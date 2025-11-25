@@ -3,154 +3,31 @@
   "days": [
     {
       "day": 1,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 20,
-              "verse": 1
-            },
-            "end": {
-              "number": 20,
-              "verse": 3
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 20,
-              "verse": 4
-            },
-            "end": {
-              "number": 20,
-              "verse": 38
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 2,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 21
-            },
-            "end": {
-              "number": 21
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 22
-            },
-            "end": {
-              "number": 22
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 3,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 23,
-              "verse": 1
-            },
-            "end": {
-              "number": 23,
-              "verse": 35
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 24
-            },
-            "end": {
-              "number": 26
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 4,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 27
-            },
-            "end": {
-              "number": 28
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 5,
-      "books": [
-        {
-          "name": "ROM",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 3
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 6,
-      "books": [
-        {
-          "name": "ROM",
-          "chapters": {
-            "start": {
-              "number": 4
-            },
-            "end": {
-              "number": 7
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 7,
-      "books": [
-        {
-          "name": "ROM",
-          "chapters": {
-            "start": {
-              "number": 8
-            },
-            "end": {
-              "number": 10
-            }
-          }
-        }
-      ]
+      "books": []
     }
   ]
 }

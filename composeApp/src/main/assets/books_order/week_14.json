@@ -8,12 +8,10 @@
           "name": "2SA",
           "chapters": {
             "start": {
-              "number": 5,
-              "verse": 11
+              "number": 19
             },
             "end": {
-              "number": 5,
-              "verse": 25
+              "number": 21
             }
           }
         }
@@ -26,10 +24,21 @@
           "name": "2SA",
           "chapters": {
             "start": {
-              "number": 6
+              "number": 22
             },
             "end": {
-              "number": 6
+              "number": 23
+            }
+          }
+        },
+        {
+          "name": "2SA",
+          "chapters": {
+            "start": {
+              "number": 24
+            },
+            "end": {
+              "number": 24
             }
           }
         }
@@ -39,13 +48,24 @@
       "day": 3,
       "books": [
         {
-          "name": "2SA",
+          "name": "1KI",
           "chapters": {
             "start": {
-              "number": 7
+              "number": 1
             },
             "end": {
-              "number": 7
+              "number": 2
+            }
+          }
+        },
+        {
+          "name": "1KI",
+          "chapters": {
+            "start": {
+              "number": 3
+            },
+            "end": {
+              "number": 4
             }
           }
         }
@@ -55,13 +75,24 @@
       "day": 4,
       "books": [
         {
-          "name": "2SA",
+          "name": "1KI",
           "chapters": {
             "start": {
-              "number": 8
+              "number": 5
             },
             "end": {
-              "number": 9
+              "number": 6
+            }
+          }
+        },
+        {
+          "name": "1KI",
+          "chapters": {
+            "start": {
+              "number": 7
+            },
+            "end": {
+              "number": 7
             }
           }
         }
@@ -71,13 +102,35 @@
       "day": 5,
       "books": [
         {
-          "name": "2SA",
+          "name": "1KI",
+          "chapters": {
+            "start": {
+              "number": 8
+            },
+            "end": {
+              "number": 8
+            }
+          }
+        },
+        {
+          "name": "1KI",
+          "chapters": {
+            "start": {
+              "number": 9
+            },
+            "end": {
+              "number": 9
+            }
+          }
+        },
+        {
+          "name": "1KI",
           "chapters": {
             "start": {
               "number": 10
             },
             "end": {
-              "number": 10
+              "number": 11
             }
           }
         }
@@ -87,13 +140,26 @@
       "day": 6,
       "books": [
         {
-          "name": "2SA",
+          "name": "1KI",
           "chapters": {
             "start": {
-              "number": 11
+              "number": 12
             },
             "end": {
-              "number": 12
+              "number": 14
+            }
+          }
+        },
+        {
+          "name": "1KI",
+          "chapters": {
+            "start": {
+              "number": 15,
+              "verse": 1
+            },
+            "end": {
+              "number": 15,
+              "verse": 24
             }
           }
         }
@@ -103,13 +169,26 @@
       "day": 7,
       "books": [
         {
-          "name": "2SA",
+          "name": "1KI",
           "chapters": {
             "start": {
-              "number": 13
+              "number": 15,
+              "verse": 25
             },
             "end": {
-              "number": 15
+              "number": 15,
+              "verse": 34
+            }
+          }
+        },
+        {
+          "name": "1KI",
+          "chapters": {
+            "start": {
+              "number": 16
+            },
+            "end": {
+              "number": 16
             }
           }
         }

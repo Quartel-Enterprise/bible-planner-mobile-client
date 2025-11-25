@@ -5,81 +5,6 @@
       "day": 1,
       "books": [
         {
-          "name": "JDG",
-          "chapters": {
-            "start": {
-              "number": 13
-            },
-            "end": {
-              "number": 15
-            }
-          }
-        },
-        {
-          "name": "JDG",
-          "chapters": {
-            "start": {
-              "number": 16
-            },
-            "end": {
-              "number": 18
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 2,
-      "books": [
-        {
-          "name": "JDG",
-          "chapters": {
-            "start": {
-              "number": 19
-            },
-            "end": {
-              "number": 21
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 3,
-      "books": [
-        {
-          "name": "RUT",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 4
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 4,
-      "books": [
-        {
-          "name": "1SA",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 3
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 5,
-      "books": [
-        {
           "name": "1SA",
           "chapters": {
             "start": {
@@ -93,7 +18,7 @@
       ]
     },
     {
-      "day": 6,
+      "day": 2,
       "books": [
         {
           "name": "1SA",
@@ -109,7 +34,7 @@
       ]
     },
     {
-      "day": 7,
+      "day": 3,
       "books": [
         {
           "name": "1SA",
@@ -119,6 +44,70 @@
             },
             "end": {
               "number": 14
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "books": [
+        {
+          "name": "1SA",
+          "chapters": {
+            "start": {
+              "number": 15
+            },
+            "end": {
+              "number": 17
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "books": [
+        {
+          "name": "1SA",
+          "chapters": {
+            "start": {
+              "number": 18
+            },
+            "end": {
+              "number": 20
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "books": [
+        {
+          "name": "1SA",
+          "chapters": {
+            "start": {
+              "number": 21
+            },
+            "end": {
+              "number": 24
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "books": [
+        {
+          "name": "1SA",
+          "chapters": {
+            "start": {
+              "number": 25
+            },
+            "end": {
+              "number": 27
             }
           }
         }

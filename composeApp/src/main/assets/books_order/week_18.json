@@ -5,35 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "2CH",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 8
+              "number": 17
             },
             "end": {
-              "number": 8
-            }
-          }
-        },
-        {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 9
-            },
-            "end": {
-              "number": 9
-            }
-          }
-        },
-        {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 10
-            },
-            "end": {
-              "number": 12
+              "number": 20
             }
           }
         }
@@ -43,35 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "2CH",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 13
+              "number": 21
             },
             "end": {
-              "number": 16
-            }
-          }
-        },
-        {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 17
-            },
-            "end": {
-              "number": 17
-            }
-          }
-        },
-        {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 18
-            },
-            "end": {
-              "number": 18
+              "number": 23
             }
           }
         }
@@ -81,35 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 19
-            },
-            "end": {
-              "number": 23
-            }
-          }
-        },
-        {
-          "name": "2CH",
+          "name": "JOB",
           "chapters": {
             "start": {
               "number": 24
             },
             "end": {
-              "number": 24
-            }
-          }
-        },
-        {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 25
-            },
-            "end": {
-              "number": 25
+              "number": 28
             }
           }
         }
@@ -119,35 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "2CH",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 26
+              "number": 29
             },
             "end": {
-              "number": 26
-            }
-          }
-        },
-        {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 27
-            },
-            "end": {
-              "number": 27
-            }
-          }
-        },
-        {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 28
-            },
-            "end": {
-              "number": 30
+              "number": 31
             }
           }
         }
@@ -157,35 +69,24 @@
       "day": 5,
       "books": [
         {
-          "name": "2CH",
-          "chapters": {
-            "start": {
-              "number": 29
-            },
-            "end": {
-              "number": 31
-            }
-          }
-        },
-        {
-          "name": "2CH",
+          "name": "JOB",
           "chapters": {
             "start": {
               "number": 32
             },
             "end": {
-              "number": 33
+              "number": 34
             }
           }
         },
         {
-          "name": "2CH",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 34
+              "number": 35
             },
             "end": {
-              "number": 35
+              "number": 37
             }
           }
         }
@@ -195,24 +96,46 @@
       "day": 6,
       "books": [
         {
-          "name": "2CH",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 36
+              "number": 38
             },
             "end": {
-              "number": 36
+              "number": 39
             }
           }
         },
         {
-          "name": "EZR",
+          "name": "JOB",
+          "chapters": {
+            "start": {
+              "number": 40
+            },
+            "end": {
+              "number": 42
+            }
+          }
+        },
+        {
+          "name": "PSA",
           "chapters": {
             "start": {
               "number": 1
             },
             "end": {
+              "number": 2
+            }
+          }
+        },
+        {
+          "name": "PSA",
+          "chapters": {
+            "start": {
               "number": 3
+            },
+            "end": {
+              "number": 4
             }
           }
         }
@@ -222,10 +145,21 @@
       "day": 7,
       "books": [
         {
-          "name": "EZR",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 5
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        },
+        {
+          "name": "PSA",
+          "chapters": {
+            "start": {
+              "number": 6
             },
             "end": {
               "number": 6
@@ -233,10 +167,21 @@
           }
         },
         {
-          "name": "EZR",
+          "name": "PSA",
           "chapters": {
             "start": {
               "number": 7
+            },
+            "end": {
+              "number": 7
+            }
+          }
+        },
+        {
+          "name": "PSA",
+          "chapters": {
+            "start": {
+              "number": 8
             },
             "end": {
               "number": 10

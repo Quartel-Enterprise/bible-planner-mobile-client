@@ -3,159 +3,31 @@
   "days": [
     {
       "day": 1,
-      "books": [
-        {
-          "name": "2CO",
-          "chapters": {
-            "start": {
-              "number": 5
-            },
-            "end": {
-              "number": 9
-            }
-          }
-        },
-        {
-          "name": "2CO",
-          "chapters": {
-            "start": {
-              "number": 10
-            },
-            "end": {
-              "number": 13
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 2,
-      "books": [
-        {
-          "name": "GAL",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 3
-            }
-          }
-        },
-        {
-          "name": "GAL",
-          "chapters": {
-            "start": {
-              "number": 4
-            },
-            "end": {
-              "number": 6
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 3,
-      "books": [
-        {
-          "name": "EPH",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 6
-            }
-          }
-        },
-        {
-          "name": "PHP",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 4
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 4,
-      "books": [
-        {
-          "name": "COL",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 4
-            }
-          }
-        },
-        {
-          "name": "1TH",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 5
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 5,
-      "books": [
-        {
-          "name": "2TH",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 3
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 6,
-      "books": [
-        {
-          "name": "1TI",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 6
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 7,
-      "books": [
-        {
-          "name": "2TI",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 4
-            }
-          }
-        }
-      ]
+      "books": []
     }
   ]
 }

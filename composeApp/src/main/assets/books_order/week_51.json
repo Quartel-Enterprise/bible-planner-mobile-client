@@ -3,107 +3,31 @@
   "days": [
     {
       "day": 1,
-      "books": [
-        {
-          "name": "TIT",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 3
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 2,
-      "books": [
-        {
-          "name": "PHM"
-        }
-      ]
+      "books": []
     },
     {
       "day": 3,
-      "books": [
-        {
-          "name": "HEB",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 6
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 4,
-      "books": [
-        {
-          "name": "HEB",
-          "chapters": {
-            "start": {
-              "number": 7
-            },
-            "end": {
-              "number": 10
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 5,
-      "books": [
-        {
-          "name": "HEB",
-          "chapters": {
-            "start": {
-              "number": 11
-            },
-            "end": {
-              "number": 13
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 6,
-      "books": [
-        {
-          "name": "JAS",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 5
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 7,
-      "books": [
-        {
-          "name": "1PE",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 5
-            }
-          }
-        }
-      ]
+      "books": []
     }
   ]
 }

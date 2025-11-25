@@ -5,24 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "JER",
+          "name": "ZEP",
           "chapters": {
             "start": {
               "number": 1
             },
             "end": {
               "number": 3
-            }
-          }
-        },
-        {
-          "name": "JER",
-          "chapters": {
-            "start": {
-              "number": 4
-            },
-            "end": {
-              "number": 6
             }
           }
         }
@@ -32,24 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "JER",
+          "name": "HAG",
           "chapters": {
             "start": {
-              "number": 7
+              "number": 1
             },
             "end": {
-              "number": 9
-            }
-          }
-        },
-        {
-          "name": "JER",
-          "chapters": {
-            "start": {
-              "number": 10
-            },
-            "end": {
-              "number": 13
+              "number": 2
             }
           }
         }
@@ -59,24 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "JER",
+          "name": "ZEC",
           "chapters": {
             "start": {
-              "number": 14
+              "number": 1
             },
             "end": {
-              "number": 17
-            }
-          }
-        },
-        {
-          "name": "JER",
-          "chapters": {
-            "start": {
-              "number": 18
-            },
-            "end": {
-              "number": 22
+              "number": 7
             }
           }
         }
@@ -86,24 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "JER",
+          "name": "ZEC",
           "chapters": {
             "start": {
-              "number": 23
+              "number": 8
             },
             "end": {
-              "number": 25
-            }
-          }
-        },
-        {
-          "name": "JER",
-          "chapters": {
-            "start": {
-              "number": 26
-            },
-            "end": {
-              "number": 29
+              "number": 14
             }
           }
         }
@@ -113,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "JER",
+          "name": "MAL",
           "chapters": {
             "start": {
-              "number": 30
+              "number": 1
             },
             "end": {
-              "number": 31
+              "number": 4
             }
           }
         }
@@ -129,13 +85,57 @@
       "day": 6,
       "books": [
         {
-          "name": "JER",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 32
+              "number": 1
             },
             "end": {
-              "number": 34
+              "number": 1
+            }
+          }
+        },
+        {
+          "name": "MAT",
+          "chapters": {
+            "start": {
+              "number": 2
+            },
+            "end": {
+              "number": 2
+            }
+          }
+        },
+        {
+          "name": "MAT",
+          "chapters": {
+            "start": {
+              "number": 3
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        },
+        {
+          "name": "MAT",
+          "chapters": {
+            "start": {
+              "number": 4
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        },
+        {
+          "name": "MAT",
+          "chapters": {
+            "start": {
+              "number": 5
+            },
+            "end": {
+              "number": 7
             }
           }
         }
@@ -145,13 +145,39 @@
       "day": 7,
       "books": [
         {
-          "name": "JER",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 35
+              "number": 8,
+              "verse": 1
             },
             "end": {
-              "number": 37
+              "number": 8,
+              "verse": 13
+            }
+          }
+        },
+        {
+          "name": "MAT",
+          "chapters": {
+            "start": {
+              "number": 8,
+              "verse": 14
+            },
+            "end": {
+              "number": 8,
+              "verse": 34
+            }
+          }
+        },
+        {
+          "name": "MAT",
+          "chapters": {
+            "start": {
+              "number": 9
+            },
+            "end": {
+              "number": 10
             }
           }
         }

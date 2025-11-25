@@ -5,6 +5,127 @@
       "day": 1,
       "books": [
         {
+          "name": "1TI",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "books": [
+        {
+          "name": "2TI",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "books": [
+        {
+          "name": "TIT",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        },
+        {
+          "name": "PHM"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "books": [
+        {
+          "name": "HEB",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "books": [
+        {
+          "name": "HEB",
+          "chapters": {
+            "start": {
+              "number": 7
+            },
+            "end": {
+              "number": 10
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "books": [
+        {
+          "name": "HEB",
+          "chapters": {
+            "start": {
+              "number": 11
+            },
+            "end": {
+              "number": 13
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "books": [
+        {
+          "name": "JAS",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        },
+        {
+          "name": "1PE",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        },
+        {
           "name": "2PE",
           "chapters": {
             "start": {
@@ -25,36 +146,16 @@
               "number": 5
             }
           }
-        }
-      ]
-    },
-    {
-      "day": 2,
-      "books": [
+        },
         {
           "name": "2JN"
-        }
-      ]
-    },
-    {
-      "day": 3,
-      "books": [
+        },
         {
           "name": "3JN"
-        }
-      ]
-    },
-    {
-      "day": 4,
-      "books": [
+        },
         {
           "name": "JUD"
-        }
-      ]
-    },
-    {
-      "day": 5,
-      "books": [
+        },
         {
           "name": "REV",
           "chapters": {
@@ -65,12 +166,7 @@
               "number": 5
             }
           }
-        }
-      ]
-    },
-    {
-      "day": 6,
-      "books": [
+        },
         {
           "name": "REV",
           "chapters": {
@@ -81,12 +177,7 @@
               "number": 11
             }
           }
-        }
-      ]
-    },
-    {
-      "day": 7,
-      "books": [
+        },
         {
           "name": "REV",
           "chapters": {

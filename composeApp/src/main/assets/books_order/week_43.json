@@ -5,26 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "LUK",
+          "name": "2PE",
           "chapters": {
             "start": {
               "number": 1
             },
             "end": {
-              "number": 1
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 2,
-              "verse": 1
-            },
-            "end": {
-              "number": 2,
-              "verse": 38
+              "number": 3
             }
           }
         }
@@ -34,26 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "LUK",
+          "name": "1JN",
           "chapters": {
             "start": {
-              "number": 2,
-              "verse": 39
+              "number": 1
             },
             "end": {
-              "number": 2,
-              "verse": 52
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 3
-            },
-            "end": {
-              "number": 3
+              "number": 5
             }
           }
         }
@@ -63,26 +37,10 @@
       "day": 3,
       "books": [
         {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 4
-            },
-            "end": {
-              "number": 5
-            }
-          }
+          "name": "2JN"
         },
         {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 6
-            },
-            "end": {
-              "number": 6
-            }
-          }
+          "name": "3JN"
         }
       ]
     },
@@ -90,69 +48,21 @@
       "day": 4,
       "books": [
         {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 7
-            },
-            "end": {
-              "number": 7
-            }
-          }
+          "name": "JUD"
         }
       ]
     },
     {
       "day": 5,
-      "books": [
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 8
-            },
-            "end": {
-              "number": 8
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 6,
-      "books": [
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 9,
-              "verse": 18
-            },
-            "end": {
-              "number": 9,
-              "verse": 17
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 7,
-      "books": [
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 9,
-              "verse": 18
-            },
-            "end": {
-              "number": 9,
-              "verse": 27
-            }
-          }
-        }
-      ]
+      "books": []
     }
   ]
 }

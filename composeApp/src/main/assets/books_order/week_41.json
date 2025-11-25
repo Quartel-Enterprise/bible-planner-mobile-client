@@ -5,24 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "MAT",
+          "name": "EPH",
           "chapters": {
             "start": {
-              "number": 17
+              "number": 1
             },
             "end": {
-              "number": 17
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 18
-            },
-            "end": {
-              "number": 18
+              "number": 6
             }
           }
         }
@@ -32,24 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "MAT",
+          "name": "PHP",
           "chapters": {
             "start": {
-              "number": 19
+              "number": 1
             },
             "end": {
-              "number": 19
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 20
-            },
-            "end": {
-              "number": 21
+              "number": 4
             }
           }
         }
@@ -59,24 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "MAT",
+          "name": "COL",
           "chapters": {
             "start": {
-              "number": 22
+              "number": 1
             },
             "end": {
-              "number": 22
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 23
-            },
-            "end": {
-              "number": 23
+              "number": 4
             }
           }
         }
@@ -86,24 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "MAT",
+          "name": "1TH",
           "chapters": {
             "start": {
-              "number": 24
+              "number": 1
             },
             "end": {
-              "number": 24
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 25
-            },
-            "end": {
-              "number": 25
+              "number": 5
             }
           }
         }
@@ -113,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "MAT",
+          "name": "2TH",
           "chapters": {
             "start": {
-              "number": 26
+              "number": 1
             },
             "end": {
-              "number": 26
+              "number": 3
             }
           }
         }
@@ -129,13 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "MAT",
+          "name": "1TI",
           "chapters": {
             "start": {
-              "number": 27
+              "number": 1
             },
             "end": {
-              "number": 27
+              "number": 6
             }
           }
         }
@@ -145,13 +101,13 @@
       "day": 7,
       "books": [
         {
-          "name": "MAT",
+          "name": "2TI",
           "chapters": {
             "start": {
-              "number": 28
+              "number": 1
             },
             "end": {
-              "number": 28
+              "number": 4
             }
           }
         }

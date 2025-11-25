@@ -3,121 +3,31 @@
   "days": [
     {
       "day": 1,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 11
-            },
-            "end": {
-              "number": 12
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 2,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 13
-            },
-            "end": {
-              "number": 14
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 3,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 15
-            },
-            "end": {
-              "number": 16
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 4,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 17
-            },
-            "end": {
-              "number": 17
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 5,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 18,
-              "verse": 1
-            },
-            "end": {
-              "number": 18,
-              "verse": 18
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 6,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 18,
-              "verse": 19
-            },
-            "end": {
-              "number": 18,
-              "verse": 28
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 7,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 19,
-              "verse": 1
-            },
-            "end": {
-              "number": 19,
-              "verse": 41
-            }
-          }
-        }
-      ]
+      "books": []
     }
   ]
 }

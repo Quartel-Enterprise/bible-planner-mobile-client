@@ -8,10 +8,10 @@
           "name": "DEU",
           "chapters": {
             "start": {
-              "number": 8
+              "number": 24
             },
             "end": {
-              "number": 10
+              "number": 27
             }
           }
         }
@@ -24,10 +24,21 @@
           "name": "DEU",
           "chapters": {
             "start": {
-              "number": 11
+              "number": 28
             },
             "end": {
-              "number": 13
+              "number": 29
+            }
+          }
+        },
+        {
+          "name": "DEU",
+          "chapters": {
+            "start": {
+              "number": 30
+            },
+            "end": {
+              "number": 31
             }
           }
         }
@@ -40,10 +51,10 @@
           "name": "DEU",
           "chapters": {
             "start": {
-              "number": 14
+              "number": 32
             },
             "end": {
-              "number": 16
+              "number": 34
             }
           }
         }
@@ -53,13 +64,13 @@
       "day": 4,
       "books": [
         {
-          "name": "DEU",
+          "name": "JOS",
           "chapters": {
             "start": {
-              "number": 17
+              "number": 1
             },
             "end": {
-              "number": 20
+              "number": 4
             }
           }
         }
@@ -69,13 +80,13 @@
       "day": 5,
       "books": [
         {
-          "name": "DEU",
+          "name": "JOS",
           "chapters": {
             "start": {
-              "number": 21
+              "number": 5
             },
             "end": {
-              "number": 23
+              "number": 8
             }
           }
         }
@@ -85,29 +96,13 @@
       "day": 6,
       "books": [
         {
-          "name": "DEU",
+          "name": "JOS",
           "chapters": {
             "start": {
-              "number": 24
+              "number": 9
             },
             "end": {
-              "number": 27
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 7,
-      "books": [
-        {
-          "name": "DEU",
-          "chapters": {
-            "start": {
-              "number": 28
-            },
-            "end": {
-              "number": 29
+              "number": 11
             }
           }
         }

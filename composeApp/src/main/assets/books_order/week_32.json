@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "ISA",
+          "name": "JOL",
           "chapters": {
             "start": {
-              "number": 37
+              "number": 1
             },
             "end": {
-              "number": 39
+              "number": 3
             }
           }
         }
@@ -21,13 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "ISA",
+          "name": "AMO",
           "chapters": {
             "start": {
-              "number": 40
+              "number": 1
             },
             "end": {
-              "number": 43
+              "number": 5
             }
           }
         }
@@ -37,13 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "ISA",
+          "name": "AMO",
           "chapters": {
             "start": {
-              "number": 44
+              "number": 6
             },
             "end": {
-              "number": 48
+              "number": 9
             }
           }
         }
@@ -53,15 +53,7 @@
       "day": 4,
       "books": [
         {
-          "name": "ISA",
-          "chapters": {
-            "start": {
-              "number": 49
-            },
-            "end": {
-              "number": 53
-            }
-          }
+          "name": "OBA"
         }
       ]
     },
@@ -69,13 +61,13 @@
       "day": 5,
       "books": [
         {
-          "name": "ISA",
+          "name": "JON",
           "chapters": {
             "start": {
-              "number": 54
+              "number": 1
             },
             "end": {
-              "number": 58
+              "number": 4
             }
           }
         }
@@ -85,13 +77,13 @@
       "day": 6,
       "books": [
         {
-          "name": "ISA",
+          "name": "MIC",
           "chapters": {
             "start": {
-              "number": 59
+              "number": 1
             },
             "end": {
-              "number": 63
+              "number": 7
             }
           }
         }
@@ -101,13 +93,24 @@
       "day": 7,
       "books": [
         {
-          "name": "ISA",
+          "name": "NAM",
           "chapters": {
             "start": {
-              "number": 64
+              "number": 1
             },
             "end": {
-              "number": 66
+              "number": 3
+            }
+          }
+        },
+        {
+          "name": "HAB",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
             }
           }
         }

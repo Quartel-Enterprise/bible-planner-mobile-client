@@ -5,13 +5,26 @@
       "day": 1,
       "books": [
         {
-          "name": "EZK",
+          "name": "LUK",
           "chapters": {
             "start": {
-              "number": 42
+              "number": 24
             },
             "end": {
-              "number": 43
+              "number": 24
+            }
+          }
+        },
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 1,
+              "verse": 1
+            },
+            "end": {
+              "number": 1,
+              "verse": 14
             }
           }
         }
@@ -21,13 +34,15 @@
       "day": 2,
       "books": [
         {
-          "name": "EZK",
+          "name": "JHN",
           "chapters": {
             "start": {
-              "number": 44
+              "number": 1,
+              "verse": 15
             },
             "end": {
-              "number": 45
+              "number": 1,
+              "verse": 51
             }
           }
         }
@@ -37,13 +52,13 @@
       "day": 3,
       "books": [
         {
-          "name": "EZK",
+          "name": "JHN",
           "chapters": {
             "start": {
-              "number": 46
+              "number": 2
             },
             "end": {
-              "number": 48
+              "number": 4
             }
           }
         }
@@ -53,13 +68,35 @@
       "day": 4,
       "books": [
         {
-          "name": "DAN",
+          "name": "JHN",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 5
             },
             "end": {
-              "number": 3
+              "number": 5
+            }
+          }
+        },
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 6
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        },
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 7
+            },
+            "end": {
+              "number": 8
             }
           }
         }
@@ -69,13 +106,41 @@
       "day": 5,
       "books": [
         {
-          "name": "DAN",
+          "name": "JHN",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 9,
+              "verse": 1
             },
             "end": {
-              "number": 6
+              "number": 9,
+              "verse": 41
+            }
+          }
+        },
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 10,
+              "verse": 1
+            },
+            "end": {
+              "number": 10,
+              "verse": 21
+            }
+          }
+        },
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 10,
+              "verse": 22
+            },
+            "end": {
+              "number": 10,
+              "verse": 42
             }
           }
         }
@@ -85,13 +150,35 @@
       "day": 6,
       "books": [
         {
-          "name": "DAN",
+          "name": "JHN",
           "chapters": {
             "start": {
-              "number": 7
+              "number": 11
             },
             "end": {
-              "number": 9
+              "number": 11
+            }
+          }
+        },
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 12
+            },
+            "end": {
+              "number": 12
+            }
+          }
+        },
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 13
+            },
+            "end": {
+              "number": 13
             }
           }
         }
@@ -101,13 +188,13 @@
       "day": 7,
       "books": [
         {
-          "name": "DAN",
+          "name": "JHN",
           "chapters": {
             "start": {
-              "number": 10
+              "number": 14
             },
             "end": {
-              "number": 12
+              "number": 17
             }
           }
         }

@@ -3,126 +3,31 @@
   "days": [
     {
       "day": 1,
-      "books": [
-        {
-          "name": "ROM",
-          "chapters": {
-            "start": {
-              "number": 11
-            },
-            "end": {
-              "number": 13
-            }
-          }
-        },
-        {
-          "name": "ROM",
-          "chapters": {
-            "start": {
-              "number": 14
-            },
-            "end": {
-              "number": 16
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 2,
-      "books": [
-        {
-          "name": "1CO",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 4
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 3,
-      "books": [
-        {
-          "name": "1CO",
-          "chapters": {
-            "start": {
-              "number": 5
-            },
-            "end": {
-              "number": 8
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 4,
-      "books": [
-        {
-          "name": "1CO",
-          "chapters": {
-            "start": {
-              "number": 9
-            },
-            "end": {
-              "number": 11
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 5,
-      "books": [
-        {
-          "name": "1CO",
-          "chapters": {
-            "start": {
-              "number": 12
-            },
-            "end": {
-              "number": 14
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 6,
-      "books": [
-        {
-          "name": "1CO",
-          "chapters": {
-            "start": {
-              "number": 15
-            },
-            "end": {
-              "number": 16
-            }
-          }
-        }
-      ]
+      "books": []
     },
     {
       "day": 7,
-      "books": [
-        {
-          "name": "2CO",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 4
-            }
-          }
-        }
-      ]
+      "books": []
     }
   ]
 }
