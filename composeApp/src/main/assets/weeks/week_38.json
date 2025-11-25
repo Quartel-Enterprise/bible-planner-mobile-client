@@ -1,12 +1,51 @@
 {
   "week": 38,
   "days": [
-    "Daniel 10 a 12",
-    "Esdras 1 a 3",
-    "Esdras 4-6; Salmos 137",
-    "Ageu 1 e 2",
-    "Zacarias 1 a 7",
-    "Zacarias 8 a 14",
-    "Ester 1 a 5"
+    [
+      {
+        "book": "DAN",
+        "chapters": "10 a 12"
+      }
+    ],
+    [
+      {
+        "book": "EZR",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "EZR",
+        "chapters": "4-6"
+      },
+      {
+        "book": "PSA",
+        "chapters": "137"
+      }
+    ],
+    [
+      {
+        "book": "HAG",
+        "chapters": "1 e 2"
+      }
+    ],
+    [
+      {
+        "book": "ZEC",
+        "chapters": "1 a 7"
+      }
+    ],
+    [
+      {
+        "book": "ZEC",
+        "chapters": "8 a 14"
+      }
+    ],
+    [
+      {
+        "book": "EST",
+        "chapters": "1 a 5"
+      }
+    ]
   ]
 }

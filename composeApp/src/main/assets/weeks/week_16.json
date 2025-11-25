@@ -1,12 +1,51 @@
 {
   "week": 16,
   "days": [
-    "Salmos 56, 120, 140 - 142",
-    "1 Samuel 25 - 27",
-    "Salmos 17, 35, 54, 63",
-    "1 Samuel 28 - 31; Salmo 18",
-    "Salmos 121, 123 a 125, 127, 128 a 130",
-    "2 Samuel 1 a 4",
-    "Salmos 6, 8 a 10, 14, 16, 19, 21"
+    [
+      {
+        "book": "PSA",
+        "chapters": "56, 120, 140 - 142"
+      }
+    ],
+    [
+      {
+        "book": "1SA",
+        "chapters": "25 - 27"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "17, 35, 54, 63"
+      }
+    ],
+    [
+      {
+        "book": "1SA",
+        "chapters": "28 - 31"
+      },
+      {
+        "book": "PSA",
+        "chapters": "18"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "121, 123 a 125, 127, 128 a 130"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "1 a 4"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "6, 8 a 10, 14, 16, 19, 21"
+      }
+    ]
   ]
 }

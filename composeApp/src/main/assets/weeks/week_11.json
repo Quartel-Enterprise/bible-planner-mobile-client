@@ -1,12 +1,47 @@
 {
   "week": 11,
   "days": [
-    "Deuteronômio 3 - 4",
-    "Deuteronômio 5 - 7",
-    "Deuteronômio 8 - 10",
-    "Deuteronômio 11 - 13",
-    "Deuteronômio 14 - 16",
-    "Deuteronômio 17 - 20",
-    "Deuteronômio 21 - 23"
+    [
+      {
+        "book": "DEU",
+        "chapters": "3 - 4"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "5 - 7"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "8 - 10"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "11 - 13"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "14 - 16"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "17 - 20"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "21 - 23"
+      }
+    ]
   ]
 }

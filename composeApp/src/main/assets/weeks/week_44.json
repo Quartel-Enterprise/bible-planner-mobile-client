@@ -1,12 +1,67 @@
 {
   "week": 44,
   "days": [
-    "João 11",
-    "Lucas 17: 11-37; Lucas 18: 1-14",
-    "Mateus 19; Marcos10",
-    "Mateus 20 e 21",
-    "Lucas 17: 11-37; Lucas 19: 1-48",
-    "Marcos 11; João 12",
-    "Mateus 22; Marcos 12"
+    [
+      {
+        "book": "JHN",
+        "chapters": "11"
+      }
+    ],
+    [
+      {
+        "book": "LUK",
+        "chapters": "17: 11-37"
+      },
+      {
+        "book": "LUK",
+        "chapters": "18: 1-14"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "19"
+      },
+      {
+        "book": "MRK",
+        "chapters": "10"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "20 e 21"
+      }
+    ],
+    [
+      {
+        "book": "LUK",
+        "chapters": "17: 11-37"
+      },
+      {
+        "book": "LUK",
+        "chapters": "19: 1-48"
+      }
+    ],
+    [
+      {
+        "book": "MRK",
+        "chapters": "11"
+      },
+      {
+        "book": "JHN",
+        "chapters": "12"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "22"
+      },
+      {
+        "book": "MRK",
+        "chapters": "12"
+      }
+    ]
   ]
 }

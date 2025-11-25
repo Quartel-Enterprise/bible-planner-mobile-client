@@ -1,12 +1,67 @@
 {
   "week": 24,
   "days": [
-    "1 Reis 5 - 6; 2 Crônicas 2 - 3",
-    "1 Reis 7, 2 Crônicas 4",
-    "1 Reis 8, 2 Crônicas 5",
-    "2 Crônicas 6-7; Salmos 136",
-    "Salmos 134, 146-150",
-    "1 Reis 9; 2 Crônicas 8",
-    "Provérbios 25 e 26"
+    [
+      {
+        "book": "1KI",
+        "chapters": "5 - 6"
+      },
+      {
+        "book": "2CH",
+        "chapters": "2 - 3"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "7"
+      },
+      {
+        "book": "2CH",
+        "chapters": "4"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "8"
+      },
+      {
+        "book": "2CH",
+        "chapters": "5"
+      }
+    ],
+    [
+      {
+        "book": "2CH",
+        "chapters": "6-7"
+      },
+      {
+        "book": "PSA",
+        "chapters": "136"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "134, 146-150"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "9"
+      },
+      {
+        "book": "2CH",
+        "chapters": "8"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "25 e 26"
+      }
+    ]
   ]
 }

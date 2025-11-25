@@ -1,12 +1,51 @@
 {
   "week": 12,
   "days": [
-    "Deuteronômio 24 - 27",
-    "Deuteronômio 28 - 29",
-    "Deuteronômio 30 - 31",
-    "Deuteronômio 32 - 34",
-    "Josué 1 - 4",
-    "Josué 5 - 8",
-    "Josué 9 - 11"
+    [
+      {
+        "book": "DEU",
+        "chapters": "24 - 27"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "28 - 29"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "30 - 31"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "32 - 34"
+      },
+      {
+        "book": "PSA",
+        "chapters": "91"
+      }
+    ],
+    [
+      {
+        "book": "JOS",
+        "chapters": "1 - 4"
+      }
+    ],
+    [
+      {
+        "book": "JOS",
+        "chapters": "5 - 8"
+      }
+    ],
+    [
+      {
+        "book": "JOS",
+        "chapters": "9 - 11"
+      }
+    ]
   ]
 }

@@ -1,12 +1,51 @@
 {
   "week": 25,
   "days": [
-    "Provérbios 27 a 29",
-    "Eclesiastes 1 a 6",
-    "Eclesiastes 7 a 12",
-    "1 Reis 10-11; 2 Crônicas 9",
-    "Provérbios 30 e 31",
-    "1 Reis 12 a 14",
-    "2 Crônicas 10 a 12"
+    [
+      {
+        "book": "PRO",
+        "chapters": "27 a 29"
+      }
+    ],
+    [
+      {
+        "book": "ECC",
+        "chapters": "1 a 6"
+      }
+    ],
+    [
+      {
+        "book": "ECC",
+        "chapters": "7 a 12"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "10-11"
+      },
+      {
+        "book": "2CH",
+        "chapters": "9"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "30 e 31"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "12 a 14"
+      }
+    ],
+    [
+      {
+        "book": "2CH",
+        "chapters": "10 a 12"
+      }
+    ]
   ]
 }

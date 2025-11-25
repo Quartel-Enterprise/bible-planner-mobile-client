@@ -1,12 +1,47 @@
 {
   "week": 36,
   "days": [
-    "Ezequiel 22 a 23",
-    "Ezequiel 24 a 27",
-    "Ezequiel 28 a 31",
-    "Ezequiel 32 a 34",
-    "Ezequiel 35 a 37",
-    "Ezequiel 38 a 39",
-    "Ezequiel 40 a 41"
+    [
+      {
+        "book": "EZK",
+        "chapters": "22 a 23"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "24 a 27"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "28 a 31"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "32 a 34"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "35 a 37"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "38 a 39"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "40 a 41"
+      }
+    ]
   ]
 }

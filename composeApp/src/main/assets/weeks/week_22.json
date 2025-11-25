@@ -1,12 +1,59 @@
 {
   "week": 22,
   "days": [
-    "Salmos 111 a 118",
-    "1 Reis 1 - 2; Salmos 37, 71, 94",
-    "Salmos 119:1-88",
-    "1 Reis 3-4; 2 Crônicas 1; Salmos 72",
-    "Salmos 119: 89 - 176",
-    "Cantares de Salomão 1 a 8",
-    "Provérbios 1 a 3"
+    [
+      {
+        "book": "PSA",
+        "chapters": "111 a 118"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "1 - 2"
+      },
+      {
+        "book": "PSA",
+        "chapters": "37, 71, 94"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "119:1-88"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "3-4"
+      },
+      {
+        "book": "2CH",
+        "chapters": "1"
+      },
+      {
+        "book": "PSA",
+        "chapters": "72"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "119: 89 - 176"
+      }
+    ],
+    [
+      {
+        "book": "SNG",
+        "chapters": "1 a 8"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "1 a 3"
+      }
+    ]
   ]
 }

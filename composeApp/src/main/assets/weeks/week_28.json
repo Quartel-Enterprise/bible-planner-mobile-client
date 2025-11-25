@@ -1,12 +1,55 @@
 {
   "week": 28,
   "days": [
-    "Isaías 1 a 4",
-    "Isaías 5 a 8",
-    "Amós 1 a 5",
-    "Amós 6 a 9",
-    "2 Crônicas 27; Isaías 9-12",
-    "Miquéias 1 a 7",
-    "2 Crônicas 28 a 30; 2 Reis 16-17"
+    [
+      {
+        "book": "ISA",
+        "chapters": "1 a 4"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "5 a 8"
+      }
+    ],
+    [
+      {
+        "book": "AMO",
+        "chapters": "1 a 5"
+      }
+    ],
+    [
+      {
+        "book": "AMO",
+        "chapters": "6 a 9"
+      }
+    ],
+    [
+      {
+        "book": "2CH",
+        "chapters": "27"
+      },
+      {
+        "book": "ISA",
+        "chapters": "9-12"
+      }
+    ],
+    [
+      {
+        "book": "MIC",
+        "chapters": "1 a 7"
+      }
+    ],
+    [
+      {
+        "book": "2CH",
+        "chapters": "28 a 30"
+      },
+      {
+        "book": "2KI",
+        "chapters": "16-17"
+      }
+    ]
   ]
 }

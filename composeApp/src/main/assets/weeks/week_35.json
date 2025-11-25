@@ -1,12 +1,47 @@
 {
   "week": 35,
   "days": [
-    "Ezequiel 1 a 4",
-    "Ezequiel 5 a 8",
-    "Ezequiel 9 a 12",
-    "Ezequiel 13 a 15",
-    "Ezequiel 16 a 17",
-    "Ezequiel 18 a 19",
-    "Ezequiel 20 a 21"
+    [
+      {
+        "book": "EZK",
+        "chapters": "1 a 4"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "5 a 8"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "9 a 12"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "13 a 15"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "16 a 17"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "18 a 19"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "20 a 21"
+      }
+    ]
   ]
 }

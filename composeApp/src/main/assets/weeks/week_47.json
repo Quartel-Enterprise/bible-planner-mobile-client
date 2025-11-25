@@ -1,12 +1,47 @@
 {
   "week": 47,
   "days": [
-    "Atos 9 a 10",
-    "Atos 11 a 12",
-    "Atos 13 a 14",
-    "Tiago 1 a 5",
-    "Atos 15 a 16",
-    "Gálatas 1 a 3",
-    "Gálatas 4 a 6"
+    [
+      {
+        "book": "ACT",
+        "chapters": "9 a 10"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "11 a 12"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "13 a 14"
+      }
+    ],
+    [
+      {
+        "book": "JAS",
+        "chapters": "1 a 5"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "15 a 16"
+      }
+    ],
+    [
+      {
+        "book": "GAL",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "GAL",
+        "chapters": "4 a 6"
+      }
+    ]
   ]
 }

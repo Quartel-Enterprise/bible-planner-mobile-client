@@ -1,12 +1,62 @@
 {
   "week": 50,
   "days": [
-    "Romanos 11 a 13",
-    "Romanos 14 a 16",
-    "Atos 20: 4 - 38; Atos 21; Atos 22; Atos 23:1 - 35",
-    "Atos 24 a 26",
-    "Atos 27 e 28",
-    "Colossenses 1-4; Filémon",
-    "Efésios 1 a 6"
+    [
+      {
+        "book": "ROM",
+        "chapters": "11 a 13"
+      }
+    ],
+    [
+      {
+        "book": "ROM",
+        "chapters": "14 a 16"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "20: 4 - 38"
+      },
+      {
+        "book": "ACT",
+        "chapters": "21"
+      },
+      {
+        "book": "ACT",
+        "chapters": "22"
+      },
+      {
+        "book": "ACT",
+        "chapters": "23:1 - 35"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "24 a 26"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "27 e 28"
+      }
+    ],
+    [
+      {
+        "book": "COL",
+        "chapters": "1-4"
+      },
+      {
+        "book": "Filémon"
+      }
+    ],
+    [
+      {
+        "book": "EPH",
+        "chapters": "1 a 6"
+      }
+    ]
   ]
 }

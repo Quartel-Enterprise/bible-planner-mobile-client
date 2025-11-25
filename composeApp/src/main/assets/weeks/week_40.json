@@ -1,12 +1,75 @@
 {
   "week": 40,
   "days": [
-    "Lucas 1; João 1: 1 - 14",
-    "Mateus 1; Lucas 2: 1 - 38",
-    "Mateus 2; Lucas 2: 39 - 52",
-    "Mateus 3; Marcos 1; Lucas 3",
-    "Mateus 4; Lucas4-5; João 1:15-51",
-    "João 2 a 4",
-    "Marcos 2"
+    [
+      {
+        "book": "LUK",
+        "chapters": "1"
+      },
+      {
+        "book": "JHN",
+        "chapters": "1: 1 - 14"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "1"
+      },
+      {
+        "book": "LUK",
+        "chapters": "2: 1 - 38"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "2"
+      },
+      {
+        "book": "LUK",
+        "chapters": "2: 39 - 52"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "3"
+      },
+      {
+        "book": "MRK",
+        "chapters": "1"
+      },
+      {
+        "book": "LUK",
+        "chapters": "3"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "4"
+      },
+      {
+        "book": "LUK",
+        "chapters": "4-5"
+      },
+      {
+        "book": "JHN",
+        "chapters": "1:15-51"
+      }
+    ],
+    [
+      {
+        "book": "JHN",
+        "chapters": "2 a 4"
+      }
+    ],
+    [
+      {
+        "book": "MRK",
+        "chapters": "2"
+      }
+    ]
   ]
 }

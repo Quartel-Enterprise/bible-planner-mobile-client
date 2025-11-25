@@ -1,12 +1,52 @@
 {
   "week": 52,
   "days": [
-    "2 Timóteo 1 a 4",
-    "2 Pedro 1-3; Judas",
-    "1 João 1-5",
-    "2 João; 3 João",
-    "Apocalipse 1 a 5",
-    "Apocalipse 6 a 11",
-    "Apocalipse 12 a 22"
+    [
+      {
+        "book": "2TI",
+        "chapters": "1 a 4"
+      }
+    ],
+    [
+      {
+        "book": "2PE",
+        "chapters": "1-3"
+      },
+      {
+        "book": "Judas"
+      }
+    ],
+    [
+      {
+        "book": "1JN",
+        "chapters": "1-5"
+      }
+    ],
+    [
+      {
+        "book": "2JN"
+      },
+      {
+        "book": "3JN"
+      }
+    ],
+    [
+      {
+        "book": "REV",
+        "chapters": "1 a 5"
+      }
+    ],
+    [
+      {
+        "book": "REV",
+        "chapters": "6 a 11"
+      }
+    ],
+    [
+      {
+        "book": "REV",
+        "chapters": "12 a 22"
+      }
+    ]
   ]
 }

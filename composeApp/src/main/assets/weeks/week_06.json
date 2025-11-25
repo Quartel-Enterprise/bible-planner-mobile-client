@@ -1,12 +1,47 @@
 {
   "week": 6,
   "days": [
-    "Êxodo 19 - 21",
-    "Êxodo 22 - 24",
-    "Êxodo 25 - 27",
-    "Êxodo 28 - 29",
-    "Êxodo 30 - 32",
-    "Êxodo 33 - 35",
-    "Êxodo 36 - 38"
+    [
+      {
+        "book": "EXO",
+        "chapters": "19 - 21"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "22 - 24"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "25 - 27"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "28 - 29"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "30 - 32"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "33 - 35"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "36 - 38"
+      }
+    ]
   ]
 }

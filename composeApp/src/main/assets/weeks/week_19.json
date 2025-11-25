@@ -1,12 +1,71 @@
 {
   "week": 19,
   "days": [
-    "2 Samuel 7; 1 Crônicas 17",
-    "Salmos 25, 29, 33, 36, 39",
-    "2 Samuel 8 e 9; 1 Crônicas 18",
-    "Salmos 50, 53, 60, 75",
-    "2 Samuel 10; 1 Crônicas 19; Salmo 20",
-    "Salmos 65 a 67; Salmos 69 a 70",
-    "2 Samuel 11 e 12; 1 Crônicas 20"
+    [
+      {
+        "book": "2SA",
+        "chapters": "7"
+      },
+      {
+        "book": "1CH",
+        "chapters": "17"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "25, 29, 33, 36, 39"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "8 e 9"
+      },
+      {
+        "book": "1CH",
+        "chapters": "18"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "50, 53, 60, 75"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "10"
+      },
+      {
+        "book": "1CH",
+        "chapters": "19"
+      },
+      {
+        "book": "PSA",
+        "chapters": "20"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "65 a 67"
+      },
+      {
+        "book": "PSA",
+        "chapters": "69 a 70"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "11 e 12"
+      },
+      {
+        "book": "1CH",
+        "chapters": "20"
+      }
+    ]
   ]
 }

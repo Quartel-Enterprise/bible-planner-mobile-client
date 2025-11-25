@@ -1,12 +1,59 @@
 {
   "week": 30,
   "days": [
-    "Isaías 31 a 34",
-    "Isaías 35 a 36",
-    "Isaías 37 a 39; Salmos 76",
-    "Isaías 40 a 43",
-    "Isaías 44 a 48",
-    "2 Reis 18:9-37; 2 Reis 19; Salmos 46",
-    "Isaías 49 a 53"
+    [
+      {
+        "book": "ISA",
+        "chapters": "31 a 34"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "35 a 36"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "37 a 39"
+      },
+      {
+        "book": "PSA",
+        "chapters": "76"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "40 a 43"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "44 a 48"
+      }
+    ],
+    [
+      {
+        "book": "2KI",
+        "chapters": "18:9-37"
+      },
+      {
+        "book": "2KI",
+        "chapters": "19"
+      },
+      {
+        "book": "PSA",
+        "chapters": "46"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "49 a 53"
+      }
+    ]
   ]
 }

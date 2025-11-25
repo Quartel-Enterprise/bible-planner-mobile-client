@@ -1,12 +1,47 @@
 {
   "week": 51,
   "days": [
-    "Filipenses 1 a 4",
-    "1 Timóteo 1 a 6",
-    "Tito 1 a 3",
-    "1 Pedro 1 a 5",
-    "Hebreus 1 a 6",
-    "Hebreus 7 a 10",
-    "Hebreus 11 a 13"
+    [
+      {
+        "book": "PHP",
+        "chapters": "1 a 4"
+      }
+    ],
+    [
+      {
+        "book": "1TI",
+        "chapters": "1 a 6"
+      }
+    ],
+    [
+      {
+        "book": "TIT",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "1PE",
+        "chapters": "1 a 5"
+      }
+    ],
+    [
+      {
+        "book": "HEB",
+        "chapters": "1 a 6"
+      }
+    ],
+    [
+      {
+        "book": "HEB",
+        "chapters": "7 a 10"
+      }
+    ],
+    [
+      {
+        "book": "HEB",
+        "chapters": "11 a 13"
+      }
+    ]
   ]
 }

@@ -1,12 +1,47 @@
 {
   "week": 32,
   "days": [
-    "Sofonias 1 a 3",
-    "Jeremias 1 a 3",
-    "Jeremias 4 a 6",
-    "Jeremias 7 a 9",
-    "Jeremias 10 a 13",
-    "Jeremias 14 a 17",
-    "Jeremias 18 a 22"
+    [
+      {
+        "book": "ZEP",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "4 a 6"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "7 a 9"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "10 a 13"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "14 a 17"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "18 a 22"
+      }
+    ]
   ]
 }

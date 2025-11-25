@@ -1,12 +1,59 @@
 {
   "week": 45,
   "days": [
-    "Mateus 23; Lucas 20-21",
-    "Marcos 13",
-    "Mateus 24",
-    "Mateus 25",
-    "Mateus 26; Marcos 14",
-    "Lucas 22; João 13",
-    "João 14 a 17"
+    [
+      {
+        "book": "MAT",
+        "chapters": "23"
+      },
+      {
+        "book": "LUK",
+        "chapters": "20-21"
+      }
+    ],
+    [
+      {
+        "book": "MRK",
+        "chapters": "13"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "24"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "25"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "26"
+      },
+      {
+        "book": "MRK",
+        "chapters": "14"
+      }
+    ],
+    [
+      {
+        "book": "LUK",
+        "chapters": "22"
+      },
+      {
+        "book": "JHN",
+        "chapters": "13"
+      }
+    ],
+    [
+      {
+        "book": "JHN",
+        "chapters": "14 a 17"
+      }
+    ]
   ]
 }

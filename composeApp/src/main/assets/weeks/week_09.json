@@ -1,12 +1,45 @@
 {
   "week": 9,
   "days": [
-    "Números 7",
-    "Números 8 - 10",
-    "Números 11 - 13",
-    "Números 14 - 15",
-    "Salmo 90",
-    "Números 18 - 20",
-    "Números 21 - 22"
+    [
+      {
+        "book": "NUM",
+        "chapters": "7"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "8 - 10"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "11 - 13"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "14 - 15"
+      },
+      {
+        "book": "PSA",
+        "chapters": "90"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "18 - 20"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "21 - 22"
+      }
+    ]
   ]
 }

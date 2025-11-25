@@ -1,12 +1,47 @@
 {
   "week": 37,
   "days": [
-    "Ezequiel 42 a 43",
-    "Ezequiel 44 a 45",
-    "Ezequiel 46 a 48",
-    "Joel 1 a 3",
-    "Daniel 1 a 3",
-    "Daniel 4 a 6",
-    "Daniel 7 a 9"
+    [
+      {
+        "book": "EZK",
+        "chapters": "42 a 43"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "44 a 45"
+      }
+    ],
+    [
+      {
+        "book": "EZK",
+        "chapters": "46 a 48"
+      }
+    ],
+    [
+      {
+        "book": "JOL",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "DAN",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "DAN",
+        "chapters": "4 a 6"
+      }
+    ],
+    [
+      {
+        "book": "DAN",
+        "chapters": "7 a 9"
+      }
+    ]
   ]
 }

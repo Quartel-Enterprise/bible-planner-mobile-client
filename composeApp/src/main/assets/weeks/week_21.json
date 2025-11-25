@@ -1,12 +1,63 @@
 {
   "week": 21,
   "days": [
-    "2 Samuel 22-23; Salmos 57",
-    "Salmos 95, 97 a 99",
-    "2 Samuel 24; 1 Crônicas 21-22; Salmos 30",
-    "Salmos 108 a 110",
-    "1 Crônicas 23 a 25",
-    "Salmos 131, 138-139, 143-145",
-    "1 Crônicas 26 -29; Salmos 27"
+    [
+      {
+        "book": "2SA",
+        "chapters": "22-23"
+      },
+      {
+        "book": "PSA",
+        "chapters": "57"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "95, 97 a 99"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "24"
+      },
+      {
+        "book": "1CH",
+        "chapters": "21-22"
+      },
+      {
+        "book": "PSA",
+        "chapters": "30"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "108 a 110"
+      }
+    ],
+    [
+      {
+        "book": "1CH",
+        "chapters": "23 a 25"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "131, 138-139, 143-145"
+      }
+    ],
+    [
+      {
+        "book": "1CH",
+        "chapters": "26 a 29"
+      },
+      {
+        "book": "PSA",
+        "chapters": "27"
+      }
+    ]
   ]
 }

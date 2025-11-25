@@ -1,12 +1,63 @@
 {
   "week": 46,
   "days": [
-    "Mateus 27; Marcos 15",
-    "Lucas 23; João 18-19",
-    "Mateus 28; Marcos 16",
-    "Lucas 24; João 20-21",
-    "Atos 1 a 3",
-    "Atos 4 a 6",
-    "Atos 7 e 8"
+    [
+      {
+        "book": "MAT",
+        "chapters": "27"
+      },
+      {
+        "book": "MRK",
+        "chapters": "15"
+      }
+    ],
+    [
+      {
+        "book": "LUK",
+        "chapters": "23"
+      },
+      {
+        "book": "JHN",
+        "chapters": "18-19"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "28"
+      },
+      {
+        "book": "MRK",
+        "chapters": "16"
+      }
+    ],
+    [
+      {
+        "book": "LUK",
+        "chapters": "24"
+      },
+      {
+        "book": "JHN",
+        "chapters": "20-21"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "4 a 6"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "7 e 8"
+      }
+    ]
   ]
 }

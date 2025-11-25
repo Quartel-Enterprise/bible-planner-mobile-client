@@ -1,12 +1,47 @@
 {
   "week": 3,
   "days": [
-    "Jó 40 - 42",
-    "Gênesis 12 - 15",
-    "Gênesis 16 - 18",
-    "Gênesis 19 - 21",
-    "Gênesis 22 - 24",
-    "Gênesis 25 - 26",
-    "Gênesis 27 - 29"
+    [
+      {
+        "book": "JOB",
+        "chapters": "40 - 42"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "12 - 15"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "16 - 18"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "19 - 21"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "22 - 24"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "25 - 26"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "27 - 29"
+      }
+    ]
   ]
 }

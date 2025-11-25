@@ -1,12 +1,47 @@
 {
   "week": 8,
   "days": [
-    "Levítico 19 - 21",
-    "Levítico 22 - 23",
-    "Levítico 24 - 26",
-    "Levítico 27",
-    "Números 1 - 2",
-    "Números 3 - 4",
-    "Números 5 - 6"
+    [
+      {
+        "book": "LEV",
+        "chapters": "19 - 21"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "22 - 23"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "24 - 26"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "27"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "1 - 2"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "3 - 4"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "5 - 6"
+      }
+    ]
   ]
 }

@@ -1,12 +1,55 @@
 {
   "week": 33,
   "days": [
-    "Jeremias 23 a 25",
-    "Jeremias 26 a 29",
-    "Jeremias 30 a 31",
-    "Jeremias 32 a 34",
-    "Jeremias 38 a 40; Salmo 71, 79, 80",
-    "Jeremias 38 a 40",
-    "2 Reis 24-25; 2 Crônicas 36"
+    [
+      {
+        "book": "JER",
+        "chapters": "23 a 25"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "26 a 29"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "30 a 31"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "32 a 34"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "35 a 37"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "38 a 40"
+      },
+      {
+        "book": "PSA",
+        "chapters": "71, 79, 80"
+      }
+    ],
+    [
+      {
+        "book": "2KI",
+        "chapters": "24-25"
+      },
+      {
+        "book": "2CH",
+        "chapters": "36"
+      }
+    ]
   ]
 }

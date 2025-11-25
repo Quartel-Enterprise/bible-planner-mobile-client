@@ -1,12 +1,47 @@
 {
   "week": 7,
   "days": [
-    "Êxodo 39 - 40",
-    "Levítico 1 - 4",
-    "Levítico 5 - 7",
-    "Levítico 8 - 10",
-    "Levítico 11 - 13",
-    "Levítico 14 - 15",
-    "Levítico 16 - 18"
+    [
+      {
+        "book": "EXO",
+        "chapters": "39 - 40"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "1 - 4"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "5 - 7"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "8 - 10"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "11 - 13"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "14 - 15"
+      }
+    ],
+    [
+      {
+        "book": "LEV",
+        "chapters": "16 - 18"
+      }
+    ]
   ]
 }

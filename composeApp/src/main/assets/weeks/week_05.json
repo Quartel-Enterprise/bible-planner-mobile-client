@@ -1,12 +1,47 @@
 {
   "week": 5,
   "days": [
-    "Gênesis 48 - 50",
-    "Êxodo 1 - 3",
-    "Êxodo 4 - 6",
-    "Êxodo 7 - 9",
-    "Êxodo 10 - 12",
-    "Êxodo 13 - 15",
-    "Êxodo 16 - 18"
+    [
+      {
+        "book": "GEN",
+        "chapters": "48 - 50"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "1 - 3"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "4 - 6"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "7 - 9"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "10 - 12"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "13 - 15"
+      }
+    ],
+    [
+      {
+        "book": "EXO",
+        "chapters": "16 - 18"
+      }
+    ]
   ]
 }

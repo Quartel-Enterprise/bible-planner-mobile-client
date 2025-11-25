@@ -1,12 +1,66 @@
 {
   "week": 26,
   "days": [
-    "1 Reis 15:1-24; 2 Crônicas 13-16",
-    "1 Reis 15:25-34; 1 Reis 16; 2 Crônicas 17",
-    "1 Reis 17-19",
-    "1 Reis 20-21",
-    "1 Reis 22; 2 Crônicas 18",
-    "2 Crônicas 19 a 23",
-    "Obadias; Salmos 82-83"
+    [
+      {
+        "book": "1KI",
+        "chapters": "15:1-24"
+      },
+      {
+        "book": "2CH",
+        "chapters": "13-16"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "15:25-34"
+      },
+      {
+        "book": "1KI",
+        "chapters": "16"
+      },
+      {
+        "book": "2CH",
+        "chapters": "17"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "17-19"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "20-21"
+      }
+    ],
+    [
+      {
+        "book": "1KI",
+        "chapters": "22"
+      },
+      {
+        "book": "2CH",
+        "chapters": "18"
+      }
+    ],
+    [
+      {
+        "book": "2CH",
+        "chapters": "19 a 23"
+      }
+    ],
+    [
+      {
+        "book": "OBA"
+      },
+      {
+        "book": "PSA",
+        "chapters": "82-83"
+      }
+    ]
   ]
 }

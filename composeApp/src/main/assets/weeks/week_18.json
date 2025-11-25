@@ -1,12 +1,59 @@
 {
   "week": 18,
   "days": [
-    "Salmos 102 a 104",
-    "2 Samuel 5:1-10 e 1 Crônicas 11-12",
-    "Salmos 133",
-    "Salmos 106 - 107",
-    "2 Samuel 5:11-25; 2 Samuel 6; 1 Crônicas 13-16",
-    "Salmos 1-2, 15, 22-24, 47, 68",
-    "Salmos 89, 96, 100, 101, 105, 132"
+    [
+      {
+        "book": "PSA",
+        "chapters": "102 a 104"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "5:1-10"
+      },
+      {
+        "book": "1CH",
+        "chapters": "11-12"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "133"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "106 - 107"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "5:11-25"
+      },
+      {
+        "book": "2SA",
+        "chapters": "6"
+      },
+      {
+        "book": "1CH",
+        "chapters": "13-16"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "1-2, 15, 22-24, 47, 68"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "89, 96, 100, 101, 105, 132"
+      }
+    ]
   ]
 }

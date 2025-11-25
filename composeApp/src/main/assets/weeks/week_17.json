@@ -1,12 +1,47 @@
 {
   "week": 17,
   "days": [
-    "1 Crônicas 1 e 2",
-    "Salmos 43 a 45, 49, 84, 85, 87",
-    "1 Crônicas 3 a 5",
-    "Salmos 73, 77, 78",
-    "1 Crônicas 6",
-    "Salmos 81, 88, 92, 93",
-    "1 Crônicas 7 a 10"
+    [
+      {
+        "book": "1CH",
+        "chapters": "1 e 2"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "43 a 45, 49, 84, 85, 87"
+      }
+    ],
+    [
+      {
+        "book": "1CH",
+        "chapters": "3 a 5"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "73, 77, 78"
+      }
+    ],
+    [
+      {
+        "book": "1CH",
+        "chapters": "6"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "81, 88, 92, 93"
+      }
+    ],
+    [
+      {
+        "book": "1CH",
+        "chapters": "7 a 10"
+      }
+    ]
   ]
 }

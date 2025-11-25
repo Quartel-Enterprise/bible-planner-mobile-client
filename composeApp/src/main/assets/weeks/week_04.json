@@ -1,12 +1,47 @@
 {
   "week": 4,
   "days": [
-    "Gênesis 30 - 31",
-    "Gênesis 32 - 34",
-    "Gênesis 35 - 37",
-    "Gênesis 38 - 40",
-    "Gênesis 41 - 42",
-    "Gênesis 43 - 45",
-    "Gênesis 46 - 47"
+    [
+      {
+        "book": "GEN",
+        "chapters": "30 - 31"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "32 - 34"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "35 - 37"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "38 - 40"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "41 - 42"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "43 - 45"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "46 - 47"
+      }
+    ]
   ]
 }

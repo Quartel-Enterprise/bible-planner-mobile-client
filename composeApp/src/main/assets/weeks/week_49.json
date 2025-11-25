@@ -1,12 +1,51 @@
 {
   "week": 49,
   "days": [
-    "1 Coríntios 15 a 16",
-    "2 Coríntios 1 a 4",
-    "2 Coríntios 5 a 9",
-    "2 Coríntios 10 a 13",
-    "Atos 20: 1 - 3; Romanos 1 - 3",
-    "Romanos 4 a 7",
-    "Romanos 8 a 10"
+    [
+      {
+        "book": "1CO",
+        "chapters": "15 a 16"
+      }
+    ],
+    [
+      {
+        "book": "2CO",
+        "chapters": "1 a 4"
+      }
+    ],
+    [
+      {
+        "book": "2CO",
+        "chapters": "5 a 9"
+      }
+    ],
+    [
+      {
+        "book": "2CO",
+        "chapters": "10 a 13"
+      }
+    ],
+    [
+      {
+        "book": "ACT",
+        "chapters": "20: 1 - 3"
+      },
+      {
+        "book": "ROM",
+        "chapters": "1 - 3"
+      }
+    ],
+    [
+      {
+        "book": "ROM",
+        "chapters": "4 a 7"
+      }
+    ],
+    [
+      {
+        "book": "ROM",
+        "chapters": "8 a 10"
+      }
+    ]
   ]
 }

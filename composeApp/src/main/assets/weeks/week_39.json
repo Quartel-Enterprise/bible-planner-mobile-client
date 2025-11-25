@@ -1,12 +1,51 @@
 {
   "week": 39,
   "days": [
-    "Ester 6 a 10",
-    "Esdras 7 a 10",
-    "Neemias 1 a 5",
-    "Neemias 6 e 7",
-    "Neemias 8 a 10",
-    "Neemias 11-13; Salmo 126",
-    "Malaquias 1 a 4"
+    [
+      {
+        "book": "EST",
+        "chapters": "6 a 10"
+      }
+    ],
+    [
+      {
+        "book": "EZR",
+        "chapters": "7 a 10"
+      }
+    ],
+    [
+      {
+        "book": "NEH",
+        "chapters": "1 a 5"
+      }
+    ],
+    [
+      {
+        "book": "NEH",
+        "chapters": "6 e 7"
+      }
+    ],
+    [
+      {
+        "book": "NEH",
+        "chapters": "8 a 10"
+      }
+    ],
+    [
+      {
+        "book": "NEH",
+        "chapters": "11-13"
+      },
+      {
+        "book": "PSA",
+        "chapters": "126"
+      }
+    ],
+    [
+      {
+        "book": "MAL",
+        "chapters": "1 a 4"
+      }
+    ]
   ]
 }

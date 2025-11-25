@@ -1,12 +1,59 @@
 {
   "week": 34,
   "days": [
-    "Habacuque 1 a 3",
-    "Jeremias 41 a 45",
-    "Jeremias 46 a 48",
-    "Jeremias 49 a 50",
-    "Jeremias 51 a 52",
-    "Lamentações 1; Lamentações 2; Lamentações 3:1-36",
-    "Lamentações 3:37-66; Lamentações 4; Lamentações 5:1-22"
+    [
+      {
+        "book": "HAB",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "41 a 45"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "46 a 48"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "49 a 50"
+      }
+    ],
+    [
+      {
+        "book": "JER",
+        "chapters": "51 a 52"
+      }
+    ],
+    [
+      {
+        "book": "LAM",
+        "chapters": "1 - 2"
+      },
+      {
+        "book": "LAM",
+        "chapters": "3:1-36"
+      }
+    ],
+    [
+      {
+        "book": "LAM",
+        "chapters": "3:37-66"
+      },
+      {
+        "book": "LAM",
+        "chapters": "4"
+      },
+      {
+        "book": "LAM",
+        "chapters": "5:1-22"
+      }
+    ]
   ]
 }

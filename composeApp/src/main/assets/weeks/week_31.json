@@ -1,12 +1,51 @@
 {
   "week": 31,
   "days": [
-    "Isaías 54 a 58",
-    "Isaías 59 a 63",
-    "Isaías 64 a 66",
-    "2 Reis 20 a 21",
-    "2 Crônicas 32 a 33",
-    "Naum 1 a 3",
-    "2 Reis 22 e 23; 2 Crônicas 34-35"
+    [
+      {
+        "book": "ISA",
+        "chapters": "54 a 58"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "59 a 63"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "64 a 66"
+      }
+    ],
+    [
+      {
+        "book": "2KI",
+        "chapters": "20 a 21"
+      }
+    ],
+    [
+      {
+        "book": "2CH",
+        "chapters": "32 a 33"
+      }
+    ],
+    [
+      {
+        "book": "NAM",
+        "chapters": "1 a 3"
+      }
+    ],
+    [
+      {
+        "book": "2KI",
+        "chapters": "22 e 23"
+      },
+      {
+        "book": "2CH",
+        "chapters": "34-35"
+      }
+    ]
   ]
 }

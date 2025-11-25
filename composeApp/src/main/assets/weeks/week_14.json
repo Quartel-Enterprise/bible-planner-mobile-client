@@ -1,12 +1,47 @@
 {
   "week": 14,
   "days": [
-    "Juízes 8 - 9",
-    "Juízes 10 - 12",
-    "Juízes 13 - 15",
-    "Juízes 16 - 18",
-    "Juízes 19 - 21",
-    "Rute 1 - 4",
-    "1 Samuel 1 - 3"
+    [
+      {
+        "book": "JDG",
+        "chapters": "8 - 9"
+      }
+    ],
+    [
+      {
+        "book": "JDG",
+        "chapters": "10 - 12"
+      }
+    ],
+    [
+      {
+        "book": "JDG",
+        "chapters": "13 - 15"
+      }
+    ],
+    [
+      {
+        "book": "JDG",
+        "chapters": "16 - 18"
+      }
+    ],
+    [
+      {
+        "book": "JDG",
+        "chapters": "19 - 21"
+      }
+    ],
+    [
+      {
+        "book": "RUT",
+        "chapters": "1 - 4"
+      }
+    ],
+    [
+      {
+        "book": "1SA",
+        "chapters": "1 - 3"
+      }
+    ]
   ]
 }

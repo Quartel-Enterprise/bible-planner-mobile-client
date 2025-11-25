@@ -1,12 +1,47 @@
 {
   "week": 10,
   "days": [
-    "Números 23 - 25",
-    "Números 26 - 27",
-    "Números 28 - 30",
-    "Números 31 - 32",
-    "Números 33 - 34",
-    "Números 35 - 36",
-    "Deuteronômio 1 - 2"
+    [
+      {
+        "book": "NUM",
+        "chapters": "23 - 25"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "26 - 27"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "28 - 30"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "31 - 32"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "33 - 34"
+      }
+    ],
+    [
+      {
+        "book": "NUM",
+        "chapters": "35 - 36"
+      }
+    ],
+    [
+      {
+        "book": "DEU",
+        "chapters": "1 - 2"
+      }
+    ]
   ]
 }

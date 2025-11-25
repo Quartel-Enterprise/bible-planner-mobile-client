@@ -1,12 +1,47 @@
 {
   "week": 1,
   "days": [
-    "Gênesis 1 - 3",
-    "Gênesis 4 - 7",
-    "Gênesis 8 - 11",
-    "Jó 1 - 5",
-    "Jó 6 - 9",
-    "Jó 10 - 13",
-    "Jó 14 - 16"
+    [
+      {
+        "book": "GEN",
+        "chapters": "1 - 3"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "4 - 7"
+      }
+    ],
+    [
+      {
+        "book": "GEN",
+        "chapters": "8 - 11"
+      }
+    ],
+    [
+      {
+        "book": "JOB",
+        "chapters": "1 - 5"
+      }
+    ],
+    [
+      {
+        "book": "JOB",
+        "chapters": "6 - 9"
+      }
+    ],
+    [
+      {
+        "book": "JOB",
+        "chapters": "10 - 13"
+      }
+    ],
+    [
+      {
+        "book": "JOB",
+        "chapters": "14 - 16"
+      }
+    ]
   ]
 }

@@ -1,12 +1,47 @@
 {
   "week": 20,
   "days": [
-    "Salmos 32, 51, 86, 122",
-    "2 Samuel 13 a 15",
-    "Salmos 3 e 4, 12 e 13, 28, 55",
-    "2 Samuel 13 a 15",
-    "SSalmos 26, 40, 58, 61-62, 64",
-    "2 Samuel 19 a 21",
-    "Salmos 5, 38, 41-42"
+    [
+      {
+        "book": "PSA",
+        "chapters": "32, 51, 86, 122"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "13 a 15"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "3 e 4, 12 e 13, 28, 55"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "16 a 18"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "26, 40, 58, 61, 62, 64"
+      }
+    ],
+    [
+      {
+        "book": "2SA",
+        "chapters": "19 a 21"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "5, 38, 41-42"
+      }
+    ]
   ]
 }

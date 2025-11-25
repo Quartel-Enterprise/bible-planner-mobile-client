@@ -1,12 +1,47 @@
 {
   "week": 13,
   "days": [
-    "Josué 12 - 15",
-    "Josué 16 - 18",
-    "Josué 19 - 21",
-    "Josué 22 - 24",
-    "Juízes 1 - 2",
-    "Juízes 3 - 5",
-    "Juízes 6 - 7"
+    [
+      {
+        "book": "JOS",
+        "chapters": "12 - 15"
+      }
+    ],
+    [
+      {
+        "book": "JOS",
+        "chapters": "16 - 18"
+      }
+    ],
+    [
+      {
+        "book": "JOS",
+        "chapters": "19 - 21"
+      }
+    ],
+    [
+      {
+        "book": "JOS",
+        "chapters": "22 - 24"
+      }
+    ],
+    [
+      {
+        "book": "JDG",
+        "chapters": "1 - 2"
+      }
+    ],
+    [
+      {
+        "book": "JDG",
+        "chapters": "3 - 5"
+      }
+    ],
+    [
+      {
+        "book": "JDG",
+        "chapters": "6 - 7"
+      }
+    ]
   ]
 }

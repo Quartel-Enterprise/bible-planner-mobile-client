@@ -1,12 +1,47 @@
 {
   "week": 23,
   "days": [
-    "Provérbios 4 a 6",
-    "Provérbios 7 a 9",
-    "Provérbios 10 a 12",
-    "Provérbios 13 a 15",
-    "Provérbios 16 a 18",
-    "Provérbios 19 a 21",
-    "Provérbios 22 a 24"
+    [
+      {
+        "book": "PRO",
+        "chapters": "4 a 6"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "7 a 9"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "10 a 12"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "13 a 15"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "16 a 18"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "19 a 21"
+      }
+    ],
+    [
+      {
+        "book": "PRO",
+        "chapters": "22 a 24"
+      }
+    ]
   ]
 }

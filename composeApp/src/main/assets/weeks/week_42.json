@@ -1,12 +1,79 @@
 {
   "week": 42,
   "days": [
-    "Mateus 8: 14-34; Marcos 4-5",
-    "Mateus 9 e 10",
-    "Mateus 14; Marcos 6; Lucas 9:18-17",
-    "João 6",
-    "Mateus 15; Marcos 7",
-    "Mateus 16; Marcos 8; Lucas 9: 18-27",
-    "Mateus 17; Marcos 9; Lucas 9:28-62"
+    [
+      {
+        "book": "MAT",
+        "chapters": "8: 14-34"
+      },
+      {
+        "book": "MRK",
+        "chapters": "4-5"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "9 e 10"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "14"
+      },
+      {
+        "book": "MRK",
+        "chapters": "6"
+      },
+      {
+        "book": "LUK",
+        "chapters": "9:18-17"
+      }
+    ],
+    [
+      {
+        "book": "JHN",
+        "chapters": "6"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "15"
+      },
+      {
+        "book": "MRK",
+        "chapters": "7"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "16"
+      },
+      {
+        "book": "MRK",
+        "chapters": "8"
+      },
+      {
+        "book": "LUK",
+        "chapters": "9: 18-27"
+      }
+    ],
+    [
+      {
+        "book": "MAT",
+        "chapters": "17"
+      },
+      {
+        "book": "MRK",
+        "chapters": "9"
+      },
+      {
+        "book": "LUK",
+        "chapters": "9:28-62"
+      }
+    ]
   ]
 }

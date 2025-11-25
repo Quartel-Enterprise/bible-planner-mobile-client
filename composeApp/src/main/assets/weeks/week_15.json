@@ -1,12 +1,51 @@
 {
   "week": 15,
   "days": [
-    "1 Samuel 4 - 8",
-    "1 Samuel 9 - 12",
-    "1 Samuel 13 - 14",
-    "1 Samuel 15 - 17",
-    "1 Samuel 18 - 20; Salmos 11 - 59",
-    "1 Samuel 21 - 24",
-    "Salmos 7, 31, 34, 52, 74"
+    [
+      {
+        "book": "1SA",
+        "chapters": "4 - 8"
+      }
+    ],
+    [
+      {
+        "book": "1SA",
+        "chapters": "9 - 12"
+      }
+    ],
+    [
+      {
+        "book": "1SA",
+        "chapters": "13 - 14"
+      }
+    ],
+    [
+      {
+        "book": "1SA",
+        "chapters": "15 - 17"
+      }
+    ],
+    [
+      {
+        "book": "1SA",
+        "chapters": "18 - 20"
+      },
+      {
+        "book": "PSA",
+        "chapters": "11 - 59"
+      }
+    ],
+    [
+      {
+        "book": "1SA",
+        "chapters": "21 - 24"
+      }
+    ],
+    [
+      {
+        "book": "PSA",
+        "chapters": "7, 31, 34, 52, 74"
+      }
+    ]
   ]
 }

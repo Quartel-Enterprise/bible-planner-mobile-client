@@ -1,12 +1,55 @@
 {
   "week": 29,
   "days": [
-    "Isaías 13 a 17",
-    "Isaías 18 a 22",
-    "Isaías 23 a 27",
-    "2 Reis 18:1-8; 2 Crônicas 29-31; Salmos 48",
-    "Oseias 1 a 7",
-    "Oseias 8 a 14",
-    "Isaías 28 a 30"
+    [
+      {
+        "book": "ISA",
+        "chapters": "13 a 17"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "18 a 22"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "23 a 27"
+      }
+    ],
+    [
+      {
+        "book": "2KI",
+        "chapters": "18:1-8"
+      },
+      {
+        "book": "2CH",
+        "chapters": "29-31"
+      },
+      {
+        "book": "PSA",
+        "chapters": "48"
+      }
+    ],
+    [
+      {
+        "book": "HOS",
+        "chapters": "1 a 7"
+      }
+    ],
+    [
+      {
+        "book": "HOS",
+        "chapters": "8 a 14"
+      }
+    ],
+    [
+      {
+        "book": "ISA",
+        "chapters": "28 a 30"
+      }
+    ]
   ]
 }
