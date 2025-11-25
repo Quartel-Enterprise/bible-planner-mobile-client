@@ -36,10 +36,10 @@ kotlin {
 android {
     namespace = project.findProperty("android.namespace") as String?
         ?: (project.group.toString() + "." + project.name.replace("-", "."))
-    compileSdk = libs.findVersion("android-compileSdk").get().toString().toInt()
+    compileSdk = (project.findProperty("android.compileSdk") as String).toInt()
 
     defaultConfig {
-        minSdk = libs.findVersion("android-minSdk").get().toString().toInt()
+        minSdk = (project.findProperty("android.minSdk") as String).toInt()
     }
 
     compileOptions {

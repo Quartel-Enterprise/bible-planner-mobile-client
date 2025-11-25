@@ -60,15 +60,15 @@ kotlin {
 
 android {
     namespace = androidNamespace
-    compileSdk = libs.findVersion("android-compileSdk").get().toString().toInt()
+    compileSdk = (project.findProperty("android.compileSdk") as String).toInt()
 
     defaultConfig {
-        applicationId = project.findProperty("android.applicationId") as String?
+        applicationId = project.findProperty("android.applicationId") as? String
             ?: androidNamespace
-        minSdk = libs.findVersion("android-minSdk").get().toString().toInt()
-        targetSdk = libs.findVersion("android-targetSdk").get().toString().toInt()
-        versionCode = (project.findProperty("android.versionCode") as String?)?.toInt() ?: 1
-        versionName = project.findProperty("android.versionName") as String? ?: "1.0"
+        minSdk = (project.findProperty("android.minSdk") as String).toInt()
+        targetSdk = (project.findProperty("android.targetSdk") as String).toInt()
+        versionCode = (project.findProperty("android.versionCode") as String).toInt()
+        versionName = project.findProperty("android.versionName") as String
     }
     
     packaging {
