@@ -107,5 +107,3 @@ compose.desktop {
         }
     }
 }
-
-
