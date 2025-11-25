@@ -3,63 +3,156 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "1KI",
-        "chapters": "15:1-24"
+        "chapters": {
+          "start": {
+            "number": 15,
+            "verse": 1
+          },
+          "end": {
+            "number": 15,
+            "verse": 24
+          }
+        }
       },
       {
+        "day": 1,
         "book": "2CH",
-        "chapters": "13-16"
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 16
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "1KI",
-        "chapters": "15:25-34"
+        "chapters": {
+          "start": {
+            "number": 15,
+            "verse": 25
+          },
+          "end": {
+            "number": 15,
+            "verse": 34
+          }
+        }
       },
       {
+        "day": 2,
         "book": "1KI",
-        "chapters": "16"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 16
+          }
+        }
       },
       {
+        "day": 2,
         "book": "2CH",
-        "chapters": "17"
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 17
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "1KI",
-        "chapters": "17-19"
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 19
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "1KI",
-        "chapters": "20-21"
+        "chapters": {
+          "start": {
+            "number": 20
+          },
+          "end": {
+            "number": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "1KI",
-        "chapters": "22"
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 22
+          }
+        }
       },
       {
+        "day": 5,
         "book": "2CH",
-        "chapters": "18"
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 18
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "2CH",
-        "chapters": "19 a 23"
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 23
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "OBA"
       },
       {
+        "day": 7,
         "book": "PSA",
-        "chapters": "82-83"
+        "chapters": {
+          "start": {
+            "number": 82
+          },
+          "end": {
+            "number": 83
+          }
+        }
       }
     ]
   ]

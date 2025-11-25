@@ -3,56 +3,144 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "MAT",
-        "chapters": "18"
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 18
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "JHN",
-        "chapters": "7 a 8"
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 8
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "JHN",
-        "chapters": "9: 1 - 41"
+        "chapters": {
+          "start": {
+            "number": 9,
+            "verse": 1
+          },
+          "end": {
+            "number": 9,
+            "verse": 41
+          }
+        }
       },
       {
+        "day": 3,
         "book": "JHN",
-        "chapters": "10: 1 - 21"
+        "chapters": {
+          "start": {
+            "number": 10,
+            "verse": 1
+          },
+          "end": {
+            "number": 10,
+            "verse": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "LUK",
-        "chapters": "10 - 11"
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 11
+          }
+        }
       },
       {
+        "day": 4,
         "book": "JHN",
-        "chapters": "10: 22 - 42"
+        "chapters": {
+          "start": {
+            "number": 10,
+            "verse": 22
+          },
+          "end": {
+            "number": 10,
+            "verse": 42
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "LUK",
-        "chapters": "12 e 13"
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 13
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "LUK",
-        "chapters": "14 e 15"
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 15
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "LUK",
-        "chapters": "16"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 16
+          }
+        }
       },
       {
+        "day": 7,
         "book": "LUK",
-        "chapters": "17:1-10"
+        "chapters": {
+          "start": {
+            "number": 17,
+            "verse": 1
+          },
+          "end": {
+            "number": 17,
+            "verse": 10
+          }
+        }
       }
     ]
   ]

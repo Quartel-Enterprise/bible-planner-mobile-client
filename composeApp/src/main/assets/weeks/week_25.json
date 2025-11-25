@@ -3,48 +3,112 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "PRO",
-        "chapters": "27 a 29"
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 29
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "ECC",
-        "chapters": "1 a 6"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 6
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "ECC",
-        "chapters": "7 a 12"
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 12
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "1KI",
-        "chapters": "10-11"
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 11
+          }
+        }
       },
       {
+        "day": 4,
         "book": "2CH",
-        "chapters": "9"
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 9
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "PRO",
-        "chapters": "30 e 31"
+        "chapters": {
+          "start": {
+            "number": 30
+          },
+          "end": {
+            "number": 31
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "1KI",
-        "chapters": "12 a 14"
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 14
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "2CH",
-        "chapters": "10 a 12"
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 12
+          }
+        }
       }
     ]
   ]

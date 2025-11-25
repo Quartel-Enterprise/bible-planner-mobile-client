@@ -3,60 +3,148 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "MAT",
-        "chapters": "27"
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 27
+          }
+        }
       },
       {
+        "day": 1,
         "book": "MRK",
-        "chapters": "15"
+        "chapters": {
+          "start": {
+            "number": 15
+          },
+          "end": {
+            "number": 15
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "LUK",
-        "chapters": "23"
+        "chapters": {
+          "start": {
+            "number": 23
+          },
+          "end": {
+            "number": 23
+          }
+        }
       },
       {
+        "day": 2,
         "book": "JHN",
-        "chapters": "18-19"
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 19
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "MAT",
-        "chapters": "28"
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 28
+          }
+        }
       },
       {
+        "day": 3,
         "book": "MRK",
-        "chapters": "16"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 16
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "LUK",
-        "chapters": "24"
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 24
+          }
+        }
       },
       {
+        "day": 4,
         "book": "JHN",
-        "chapters": "20-21"
+        "chapters": {
+          "start": {
+            "number": 20
+          },
+          "end": {
+            "number": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "ACT",
-        "chapters": "1 a 3"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "ACT",
-        "chapters": "4 a 6"
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 6
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "ACT",
-        "chapters": "7 e 8"
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 8
+          }
+        }
       }
     ]
   ]

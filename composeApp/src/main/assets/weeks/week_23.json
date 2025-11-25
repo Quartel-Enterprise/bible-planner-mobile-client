@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "PRO",
-        "chapters": "4 a 6"
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 6
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "PRO",
-        "chapters": "7 a 9"
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 9
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "PRO",
-        "chapters": "10 a 12"
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 12
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "PRO",
-        "chapters": "13 a 15"
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 15
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "PRO",
-        "chapters": "16 a 18"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "PRO",
-        "chapters": "19 a 21"
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "PRO",
-        "chapters": "22 a 24"
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 24
+          }
+        }
       }
     ]
   ]

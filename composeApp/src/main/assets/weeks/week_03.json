@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "JOB",
-        "chapters": "40 - 42"
+        "chapters": {
+          "start": {
+            "number": 40
+          },
+          "end": {
+            "number": 42
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "GEN",
-        "chapters": "12 - 15"
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 15
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "GEN",
-        "chapters": "16 - 18"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "GEN",
-        "chapters": "19 - 21"
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "GEN",
-        "chapters": "22 - 24"
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 24
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "GEN",
-        "chapters": "25 - 26"
+        "chapters": {
+          "start": {
+            "number": 25
+          },
+          "end": {
+            "number": 26
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "GEN",
-        "chapters": "27 - 29"
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 29
+          }
+        }
       }
     ]
   ]

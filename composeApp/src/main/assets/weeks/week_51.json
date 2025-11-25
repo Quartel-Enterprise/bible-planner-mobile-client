@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "PHP",
-        "chapters": "1 a 4"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "1TI",
-        "chapters": "1 a 6"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 6
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "TIT",
-        "chapters": "1 a 3"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "1PE",
-        "chapters": "1 a 5"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 5
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "HEB",
-        "chapters": "1 a 6"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 6
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "HEB",
-        "chapters": "7 a 10"
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 10
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "HEB",
-        "chapters": "11 a 13"
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 13
+          }
+        }
       }
     ]
   ]

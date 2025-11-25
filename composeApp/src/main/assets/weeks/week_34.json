@@ -3,56 +3,142 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "HAB",
-        "chapters": "1 a 3"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "JER",
-        "chapters": "41 a 45"
+        "chapters": {
+          "start": {
+            "number": 41
+          },
+          "end": {
+            "number": 45
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "JER",
-        "chapters": "46 a 48"
+        "chapters": {
+          "start": {
+            "number": 46
+          },
+          "end": {
+            "number": 48
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "JER",
-        "chapters": "49 a 50"
+        "chapters": {
+          "start": {
+            "number": 49
+          },
+          "end": {
+            "number": 50
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "JER",
-        "chapters": "51 a 52"
+        "chapters": {
+          "start": {
+            "number": 51
+          },
+          "end": {
+            "number": 52
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "LAM",
-        "chapters": "1 - 2"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
       },
       {
+        "day": 6,
         "book": "LAM",
-        "chapters": "3:1-36"
+        "chapters": {
+          "start": {
+            "number": 3,
+            "verse": 1
+          },
+          "end": {
+            "number": 3,
+            "verse": 36
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "LAM",
-        "chapters": "3:37-66"
+        "chapters": {
+          "start": {
+            "number": 3,
+            "verse": 37
+          },
+          "end": {
+            "number": 3,
+            "verse": 66
+          }
+        }
       },
       {
+        "day": 7,
         "book": "LAM",
-        "chapters": "4"
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 4
+          }
+        }
       },
       {
+        "day": 7,
         "book": "LAM",
-        "chapters": "5:1-22"
+        "chapters": {
+          "start": {
+            "number": 5,
+            "verse": 1
+          },
+          "end": {
+            "number": 5,
+            "verse": 22
+          }
+        }
       }
     ]
   ]

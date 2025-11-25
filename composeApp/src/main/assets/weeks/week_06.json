@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "EXO",
-        "chapters": "19 - 21"
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "EXO",
-        "chapters": "22 - 24"
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 24
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "EXO",
-        "chapters": "25 - 27"
+        "chapters": {
+          "start": {
+            "number": 25
+          },
+          "end": {
+            "number": 27
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "EXO",
-        "chapters": "28 - 29"
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 29
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "EXO",
-        "chapters": "30 - 32"
+        "chapters": {
+          "start": {
+            "number": 30
+          },
+          "end": {
+            "number": 32
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "EXO",
-        "chapters": "33 - 35"
+        "chapters": {
+          "start": {
+            "number": 33
+          },
+          "end": {
+            "number": 35
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "EXO",
-        "chapters": "36 - 38"
+        "chapters": {
+          "start": {
+            "number": 36
+          },
+          "end": {
+            "number": 38
+          }
+        }
       }
     ]
   ]

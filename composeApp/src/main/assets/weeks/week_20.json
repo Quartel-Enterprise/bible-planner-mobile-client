@@ -3,44 +3,256 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "PSA",
-        "chapters": "32, 51, 86, 122"
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 32
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 51
+          },
+          "end": {
+            "number": 51
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 86
+          },
+          "end": {
+            "number": 86
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 122
+          },
+          "end": {
+            "number": 122
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "2SA",
-        "chapters": "13 a 15"
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 15
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "PSA",
-        "chapters": "3 e 4, 12 e 13, 28, 55"
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 3,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 13
+          }
+        }
+      },
+      {
+        "day": 3,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 28
+          }
+        }
+      },
+      {
+        "day": 3,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 55
+          },
+          "end": {
+            "number": 55
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "2SA",
-        "chapters": "16 a 18"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "PSA",
-        "chapters": "26, 40, 58, 61, 62, 64"
+        "chapters": {
+          "start": {
+            "number": 26
+          },
+          "end": {
+            "number": 26
+          }
+        }
+      },
+      {
+        "day": 5,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 40
+          },
+          "end": {
+            "number": 40
+          }
+        }
+      },
+      {
+        "day": 5,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 58
+          },
+          "end": {
+            "number": 58
+          }
+        }
+      },
+      {
+        "day": 5,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 61
+          },
+          "end": {
+            "number": 61
+          }
+        }
+      },
+      {
+        "day": 5,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 62
+          },
+          "end": {
+            "number": 62
+          }
+        }
+      },
+      {
+        "day": 5,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 64
+          },
+          "end": {
+            "number": 64
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "2SA",
-        "chapters": "19 a 21"
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "PSA",
-        "chapters": "5, 38, 41-42"
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      },
+      {
+        "day": 7,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 38
+          },
+          "end": {
+            "number": 38
+          }
+        }
+      },
+      {
+        "day": 7,
+        "book": "PSA",
+        "chapters": {
+          "start": {
+            "number": 41
+          },
+          "end": {
+            "number": 42
+          }
+        }
       }
     ]
   ]

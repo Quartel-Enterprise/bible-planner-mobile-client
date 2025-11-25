@@ -3,52 +3,124 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "ISA",
-        "chapters": "1 a 4"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "ISA",
-        "chapters": "5 a 8"
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 8
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "AMO",
-        "chapters": "1 a 5"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 5
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "AMO",
-        "chapters": "6 a 9"
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 9
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "2CH",
-        "chapters": "27"
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 27
+          }
+        }
       },
       {
+        "day": 5,
         "book": "ISA",
-        "chapters": "9-12"
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 12
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "MIC",
-        "chapters": "1 a 7"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 7
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "2CH",
-        "chapters": "28 a 30"
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 30
+          }
+        }
       },
       {
+        "day": 7,
         "book": "2KI",
-        "chapters": "16-17"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 17
+          }
+        }
       }
     ]
   ]

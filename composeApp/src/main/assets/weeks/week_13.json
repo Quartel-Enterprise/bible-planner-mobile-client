@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "JOS",
-        "chapters": "12 - 15"
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 15
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "JOS",
-        "chapters": "16 - 18"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "JOS",
-        "chapters": "19 - 21"
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "JOS",
-        "chapters": "22 - 24"
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 24
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "JDG",
-        "chapters": "1 - 2"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "JDG",
-        "chapters": "3 - 5"
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 5
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "JDG",
-        "chapters": "6 - 7"
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 7
+          }
+        }
       }
     ]
   ]

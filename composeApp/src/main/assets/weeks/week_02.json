@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "JOB",
-        "chapters": "17 - 20"
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 20
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "JOB",
-        "chapters": "21 - 23"
+        "chapters": {
+          "start": {
+            "number": 21
+          },
+          "end": {
+            "number": 23
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "JOB",
-        "chapters": "24 - 28"
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 28
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "JOB",
-        "chapters": "29 - 31"
+        "chapters": {
+          "start": {
+            "number": 29
+          },
+          "end": {
+            "number": 31
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "JOB",
-        "chapters": "32 - 34"
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 34
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "JOB",
-        "chapters": "35 - 37"
+        "chapters": {
+          "start": {
+            "number": 35
+          },
+          "end": {
+            "number": 37
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "JOB",
-        "chapters": "38 - 39"
+        "chapters": {
+          "start": {
+            "number": 38
+          },
+          "end": {
+            "number": 39
+          }
+        }
       }
     ]
   ]

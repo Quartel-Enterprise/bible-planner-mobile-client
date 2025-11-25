@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "ACT",
-        "chapters": "9 a 10"
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 10
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "ACT",
-        "chapters": "11 a 12"
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 12
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "ACT",
-        "chapters": "13 a 14"
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 14
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "JAS",
-        "chapters": "1 a 5"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 5
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "ACT",
-        "chapters": "15 a 16"
+        "chapters": {
+          "start": {
+            "number": 15
+          },
+          "end": {
+            "number": 16
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "GAL",
-        "chapters": "1 a 3"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "GAL",
-        "chapters": "4 a 6"
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 6
+          }
+        }
       }
     ]
   ]

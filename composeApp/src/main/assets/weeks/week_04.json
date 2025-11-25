@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "GEN",
-        "chapters": "30 - 31"
+        "chapters": {
+          "start": {
+            "number": 30
+          },
+          "end": {
+            "number": 31
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "GEN",
-        "chapters": "32 - 34"
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 34
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "GEN",
-        "chapters": "35 - 37"
+        "chapters": {
+          "start": {
+            "number": 35
+          },
+          "end": {
+            "number": 37
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "GEN",
-        "chapters": "38 - 40"
+        "chapters": {
+          "start": {
+            "number": 38
+          },
+          "end": {
+            "number": 40
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "GEN",
-        "chapters": "41 - 42"
+        "chapters": {
+          "start": {
+            "number": 41
+          },
+          "end": {
+            "number": 42
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "GEN",
-        "chapters": "43 - 45"
+        "chapters": {
+          "start": {
+            "number": 43
+          },
+          "end": {
+            "number": 45
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "GEN",
-        "chapters": "46 - 47"
+        "chapters": {
+          "start": {
+            "number": 46
+          },
+          "end": {
+            "number": 47
+          }
+        }
       }
     ]
   ]

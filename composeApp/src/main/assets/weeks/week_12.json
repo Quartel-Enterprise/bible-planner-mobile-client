@@ -3,48 +3,112 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "DEU",
-        "chapters": "24 - 27"
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 27
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "DEU",
-        "chapters": "28 - 29"
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 29
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "DEU",
-        "chapters": "30 - 31"
+        "chapters": {
+          "start": {
+            "number": 30
+          },
+          "end": {
+            "number": 31
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "DEU",
-        "chapters": "32 - 34"
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 34
+          }
+        }
       },
       {
+        "day": 4,
         "book": "PSA",
-        "chapters": "91"
+        "chapters": {
+          "start": {
+            "number": 91
+          },
+          "end": {
+            "number": 91
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "JOS",
-        "chapters": "1 - 4"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "JOS",
-        "chapters": "5 - 8"
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 8
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "JOS",
-        "chapters": "9 - 11"
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 11
+          }
+        }
       }
     ]
   ]

@@ -3,76 +3,204 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "MAT",
-        "chapters": "8: 14-34"
+        "chapters": {
+          "start": {
+            "number": 8,
+            "verse": 14
+          },
+          "end": {
+            "number": 8,
+            "verse": 34
+          }
+        }
       },
       {
+        "day": 1,
         "book": "MRK",
-        "chapters": "4-5"
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 5
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "MAT",
-        "chapters": "9 e 10"
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 10
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "MAT",
-        "chapters": "14"
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 14
+          }
+        }
       },
       {
+        "day": 3,
         "book": "MRK",
-        "chapters": "6"
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 6
+          }
+        }
       },
       {
+        "day": 3,
         "book": "LUK",
-        "chapters": "9:18-17"
+        "chapters": {
+          "start": {
+            "number": 9,
+            "verse": 18
+          },
+          "end": {
+            "number": 9,
+            "verse": 17
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "JHN",
-        "chapters": "6"
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 6
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "MAT",
-        "chapters": "15"
+        "chapters": {
+          "start": {
+            "number": 15
+          },
+          "end": {
+            "number": 15
+          }
+        }
       },
       {
+        "day": 5,
         "book": "MRK",
-        "chapters": "7"
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 7
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "MAT",
-        "chapters": "16"
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 16
+          }
+        }
       },
       {
+        "day": 6,
         "book": "MRK",
-        "chapters": "8"
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 8
+          }
+        }
       },
       {
+        "day": 6,
         "book": "LUK",
-        "chapters": "9: 18-27"
+        "chapters": {
+          "start": {
+            "number": 9,
+            "verse": 18
+          },
+          "end": {
+            "number": 9,
+            "verse": 27
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "MAT",
-        "chapters": "17"
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 17
+          }
+        }
       },
       {
+        "day": 7,
         "book": "MRK",
-        "chapters": "9"
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 9
+          }
+        }
       },
       {
+        "day": 7,
         "book": "LUK",
-        "chapters": "9:28-62"
+        "chapters": {
+          "start": {
+            "number": 9,
+            "verse": 28
+          },
+          "end": {
+            "number": 9,
+            "verse": 62
+          }
+        }
       }
     ]
   ]

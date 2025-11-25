@@ -3,48 +3,112 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "EST",
-        "chapters": "6 a 10"
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 10
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "EZR",
-        "chapters": "7 a 10"
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 10
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "NEH",
-        "chapters": "1 a 5"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 5
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "NEH",
-        "chapters": "6 e 7"
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 7
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "NEH",
-        "chapters": "8 a 10"
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 10
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "NEH",
-        "chapters": "11-13"
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 13
+          }
+        }
       },
       {
+        "day": 6,
         "book": "PSA",
-        "chapters": "126"
+        "chapters": {
+          "start": {
+            "number": 126
+          },
+          "end": {
+            "number": 126
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "MAL",
-        "chapters": "1 a 4"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
       }
     ]
   ]

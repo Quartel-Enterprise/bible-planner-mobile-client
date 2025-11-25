@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "DEU",
-        "chapters": "3 - 4"
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 4
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "DEU",
-        "chapters": "5 - 7"
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 7
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "DEU",
-        "chapters": "8 - 10"
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 10
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "DEU",
-        "chapters": "11 - 13"
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 13
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "DEU",
-        "chapters": "14 - 16"
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 16
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "DEU",
-        "chapters": "17 - 20"
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 20
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "DEU",
-        "chapters": "21 - 23"
+        "chapters": {
+          "start": {
+            "number": 21
+          },
+          "end": {
+            "number": 23
+          }
+        }
       }
     ]
   ]

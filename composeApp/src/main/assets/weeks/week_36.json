@@ -3,44 +3,100 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "EZK",
-        "chapters": "22 a 23"
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 23
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "EZK",
-        "chapters": "24 a 27"
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 27
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "EZK",
-        "chapters": "28 a 31"
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 31
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "EZK",
-        "chapters": "32 a 34"
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 34
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "EZK",
-        "chapters": "35 a 37"
+        "chapters": {
+          "start": {
+            "number": 35
+          },
+          "end": {
+            "number": 37
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "EZK",
-        "chapters": "38 a 39"
+        "chapters": {
+          "start": {
+            "number": 38
+          },
+          "end": {
+            "number": 39
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "EZK",
-        "chapters": "40 a 41"
+        "chapters": {
+          "start": {
+            "number": 40
+          },
+          "end": {
+            "number": 41
+          }
+        }
       }
     ]
   ]

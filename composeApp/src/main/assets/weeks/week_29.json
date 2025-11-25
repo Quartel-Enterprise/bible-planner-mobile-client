@@ -3,52 +3,126 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "ISA",
-        "chapters": "13 a 17"
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 17
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "ISA",
-        "chapters": "18 a 22"
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 22
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "ISA",
-        "chapters": "23 a 27"
+        "chapters": {
+          "start": {
+            "number": 23
+          },
+          "end": {
+            "number": 27
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "2KI",
-        "chapters": "18:1-8"
+        "chapters": {
+          "start": {
+            "number": 18,
+            "verse": 1
+          },
+          "end": {
+            "number": 18,
+            "verse": 8
+          }
+        }
       },
       {
+        "day": 4,
         "book": "2CH",
-        "chapters": "29-31"
+        "chapters": {
+          "start": {
+            "number": 29
+          },
+          "end": {
+            "number": 31
+          }
+        }
       },
       {
+        "day": 4,
         "book": "PSA",
-        "chapters": "48"
+        "chapters": {
+          "start": {
+            "number": 48
+          },
+          "end": {
+            "number": 48
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "HOS",
-        "chapters": "1 a 7"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 7
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "HOS",
-        "chapters": "8 a 14"
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 14
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "ISA",
-        "chapters": "28 a 30"
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 30
+          }
+        }
       }
     ]
   ]

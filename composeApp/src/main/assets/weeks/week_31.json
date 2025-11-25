@@ -3,48 +3,112 @@
   "days": [
     [
       {
+        "day": 1,
         "book": "ISA",
-        "chapters": "54 a 58"
+        "chapters": {
+          "start": {
+            "number": 54
+          },
+          "end": {
+            "number": 58
+          }
+        }
       }
     ],
     [
       {
+        "day": 2,
         "book": "ISA",
-        "chapters": "59 a 63"
+        "chapters": {
+          "start": {
+            "number": 59
+          },
+          "end": {
+            "number": 63
+          }
+        }
       }
     ],
     [
       {
+        "day": 3,
         "book": "ISA",
-        "chapters": "64 a 66"
+        "chapters": {
+          "start": {
+            "number": 64
+          },
+          "end": {
+            "number": 66
+          }
+        }
       }
     ],
     [
       {
+        "day": 4,
         "book": "2KI",
-        "chapters": "20 a 21"
+        "chapters": {
+          "start": {
+            "number": 20
+          },
+          "end": {
+            "number": 21
+          }
+        }
       }
     ],
     [
       {
+        "day": 5,
         "book": "2CH",
-        "chapters": "32 a 33"
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 33
+          }
+        }
       }
     ],
     [
       {
+        "day": 6,
         "book": "NAM",
-        "chapters": "1 a 3"
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
       }
     ],
     [
       {
+        "day": 7,
         "book": "2KI",
-        "chapters": "22 e 23"
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 23
+          }
+        }
       },
       {
+        "day": 7,
         "book": "2CH",
-        "chapters": "34-35"
+        "chapters": {
+          "start": {
+            "number": 34
+          },
+          "end": {
+            "number": 35
+          }
+        }
       }
     ]
   ]
