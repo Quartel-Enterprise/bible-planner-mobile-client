@@ -1,8 +1,7 @@
 plugins {
-    id("kotlin-multiplatform-convention")
+    alias(libs.plugins.kotlinMultiplatformConvention)
 }
 
 android {
     namespace = "quare.software.bibleplanner.core.provider.koin"
 }
-

@@ -1,7 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    id("application-convention")
+    alias(libs.plugins.applicationConvention)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
 }

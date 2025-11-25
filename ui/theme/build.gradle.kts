@@ -1,6 +1,6 @@
 plugins {
-    id("compose-multiplatform-convention")
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.composeMultiplatformConvention)
 }
 
 android {
