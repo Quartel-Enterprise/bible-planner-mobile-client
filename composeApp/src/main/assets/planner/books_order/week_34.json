@@ -5,39 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "MAT",
+          "name": "JER",
           "chapters": {
             "start": {
-              "number": 11
+              "number": 47
             },
             "end": {
-              "number": 11
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 12,
-              "verse": 1
-            },
-            "end": {
-              "number": 12,
-              "verse": 21
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 12,
-              "verse": 22
-            },
-            "end": {
-              "number": 12,
-              "verse": 50
+              "number": 49
             }
           }
         }
@@ -47,57 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "MAT",
+          "name": "JER",
           "chapters": {
             "start": {
-              "number": 13
+              "number": 50
             },
             "end": {
-              "number": 13
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 14
-            },
-            "end": {
-              "number": 14
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 15
-            },
-            "end": {
-              "number": 15
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 16
-            },
-            "end": {
-              "number": 16
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 17
-            },
-            "end": {
-              "number": 17
+              "number": 50
             }
           }
         }
@@ -107,35 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "MAT",
+          "name": "JER",
           "chapters": {
             "start": {
-              "number": 18
+              "number": 51
             },
             "end": {
-              "number": 18
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 19
-            },
-            "end": {
-              "number": 19
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 20
-            },
-            "end": {
-              "number": 21
+              "number": 52
             }
           }
         }
@@ -145,24 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "MAT",
+          "name": "LAM",
           "chapters": {
             "start": {
-              "number": 22
+              "number": 1
             },
             "end": {
-              "number": 22
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 23
-            },
-            "end": {
-              "number": 23
+              "number": 2
             }
           }
         }
@@ -172,24 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "MAT",
+          "name": "LAM",
           "chapters": {
             "start": {
-              "number": 24
+              "number": 3
             },
             "end": {
-              "number": 24
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 25
-            },
-            "end": {
-              "number": 25
+              "number": 4
             }
           }
         }
@@ -199,35 +85,24 @@
       "day": 6,
       "books": [
         {
-          "name": "MAT",
+          "name": "LAM",
           "chapters": {
             "start": {
-              "number": 26
+              "number": 5
             },
             "end": {
-              "number": 26
+              "number": 5
             }
           }
         },
         {
-          "name": "MAT",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 27
+              "number": 1
             },
             "end": {
-              "number": 27
-            }
-          }
-        },
-        {
-          "name": "MAT",
-          "chapters": {
-            "start": {
-              "number": 28
-            },
-            "end": {
-              "number": 28
+              "number": 3
             }
           }
         }
@@ -237,35 +112,13 @@
       "day": 7,
       "books": [
         {
-          "name": "MRK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 4
             },
             "end": {
-              "number": 1
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 2
-            },
-            "end": {
-              "number": 2
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 3
-            },
-            "end": {
-              "number": 3
+              "number": 8
             }
           }
         }

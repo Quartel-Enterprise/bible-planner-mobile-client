@@ -8,10 +8,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 48
+              "number": 41
             },
             "end": {
-              "number": 50
+              "number": 42
             }
           }
         }
@@ -21,13 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "EXO",
+          "name": "GEN",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 43
             },
             "end": {
-              "number": 3
+              "number": 45
             }
           }
         }
@@ -37,13 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "EXO",
+          "name": "GEN",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 46
             },
             "end": {
-              "number": 6
+              "number": 48
             }
           }
         }
@@ -53,13 +53,24 @@
       "day": 4,
       "books": [
         {
+          "name": "GEN",
+          "chapters": {
+            "start": {
+              "number": 49
+            },
+            "end": {
+              "number": 50
+            }
+          }
+        },
+        {
           "name": "EXO",
           "chapters": {
             "start": {
-              "number": 7
+              "number": 1
             },
             "end": {
-              "number": 9
+              "number": 1
             }
           }
         }
@@ -72,10 +83,10 @@
           "name": "EXO",
           "chapters": {
             "start": {
-              "number": 10
+              "number": 2
             },
             "end": {
-              "number": 12
+              "number": 5
             }
           }
         }
@@ -88,10 +99,10 @@
           "name": "EXO",
           "chapters": {
             "start": {
-              "number": 13
+              "number": 6
             },
             "end": {
-              "number": 15
+              "number": 8
             }
           }
         }
@@ -104,10 +115,10 @@
           "name": "EXO",
           "chapters": {
             "start": {
-              "number": 16
+              "number": 9
             },
             "end": {
-              "number": 18
+              "number": 11
             }
           }
         }

@@ -3,31 +3,148 @@
   "days": [
     {
       "day": 1,
-      "books": []
+      "books": [
+        {
+          "name": "HEB",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        }
+      ]
     },
     {
       "day": 2,
-      "books": []
+      "books": [
+        {
+          "name": "HEB",
+          "chapters": {
+            "start": {
+              "number": 7
+            },
+            "end": {
+              "number": 9
+            }
+          }
+        }
+      ]
     },
     {
       "day": 3,
-      "books": []
+      "books": [
+        {
+          "name": "HEB",
+          "chapters": {
+            "start": {
+              "number": 10
+            },
+            "end": {
+              "number": 11
+            }
+          }
+        }
+      ]
     },
     {
       "day": 4,
-      "books": []
+      "books": [
+        {
+          "name": "HEB",
+          "chapters": {
+            "start": {
+              "number": 12
+            },
+            "end": {
+              "number": 13
+            }
+          }
+        },
+        {
+          "name": "JAS",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 1
+            }
+          }
+        }
+      ]
     },
     {
       "day": 5,
-      "books": []
+      "books": [
+        {
+          "name": "JAS",
+          "chapters": {
+            "start": {
+              "number": 2
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        }
+      ]
     },
     {
       "day": 6,
-      "books": []
+      "books": [
+        {
+          "name": "1PE",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        }
+      ]
     },
     {
       "day": 7,
-      "books": []
+      "books": [
+        {
+          "name": "1PE",
+          "chapters": {
+            "start": {
+              "number": 5
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        },
+        {
+          "name": "2PE",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        },
+        {
+          "name": "1JN",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 1
+            }
+          }
+        }
+      ]
     }
   ]
 }

@@ -8,21 +8,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
+              "number": 24
+            },
+            "end": {
               "number": 25
-            },
-            "end": {
-              "number": 26
-            }
-          }
-        },
-        {
-          "name": "GEN",
-          "chapters": {
-            "start": {
-              "number": 27
-            },
-            "end": {
-              "number": 29
             }
           }
         }
@@ -35,10 +24,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 30
+              "number": 26
             },
             "end": {
-              "number": 31
+              "number": 27
             }
           }
         }
@@ -51,21 +40,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 32
+              "number": 28
             },
             "end": {
-              "number": 34
-            }
-          }
-        },
-        {
-          "name": "GEN",
-          "chapters": {
-            "start": {
-              "number": 35
-            },
-            "end": {
-              "number": 37
+              "number": 30
             }
           }
         }
@@ -78,10 +56,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 38
+              "number": 31
             },
             "end": {
-              "number": 40
+              "number": 32
             }
           }
         }
@@ -94,10 +72,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 41
+              "number": 33
             },
             "end": {
-              "number": 42
+              "number": 35
             }
           }
         }
@@ -110,10 +88,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 43
+              "number": 36
             },
             "end": {
-              "number": 45
+              "number": 38
             }
           }
         }
@@ -126,10 +104,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 46
+              "number": 39
             },
             "end": {
-              "number": 47
+              "number": 40
             }
           }
         }

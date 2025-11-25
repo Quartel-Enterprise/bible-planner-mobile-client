@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "ISA",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 9
+              "number": 69
             },
             "end": {
-              "number": 12
+              "number": 72
             }
           }
         }
@@ -21,13 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "ISA",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 13
+              "number": 73
             },
             "end": {
-              "number": 17
+              "number": 77
             }
           }
         }
@@ -37,13 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "ISA",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 18
+              "number": 78
             },
             "end": {
-              "number": 22
+              "number": 79
             }
           }
         }
@@ -53,13 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "ISA",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 23
+              "number": 80
             },
             "end": {
-              "number": 27
+              "number": 85
             }
           }
         }
@@ -69,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "ISA",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 28
+              "number": 86
             },
             "end": {
-              "number": 30
+              "number": 89
             }
           }
         }
@@ -85,24 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "ISA",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 31
+              "number": 90
             },
             "end": {
-              "number": 34
-            }
-          }
-        },
-        {
-          "name": "ISA",
-          "chapters": {
-            "start": {
-              "number": 35
-            },
-            "end": {
-              "number": 36
+              "number": 96
             }
           }
         }
@@ -112,13 +101,13 @@
       "day": 7,
       "books": [
         {
-          "name": "ISA",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 37
+              "number": 97
             },
             "end": {
-              "number": 39
+              "number": 103
             }
           }
         }

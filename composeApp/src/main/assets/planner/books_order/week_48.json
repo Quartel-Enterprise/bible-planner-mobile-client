@@ -3,31 +3,115 @@
   "days": [
     {
       "day": 1,
-      "books": []
+      "books": [
+        {
+          "name": "ROM",
+          "chapters": {
+            "start": {
+              "number": 7
+            },
+            "end": {
+              "number": 9
+            }
+          }
+        }
+      ]
     },
     {
       "day": 2,
-      "books": []
+      "books": [
+        {
+          "name": "ROM",
+          "chapters": {
+            "start": {
+              "number": 10
+            },
+            "end": {
+              "number": 13
+            }
+          }
+        }
+      ]
     },
     {
       "day": 3,
-      "books": []
+      "books": [
+        {
+          "name": "ROM",
+          "chapters": {
+            "start": {
+              "number": 14
+            },
+            "end": {
+              "number": 16
+            }
+          }
+        }
+      ]
     },
     {
       "day": 4,
-      "books": []
+      "books": [
+        {
+          "name": "1CO",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        }
+      ]
     },
     {
       "day": 5,
-      "books": []
+      "books": [
+        {
+          "name": "1CO",
+          "chapters": {
+            "start": {
+              "number": 5
+            },
+            "end": {
+              "number": 8
+            }
+          }
+        }
+      ]
     },
     {
       "day": 6,
-      "books": []
+      "books": [
+        {
+          "name": "1CO",
+          "chapters": {
+            "start": {
+              "number": 9
+            },
+            "end": {
+              "number": 11
+            }
+          }
+        }
+      ]
     },
     {
       "day": 7,
-      "books": []
+      "books": [
+        {
+          "name": "1CO",
+          "chapters": {
+            "start": {
+              "number": 12
+            },
+            "end": {
+              "number": 14
+            }
+          }
+        }
+      ]
     }
   ]
 }

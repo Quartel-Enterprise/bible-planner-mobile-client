@@ -8,10 +8,10 @@
           "name": "NUM",
           "chapters": {
             "start": {
-              "number": 14
+              "number": 2
             },
             "end": {
-              "number": 15
+              "number": 3
             }
           }
         }
@@ -24,21 +24,10 @@
           "name": "NUM",
           "chapters": {
             "start": {
-              "number": 18
+              "number": 4
             },
             "end": {
-              "number": 20
-            }
-          }
-        },
-        {
-          "name": "NUM",
-          "chapters": {
-            "start": {
-              "number": 21
-            },
-            "end": {
-              "number": 22
+              "number": 5
             }
           }
         }
@@ -51,10 +40,10 @@
           "name": "NUM",
           "chapters": {
             "start": {
-              "number": 23
+              "number": 6
             },
             "end": {
-              "number": 25
+              "number": 6
             }
           }
         }
@@ -67,10 +56,10 @@
           "name": "NUM",
           "chapters": {
             "start": {
-              "number": 26
+              "number": 7
             },
             "end": {
-              "number": 27
+              "number": 7
             }
           }
         }
@@ -83,10 +72,10 @@
           "name": "NUM",
           "chapters": {
             "start": {
-              "number": 28
+              "number": 8
             },
             "end": {
-              "number": 30
+              "number": 10
             }
           }
         }
@@ -99,10 +88,10 @@
           "name": "NUM",
           "chapters": {
             "start": {
-              "number": 31
+              "number": 11
             },
             "end": {
-              "number": 32
+              "number": 13
             }
           }
         }
@@ -115,21 +104,10 @@
           "name": "NUM",
           "chapters": {
             "start": {
-              "number": 33
+              "number": 14
             },
             "end": {
-              "number": 34
-            }
-          }
-        },
-        {
-          "name": "NUM",
-          "chapters": {
-            "start": {
-              "number": 35
-            },
-            "end": {
-              "number": 36
+              "number": 15
             }
           }
         }

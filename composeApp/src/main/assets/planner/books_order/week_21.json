@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "PSA",
+          "name": "2CH",
           "chapters": {
             "start": {
-              "number": 65
+              "number": 31
             },
             "end": {
-              "number": 67
+              "number": 33
             }
           }
         }
@@ -21,35 +21,24 @@
       "day": 2,
       "books": [
         {
-          "name": "PSA",
+          "name": "2CH",
           "chapters": {
             "start": {
-              "number": 68
+              "number": 34
             },
             "end": {
-              "number": 68
+              "number": 36
             }
           }
         },
         {
-          "name": "PSA",
+          "name": "EZR",
           "chapters": {
             "start": {
-              "number": 69
+              "number": 1
             },
             "end": {
-              "number": 70
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 71
-            },
-            "end": {
-              "number": 71
+              "number": 1
             }
           }
         }
@@ -59,46 +48,13 @@
       "day": 3,
       "books": [
         {
-          "name": "PSA",
+          "name": "EZR",
           "chapters": {
             "start": {
-              "number": 71
+              "number": 2
             },
             "end": {
-              "number": 71
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 72
-            },
-            "end": {
-              "number": 72
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 73
-            },
-            "end": {
-              "number": 73
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 74
-            },
-            "end": {
-              "number": 74
+              "number": 3
             }
           }
         }
@@ -108,35 +64,13 @@
       "day": 4,
       "books": [
         {
-          "name": "PSA",
+          "name": "EZR",
           "chapters": {
             "start": {
-              "number": 75
+              "number": 4
             },
             "end": {
-              "number": 75
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 76
-            },
-            "end": {
-              "number": 76
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 77
-            },
-            "end": {
-              "number": 77
+              "number": 7
             }
           }
         }
@@ -146,35 +80,13 @@
       "day": 5,
       "books": [
         {
-          "name": "PSA",
+          "name": "EZR",
           "chapters": {
             "start": {
-              "number": 78
+              "number": 8
             },
             "end": {
-              "number": 78
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 79
-            },
-            "end": {
-              "number": 79
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 80
-            },
-            "end": {
-              "number": 80
+              "number": 10
             }
           }
         }
@@ -184,57 +96,13 @@
       "day": 6,
       "books": [
         {
-          "name": "PSA",
+          "name": "NEH",
           "chapters": {
             "start": {
-              "number": 81
+              "number": 1
             },
             "end": {
-              "number": 81
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 82
-            },
-            "end": {
-              "number": 83
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 84
-            },
-            "end": {
-              "number": 84
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 85
-            },
-            "end": {
-              "number": 85
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 86
-            },
-            "end": {
-              "number": 86
+              "number": 4
             }
           }
         }
@@ -244,57 +112,13 @@
       "day": 7,
       "books": [
         {
-          "name": "PSA",
+          "name": "NEH",
           "chapters": {
             "start": {
-              "number": 87
+              "number": 5
             },
             "end": {
-              "number": 87
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 88
-            },
-            "end": {
-              "number": 88
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 89
-            },
-            "end": {
-              "number": 89
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 90
-            },
-            "end": {
-              "number": 90
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 91
-            },
-            "end": {
-              "number": 91
+              "number": 6
             }
           }
         }

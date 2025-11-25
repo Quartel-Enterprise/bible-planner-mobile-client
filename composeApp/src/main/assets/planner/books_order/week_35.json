@@ -5,35 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "MRK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 9
             },
             "end": {
-              "number": 5
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 6
-            },
-            "end": {
-              "number": 6
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 7
-            },
-            "end": {
-              "number": 7
+              "number": 12
             }
           }
         }
@@ -43,46 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "MRK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 8
+              "number": 13
             },
             "end": {
-              "number": 8
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 9
-            },
-            "end": {
-              "number": 9
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 10
-            },
-            "end": {
-              "number": 10
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 11
-            },
-            "end": {
-              "number": 11
+              "number": 15
             }
           }
         }
@@ -92,46 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "MRK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 12
+              "number": 16
             },
             "end": {
-              "number": 12
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 13
-            },
-            "end": {
-              "number": 13
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 14
-            },
-            "end": {
-              "number": 14
-            }
-          }
-        },
-        {
-          "name": "MRK",
-          "chapters": {
-            "start": {
-              "number": 15
-            },
-            "end": {
-              "number": 15
+              "number": 17
             }
           }
         }
@@ -141,37 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "MRK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 16
+              "number": 18
             },
             "end": {
-              "number": 16
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 1
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 2,
-              "verse": 1
-            },
-            "end": {
-              "number": 2,
-              "verse": 38
+              "number": 20
             }
           }
         }
@@ -181,26 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 2,
-              "verse": 39
+              "number": 21
             },
             "end": {
-              "number": 2,
-              "verse": 52
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 3
-            },
-            "end": {
-              "number": 3
+              "number": 22
             }
           }
         }
@@ -210,13 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 23
             },
             "end": {
-              "number": 5
+              "number": 25
             }
           }
         }
@@ -226,24 +101,13 @@
       "day": 7,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 6
+              "number": 26
             },
             "end": {
-              "number": 6
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 7
-            },
-            "end": {
-              "number": 7
+              "number": 28
             }
           }
         }

@@ -27,7 +27,7 @@
               "number": 4
             },
             "end": {
-              "number": 7
+              "number": 6
             }
           }
         }
@@ -40,10 +40,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 8
+              "number": 7
             },
             "end": {
-              "number": 11
+              "number": 9
             }
           }
         }
@@ -56,10 +56,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 12
+              "number": 10
             },
             "end": {
-              "number": 15
+              "number": 13
             }
           }
         }
@@ -72,10 +72,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 16
+              "number": 14
             },
             "end": {
-              "number": 18
+              "number": 17
             }
           }
         }
@@ -88,10 +88,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 19
+              "number": 18
             },
             "end": {
-              "number": 21
+              "number": 20
             }
           }
         }
@@ -104,10 +104,10 @@
           "name": "GEN",
           "chapters": {
             "start": {
-              "number": 22
+              "number": 21
             },
             "end": {
-              "number": 24
+              "number": 23
             }
           }
         }

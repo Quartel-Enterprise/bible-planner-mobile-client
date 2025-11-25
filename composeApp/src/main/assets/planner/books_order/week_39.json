@@ -5,7 +5,45 @@
       "day": 1,
       "books": [
         {
-          "name": "ROM",
+          "name": "ZEC",
+          "chapters": {
+            "start": {
+              "number": 11
+            },
+            "end": {
+              "number": 14
+            }
+          }
+        },
+        {
+          "name": "MAL",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "books": [
+        {
+          "name": "MAL",
+          "chapters": {
+            "start": {
+              "number": 3
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        },
+        {
+          "name": "MAT",
           "chapters": {
             "start": {
               "number": 1
@@ -18,43 +56,16 @@
       ]
     },
     {
-      "day": 2,
+      "day": 3,
       "books": [
         {
-          "name": "ROM",
+          "name": "MAT",
           "chapters": {
             "start": {
               "number": 4
             },
             "end": {
-              "number": 7
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 3,
-      "books": [
-        {
-          "name": "ROM",
-          "chapters": {
-            "start": {
-              "number": 8
-            },
-            "end": {
-              "number": 10
-            }
-          }
-        },
-        {
-          "name": "ROM",
-          "chapters": {
-            "start": {
-              "number": 11
-            },
-            "end": {
-              "number": 13
+              "number": 5
             }
           }
         }
@@ -64,42 +75,10 @@
       "day": 4,
       "books": [
         {
-          "name": "ROM",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 14
-            },
-            "end": {
-              "number": 16
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 5,
-      "books": [
-        {
-          "name": "1CO",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 4
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 6,
-      "books": [
-        {
-          "name": "1CO",
-          "chapters": {
-            "start": {
-              "number": 5
+              "number": 6
             },
             "end": {
               "number": 8
@@ -109,16 +88,48 @@
       ]
     },
     {
-      "day": 7,
+      "day": 5,
       "books": [
         {
-          "name": "1CO",
+          "name": "MAT",
           "chapters": {
             "start": {
               "number": 9
             },
             "end": {
+              "number": 10
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "books": [
+        {
+          "name": "MAT",
+          "chapters": {
+            "start": {
               "number": 11
+            },
+            "end": {
+              "number": 12
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "books": [
+        {
+          "name": "MAT",
+          "chapters": {
+            "start": {
+              "number": 13
+            },
+            "end": {
+              "number": 14
             }
           }
         }

@@ -5,24 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "JHN",
+          "name": "AMO",
           "chapters": {
             "start": {
-              "number": 18
+              "number": 2
             },
             "end": {
-              "number": 19
-            }
-          }
-        },
-        {
-          "name": "JHN",
-          "chapters": {
-            "start": {
-              "number": 20
-            },
-            "end": {
-              "number": 21
+              "number": 7
             }
           }
         }
@@ -32,7 +21,110 @@
       "day": 2,
       "books": [
         {
-          "name": "ACT",
+          "name": "AMO",
+          "chapters": {
+            "start": {
+              "number": 8
+            },
+            "end": {
+              "number": 9
+            }
+          }
+        },
+        {
+          "name": "OBA",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 1
+            }
+          }
+        },
+        {
+          "name": "JON",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "books": [
+        {
+          "name": "MIC",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "books": [
+        {
+          "name": "MIC",
+          "chapters": {
+            "start": {
+              "number": 7
+            },
+            "end": {
+              "number": 7
+            }
+          }
+        },
+        {
+          "name": "NAM",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        },
+        {
+          "name": "HAB",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "books": [
+        {
+          "name": "HAB",
+          "chapters": {
+            "start": {
+              "number": 2
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        },
+        {
+          "name": "ZEP",
           "chapters": {
             "start": {
               "number": 1
@@ -45,184 +137,27 @@
       ]
     },
     {
-      "day": 3,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 4
-            },
-            "end": {
-              "number": 6
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 7
-            },
-            "end": {
-              "number": 8
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 4,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 9
-            },
-            "end": {
-              "number": 10
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 5,
-      "books": [
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 11
-            },
-            "end": {
-              "number": 12
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 13
-            },
-            "end": {
-              "number": 14
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 15
-            },
-            "end": {
-              "number": 16
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 17
-            },
-            "end": {
-              "number": 17
-            }
-          }
-        }
-      ]
-    },
-    {
       "day": 6,
       "books": [
         {
-          "name": "ACT",
+          "name": "HAG",
           "chapters": {
             "start": {
-              "number": 18,
-              "verse": 1
+              "number": 1
             },
             "end": {
-              "number": 18,
-              "verse": 18
+              "number": 2
             }
           }
         },
         {
-          "name": "ACT",
+          "name": "ZEC",
           "chapters": {
             "start": {
-              "number": 18,
-              "verse": 19
+              "number": 1
             },
             "end": {
-              "number": 18,
-              "verse": 28
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 19,
-              "verse": 1
-            },
-            "end": {
-              "number": 19,
-              "verse": 41
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 20,
-              "verse": 1
-            },
-            "end": {
-              "number": 20,
-              "verse": 3
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 20,
-              "verse": 4
-            },
-            "end": {
-              "number": 20,
-              "verse": 38
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 21
-            },
-            "end": {
-              "number": 21
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 22
-            },
-            "end": {
-              "number": 22
+              "number": 4
             }
           }
         }
@@ -232,37 +167,13 @@
       "day": 7,
       "books": [
         {
-          "name": "ACT",
+          "name": "ZEC",
           "chapters": {
             "start": {
-              "number": 23,
-              "verse": 1
+              "number": 5
             },
             "end": {
-              "number": 23,
-              "verse": 35
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 24
-            },
-            "end": {
-              "number": 26
-            }
-          }
-        },
-        {
-          "name": "ACT",
-          "chapters": {
-            "start": {
-              "number": 27
-            },
-            "end": {
-              "number": 28
+              "number": 10
             }
           }
         }

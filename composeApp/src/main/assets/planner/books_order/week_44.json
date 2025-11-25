@@ -3,31 +3,115 @@
   "days": [
     {
       "day": 1,
-      "books": []
+      "books": [
+        {
+          "name": "LUK",
+          "chapters": {
+            "start": {
+              "number": 22
+            },
+            "end": {
+              "number": 22
+            }
+          }
+        }
+      ]
     },
     {
       "day": 2,
-      "books": []
+      "books": [
+        {
+          "name": "LUK",
+          "chapters": {
+            "start": {
+              "number": 23
+            },
+            "end": {
+              "number": 23
+            }
+          }
+        }
+      ]
     },
     {
       "day": 3,
-      "books": []
+      "books": [
+        {
+          "name": "LUK",
+          "chapters": {
+            "start": {
+              "number": 24
+            },
+            "end": {
+              "number": 24
+            }
+          }
+        }
+      ]
     },
     {
       "day": 4,
-      "books": []
+      "books": [
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 2
+            }
+          }
+        }
+      ]
     },
     {
       "day": 5,
-      "books": []
+      "books": [
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 3
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        }
+      ]
     },
     {
       "day": 6,
-      "books": []
+      "books": [
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 5
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        }
+      ]
     },
     {
       "day": 7,
-      "books": []
+      "books": [
+        {
+          "name": "JHN",
+          "chapters": {
+            "start": {
+              "number": 6
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        }
+      ]
     }
   ]
 }

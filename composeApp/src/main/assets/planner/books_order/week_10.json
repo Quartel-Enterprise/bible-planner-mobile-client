@@ -5,42 +5,10 @@
       "day": 1,
       "books": [
         {
-          "name": "JOS",
+          "name": "DEU",
           "chapters": {
             "start": {
-              "number": 12
-            },
-            "end": {
-              "number": 15
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 2,
-      "books": [
-        {
-          "name": "JOS",
-          "chapters": {
-            "start": {
-              "number": 16
-            },
-            "end": {
               "number": 18
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 3,
-      "books": [
-        {
-          "name": "JOS",
-          "chapters": {
-            "start": {
-              "number": 19
             },
             "end": {
               "number": 21
@@ -50,16 +18,48 @@
       ]
     },
     {
-      "day": 4,
+      "day": 2,
       "books": [
         {
-          "name": "JOS",
+          "name": "DEU",
           "chapters": {
             "start": {
               "number": 22
             },
             "end": {
-              "number": 24
+              "number": 25
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "books": [
+        {
+          "name": "DEU",
+          "chapters": {
+            "start": {
+              "number": 26
+            },
+            "end": {
+              "number": 27
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "books": [
+        {
+          "name": "DEU",
+          "chapters": {
+            "start": {
+              "number": 28
+            },
+            "end": {
+              "number": 29
             }
           }
         }
@@ -69,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "JDG",
+          "name": "DEU",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 30
             },
             "end": {
-              "number": 2
+              "number": 32
             }
           }
         }
@@ -85,13 +85,24 @@
       "day": 6,
       "books": [
         {
-          "name": "JDG",
+          "name": "DEU",
           "chapters": {
             "start": {
-              "number": 3
+              "number": 33
             },
             "end": {
-              "number": 5
+              "number": 34
+            }
+          }
+        },
+        {
+          "name": "JOS",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
             }
           }
         }
@@ -101,10 +112,10 @@
       "day": 7,
       "books": [
         {
-          "name": "JDG",
+          "name": "JOS",
           "chapters": {
             "start": {
-              "number": 6
+              "number": 4
             },
             "end": {
               "number": 7

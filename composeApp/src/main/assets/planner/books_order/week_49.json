@@ -3,31 +3,137 @@
   "days": [
     {
       "day": 1,
-      "books": []
+      "books": [
+        {
+          "name": "1CO",
+          "chapters": {
+            "start": {
+              "number": 15
+            },
+            "end": {
+              "number": 16
+            }
+          }
+        }
+      ]
     },
     {
       "day": 2,
-      "books": []
+      "books": [
+        {
+          "name": "2CO",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        }
+      ]
     },
     {
       "day": 3,
-      "books": []
+      "books": [
+        {
+          "name": "2CO",
+          "chapters": {
+            "start": {
+              "number": 6
+            },
+            "end": {
+              "number": 10
+            }
+          }
+        }
+      ]
     },
     {
       "day": 4,
-      "books": []
+      "books": [
+        {
+          "name": "2CO",
+          "chapters": {
+            "start": {
+              "number": 11
+            },
+            "end": {
+              "number": 13
+            }
+          }
+        },
+        {
+          "name": "GAL",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 1
+            }
+          }
+        }
+      ]
     },
     {
       "day": 5,
-      "books": []
+      "books": [
+        {
+          "name": "GAL",
+          "chapters": {
+            "start": {
+              "number": 2
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        }
+      ]
     },
     {
       "day": 6,
-      "books": []
+      "books": [
+        {
+          "name": "GAL",
+          "chapters": {
+            "start": {
+              "number": 5
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        },
+        {
+          "name": "EPH",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 2
+            }
+          }
+        }
+      ]
     },
     {
       "day": 7,
-      "books": []
+      "books": [
+        {
+          "name": "EPH",
+          "chapters": {
+            "start": {
+              "number": 3
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        }
+      ]
     }
   ]
 }

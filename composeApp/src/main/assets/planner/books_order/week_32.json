@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "JOL",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 59
             },
             "end": {
-              "number": 3
+              "number": 64
             }
           }
         }
@@ -21,13 +21,24 @@
       "day": 2,
       "books": [
         {
-          "name": "AMO",
+          "name": "ISA",
+          "chapters": {
+            "start": {
+              "number": 65
+            },
+            "end": {
+              "number": 66
+            }
+          }
+        },
+        {
+          "name": "JER",
           "chapters": {
             "start": {
               "number": 1
             },
             "end": {
-              "number": 5
+              "number": 1
             }
           }
         }
@@ -37,34 +48,10 @@
       "day": 3,
       "books": [
         {
-          "name": "AMO",
+          "name": "JER",
           "chapters": {
             "start": {
-              "number": 6
-            },
-            "end": {
-              "number": 9
-            }
-          }
-        }
-      ]
-    },
-    {
-      "day": 4,
-      "books": [
-        {
-          "name": "OBA"
-        }
-      ]
-    },
-    {
-      "day": 5,
-      "books": [
-        {
-          "name": "JON",
-          "chapters": {
-            "start": {
-              "number": 1
+              "number": 2
             },
             "end": {
               "number": 4
@@ -74,13 +61,13 @@
       ]
     },
     {
-      "day": 6,
+      "day": 4,
       "books": [
         {
-          "name": "MIC",
+          "name": "JER",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 5
             },
             "end": {
               "number": 7
@@ -90,27 +77,48 @@
       ]
     },
     {
+      "day": 5,
+      "books": [
+        {
+          "name": "JER",
+          "chapters": {
+            "start": {
+              "number": 8
+            },
+            "end": {
+              "number": 11
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "books": [
+        {
+          "name": "JER",
+          "chapters": {
+            "start": {
+              "number": 12
+            },
+            "end": {
+              "number": 15
+            }
+          }
+        }
+      ]
+    },
+    {
       "day": 7,
       "books": [
         {
-          "name": "NAM",
+          "name": "JER",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 16
             },
             "end": {
-              "number": 3
-            }
-          }
-        },
-        {
-          "name": "HAB",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 3
+              "number": 19
             }
           }
         }

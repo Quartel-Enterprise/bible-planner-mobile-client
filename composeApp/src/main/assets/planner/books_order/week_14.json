@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "2SA",
+          "name": "1SA",
           "chapters": {
             "start": {
-              "number": 19
+              "number": 22
             },
             "end": {
-              "number": 21
+              "number": 24
             }
           }
         }
@@ -21,24 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "2SA",
+          "name": "1SA",
           "chapters": {
             "start": {
-              "number": 22
+              "number": 25
             },
             "end": {
-              "number": 23
-            }
-          }
-        },
-        {
-          "name": "2SA",
-          "chapters": {
-            "start": {
-              "number": 24
-            },
-            "end": {
-              "number": 24
+              "number": 27
             }
           }
         }
@@ -48,24 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "1KI",
+          "name": "1SA",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 28
             },
             "end": {
-              "number": 2
-            }
-          }
-        },
-        {
-          "name": "1KI",
-          "chapters": {
-            "start": {
-              "number": 3
-            },
-            "end": {
-              "number": 4
+              "number": 31
             }
           }
         }
@@ -75,24 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "1KI",
+          "name": "2SA",
           "chapters": {
             "start": {
-              "number": 5
+              "number": 1
             },
             "end": {
-              "number": 6
-            }
-          }
-        },
-        {
-          "name": "1KI",
-          "chapters": {
-            "start": {
-              "number": 7
-            },
-            "end": {
-              "number": 7
+              "number": 3
             }
           }
         }
@@ -102,35 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "1KI",
+          "name": "2SA",
           "chapters": {
             "start": {
-              "number": 8
+              "number": 4
             },
             "end": {
-              "number": 8
-            }
-          }
-        },
-        {
-          "name": "1KI",
-          "chapters": {
-            "start": {
-              "number": 9
-            },
-            "end": {
-              "number": 9
-            }
-          }
-        },
-        {
-          "name": "1KI",
-          "chapters": {
-            "start": {
-              "number": 10
-            },
-            "end": {
-              "number": 11
+              "number": 7
             }
           }
         }
@@ -140,26 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "1KI",
+          "name": "2SA",
           "chapters": {
             "start": {
-              "number": 12
+              "number": 8
             },
             "end": {
-              "number": 14
-            }
-          }
-        },
-        {
-          "name": "1KI",
-          "chapters": {
-            "start": {
-              "number": 15,
-              "verse": 1
-            },
-            "end": {
-              "number": 15,
-              "verse": 24
+              "number": 11
             }
           }
         }
@@ -169,26 +101,13 @@
       "day": 7,
       "books": [
         {
-          "name": "1KI",
+          "name": "2SA",
           "chapters": {
             "start": {
-              "number": 15,
-              "verse": 25
+              "number": 12
             },
             "end": {
-              "number": 15,
-              "verse": 34
-            }
-          }
-        },
-        {
-          "name": "1KI",
-          "chapters": {
-            "start": {
-              "number": 16
-            },
-            "end": {
-              "number": 16
+              "number": 13
             }
           }
         }

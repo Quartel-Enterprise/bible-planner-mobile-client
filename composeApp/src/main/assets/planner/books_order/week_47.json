@@ -3,31 +3,126 @@
   "days": [
     {
       "day": 1,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 17
+            },
+            "end": {
+              "number": 18
+            }
+          }
+        }
+      ]
     },
     {
       "day": 2,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 19
+            },
+            "end": {
+              "number": 20
+            }
+          }
+        }
+      ]
     },
     {
       "day": 3,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 21
+            },
+            "end": {
+              "number": 22
+            }
+          }
+        }
+      ]
     },
     {
       "day": 4,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 23
+            },
+            "end": {
+              "number": 25
+            }
+          }
+        }
+      ]
     },
     {
       "day": 5,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 26
+            },
+            "end": {
+              "number": 27
+            }
+          }
+        }
+      ]
     },
     {
       "day": 6,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 28
+            },
+            "end": {
+              "number": 28
+            }
+          }
+        },
+        {
+          "name": "ROM",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 2
+            }
+          }
+        }
+      ]
     },
     {
       "day": 7,
-      "books": []
+      "books": [
+        {
+          "name": "ROM",
+          "chapters": {
+            "start": {
+              "number": 3
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        }
+      ]
     }
   ]
 }

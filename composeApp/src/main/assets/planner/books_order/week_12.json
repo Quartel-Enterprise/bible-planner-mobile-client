@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "1SA",
+          "name": "JDG",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 3
             },
             "end": {
-              "number": 8
+              "number": 5
             }
           }
         }
@@ -21,13 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "1SA",
+          "name": "JDG",
           "chapters": {
             "start": {
-              "number": 9
+              "number": 6
             },
             "end": {
-              "number": 12
+              "number": 8
             }
           }
         }
@@ -37,13 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "1SA",
+          "name": "JDG",
           "chapters": {
             "start": {
-              "number": 13
+              "number": 9
             },
             "end": {
-              "number": 14
+              "number": 10
             }
           }
         }
@@ -53,13 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "1SA",
+          "name": "JDG",
           "chapters": {
             "start": {
-              "number": 15
+              "number": 11
             },
             "end": {
-              "number": 17
+              "number": 14
             }
           }
         }
@@ -69,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "1SA",
+          "name": "JDG",
           "chapters": {
             "start": {
-              "number": 18
+              "number": 15
             },
             "end": {
-              "number": 20
+              "number": 18
             }
           }
         }
@@ -85,13 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "1SA",
+          "name": "JDG",
           "chapters": {
             "start": {
-              "number": 21
+              "number": 19
             },
             "end": {
-              "number": 24
+              "number": 20
             }
           }
         }
@@ -101,13 +101,24 @@
       "day": 7,
       "books": [
         {
-          "name": "1SA",
+          "name": "JDG",
           "chapters": {
             "start": {
-              "number": 25
+              "number": 21
             },
             "end": {
-              "number": 27
+              "number": 21
+            }
+          }
+        },
+        {
+          "name": "RUT",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
             }
           }
         }

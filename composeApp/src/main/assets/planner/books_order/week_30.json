@@ -5,24 +5,24 @@
       "day": 1,
       "books": [
         {
-          "name": "EZK",
+          "name": "ECC",
           "chapters": {
             "start": {
-              "number": 16
+              "number": 12
             },
             "end": {
-              "number": 17
+              "number": 12
             }
           }
         },
         {
-          "name": "EZK",
+          "name": "SNG",
           "chapters": {
             "start": {
-              "number": 18
+              "number": 1
             },
             "end": {
-              "number": 19
+              "number": 5
             }
           }
         }
@@ -32,13 +32,24 @@
       "day": 2,
       "books": [
         {
-          "name": "EZK",
+          "name": "SNG",
           "chapters": {
             "start": {
-              "number": 20
+              "number": 6
             },
             "end": {
-              "number": 21
+              "number": 8
+            }
+          }
+        },
+        {
+          "name": "ISA",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 2
             }
           }
         }
@@ -48,13 +59,13 @@
       "day": 3,
       "books": [
         {
-          "name": "EZK",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 22
+              "number": 3
             },
             "end": {
-              "number": 23
+              "number": 7
             }
           }
         }
@@ -64,13 +75,13 @@
       "day": 4,
       "books": [
         {
-          "name": "EZK",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 24
+              "number": 8
             },
             "end": {
-              "number": 27
+              "number": 12
             }
           }
         }
@@ -80,13 +91,13 @@
       "day": 5,
       "books": [
         {
-          "name": "EZK",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 28
+              "number": 13
             },
             "end": {
-              "number": 31
+              "number": 18
             }
           }
         }
@@ -96,13 +107,13 @@
       "day": 6,
       "books": [
         {
-          "name": "EZK",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 32
+              "number": 19
             },
             "end": {
-              "number": 34
+              "number": 23
             }
           }
         }
@@ -112,24 +123,13 @@
       "day": 7,
       "books": [
         {
-          "name": "EZK",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 35
+              "number": 24
             },
             "end": {
-              "number": 37
-            }
-          }
-        },
-        {
-          "name": "EZK",
-          "chapters": {
-            "start": {
-              "number": 38
-            },
-            "end": {
-              "number": 39
+              "number": 28
             }
           }
         }

@@ -5,7 +5,7 @@
       "day": 1,
       "books": [
         {
-          "name": "JDG",
+          "name": "JOS",
           "chapters": {
             "start": {
               "number": 8
@@ -21,7 +21,7 @@
       "day": 2,
       "books": [
         {
-          "name": "JDG",
+          "name": "JOS",
           "chapters": {
             "start": {
               "number": 10
@@ -37,13 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "JDG",
+          "name": "JOS",
           "chapters": {
             "start": {
               "number": 13
             },
             "end": {
-              "number": 15
+              "number": 14
             }
           }
         }
@@ -53,13 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "JDG",
+          "name": "JOS",
           "chapters": {
             "start": {
-              "number": 16
+              "number": 15
             },
             "end": {
-              "number": 18
+              "number": 17
             }
           }
         }
@@ -69,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "JDG",
+          "name": "JOS",
           "chapters": {
             "start": {
-              "number": 19
+              "number": 18
             },
             "end": {
-              "number": 21
+              "number": 20
             }
           }
         }
@@ -85,13 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "RUT",
+          "name": "JOS",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 21
             },
             "end": {
-              "number": 4
+              "number": 23
             }
           }
         }
@@ -101,13 +101,24 @@
       "day": 7,
       "books": [
         {
-          "name": "1SA",
+          "name": "JOS",
+          "chapters": {
+            "start": {
+              "number": 24
+            },
+            "end": {
+              "number": 24
+            }
+          }
+        },
+        {
+          "name": "JDG",
           "chapters": {
             "start": {
               "number": 1
             },
             "end": {
-              "number": 3
+              "number": 2
             }
           }
         }

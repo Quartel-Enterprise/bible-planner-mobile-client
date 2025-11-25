@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "JER",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 141
             },
             "end": {
-              "number": 6
+              "number": 147
             }
           }
         }
@@ -21,13 +21,24 @@
       "day": 2,
       "books": [
         {
-          "name": "JER",
+          "name": "PSA",
           "chapters": {
             "start": {
-              "number": 7
+              "number": 148
             },
             "end": {
-              "number": 9
+              "number": 150
+            }
+          }
+        },
+        {
+          "name": "PRO",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 2
             }
           }
         }
@@ -37,13 +48,13 @@
       "day": 3,
       "books": [
         {
-          "name": "JER",
+          "name": "PRO",
           "chapters": {
             "start": {
-              "number": 10
+              "number": 3
             },
             "end": {
-              "number": 13
+              "number": 5
             }
           }
         }
@@ -53,13 +64,13 @@
       "day": 4,
       "books": [
         {
-          "name": "JER",
+          "name": "PRO",
           "chapters": {
             "start": {
-              "number": 14
+              "number": 6
             },
             "end": {
-              "number": 17
+              "number": 8
             }
           }
         }
@@ -69,13 +80,13 @@
       "day": 5,
       "books": [
         {
-          "name": "JER",
+          "name": "PRO",
           "chapters": {
             "start": {
-              "number": 18
+              "number": 9
             },
             "end": {
-              "number": 22
+              "number": 11
             }
           }
         }
@@ -85,24 +96,13 @@
       "day": 6,
       "books": [
         {
-          "name": "JER",
+          "name": "PRO",
           "chapters": {
             "start": {
-              "number": 23
+              "number": 12
             },
             "end": {
-              "number": 25
-            }
-          }
-        },
-        {
-          "name": "JER",
-          "chapters": {
-            "start": {
-              "number": 26
-            },
-            "end": {
-              "number": 29
+              "number": 14
             }
           }
         }
@@ -112,24 +112,13 @@
       "day": 7,
       "books": [
         {
-          "name": "JER",
+          "name": "PRO",
           "chapters": {
             "start": {
-              "number": 30
+              "number": 15
             },
             "end": {
-              "number": 31
-            }
-          }
-        },
-        {
-          "name": "JER",
-          "chapters": {
-            "start": {
-              "number": 32
-            },
-            "end": {
-              "number": 34
+              "number": 17
             }
           }
         }

@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "PSA",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 128
+              "number": 8
             },
             "end": {
-              "number": 130
+              "number": 11
             }
           }
         }
@@ -21,35 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "PSA",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 131
+              "number": 12
             },
             "end": {
-              "number": 131
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 132
-            },
-            "end": {
-              "number": 132
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 133
-            },
-            "end": {
-              "number": 133
+              "number": 14
             }
           }
         }
@@ -59,35 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "PSA",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 134
+              "number": 15
             },
             "end": {
-              "number": 134
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 136
-            },
-            "end": {
-              "number": 136
-            }
-          }
-        },
-        {
-          "name": "PSA",
-          "chapters": {
-            "start": {
-              "number": 137
-            },
-            "end": {
-              "number": 137
+              "number": 18
             }
           }
         }
@@ -97,13 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "PSA",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 138
+              "number": 19
             },
             "end": {
-              "number": 139
+              "number": 21
             }
           }
         }
@@ -113,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "PSA",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 140
+              "number": 22
             },
             "end": {
-              "number": 142
+              "number": 26
             }
           }
         }
@@ -129,13 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "PSA",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 143
+              "number": 27
             },
             "end": {
-              "number": 145
+              "number": 29
             }
           }
         }
@@ -145,13 +101,13 @@
       "day": 7,
       "books": [
         {
-          "name": "PSA",
+          "name": "JOB",
           "chapters": {
             "start": {
-              "number": 146
+              "number": 30
             },
             "end": {
-              "number": 150
+              "number": 32
             }
           }
         }

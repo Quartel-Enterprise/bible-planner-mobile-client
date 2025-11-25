@@ -5,26 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "LUK",
+          "name": "DAN",
           "chapters": {
             "start": {
-              "number": 24
+              "number": 2
             },
             "end": {
-              "number": 24
-            }
-          }
-        },
-        {
-          "name": "JHN",
-          "chapters": {
-            "start": {
-              "number": 1,
-              "verse": 1
-            },
-            "end": {
-              "number": 1,
-              "verse": 14
+              "number": 3
             }
           }
         }
@@ -34,15 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "JHN",
+          "name": "DAN",
           "chapters": {
             "start": {
-              "number": 1,
-              "verse": 15
+              "number": 4
             },
             "end": {
-              "number": 1,
-              "verse": 51
+              "number": 6
             }
           }
         }
@@ -52,13 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "JHN",
+          "name": "DAN",
           "chapters": {
             "start": {
-              "number": 2
+              "number": 7
             },
             "end": {
-              "number": 4
+              "number": 9
             }
           }
         }
@@ -68,35 +53,24 @@
       "day": 4,
       "books": [
         {
-          "name": "JHN",
+          "name": "DAN",
           "chapters": {
             "start": {
-              "number": 5
+              "number": 10
             },
             "end": {
-              "number": 5
+              "number": 12
             }
           }
         },
         {
-          "name": "JHN",
+          "name": "HOS",
           "chapters": {
             "start": {
-              "number": 6
+              "number": 1
             },
             "end": {
-              "number": 6
-            }
-          }
-        },
-        {
-          "name": "JHN",
-          "chapters": {
-            "start": {
-              "number": 7
-            },
-            "end": {
-              "number": 8
+              "number": 1
             }
           }
         }
@@ -106,41 +80,13 @@
       "day": 5,
       "books": [
         {
-          "name": "JHN",
+          "name": "HOS",
           "chapters": {
             "start": {
-              "number": 9,
-              "verse": 1
+              "number": 2
             },
             "end": {
-              "number": 9,
-              "verse": 41
-            }
-          }
-        },
-        {
-          "name": "JHN",
-          "chapters": {
-            "start": {
-              "number": 10,
-              "verse": 1
-            },
-            "end": {
-              "number": 10,
-              "verse": 21
-            }
-          }
-        },
-        {
-          "name": "JHN",
-          "chapters": {
-            "start": {
-              "number": 10,
-              "verse": 22
-            },
-            "end": {
-              "number": 10,
-              "verse": 42
+              "number": 7
             }
           }
         }
@@ -150,35 +96,13 @@
       "day": 6,
       "books": [
         {
-          "name": "JHN",
+          "name": "HOS",
           "chapters": {
             "start": {
-              "number": 11
+              "number": 8
             },
             "end": {
-              "number": 11
-            }
-          }
-        },
-        {
-          "name": "JHN",
-          "chapters": {
-            "start": {
-              "number": 12
-            },
-            "end": {
-              "number": 12
-            }
-          }
-        },
-        {
-          "name": "JHN",
-          "chapters": {
-            "start": {
-              "number": 13
-            },
-            "end": {
-              "number": 13
+              "number": 14
             }
           }
         }
@@ -188,13 +112,24 @@
       "day": 7,
       "books": [
         {
-          "name": "JHN",
+          "name": "JOL",
           "chapters": {
             "start": {
-              "number": 14
+              "number": 1
             },
             "end": {
-              "number": 17
+              "number": 3
+            }
+          }
+        },
+        {
+          "name": "AMO",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 1
             }
           }
         }

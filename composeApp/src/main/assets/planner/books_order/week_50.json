@@ -3,31 +3,192 @@
   "days": [
     {
       "day": 1,
-      "books": []
+      "books": [
+        {
+          "name": "EPH",
+          "chapters": {
+            "start": {
+              "number": 6
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        },
+        {
+          "name": "PHP",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 2
+            }
+          }
+        }
+      ]
     },
     {
       "day": 2,
-      "books": []
+      "books": [
+        {
+          "name": "PHP",
+          "chapters": {
+            "start": {
+              "number": 3
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        },
+        {
+          "name": "COL",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 2
+            }
+          }
+        }
+      ]
     },
     {
       "day": 3,
-      "books": []
+      "books": [
+        {
+          "name": "COL",
+          "chapters": {
+            "start": {
+              "number": 3
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        },
+        {
+          "name": "1TH",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        }
+      ]
     },
     {
       "day": 4,
-      "books": []
+      "books": [
+        {
+          "name": "1TH",
+          "chapters": {
+            "start": {
+              "number": 4
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        },
+        {
+          "name": "2TH",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        }
+      ]
     },
     {
       "day": 5,
-      "books": []
+      "books": [
+        {
+          "name": "1TI",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 5
+            }
+          }
+        }
+      ]
     },
     {
       "day": 6,
-      "books": []
+      "books": [
+        {
+          "name": "1TI",
+          "chapters": {
+            "start": {
+              "number": 6
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        },
+        {
+          "name": "2TI",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        }
+      ]
     },
     {
       "day": 7,
-      "books": []
+      "books": [
+        {
+          "name": "2TI",
+          "chapters": {
+            "start": {
+              "number": 4
+            },
+            "end": {
+              "number": 4
+            }
+          }
+        },
+        {
+          "name": "TIT",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        },
+        {
+          "name": "PHM",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 1
+            }
+          }
+        }
+      ]
     }
   ]
 }

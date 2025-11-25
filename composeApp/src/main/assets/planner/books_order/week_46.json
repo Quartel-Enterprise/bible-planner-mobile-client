@@ -3,31 +3,115 @@
   "days": [
     {
       "day": 1,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 1
+            },
+            "end": {
+              "number": 3
+            }
+          }
+        }
+      ]
     },
     {
       "day": 2,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 4
+            },
+            "end": {
+              "number": 6
+            }
+          }
+        }
+      ]
     },
     {
       "day": 3,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 7
+            },
+            "end": {
+              "number": 8
+            }
+          }
+        }
+      ]
     },
     {
       "day": 4,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 9
+            },
+            "end": {
+              "number": 10
+            }
+          }
+        }
+      ]
     },
     {
       "day": 5,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 11
+            },
+            "end": {
+              "number": 12
+            }
+          }
+        }
+      ]
     },
     {
       "day": 6,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 13
+            },
+            "end": {
+              "number": 14
+            }
+          }
+        }
+      ]
     },
     {
       "day": 7,
-      "books": []
+      "books": [
+        {
+          "name": "ACT",
+          "chapters": {
+            "start": {
+              "number": 15
+            },
+            "end": {
+              "number": 16
+            }
+          }
+        }
+      ]
     }
   ]
 }

@@ -5,35 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "EZK",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 40
+              "number": 29
             },
             "end": {
-              "number": 41
-            }
-          }
-        },
-        {
-          "name": "EZK",
-          "chapters": {
-            "start": {
-              "number": 42
-            },
-            "end": {
-              "number": 43
-            }
-          }
-        },
-        {
-          "name": "EZK",
-          "chapters": {
-            "start": {
-              "number": 44
-            },
-            "end": {
-              "number": 45
+              "number": 32
             }
           }
         }
@@ -43,24 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "EZK",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 46
+              "number": 33
             },
             "end": {
-              "number": 48
-            }
-          }
-        },
-        {
-          "name": "DAN",
-          "chapters": {
-            "start": {
-              "number": 1
-            },
-            "end": {
-              "number": 3
+              "number": 36
             }
           }
         }
@@ -70,13 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "DAN",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 37
             },
             "end": {
-              "number": 6
+              "number": 40
             }
           }
         }
@@ -86,13 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "DAN",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 7
+              "number": 41
             },
             "end": {
-              "number": 9
+              "number": 43
             }
           }
         }
@@ -102,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "DAN",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 10
+              "number": 44
             },
             "end": {
-              "number": 12
+              "number": 47
             }
           }
         }
@@ -118,13 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "HOS",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 48
             },
             "end": {
-              "number": 7
+              "number": 52
             }
           }
         }
@@ -134,13 +101,13 @@
       "day": 7,
       "books": [
         {
-          "name": "HOS",
+          "name": "ISA",
           "chapters": {
             "start": {
-              "number": 8
+              "number": 53
             },
             "end": {
-              "number": 14
+              "number": 58
             }
           }
         }

@@ -5,26 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 8
+              "number": 29
             },
             "end": {
-              "number": 8
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 9,
-              "verse": 18
-            },
-            "end": {
-              "number": 9,
-              "verse": 17
+              "number": 32
             }
           }
         }
@@ -34,39 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 9,
-              "verse": 18
+              "number": 33
             },
             "end": {
-              "number": 9,
-              "verse": 27
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 9,
-              "verse": 28
-            },
-            "end": {
-              "number": 9,
-              "verse": 62
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 10
-            },
-            "end": {
-              "number": 11
+              "number": 35
             }
           }
         }
@@ -76,24 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 12
+              "number": 36
             },
             "end": {
-              "number": 13
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 14
-            },
-            "end": {
-              "number": 15
+              "number": 38
             }
           }
         }
@@ -103,39 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 16
+              "number": 39
             },
             "end": {
-              "number": 16
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 17,
-              "verse": 1
-            },
-            "end": {
-              "number": 17,
-              "verse": 10
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 17,
-              "verse": 11
-            },
-            "end": {
-              "number": 17,
-              "verse": 37
+              "number": 40
             }
           }
         }
@@ -145,41 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 17,
-              "verse": 11
+              "number": 41
             },
             "end": {
-              "number": 17,
-              "verse": 37
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 18,
-              "verse": 1
-            },
-            "end": {
-              "number": 18,
-              "verse": 14
-            }
-          }
-        },
-        {
-          "name": "LUK",
-          "chapters": {
-            "start": {
-              "number": 19,
-              "verse": 1
-            },
-            "end": {
-              "number": 19,
-              "verse": 48
+              "number": 43
             }
           }
         }
@@ -189,13 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 20
+              "number": 44
             },
             "end": {
-              "number": 21
+              "number": 46
             }
           }
         }
@@ -205,24 +101,24 @@
       "day": 7,
       "books": [
         {
-          "name": "LUK",
+          "name": "EZK",
           "chapters": {
             "start": {
-              "number": 22
+              "number": 47
             },
             "end": {
-              "number": 22
+              "number": 48
             }
           }
         },
         {
-          "name": "LUK",
+          "name": "DAN",
           "chapters": {
             "start": {
-              "number": 23
+              "number": 1
             },
             "end": {
-              "number": 23
+              "number": 1
             }
           }
         }

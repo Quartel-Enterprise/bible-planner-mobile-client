@@ -5,13 +5,13 @@
       "day": 1,
       "books": [
         {
-          "name": "1CO",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 12
+              "number": 15
             },
             "end": {
-              "number": 14
+              "number": 17
             }
           }
         }
@@ -21,13 +21,13 @@
       "day": 2,
       "books": [
         {
-          "name": "1CO",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 15
+              "number": 18
             },
             "end": {
-              "number": 16
+              "number": 20
             }
           }
         }
@@ -37,13 +37,13 @@
       "day": 3,
       "books": [
         {
-          "name": "2CO",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 21
             },
             "end": {
-              "number": 4
+              "number": 22
             }
           }
         }
@@ -53,13 +53,13 @@
       "day": 4,
       "books": [
         {
-          "name": "2CO",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 5
+              "number": 23
             },
             "end": {
-              "number": 9
+              "number": 24
             }
           }
         }
@@ -69,13 +69,13 @@
       "day": 5,
       "books": [
         {
-          "name": "2CO",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 10
+              "number": 25
             },
             "end": {
-              "number": 13
+              "number": 25
             }
           }
         }
@@ -85,13 +85,13 @@
       "day": 6,
       "books": [
         {
-          "name": "GAL",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 1
+              "number": 26
             },
             "end": {
-              "number": 3
+              "number": 26
             }
           }
         }
@@ -101,13 +101,13 @@
       "day": 7,
       "books": [
         {
-          "name": "GAL",
+          "name": "MAT",
           "chapters": {
             "start": {
-              "number": 4
+              "number": 27
             },
             "end": {
-              "number": 6
+              "number": 28
             }
           }
         }
