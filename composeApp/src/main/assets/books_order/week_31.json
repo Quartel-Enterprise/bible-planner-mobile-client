@@ -1,0 +1,103 @@
+{
+  "week": 31,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "DAN",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "DAN",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "DAN",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "DAN",
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "HOS",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "HOS",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 14
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "JOL",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ]
+  ]
+}

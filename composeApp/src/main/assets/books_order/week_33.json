@@ -1,0 +1,103 @@
+{
+  "week": 33,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "ZEP",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "HAG",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "ZEC",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "ZEC",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 14
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "MAL",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "MAT",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 1
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "MAT",
+        "chapters": {
+          "start": {
+            "number": 2
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      }
+    ]
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "week": 23,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "ECC",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "SNG",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 8
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 8
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 17
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 22
+          }
+        }
+      }
+    ]
+  ]
+}

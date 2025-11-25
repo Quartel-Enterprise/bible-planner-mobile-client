@@ -1,0 +1,103 @@
+{
+  "week": 27,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 35
+          },
+          "end": {
+            "number": 37
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 38
+          },
+          "end": {
+            "number": 40
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 41
+          },
+          "end": {
+            "number": 45
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 46
+          },
+          "end": {
+            "number": 48
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 49
+          },
+          "end": {
+            "number": 50
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 51
+          },
+          "end": {
+            "number": 52
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "LAM",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      }
+    ]
+  ]
+}

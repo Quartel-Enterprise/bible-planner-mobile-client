@@ -1,0 +1,107 @@
+{
+  "week": 39,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "MRK",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 13
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "MRK",
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 14
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "MRK",
+        "chapters": {
+          "start": {
+            "number": 15
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "MRK",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 16
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 1
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 2,
+            "verse": 1
+          },
+          "end": {
+            "number": 2,
+            "verse": 38
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 2,
+            "verse": 39
+          },
+          "end": {
+            "number": 2,
+            "verse": 52
+          }
+        }
+      }
+    ]
+  ]
+}

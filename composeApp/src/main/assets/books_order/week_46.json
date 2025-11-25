@@ -1,0 +1,113 @@
+{
+  "week": 46,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 15
+          },
+          "end": {
+            "number": 16
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 17
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 18,
+            "verse": 1
+          },
+          "end": {
+            "number": 18,
+            "verse": 18
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 18,
+            "verse": 19
+          },
+          "end": {
+            "number": 18,
+            "verse": 28
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 19,
+            "verse": 1
+          },
+          "end": {
+            "number": 19,
+            "verse": 41
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 20,
+            "verse": 1
+          },
+          "end": {
+            "number": 20,
+            "verse": 3
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 20,
+            "verse": 4
+          },
+          "end": {
+            "number": 20,
+            "verse": 38
+          }
+        }
+      }
+    ]
+  ]
+}

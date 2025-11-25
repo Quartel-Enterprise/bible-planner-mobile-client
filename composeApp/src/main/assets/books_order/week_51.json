@@ -1,0 +1,95 @@
+{
+  "week": 51,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "PHM"
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "HEB",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "HEB",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 10
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "HEB",
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 13
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "JAS",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "1PE",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "2PE",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ]
+  ]
+}

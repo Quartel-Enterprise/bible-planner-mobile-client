@@ -1,0 +1,103 @@
+{
+  "week": 45,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "JHN",
+        "chapters": {
+          "start": {
+            "number": 20
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 8
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 10
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "ACT",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 14
+          }
+        }
+      }
+    ]
+  ]
+}

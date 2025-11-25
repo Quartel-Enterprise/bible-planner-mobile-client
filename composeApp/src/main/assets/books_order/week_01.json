@@ -1,0 +1,1975 @@
+{
+  "week": 1,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 11
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 24
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 25
+          },
+          "end": {
+            "number": 26
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 29
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 30
+          },
+          "end": {
+            "number": 31
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 34
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 35
+          },
+          "end": {
+            "number": 37
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 38
+          },
+          "end": {
+            "number": 40
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 41
+          },
+          "end": {
+            "number": 42
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 43
+          },
+          "end": {
+            "number": 45
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 46
+          },
+          "end": {
+            "number": 47
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "GEN",
+        "chapters": {
+          "start": {
+            "number": 48
+          },
+          "end": {
+            "number": 50
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 24
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 25
+          },
+          "end": {
+            "number": 27
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 29
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 30
+          },
+          "end": {
+            "number": 32
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 33
+          },
+          "end": {
+            "number": 35
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 36
+          },
+          "end": {
+            "number": 38
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "EXO",
+        "chapters": {
+          "start": {
+            "number": 39
+          },
+          "end": {
+            "number": 40
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 10
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 13
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 23
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 26
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "LEV",
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 27
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 10
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 13
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 20
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 21
+          },
+          "end": {
+            "number": 22
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 23
+          },
+          "end": {
+            "number": 25
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 26
+          },
+          "end": {
+            "number": 27
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 30
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 31
+          },
+          "end": {
+            "number": 32
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 33
+          },
+          "end": {
+            "number": 34
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "NUM",
+        "chapters": {
+          "start": {
+            "number": 35
+          },
+          "end": {
+            "number": 36
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 10
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 13
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 16
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 20
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 21
+          },
+          "end": {
+            "number": 23
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 27
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 29
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 30
+          },
+          "end": {
+            "number": 31
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "DEU",
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 34
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JOS",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JOS",
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 8
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JOS",
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 11
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JOS",
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JOS",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JOS",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JOS",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 24
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JDG",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JDG",
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JDG",
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JDG",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JDG",
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JDG",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JDG",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "JDG",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "RUT",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 8
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 14
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 15
+          },
+          "end": {
+            "number": 17
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 20
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 21
+          },
+          "end": {
+            "number": 24
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 25
+          },
+          "end": {
+            "number": 27
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1SA",
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 31
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 5,
+            "verse": 1
+          },
+          "end": {
+            "number": 5,
+            "verse": 10
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 5,
+            "verse": 11
+          },
+          "end": {
+            "number": 5,
+            "verse": 25
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 10
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 23
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2SA",
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 24
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 8
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 11
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 14
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 15,
+            "verse": 1
+          },
+          "end": {
+            "number": 15,
+            "verse": 24
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 15,
+            "verse": 25
+          },
+          "end": {
+            "number": 15,
+            "verse": 34
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 16
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 19
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 20
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1KI",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 22
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 8
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 11
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 12
+          },
+          "end": {
+            "number": 13
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 14
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 15
+          },
+          "end": {
+            "number": 15
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 17
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 18,
+            "verse": 1
+          },
+          "end": {
+            "number": 18,
+            "verse": 8
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 18,
+            "verse": 9
+          },
+          "end": {
+            "number": 18,
+            "verse": 37
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 19
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 20
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 23
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2KI",
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 25
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 10
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 11
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 16
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 17
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 19
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 20
+          },
+          "end": {
+            "number": 20
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 21
+          },
+          "end": {
+            "number": 22
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 23
+          },
+          "end": {
+            "number": 25
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "1CH",
+        "chapters": {
+          "start": {
+            "number": 26
+          },
+          "end": {
+            "number": 29
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 1
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 2
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 5
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 8
+          },
+          "end": {
+            "number": 8
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 9
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 12
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 13
+          },
+          "end": {
+            "number": 16
+          }
+        }
+      },
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 17
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 18
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 23
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 24
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 25
+          },
+          "end": {
+            "number": 25
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 26
+          },
+          "end": {
+            "number": 26
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 27
+          }
+        }
+      }
+    ]
+  ]
+}

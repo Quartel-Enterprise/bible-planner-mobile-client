@@ -1,0 +1,95 @@
+{
+  "week": 32,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "AMO",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "AMO",
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "OBA"
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "JON",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 4
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "MIC",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 7
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "NAM",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "HAB",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ]
+  ]
+}

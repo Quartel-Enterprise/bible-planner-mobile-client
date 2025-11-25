@@ -1,0 +1,103 @@
+{
+  "week": 30,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "EZK",
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 34
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "EZK",
+        "chapters": {
+          "start": {
+            "number": 35
+          },
+          "end": {
+            "number": 37
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "EZK",
+        "chapters": {
+          "start": {
+            "number": 38
+          },
+          "end": {
+            "number": 39
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "EZK",
+        "chapters": {
+          "start": {
+            "number": 40
+          },
+          "end": {
+            "number": 41
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "EZK",
+        "chapters": {
+          "start": {
+            "number": 42
+          },
+          "end": {
+            "number": 43
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "EZK",
+        "chapters": {
+          "start": {
+            "number": 44
+          },
+          "end": {
+            "number": 45
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "EZK",
+        "chapters": {
+          "start": {
+            "number": 46
+          },
+          "end": {
+            "number": 48
+          }
+        }
+      }
+    ]
+  ]
+}

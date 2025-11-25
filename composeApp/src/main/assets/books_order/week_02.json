@@ -1,0 +1,103 @@
+{
+  "week": 2,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 30
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 29
+          },
+          "end": {
+            "number": 31
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 32
+          },
+          "end": {
+            "number": 33
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 34
+          },
+          "end": {
+            "number": 35
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "2CH",
+        "chapters": {
+          "start": {
+            "number": 36
+          },
+          "end": {
+            "number": 36
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "EZR",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "EZR",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      }
+    ]
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "week": 42,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 18,
+            "verse": 1
+          },
+          "end": {
+            "number": 18,
+            "verse": 14
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 17,
+            "verse": 11
+          },
+          "end": {
+            "number": 17,
+            "verse": 37
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 19,
+            "verse": 1
+          },
+          "end": {
+            "number": 19,
+            "verse": 48
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 20
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 22
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 23
+          },
+          "end": {
+            "number": 23
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "LUK",
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 24
+          }
+        }
+      }
+    ]
+  ]
+}

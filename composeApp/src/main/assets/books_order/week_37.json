@@ -1,0 +1,103 @@
+{
+  "week": 37,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "MAT",
+        "chapters": {
+          "start": {
+            "number": 26
+          },
+          "end": {
+            "number": 26
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "MAT",
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 27
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "MAT",
+        "chapters": {
+          "start": {
+            "number": 28
+          },
+          "end": {
+            "number": 28
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "MRK",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 1
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "MRK",
+        "chapters": {
+          "start": {
+            "number": 2
+          },
+          "end": {
+            "number": 2
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "MRK",
+        "chapters": {
+          "start": {
+            "number": 3
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "MRK",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      }
+    ]
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "week": 22,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "PRO",
+        "chapters": {
+          "start": {
+            "number": 16
+          },
+          "end": {
+            "number": 18
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "PRO",
+        "chapters": {
+          "start": {
+            "number": 19
+          },
+          "end": {
+            "number": 21
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "PRO",
+        "chapters": {
+          "start": {
+            "number": 22
+          },
+          "end": {
+            "number": 24
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "PRO",
+        "chapters": {
+          "start": {
+            "number": 25
+          },
+          "end": {
+            "number": 26
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "PRO",
+        "chapters": {
+          "start": {
+            "number": 27
+          },
+          "end": {
+            "number": 29
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "PRO",
+        "chapters": {
+          "start": {
+            "number": 30
+          },
+          "end": {
+            "number": 31
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "ECC",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      }
+    ]
+  ]
+}

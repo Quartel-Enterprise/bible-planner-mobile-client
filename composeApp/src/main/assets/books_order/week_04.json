@@ -1,0 +1,103 @@
+{
+  "week": 4,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "JOB",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 5
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "JOB",
+        "chapters": {
+          "start": {
+            "number": 6
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "JOB",
+        "chapters": {
+          "start": {
+            "number": 10
+          },
+          "end": {
+            "number": 13
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "JOB",
+        "chapters": {
+          "start": {
+            "number": 14
+          },
+          "end": {
+            "number": 16
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "JOB",
+        "chapters": {
+          "start": {
+            "number": 17
+          },
+          "end": {
+            "number": 20
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "JOB",
+        "chapters": {
+          "start": {
+            "number": 21
+          },
+          "end": {
+            "number": 23
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "JOB",
+        "chapters": {
+          "start": {
+            "number": 24
+          },
+          "end": {
+            "number": 28
+          }
+        }
+      }
+    ]
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "week": 25,
+  "days": [
+    [
+      {
+        "day": 1,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 49
+          },
+          "end": {
+            "number": 53
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 2,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 54
+          },
+          "end": {
+            "number": 58
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 3,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 59
+          },
+          "end": {
+            "number": 63
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 4,
+        "book": "ISA",
+        "chapters": {
+          "start": {
+            "number": 64
+          },
+          "end": {
+            "number": 66
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 5,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 1
+          },
+          "end": {
+            "number": 3
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 6,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 4
+          },
+          "end": {
+            "number": 6
+          }
+        }
+      }
+    ],
+    [
+      {
+        "day": 7,
+        "book": "JER",
+        "chapters": {
+          "start": {
+            "number": 7
+          },
+          "end": {
+            "number": 9
+          }
+        }
+      }
+    ]
+  ]
+}
