@@ -9,12 +9,12 @@ import com.quare.bibleplanner.ui.theme.color.lightScheme
 @Composable
 fun AppTheme(
     getSpecificColors: @Composable ((Boolean) -> ColorScheme?)? = null,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val isDarkTheme = isAppInDarkTheme()
     MaterialTheme(
         colorScheme = getSpecificColors?.invoke(isDarkTheme) ?: getColorScheme(isDarkTheme),
-        content = content
+        content = content,
     )
 }
 

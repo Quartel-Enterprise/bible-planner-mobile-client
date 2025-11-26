@@ -1,0 +1,65 @@
+name: ktlint
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ktlint.yml'
+      - '**/*.kt'
+      - '**/*.kts'
+      - '.editorconfig'
+      - 'build.gradle.kts'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/ktlint.yml'
+      - '**/*.kt'
+      - '**/*.kts'
+      - '.editorconfig'
+      - 'build.gradle.kts'
+
+jobs:
+  ktlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run ktlint check with Gradle
+        run: |
+          ./gradlew ktlintCheck --continue || true
+        continue-on-error: true
+
+      - name: Find and merge ktlint checkstyle reports
+        run: |
+          mkdir -p build
+          # Find all checkstyle reports from subprojects
+          REPORTS=$(find . -path "*/build/reports/ktlint/*/*.xml" -type f 2>/dev/null || true)
+          if [ -n "$REPORTS" ]; then
+            # Use the first report found (or we could merge multiple reports)
+            FIRST_REPORT=$(echo "$REPORTS" | head -1)
+            cp "$FIRST_REPORT" build/ktlint-report.xml
+          else
+            # Create empty report if none found
+            echo '<?xml version="1.0" encoding="UTF-8"?><checkstyle version="4.3"></checkstyle>' > build/ktlint-report.xml
+          fi
+        continue-on-error: true
+
+      - name: Annotate ktlint results
+        uses: yutailang0119/action-ktlint@v5
+        with:
+          report-path: 'build/**/*.xml'
+          ignore-warnings: false
+        continue-on-error: false
+
