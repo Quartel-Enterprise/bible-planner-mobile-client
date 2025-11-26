@@ -12,6 +12,7 @@ gradle = "8.13.1"
 junit = "4.13.2"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
+ktlint = "14.0.1"
 
 [libraries]
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
@@ -35,3 +36,4 @@ kotlinMultiplatformConvention = { id = "kotlin-multiplatform-convention" }
 composeMultiplatformConvention = { id = "compose-multiplatform-convention" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
