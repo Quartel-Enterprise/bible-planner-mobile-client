@@ -1,4 +1,5 @@
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     alias(libs.plugins.composeHotReload) apply false
@@ -22,6 +23,10 @@ subprojects {
             exclude("**/generated/**")
             exclude("**/build/**")
             include("**/kotlin/**")
+        }
+
+        reporters {
+            reporter(ReporterType.CHECKSTYLE)
         }
     }
 }

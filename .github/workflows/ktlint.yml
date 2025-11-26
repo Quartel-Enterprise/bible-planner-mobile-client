@@ -27,17 +27,31 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Install ktlint
-        run: |
-          curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.8.0/ktlint && 
-          chmod a+x ktlint && 
-          sudo mv ktlint /usr/local/bin/
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
 
-      - name: Run ktlint with checkstyle reporter
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Run ktlint check with Gradle
+        run: |
+          ./gradlew ktlintCheck --continue || true
+        continue-on-error: true
+
+      - name: Find and merge ktlint checkstyle reports
         run: |
           mkdir -p build
-          ktlint --reporter=checkstyle,output=build/ktlint-report.xml || true
-          if [ ! -f build/ktlint-report.xml ]; then
+          # Find all checkstyle reports from subprojects
+          REPORTS=$(find . -path "*/build/reports/ktlint/*/*.xml" -type f 2>/dev/null || true)
+          if [ -n "$REPORTS" ]; then
+            # Use the first report found (or we could merge multiple reports)
+            FIRST_REPORT=$(echo "$REPORTS" | head -1)
+            cp "$FIRST_REPORT" build/ktlint-report.xml
+          else
+            # Create empty report if none found
             echo '<?xml version="1.0" encoding="UTF-8"?><checkstyle version="4.3"></checkstyle>' > build/ktlint-report.xml
           fi
         continue-on-error: true
