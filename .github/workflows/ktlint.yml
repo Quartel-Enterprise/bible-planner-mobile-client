@@ -37,13 +37,10 @@ jobs:
         run: |
           mkdir -p build
           ktlint --reporter=checkstyle,output=build/ktlint-report.xml || true
+          if [ ! -f build/ktlint-report.xml ]; then
+            echo '<?xml version="1.0" encoding="UTF-8"?><checkstyle version="4.3"></checkstyle>' > build/ktlint-report.xml
+          fi
         continue-on-error: true
-
-      - name: Generate ktlint report if not exists
-        if: "! -f build/ktlint-report.xml"
-        run: |
-          mkdir -p build
-          echo '<?xml version="1.0" encoding="UTF-8"?><checkstyle version="4.3"></checkstyle>' > build/ktlint-report.xml
 
       - name: Annotate ktlint results
         uses: yutailang0119/action-ktlint@v5
