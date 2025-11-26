@@ -17,9 +17,21 @@ android {
 // Add project-specific dependencies
 kotlin {
     sourceSets {
+        androidMain.dependencies {
+            // Koin
+            implementation(libs.koinAndroid)
+        }
         commonMain.dependencies {
-            // Theme
+            // Core
+            implementation(projects.core.navigation)
+            implementation(projects.core.provider.koin)
+
+            // UI
             implementation(projects.ui.theme)
+
+            // Koin
+            implementation(project.dependencies.platform(libs.koinBom))
+            implementation(libs.koinCore)
         }
     }
 }

@@ -13,6 +13,9 @@ junit = "4.13.2"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 ktlint = "14.0.1"
+kotlinSerializationJson = "1.9.0"
+navigationComposeMultiplatform = "2.9.1"
+koinVersion = "4.1.1"
 
 [libraries]
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
@@ -30,6 +33,19 @@ androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecyc
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 
+# Compose Multiplatform Navigation
+compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeMultiplatform" }
+
+# Serialization
+kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerializationJson" }
+
+# Koin
+koinBom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koinVersion" }
+koinAndroid = { group = "io.insert-koin", name = "koin-android" }
+koinCore = { group = "io.insert-koin", name = "koin-core" }
+koinCompose = { group = "io.insert-koin", name = "koin-compose" }
+koinComposeViewModel = { group = "io.insert-koin", name = "koin-compose-viewmodel" }
+
 [plugins]
 applicationConvention = { id = "application-convention" }
 kotlinMultiplatformConvention = { id = "kotlin-multiplatform-convention" }
@@ -37,3 +53,4 @@ composeMultiplatformConvention = { id = "compose-multiplatform-convention" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

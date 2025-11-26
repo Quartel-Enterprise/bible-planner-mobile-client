@@ -11,7 +11,7 @@ val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 kotlin {
     androidTarget()
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -21,9 +21,9 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
