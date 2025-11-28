@@ -11,14 +11,17 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanProgress
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanTypesSegmentedButtons
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
-import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiModel
+import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 
 @Composable
-internal fun LoadedReadingPlanContent(
+internal fun ReadingPlanContent(
     modifier: Modifier = Modifier,
-    data: ReadingPlanUiModel,
+    uiState: ReadingPlanUiState,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
+    val loadedUiState = uiState as? ReadingPlanUiState.Loaded
+    val isLoading = uiState is ReadingPlanUiState.Loading
+
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -29,7 +32,7 @@ internal fun LoadedReadingPlanContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                selectedReadingPlan = data.selectedReadingPlan,
+                selectedReadingPlan = uiState.selectedReadingPlan,
                 onPlanClick = {
                     onEvent(ReadingPlanUiEvent.OnPlanClick(it))
                 },
@@ -40,8 +43,15 @@ internal fun LoadedReadingPlanContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                progress = data.progress,
+                progress = loadedUiState?.data?.progress ?: 0f,
+                isLoading = isLoading
             )
+        }
+        item {
+            when (uiState) {
+                is ReadingPlanUiState.Loaded -> Unit
+                is ReadingPlanUiState.Loading -> LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }

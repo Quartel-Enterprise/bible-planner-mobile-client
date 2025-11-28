@@ -36,6 +36,9 @@ kotlin {
             implementation(projects.core.provider.koin)
             implementation(projects.core.provider.room)
 
+            // Compose
+            implementation(compose.runtime)
+
             // Navigation
             implementation(libs.compose.navigation)
         }

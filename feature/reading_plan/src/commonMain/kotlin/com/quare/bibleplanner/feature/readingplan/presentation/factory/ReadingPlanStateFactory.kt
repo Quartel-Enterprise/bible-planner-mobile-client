@@ -5,11 +5,18 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 
 internal class ReadingPlanStateFactory {
-    fun createLoaded(): ReadingPlanUiState.Loaded = ReadingPlanUiState.Loaded(
-        ReadingPlanUiModel(
-            selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
+
+    private val defaultPlan = ReadingPlanType.CHRONOLOGICAL
+
+    fun createLoaded(selectedReadingPlan: ReadingPlanType): ReadingPlanUiState.Loaded = ReadingPlanUiState.Loaded(
+        selectedReadingPlan = selectedReadingPlan,
+        data = ReadingPlanUiModel(
             weeks = emptyList(),
             progress = 0f,
         )
+    )
+
+    fun createLoading(): ReadingPlanUiState.Loading = ReadingPlanUiState.Loading(
+        selectedReadingPlan = defaultPlan,
     )
 }

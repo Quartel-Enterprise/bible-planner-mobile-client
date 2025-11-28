@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.androidCommonConfig)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
@@ -14,17 +16,23 @@ kotlin {
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "CoreBooks"
-            isStatic = true
+            // Use a dynamic framework so iOS can bundle and embed resources properly
+            // Static frameworks do not carry resource files into the app bundle
+            isStatic = false
         }
     }
 
     jvm()
-    
+
     sourceSets {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.provider.room)
+
+            // Compose
+            implementation(compose.runtime)
+            implementation(compose.components.resources)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
@@ -36,31 +44,10 @@ kotlin {
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
         }
-        
-        // Ensure iOS source sets include resources from commonMain
-        getByName("iosArm64Main") {
-            resources.srcDirs("src/commonMain/resources")
-        }
-        getByName("iosSimulatorArm64Main") {
-            resources.srcDirs("src/commonMain/resources")
-        }
+
     }
 }
 
 android {
     namespace = "com.quare.bibleplanner.core.books"
-}
-
-// Copy commonMain assets to androidMain before build
-tasks.register<Copy>("copyCommonMainAssets") {
-    from("src/commonMain/resources/assets")
-    into("src/androidMain/assets")
-    include("**/*.json")
-}
-
-// Ensure assets are copied before any Android build tasks
-afterEvaluate {
-    tasks.named("preBuild").configure {
-        dependsOn("copyCommonMainAssets")
-    }
 }

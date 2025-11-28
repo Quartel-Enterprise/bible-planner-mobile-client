@@ -15,26 +15,23 @@ internal class ReadingPlanViewModel(
     factory: ReadingPlanStateFactory,
     private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
 ) : ViewModel() {
-    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(ReadingPlanUiState.Loading)
+    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createLoading())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
-
-    private val loadedUiState: ReadingPlanUiState.Loaded get() = _uiState.value as ReadingPlanUiState.Loaded
 
     init {
         viewModelScope.launch {
             initializeBooksIfNeeded()
-            _uiState.update { factory.createLoaded() }
+            _uiState.update { factory.createLoaded(it.selectedReadingPlan) }
         }
     }
 
     fun onEvent(event: ReadingPlanUiEvent) {
         when (event) {
-            is ReadingPlanUiEvent.OnPlanClick -> _uiState.update {
-                loadedUiState.copy(
-                    data = loadedUiState.data.copy(
-                        selectedReadingPlan = event.type
-                    )
-                )
+            is ReadingPlanUiEvent.OnPlanClick -> _uiState.update { currentUiState ->
+                when(currentUiState) {
+                    is ReadingPlanUiState.Loaded -> currentUiState.copy(selectedReadingPlan = event.type)
+                    is ReadingPlanUiState.Loading -> currentUiState.copy(selectedReadingPlan = event.type)
+                }
             }
         }
     }

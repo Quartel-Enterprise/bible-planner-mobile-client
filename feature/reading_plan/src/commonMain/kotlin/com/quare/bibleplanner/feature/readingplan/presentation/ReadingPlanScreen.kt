@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.reading_plan
-import com.quare.bibleplanner.feature.readingplan.presentation.content.AnimatedReadingPlanContent
+import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanContent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import org.jetbrains.compose.resources.stringResource
@@ -31,9 +31,8 @@ internal fun ReadingPlanScreen(
             )
         },
     ) { paddingValues ->
-        AnimatedReadingPlanContent(
+        ReadingPlanContent(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(paddingValues),
             uiState = uiState,
             onEvent = onEvent,
