@@ -59,7 +59,11 @@ echo "📋 Running ktlint check..."
 echo ""
 
 # Run ktlint check (same as CI)
-./gradlew ktlintCheck --continue || true
+# Temporarily disable set -e to capture exit code and still collect reports
+set +e
+./gradlew ktlintCheck --continue
+KTLINT_EXIT_CODE=$?
+set -e
 
 echo ""
 echo "📊 Collecting ktlint reports..."
@@ -83,7 +87,14 @@ else
 fi
 
 echo ""
-echo "✨ CI simulation complete!"
+if [ $KTLINT_EXIT_CODE -ne 0 ]; then
+    echo "❌ ktlint found formatting errors. Please run './gradlew ktlintFormat' to fix them."
+    echo ""
+    echo "✨ CI simulation complete (with errors)!"
+    exit $KTLINT_EXIT_CODE
+else
+    echo "✨ CI simulation complete!"
+fi
 echo ""
 echo "To fix ktlint issues, run:"
 echo "  ./gradlew ktlintFormat"

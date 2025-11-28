@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ChaptersPlanDto(
     @SerialName("end") val end: EndChapterDto,
-    @SerialName("start") val start: StartChapterPlanDto,
+    @SerialName("start") val start: StartChapterPlanDto
 )
