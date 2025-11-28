@@ -1,10 +1,10 @@
-package com.quare.bibleplanner.core.plan.data.dto
+package com.quare.bibleplanner.core.books.data.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BookDataDto(
+data class ChapterDataDto(
     @SerialName("number") val number: Int,
     @SerialName("verses") val verses: Int,
 )

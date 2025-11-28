@@ -13,9 +13,7 @@ fun main() = application {
     initializeKoin(
         platformModules = listOf(
             module {
-                single {
-                    getDatabaseBuilder()
-                }
+                single { getDatabaseBuilder() }
             },
         ),
     )

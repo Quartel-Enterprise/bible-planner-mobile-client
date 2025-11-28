@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
+import bibleplanner.feature.reading_plan.generated.resources.loading
 import bibleplanner.feature.reading_plan.generated.resources.progress_label
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
@@ -18,6 +19,7 @@ import kotlin.math.round
 
 @Composable
 fun PlanProgress(
+    isLoading: Boolean,
     progress: Float,
     modifier: Modifier = Modifier,
 ) {
@@ -26,7 +28,11 @@ fun PlanProgress(
             Text(
                 text = stringResource(
                     Res.string.progress_label,
-                    progress.formatProgress(),
+                    if (isLoading) {
+                        stringResource(Res.string.loading)
+                    } else {
+                        progress.formatProgress()
+                    },
                 ),
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(8.dp),

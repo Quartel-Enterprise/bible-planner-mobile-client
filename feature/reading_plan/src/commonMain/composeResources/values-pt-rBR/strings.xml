@@ -3,4 +3,5 @@
     <string name="book_order">Ordem dos Livros</string>
     <string name="chronological_order">Ordem Cronológica</string>
     <string name="progress_label">Progresso: %1$d %</string>
+    <string name="loading">Carregando...</string>
 </resources>

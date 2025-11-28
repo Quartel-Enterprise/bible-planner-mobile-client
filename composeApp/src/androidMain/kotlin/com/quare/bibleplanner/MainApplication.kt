@@ -10,14 +10,14 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         val context = this@MainApplication
-        val androidRoomModule = module {
+        val androidModule = module {
             single { getDatabaseBuilder(context) }
         }
         initializeKoin(
             config = {
                 androidContext(context)
             },
-            platformModules = listOf(androidRoomModule),
+            platformModules = listOf(androidModule),
         )
     }
 }

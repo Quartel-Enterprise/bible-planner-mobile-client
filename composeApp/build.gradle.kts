@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -91,6 +92,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
             // Core
+            implementation(projects.core.books)
             implementation(projects.core.navigation)
             implementation(projects.core.provider.koin)
             implementation(projects.core.provider.room)
@@ -123,5 +125,12 @@ compose.desktop {
             packageName = "com.quare.bibleplanner"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+// Ensure resources from library modules are included
+tasks.named<KotlinJvmCompile>("compileKotlinJvm") {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }

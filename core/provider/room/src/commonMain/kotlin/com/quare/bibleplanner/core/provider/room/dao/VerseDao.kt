@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface VerseDao {
     @Query("SELECT * FROM verses WHERE chapterId = :chapterId ORDER BY number")
-    fun getVersesByChapterId(chapterId: Long): Flow<List<VerseEntity>>
+    fun getVersesByChapterIdFlow(chapterId: Long): Flow<List<VerseEntity>>
 
     @Query("SELECT * FROM verses WHERE chapterId = :chapterId ORDER BY number")
-    suspend fun getVersesByChapterIdSuspend(chapterId: Long): List<VerseEntity>
+    suspend fun getVersesByChapterId(chapterId: Long): List<VerseEntity>
 
     @Query("SELECT * FROM verses WHERE id = :verseId")
     fun getVerseById(verseId: Long): Flow<VerseEntity?>

@@ -10,9 +10,7 @@ fun MainViewController() = ComposeUIViewController(
         initializeKoin(
             platformModules = listOf(
                 module {
-                    single {
-                        getDatabaseBuilder()
-                    }
+                    single { getDatabaseBuilder() }
                 },
             ),
         )
