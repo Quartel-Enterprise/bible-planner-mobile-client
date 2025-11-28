@@ -7,13 +7,13 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
-import com.quare.bibleplanner.core.provider.room.entity.BookWithChapters
+import com.quare.bibleplanner.core.provider.room.entity.BookWithChaptersData
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BookDao {
     @Query("SELECT * FROM books")
-    fun getAllBooks(): Flow<List<BookEntity>>
+    fun getAllBooksFlow(): Flow<List<BookEntity>>
 
     @Query("SELECT * FROM books WHERE id = :bookId")
     fun getBookById(bookId: String): Flow<BookEntity?>
@@ -23,15 +23,19 @@ interface BookDao {
 
     @Transaction
     @Query("SELECT * FROM books")
-    fun getAllBooksWithChapters(): Flow<List<BookWithChapters>>
+    suspend fun getAllBooksWithChaptersData(): List<BookWithChaptersData>
+
+    @Transaction
+    @Query("SELECT * FROM books")
+    fun getAllBooksWithChaptersDataFlow(): Flow<List<BookWithChaptersData>>
 
     @Transaction
     @Query("SELECT * FROM books WHERE id = :bookId")
-    fun getBookWithChaptersById(bookId: String): Flow<BookWithChapters?>
+    fun getBookWithChaptersByIdFlow(bookId: String): Flow<BookWithChaptersData?>
 
     @Transaction
     @Query("SELECT * FROM books WHERE id = :bookId")
-    suspend fun getBookWithChaptersByIdSuspend(bookId: String): BookWithChapters?
+    suspend fun getBookWithChaptersById(bookId: String): BookWithChaptersData?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBook(book: BookEntity)

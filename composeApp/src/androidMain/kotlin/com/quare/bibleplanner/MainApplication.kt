@@ -1,6 +1,8 @@
 package com.quare.bibleplanner
 
 import android.app.Application
+import com.quare.bibleplanner.core.books.data.datasource.AndroidResourceReader
+import com.quare.bibleplanner.core.books.data.datasource.ResourceReader
 import com.quare.bibleplanner.core.provider.koin.initializeKoin
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import org.koin.android.ext.koin.androidContext
@@ -10,14 +12,15 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         val context = this@MainApplication
-        val androidRoomModule = module {
+        val androidModule = module {
             single { getDatabaseBuilder(context) }
+            single<ResourceReader> { AndroidResourceReader(context) }
         }
         initializeKoin(
             config = {
                 androidContext(context)
             },
-            platformModules = listOf(androidRoomModule),
+            platformModules = listOf(androidModule),
         )
     }
 }

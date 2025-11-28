@@ -1,22 +1,41 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 internal class ReadingPlanViewModel(
     factory: ReadingPlanStateFactory,
+    private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
 ) : ViewModel() {
-    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.create())
+    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(ReadingPlanUiState.Loading)
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
+
+    private val loadedUiState: ReadingPlanUiState.Loaded get() = _uiState.value as ReadingPlanUiState.Loaded
+
+    init {
+        viewModelScope.launch {
+            initializeBooksIfNeeded()
+            _uiState.update { factory.createLoaded() }
+        }
+    }
 
     fun onEvent(event: ReadingPlanUiEvent) {
         when (event) {
-            is ReadingPlanUiEvent.OnPlanClick -> _uiState.update { it.copy(selectedReadingPlan = event.type) }
+            is ReadingPlanUiEvent.OnPlanClick -> _uiState.update {
+                loadedUiState.copy(
+                    data = loadedUiState.data.copy(
+                        selectedReadingPlan = event.type
+                    )
+                )
+            }
         }
     }
 }

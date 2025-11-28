@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ChapterDao {
     @Query("SELECT * FROM chapters WHERE bookId = :bookId ORDER BY number")
-    fun getChaptersByBookId(bookId: String): Flow<List<ChapterEntity>>
+    fun getChaptersByBookIdFlow(bookId: String): Flow<List<ChapterEntity>>
 
     @Query("SELECT * FROM chapters WHERE bookId = :bookId ORDER BY number")
-    suspend fun getChaptersByBookIdSuspend(bookId: String): List<ChapterEntity>
+    suspend fun getChaptersByBookId(bookId: String): List<ChapterEntity>
 
     @Query("SELECT * FROM chapters WHERE id = :chapterId")
-    fun getChapterById(chapterId: Long): Flow<ChapterEntity?>
+    fun getChapterByIdFlow(chapterId: Long): Flow<ChapterEntity?>
 
     @Query("SELECT * FROM chapters WHERE id = :chapterId")
-    suspend fun getChapterByIdSuspend(chapterId: Long): ChapterEntity?
+    suspend fun getChapterById(chapterId: Long): ChapterEntity?
 
     @Query("SELECT * FROM chapters WHERE bookId = :bookId AND number = :chapterNumber")
     suspend fun getChapterByBookIdAndNumber(

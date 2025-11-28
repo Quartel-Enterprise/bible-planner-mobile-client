@@ -1,23 +1,16 @@
-package com.quare.bibleplanner.core.books.data
+package com.quare.bibleplanner.core.books.data.mapper
 
-import com.quare.bibleplanner.core.books.domain.BooksRepository
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.VerseModel
-import com.quare.bibleplanner.core.provider.room.dao.BookDao
-import com.quare.bibleplanner.core.provider.room.entity.BookWithChapters
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import com.quare.bibleplanner.core.provider.room.entity.BookWithChaptersData
 
-class BooksRepositoryImpl(private val dao: BookDao) : BooksRepository {
-    override fun getBooksFlow(): Flow<List<BookDataModel>> = dao
-        .getAllBooksWithChapters()
-        .map { bookWithChapters: List<BookWithChapters> ->
-            bookWithChapters.map { it.toModel() }
-        }
+class BooksWithChapterMapper {
+    fun map(bookWithChapterData: List<BookWithChaptersData>): List<BookDataModel> =
+        bookWithChapterData.map { it.toModel() }
 
-    private fun BookWithChapters.toModel(): BookDataModel {
+    private fun BookWithChaptersData.toModel(): BookDataModel {
         val chaptersModel = chapters.map {
             val versesModel = it.verses.map { verseModel ->
                 VerseModel(

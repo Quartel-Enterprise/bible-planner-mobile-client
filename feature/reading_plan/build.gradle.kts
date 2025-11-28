@@ -28,6 +28,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.books)
             implementation(projects.core.model)
 
             // Compose

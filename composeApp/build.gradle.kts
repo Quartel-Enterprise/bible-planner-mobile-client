@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -91,6 +92,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
             // Core
+            implementation(projects.core.books)
             implementation(projects.core.navigation)
             implementation(projects.core.provider.koin)
             implementation(projects.core.provider.room)
@@ -110,6 +112,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
+        
     }
 }
 
@@ -123,5 +126,38 @@ compose.desktop {
             packageName = "com.quare.bibleplanner"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+// Copy commonMain assets from core:books to iosMain before build
+tasks.register<Copy>("copyCoreBooksAssetsToIos") {
+    from(project(":core:books").projectDir.resolve("src/commonMain/resources/assets"))
+    into(projectDir.resolve("src/iosMain/resources/assets"))
+    include("**/*.json")
+}
+
+// Ensure assets are copied before iOS build tasks
+afterEvaluate {
+    // Make iOS compilation tasks depend on copying assets
+    tasks.matching { 
+        it.name.contains("ios") && (
+            it.name.contains("compile") || 
+            it.name.contains("link") ||
+            it.name.contains("assemble")
+        )
+    }.configureEach {
+        dependsOn("copyCoreBooksAssetsToIos")
+    }
+    
+    // Also run before any framework tasks
+    tasks.matching { it.name.contains("framework") && it.name.contains("ios") }.configureEach {
+        dependsOn("copyCoreBooksAssetsToIos")
+    }
+}
+
+// Ensure resources from library modules are included
+tasks.named<KotlinJvmCompile>("compileKotlinJvm") {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }

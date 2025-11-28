@@ -3,7 +3,7 @@ package com.quare.bibleplanner.core.provider.room.entity
 import androidx.room.Embedded
 import androidx.room.Relation
 
-data class BookWithChapters(
+data class BookWithChaptersData(
     @Embedded
     val book: BookEntity,
     @Relation(
