@@ -33,4 +33,42 @@ subprojects {
             reporter(ReporterType.CHECKSTYLE)
         }
     }
+
+    // Ensure KSP code generation runs before ktlint for projects with KSP
+    // This is important for Room's DatabaseConstructor and other generated code
+    afterEvaluate {
+        val ktlintCheckTask = tasks.findByName("ktlintCheck")
+        if (ktlintCheckTask != null) {
+            // Make ktlintCheck depend on KSP tasks if they exist
+            // Priority: Android and JVM first (don't require native toolchains in CI)
+            // These are the most important for generating code that ktlint needs
+            val primaryKspTaskNames = listOf(
+                "kspKotlinAndroid",
+                "kspKotlinJvm",
+            )
+            
+            // Also try iOS targets, but they may fail in CI without native toolchains
+            val secondaryKspTaskNames = listOf(
+                "kspKotlinMetadata",
+                "kspKotlinIosArm64",
+                "kspKotlinIosSimulatorArm64",
+            )
+            
+            // Add dependencies for primary targets (required)
+            primaryKspTaskNames.forEach { taskName ->
+                val kspTask = tasks.findByName(taskName)
+                if (kspTask != null) {
+                    ktlintCheckTask.dependsOn(kspTask)
+                }
+            }
+            
+            // Add dependencies for secondary targets (optional - may fail in CI)
+            secondaryKspTaskNames.forEach { taskName ->
+                val kspTask = tasks.findByName(taskName)
+                if (kspTask != null) {
+                    ktlintCheckTask.dependsOn(kspTask)
+                }
+            }
+        }
+    }
 }
