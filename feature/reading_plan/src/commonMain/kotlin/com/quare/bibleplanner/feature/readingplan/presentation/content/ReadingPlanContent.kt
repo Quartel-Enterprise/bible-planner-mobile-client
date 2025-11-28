@@ -44,7 +44,7 @@ internal fun ReadingPlanContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 progress = loadedUiState?.data?.progress ?: 0f,
-                isLoading = isLoading
+                isLoading = isLoading,
             )
         }
         item {

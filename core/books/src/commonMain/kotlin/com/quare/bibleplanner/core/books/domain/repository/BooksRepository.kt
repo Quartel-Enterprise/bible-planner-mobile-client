@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface BooksRepository {
     fun getBooksFlow(): Flow<List<BookDataModel>>
+
     suspend fun getBooks(): List<BookDataModel>
+
     suspend fun initializeDatabase()
 }

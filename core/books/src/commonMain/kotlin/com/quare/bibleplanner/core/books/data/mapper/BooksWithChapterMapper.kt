@@ -15,7 +15,7 @@ class BooksWithChapterMapper {
             val versesModel = it.verses.map { verseModel ->
                 VerseModel(
                     number = verseModel.number,
-                    isRead = verseModel.isRead
+                    isRead = verseModel.isRead,
                 )
             }
             BookChapterModel(
@@ -27,7 +27,7 @@ class BooksWithChapterMapper {
         return BookDataModel(
             id = BookId.valueOf(book.id),
             chapters = chaptersModel,
-            isRead = book.isRead
+            isRead = book.isRead,
         )
     }
 }

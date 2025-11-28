@@ -28,7 +28,7 @@ internal class ReadingPlanViewModel(
     fun onEvent(event: ReadingPlanUiEvent) {
         when (event) {
             is ReadingPlanUiEvent.OnPlanClick -> _uiState.update { currentUiState ->
-                when(currentUiState) {
+                when (currentUiState) {
                     is ReadingPlanUiState.Loaded -> currentUiState.copy(selectedReadingPlan = event.type)
                     is ReadingPlanUiState.Loading -> currentUiState.copy(selectedReadingPlan = event.type)
                 }

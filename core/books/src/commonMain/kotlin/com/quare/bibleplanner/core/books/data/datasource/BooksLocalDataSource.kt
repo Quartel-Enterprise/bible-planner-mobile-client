@@ -26,8 +26,7 @@ class BooksLocalDataSource(
                 async {
                     readBookFromFile(fileName)
                 }
-            }
-            .awaitAll()
+            }.awaitAll()
             .filterNotNull()
             .sortedBy { it.id.ordinal }
     }

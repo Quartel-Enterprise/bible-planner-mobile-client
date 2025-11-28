@@ -44,7 +44,6 @@ kotlin {
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
         }
-
     }
 }
 

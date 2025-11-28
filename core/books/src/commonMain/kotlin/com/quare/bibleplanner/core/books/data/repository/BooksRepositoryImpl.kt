@@ -18,9 +18,8 @@ class BooksRepositoryImpl(
     private val bookDao: BookDao,
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
-    private val booksWithChapterMapper: BooksWithChapterMapper
+    private val booksWithChapterMapper: BooksWithChapterMapper,
 ) : BooksRepository {
-
     override fun getBooksFlow(): Flow<List<BookDataModel>> = bookDao
         .getAllBooksWithChaptersDataFlow()
         .map(booksWithChapterMapper::map)
