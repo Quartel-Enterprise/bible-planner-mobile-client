@@ -83,6 +83,22 @@
           "name": "NUM",
           "chapters": {
             "start": {
+              "number": 16
+            },
+            "end": {
+              "number": 17
+            }
+          }
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "books": [
+        {
+          "name": "NUM",
+          "chapters": {
+            "start": {
               "number": 18
             },
             "end": {
@@ -93,7 +109,7 @@
       ]
     },
     {
-      "day": 6,
+      "day": 7,
       "books": [
         {
           "name": "NUM",

@@ -123,7 +123,14 @@ private fun formatDayReading(passages: List<PassagePlanModel>): String {
     for (passage in passages) {
         val bookName = passage.bookId.getBookName()
         val chapterRanges = formatChapterRanges(passage.chapters)
-        passageTexts.add("$bookName $chapterRanges")
+        // If no chapters, show just the book name (e.g., "Obadiah")
+        // Otherwise show book name with chapter ranges (e.g., "2 Samuel 5:1-10")
+        val passageText = if (chapterRanges.isEmpty()) {
+            bookName
+        } else {
+            "$bookName $chapterRanges"
+        }
+        passageTexts.add(passageText)
     }
     return passageTexts.joinToString(", ")
 }
@@ -131,41 +138,111 @@ private fun formatDayReading(passages: List<PassagePlanModel>): String {
 private fun formatChapterRanges(chapters: List<ChapterPlanModel>): String {
     if (chapters.isEmpty()) return ""
 
-    val chapterNumbers = chapters.map { it.number }
+    val sortedChapters = chapters.sortedBy { it.number }
     val ranges = mutableListOf<String>()
 
-    var start: Int? = null
-    var end: Int? = null
+    var currentRangeStart: ChapterPlanModel? = null
+    var currentRangeEnd: ChapterPlanModel? = null
 
-    for (chapterNumber in chapterNumbers.sorted()) {
+    for (chapter in sortedChapters) {
         when {
-            start == null -> {
-                start = chapterNumber
-                end = chapterNumber
+            currentRangeStart == null -> {
+                // Start a new range
+                currentRangeStart = chapter
+                currentRangeEnd = chapter
             }
 
-            chapterNumber == end!! + 1 -> {
-                end = chapterNumber
+            canGroupChapters(currentRangeEnd!!, chapter) -> {
+                // Extend the current range
+                currentRangeEnd = chapter
             }
 
             else -> {
-                ranges.add(formatRange(start, end))
-                start = chapterNumber
-                end = chapterNumber
+                // Finish current range and start a new one
+                ranges.add(formatChapterRange(currentRangeStart, currentRangeEnd))
+                currentRangeStart = chapter
+                currentRangeEnd = chapter
             }
         }
     }
-    if (start != null) {
-        ranges.add(formatRange(start, end))
+
+    // Add the last range
+    if (currentRangeStart != null) {
+        ranges.add(formatChapterRange(currentRangeStart, currentRangeEnd))
     }
 
     return ranges.joinToString(", ")
 }
 
-private fun formatRange(
-    start: Int,
-    end: Int?,
-): String = when {
-    end == null || start == end -> "$start"
-    else -> "$start-$end"
+private fun canGroupChapters(
+    first: ChapterPlanModel,
+    second: ChapterPlanModel,
+): Boolean {
+    // Can only group if chapters are consecutive
+    if (second.number != first.number + 1) return false
+
+    // Can group if neither has specific verse ranges
+    val firstHasVerses = first.startVerse != null || first.endVerse != null
+    val secondHasVerses = second.startVerse != null || second.endVerse != null
+
+    // Only group if both don't have verses (full chapters)
+    return !firstHasVerses && !secondHasVerses
+}
+
+private fun formatChapterRange(
+    start: ChapterPlanModel,
+    end: ChapterPlanModel?,
+): String {
+    val endChapter = end ?: start
+    val startVerseStr = formatVerseRange(start.startVerse, start.endVerse)
+    val endVerseStr = formatVerseRange(endChapter.startVerse, endChapter.endVerse)
+
+    return when {
+        start.number == endChapter.number -> {
+            // Single chapter
+            if (startVerseStr != null) {
+                "${start.number}:$startVerseStr"
+            } else {
+                "${start.number}"
+            }
+        }
+
+        startVerseStr != null && endVerseStr != null -> {
+            // Range with verses: "5:1-10-12:5-8"
+            "${start.number}:$startVerseStr-${endChapter.number}:$endVerseStr"
+        }
+
+        startVerseStr != null -> {
+            // Start has verses, end doesn't: "5:1-10-12"
+            "${start.number}:$startVerseStr-${endChapter.number}"
+        }
+
+        endVerseStr != null -> {
+            // End has verses, start doesn't: "5-12:5-8"
+            "${start.number}-${endChapter.number}:$endVerseStr"
+        }
+
+        else -> {
+            // No verses: "5-12"
+            "${start.number}-${endChapter.number}"
+        }
+    }
+}
+
+private fun formatVerseRange(startVerse: Int?, endVerse: Int?): String? {
+    return when {
+        startVerse != null && endVerse != null -> {
+            if (startVerse == endVerse) {
+                "$startVerse"
+            } else {
+                "$startVerse-$endVerse"
+            }
+        }
+
+        startVerse != null -> "$startVerse"
+
+        endVerse != null -> "-$endVerse"
+
+        else -> null
+    }
 }

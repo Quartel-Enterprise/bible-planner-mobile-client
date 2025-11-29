@@ -31,11 +31,19 @@ class WeekPlanDtoToModelMapper(
     private fun mapBook(bookDto: BookPlanDto): PassagePlanModel? {
         val bookId = mapBookNameToBookId(bookDto.name) ?: return null
 
+        // If chapters is null, create a passage with empty chapters list
+        // This represents reading the entire book (e.g., Obadiah - single chapter book)
+        val chaptersDto = bookDto.chapters ?: return PassagePlanModel(
+            bookId = bookId,
+            chapters = emptyList(),
+            isRead = false,
+        )
+
         val chapters = buildList {
-            val startChapter = bookDto.chapters.start.number
-            val endChapter = bookDto.chapters.end.number
-            val startVerse = bookDto.chapters.start.verse
-            val endVerse = bookDto.chapters.end.verse
+            val startChapter = chaptersDto.start.number
+            val endChapter = chaptersDto.end.number
+            val startVerse = chaptersDto.start.verse
+            val endVerse = chaptersDto.end.verse
 
             if (startChapter == endChapter) {
                 // Single chapter range
@@ -49,11 +57,11 @@ class WeekPlanDtoToModelMapper(
             } else {
                 // Multiple chapters
                 (startChapter..endChapter).forEachIndexed { index, chapterNumber ->
-                    val chapterStartVerse = if (index == 0) startVerse else DEFAULT_START_VERSE
+                    val chapterStartVerse = if (index == 0) startVerse else null
                     val chapterEndVerse = if (index == (endChapter - startChapter)) {
                         endVerse
                     } else {
-                        DEFAULT_END_VERSE
+                        null
                     }
 
                     add(
@@ -76,9 +84,4 @@ class WeekPlanDtoToModelMapper(
 
     private fun mapBookNameToBookId(bookName: String): BookId? =
         bookMapsProvider.bookMaps.firstNotNullOfOrNull { it[bookName] }
-
-    companion object {
-        private const val DEFAULT_START_VERSE = 1
-        private const val DEFAULT_END_VERSE = Int.MAX_VALUE // Will be updated when book data is available
-    }
 }

@@ -64,8 +64,13 @@ class GetPlansByWeekUseCase(
     ): PassagePlanModel {
         val book = books.find { it.id == passage.bookId } ?: return passage.copy(isRead = false)
 
-        val allChaptersRead = passage.chapters.all { chapterPlan ->
-            isChapterPlanRead(chapterPlan, book)
+        // If no chapters specified (empty list), check if entire book is read
+        val allChaptersRead = if (passage.chapters.isEmpty()) {
+            book.isRead
+        } else {
+            passage.chapters.all { chapterPlan ->
+                isChapterPlanRead(chapterPlan, book)
+            }
         }
 
         return passage.copy(isRead = allChaptersRead)
