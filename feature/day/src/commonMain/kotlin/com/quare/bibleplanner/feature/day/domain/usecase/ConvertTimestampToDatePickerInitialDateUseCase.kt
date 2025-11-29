@@ -20,7 +20,7 @@ internal class ConvertTimestampToDatePickerInitialDateUseCase {
     operator fun invoke(timestamp: Long): Long {
         // Get the local timezone once
         val localTimeZone = TimeZone.currentSystemDefault()
-        
+
         // Convert timestamp to LocalDateTime in local timezone to get the date
         val localDateTime = Instant
             .fromEpochMilliseconds(timestamp)
@@ -35,4 +35,3 @@ internal class ConvertTimestampToDatePickerInitialDateUseCase {
         return localMidnight.toEpochMilliseconds()
     }
 }
-

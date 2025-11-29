@@ -26,4 +26,3 @@ internal class GetFinalTimestampAfterEditionUseCase {
         return finalInstant.toEpochMilliseconds()
     }
 }
-

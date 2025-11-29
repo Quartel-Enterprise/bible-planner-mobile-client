@@ -28,4 +28,3 @@ kotlin {
 android {
     namespace = "com.quare.bibleplanner.core.utils"
 }
-

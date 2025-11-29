@@ -14,7 +14,7 @@ class UpdateDayReadTimestampUseCase(
             weekNumber = weekNumber,
             dayNumber = dayNumber,
             isRead = true,
-            readTimestamp = readTimestamp
+            readTimestamp = readTimestamp,
         )
     }
 }

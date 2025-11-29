@@ -139,7 +139,6 @@ internal class DayViewModel(
         }
     }
 
-
     private fun onDayReadToggle(event: DayUiEvent.OnDayReadToggle) {
         viewModelScope.launch {
             useCases.updateDayReadStatus(

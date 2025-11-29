@@ -11,4 +11,3 @@ fun LocalDateTime.toLocalDate(): LocalDate = LocalDate(
     month = month,
     day = day,
 )
-
