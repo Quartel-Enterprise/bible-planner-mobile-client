@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanProgress
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanTypesSegmentedButtons
 import com.quare.bibleplanner.feature.readingplan.presentation.component.WeekPlanItem
@@ -52,25 +51,26 @@ internal fun ReadingPlanContent(
         }
         when (uiState) {
             is ReadingPlanUiState.Loaded -> {
-                val selectedWeeks = when (uiState.selectedReadingPlan) {
-                    ReadingPlanType.CHRONOLOGICAL -> uiState.plansModel.chronologicalOrder
-                    ReadingPlanType.BOOKS -> uiState.plansModel.booksOrder
-                }
-
                 items(
-                    items = selectedWeeks,
-                    key = { week -> week.number },
-                ) { week ->
+                    items = uiState.weekPlans,
+                    key = { weekPresentation -> weekPresentation.weekPlan.number },
+                ) { weekPresentation ->
                     WeekPlanItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
-                        week = week,
+                        weekPresentation = weekPresentation,
+                        onExpandClick = {
+                            onEvent(ReadingPlanUiEvent.OnWeekExpandClick(weekPresentation.weekPlan.number))
+                        },
                     )
                 }
             }
-            is ReadingPlanUiState.Loading -> item {
-                LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
+
+            is ReadingPlanUiState.Loading -> {
+                item {
+                    LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
+                }
             }
         }
     }

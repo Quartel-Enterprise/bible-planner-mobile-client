@@ -16,10 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -30,27 +26,29 @@ import bibleplanner.feature.reading_plan.generated.resources.week_complete
 import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
-import com.quare.bibleplanner.core.model.plan.WeekPlanModel
+import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 import com.quare.bibleplanner.feature.readingplan.presentation.util.getBookName
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun WeekPlanItem(
     modifier: Modifier = Modifier,
-    week: WeekPlanModel,
+    weekPresentation: WeekPlanPresentationModel,
+    onExpandClick: () -> Unit,
 ) {
-    var isExpanded by remember(week.number) { mutableStateOf(week.number == 1) }
-    val readDaysCount = week.days.count { it.isRead }
-    val totalDays = week.days.size
+    val isExpanded = weekPresentation.isExpanded
+    val readDaysCount = weekPresentation.readDaysCount
+    val totalDays = weekPresentation.totalDays
+    val week = weekPresentation.weekPlan
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { isExpanded = !isExpanded }
+                .clickable(onClick = onExpandClick)
                 .padding(vertical = 12.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -232,20 +230,27 @@ private fun formatChapterRange(
     }
 }
 
-private fun formatVerseRange(startVerse: Int?, endVerse: Int?): String? {
-    return when {
-        startVerse != null && endVerse != null -> {
-            if (startVerse == endVerse) {
-                "$startVerse"
-            } else {
-                "$startVerse-$endVerse"
-            }
+private fun formatVerseRange(
+    startVerse: Int?,
+    endVerse: Int?,
+): String? = when {
+    startVerse != null && endVerse != null -> {
+        if (startVerse == endVerse) {
+            "$startVerse"
+        } else {
+            "$startVerse-$endVerse"
         }
+    }
 
-        startVerse != null -> "$startVerse"
+    startVerse != null -> {
+        "$startVerse"
+    }
 
-        endVerse != null -> "-$endVerse"
+    endVerse != null -> {
+        "-$endVerse"
+    }
 
-        else -> null
+    else -> {
+        null
     }
 }
