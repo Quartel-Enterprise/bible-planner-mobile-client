@@ -4,12 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanProgress
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanTypesSegmentedButtons
+import com.quare.bibleplanner.feature.readingplan.presentation.component.WeekPlanItem
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 
@@ -43,14 +46,30 @@ internal fun ReadingPlanContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                progress = loadedUiState?.data?.progress ?: 0f,
+                progress = loadedUiState?.progress ?: 0f,
                 isLoading = isLoading,
             )
         }
-        item {
-            when (uiState) {
-                is ReadingPlanUiState.Loaded -> Unit
-                is ReadingPlanUiState.Loading -> LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
+        when (uiState) {
+            is ReadingPlanUiState.Loaded -> {
+                val selectedWeeks = when (uiState.selectedReadingPlan) {
+                    ReadingPlanType.CHRONOLOGICAL -> uiState.plansModel.chronologicalOrder
+                    ReadingPlanType.BOOKS -> uiState.plansModel.booksOrder
+                }
+
+                items(
+                    items = selectedWeeks,
+                    key = { week -> week.number },
+                ) { week ->
+                    WeekPlanItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        week = week,
+                    )
+                }
+            }
+
+            is ReadingPlanUiState.Loading -> {
+                item { LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth()) }
             }
         }
     }

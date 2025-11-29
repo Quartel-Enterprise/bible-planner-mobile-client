@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidCommonConfig)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -37,6 +38,12 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+
+            // Serialization
+            implementation(libs.kotlin.serialization.json)
+
+            // Coroutines
+            implementation(libs.kotlinx.coroutines.core)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

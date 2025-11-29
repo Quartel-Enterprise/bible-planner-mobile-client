@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StartChapterPlanDto(
     @SerialName("number") val number: Int,
-    @SerialName("verse") val verse: Int,
+    @SerialName("verse") val verse: Int? = null,
 )

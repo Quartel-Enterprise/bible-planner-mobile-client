@@ -29,6 +29,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.books)
+            implementation(projects.core.plan)
             implementation(projects.core.model)
 
             // Compose
@@ -36,6 +37,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
 
             // Navigation
