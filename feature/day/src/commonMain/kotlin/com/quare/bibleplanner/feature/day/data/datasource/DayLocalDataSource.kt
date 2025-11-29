@@ -23,6 +23,18 @@ class DayLocalDataSource(
         isRead: Boolean,
         readTimestamp: Long?,
     ) {
-        dayDao.updateDayReadStatus(weekNumber, dayNumber, isRead, readTimestamp)
+        val existingDay = dayDao.getDayByWeekAndDay(weekNumber, dayNumber)
+        if (existingDay != null) {
+            dayDao.updateDayReadStatus(weekNumber, dayNumber, isRead, readTimestamp)
+        } else {
+            dayDao.insertDay(
+                DayEntity(
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
+                    isRead = isRead,
+                    readTimestamp = readTimestamp,
+                ),
+            )
+        }
     }
 }

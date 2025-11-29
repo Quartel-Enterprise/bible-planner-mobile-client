@@ -12,14 +12,24 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import bibleplanner.feature.day.generated.resources.Res
+import bibleplanner.feature.day.generated.resources.completed_date
+import bibleplanner.feature.day.generated.resources.edit
+import bibleplanner.feature.day.generated.resources.mark_day_as_read
+import bibleplanner.feature.day.generated.resources.no_date_set
+import com.quare.bibleplanner.ui.utils.DateTimePickerDialog
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalTime::class)
 @Composable
@@ -30,6 +40,19 @@ internal fun DayReadSection(
     onEditDate: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    if (showDatePicker) {
+        DateTimePickerDialog(
+            initialTimestamp = readTimestamp,
+            onDismiss = { showDatePicker = false },
+            onConfirm = { timestamp ->
+                onEditDate(timestamp)
+                showDatePicker = false
+            },
+        )
+    }
+
     Column(
         modifier = modifier.padding(vertical = 16.dp),
     ) {
@@ -41,7 +64,7 @@ internal fun DayReadSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Mark day as read",
+                text = stringResource(Res.string.mark_day_as_read),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.weight(1f),
             )
@@ -53,36 +76,37 @@ internal fun DayReadSection(
 
         // Completed date section - show when day is marked as read
         if (isRead) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    imageVector = Icons.Default.CalendarToday,
-                    contentDescription = "Calendar",
-                    modifier = Modifier.padding(end = 8.dp),
-                )
                 Text(
-                    text = if (readTimestamp != null) {
-                        formatReadDate(readTimestamp)
-                    } else {
-                        // If no timestamp, use current time for display
-                        formatReadDate(Clock.System.now().toEpochMilliseconds())
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f),
+                    text = stringResource(Res.string.completed_date),
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
-                TextButton(
-                    onClick = {
-                        // TODO: Open date picker
-                        // For now, update to current time
-                        val timestamp = Clock.System.now().toEpochMilliseconds()
-                        onEditDate(timestamp)
-                    },
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text("Edit")
+                    Icon(
+                        imageVector = Icons.Default.CalendarToday,
+                        contentDescription = "Calendar",
+                        modifier = Modifier.padding(end = 8.dp),
+                    )
+                    Text(
+                        text = readTimestamp?.let { formatReadDate(it) } ?: stringResource(Res.string.no_date_set),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    TextButton(
+                        onClick = {
+                            showDatePicker = true
+                        },
+                    ) {
+                        Text(stringResource(Res.string.edit))
+                    }
                 }
             }
         }

@@ -4,5 +4,9 @@
     <string name="day_week_title">Day %1$d — Week %2$d</string>
     <string name="passages_completed">%1$d/%2$d passages completed</string>
     <string name="loading">Loading...</string>
+    <string name="no_date_set">No date set</string>
+    <string name="mark_day_as_read">Mark day as read</string>
+    <string name="edit">Edit</string>
+    <string name="completed_date">Completed date</string>
 </resources>
 

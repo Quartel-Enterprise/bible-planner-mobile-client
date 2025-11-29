@@ -26,6 +26,9 @@ kotlin {
             // View Model
             implementation(libs.androidx.lifecycle.viewmodelCompose)
 
+            // DateTime
+            implementation(libs.kotlinx.datetime)
+
             // Compose
             implementation(compose.runtime)
             implementation(compose.foundation)
