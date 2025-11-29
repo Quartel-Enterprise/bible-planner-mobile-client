@@ -62,14 +62,15 @@ internal fun ReadingPlanContent(
                     key = { week -> week.number },
                 ) { week ->
                     WeekPlanItem(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         week = week,
                     )
                 }
             }
-
-            is ReadingPlanUiState.Loading -> {
-                item { LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth()) }
+            is ReadingPlanUiState.Loading -> item {
+                LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
             }
         }
     }

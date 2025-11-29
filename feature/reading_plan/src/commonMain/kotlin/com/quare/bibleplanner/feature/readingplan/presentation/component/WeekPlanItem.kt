@@ -43,7 +43,10 @@ internal fun WeekPlanItem(
     val readDaysCount = week.days.count { it.isRead }
     val totalDays = week.days.size
 
-    Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
