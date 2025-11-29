@@ -33,7 +33,10 @@ import kotlinx.coroutines.flow.collectLatest
  *             Use this to perform side effects in response to events.
  */
 @Composable
-fun <T> ActionCollector(flow: Flow<T>, emit: suspend (T) -> Unit) {
+fun <T> ActionCollector(
+    flow: Flow<T>,
+    emit: suspend (T) -> Unit,
+) {
     LaunchedEffect(key1 = Unit) {
         flow.collectLatest {
             emit(it)

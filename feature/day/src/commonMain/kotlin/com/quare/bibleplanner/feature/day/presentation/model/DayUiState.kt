@@ -10,5 +10,7 @@ internal sealed interface DayUiState {
         val day: DayModel,
         val weekNumber: Int,
         val books: List<BookDataModel>,
+        val datePickerUiState: DatePickerUiState,
+        val formattedReadDate: String?,
     ) : DayUiState
 }

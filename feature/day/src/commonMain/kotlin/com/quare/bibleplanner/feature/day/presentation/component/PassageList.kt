@@ -1,9 +1,10 @@
 package com.quare.bibleplanner.feature.day.presentation.component
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,44 +17,40 @@ import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
 
-@Composable
-internal fun PassageList(
+internal fun LazyListScope.passageList(
     passages: List<PassagePlanModel>,
     books: List<BookDataModel>,
     onChapterToggle: (passageIndex: Int, chapterIndex: Int) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        passages.forEachIndexed { passageIndex, passage ->
-            if (passage.chapters.isEmpty()) {
-                // If no chapters specified, show the whole book as a single item
+    itemsIndexed(passages) { passageIndex, passage ->
+        if (passage.chapters.isEmpty()) {
+            // If no chapters specified, show the whole book as a single item
+            ChapterItem(
+                bookName = passage.bookId.getBookName(),
+                chapterNumber = null,
+                isRead = passage.isRead,
+                onToggle = { onChapterToggle(passageIndex, -1) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+            )
+        } else {
+            // Show each chapter as a separate item
+            passage.chapters.forEachIndexed { chapterIndex, chapter ->
+                val isChapterRead = isChapterRead(
+                    passage = passage,
+                    chapter = chapter,
+                    books = books,
+                )
                 ChapterItem(
                     bookName = passage.bookId.getBookName(),
-                    chapterNumber = null,
-                    isRead = passage.isRead,
-                    onToggle = { onChapterToggle(passageIndex, -1) },
+                    chapterNumber = chapter.number,
+                    isRead = isChapterRead,
+                    onToggle = { onChapterToggle(passageIndex, chapterIndex) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                 )
-            } else {
-                // Show each chapter as a separate item
-                passage.chapters.forEachIndexed { chapterIndex, chapter ->
-                    val isChapterRead = isChapterRead(
-                        passage = passage,
-                        chapter = chapter,
-                        books = books,
-                    )
-                    ChapterItem(
-                        bookName = passage.bookId.getBookName(),
-                        chapterNumber = chapter.number,
-                        isRead = isChapterRead,
-                        onToggle = { onChapterToggle(passageIndex, chapterIndex) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                    )
-                }
             }
         }
     }

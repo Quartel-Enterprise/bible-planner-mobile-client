@@ -41,4 +41,3 @@ kotlin {
 android {
     namespace = "com.quare.bibleplanner.ui.utils"
 }
-

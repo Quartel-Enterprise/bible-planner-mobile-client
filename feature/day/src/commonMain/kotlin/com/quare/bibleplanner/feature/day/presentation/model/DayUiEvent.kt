@@ -11,8 +11,19 @@ internal sealed interface DayUiEvent {
     ) : DayUiEvent
 
     data class OnEditReadDate(
-        val timestamp: Long,
-    ) : DayUiEvent // Epoch milliseconds
+        val hour: Int,
+        val minute: Int,
+    ) : DayUiEvent
+
+    data object OnEditDateClick : DayUiEvent
+
+    data object OnShowTimePicker : DayUiEvent
+
+    data object OnDismissPicker : DayUiEvent
+
+    data class OnDateSelected(
+        val dateMillis: Long,
+    ) : DayUiEvent
 
     data object OnBackClick : DayUiEvent
 }

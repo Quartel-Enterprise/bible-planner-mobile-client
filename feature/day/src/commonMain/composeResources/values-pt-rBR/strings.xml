@@ -13,5 +13,6 @@
     <string name="cancel">Cancelar</string>
     <string name="select_time">Selecionar Hora</string>
     <string name="future_date_error">Não é possível selecionar uma data futura</string>
+    <string name="calendar">Calendário</string>
 </resources>
 
