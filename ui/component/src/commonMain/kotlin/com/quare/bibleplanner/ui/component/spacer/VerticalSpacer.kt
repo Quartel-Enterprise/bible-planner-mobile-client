@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 fun VerticalSpacer(size: Dp = 16.dp) {
     BaseSpacer(
         orientation = Orientation.Vertical,
-        size = size
+        size = size,
     )
 }
 

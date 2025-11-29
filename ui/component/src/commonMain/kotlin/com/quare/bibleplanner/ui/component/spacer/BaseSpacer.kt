@@ -9,11 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 
 @Composable
-internal fun BaseSpacer(orientation: Orientation, size: Dp) {
+internal fun BaseSpacer(
+    orientation: Orientation,
+    size: Dp,
+) {
     Spacer(
         modifier = when (orientation) {
             Orientation.Vertical -> Modifier.height(size)
             Orientation.Horizontal -> Modifier.width(size)
-        }
+        },
     )
 }

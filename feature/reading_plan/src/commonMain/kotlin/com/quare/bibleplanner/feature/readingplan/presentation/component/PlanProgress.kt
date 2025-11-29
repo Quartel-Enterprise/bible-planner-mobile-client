@@ -28,7 +28,7 @@ fun PlanProgress(
             Text(
                 modifier = Modifier.padding(
                     vertical = 8.dp,
-                    horizontal = 16.dp
+                    horizontal = 16.dp,
                 ),
                 text = stringResource(
                     Res.string.progress_label,
