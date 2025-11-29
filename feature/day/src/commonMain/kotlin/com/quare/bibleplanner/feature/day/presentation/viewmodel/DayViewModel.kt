@@ -121,7 +121,6 @@ internal class DayViewModel(
         val selectedLocalDate = currentState.datePickerUiState.selectedLocalDate ?: return
         val eventDuration = event.toDuration()
 
-        // Reset picker UI state immediately to close the dialog
         updateDatePickerState {
             it.copy(
                 visiblePicker = null,
@@ -137,7 +136,6 @@ internal class DayViewModel(
                 selectedLocalDate = selectedLocalDate,
                 eventDuration = eventDuration,
             )
-            // State will be updated automatically by the flow when the database emits
         }
     }
 
@@ -150,7 +148,6 @@ internal class DayViewModel(
                 isRead = event.isRead,
                 readingPlanType = readingPlanType,
             )
-            // State will be updated by the flow
         }
     }
 
@@ -158,7 +155,6 @@ internal class DayViewModel(
         val currentState = _uiState.value as? DayUiState.Loaded ?: return
         val passageIndex = event.passageIndex
         val chapterIndex = event.chapterIndex
-        val passage = currentState.day.passages.getOrNull(passageIndex) ?: return
 
         viewModelScope.launch {
             useCases.toggleChapterReadStatus(
@@ -166,11 +162,10 @@ internal class DayViewModel(
                 dayNumber = dayNumber,
                 passageIndex = passageIndex,
                 chapterIndex = chapterIndex,
-                passage = passage,
+                passage = currentState.day.passages.getOrNull(passageIndex) ?: return@launch,
                 books = currentState.books,
                 readingPlanType = readingPlanType,
             )
-            // State will be updated by the flow
         }
     }
 
