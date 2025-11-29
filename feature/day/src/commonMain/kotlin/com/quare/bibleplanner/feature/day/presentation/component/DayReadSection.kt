@@ -11,6 +11,9 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,20 +35,23 @@ import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.cancel
 import bibleplanner.feature.day.generated.resources.completed_date
 import bibleplanner.feature.day.generated.resources.edit
+import bibleplanner.feature.day.generated.resources.future_date_error
 import bibleplanner.feature.day.generated.resources.mark_day_as_read
 import bibleplanner.feature.day.generated.resources.next
 import bibleplanner.feature.day.generated.resources.no_date_set
 import bibleplanner.feature.day.generated.resources.ok
 import bibleplanner.feature.day.generated.resources.select_time
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -59,13 +66,35 @@ internal fun DayReadSection(
     var showTimePicker by remember { mutableStateOf(false) }
     var selectedDateMillis by remember { mutableStateOf<Long?>(null) }
     var selectedLocalDate by remember { mutableStateOf<LocalDate?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
-    val initialTimestamp = readTimestamp ?: Clock.System.now().toEpochMilliseconds()
+    val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
+    val initialTimestamp = readTimestamp ?: currentTimeMillis
     val initialDate = Instant.fromEpochMilliseconds(initialTimestamp)
         .toLocalDateTime(TimeZone.currentSystemDefault())
 
+    // Create SelectableDates that blocks future dates
+    val selectableDates = object : SelectableDates {
+        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+            // Block future dates - only allow dates up to now
+            val now = Clock.System.now().toEpochMilliseconds()
+            return utcTimeMillis <= now
+        }
+
+        override fun isSelectableYear(year: Int): Boolean {
+            // Get current year from current timestamp
+            val now = Clock.System.now().toEpochMilliseconds()
+            val currentYear = Instant.fromEpochMilliseconds(now)
+                .toLocalDateTime(TimeZone.UTC)
+                .year
+            return year <= currentYear
+        }
+    }
+
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = initialTimestamp,
+        selectableDates = selectableDates,
     )
     val timePickerState = rememberTimePickerState(
         initialHour = initialDate.hour,
@@ -80,11 +109,17 @@ internal fun DayReadSection(
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { dateMillis ->
-                            // Extract date components directly from the selected date timestamp
-                            // DatePicker's selectedDateMillis represents the selected date at midnight UTC
-                            // We extract the date components (year, month, day) which are timezone-independent
-                            @Suppress("DEPRECATION")
-                            val dateTime = kotlinx.datetime.Instant.fromEpochMilliseconds(dateMillis)
+                            // Validate that the selected date is not in the future
+                            if (dateMillis > currentTimeMillis) {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = getString(Res.string.future_date_error),
+                                    )
+                                }
+                                return@let
+                            }
+
+                            val dateTime = Instant.fromEpochMilliseconds(dateMillis)
                                 .toLocalDateTime(TimeZone.UTC)
                             val localDate = LocalDate(
                                 year = dateTime.year,
@@ -130,7 +165,19 @@ internal fun DayReadSection(
                             )
                             val duration = timeOffsetMillis.milliseconds
                             val finalInstant = startOfDay + duration
-                            onEditDate(finalInstant.toEpochMilliseconds())
+                            val finalTimestamp = finalInstant.toEpochMilliseconds()
+
+                            // Validate that the final timestamp is not in the future
+                            if (finalTimestamp > currentTimeMillis) {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = getString(Res.string.future_date_error),
+                                    )
+                                }
+                                return@let
+                            }
+
+                            onEditDate(finalTimestamp)
                             showTimePicker = false
                             selectedDateMillis = null
                             selectedLocalDate = null
@@ -156,6 +203,7 @@ internal fun DayReadSection(
     Column(
         modifier = modifier.padding(vertical = 16.dp),
     ) {
+        SnackbarHost(hostState = snackbarHostState)
         // Mark day as read toggle
         Row(
             modifier = Modifier
