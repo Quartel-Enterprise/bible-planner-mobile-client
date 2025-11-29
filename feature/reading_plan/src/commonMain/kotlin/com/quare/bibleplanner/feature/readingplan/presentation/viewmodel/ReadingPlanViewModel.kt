@@ -75,13 +75,11 @@ internal class ReadingPlanViewModel(
                                 ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
                                 ReadingPlanType.BOOKS -> plansModel.booksOrder
                             }
-                            val progress = calculateProgress(selectedWeeks)
                             val weekPresentationModels = createWeekPresentationModels(selectedWeeks)
 
                             currentUiState.copy(
                                 weekPlans = weekPresentationModels,
                                 selectedReadingPlan = event.type,
-                                progress = progress,
                             )
                         }
 
@@ -152,13 +150,15 @@ internal class ReadingPlanViewModel(
     private fun calculateProgress(weeks: List<WeekPlanModel>): Float {
         if (weeks.isEmpty()) return 0f
 
-        val totalDays = weeks.sumOf { it.days.size }
-        if (totalDays == 0) return 0f
+        val totalVerses = weeks.sumOf { week ->
+            week.days.sumOf { it.totalVerses }
+        }
+        if (totalVerses == 0) return 0f
 
-        val readDays = weeks.sumOf { week ->
-            week.days.count { it.isRead }
+        val readVerses = weeks.sumOf { week ->
+            week.days.sumOf { it.readVerses }
         }
 
-        return 100 * (readDays.toFloat() / totalDays.toFloat())
+        return 100 * (readVerses.toFloat() / totalVerses.toFloat())
     }
 }
