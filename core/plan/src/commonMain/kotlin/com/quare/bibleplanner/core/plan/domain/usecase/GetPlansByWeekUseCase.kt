@@ -51,10 +51,14 @@ class GetPlansByWeekUseCase(
             calculatePassageReadStatus(passage, books)
         }
         val isDayRead = updatedBooks.all { it.isRead }
+        val totalVerses = calculateTotalVerses(day.passages, books)
+        val readVerses = calculateReadVerses(day.passages, books)
 
         return day.copy(
             passages = updatedBooks,
             isRead = isDayRead,
+            totalVerses = totalVerses,
+            readVerses = readVerses,
         )
     }
 
@@ -105,6 +109,114 @@ class GetPlansByWeekUseCase(
             // If no verse range specified, check if entire chapter is read
             else -> {
                 chapter.isRead
+            }
+        }
+    }
+
+    private fun calculateTotalVerses(
+        passages: List<PassagePlanModel>,
+        books: List<BookDataModel>,
+    ): Int = passages.sumOf { passage ->
+        calculatePassageTotalVerses(passage, books)
+    }
+
+    private fun calculatePassageTotalVerses(
+        passage: PassagePlanModel,
+        books: List<BookDataModel>,
+    ): Int {
+        val book = books.find { it.id == passage.bookId } ?: return 0
+
+        // If no chapters specified (empty list), count all verses in the book
+        if (passage.chapters.isEmpty()) {
+            return book.chapters.sumOf { it.verses.size }
+        }
+
+        return passage.chapters.sumOf { chapterPlan ->
+            calculateChapterPlanTotalVerses(chapterPlan, book)
+        }
+    }
+
+    private fun calculateChapterPlanTotalVerses(
+        chapterPlan: ChapterPlanModel,
+        book: BookDataModel,
+    ): Int {
+        val chapter = book.chapters.find { it.number == chapterPlan.number }
+            ?: return 0
+
+        val startVerse = chapterPlan.startVerse
+        val endVerse = chapterPlan.endVerse
+
+        return when {
+            // If verse range is specified, count those specific verses
+            startVerse != null && endVerse != null -> {
+                endVerse - startVerse + 1
+            }
+
+            // If only start verse is specified, count from that verse to end of chapter
+            startVerse != null -> {
+                chapter.verses.count { it.number >= startVerse }
+            }
+
+            // If no verse range specified, count all verses in the chapter
+            else -> {
+                chapter.verses.size
+            }
+        }
+    }
+
+    private fun calculateReadVerses(
+        passages: List<PassagePlanModel>,
+        books: List<BookDataModel>,
+    ): Int = passages.sumOf { passage ->
+        calculatePassageReadVerses(passage, books)
+    }
+
+    private fun calculatePassageReadVerses(
+        passage: PassagePlanModel,
+        books: List<BookDataModel>,
+    ): Int {
+        val book = books.find { it.id == passage.bookId } ?: return 0
+
+        // If no chapters specified (empty list), count all read verses in the book
+        if (passage.chapters.isEmpty()) {
+            return book.chapters.sumOf { chapter ->
+                chapter.verses.count { it.isRead }
+            }
+        }
+
+        return passage.chapters.sumOf { chapterPlan ->
+            calculateChapterPlanReadVerses(chapterPlan, book)
+        }
+    }
+
+    private fun calculateChapterPlanReadVerses(
+        chapterPlan: ChapterPlanModel,
+        book: BookDataModel,
+    ): Int {
+        val chapter = book.chapters.find { it.number == chapterPlan.number }
+            ?: return 0
+
+        val startVerse = chapterPlan.startVerse
+        val endVerse = chapterPlan.endVerse
+
+        return when {
+            // If verse range is specified, count read verses in that range
+            startVerse != null && endVerse != null -> {
+                chapter.verses.count { verse ->
+                    verse.number in startVerse..endVerse && verse.isRead
+                }
+            }
+
+            // If only start verse is specified, count read verses from that verse to end of chapter
+            startVerse != null -> {
+                chapter.verses.count { verse ->
+                    verse.number >= startVerse && verse.isRead
+                }
+            }
+
+            // If no verse range specified, count all read verses in the chapter
+            else -> {
+                chapter.verses.count { it.isRead }
             }
         }
     }
