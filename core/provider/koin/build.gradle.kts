@@ -28,6 +28,7 @@ kotlin {
 
             // Features
             implementation(projects.feature.readingPlan)
+            implementation(projects.feature.day)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
