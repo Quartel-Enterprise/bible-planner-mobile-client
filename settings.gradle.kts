@@ -35,6 +35,7 @@ plugins {
 
 include(":composeApp")
 include(":ui:theme")
+include(":ui:component")
 include(":core:model")
 include(":core:navigation")
 include(":core:books")

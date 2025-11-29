@@ -24,6 +24,7 @@ kotlin {
             // Core
             implementation(projects.core.provider.room)
             implementation(projects.core.books)
+            implementation(projects.core.plan)
 
             // Features
             implementation(projects.feature.readingPlan)

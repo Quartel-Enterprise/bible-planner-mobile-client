@@ -1,6 +1,7 @@
 package com.quare.bibleplanner
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -11,8 +12,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App() {
-    AppTheme {
+fun App(getSpecificColors: @Composable ((isAppInDarkTheme: Boolean) -> ColorScheme?)? = null) {
+    AppTheme(getSpecificColors) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,

@@ -6,7 +6,8 @@ internal sealed interface ReadingPlanUiState {
     val selectedReadingPlan: ReadingPlanType
 
     data class Loaded(
-        val data: ReadingPlanUiModel,
+        val weekPlans: List<WeekPlanPresentationModel>,
+        val progress: Float,
         override val selectedReadingPlan: ReadingPlanType,
     ) : ReadingPlanUiState
 

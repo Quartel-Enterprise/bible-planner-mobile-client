@@ -2,6 +2,6 @@ package com.quare.bibleplanner.core.model.plan
 
 data class DayModel(
     val number: Int,
-    val books: List<PassagePlanModel>,
+    val passages: List<PassagePlanModel>,
     val isRead: Boolean,
 )

@@ -1,5 +1,8 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.component
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,6 +11,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
@@ -23,23 +27,35 @@ fun PlanProgress(
     progress: Float,
     modifier: Modifier = Modifier,
 ) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(
+            durationMillis = 400,
+            easing = LinearEasing,
+        ),
+        label = "planProgressAnimation",
+    )
+
     Card(modifier = modifier) {
         Column {
             Text(
+                modifier = Modifier.padding(
+                    vertical = 8.dp,
+                    horizontal = 16.dp,
+                ),
                 text = stringResource(
                     Res.string.progress_label,
                     if (isLoading) {
                         stringResource(Res.string.loading)
                     } else {
-                        progress.formatProgress()
+                        animatedProgress.formatProgress()
                     },
                 ),
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(8.dp),
+                style = MaterialTheme.typography.labelLarge,
             )
             LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(),
-                progress = { progress / 100 },
+                progress = { animatedProgress / 100 },
             )
         }
     }

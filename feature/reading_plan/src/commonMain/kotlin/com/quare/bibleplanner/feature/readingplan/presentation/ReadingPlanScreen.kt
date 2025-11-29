@@ -6,8 +6,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.reading_plan
 import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanContent
@@ -21,13 +23,18 @@ internal fun ReadingPlanScreen(
     uiState: ReadingPlanUiState,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
                     Text(text = stringResource(Res.string.reading_plan))
                 },
+                scrollBehavior = scrollBehavior,
             )
         },
     ) { paddingValues ->
