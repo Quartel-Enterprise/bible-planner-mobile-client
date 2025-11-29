@@ -10,6 +10,11 @@ class UpdateDayReadTimestampUseCase(
         dayNumber: Int,
         readTimestamp: Long, // Epoch milliseconds
     ) {
-        dayRepository.updateDayReadStatus(weekNumber, dayNumber, true, readTimestamp)
+        dayRepository.updateDayReadStatus(
+            weekNumber = weekNumber,
+            dayNumber = dayNumber,
+            isRead = true,
+            readTimestamp = readTimestamp
+        )
     }
 }

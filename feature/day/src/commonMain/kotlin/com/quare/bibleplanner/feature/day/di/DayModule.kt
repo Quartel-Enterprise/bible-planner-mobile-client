@@ -6,13 +6,16 @@ import com.quare.bibleplanner.feature.day.data.repository.DayRepositoryImpl
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.domain.repository.DayRepository
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateChapterReadStatusUseCase
+import com.quare.bibleplanner.feature.day.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.DayUseCases
 import com.quare.bibleplanner.feature.day.domain.usecase.GetBooksUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
+import com.quare.bibleplanner.feature.day.domain.usecase.GetFinalTimestampAfterEditionUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ToggleChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampUseCase
+import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampWithDateAndTimeUseCase
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
@@ -37,6 +40,9 @@ val dayModule = module {
     factoryOf(::UpdateDayReadTimestampUseCase)
     factoryOf(::CalculateChapterReadStatusUseCase)
     factoryOf(::ToggleChapterReadStatusUseCase)
+    factoryOf(::ConvertUtcDateToLocalDateUseCase)
+    factoryOf(::GetFinalTimestampAfterEditionUseCase)
+    factoryOf(::UpdateDayReadTimestampWithDateAndTimeUseCase)
     factoryOf(::EditDaySelectableDates)
 
     // Use cases container

@@ -6,10 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.domain.usecase.DayUseCases
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
-import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -22,20 +20,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 internal class DayViewModel(
     savedStateHandle: SavedStateHandle,
     private val useCases: DayUseCases,
-    private val readDateFormatter: ReadDateFormatter,
-    private val editDaySelectableDates: EditDaySelectableDates,
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
@@ -120,18 +112,11 @@ internal class DayViewModel(
     }
 
     private fun onDateSelected(event: DayUiEvent.OnDateSelected) {
-        val dateTime = Instant
-            .fromEpochMilliseconds(event.utcDateMillis)
-            .toLocalDateTime(TimeZone.UTC)
-        val localDate = LocalDate(
-            year = dateTime.year,
-            month = dateTime.month,
-            day = dateTime.day,
-        )
+        val utcDateMillis = event.utcDateMillis
         updateDatePickerState {
             it.copy(
-                selectedDateMillis = event.utcDateMillis,
-                selectedLocalDate = localDate,
+                selectedDateMillis = utcDateMillis,
+                selectedLocalDate = useCases.convertUtcDateToLocalDate(utcDateMillis),
                 visiblePicker = PickerType.TIME,
             )
         }
@@ -144,44 +129,28 @@ internal class DayViewModel(
     private fun onEditReadDate(event: DayUiEvent.OnEditReadDate) {
         val currentState = _uiState.value as? DayUiState.Loaded ?: return
         val selectedLocalDate = currentState.datePickerUiState.selectedLocalDate ?: return
+        val eventDuration = event.toDuration()
+
+        // Reset picker UI state immediately to close the dialog
+        updateDatePickerState {
+            it.copy(
+                visiblePicker = null,
+                selectedDateMillis = null,
+                selectedLocalDate = null,
+            )
+        }
 
         viewModelScope.launch {
-            // Combine date and time using the local date directly (not converted from UTC)
-            val timeZone = TimeZone.currentSystemDefault()
-            val startOfDay = selectedLocalDate.atStartOfDayIn(timeZone)
-            val timeOffsetMillis = (
-                event.hour * 3600_000L +
-                    event.minute * 60_000L
-            )
-            val duration = timeOffsetMillis.milliseconds
-            val finalInstant = startOfDay + duration
-            val finalTimestamp = finalInstant.toEpochMilliseconds()
-
-            useCases.updateDayReadTimestamp(
+            useCases.updateDayReadTimestampWithDateAndTime(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
-                readTimestamp = finalTimestamp,
+                selectedLocalDate = selectedLocalDate,
+                eventDuration = eventDuration,
             )
-            // Reset date picker state and update initial values
-            val initialDate = Instant
-                .fromEpochMilliseconds(finalTimestamp)
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-            updateLoadedState { loaded ->
-                loaded.copy(
-                    datePickerUiState = DatePickerUiState(
-                        visiblePicker = null,
-                        selectedDateMillis = null,
-                        selectedLocalDate = null,
-                        selectableDates = editDaySelectableDates,
-                        initialTimestamp = finalTimestamp,
-                        initialHour = initialDate.hour,
-                        initialMinute = initialDate.minute,
-                    ),
-                    formattedReadDate = readDateFormatter.format(finalTimestamp),
-                )
-            }
+            // State will be updated automatically by the flow when the database emits
         }
     }
+
 
     private fun onDayReadToggle(event: DayUiEvent.OnDayReadToggle) {
         viewModelScope.launch {
@@ -214,6 +183,8 @@ internal class DayViewModel(
             // State will be updated by the flow
         }
     }
+
+    private fun DayUiEvent.OnEditReadDate.toDuration(): Duration = (hour * minute).minutes
 
     private fun backToPreviousScreen() {
         viewModelScope.launch {
