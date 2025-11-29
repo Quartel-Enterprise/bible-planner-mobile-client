@@ -33,7 +33,10 @@ class GetDayDetailsUseCase(
                 isRead = dayFromPlans.isRead,
                 totalVerses = dayFromPlans.totalVerses,
                 readVerses = dayFromPlans.readVerses,
-            ) ?: dayFromPlans
+                readTimestamp = dayFromRepository.readTimestamp, // Preserve readTimestamp from repository
+            ) ?: dayFromPlans.copy(
+                readTimestamp = null, // Ensure readTimestamp is set even if dayFromRepository is null
+            )
         }
     }
 }

@@ -51,8 +51,8 @@ internal fun DayReadSection(
             )
         }
 
-        // Completed date section
-        if (isRead && readTimestamp != null) {
+        // Completed date section - show when day is marked as read
+        if (isRead) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -65,7 +65,12 @@ internal fun DayReadSection(
                     modifier = Modifier.padding(end = 8.dp),
                 )
                 Text(
-                    text = formatReadDate(readTimestamp),
+                    text = if (readTimestamp != null) {
+                        formatReadDate(readTimestamp)
+                    } else {
+                        // If no timestamp, use current time for display
+                        formatReadDate(Clock.System.now().toEpochMilliseconds())
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f),
                 )
@@ -73,7 +78,8 @@ internal fun DayReadSection(
                     onClick = {
                         // TODO: Open date picker
                         // For now, update to current time
-                        onEditDate(Clock.System.now().toEpochMilliseconds())
+                        val timestamp = Clock.System.now().toEpochMilliseconds()
+                        onEditDate(timestamp)
                     },
                 ) {
                     Text("Edit")
@@ -87,11 +93,12 @@ internal fun DayReadSection(
 private fun formatReadDate(timestamp: Long): String {
     val instant = Instant.fromEpochMilliseconds(timestamp)
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    // Format: "26 Nov 2025, 22:47"
+    // Format: "26 Nov 2025, 22:47:30"
     val day = localDateTime.day
     val month = localDateTime.month.name.take(3) // First 3 letters of month
     val year = localDateTime.year
     val hour = localDateTime.hour.toString().padStart(2, '0')
     val minute = localDateTime.minute.toString().padStart(2, '0')
-    return "$day $month $year, $hour:$minute"
+    val second = localDateTime.second.toString().padStart(2, '0')
+    return "$day $month $year, $hour:$minute:$second"
 }

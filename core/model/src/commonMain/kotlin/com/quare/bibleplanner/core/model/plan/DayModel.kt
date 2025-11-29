@@ -6,5 +6,5 @@ data class DayModel(
     val isRead: Boolean,
     val totalVerses: Int,
     val readVerses: Int,
-    val readTimestamp: Long? = null, // Epoch milliseconds, null if not read
+    val readTimestamp: Long?,
 )

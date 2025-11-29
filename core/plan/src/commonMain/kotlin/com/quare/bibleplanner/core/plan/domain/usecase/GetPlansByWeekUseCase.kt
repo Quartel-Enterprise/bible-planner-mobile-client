@@ -59,6 +59,7 @@ class GetPlansByWeekUseCase(
             isRead = isDayRead,
             totalVerses = totalVerses,
             readVerses = readVerses,
+            readTimestamp = day.readTimestamp, // Preserve readTimestamp
         )
     }
 
