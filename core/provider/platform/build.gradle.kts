@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.androidCommonConfig)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.androidCommonConfig)
 }
 
 kotlin {
@@ -14,7 +14,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "UiComponent"
+            baseName = "PlatformProvider"
             isStatic = true
         }
     }
@@ -23,19 +23,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            // Core
-            implementation(projects.core.provider.platform)
-
             implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.components.resources)
         }
     }
 }
 
 android {
-    namespace = "com.quare.bibleplanner.ui.component"
+    namespace = "com.quare.bibleplanner.core.provider.platform"
 }

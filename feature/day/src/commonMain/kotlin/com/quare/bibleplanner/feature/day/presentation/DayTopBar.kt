@@ -1,18 +1,14 @@
 package com.quare.bibleplanner.feature.day.presentation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import bibleplanner.feature.day.generated.resources.Res
-import bibleplanner.feature.day.generated.resources.back
 import bibleplanner.feature.day.generated.resources.day_week_title
 import bibleplanner.feature.day.generated.resources.loading
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
+import com.quare.bibleplanner.ui.component.backicon.BackIcon
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,12 +19,7 @@ internal fun DayTopBar(
 ) {
     TopAppBar(
         navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(Res.string.back),
-                )
-            }
+            BackIcon(onBackClick = onBackClick)
         },
         title = {
             when (uiState) {

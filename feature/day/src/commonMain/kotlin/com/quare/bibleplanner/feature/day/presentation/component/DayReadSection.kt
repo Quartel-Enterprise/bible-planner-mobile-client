@@ -36,8 +36,7 @@ internal fun DayReadSection(
                 .fillMaxWidth()
                 .clickable {
                     onEvent(DayUiEvent.OnDayReadToggle(!isRead))
-                }
-                .padding(vertical = 8.dp),
+                }.padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
