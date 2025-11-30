@@ -1,11 +1,15 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.content
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanProgress
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanTypesSegmentedButtons
@@ -19,6 +23,7 @@ internal fun ReadingPlanContent(
     modifier: Modifier = Modifier,
     uiState: ReadingPlanUiState,
     onEvent: (ReadingPlanUiEvent) -> Unit,
+    maxContentWidth: Dp,
 ) {
     val loadedUiState = uiState as? ReadingPlanUiState.Loaded
 
@@ -26,25 +31,39 @@ internal fun ReadingPlanContent(
         modifier = modifier,
     ) {
         item {
-            PlanTypesSegmentedButtons(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                selectedReadingPlan = uiState.selectedReadingPlan,
-                onPlanClick = {
-                    onEvent(ReadingPlanUiEvent.OnPlanClick(it))
-                },
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(modifier = Modifier.width(maxContentWidth)) {
+                    PlanTypesSegmentedButtons(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        selectedReadingPlan = uiState.selectedReadingPlan,
+                        onPlanClick = {
+                            onEvent(ReadingPlanUiEvent.OnPlanClick(it))
+                        },
+                    )
+                }
+            }
             VerticalSpacer()
         }
         item {
-            PlanProgress(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                progress = loadedUiState?.progress ?: 0f,
-                isLoading = uiState is ReadingPlanUiState.Loading,
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(modifier = Modifier.width(maxContentWidth)) {
+                    PlanProgress(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        progress = loadedUiState?.progress ?: 0f,
+                        isLoading = uiState is ReadingPlanUiState.Loading,
+                    )
+                }
+            }
             VerticalSpacer()
         }
         when (uiState) {
@@ -52,15 +71,29 @@ internal fun ReadingPlanContent(
                 items = uiState.weekPlans,
                 key = { weekPresentation -> weekPresentation.weekPlan.number },
             ) { weekPresentation ->
-                WeekPlanItem(
+                Box(
                     modifier = Modifier.fillMaxWidth(),
-                    weekPresentation = weekPresentation,
-                    onEvent = onEvent,
-                )
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(modifier = Modifier.width(maxContentWidth)) {
+                        WeekPlanItem(
+                            modifier = Modifier.fillMaxWidth(),
+                            weekPresentation = weekPresentation,
+                            onEvent = onEvent,
+                        )
+                    }
+                }
             }
 
             is ReadingPlanUiState.Loading -> item {
-                LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(modifier = Modifier.width(maxContentWidth)) {
+                        LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
+                    }
+                }
             }
         }
     }

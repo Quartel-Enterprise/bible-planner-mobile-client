@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.day.presentation.content
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
@@ -10,6 +11,7 @@ internal fun DayContent(
     uiState: DayUiState,
     onEvent: (DayUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    maxContentWidth: Dp? = null,
 ) {
     when (uiState) {
         is DayUiState.Loading -> LoadingDayContent(modifier)
@@ -18,6 +20,7 @@ internal fun DayContent(
             modifier = modifier,
             uiState = uiState,
             onEvent = onEvent,
+            maxContentWidth = maxContentWidth,
         )
     }
 }

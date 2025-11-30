@@ -1,11 +1,8 @@
 package com.quare.bibleplanner.feature.readingplan.presentation
 
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,18 +48,12 @@ internal fun ReadingPlanScreen(
                 .padding(paddingValues),
         ) {
             val constrainedWidth = maxWidth.coerceAtMost(MAX_CONTENT_WIDTH.dp)
-            Row(
+            ReadingPlanContent(
                 modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-            ) {
-                ReadingPlanContent(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(constrainedWidth),
-                    uiState = uiState,
-                    onEvent = onEvent,
-                )
-            }
+                uiState = uiState,
+                onEvent = onEvent,
+                maxContentWidth = constrainedWidth,
+            )
         }
     }
 }
