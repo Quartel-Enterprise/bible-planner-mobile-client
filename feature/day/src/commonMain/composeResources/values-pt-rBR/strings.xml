@@ -5,7 +5,8 @@
     <string name="passages_completed">%1$d/%2$d passagens concluídas</string>
     <string name="loading">Carregando...</string>
     <string name="no_date_set">Nenhuma data definida</string>
-    <string name="mark_day_as_read">Marcar dia como lido</string>
+    <string name="mark_as_unread">Marcar como não lido</string>
+    <string name="mark_as_read">Marcar como lido</string>
     <string name="edit">Editar</string>
     <string name="completed_date">Data de conclusão</string>
     <string name="next">Próximo</string>

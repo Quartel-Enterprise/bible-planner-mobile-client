@@ -4,7 +4,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation.compose.dialog
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.day.presentation.component.TimeEditionDialog
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -13,7 +13,7 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.day(navController: NavController) {
-    composable<DayNavRoute> {
+    dialog<DayNavRoute> {
         val viewModel = koinViewModel<DayViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         val onEvent = viewModel::onEvent
@@ -29,7 +29,7 @@ fun NavGraphBuilder.day(navController: NavController) {
                 )
             }
         }
-        DayScreen(
+        DayBottomSheet(
             uiState = uiState,
             onEvent = viewModel::onEvent,
         )
