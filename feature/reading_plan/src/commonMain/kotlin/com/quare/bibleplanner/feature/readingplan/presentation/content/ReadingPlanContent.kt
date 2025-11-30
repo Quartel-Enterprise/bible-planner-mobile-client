@@ -23,7 +23,7 @@ internal fun ReadingPlanContent(
     val loadedUiState = uiState as? ReadingPlanUiState.Loaded
 
     LazyColumn(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
     ) {
         item {
             PlanTypesSegmentedButtons(

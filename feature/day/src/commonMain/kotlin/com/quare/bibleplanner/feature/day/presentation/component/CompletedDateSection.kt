@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.feature.day.presentation.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +21,7 @@ import bibleplanner.feature.day.generated.resources.completed_date
 import bibleplanner.feature.day.generated.resources.edit
 import bibleplanner.feature.day.generated.resources.no_date_set
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
+import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -37,28 +38,32 @@ internal fun CompletedDateSection(
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(bottom = 8.dp),
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onEvent(DayUiEvent.OnEditDateClick) },
-            verticalAlignment = Alignment.CenterVertically,
+        Card(
+            onClick = {
+                onEvent(DayUiEvent.OnEditDateClick)
+            },
         ) {
-            Icon(
-                imageVector = Icons.Default.CalendarToday,
-                contentDescription = stringResource(Res.string.calendar),
-                modifier = Modifier.padding(end = 8.dp),
-            )
-            Text(
-                text = formattedReadDate ?: stringResource(Res.string.no_date_set),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f),
-            )
-            TextButton(
-                onClick = {
-                    onEvent(DayUiEvent.OnEditDateClick)
-                },
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(stringResource(Res.string.edit))
+                Icon(
+                    imageVector = Icons.Default.CalendarToday,
+                    contentDescription = stringResource(Res.string.calendar),
+                )
+                HorizontalSpacer(8)
+                Text(
+                    text = formattedReadDate ?: stringResource(Res.string.no_date_set),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                TextButton(
+                    onClick = {
+                        onEvent(DayUiEvent.OnEditDateClick)
+                    },
+                ) {
+                    Text(stringResource(Res.string.edit))
+                }
             }
         }
     }
