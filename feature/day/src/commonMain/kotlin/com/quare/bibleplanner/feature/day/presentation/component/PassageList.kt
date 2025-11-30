@@ -18,13 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
-import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
 
 internal fun LazyListScope.passageList(
     passages: List<PassagePlanModel>,
-    books: List<BookDataModel>,
+    chapterReadStatus: Map<Pair<Int, Int>, Boolean>,
     onChapterToggle: (passageIndex: Int, chapterIndex: Int) -> Unit,
     maxContentWidth: Dp,
 ) {
@@ -60,11 +58,7 @@ internal fun LazyListScope.passageList(
         } else {
             // Show each chapter as a separate item
             passage.chapters.forEachIndexed { chapterIndex, chapter ->
-                val isChapterRead = isChapterRead(
-                    passage = passage,
-                    chapter = chapter,
-                    books = books,
-                )
+                val isChapterRead = chapterReadStatus[passageIndex to chapterIndex] ?: false
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
@@ -130,41 +124,4 @@ private fun formatChapterText(
     bookName
 } else {
     "$bookName $chapterNumber"
-}
-
-/**
- * Check if a specific chapter within a passage is read by checking the book data.
- */
-private fun isChapterRead(
-    passage: PassagePlanModel,
-    chapter: ChapterPlanModel,
-    books: List<BookDataModel>,
-): Boolean {
-    val book = books.find { it.id == passage.bookId } ?: return false
-    val bookChapter = book.chapters.find { it.number == chapter.number } ?: return false
-
-    val startVerse = chapter.startVerse
-    val endVerse = chapter.endVerse
-
-    return when {
-        // If verse range is specified, check those specific verses
-        startVerse != null && endVerse != null -> {
-            val requiredVerses = startVerse..endVerse
-            requiredVerses.all { verseNumber ->
-                bookChapter.verses.find { it.number == verseNumber }?.isRead == true
-            }
-        }
-
-        // If only start verse is specified, check from that verse to end of chapter
-        startVerse != null -> {
-            bookChapter.verses
-                .filter { it.number >= startVerse }
-                .all { it.isRead }
-        }
-
-        // If no verse range specified, check if entire chapter is read
-        else -> {
-            bookChapter.isRead
-        }
-    }
 }

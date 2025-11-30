@@ -27,7 +27,7 @@ internal fun LoadedDayContent(
     ) {
         passageList(
             passages = uiState.day.passages,
-            books = uiState.books,
+            chapterReadStatus = uiState.chapterReadStatus,
             onChapterToggle = { passageIndex, chapterIndex ->
                 onEvent(DayUiEvent.OnChapterToggle(passageIndex, chapterIndex))
             },

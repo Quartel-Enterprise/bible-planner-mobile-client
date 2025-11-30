@@ -12,5 +12,6 @@ internal sealed interface DayUiState {
         val books: List<BookDataModel>,
         val datePickerUiState: DatePickerUiState,
         val formattedReadDate: String?,
+        val chapterReadStatus: Map<Pair<Int, Int>, Boolean>,
     ) : DayUiState
 }

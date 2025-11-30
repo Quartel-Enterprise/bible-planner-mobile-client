@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.day.presentation.factory
 
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
+import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetBooksUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
@@ -23,6 +24,7 @@ internal class DayUiStateFlowFactory(
     private val readDateFormatter: ReadDateFormatter,
     private val editDaySelectableDates: EditDaySelectableDates,
     private val convertTimestampToDatePickerInitialDate: ConvertTimestampToDatePickerInitialDateUseCase,
+    private val calculateAllChaptersReadStatus: CalculateAllChaptersReadStatusUseCase,
 ) {
     fun createUiState(
         weekNumber: Int,
@@ -76,6 +78,10 @@ internal class DayUiStateFlowFactory(
                 books = books,
                 datePickerUiState = datePickerUiState,
                 formattedReadDate = day.readTimestamp?.let(readDateFormatter::format),
+                chapterReadStatus = calculateAllChaptersReadStatus(
+                    passages = day.passages,
+                    books = books,
+                ),
             )
         } else {
             DayUiState.Loading
