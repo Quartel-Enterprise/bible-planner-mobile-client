@@ -46,7 +46,7 @@ internal fun DayScreen(
                 title = {
                     (uiState as? DayUiState.Loaded)?.run {
                         Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
                                 text = stringResource(
@@ -71,19 +71,21 @@ internal fun DayScreen(
                         OutlinedButton(
                             onClick = {
                                 onEvent(
-                                    DayUiEvent.OnDayReadToggle(!day.isRead)
+                                    DayUiEvent.OnDayReadToggle(!day.isRead),
                                 )
                             },
                         ) {
                             Text(
-                                text = stringResource(if (day.isRead) Res.string.mark_as_unread else Res.string.mark_as_read),
+                                text = stringResource(
+                                    if (day.isRead) Res.string.mark_as_unread else Res.string.mark_as_read,
+                                ),
                             )
                         }
                     }
                 },
                 scrollBehavior = scrollBehavior,
             )
-        }
+        },
     ) { paddingValues ->
         BoxWithConstraints(
             modifier = Modifier
@@ -95,7 +97,7 @@ internal fun DayScreen(
                 modifier = Modifier.fillMaxSize(),
                 uiState = uiState,
                 onEvent = onEvent,
-                maxContentWidth = constrainedWidth
+                maxContentWidth = constrainedWidth,
             )
         }
     }
