@@ -1,13 +1,13 @@
 package com.quare.bibleplanner.feature.day.presentation.content
 
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.quare.bibleplanner.feature.day.presentation.component.DayProgress
-import com.quare.bibleplanner.feature.day.presentation.component.DayReadSection
-import com.quare.bibleplanner.feature.day.presentation.component.passageList
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
+
+private const val BREAKPOINT_WIDTH = 600
 
 @Composable
 internal fun LoadedDayContent(
@@ -15,30 +15,12 @@ internal fun LoadedDayContent(
     uiState: DayUiState.Loaded,
     onEvent: (DayUiEvent) -> Unit,
 ) {
-    LazyColumn(
-        modifier = modifier,
-    ) {
-        item {
-            DayProgress(
-                passages = uiState.day.passages,
-                books = uiState.books,
-            )
-        }
-
-        passageList(
-            passages = uiState.day.passages,
-            books = uiState.books,
-            onChapterToggle = { passageIndex, chapterIndex ->
-                onEvent(DayUiEvent.OnChapterToggle(passageIndex, chapterIndex))
-            },
-        )
-
-        item {
-            DayReadSection(
-                isRead = uiState.day.isRead,
-                formattedReadDate = uiState.formattedReadDate,
-                onEvent = onEvent,
-            )
+    BoxWithConstraints(modifier = modifier) {
+        val isLargeScreenWidth = maxWidth >= BREAKPOINT_WIDTH.dp
+        if (isLargeScreenWidth) {
+            DayLargeWidthContent(uiState, onEvent)
+        } else {
+            DayCompactWidthContent(uiState, onEvent)
         }
     }
 }
