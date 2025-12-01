@@ -66,15 +66,15 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
                 // Special handling for week 1 (first week at top)
                 if (uiState.scrollToWeekNumber == 1) {
                     // Check if we're already at the top
-                    val isAtTop = lazyListState.firstVisibleItemIndex == 0 && 
-                            lazyListState.firstVisibleItemScrollOffset == 0
-                    
+                    val isAtTop = lazyListState.firstVisibleItemIndex == 0 &&
+                        lazyListState.firstVisibleItemScrollOffset == 0
+
                     if (!isAtTop) {
                         // Scroll to top since we're not there yet
                         delay(100)
                         lazyListState.animateScrollToItem(0, scrollOffset = 0)
                     }
-                    
+
                     // Mark as completed (whether we scrolled or not)
                     viewModel.onEvent(ReadingPlanUiEvent.OnScrollToWeekCompleted)
                     return@LaunchedEffect
