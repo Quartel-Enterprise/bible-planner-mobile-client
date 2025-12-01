@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Contrast
@@ -24,8 +25,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -51,14 +53,24 @@ private const val MAX_CONTENT_WIDTH = 600
 internal fun ReadingPlanScreen(
     uiState: ReadingPlanUiState,
     onEvent: (ReadingPlanUiEvent) -> Unit,
-    scrollToWeekNumber: Int,
-    onScrollToWeekCompleted: () -> Unit,
-    scrollToTop: Boolean,
-    onScrollToTopCompleted: () -> Unit,
-    isScrolledDown: Boolean,
-    onScrollStateChange: (Boolean) -> Unit,
+    lazyListState: LazyListState,
+    scrollBehavior: TopAppBarScrollBehavior,
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    // Determine if the first unread week is visible and expanded
+    // Hide FAB if we're already viewing the first unread week (expanded and at top)
+    val isFirstUnreadWeekVisible = remember(uiState) {
+        if (uiState is ReadingPlanUiState.Loaded) {
+            val firstUnreadWeek = uiState.weekPlans.find { week ->
+                week.weekPlan.days.any { day ->
+                    day.passages.any { passage -> !passage.isRead }
+                }
+            }
+            // If the first unread week is expanded and we're at the top, we're "in" it
+            firstUnreadWeek != null && firstUnreadWeek.isExpanded && !uiState.isScrolledDown
+        } else {
+            false
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -127,11 +139,11 @@ internal fun ReadingPlanScreen(
         },
         floatingActionButton = {
             Column(
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = Alignment.End,
             ) {
                 // Scroll to top FAB - only visible when scrolled down
                 AnimatedVisibility(
-                    visible = isScrolledDown,
+                    visible = uiState.isScrolledDown,
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
@@ -148,21 +160,24 @@ internal fun ReadingPlanScreen(
                     }
                 }
                 // Main FAB - scroll to first unread week
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        onEvent(ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick)
-                    },
-                    expanded = !isScrolledDown,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Default.Book,
-                            contentDescription = null,
-                        )
-                    },
-                    text = {
-                        Text(stringResource(Res.string.go_to_unread))
-                    },
-                )
+                // Hide if we're already viewing the first unread week opened
+                if (!isFirstUnreadWeekVisible) {
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            onEvent(ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick)
+                        },
+                        expanded = !uiState.isScrolledDown,
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Default.Book,
+                                contentDescription = null,
+                            )
+                        },
+                        text = {
+                            Text(stringResource(Res.string.go_to_unread))
+                        },
+                    )
+                }
             }
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -178,12 +193,7 @@ internal fun ReadingPlanScreen(
                 uiState = uiState,
                 onEvent = onEvent,
                 maxContentWidth = constrainedWidth,
-                scrollToWeekNumber = scrollToWeekNumber,
-                onScrollToWeekCompleted = onScrollToWeekCompleted,
-                scrollToTop = scrollToTop,
-                onScrollToTopCompleted = onScrollToTopCompleted,
-                onScrollStateChange = onScrollStateChange,
-                scrollBehavior = scrollBehavior,
+                lazyListState = lazyListState,
             )
         }
     }

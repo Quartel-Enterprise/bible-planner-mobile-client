@@ -41,8 +41,7 @@ internal class ReadingPlanViewModel(
     val uiAction: SharedFlow<ReadingPlanUiAction> = _uiAction
 
     private var currentPlansModel: PlansModel? = null
-    private val expandedWeeks = mutableSetOf<Int>().apply {
-    }
+    private val expandedWeeks = mutableSetOf<Int>()
     private var isFirstLoad = true
 
     init {
@@ -65,15 +64,22 @@ internal class ReadingPlanViewModel(
                         progress = progress,
                         selectedReadingPlan = selectedPlan,
                         isShowingMenu = currentState.isShowingMenu,
+                        scrollToWeekNumber = currentState.scrollToWeekNumber,
+                        scrollToTop = currentState.scrollToTop,
+                        isScrolledDown = currentState.isScrolledDown,
                     )
                 } else {
                     when (currentState) {
                         is ReadingPlanUiState.Loaded -> {
-                            currentState.copy(selectedReadingPlan = selectedPlan)
+                            currentState.copy(
+                                selectedReadingPlan = selectedPlan,
+                            )
                         }
 
                         is ReadingPlanUiState.Loading -> {
-                            currentState.copy(selectedReadingPlan = selectedPlan)
+                            currentState.copy(
+                                selectedReadingPlan = selectedPlan,
+                            )
                         }
                     }
                 }
@@ -89,10 +95,14 @@ internal class ReadingPlanViewModel(
                 }
 
                 // On first load, find and expand the first week with unread books
+                var scrollToWeekNumber = currentState.scrollToWeekNumber
                 if (isFirstLoad) {
                     val firstUnreadWeekNumber = findFirstWeekWithUnreadBook(selectedWeeks)
                     if (firstUnreadWeekNumber != null) {
                         expandedWeeks.add(firstUnreadWeekNumber)
+                        // Always set scrollToWeekNumber - Root will handle skipping scroll for week 1 if at top
+                        scrollToWeekNumber = firstUnreadWeekNumber
+                        // Emit action for UI to scroll (state will be updated in the state creation below)
                         viewModelScope.launch {
                             emitUiAction(ReadingPlanUiAction.ScrollToWeek(firstUnreadWeekNumber))
                         }
@@ -108,6 +118,9 @@ internal class ReadingPlanViewModel(
                     progress = progress,
                     selectedReadingPlan = selectedPlan,
                     isShowingMenu = uiState.value.isShowingMenu,
+                    scrollToWeekNumber = scrollToWeekNumber,
+                    scrollToTop = currentState.scrollToTop,
+                    isScrolledDown = currentState.isScrolledDown,
                 )
             }
         }
@@ -135,7 +148,12 @@ internal class ReadingPlanViewModel(
                                 currentUiState.weekPlans.map { it.weekPlan },
                             )
 
-                            currentUiState.copy(weekPlans = weekPresentationModels)
+                            currentUiState.copy(
+                                weekPlans = weekPresentationModels,
+                                scrollToWeekNumber = currentUiState.scrollToWeekNumber,
+                                scrollToTop = currentUiState.scrollToTop,
+                                isScrolledDown = currentUiState.isScrolledDown,
+                            )
                         }
 
                         is ReadingPlanUiState.Loading -> {
@@ -217,19 +235,63 @@ internal class ReadingPlanViewModel(
                                 val weekPresentationModels = createWeekPresentationModels(
                                     state.weekPlans.map { it.weekPlan },
                                 )
-                                state.copy(weekPlans = weekPresentationModels)
+                                state.copy(
+                                    weekPlans = weekPresentationModels,
+                                    scrollToWeekNumber = state.scrollToWeekNumber,
+                                    scrollToTop = state.scrollToTop,
+                                    isScrolledDown = state.isScrolledDown,
+                                )
                             } else {
                                 state
                             }
                         }
                     }
                     // Scroll to the week
+                    _uiState.update { state ->
+                        when (state) {
+                            is ReadingPlanUiState.Loaded -> state.copy(scrollToWeekNumber = firstUnreadWeekNumber)
+                            is ReadingPlanUiState.Loading -> state.copy(scrollToWeekNumber = firstUnreadWeekNumber)
+                        }
+                    }
                     emitUiAction(ReadingPlanUiAction.ScrollToWeek(firstUnreadWeekNumber))
                 }
             }
 
             ReadingPlanUiEvent.OnScrollToTopClick -> {
+                _uiState.update { state ->
+                    when (state) {
+                        is ReadingPlanUiState.Loaded -> state.copy(scrollToTop = true)
+                        is ReadingPlanUiState.Loading -> state.copy(scrollToTop = true)
+                    }
+                }
                 emitUiAction(ReadingPlanUiAction.ScrollToTop)
+            }
+
+            is ReadingPlanUiEvent.OnScrollStateChange -> {
+                _uiState.update { state ->
+                    when (state) {
+                        is ReadingPlanUiState.Loaded -> state.copy(isScrolledDown = event.isScrolledDown)
+                        is ReadingPlanUiState.Loading -> state.copy(isScrolledDown = event.isScrolledDown)
+                    }
+                }
+            }
+
+            ReadingPlanUiEvent.OnScrollToWeekCompleted -> {
+                _uiState.update { state ->
+                    when (state) {
+                        is ReadingPlanUiState.Loaded -> state.copy(scrollToWeekNumber = 0)
+                        is ReadingPlanUiState.Loading -> state.copy(scrollToWeekNumber = 0)
+                    }
+                }
+            }
+
+            ReadingPlanUiEvent.OnScrollToTopCompleted -> {
+                _uiState.update { state ->
+                    when (state) {
+                        is ReadingPlanUiState.Loaded -> state.copy(scrollToTop = false)
+                        is ReadingPlanUiState.Loading -> state.copy(scrollToTop = false)
+                    }
+                }
             }
         }
     }
@@ -238,11 +300,21 @@ internal class ReadingPlanViewModel(
         _uiState.update { currentUiState ->
             when (currentUiState) {
                 is ReadingPlanUiState.Loaded -> {
-                    currentUiState.copy(isShowingMenu = isShowing)
+                    currentUiState.copy(
+                        isShowingMenu = isShowing,
+                        scrollToWeekNumber = currentUiState.scrollToWeekNumber,
+                        scrollToTop = currentUiState.scrollToTop,
+                        isScrolledDown = currentUiState.isScrolledDown,
+                    )
                 }
 
                 is ReadingPlanUiState.Loading -> {
-                    currentUiState.copy(isShowingMenu = isShowing)
+                    currentUiState.copy(
+                        isShowingMenu = isShowing,
+                        scrollToWeekNumber = currentUiState.scrollToWeekNumber,
+                        scrollToTop = currentUiState.scrollToTop,
+                        isScrolledDown = currentUiState.isScrolledDown,
+                    )
                 }
             }
         }
