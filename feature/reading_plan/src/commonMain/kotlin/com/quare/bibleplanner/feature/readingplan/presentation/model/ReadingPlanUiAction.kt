@@ -13,6 +13,8 @@ sealed interface ReadingPlanUiAction {
         val weekNumber: Int,
     ) : ReadingPlanUiAction
 
+    data object ScrollToTop : ReadingPlanUiAction
+
     data object GoToDeleteAllProgress : ReadingPlanUiAction
 
     data object GoToTheme : ReadingPlanUiAction

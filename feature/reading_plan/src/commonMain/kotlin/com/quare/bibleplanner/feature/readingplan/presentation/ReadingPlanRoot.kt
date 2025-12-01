@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.readingplan.presentation
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
@@ -22,6 +23,8 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
         val viewModel = koinViewModel<ReadingPlanViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         var scrollToWeekNumber by remember { mutableIntStateOf(0) }
+        var scrollToTop by remember { mutableStateOf(false) }
+        var isScrolledDown by remember { mutableStateOf(false) }
 
         ActionCollector(viewModel.uiAction) { uiAction ->
             when (uiAction) {
@@ -39,6 +42,10 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
                     scrollToWeekNumber = uiAction.weekNumber
                 }
 
+                ReadingPlanUiAction.ScrollToTop -> {
+                    scrollToTop = true
+                }
+
                 ReadingPlanUiAction.GoToDeleteAllProgress -> {
                     navController.navigate(DeleteAllProgressNavRoute)
                 }
@@ -53,6 +60,10 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
             onEvent = viewModel::onEvent,
             scrollToWeekNumber = scrollToWeekNumber,
             onScrollToWeekCompleted = { scrollToWeekNumber = 0 },
+            scrollToTop = scrollToTop,
+            onScrollToTopCompleted = { scrollToTop = false },
+            isScrolledDown = isScrolledDown,
+            onScrollStateChange = { isScrolledDown = it },
         )
     }
 }

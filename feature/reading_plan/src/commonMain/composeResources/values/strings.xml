@@ -9,4 +9,6 @@
     <string name="more_options">More options</string>
     <string name="theme_option">Theme</string>
     <string name="delete_progress_option">Delete progress</string>
+    <string name="go_to_unread">Go to unread</string>
+    <string name="scroll_to_top">Scroll to top</string>
 </resources>

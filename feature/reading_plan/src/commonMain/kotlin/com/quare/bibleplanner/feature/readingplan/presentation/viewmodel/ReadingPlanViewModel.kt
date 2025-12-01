@@ -193,6 +193,44 @@ internal class ReadingPlanViewModel(
                     },
                 )
             }
+
+            ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick -> {
+                val currentUiState = _uiState.value
+                val plansModel = currentPlansModel
+
+                if (currentUiState !is ReadingPlanUiState.Loaded || plansModel == null) {
+                    return
+                }
+
+                val selectedWeeks = when (currentUiState.selectedReadingPlan) {
+                    ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
+                    ReadingPlanType.BOOKS -> plansModel.booksOrder
+                }
+
+                val firstUnreadWeekNumber = findFirstWeekWithUnreadBook(selectedWeeks)
+                if (firstUnreadWeekNumber != null) {
+                    // Expand the week if it's not already expanded
+                    if (!expandedWeeks.contains(firstUnreadWeekNumber)) {
+                        expandedWeeks.add(firstUnreadWeekNumber)
+                        _uiState.update { state ->
+                            if (state is ReadingPlanUiState.Loaded) {
+                                val weekPresentationModels = createWeekPresentationModels(
+                                    state.weekPlans.map { it.weekPlan },
+                                )
+                                state.copy(weekPlans = weekPresentationModels)
+                            } else {
+                                state
+                            }
+                        }
+                    }
+                    // Scroll to the week
+                    emitUiAction(ReadingPlanUiAction.ScrollToWeek(firstUnreadWeekNumber))
+                }
+            }
+
+            ReadingPlanUiEvent.OnScrollToTopClick -> {
+                emitUiAction(ReadingPlanUiAction.ScrollToTop)
+            }
         }
     }
 

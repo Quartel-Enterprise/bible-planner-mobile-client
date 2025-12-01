@@ -1,30 +1,41 @@
 package com.quare.bibleplanner.feature.readingplan.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Contrast
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.delete_progress_option
+import bibleplanner.feature.reading_plan.generated.resources.go_to_unread
 import bibleplanner.feature.reading_plan.generated.resources.more_options
 import bibleplanner.feature.reading_plan.generated.resources.reading_plan
+import bibleplanner.feature.reading_plan.generated.resources.scroll_to_top
 import bibleplanner.feature.reading_plan.generated.resources.theme_option
 import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanContent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
@@ -42,6 +53,10 @@ internal fun ReadingPlanScreen(
     onEvent: (ReadingPlanUiEvent) -> Unit,
     scrollToWeekNumber: Int,
     onScrollToWeekCompleted: () -> Unit,
+    scrollToTop: Boolean,
+    onScrollToTopCompleted: () -> Unit,
+    isScrolledDown: Boolean,
+    onScrollStateChange: (Boolean) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -110,6 +125,47 @@ internal fun ReadingPlanScreen(
                 },
             )
         },
+        floatingActionButton = {
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                // Scroll to top FAB - only visible when scrolled down
+                AnimatedVisibility(
+                    visible = isScrolledDown,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    SmallFloatingActionButton(
+                        onClick = {
+                            onEvent(ReadingPlanUiEvent.OnScrollToTopClick)
+                        },
+                        modifier = Modifier.padding(bottom = 8.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowUp,
+                            contentDescription = stringResource(Res.string.scroll_to_top),
+                        )
+                    }
+                }
+                // Main FAB - scroll to first unread week
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        onEvent(ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick)
+                    },
+                    expanded = !isScrolledDown,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Book,
+                            contentDescription = null,
+                        )
+                    },
+                    text = {
+                        Text(stringResource(Res.string.go_to_unread))
+                    },
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
         BoxWithConstraints(
             modifier = Modifier
@@ -124,6 +180,10 @@ internal fun ReadingPlanScreen(
                 maxContentWidth = constrainedWidth,
                 scrollToWeekNumber = scrollToWeekNumber,
                 onScrollToWeekCompleted = onScrollToWeekCompleted,
+                scrollToTop = scrollToTop,
+                onScrollToTopCompleted = onScrollToTopCompleted,
+                onScrollStateChange = onScrollStateChange,
+                scrollBehavior = scrollBehavior,
             )
         }
     }

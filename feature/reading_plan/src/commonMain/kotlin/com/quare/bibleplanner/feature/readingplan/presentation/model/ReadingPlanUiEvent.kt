@@ -28,4 +28,8 @@ internal sealed interface ReadingPlanUiEvent {
     data class OnOverflowOptionClick(
         val option: OverflowOption,
     ) : ReadingPlanUiEvent
+
+    data object OnScrollToFirstUnreadWeekClick : ReadingPlanUiEvent
+
+    data object OnScrollToTopClick : ReadingPlanUiEvent
 }
