@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
@@ -31,6 +32,7 @@ internal class ReadingPlanViewModel(
     private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
     private val markPassagesReadUseCase: MarkPassagesReadUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
+    private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
@@ -40,9 +42,8 @@ internal class ReadingPlanViewModel(
 
     private var currentPlansModel: PlansModel? = null
     private val expandedWeeks = mutableSetOf<Int>().apply {
-        // Default to week 1 expanded
-        add(1)
     }
+    private var isFirstLoad = true
 
     init {
         viewModelScope.launch {
@@ -86,6 +87,19 @@ internal class ReadingPlanViewModel(
                     ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
                     ReadingPlanType.BOOKS -> plansModel.booksOrder
                 }
+
+                // On first load, find and expand the first week with unread books
+                if (isFirstLoad) {
+                    val firstUnreadWeekNumber = findFirstWeekWithUnreadBook(selectedWeeks)
+                    if (firstUnreadWeekNumber != null) {
+                        expandedWeeks.add(firstUnreadWeekNumber)
+                        viewModelScope.launch {
+                            emitUiAction(ReadingPlanUiAction.ScrollToWeek(firstUnreadWeekNumber))
+                        }
+                    }
+                    isFirstLoad = false
+                }
+
                 val progress = calculateProgress(selectedWeeks)
                 val weekPresentationModels = createWeekPresentationModels(selectedWeeks)
 

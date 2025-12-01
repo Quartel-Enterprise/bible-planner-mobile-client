@@ -40,6 +40,8 @@ private const val MAX_CONTENT_WIDTH = 600
 internal fun ReadingPlanScreen(
     uiState: ReadingPlanUiState,
     onEvent: (ReadingPlanUiEvent) -> Unit,
+    scrollToWeekNumber: Int,
+    onScrollToWeekCompleted: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -120,6 +122,8 @@ internal fun ReadingPlanScreen(
                 uiState = uiState,
                 onEvent = onEvent,
                 maxContentWidth = constrainedWidth,
+                scrollToWeekNumber = scrollToWeekNumber,
+                onScrollToWeekCompleted = onScrollToWeekCompleted,
             )
         }
     }

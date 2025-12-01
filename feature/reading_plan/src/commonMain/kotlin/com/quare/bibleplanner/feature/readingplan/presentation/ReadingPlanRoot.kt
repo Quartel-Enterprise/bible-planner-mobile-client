@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.readingplan.presentation
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -18,30 +21,38 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
     composable<ReadingPlanNavRoute> {
         val viewModel = koinViewModel<ReadingPlanViewModel>()
         val uiState by viewModel.uiState.collectAsState()
+        var scrollToWeekNumber by remember { mutableIntStateOf(0) }
+
         ActionCollector(viewModel.uiAction) { uiAction ->
-            navController.navigate(
-                when (uiAction) {
-                    is ReadingPlanUiAction.GoToDay -> {
+            when (uiAction) {
+                is ReadingPlanUiAction.GoToDay -> {
+                    navController.navigate(
                         DayNavRoute(
                             dayNumber = uiAction.dayNumber,
                             weekNumber = uiAction.weekNumber,
                             readingPlanType = uiAction.readingPlanType.name,
-                        )
-                    }
+                        ),
+                    )
+                }
 
-                    ReadingPlanUiAction.GoToDeleteAllProgress -> {
-                        DeleteAllProgressNavRoute
-                    }
+                is ReadingPlanUiAction.ScrollToWeek -> {
+                    scrollToWeekNumber = uiAction.weekNumber
+                }
 
-                    ReadingPlanUiAction.GoToTheme -> {
-                        ThemeNavRoute
-                    }
-                },
-            )
+                ReadingPlanUiAction.GoToDeleteAllProgress -> {
+                    navController.navigate(DeleteAllProgressNavRoute)
+                }
+
+                ReadingPlanUiAction.GoToTheme -> {
+                    navController.navigate(ThemeNavRoute)
+                }
+            }
         }
         ReadingPlanScreen(
             uiState = uiState,
             onEvent = viewModel::onEvent,
+            scrollToWeekNumber = scrollToWeekNumber,
+            onScrollToWeekCompleted = { scrollToWeekNumber = 0 },
         )
     }
 }
