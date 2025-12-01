@@ -31,6 +31,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.model)
+            implementation(projects.core.provider.dataStore)
 
             // UI
             implementation(projects.ui.component)
@@ -52,6 +53,10 @@ kotlin {
             implementation(libs.koinCore)
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewModel)
+
+            // Data Store
+            implementation(libs.dataStore)
+            implementation(libs.dataStore.preferences)
         }
     }
 }

@@ -16,9 +16,7 @@ import com.quare.bibleplanner.ui.theme.model.Theme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun App(
-    getSpecificColors: @Composable ((isAppInDarkTheme: Boolean) -> ColorScheme?)? = null,
-) {
+fun App(getSpecificColors: @Composable ((isAppInDarkTheme: Boolean) -> ColorScheme?)? = null) {
     val viewModel: AppViewModel = koinViewModel()
     val theme by viewModel.themeState.collectAsState()
     ProvideCompositionLocals(theme) {

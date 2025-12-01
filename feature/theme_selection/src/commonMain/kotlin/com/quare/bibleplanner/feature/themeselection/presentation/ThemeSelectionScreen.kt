@@ -44,7 +44,7 @@ fun ThemeSelectionScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
             val isWide = maxWidth > 600.dp
             val commonModifier = Modifier.align(Alignment.Center)

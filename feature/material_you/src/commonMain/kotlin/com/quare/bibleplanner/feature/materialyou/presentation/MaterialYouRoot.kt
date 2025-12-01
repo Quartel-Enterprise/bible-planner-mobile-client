@@ -16,15 +16,13 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.materialYou(
-    navController: NavHostController,
-) {
+fun NavGraphBuilder.materialYou(navController: NavHostController) {
     dialog<MaterialYouBottomSheetNavRoute> {
         val viewModel = koinViewModel<AndroidColorSchemeViewModel>()
         val state by viewModel.uiState.collectAsState()
         MaterialYouActionCollector(
             navHostController = navController,
-            flow = viewModel.uiAction
+            flow = viewModel.uiAction,
         )
         MaterialYouDialog(
             isMaterialYouActivated = state,
@@ -36,7 +34,7 @@ fun NavGraphBuilder.materialYou(
 @Composable
 private fun MaterialYouActionCollector(
     flow: Flow<AndroidColorSchemeUiAction>,
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     ActionCollector(flow) { uiAction ->
         when (uiAction) {
