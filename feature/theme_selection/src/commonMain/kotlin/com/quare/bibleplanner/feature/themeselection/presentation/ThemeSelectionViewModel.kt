@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.isAndroid
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
+import com.quare.bibleplanner.feature.materialyou.domain.usecase.SetIsDynamicColorsEnabled
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetThemeOption
 import com.quare.bibleplanner.feature.themeselection.presentation.factory.ThemeOptionsFactory
@@ -23,6 +24,7 @@ import kotlinx.coroutines.launch
 
 class ThemeSelectionViewModel(
     private val setThemeOption: SetThemeOption,
+    private val setDynamicColorsEnabledFlow: SetIsDynamicColorsEnabled,
     getThemeOptionFlow: GetThemeOptionFlow,
     getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
     platform: Platform,
@@ -66,7 +68,9 @@ class ThemeSelectionViewModel(
             }
 
             is ThemeSelectionUiEvent.MaterialYouToggleClicked -> {
-                // TODO: set the data flow
+                viewModelScope.launch {
+                    setDynamicColorsEnabledFlow(event.isNewValueOn)
+                }
             }
 
             ThemeSelectionUiEvent.OnBackClicked -> {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +44,7 @@ fun ThemeSelectionScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(16.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
         ) {
             val isWide = maxWidth > 600.dp
             val commonModifier = Modifier.align(Alignment.Center)
@@ -53,7 +54,7 @@ fun ThemeSelectionScreen(
             val options = uiState.options
             if (isWide) {
                 Row(
-                    modifier = commonModifier,
+                    modifier = commonModifier.widthIn(max = 1000.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     options.forEach {
