@@ -29,4 +29,3 @@ fun NavGraphBuilder.deleteProgress(navController: NavHostController) {
         )
     }
 }
-

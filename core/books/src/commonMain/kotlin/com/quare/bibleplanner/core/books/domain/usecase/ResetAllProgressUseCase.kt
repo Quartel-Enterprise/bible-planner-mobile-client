@@ -22,4 +22,3 @@ class ResetAllProgressUseCase(
         verseDao.resetAllVersesProgress()
     }
 }
-

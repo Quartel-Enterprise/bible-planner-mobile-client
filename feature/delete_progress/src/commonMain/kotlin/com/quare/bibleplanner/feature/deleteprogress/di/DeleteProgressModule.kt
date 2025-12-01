@@ -8,4 +8,3 @@ val deleteProgressModule = module {
     // Presentation
     viewModelOf(::DeleteAllProgressViewModel)
 }
-

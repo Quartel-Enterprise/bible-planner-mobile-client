@@ -18,9 +18,7 @@ import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAl
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun DeleteAllProgressScreen(
-    onEvent: (DeleteAllProgressUiEvent) -> Unit,
-) {
+fun DeleteAllProgressScreen(onEvent: (DeleteAllProgressUiEvent) -> Unit) {
     AlertDialog(
         onDismissRequest = {
             onEvent(DeleteAllProgressUiEvent.OnCancel)
@@ -64,4 +62,3 @@ fun DeleteAllProgressScreen(
         },
     )
 }
-
