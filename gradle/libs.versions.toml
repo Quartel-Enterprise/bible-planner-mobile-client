@@ -20,6 +20,7 @@ koinVersion = "4.1.1"
 room = "2.8.4"
 sqlite = "2.6.2"
 ksp = "2.2.20-2.0.3"
+datasSoreVersion = "1.2.0"
 
 [libraries]
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
@@ -60,6 +61,10 @@ koinAndroid = { group = "io.insert-koin", name = "koin-android" }
 koinCore = { group = "io.insert-koin", name = "koin-core" }
 koinCompose = { group = "io.insert-koin", name = "koin-compose" }
 koinComposeViewModel = { group = "io.insert-koin", name = "koin-compose-viewmodel" }
+
+# Data Store
+dataStore = { module = "androidx.datastore:datastore", version.ref = "datasSoreVersion" }
+dataStore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datasSoreVersion" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

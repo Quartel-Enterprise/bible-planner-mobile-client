@@ -22,12 +22,14 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.room)
             implementation(projects.core.books)
             implementation(projects.core.plan)
 
             // Features
             implementation(projects.feature.readingPlan)
+            implementation(projects.feature.themeSelection)
             implementation(projects.feature.day)
 
             // Koin

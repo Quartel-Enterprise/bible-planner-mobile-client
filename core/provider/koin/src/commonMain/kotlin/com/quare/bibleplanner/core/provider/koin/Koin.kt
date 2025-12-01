@@ -4,7 +4,7 @@ import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 
-fun initializeKoin(
+fun commonKoinInitializer(
     config: (KoinApplication.() -> Unit)? = null,
     platformModules: List<Module> = emptyList(),
 ) {

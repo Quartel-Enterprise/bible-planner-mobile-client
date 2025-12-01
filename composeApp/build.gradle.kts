@@ -82,14 +82,8 @@ kotlin {
             implementation(libs.koinAndroid)
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
+            // Feature
+            implementation(projects.feature.themeSelection)
 
             // Core
             implementation(projects.core.books)
@@ -100,9 +94,21 @@ kotlin {
             // UI
             implementation(projects.ui.theme)
 
+            // Compose
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
+            implementation(libs.koinCompose)
+            implementation(libs.koinComposeViewModel)
 
             // Room
             implementation(libs.androidx.room.runtime)

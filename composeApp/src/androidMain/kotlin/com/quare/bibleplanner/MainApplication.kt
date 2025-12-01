@@ -1,8 +1,9 @@
 package com.quare.bibleplanner
 
 import android.app.Application
-import com.quare.bibleplanner.core.provider.koin.initializeKoin
+import com.quare.bibleplanner.core.provider.koin.commonKoinInitializer
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
+import com.quare.bibleplanner.di.initializeKoin
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 

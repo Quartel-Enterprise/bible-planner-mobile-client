@@ -1,11 +1,13 @@
 package com.quare.bibleplanner.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.quare.bibleplanner.core.model.route.ReadingPlanNavRoute
 import com.quare.bibleplanner.feature.day.presentation.day
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
+import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 
 @Composable
 fun AppNavHost() {
@@ -16,5 +18,6 @@ fun AppNavHost() {
     ) {
         readingPlan(navController)
         day(navController)
+        themeSettings(navController)
     }
 }

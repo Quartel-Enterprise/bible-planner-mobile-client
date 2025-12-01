@@ -6,4 +6,7 @@
     <string name="loading">Loading...</string>
     <string name="week_complete">Week %1$d - %2$d/%3$d complete</string>
     <string name="day_number">Day %1$d</string>
+    <string name="more_options">More options</string>
+    <string name="theme_option">Theme</string>
+    <string name="delete_progress_option">Delete progress</string>
 </resources>

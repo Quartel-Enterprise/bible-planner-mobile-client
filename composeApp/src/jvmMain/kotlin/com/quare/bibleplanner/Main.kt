@@ -4,8 +4,8 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import bibleplanner.composeapp.generated.resources.Res
 import bibleplanner.composeapp.generated.resources.app_title
-import com.quare.bibleplanner.core.provider.koin.initializeKoin
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
+import com.quare.bibleplanner.di.initializeKoin
 import org.jetbrains.compose.resources.stringResource
 import org.koin.dsl.module
 

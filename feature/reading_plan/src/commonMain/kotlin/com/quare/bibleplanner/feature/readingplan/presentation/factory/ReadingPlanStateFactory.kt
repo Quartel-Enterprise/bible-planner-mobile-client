@@ -6,7 +6,8 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 internal class ReadingPlanStateFactory {
     private val defaultPlan = ReadingPlanType.CHRONOLOGICAL
 
-    fun createLoading(): ReadingPlanUiState.Loading = ReadingPlanUiState.Loading(
+    fun createFirstState(): ReadingPlanUiState.Loading = ReadingPlanUiState.Loading(
         selectedReadingPlan = defaultPlan,
+        isShowingMenu = false,
     )
 }

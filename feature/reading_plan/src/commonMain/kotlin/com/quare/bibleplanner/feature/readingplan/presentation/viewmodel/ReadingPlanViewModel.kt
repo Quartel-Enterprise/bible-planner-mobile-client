@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
+import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
@@ -27,7 +28,7 @@ internal class ReadingPlanViewModel(
     private val markPassagesReadUseCase: MarkPassagesReadUseCase,
     getPlansByWeek: GetPlansByWeekUseCase,
 ) : ViewModel() {
-    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createLoading())
+    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
 
     private val _uiAction: MutableSharedFlow<ReadingPlanUiAction> = MutableSharedFlow()
@@ -58,6 +59,7 @@ internal class ReadingPlanViewModel(
                     weekPlans = weekPresentationModels,
                     progress = progress,
                     selectedReadingPlan = selectedPlan,
+                    isShowingMenu = uiState.value.isShowingMenu,
                 )
             }
         }
@@ -135,14 +137,44 @@ internal class ReadingPlanViewModel(
             }
 
             is ReadingPlanUiEvent.OnDayClick -> {
-                viewModelScope.launch {
-                    _uiAction.emit(
-                        ReadingPlanUiAction.GoToDay(
-                            dayNumber = event.dayNumber,
-                            weekNumber = event.weekNumber,
-                            readingPlanType = uiState.value.selectedReadingPlan,
-                        ),
-                    )
+                emitUiAction(
+                    ReadingPlanUiAction.GoToDay(
+                        dayNumber = event.dayNumber,
+                        weekNumber = event.weekNumber,
+                        readingPlanType = uiState.value.selectedReadingPlan,
+                    ),
+                )
+            }
+
+            ReadingPlanUiEvent.OnOverflowClick -> {
+                changeMenuVisibility(true)
+            }
+
+            ReadingPlanUiEvent.OnOverflowDismiss -> {
+                changeMenuVisibility(false)
+            }
+
+            is ReadingPlanUiEvent.OnOverflowOptionClick -> {
+                changeMenuVisibility(false)
+                emitUiAction(
+                    when (event.option) {
+                        OverflowOption.THEME -> ReadingPlanUiAction.GoToTheme
+                        OverflowOption.DELETE_PROGRESS -> ReadingPlanUiAction.GoToTheme
+                    },
+                )
+            }
+        }
+    }
+
+    private fun changeMenuVisibility(isShowing: Boolean) {
+        _uiState.update { currentUiState ->
+            when (currentUiState) {
+                is ReadingPlanUiState.Loaded -> {
+                    currentUiState.copy(isShowingMenu = isShowing)
+                }
+
+                is ReadingPlanUiState.Loading -> {
+                    currentUiState.copy(isShowingMenu = isShowing)
                 }
             }
         }
@@ -171,5 +203,11 @@ internal class ReadingPlanViewModel(
         }
 
         return 100 * (readVerses.toFloat() / totalVerses.toFloat())
+    }
+
+    private fun emitUiAction(uiAction: ReadingPlanUiAction) {
+        viewModelScope.launch {
+            _uiAction.emit(uiAction)
+        }
     }
 }

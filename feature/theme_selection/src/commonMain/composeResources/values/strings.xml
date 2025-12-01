@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="light_title">Light</string>
+    <string name="light_description">Bright and clear interface</string>
+    <string name="dark_title">Dark</string>
+    <string name="dark_description">Reduces eye strain, ideal for low-light environments</string>
+    <string name="system_title">System</string>
+    <string name="system_description">Automatically adapts to system settings</string>
+    <string name="dynamic_colors_title">Dynamic colors</string>
+</resources>
+
