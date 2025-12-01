@@ -1,0 +1,7 @@
+<resources>
+    <string name="delete_all_progress_title">Excluir Todo o Progresso</string>
+    <string name="delete_all_progress_message">Tem certeza de que deseja excluir todo o seu progresso de leitura? Isso marcará todas as passagens como não lidas e limpará todos os carimbos de data/hora. Esta ação não pode ser desfeita.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Excluir</string>
+</resources>
+

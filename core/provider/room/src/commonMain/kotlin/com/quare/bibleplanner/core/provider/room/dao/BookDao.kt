@@ -57,4 +57,7 @@ interface BookDao {
 
     @Query("DELETE FROM books")
     suspend fun deleteAllBooks()
+
+    @Query("UPDATE books SET isRead = 0")
+    suspend fun resetAllBooksProgress()
 }

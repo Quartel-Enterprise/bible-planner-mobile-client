@@ -8,7 +8,10 @@ import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
+import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
@@ -23,11 +26,13 @@ import kotlinx.coroutines.launch
 
 internal class ReadingPlanViewModel(
     factory: ReadingPlanStateFactory,
+    getPlansByWeek: GetPlansByWeekUseCase,
+    getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
     private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
     private val markPassagesReadUseCase: MarkPassagesReadUseCase,
-    getPlansByWeek: GetPlansByWeekUseCase,
+    private val setSelectedReadingPlan: SetSelectedReadingPlan,
 ) : ViewModel() {
-    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createLoading())
+    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
 
     private val _uiAction: MutableSharedFlow<ReadingPlanUiAction> = MutableSharedFlow()
@@ -42,6 +47,36 @@ internal class ReadingPlanViewModel(
     init {
         viewModelScope.launch {
             initializeBooksIfNeeded()
+        }
+        observe(getSelectedReadingPlanFlow()) { selectedPlan ->
+            _uiState.update { currentState ->
+                val plansModel = currentPlansModel
+                if (plansModel != null) {
+                    val selectedWeeks = when (selectedPlan) {
+                        ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
+                        ReadingPlanType.BOOKS -> plansModel.booksOrder
+                    }
+                    val progress = calculateProgress(selectedWeeks)
+                    val weekPresentationModels = createWeekPresentationModels(selectedWeeks)
+
+                    ReadingPlanUiState.Loaded(
+                        weekPlans = weekPresentationModels,
+                        progress = progress,
+                        selectedReadingPlan = selectedPlan,
+                        isShowingMenu = currentState.isShowingMenu,
+                    )
+                } else {
+                    when (currentState) {
+                        is ReadingPlanUiState.Loaded -> {
+                            currentState.copy(selectedReadingPlan = selectedPlan)
+                        }
+
+                        is ReadingPlanUiState.Loading -> {
+                            currentState.copy(selectedReadingPlan = selectedPlan)
+                        }
+                    }
+                }
+            }
         }
         observe(getPlansByWeek()) { plansModel ->
             currentPlansModel = plansModel
@@ -58,6 +93,7 @@ internal class ReadingPlanViewModel(
                     weekPlans = weekPresentationModels,
                     progress = progress,
                     selectedReadingPlan = selectedPlan,
+                    isShowingMenu = uiState.value.isShowingMenu,
                 )
             }
         }
@@ -66,26 +102,8 @@ internal class ReadingPlanViewModel(
     fun onEvent(event: ReadingPlanUiEvent) {
         when (event) {
             is ReadingPlanUiEvent.OnPlanClick -> {
-                _uiState.update { currentUiState ->
-                    when (currentUiState) {
-                        is ReadingPlanUiState.Loaded -> {
-                            val plansModel = currentPlansModel ?: return@update currentUiState
-                            val selectedWeeks = when (event.type) {
-                                ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
-                                ReadingPlanType.BOOKS -> plansModel.booksOrder
-                            }
-                            val weekPresentationModels = createWeekPresentationModels(selectedWeeks)
-
-                            currentUiState.copy(
-                                weekPlans = weekPresentationModels,
-                                selectedReadingPlan = event.type,
-                            )
-                        }
-
-                        is ReadingPlanUiState.Loading -> {
-                            currentUiState.copy(selectedReadingPlan = event.type)
-                        }
-                    }
+                viewModelScope.launch {
+                    setSelectedReadingPlan(event.type)
                 }
             }
 
@@ -135,14 +153,44 @@ internal class ReadingPlanViewModel(
             }
 
             is ReadingPlanUiEvent.OnDayClick -> {
-                viewModelScope.launch {
-                    _uiAction.emit(
-                        ReadingPlanUiAction.GoToDay(
-                            dayNumber = event.dayNumber,
-                            weekNumber = event.weekNumber,
-                            readingPlanType = uiState.value.selectedReadingPlan,
-                        ),
-                    )
+                emitUiAction(
+                    ReadingPlanUiAction.GoToDay(
+                        dayNumber = event.dayNumber,
+                        weekNumber = event.weekNumber,
+                        readingPlanType = uiState.value.selectedReadingPlan,
+                    ),
+                )
+            }
+
+            ReadingPlanUiEvent.OnOverflowClick -> {
+                changeMenuVisibility(true)
+            }
+
+            ReadingPlanUiEvent.OnOverflowDismiss -> {
+                changeMenuVisibility(false)
+            }
+
+            is ReadingPlanUiEvent.OnOverflowOptionClick -> {
+                changeMenuVisibility(false)
+                emitUiAction(
+                    when (event.option) {
+                        OverflowOption.THEME -> ReadingPlanUiAction.GoToTheme
+                        OverflowOption.DELETE_PROGRESS -> ReadingPlanUiAction.GoToDeleteAllProgress
+                    },
+                )
+            }
+        }
+    }
+
+    private fun changeMenuVisibility(isShowing: Boolean) {
+        _uiState.update { currentUiState ->
+            when (currentUiState) {
+                is ReadingPlanUiState.Loaded -> {
+                    currentUiState.copy(isShowingMenu = isShowing)
+                }
+
+                is ReadingPlanUiState.Loading -> {
+                    currentUiState.copy(isShowingMenu = isShowing)
                 }
             }
         }
@@ -171,5 +219,11 @@ internal class ReadingPlanViewModel(
         }
 
         return 100 * (readVerses.toFloat() / totalVerses.toFloat())
+    }
+
+    private fun emitUiAction(uiAction: ReadingPlanUiAction) {
+        viewModelScope.launch {
+            _uiAction.emit(uiAction)
+        }
     }
 }

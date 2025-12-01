@@ -62,4 +62,7 @@ interface DayDao {
 
     @Query("DELETE FROM days")
     suspend fun deleteAllDays()
+
+    @Query("UPDATE days SET isRead = 0, readTimestamp = NULL")
+    suspend fun resetAllDaysProgress()
 }

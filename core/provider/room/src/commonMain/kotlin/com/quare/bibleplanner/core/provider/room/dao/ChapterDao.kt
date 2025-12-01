@@ -51,4 +51,7 @@ interface ChapterDao {
 
     @Query("DELETE FROM chapters")
     suspend fun deleteAllChapters()
+
+    @Query("UPDATE chapters SET isRead = 0")
+    suspend fun resetAllChaptersProgress()
 }

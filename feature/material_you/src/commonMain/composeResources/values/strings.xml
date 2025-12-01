@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="android_dynamic_colors">Dynamic colors</string>
+    <string name="dynamic_colors_title">Dynamic colors</string>
+    <string name="dynamic_colors_message">
+        Dynamic colors adapt the app’s look and feel to match your device’s wallpaper.
+        When enabled, buttons, backgrounds, and highlights will use colors extracted from your wallpaper.
+    </string>
+    <string name="dynamic_colors_compat_note">Available on Android 12 or newer. Older versions use the default color scheme.</string>
+    <string name="got_it">Got it</string>
+    <string name="dynamic_colors_toggle_label">Use dynamic colors</string>
+</resources>
+
+

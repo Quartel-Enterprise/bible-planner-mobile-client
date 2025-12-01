@@ -20,4 +20,12 @@ internal sealed interface ReadingPlanUiEvent {
         val dayNumber: Int,
         val weekNumber: Int,
     ) : ReadingPlanUiEvent
+
+    data object OnOverflowClick : ReadingPlanUiEvent
+
+    data object OnOverflowDismiss : ReadingPlanUiEvent
+
+    data class OnOverflowOptionClick(
+        val option: OverflowOption,
+    ) : ReadingPlanUiEvent
 }

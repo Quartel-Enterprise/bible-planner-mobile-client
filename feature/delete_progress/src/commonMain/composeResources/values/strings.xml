@@ -1,0 +1,7 @@
+<resources>
+    <string name="delete_all_progress_title">Delete All Progress</string>
+    <string name="delete_all_progress_message">Are you sure you want to delete all your reading progress? This will mark all passages as unread and clear all timestamps. This action cannot be undone.</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+</resources>
+

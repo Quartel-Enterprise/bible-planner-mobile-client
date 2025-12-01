@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.ui.component.backicon
+package com.quare.bibleplanner.ui.component.icon
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -28,15 +28,12 @@ fun BackIcon(
     modifier: Modifier = Modifier,
 ) {
     val platform = remember { getPlatform() }
-    IconButton(
-        onClick = onBackClick,
+    CommonIconButton(
         modifier = modifier,
-    ) {
-        Icon(
-            imageVector = platform.toArrowBackIcon(),
-            contentDescription = stringResource(Res.string.back),
-        )
-    }
+        onClick = onBackClick,
+        imageVector = platform.toArrowBackIcon(),
+        contentDescription = stringResource(Res.string.back),
+    )
 }
 
 private fun Platform.toArrowBackIcon(): ImageVector = if (isApplePlatform()) {

@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -30,4 +31,5 @@ val booksModule = module {
     // Use cases
     factoryOf(::InitializeBooksIfNeeded)
     factoryOf(::MarkPassagesReadUseCase)
+    factoryOf(::ResetAllProgressUseCase)
 }

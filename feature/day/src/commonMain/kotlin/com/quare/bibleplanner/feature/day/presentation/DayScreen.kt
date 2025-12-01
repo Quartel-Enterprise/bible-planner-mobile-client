@@ -23,7 +23,7 @@ import com.quare.bibleplanner.feature.day.presentation.component.DayProgress
 import com.quare.bibleplanner.feature.day.presentation.content.DayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-import com.quare.bibleplanner.ui.component.backicon.BackIcon
+import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 

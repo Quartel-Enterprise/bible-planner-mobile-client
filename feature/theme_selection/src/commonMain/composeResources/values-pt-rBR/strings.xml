@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="light_title">Claro</string>
+    <string name="light_description">Interface brilhante e nítida</string>
+    <string name="dark_title">Escuro</string>
+    <string name="dark_description">Reduz fadiga ocular, ideal para ambientes de pouca luz</string>
+    <string name="system_title">Sistema</string>
+    <string name="system_description">Adapta-se automaticamente às configurações do sistema</string>
+    <string name="dynamic_colors_title">Cores dinâmicas</string>
+</resources>
+
+

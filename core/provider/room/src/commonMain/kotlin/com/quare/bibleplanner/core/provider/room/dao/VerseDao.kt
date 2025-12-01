@@ -57,4 +57,7 @@ interface VerseDao {
 
     @Query("DELETE FROM verses")
     suspend fun deleteAllVerses()
+
+    @Query("UPDATE verses SET isRead = 0")
+    suspend fun resetAllVersesProgress()
 }

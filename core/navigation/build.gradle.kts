@@ -30,7 +30,10 @@ kotlin {
         commonMain.dependencies {
             // Feature
             implementation(projects.feature.readingPlan)
+            implementation(projects.feature.themeSelection)
+            implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
+            implementation(projects.feature.deleteProgress)
 
             // Core
             implementation(projects.core.model)
