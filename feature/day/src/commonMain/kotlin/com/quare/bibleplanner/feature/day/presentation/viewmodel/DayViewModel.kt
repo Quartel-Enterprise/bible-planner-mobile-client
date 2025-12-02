@@ -71,8 +71,8 @@ internal class DayViewModel(
                 onChapterToggle(event)
             }
 
-            is DayUiEvent.OnDayReadToggle -> {
-                onDayReadToggle(event)
+            DayUiEvent.OnDayReadToggle -> {
+                onDayReadToggle()
             }
 
             is DayUiEvent.OnEditReadDate -> {
@@ -139,12 +139,15 @@ internal class DayViewModel(
         }
     }
 
-    private fun onDayReadToggle(event: DayUiEvent.OnDayReadToggle) {
+    private fun onDayReadToggle() {
+        val currentState = _uiState.value as? DayUiState.Loaded ?: return
+        val newReadStatus = !currentState.day.isRead
+
         viewModelScope.launch {
             useCases.updateDayReadStatus(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
-                isRead = event.isRead,
+                isRead = newReadStatus,
                 readingPlanType = readingPlanType,
             )
         }

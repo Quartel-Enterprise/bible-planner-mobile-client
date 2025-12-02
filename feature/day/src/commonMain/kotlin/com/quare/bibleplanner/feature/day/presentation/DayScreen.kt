@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -17,8 +16,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.day_week_title
-import bibleplanner.feature.day.generated.resources.mark_as_read
-import bibleplanner.feature.day.generated.resources.mark_as_unread
 import com.quare.bibleplanner.feature.day.presentation.component.DayProgress
 import com.quare.bibleplanner.feature.day.presentation.content.DayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
@@ -65,23 +62,6 @@ internal fun DayScreen(
                 },
                 navigationIcon = {
                     BackIcon(onBackClick = { onEvent(DayUiEvent.OnBackClick) })
-                },
-                actions = {
-                    (uiState as? DayUiState.Loaded)?.run {
-                        OutlinedButton(
-                            onClick = {
-                                onEvent(
-                                    DayUiEvent.OnDayReadToggle(!day.isRead),
-                                )
-                            },
-                        ) {
-                            Text(
-                                text = stringResource(
-                                    if (day.isRead) Res.string.mark_as_unread else Res.string.mark_as_read,
-                                ),
-                            )
-                        }
-                    }
                 },
                 scrollBehavior = scrollBehavior,
             )

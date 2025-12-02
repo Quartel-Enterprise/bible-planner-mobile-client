@@ -26,68 +26,78 @@ internal fun LazyListScope.passageList(
     onChapterToggle: (passageIndex: Int, chapterIndex: Int) -> Unit,
     maxContentWidth: Dp,
 ) {
-    itemsIndexed(passages) { passageIndex, passage ->
+    passages.forEachIndexed { passageIndex, passage ->
+        val onToggle = { onChapterToggle(passageIndex, -1) }
         if (passage.chapters.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(modifier = Modifier.width(maxContentWidth)) {
-                    ChapterItem(
-                        bookName = passage.bookId.getBookName(),
-                        chapterNumber = null,
-                        isRead = passage.isRead,
-                        onToggle = { onChapterToggle(passageIndex, -1) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                    )
-                }
+            centeredClickableItem(maxContentWidth, onToggle) {
+                ChapterItem(
+                    bookName = passage.bookId.getBookName(),
+                    chapterNumber = null,
+                    isRead = passage.isRead,
+                    onToggle = onToggle,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp)
+                        .padding(vertical = 8.dp),
+                )
             }
-            // Add divider after passage if it's not the last one
             if (passageIndex < passages.size - 1) {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Box(modifier = Modifier.width(maxContentWidth)) {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                    }
-                }
+                dividerItem(maxContentWidth)
             }
         } else {
             // Show each chapter as a separate item
             passage.chapters.forEachIndexed { chapterIndex, chapter ->
+                val chapterToggle = { onChapterToggle(passageIndex, chapterIndex) }
                 val isChapterRead = chapterReadStatus[passageIndex to chapterIndex] ?: false
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Box(modifier = Modifier.width(maxContentWidth)) {
-                        ChapterItem(
-                            bookName = passage.bookId.getBookName(),
-                            chapterNumber = chapter.number,
-                            isRead = isChapterRead,
-                            onToggle = { onChapterToggle(passageIndex, chapterIndex) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                        )
-                    }
+                centeredClickableItem(maxContentWidth, chapterToggle) {
+                    ChapterItem(
+                        bookName = passage.bookId.getBookName(),
+                        chapterNumber = chapter.number,
+                        isRead = isChapterRead,
+                        onToggle = chapterToggle,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp)
+                            .padding(vertical = 8.dp),
+                    )
                 }
-                // Add divider after each chapter except the last chapter of the last passage
                 val isLastChapter = chapterIndex == passage.chapters.size - 1
                 val isLastPassage = passageIndex == passages.size - 1
                 if (!(isLastChapter && isLastPassage)) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Box(modifier = Modifier.width(maxContentWidth)) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                        }
-                    }
+                    dividerItem(maxContentWidth)
                 }
+            }
+        }
+    }
+}
+
+private fun LazyListScope.centeredClickableItem(
+    maxContentWidth: Dp,
+    onClick: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    item {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(modifier = Modifier.width(maxContentWidth)) {
+                content()
+            }
+        }
+    }
+}
+
+private fun LazyListScope.dividerItem(maxContentWidth: Dp) {
+    item {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(modifier = Modifier.width(maxContentWidth)) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
             }
         }
     }
@@ -102,17 +112,17 @@ private fun ChapterItem(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.clickable { onToggle() },
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Checkbox(
-            checked = isRead,
-            onCheckedChange = { onToggle() }, // Handled by row click
-        )
         Text(
             text = formatChapterText(bookName, chapterNumber),
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(start = 8.dp),
+            modifier = Modifier.weight(1f),
+        )
+        Checkbox(
+            checked = isRead,
+            onCheckedChange = { onToggle() }, // Handled by row click
         )
     }
 }

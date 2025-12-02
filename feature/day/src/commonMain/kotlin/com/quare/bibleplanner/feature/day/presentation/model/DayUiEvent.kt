@@ -6,9 +6,7 @@ internal sealed interface DayUiEvent {
         val chapterIndex: Int,
     ) : DayUiEvent
 
-    data class OnDayReadToggle(
-        val isRead: Boolean,
-    ) : DayUiEvent
+    data object OnDayReadToggle : DayUiEvent
 
     data class OnEditReadDate(
         val hour: Int,
