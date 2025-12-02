@@ -50,7 +50,7 @@ internal fun LoadedDayContent(
                     .fillMaxWidth()
                     .padding(
                         horizontal = 16.dp,
-                        vertical = 8.dp
+                        vertical = 8.dp,
                     ),
                 onClick = {
                     onEvent(DayUiEvent.OnDayReadToggle)
