@@ -31,3 +31,4 @@ node_modules/
 setup-java.sh
 /core/provider/room/schemas/com.quare.bibleplanner.core.provider.room.db.AppDatabase/*.json
 /composeApp/prefs.preferences_pb
+/composeApp/release/

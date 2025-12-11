@@ -1,9 +1,8 @@
-package com.quare.bibleplanner.feature.day.domain.usecase
+package com.quare.bibleplanner.core.plan.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
-import com.quare.bibleplanner.feature.day.domain.repository.DayRepository
+import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -18,7 +17,7 @@ class UpdateDayReadStatusUseCase(
         weekNumber: Int,
         dayNumber: Int,
         isRead: Boolean,
-        readingPlanType: ReadingPlanType = ReadingPlanType.CHRONOLOGICAL,
+        readingPlanType: ReadingPlanType,
     ) {
         // Get the day to access its passages
         val plansModel = getPlansByWeekUseCase().first()
