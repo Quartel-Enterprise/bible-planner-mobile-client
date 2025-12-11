@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
-import com.quare.bibleplanner.feature.day.domain.repository.DayRepository
+import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 
 class UpdateDayReadTimestampUseCase(
     private val dayRepository: DayRepository,

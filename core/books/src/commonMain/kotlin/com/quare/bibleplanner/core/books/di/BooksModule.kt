@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
 import com.quare.bibleplanner.core.books.data.provider.BookMapsProvider
 import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
@@ -32,4 +33,5 @@ val booksModule = module {
     factoryOf(::InitializeBooksIfNeeded)
     factoryOf(::MarkPassagesReadUseCase)
     factoryOf(::ResetAllProgressUseCase)
+    factoryOf(::CalculateBibleProgressUseCase)
 }

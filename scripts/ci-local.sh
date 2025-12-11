@@ -109,4 +109,3 @@ fi
 echo ""
 echo "To fix ktlint issues, run:"
 echo "  ./gradlew ktlintFormat"
-

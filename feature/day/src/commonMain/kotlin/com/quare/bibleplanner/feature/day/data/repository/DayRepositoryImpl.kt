@@ -2,10 +2,10 @@ package com.quare.bibleplanner.feature.day.data.repository
 
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.feature.day.data.datasource.DayLocalDataSource
 import com.quare.bibleplanner.feature.day.data.mapper.DayEntityToModelMapper
-import com.quare.bibleplanner.feature.day.domain.repository.DayRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

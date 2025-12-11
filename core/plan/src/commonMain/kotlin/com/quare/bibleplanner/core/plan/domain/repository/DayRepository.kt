@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.day.domain.repository
+package com.quare.bibleplanner.core.plan.domain.repository
 
 import com.quare.bibleplanner.core.model.plan.DayModel
 import kotlinx.coroutines.flow.Flow

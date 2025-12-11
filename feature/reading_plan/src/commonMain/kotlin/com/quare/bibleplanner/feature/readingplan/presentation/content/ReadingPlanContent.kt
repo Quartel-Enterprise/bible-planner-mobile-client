@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.content
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -29,73 +31,83 @@ internal fun ReadingPlanContent(
 ) {
     val loadedUiState = uiState as? ReadingPlanUiState.Loaded
 
-    LazyColumn(
-        state = lazyListState,
-        modifier = modifier,
-    ) {
-        item {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(modifier = Modifier.width(maxContentWidth)) {
-                    PlanTypesSegmentedButtons(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        selectedReadingPlan = uiState.selectedReadingPlan,
-                        onPlanClick = {
-                            onEvent(ReadingPlanUiEvent.OnPlanClick(it))
-                        },
-                    )
-                }
-            }
-            VerticalSpacer()
-        }
-        item {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(modifier = Modifier.width(maxContentWidth)) {
-                    PlanProgress(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        progress = loadedUiState?.progress ?: 0f,
-                        isLoading = uiState is ReadingPlanUiState.Loading,
-                    )
-                }
-            }
-            VerticalSpacer()
-        }
-        when (uiState) {
-            is ReadingPlanUiState.Loaded -> items(
-                items = uiState.weekPlans,
-                key = { weekPresentation -> weekPresentation.weekPlan.number },
-            ) { weekPresentation ->
+    BoxWithConstraints(modifier = modifier) {
+        val isLandscape = maxWidth > maxHeight
+
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            item {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
                     Box(modifier = Modifier.width(maxContentWidth)) {
-                        WeekPlanItem(
-                            modifier = Modifier.fillMaxWidth(),
-                            weekPresentation = weekPresentation,
-                            onEvent = onEvent,
+                        PlanTypesSegmentedButtons(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            selectedReadingPlan = uiState.selectedReadingPlan,
+                            onPlanClick = {
+                                onEvent(ReadingPlanUiEvent.OnPlanClick(it))
+                            },
                         )
                     }
                 }
+                VerticalSpacer()
             }
-
-            is ReadingPlanUiState.Loading -> item {
+            item {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
                     Box(modifier = Modifier.width(maxContentWidth)) {
-                        LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
+                        PlanProgress(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            progress = loadedUiState?.progress ?: 0f,
+                            isLoading = uiState is ReadingPlanUiState.Loading,
+                        )
                     }
+                }
+                VerticalSpacer()
+            }
+            when (uiState) {
+                is ReadingPlanUiState.Loaded -> items(
+                    items = uiState.weekPlans,
+                    key = { weekPresentation -> weekPresentation.weekPlan.number },
+                ) { weekPresentation ->
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Box(modifier = Modifier.width(maxContentWidth)) {
+                            WeekPlanItem(
+                                modifier = Modifier.fillMaxWidth(),
+                                weekPresentation = weekPresentation,
+                                onEvent = onEvent,
+                            )
+                        }
+                    }
+                }
+
+                is ReadingPlanUiState.Loading -> item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Box(modifier = Modifier.width(maxContentWidth)) {
+                            LoadingReadingPlanContent(modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+                }
+            }
+            // Add bottom padding to prevent FABs from covering the last items (only in portrait)
+            if (!isLandscape) {
+                item {
+                    VerticalSpacer(size = 140.dp)
                 }
             }
         }
