@@ -13,9 +13,9 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.SetSelecte
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.koin.core.module.dsl.viewModel
 
 val readingPlanModule = module {
     // Data

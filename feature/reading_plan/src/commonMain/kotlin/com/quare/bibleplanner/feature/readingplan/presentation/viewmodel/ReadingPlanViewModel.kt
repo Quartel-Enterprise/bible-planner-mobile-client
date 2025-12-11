@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
-import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan

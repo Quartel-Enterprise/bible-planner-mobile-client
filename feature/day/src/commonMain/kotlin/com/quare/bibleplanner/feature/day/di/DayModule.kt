@@ -1,10 +1,11 @@
 package com.quare.bibleplanner.feature.day.di
 
+import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
+import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.day.data.datasource.DayLocalDataSource
 import com.quare.bibleplanner.feature.day.data.mapper.DayEntityToModelMapper
 import com.quare.bibleplanner.feature.day.data.repository.DayRepositoryImpl
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
-import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase
@@ -15,7 +16,6 @@ import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetFinalTimestampAfterEditionUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ToggleChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateChapterReadStatusUseCase
-import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampWithDateAndTimeUseCase
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory

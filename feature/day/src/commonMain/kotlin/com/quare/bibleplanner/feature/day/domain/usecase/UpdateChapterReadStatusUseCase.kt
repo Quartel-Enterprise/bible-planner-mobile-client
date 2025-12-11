@@ -3,8 +3,8 @@ package com.quare.bibleplanner.feature.day.domain.usecase
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
+import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
