@@ -222,7 +222,7 @@ internal class ReadingPlanViewModel(
 
             is ReadingPlanUiEvent.OnOverflowOptionClick -> {
                 changeMenuVisibility(false)
-                emitUiAction(event.option.toUiAction())
+                event.option.toUiAction()?.let(::emitUiAction)
             }
 
             ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick -> {
@@ -331,11 +331,20 @@ internal class ReadingPlanViewModel(
         }
     }
 
-    private fun OverflowOption.toUiAction(): ReadingPlanUiAction = when (this) {
+    private fun OverflowOption.toUiAction(): ReadingPlanUiAction? = when (this) {
         OverflowOption.THEME -> ReadingPlanUiAction.GoToTheme
-        OverflowOption.DELETE_PROGRESS -> ReadingPlanUiAction.GoToDeleteAllProgress
+        OverflowOption.DELETE_PROGRESS -> getDeleteProgressUiAction()
         OverflowOption.PRIVACY_POLICY -> ReadingPlanUiAction.OpenLink("$BASE_URL/privacy")
         OverflowOption.TERMS -> ReadingPlanUiAction.OpenLink("$BASE_URL/terms")
+    }
+
+    private fun getDeleteProgressUiAction(): ReadingPlanUiAction? = when(val state = uiState.value) {
+        is ReadingPlanUiState.Loaded -> if (state.weekPlans.containsReadDay()) {
+            ReadingPlanUiAction.GoToDeleteAllProgress
+        } else {
+            ReadingPlanUiAction.ShowNoProgressToDelete
+        }
+        is ReadingPlanUiState.Loading -> null
     }
 
     private fun createWeekPresentationModels(weeks: List<WeekPlanModel>): List<WeekPlanPresentationModel> =
@@ -347,6 +356,10 @@ internal class ReadingPlanViewModel(
                 totalDays = week.days.size,
             )
         }
+
+    private fun List<WeekPlanPresentationModel>.containsReadDay(): Boolean = any {
+        it.weekPlan.days.any { day -> day.isRead }
+    }
 
     private fun emitUiAction(uiAction: ReadingPlanUiAction) {
         viewModelScope.launch {
