@@ -18,6 +18,8 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -45,9 +47,10 @@ private const val MAX_CONTENT_WIDTH = 600
 @Composable
 internal fun ReadingPlanScreen(
     uiState: ReadingPlanUiState,
-    onEvent: (ReadingPlanUiEvent) -> Unit,
     lazyListState: LazyListState,
+    snackbarHostState: SnackbarHostState,
     scrollBehavior: TopAppBarScrollBehavior,
+    onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     // Determine if the first unread week is visible and expanded
     // Hide FAB if we're already viewing the first unread week (expanded and at top)
@@ -69,6 +72,9 @@ internal fun ReadingPlanScreen(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             TopAppBar(
                 title = {

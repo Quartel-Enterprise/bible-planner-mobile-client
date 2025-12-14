@@ -13,4 +13,5 @@
     <string name="scroll_to_top">Scroll to top</string>
     <string name="terms_of_service">Terms of Service</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="no_progress_to_delete_message">You haven't made any progress towards deleting anything yet.</string>
 </resources>

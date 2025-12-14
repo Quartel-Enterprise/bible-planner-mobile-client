@@ -11,6 +11,8 @@ sealed interface ReadingPlanUiAction {
 
     data object GoToDeleteAllProgress : ReadingPlanUiAction
 
+    data object ShowNoProgressToDelete : ReadingPlanUiAction
+
     data object GoToTheme : ReadingPlanUiAction
 
     data class OpenLink(
