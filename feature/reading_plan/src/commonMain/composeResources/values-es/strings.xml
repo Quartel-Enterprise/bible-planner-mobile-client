@@ -11,4 +11,6 @@
     <string name="delete_progress_option">Eliminar progreso</string>
     <string name="go_to_unread">Ir a no leído</string>
     <string name="scroll_to_top">Desplazar arriba</string>
+    <string name="terms_of_service">Términos de Servicio</string>
+    <string name="privacy_policy">Política de Privacidad</string>
 </resources>

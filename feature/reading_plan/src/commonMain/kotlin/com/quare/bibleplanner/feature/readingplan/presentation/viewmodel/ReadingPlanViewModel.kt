@@ -34,7 +34,7 @@ internal class ReadingPlanViewModel(
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
-    private val calculateBibleProgressUseCase: CalculateBibleProgressUseCase,
+    calculateBibleProgressUseCase: CalculateBibleProgressUseCase,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
@@ -118,10 +118,6 @@ internal class ReadingPlanViewModel(
                         expandedWeeks.add(firstUnreadWeekNumber)
                         // Always set scrollToWeekNumber - Root will handle skipping scroll for week 1 if at top
                         scrollToWeekNumber = firstUnreadWeekNumber
-                        // Emit action for UI to scroll (state will be updated in the state creation below)
-                        viewModelScope.launch {
-                            emitUiAction(ReadingPlanUiAction.ScrollToWeek(firstUnreadWeekNumber))
-                        }
                     }
                     isFirstLoad = false
                 }
@@ -226,12 +222,7 @@ internal class ReadingPlanViewModel(
 
             is ReadingPlanUiEvent.OnOverflowOptionClick -> {
                 changeMenuVisibility(false)
-                emitUiAction(
-                    when (event.option) {
-                        OverflowOption.THEME -> ReadingPlanUiAction.GoToTheme
-                        OverflowOption.DELETE_PROGRESS -> ReadingPlanUiAction.GoToDeleteAllProgress
-                    },
-                )
+                emitUiAction(event.option.toUiAction())
             }
 
             ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick -> {
@@ -275,7 +266,6 @@ internal class ReadingPlanViewModel(
                             is ReadingPlanUiState.Loading -> state.copy(scrollToWeekNumber = firstUnreadWeekNumber)
                         }
                     }
-                    emitUiAction(ReadingPlanUiAction.ScrollToWeek(firstUnreadWeekNumber))
                 }
             }
 
@@ -286,7 +276,6 @@ internal class ReadingPlanViewModel(
                         is ReadingPlanUiState.Loading -> state.copy(scrollToTop = true)
                     }
                 }
-                emitUiAction(ReadingPlanUiAction.ScrollToTop)
             }
 
             is ReadingPlanUiEvent.OnScrollStateChange -> {
@@ -342,6 +331,13 @@ internal class ReadingPlanViewModel(
         }
     }
 
+    private fun OverflowOption.toUiAction(): ReadingPlanUiAction = when (this) {
+        OverflowOption.THEME -> ReadingPlanUiAction.GoToTheme
+        OverflowOption.DELETE_PROGRESS -> ReadingPlanUiAction.GoToDeleteAllProgress
+        OverflowOption.PRIVACY_POLICY -> ReadingPlanUiAction.OpenLink("$BASE_URL/privacy")
+        OverflowOption.TERMS -> ReadingPlanUiAction.OpenLink("$BASE_URL/terms")
+    }
+
     private fun createWeekPresentationModels(weeks: List<WeekPlanModel>): List<WeekPlanPresentationModel> =
         weeks.map { week ->
             WeekPlanPresentationModel(
@@ -356,5 +352,9 @@ internal class ReadingPlanViewModel(
         viewModelScope.launch {
             _uiAction.emit(uiAction)
         }
+    }
+
+    companion object {
+        private const val BASE_URL = "https://www.bibleplanner.app"
     }
 }

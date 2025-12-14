@@ -1,14 +1,13 @@
 package com.quare.bibleplanner.feature.readingplan.presentation
 
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -32,6 +31,7 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
         val lazyListState = rememberLazyListState()
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
         val loadedUiState = remember(uiState) { uiState as? ReadingPlanUiState.Loaded }
+        val uriHandler = LocalUriHandler.current
 
         // Track scroll position to determine if scroll-to-top FAB should be visible
         // Also ensure top bar shows when at top
@@ -115,14 +115,6 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
                     )
                 }
 
-                is ReadingPlanUiAction.ScrollToWeek -> {
-                    // Scroll state is managed in ViewModel, no action needed here
-                }
-
-                ReadingPlanUiAction.ScrollToTop -> {
-                    // Scroll state is managed in ViewModel, no action needed here
-                }
-
                 ReadingPlanUiAction.GoToDeleteAllProgress -> {
                     navController.navigate(DeleteAllProgressNavRoute)
                 }
@@ -130,6 +122,8 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
                 ReadingPlanUiAction.GoToTheme -> {
                     navController.navigate(ThemeNavRoute)
                 }
+
+                is ReadingPlanUiAction.OpenLink -> uriHandler.openUri(uiAction.url)
             }
         }
         ReadingPlanScreen(
