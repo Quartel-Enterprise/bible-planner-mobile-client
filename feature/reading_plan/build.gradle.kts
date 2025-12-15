@@ -32,6 +32,7 @@ kotlin {
             implementation(projects.core.plan)
             implementation(projects.core.model)
             implementation(projects.core.provider.dataStore)
+            implementation(projects.core.utils)
 
             // UI
             implementation(projects.ui.component)

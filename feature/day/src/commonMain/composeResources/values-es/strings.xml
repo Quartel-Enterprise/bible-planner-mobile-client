@@ -1,7 +1,8 @@
 <resources>
     <string name="day_details_screen">Pantalla de Detalles del Día</string>
     <string name="back">Atrás</string>
-    <string name="day_week_title">Día %1$d — Semana %2$d</string>
+    <string name="day_title_part">Día %1$d</string>
+    <string name="week_title_part">Semana %1$d</string>
     <string name="passages_completed">%1$d/%2$d pasajes completados</string>
     <string name="loading">Cargando...</string>
     <string name="no_date_set">No hay fecha establecida</string>

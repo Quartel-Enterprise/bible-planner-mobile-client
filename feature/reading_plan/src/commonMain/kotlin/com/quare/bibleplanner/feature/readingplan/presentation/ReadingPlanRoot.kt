@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.readingplan.presentation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,8 +27,11 @@ import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.Reading
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.readingPlan(navController: NavController) {
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+fun NavGraphBuilder.readingPlan(
+    navController: NavController,
+    sharedTransitionScope: SharedTransitionScope,
+) {
     composable<ReadingPlanNavRoute> {
         val viewModel = koinViewModel<ReadingPlanViewModel>()
         val onEvent = viewModel::onEvent
@@ -50,6 +55,8 @@ fun NavGraphBuilder.readingPlan(navController: NavController) {
             lazyListState = lazyListState,
             scrollBehavior = scrollBehavior,
             onEvent = onEvent,
+            animatedContentScope = this,
+            sharedTransitionScope = sharedTransitionScope,
         )
     }
 }

@@ -1,3 +1,5 @@
 <resources>
     <string name="back">Back</string>
+    <string name="collapse">Collapse</string>
+    <string name="expand">Expand</string>
 </resources>

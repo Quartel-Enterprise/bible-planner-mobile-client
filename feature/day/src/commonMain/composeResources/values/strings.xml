@@ -1,7 +1,8 @@
 <resources>
     <string name="day_details_screen">Day Details Screen</string>
     <string name="back">Back</string>
-    <string name="day_week_title">Day %1$d — Week %2$d</string>
+    <string name="day_title_part">Day %1$d</string>
+    <string name="week_title_part">Week %1$d</string>
     <string name="passages_completed">%1$d/%2$d passages completed</string>
     <string name="loading">Loading...</string>
     <string name="no_date_set">No date set</string>

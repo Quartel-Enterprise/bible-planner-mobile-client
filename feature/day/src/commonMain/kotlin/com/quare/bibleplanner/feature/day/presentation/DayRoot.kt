@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.day.presentation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
@@ -12,7 +14,11 @@ import com.quare.bibleplanner.feature.day.presentation.util.DayUiActionCollector
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun NavGraphBuilder.day(navController: NavController) {
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun NavGraphBuilder.day(
+    navController: NavController,
+    sharedTransitionScope: SharedTransitionScope,
+) {
     composable<DayNavRoute> {
         val viewModel = koinViewModel<DayViewModel>()
         val uiState by viewModel.uiState.collectAsState()
@@ -33,6 +39,8 @@ fun NavGraphBuilder.day(navController: NavController) {
         DayScreen(
             uiState = uiState,
             onEvent = viewModel::onEvent,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = this,
         )
     }
 }

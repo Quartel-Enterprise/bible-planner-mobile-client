@@ -1,6 +1,9 @@
 package com.quare.bibleplanner.feature.readingplan.presentation
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -43,11 +46,13 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val MAX_CONTENT_WIDTH = 600
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun ReadingPlanScreen(
     uiState: ReadingPlanUiState,
     lazyListState: LazyListState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     snackbarHostState: SnackbarHostState,
     scrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadingPlanUiEvent) -> Unit,
@@ -153,6 +158,8 @@ internal fun ReadingPlanScreen(
                 modifier = Modifier.fillMaxSize(),
                 uiState = uiState,
                 onEvent = onEvent,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
                 maxContentWidth = constrainedWidth,
                 lazyListState = lazyListState,
             )

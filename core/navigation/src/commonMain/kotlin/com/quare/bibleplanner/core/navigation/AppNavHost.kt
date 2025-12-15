@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.core.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -10,17 +12,27 @@ import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavHost() {
     val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = ReadingPlanNavRoute,
-    ) {
-        readingPlan(navController)
-        day(navController)
-        themeSettings(navController)
-        materialYou(navController)
-        deleteProgress(navController)
+    SharedTransitionLayout {
+        NavHost(
+            navController = navController,
+            startDestination = ReadingPlanNavRoute,
+        ) {
+            val sharedTransitionScope = this@SharedTransitionLayout
+            readingPlan(
+                navController = navController,
+                sharedTransitionScope = sharedTransitionScope,
+            )
+            day(
+                navController = navController,
+                sharedTransitionScope = sharedTransitionScope,
+            )
+            themeSettings(navController)
+            materialYou(navController)
+            deleteProgress(navController)
+        }
     }
 }

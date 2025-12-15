@@ -1,5 +1,8 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.content
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,9 +24,12 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun ReadingPlanContent(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     uiState: ReadingPlanUiState,
     onEvent: (ReadingPlanUiEvent) -> Unit,
     maxContentWidth: Dp,
@@ -87,6 +93,8 @@ internal fun ReadingPlanContent(
                             WeekPlanItem(
                                 modifier = Modifier.fillMaxWidth(),
                                 weekPresentation = weekPresentation,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedContentScope = animatedContentScope,
                                 onEvent = onEvent,
                             )
                         }

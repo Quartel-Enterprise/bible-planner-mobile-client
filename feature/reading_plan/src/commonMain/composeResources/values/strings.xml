@@ -4,7 +4,8 @@
     <string name="chronological_order">Chronological Order</string>
     <string name="progress_label">Progress: %1$d %</string>
     <string name="loading">Loading...</string>
-    <string name="week_complete">Week %1$d - %2$d/%3$d complete</string>
+    <string name="week_number">Week %1$d</string>
+    <string name="week_progress_description">%1$d/%2$d complete</string>
     <string name="day_number">Day %1$d</string>
     <string name="more_options">More options</string>
     <string name="theme_option">Theme</string>

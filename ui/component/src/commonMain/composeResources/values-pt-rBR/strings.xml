@@ -1,3 +1,5 @@
 <resources>
     <string name="back">Voltar</string>
+    <string name="collapse">Colapsar</string>
+    <string name="expand">Expandir</string>
 </resources>
