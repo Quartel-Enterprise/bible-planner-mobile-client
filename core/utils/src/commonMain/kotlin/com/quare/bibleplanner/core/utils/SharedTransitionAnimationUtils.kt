@@ -1,14 +1,14 @@
 package com.quare.bibleplanner.core.utils
 
 object SharedTransitionAnimationUtils {
-    fun buildWeekSeparatorId(weekNumber: Int) = buildWeekNumberId(weekNumber) + "_separator"
+    fun buildWeekSeparatorId(weekNumber: Int): String = buildWeekNumberId(weekNumber) + "_separator"
 
     fun buildDayNumberId(
         weekNumber: Int,
         dayNumebr: Int,
-    ) = buildWeekNumberId(
+    ): String = buildWeekNumberId(
         weekNumber,
     ) + "_day_$dayNumebr"
 
-    fun buildWeekNumberId(weekNumber: Int) = "week_number_$weekNumber"
+    fun buildWeekNumberId(weekNumber: Int): String = "week_number_$weekNumber"
 }
