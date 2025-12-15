@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ThemeSelectionViewModel(
+internal class ThemeSelectionViewModel(
     private val setThemeOption: SetThemeOption,
     private val setDynamicColorsEnabledFlow: SetIsDynamicColorsEnabled,
     getThemeOptionFlow: GetThemeOptionFlow,

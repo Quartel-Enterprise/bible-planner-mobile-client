@@ -8,8 +8,8 @@ import androidx.navigation.compose.composable
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.day.presentation.component.TimeEditionDialog
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
+import com.quare.bibleplanner.feature.day.presentation.util.DayUiActionCollector
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
-import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.day(navController: NavController) {
@@ -17,9 +17,10 @@ fun NavGraphBuilder.day(navController: NavController) {
         val viewModel = koinViewModel<DayViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         val onEvent = viewModel::onEvent
-        ActionCollector(viewModel.backUiAction) {
-            navController.navigateUp()
-        }
+        DayUiActionCollector(
+            uiActionFlow = viewModel.backUiAction,
+            navController = navController,
+        )
         (uiState as? DayUiState.Loaded)?.run {
             datePickerUiState.visiblePicker?.let {
                 TimeEditionDialog(

@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.deleteprogress.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
-import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiAction
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,8 +20,8 @@ internal class DeleteAllProgressViewModel(
         MutableStateFlow(DeleteAllProgressUiState.Idle)
     val uiState: StateFlow<DeleteAllProgressUiState> = _uiState.asStateFlow()
 
-    private val _uiAction: MutableSharedFlow<DeleteAllProgressUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<DeleteAllProgressUiAction> = _uiAction
+    private val _backUiAction: MutableSharedFlow<Unit> = MutableSharedFlow()
+    val backUiAction: SharedFlow<Unit> = _backUiAction
 
     fun onEvent(event: DeleteAllProgressUiEvent) {
         when (event) {
@@ -32,7 +31,7 @@ internal class DeleteAllProgressViewModel(
                     try {
                         resetAllProgressUseCase()
                         _uiState.update { DeleteAllProgressUiState.Success }
-                        _uiAction.emit(DeleteAllProgressUiAction.NavigateBack)
+                        _backUiAction.emit(Unit)
                     } catch (e: Exception) {
                         // On error, go back to idle state
                         _uiState.update { DeleteAllProgressUiState.Idle }
@@ -42,7 +41,7 @@ internal class DeleteAllProgressViewModel(
 
             DeleteAllProgressUiEvent.OnCancel -> {
                 viewModelScope.launch {
-                    _uiAction.emit(DeleteAllProgressUiAction.NavigateBack)
+                    _backUiAction.emit(Unit)
                 }
             }
         }
