@@ -6,6 +6,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
@@ -15,10 +16,12 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun WeekProgressLabel(
+    modifier: Modifier = Modifier,
     readDaysCount: Int,
     totalDays: Int,
 ) {
     Row(
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(0.dp),
     ) {

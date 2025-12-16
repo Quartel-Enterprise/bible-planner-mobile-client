@@ -16,12 +16,12 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ScrollToUpFab(
     modifier: Modifier = Modifier,
-    isScrolledDown: Boolean,
+    isVisible: Boolean,
     onClick: () -> Unit,
 ) {
     AnimatedVisibility(
         modifier = modifier,
-        visible = isScrolledDown,
+        visible = isVisible,
         enter = fadeIn(),
         exit = fadeOut(),
     ) {

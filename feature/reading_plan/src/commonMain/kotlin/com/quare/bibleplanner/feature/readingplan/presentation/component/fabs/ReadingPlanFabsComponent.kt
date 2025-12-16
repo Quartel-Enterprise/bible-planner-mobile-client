@@ -17,15 +17,16 @@ internal fun ReadingPlanFabsComponent(
         horizontalAlignment = Alignment.End,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        ScrollToUpFab(
-            isScrolledDown = uiState.isScrolledDown,
-            onClick = {
-                onEvent(ReadingPlanUiEvent.OnScrollToTopClick)
-            },
-        )
-        if (!uiState.isFirstUnreadWeekVisible) {
+        uiState.run {
+            ScrollToUpFab(
+                isVisible = isScrolledDown,
+                onClick = {
+                    onEvent(ReadingPlanUiEvent.OnScrollToTopClick)
+                },
+            )
             GoToUnreadFab(
-                isExpanded = !uiState.isScrolledDown,
+                isVisible = !isFirstUnreadWeekVisible,
+                isExpanded = !isScrolledDown,
                 onClick = {
                     onEvent(ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick)
                 },
