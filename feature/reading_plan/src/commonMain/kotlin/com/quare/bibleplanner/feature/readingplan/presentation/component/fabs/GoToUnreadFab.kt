@@ -15,11 +15,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun GoToUnreadFab(
     modifier: Modifier = Modifier,
-    isFirstUnreadWeekVisible: Boolean,
+    isVisible: Boolean,
     isExpanded: Boolean,
     onClick: () -> Unit,
 ) {
-    val isVisible = !isFirstUnreadWeekVisible
     AnimatedVisibility(visible = isVisible) {
         ExtendedFloatingActionButton(
             modifier = modifier,
