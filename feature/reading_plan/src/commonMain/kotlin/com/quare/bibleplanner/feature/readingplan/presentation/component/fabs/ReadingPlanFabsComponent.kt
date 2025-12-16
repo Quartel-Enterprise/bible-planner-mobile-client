@@ -23,13 +23,12 @@ internal fun ReadingPlanFabsComponent(
                 onEvent(ReadingPlanUiEvent.OnScrollToTopClick)
             },
         )
-        if (!uiState.isFirstUnreadWeekVisible) {
-            GoToUnreadFab(
-                isExpanded = !uiState.isScrolledDown,
-                onClick = {
-                    onEvent(ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick)
-                },
-            )
-        }
+        GoToUnreadFab(
+            isFirstUnreadWeekVisible = uiState.isFirstUnreadWeekVisible,
+            isExpanded = !uiState.isScrolledDown,
+            onClick = {
+                onEvent(ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick)
+            },
+        )
     }
 }

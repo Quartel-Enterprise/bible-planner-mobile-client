@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.component.fabs
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -14,21 +15,25 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun GoToUnreadFab(
     modifier: Modifier = Modifier,
+    isFirstUnreadWeekVisible: Boolean,
     isExpanded: Boolean,
     onClick: () -> Unit,
 ) {
-    ExtendedFloatingActionButton(
-        modifier = modifier,
-        expanded = isExpanded,
-        text = {
-            Text(stringResource(Res.string.go_to_unread))
-        },
-        icon = {
-            Icon(
-                imageVector = Icons.Default.Book,
-                contentDescription = null,
-            )
-        },
-        onClick = onClick,
-    )
+    val isVisible = !isFirstUnreadWeekVisible
+    AnimatedVisibility(visible = isVisible) {
+        ExtendedFloatingActionButton(
+            modifier = modifier,
+            expanded = isExpanded && isVisible,
+            text = {
+                Text(stringResource(Res.string.go_to_unread))
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Book,
+                    contentDescription = null,
+                )
+            },
+            onClick = onClick,
+        )
+    }
 }

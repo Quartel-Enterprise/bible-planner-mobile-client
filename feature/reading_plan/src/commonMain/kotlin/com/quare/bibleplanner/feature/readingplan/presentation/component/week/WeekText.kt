@@ -23,15 +23,15 @@ internal fun SharedTransitionScope.WeekText(
     ) {
         WeekNumberComponent(
             weekNumber = weekNumber,
-            animatedContentScope = animatedContentScope
+            animatedContentScope = animatedContentScope,
         )
         WeekProgressSeparatorComponent(
             weekNumber = weekNumber,
-            animatedContentScope = animatedContentScope
+            animatedContentScope = animatedContentScope,
         )
         WeekProgressLabel(
             readDaysCount = readDaysCount,
-            totalDays = totalDays
+            totalDays = totalDays,
         )
     }
 }
