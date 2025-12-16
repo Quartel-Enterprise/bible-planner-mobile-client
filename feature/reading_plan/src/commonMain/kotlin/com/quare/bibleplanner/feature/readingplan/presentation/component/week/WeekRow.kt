@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.readingplan.presentation.component
+package com.quare.bibleplanner.feature.readingplan.presentation.component.week
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi

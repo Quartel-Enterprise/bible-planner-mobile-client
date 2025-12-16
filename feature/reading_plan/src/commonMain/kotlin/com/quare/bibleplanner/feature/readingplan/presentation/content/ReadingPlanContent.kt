@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanProgress
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanTypesSegmentedButtons
-import com.quare.bibleplanner.feature.readingplan.presentation.component.WeekPlanItem
+import com.quare.bibleplanner.feature.readingplan.presentation.component.week.WeekPlanItem
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer

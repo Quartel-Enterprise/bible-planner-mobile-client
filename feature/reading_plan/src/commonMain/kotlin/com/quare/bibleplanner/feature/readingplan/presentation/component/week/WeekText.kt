@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.readingplan.presentation.component
+package com.quare.bibleplanner.feature.readingplan.presentation.component.week
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -14,7 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.week_number
-import bibleplanner.feature.reading_plan.generated.resources.week_progress_description
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import org.jetbrains.compose.resources.stringResource
 
@@ -55,14 +54,6 @@ internal fun SharedTransitionScope.WeekText(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Medium,
         )
-        Text(
-            text = stringResource(
-                Res.string.week_progress_description,
-                readDaysCount,
-                totalDays,
-            ),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Medium,
-        )
+        WeekProgressLabel(readDaysCount, totalDays)
     }
 }

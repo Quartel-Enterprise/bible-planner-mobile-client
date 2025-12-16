@@ -13,6 +13,9 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWi
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
+import com.quare.bibleplanner.feature.readingplan.presentation.mapper.CalculateIsFirstUnreadWeekVisible
+import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
+import com.quare.bibleplanner.feature.readingplan.presentation.mapper.WeeksPlanPresentationMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
@@ -30,11 +33,14 @@ internal class ReadingPlanViewModel(
     factory: ReadingPlanStateFactory,
     getPlansByWeek: GetPlansByWeekUseCase,
     getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
+    calculateBibleProgressUseCase: CalculateBibleProgressUseCase,
     private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
-    calculateBibleProgressUseCase: CalculateBibleProgressUseCase,
+    private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
+    private val calculateIsFirstUnreadWeekVisible: CalculateIsFirstUnreadWeekVisible,
+    private val deleteProgressMapper: DeleteProgressMapper,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
@@ -67,13 +73,12 @@ internal class ReadingPlanViewModel(
         }
         observe(getSelectedReadingPlanFlow()) { selectedPlan ->
             _uiState.update { currentState ->
-                val plansModel = currentPlansModel
-                if (plansModel != null) {
+                currentPlansModel?.let { plansModel ->
                     val selectedWeeks = when (selectedPlan) {
                         ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
                         ReadingPlanType.BOOKS -> plansModel.booksOrder
                     }
-                    val weekPresentationModels = createWeekPresentationModels(selectedWeeks)
+                    val weekPresentationModels = mapToPresentation(selectedWeeks)
 
                     ReadingPlanUiState.Loaded(
                         weekPlans = weekPresentationModels,
@@ -83,20 +88,22 @@ internal class ReadingPlanViewModel(
                         scrollToWeekNumber = currentState.scrollToWeekNumber,
                         scrollToTop = currentState.scrollToTop,
                         isScrolledDown = currentState.isScrolledDown,
+                        isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
+                            weekPlans = weekPresentationModels,
+                            isScrolledDown = currentState.isScrolledDown,
+                        ),
                     )
-                } else {
-                    when (currentState) {
-                        is ReadingPlanUiState.Loaded -> {
-                            currentState.copy(
-                                selectedReadingPlan = selectedPlan,
-                            )
-                        }
+                } ?: when (currentState) {
+                    is ReadingPlanUiState.Loaded -> {
+                        currentState.copy(
+                            selectedReadingPlan = selectedPlan,
+                        )
+                    }
 
-                        is ReadingPlanUiState.Loading -> {
-                            currentState.copy(
-                                selectedReadingPlan = selectedPlan,
-                            )
-                        }
+                    is ReadingPlanUiState.Loading -> {
+                        currentState.copy(
+                            selectedReadingPlan = selectedPlan,
+                        )
                     }
                 }
             }
@@ -122,8 +129,9 @@ internal class ReadingPlanViewModel(
                     isFirstLoad = false
                 }
 
-                val weekPresentationModels = createWeekPresentationModels(selectedWeeks)
+                val weekPresentationModels = mapToPresentation(selectedWeeks)
 
+                val isScrolledDown = currentState.isScrolledDown
                 ReadingPlanUiState.Loaded(
                     weekPlans = weekPresentationModels,
                     progress = currentBibleProgress,
@@ -131,7 +139,11 @@ internal class ReadingPlanViewModel(
                     isShowingMenu = uiState.value.isShowingMenu,
                     scrollToWeekNumber = scrollToWeekNumber,
                     scrollToTop = currentState.scrollToTop,
-                    isScrolledDown = currentState.isScrolledDown,
+                    isScrolledDown = isScrolledDown,
+                    isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
+                        weekPlans = weekPresentationModels,
+                        isScrolledDown = isScrolledDown,
+                    ),
                 )
             }
         }
@@ -155,7 +167,7 @@ internal class ReadingPlanViewModel(
                                 expandedWeeks.add(event.weekNumber)
                             }
 
-                            val weekPresentationModels = createWeekPresentationModels(
+                            val weekPresentationModels = mapToPresentation(
                                 currentUiState.weekPlans.map { it.weekPlan },
                             )
 
@@ -164,6 +176,10 @@ internal class ReadingPlanViewModel(
                                 scrollToWeekNumber = currentUiState.scrollToWeekNumber,
                                 scrollToTop = currentUiState.scrollToTop,
                                 isScrolledDown = currentUiState.isScrolledDown,
+                                isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
+                                    weekPlans = weekPresentationModels,
+                                    isScrolledDown = currentUiState.isScrolledDown,
+                                ),
                             )
                         }
 
@@ -245,7 +261,7 @@ internal class ReadingPlanViewModel(
                         expandedWeeks.add(firstUnreadWeekNumber)
                         _uiState.update { state ->
                             if (state is ReadingPlanUiState.Loaded) {
-                                val weekPresentationModels = createWeekPresentationModels(
+                                val weekPresentationModels = mapToPresentation(
                                     state.weekPlans.map { it.weekPlan },
                                 )
                                 state.copy(
@@ -253,6 +269,10 @@ internal class ReadingPlanViewModel(
                                     scrollToWeekNumber = state.scrollToWeekNumber,
                                     scrollToTop = state.scrollToTop,
                                     isScrolledDown = state.isScrolledDown,
+                                    isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
+                                        weekPlans = weekPresentationModels,
+                                        isScrolledDown = state.isScrolledDown,
+                                    ),
                                 )
                             } else {
                                 state
@@ -281,8 +301,19 @@ internal class ReadingPlanViewModel(
             is ReadingPlanUiEvent.OnScrollStateChange -> {
                 _uiState.update { state ->
                     when (state) {
-                        is ReadingPlanUiState.Loaded -> state.copy(isScrolledDown = event.isScrolledDown)
-                        is ReadingPlanUiState.Loading -> state.copy(isScrolledDown = event.isScrolledDown)
+                        is ReadingPlanUiState.Loaded -> {
+                            state.copy(
+                                isScrolledDown = event.isScrolledDown,
+                                isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
+                                    weekPlans = state.weekPlans,
+                                    isScrolledDown = event.isScrolledDown,
+                                ),
+                            )
+                        }
+
+                        is ReadingPlanUiState.Loading -> {
+                            state.copy(isScrolledDown = event.isScrolledDown)
+                        }
                     }
                 }
             }
@@ -333,34 +364,16 @@ internal class ReadingPlanViewModel(
 
     private fun OverflowOption.toUiAction(): ReadingPlanUiAction? = when (this) {
         OverflowOption.THEME -> ReadingPlanUiAction.GoToTheme
-        OverflowOption.DELETE_PROGRESS -> getDeleteProgressUiAction()
+        OverflowOption.DELETE_PROGRESS -> deleteProgressMapper.map(uiState.value)
         OverflowOption.PRIVACY_POLICY -> ReadingPlanUiAction.OpenLink("$BASE_URL/privacy")
         OverflowOption.TERMS -> ReadingPlanUiAction.OpenLink("$BASE_URL/terms")
     }
 
-    private fun getDeleteProgressUiAction(): ReadingPlanUiAction? = when (val state = uiState.value) {
-        is ReadingPlanUiState.Loaded -> if (state.weekPlans.containsReadDay()) {
-            ReadingPlanUiAction.GoToDeleteAllProgress
-        } else {
-            ReadingPlanUiAction.ShowNoProgressToDelete
-        }
-
-        is ReadingPlanUiState.Loading -> null
-    }
-
-    private fun createWeekPresentationModels(weeks: List<WeekPlanModel>): List<WeekPlanPresentationModel> =
-        weeks.map { week ->
-            WeekPlanPresentationModel(
-                weekPlan = week,
-                isExpanded = expandedWeeks.contains(week.number),
-                readDaysCount = week.days.count { it.isRead },
-                totalDays = week.days.size,
-            )
-        }
-
-    private fun List<WeekPlanPresentationModel>.containsReadDay(): Boolean = any {
-        it.weekPlan.days.any { day -> day.isRead }
-    }
+    private fun mapToPresentation(weeks: List<WeekPlanModel>): List<WeekPlanPresentationModel> =
+        weeksPlanPresentationMapper.map(
+            weeks = weeks,
+            expandedWeeks = expandedWeeks,
+        )
 
     private fun emitUiAction(uiAction: ReadingPlanUiAction) {
         viewModelScope.launch {

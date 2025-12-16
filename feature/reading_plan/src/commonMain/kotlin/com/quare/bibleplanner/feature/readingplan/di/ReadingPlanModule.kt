@@ -11,9 +11,13 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.FindFirstW
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.GetSelectedReadingPlanFlowUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.SetSelectedReadingPlanUseCase
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
+import com.quare.bibleplanner.feature.readingplan.presentation.mapper.CalculateIsFirstUnreadWeekVisible
+import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
+import com.quare.bibleplanner.feature.readingplan.presentation.mapper.WeeksPlanPresentationMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -28,17 +32,9 @@ val readingPlanModule = module {
     factoryOf(::FindFirstWeekWithUnreadBookUseCase).bind<FindFirstWeekWithUnreadBook>()
 
     // Presentation
-    viewModel {
-        ReadingPlanViewModel(
-            factory = get(),
-            getPlansByWeek = get(),
-            getSelectedReadingPlanFlow = get(),
-            initializeBooksIfNeeded = get(),
-            updateDayReadStatus = get(),
-            setSelectedReadingPlan = get(),
-            findFirstWeekWithUnreadBook = get(),
-            calculateBibleProgressUseCase = get(),
-        )
-    }
+    viewModelOf(::ReadingPlanViewModel)
     factoryOf(::ReadingPlanStateFactory)
+    factoryOf(::WeeksPlanPresentationMapper)
+    factoryOf(::CalculateIsFirstUnreadWeekVisible)
+    factoryOf(::DeleteProgressMapper)
 }

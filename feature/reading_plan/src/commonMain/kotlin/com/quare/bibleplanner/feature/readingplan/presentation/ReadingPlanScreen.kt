@@ -1,48 +1,27 @@
 package com.quare.bibleplanner.feature.readingplan.presentation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import bibleplanner.feature.reading_plan.generated.resources.Res
-import bibleplanner.feature.reading_plan.generated.resources.go_to_unread
-import bibleplanner.feature.reading_plan.generated.resources.more_options
-import bibleplanner.feature.reading_plan.generated.resources.reading_plan
-import bibleplanner.feature.reading_plan.generated.resources.scroll_to_top
-import com.quare.bibleplanner.feature.readingplan.presentation.component.ReadingPlanDropdownMenu
+import com.quare.bibleplanner.feature.readingplan.presentation.component.ReadingPlanTopBar
+import com.quare.bibleplanner.feature.readingplan.presentation.component.fabs.ReadingPlanFabsComponent
 import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanContent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
-import com.quare.bibleplanner.ui.component.icon.CommonIconButton
-import org.jetbrains.compose.resources.stringResource
 
 private const val MAX_CONTENT_WIDTH = 600
 
@@ -57,22 +36,6 @@ internal fun ReadingPlanScreen(
     scrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
-    // Determine if the first unread week is visible and expanded
-    // Hide FAB if we're already viewing the first unread week (expanded and at top)
-    val isFirstUnreadWeekVisible = remember(uiState) {
-        if (uiState is ReadingPlanUiState.Loaded) {
-            val firstUnreadWeek = uiState.weekPlans.find { week ->
-                week.weekPlan.days.any { day ->
-                    day.passages.any { passage -> !passage.isRead }
-                }
-            }
-            // If the first unread week is expanded and we're at the top, we're "in" it
-            firstUnreadWeek != null && firstUnreadWeek.isExpanded && !uiState.isScrolledDown
-        } else {
-            false
-        }
-    }
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -81,70 +44,14 @@ internal fun ReadingPlanScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(text = stringResource(Res.string.reading_plan))
-                    }
-                },
+            ReadingPlanTopBar(
                 scrollBehavior = scrollBehavior,
-                actions = {
-                    CommonIconButton(
-                        imageVector = Icons.Default.MoreVert,
-                        onClick = {
-                            onEvent(ReadingPlanUiEvent.OnOverflowClick)
-                        },
-                        contentDescription = stringResource(Res.string.more_options),
-                    )
-                    ReadingPlanDropdownMenu(
-                        isShowingMenu = uiState.isShowingMenu,
-                        onEvent = onEvent,
-                    )
-                },
+                isShowingMenu = uiState.isShowingMenu,
+                onEvent = onEvent,
             )
         },
         floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-            ) {
-                // Scroll to top FAB - only visible when scrolled down
-                AnimatedVisibility(
-                    visible = uiState.isScrolledDown,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
-                    SmallFloatingActionButton(
-                        onClick = {
-                            onEvent(ReadingPlanUiEvent.OnScrollToTopClick)
-                        },
-                        modifier = Modifier.padding(bottom = 8.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowUp,
-                            contentDescription = stringResource(Res.string.scroll_to_top),
-                        )
-                    }
-                }
-                // Main FAB - scroll to first unread week
-                // Hide if we're already viewing the first unread week opened
-                if (!isFirstUnreadWeekVisible) {
-                    ExtendedFloatingActionButton(
-                        onClick = {
-                            onEvent(ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick)
-                        },
-                        expanded = !uiState.isScrolledDown,
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Default.Book,
-                                contentDescription = null,
-                            )
-                        },
-                        text = {
-                            Text(stringResource(Res.string.go_to_unread))
-                        },
-                    )
-                }
-            }
+            ReadingPlanFabsComponent(uiState, onEvent)
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->

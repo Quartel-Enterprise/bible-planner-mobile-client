@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.readingplan.presentation.component
+package com.quare.bibleplanner.feature.readingplan.presentation.component.week
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -11,6 +11,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.feature.readingplan.presentation.component.week.day.AnimatedDaysList
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 
