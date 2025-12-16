@@ -83,8 +83,8 @@ internal fun DayScreenTopBarComponent(
                     }
                     VerticalSpacer(4)
                     DayProgress(
-                        passages = day.passages,
-                        books = books,
+                        completedCount = completedPassagesCount,
+                        totalCount = totalPassagesCount,
                     )
                 }
             }

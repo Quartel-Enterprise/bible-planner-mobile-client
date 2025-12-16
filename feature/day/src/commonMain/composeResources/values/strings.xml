@@ -3,7 +3,7 @@
     <string name="back">Back</string>
     <string name="day_title_part">Day %1$d</string>
     <string name="week_title_part">Week %1$d</string>
-    <string name="passages_completed">%1$d/%2$d passages completed</string>
+    <string name="passages_completed">passages completed</string>
     <string name="loading">Loading...</string>
     <string name="no_date_set">No date set</string>
     <string name="mark_as_unread">Mark as unread</string>

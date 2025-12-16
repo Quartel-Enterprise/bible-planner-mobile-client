@@ -13,5 +13,7 @@ internal sealed interface DayUiState {
         val datePickerUiState: DatePickerUiState,
         val formattedReadDate: String?,
         val chapterReadStatus: Map<Pair<Int, Int>, Boolean>,
+        val completedPassagesCount: Int,
+        val totalPassagesCount: Int,
     ) : DayUiState
 }
