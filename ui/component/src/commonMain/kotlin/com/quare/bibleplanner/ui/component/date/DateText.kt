@@ -21,5 +21,4 @@ fun DateText(
 }
 
 @Composable
-private fun DatePresentationModel.toText(): String =
-    "$day ${stringResource(month).take(3)} $year, $hour:$minute"
+private fun DatePresentationModel.toText(): String = "$day ${stringResource(month).take(3)} $year, $hour:$minute"

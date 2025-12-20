@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.day.presentation.component.completed_date
+package com.quare.bibleplanner.feature.day.presentation.component.completeddate
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday

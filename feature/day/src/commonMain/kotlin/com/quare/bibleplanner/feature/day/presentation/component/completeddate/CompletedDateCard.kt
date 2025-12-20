@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.day.presentation.component.completed_date
+package com.quare.bibleplanner.feature.day.presentation.component.completeddate
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.no_date_set
+import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.ui.component.date.DatePresentationModel
 import com.quare.bibleplanner.ui.component.date.DateText
-import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.ui.component.icon.EditTextButton
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
@@ -44,7 +44,7 @@ internal fun CompletedDateCard(
             EditTextButton(
                 onClick = {
                     onEvent(DayUiEvent.OnEditDateClick)
-                }
+                },
             )
         }
     }
