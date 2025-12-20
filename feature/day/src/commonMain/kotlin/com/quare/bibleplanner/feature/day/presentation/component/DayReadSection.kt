@@ -12,6 +12,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.feature.day.presentation.component.completed_date.CompletedDateSection
+import com.quare.bibleplanner.ui.component.date.DatePresentationModel
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import kotlin.time.ExperimentalTime
 
@@ -19,7 +21,7 @@ import kotlin.time.ExperimentalTime
 @Composable
 internal fun DayReadSection(
     isRead: Boolean,
-    formattedReadDate: String?,
+    formattedReadDate: DatePresentationModel?,
     onEvent: (DayUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {

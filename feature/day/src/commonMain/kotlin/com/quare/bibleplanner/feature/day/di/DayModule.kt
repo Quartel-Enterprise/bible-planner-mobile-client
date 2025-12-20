@@ -6,6 +6,7 @@ import com.quare.bibleplanner.feature.day.data.datasource.DayLocalDataSource
 import com.quare.bibleplanner.feature.day.data.mapper.DayEntityToModelMapper
 import com.quare.bibleplanner.feature.day.data.repository.DayRepositoryImpl
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
+import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase
@@ -19,6 +20,7 @@ import com.quare.bibleplanner.feature.day.domain.usecase.UpdateChapterReadStatus
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampWithDateAndTimeUseCase
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
+import com.quare.bibleplanner.feature.day.presentation.mapper.MonthPresentationMapper
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
 import org.koin.core.module.dsl.factoryOf
@@ -31,7 +33,6 @@ val dayModule = module {
     // Data
     singleOf(::DayLocalDataSource)
     factoryOf(::DayEntityToModelMapper)
-    factoryOf(::ReadDateFormatter)
     singleOf(::DayRepositoryImpl).bind<DayRepository>()
 
     // Domain
@@ -48,12 +49,15 @@ val dayModule = module {
     factoryOf(::UpdateDayReadTimestampWithDateAndTimeUseCase)
     factoryOf(::ConvertTimestampToDatePickerInitialDateUseCase)
     factoryOf(::EditDaySelectableDates)
+    factoryOf(::LocalDateTimeToDateMapper)
 
     // Use cases container
     factoryOf(::DayUseCases)
 
     // Presentation
     factoryOf(::DayUiStateFlowFactory)
+    factoryOf(::ReadDateFormatter)
+    factoryOf(::MonthPresentationMapper)
 
     // ViewModel
     viewModelOf(::DayViewModel)
