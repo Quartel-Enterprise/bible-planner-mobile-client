@@ -21,6 +21,9 @@ kotlin {
     jvm()
     sourceSets {
         commonMain.dependencies {
+            // DateTime
+            implementation(libs.kotlinx.datetime)
+
             // Serialization
             implementation(libs.kotlin.serialization.json)
         }

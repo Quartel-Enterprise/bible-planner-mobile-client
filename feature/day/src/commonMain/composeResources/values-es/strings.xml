@@ -8,7 +8,6 @@
     <string name="no_date_set">No hay fecha establecida</string>
     <string name="mark_as_unread">Marcar como no leído</string>
     <string name="mark_as_read">Marcar como leído</string>
-    <string name="edit">Editar</string>
     <string name="completed_date">Fecha de finalización</string>
     <string name="next">Siguiente</string>
     <string name="ok">Aceptar</string>
@@ -16,4 +15,16 @@
     <string name="select_time">Seleccionar hora</string>
     <string name="future_date_error">No se puede seleccionar una fecha futura</string>
     <string name="calendar">Calendario</string>
+    <string name="january">Enero</string>
+    <string name="february">Febrero</string>
+    <string name="march">Marzo</string>
+    <string name="april">Abril</string>
+    <string name="may">Mayo</string>
+    <string name="june">Junio</string>
+    <string name="july">Julio</string>
+    <string name="august">Agosto</string>
+    <string name="september">Septiembre</string>
+    <string name="october">Octubre</string>
+    <string name="november">Noviembre</string>
+    <string name="december">Diciembre</string>
 </resources>
