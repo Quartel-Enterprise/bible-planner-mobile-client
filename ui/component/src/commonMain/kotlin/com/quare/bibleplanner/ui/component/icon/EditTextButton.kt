@@ -11,7 +11,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun EditTextButton(
     modifier: Modifier = Modifier,
-    onClick:       () -> Unit,
+    onClick: () -> Unit,
 ) {
     TextButton(
         modifier = modifier,
