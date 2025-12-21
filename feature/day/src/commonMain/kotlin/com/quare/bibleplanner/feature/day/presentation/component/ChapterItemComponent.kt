@@ -31,8 +31,8 @@ internal fun ChapterItemComponent(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(
                 space = 4.dp,
-                alignment = Alignment.CenterVertically
-            )
+                alignment = Alignment.CenterVertically,
+            ),
         ) {
             Text(
                 text = formatChapterText(bookName, chapterPlanModel?.number),
@@ -42,7 +42,7 @@ internal fun ChapterItemComponent(
             val endVerse = chapterPlanModel?.endVerse
             if (startVerse != null && endVerse != null) {
                 Text(
-                    text = "${stringResource(Res.string.vers)} ${startVerse}-${endVerse}",
+                    text = "${stringResource(Res.string.vers)} $startVerse-$endVerse",
                     style = MaterialTheme.typography.bodySmall,
                 )
             }

@@ -49,7 +49,7 @@ class UpdateChapterReadStatusUseCase(
                 bookId = passage.bookId,
                 chapters = listOf(chapter),
                 isRead = false,
-                chapterRanges = passage.chapterRanges
+                chapterRanges = passage.chapterRanges,
             )
         }
 
@@ -73,7 +73,7 @@ class UpdateChapterReadStatusUseCase(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
                 isRead = true,
-                readTimestamp = readTimestamp
+                readTimestamp = readTimestamp,
             )
         } else {
             // If not all passages are read, unmark day as read
@@ -81,7 +81,7 @@ class UpdateChapterReadStatusUseCase(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
                 isRead = false,
-                readTimestamp = null
+                readTimestamp = null,
             )
         }
     }
