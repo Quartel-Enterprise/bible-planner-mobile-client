@@ -63,7 +63,7 @@ fun SharedTransitionScope.PlannedReadDateComponent(
                     ),
                     animatedVisibilityScope = animatedContentScope,
                 ),
-                text = "${plannedReadDate.day}",
+                text = plannedReadDate.day.toString().padStart(2, '0'),
                 style = textStyle,
                 textDecoration = textDecoration,
             )
