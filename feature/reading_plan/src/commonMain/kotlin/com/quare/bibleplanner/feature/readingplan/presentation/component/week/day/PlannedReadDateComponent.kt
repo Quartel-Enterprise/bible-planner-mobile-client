@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PlannedReadDateComponent(
     modifier: Modifier = Modifier,
-    localDate: LocalDate,
+    plannedReadDate: LocalDate,
     isRead: Boolean,
 ) {
     Column(
@@ -42,12 +42,12 @@ fun PlannedReadDateComponent(
         }
         val textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
-            text = "${localDate.day} ${stringResource(localDate.month.toStringResource()).take(3)}",
+            text = "${plannedReadDate.day} ${stringResource(plannedReadDate.month.toStringResource()).take(3)}",
             style = textStyle,
             textDecoration = textDecoration,
         )
         Text(
-            text = localDate.year.toString(),
+            text = plannedReadDate.year.toString(),
             style = textStyle,
             textDecoration = textDecoration,
         )

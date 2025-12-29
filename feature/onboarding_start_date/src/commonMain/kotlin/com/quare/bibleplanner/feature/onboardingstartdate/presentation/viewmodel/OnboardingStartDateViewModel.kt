@@ -2,8 +2,7 @@ package com.quare.bibleplanner.feature.onboardingstartdate.presentation.viewmode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
-import com.quare.bibleplanner.core.date.CurrentTimestampProvider
+import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.feature.onboardingstartdate.domain.repository.OnboardingStartDateRepository
 import com.quare.bibleplanner.feature.onboardingstartdate.presentation.model.OnboardingStartDateUiAction
 import com.quare.bibleplanner.feature.onboardingstartdate.presentation.model.OnboardingStartDateUiEvent
@@ -17,9 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class OnboardingStartDateViewModel(
-    private val planRepository: PlanRepository,
     private val onboardingRepository: OnboardingStartDateRepository,
-    private val currentTimestampProvider: CurrentTimestampProvider,
+    private val setPlanStartTime: SetPlanStartTimeUseCase,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<OnboardingStartDateUiState> =
         MutableStateFlow(OnboardingStartDateUiState(isDontShowAgainMarked = false))
@@ -31,7 +29,9 @@ internal class OnboardingStartDateViewModel(
         when (event) {
             is OnboardingStartDateUiEvent.OnDismiss -> {
                 viewModelScope.launch {
-                    onboardingRepository.setDontShowAgain(_uiState.value.isDontShowAgainMarked)
+                    if (_uiState.value.isDontShowAgainMarked) {
+                        onboardingRepository.setDontShowAgain(true)
+                    }
                     _uiAction.emit(OnboardingStartDateUiAction.DISMISS)
                 }
             }
@@ -52,8 +52,9 @@ internal class OnboardingStartDateViewModel(
 
     private fun onStartNowClick() {
         viewModelScope.launch {
-            val now = currentTimestampProvider.getCurrentTimestamp()
-            planRepository.setStartPlanTimestamp(now)
+            setPlanStartTime(
+                strategy = SetPlanStartTimeUseCase.Strategy.Now
+            )
             _uiAction.emit(OnboardingStartDateUiAction.DISMISS)
         }
     }

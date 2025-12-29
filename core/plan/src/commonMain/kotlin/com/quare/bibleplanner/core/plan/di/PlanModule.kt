@@ -8,6 +8,8 @@ import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.DeletePlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -28,4 +30,6 @@ val planModule = module {
     factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
     factoryOf(::DeletePlanStartDateUseCase)
+    factoryOf(::ReadDayToggleOperationUseCase)
+    factoryOf(::SetPlanStartTimeUseCase)
 }

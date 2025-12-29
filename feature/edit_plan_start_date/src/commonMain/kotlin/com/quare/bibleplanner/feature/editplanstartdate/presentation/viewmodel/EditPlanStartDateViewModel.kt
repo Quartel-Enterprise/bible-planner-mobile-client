@@ -9,7 +9,7 @@ import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.date.toLocalDate
 import com.quare.bibleplanner.core.date.toTimestampUTC
 import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
-import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.SetPlanStartTimeUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 import com.quare.bibleplanner.ui.utils.observe
@@ -72,7 +72,11 @@ internal class EditPlanStartDateViewModel(
 
     private fun onDateSelected(utcDateMillis: Long) {
         viewModelScope.launch {
-            setPlanStartTime(getFinalTimestampAfterEdition(convertUtcDateToLocalDate(utcDateMillis)))
+            setPlanStartTime(
+                strategy = SetPlanStartTimeUseCase.Strategy.SpecificTime(
+                    timestamp = getFinalTimestampAfterEdition(convertUtcDateToLocalDate(utcDateMillis))
+                )
+            )
             dismissDialog()
         }
     }

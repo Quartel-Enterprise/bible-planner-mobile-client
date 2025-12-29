@@ -29,6 +29,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.books)
+            implementation(projects.core.date)
             implementation(projects.core.plan)
             implementation(projects.core.model)
             implementation(projects.core.provider.dataStore)
