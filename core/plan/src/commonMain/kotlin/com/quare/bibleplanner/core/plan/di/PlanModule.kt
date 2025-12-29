@@ -5,6 +5,8 @@ import com.quare.bibleplanner.core.plan.data.mapper.ChaptersRangeMapper
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.data.repository.PlanRepositoryImpl
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
+import com.quare.bibleplanner.core.plan.domain.usecase.DeletePlanStartDateUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -23,5 +25,7 @@ val planModule = module {
     singleOf(::PlanRepositoryImpl).bind<PlanRepository>()
 
     // Use cases
+    factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
+    factoryOf(::DeletePlanStartDateUseCase)
 }

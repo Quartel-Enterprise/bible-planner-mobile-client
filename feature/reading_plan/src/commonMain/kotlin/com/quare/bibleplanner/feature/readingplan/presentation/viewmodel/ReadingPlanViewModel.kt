@@ -335,6 +335,10 @@ internal class ReadingPlanViewModel(
                     }
                 }
             }
+
+            ReadingPlanUiEvent.OnEditPlanClick -> {
+                emitUiAction(ReadingPlanUiAction.GoToChangeStartDate)
+            }
         }
     }
 
@@ -367,6 +371,7 @@ internal class ReadingPlanViewModel(
         OverflowOption.DELETE_PROGRESS -> deleteProgressMapper.map(uiState.value)
         OverflowOption.PRIVACY_POLICY -> ReadingPlanUiAction.OpenLink("$BASE_URL/privacy")
         OverflowOption.TERMS -> ReadingPlanUiAction.OpenLink("$BASE_URL/terms")
+        OverflowOption.EDIT_START_DAY -> ReadingPlanUiAction.GoToChangeStartDate
     }
 
     private fun mapToPresentation(weeks: List<WeekPlanModel>): List<WeekPlanPresentationModel> =

@@ -7,64 +7,79 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.merge
 import kotlinx.datetime.LocalDate
 
 class GetPlansByWeekUseCase(
     private val planRepository: PlanRepository,
     private val booksRepository: BooksRepository,
+    private val getPlannedReadDateForDayUseCase: GetPlannedReadDateForDayUseCase,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<PlansModel> = booksRepository.getBooksFlow().flatMapLatest { books ->
-        val chronologicalOrder = planRepository.getPlans(
-            readingPlanType = ReadingPlanType.CHRONOLOGICAL,
-        )
-        val booksOrder = planRepository.getPlans(
-            readingPlanType = ReadingPlanType.BOOKS,
-        )
+    operator fun invoke(): Flow<PlansModel> = combine(
+        booksRepository.getBooksFlow(),
+        planRepository.getStartPlanTimestamp(),
+    ) { books, startDate ->
+        books to startDate
+    }.flatMapLatest { (books: List<BookDataModel>, startDate: LocalDate?) ->
         flow {
             emit(
                 PlansModel(
-                    chronologicalOrder = chronologicalOrder.map { weekPlan ->
-                        weekPlan.copy(
-                            days = weekPlan.days.map { day ->
-                                calculateDayReadStatus(day, books)
-                            },
-                        )
-                    },
-                    booksOrder = booksOrder.map { weekPlan ->
-                        weekPlan.copy(
-                            days = weekPlan.days.map { day ->
-                                calculateDayReadStatus(day, books)
-                            },
-                        )
-                    },
+                    chronologicalOrder = planRepository
+                        .getPlans(ReadingPlanType.CHRONOLOGICAL)
+                        .toUpdatedDayStatus(books, startDate),
+                    booksOrder = planRepository
+                        .getPlans(ReadingPlanType.BOOKS)
+                        .toUpdatedDayStatus(books, startDate),
                 ),
             )
         }
     }
 
+    private fun List<WeekPlanModel>.toUpdatedDayStatus(
+        books: List<BookDataModel>,
+        startDate: LocalDate?,
+    ): List<WeekPlanModel> = map { weekPlan ->
+        weekPlan.copy(
+            days = weekPlan.days.map { day ->
+                calculateDayReadStatus(
+                    day = day,
+                    books = books,
+                    weekNumber = weekPlan.number,
+                    startDate = startDate,
+                )
+            },
+        )
+    }
+
     private fun calculateDayReadStatus(
         day: DayModel,
         books: List<BookDataModel>,
+        weekNumber: Int,
+        startDate: LocalDate?,
     ): DayModel {
         val updatedBooks = day.passages.map { passage ->
             calculatePassageReadStatus(passage, books)
         }
-        val isDayRead = updatedBooks.all { it.isRead }
-        val totalVerses = calculateTotalVerses(day.passages, books)
-        val readVerses = calculateReadVerses(day.passages, books)
         return day.copy(
             passages = updatedBooks,
-            isRead = isDayRead,
-            totalVerses = totalVerses,
-            readVerses = readVerses,
+            isRead = updatedBooks.all { it.isRead },
+            totalVerses = calculateTotalVerses(day.passages, books),
+            readVerses = calculateReadVerses(day.passages, books),
             readTimestamp = day.readTimestamp,
+            plannedReadDate = startDate?.let {
+                getPlannedReadDateForDayUseCase(
+                    weekNumber = weekNumber,
+                    dayNumber = day.number,
+                    startDate = it,
+                )
+            },
         )
     }
 

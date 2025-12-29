@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.quare.bibleplanner.feature.deleteprogress"
+    namespace = "com.quare.bibleplanner.feature.editplanstartdate"
 }
 
 kotlin {
@@ -19,7 +19,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "FeatureDeleteProgress"
+            baseName = "FeatureEditPlanStartDate"
             isStatic = true
         }
     }
@@ -28,11 +28,12 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
-            implementation(projects.core.books)
-            implementation(projects.core.model)
             implementation(projects.core.plan)
+            implementation(projects.core.model)
+            implementation(projects.core.utils)
 
             // UI
+            implementation(projects.ui.component)
             implementation(projects.ui.utils)
 
             // Compose
@@ -40,10 +41,14 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
 
             // Navigation
             implementation(libs.compose.navigation)
+
+            // DateTime
+            implementation(libs.kotlinx.datetime)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
@@ -53,3 +58,4 @@ kotlin {
         }
     }
 }
+

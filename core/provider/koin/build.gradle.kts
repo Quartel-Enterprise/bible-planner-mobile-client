@@ -35,6 +35,7 @@ kotlin {
             implementation(projects.feature.themeSelection)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
+            implementation(projects.feature.editPlanStartDate)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

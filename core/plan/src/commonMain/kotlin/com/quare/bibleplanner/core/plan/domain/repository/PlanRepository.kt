@@ -8,7 +8,7 @@ import kotlinx.datetime.LocalDate
 interface PlanRepository {
     suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanModel>
 
-    suspend fun setStartPlanTimestamp(epoch: Long)
+    suspend fun setStartPlanTimestamp(timestamp: Long)
 
     suspend fun deleteStartPlanTimestamp()
 

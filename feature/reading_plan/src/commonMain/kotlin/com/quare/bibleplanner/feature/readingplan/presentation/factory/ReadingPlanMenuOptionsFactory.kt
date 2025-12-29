@@ -2,11 +2,13 @@ package com.quare.bibleplanner.feature.readingplan.presentation.factory
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Shield
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.delete_progress_option
+import bibleplanner.feature.reading_plan.generated.resources.edit_plan_start_day
 import bibleplanner.feature.reading_plan.generated.resources.privacy_policy
 import bibleplanner.feature.reading_plan.generated.resources.terms_of_service
 import bibleplanner.feature.reading_plan.generated.resources.theme_option
@@ -19,6 +21,11 @@ internal object ReadingPlanMenuOptionsFactory {
             name = Res.string.theme_option,
             type = OverflowOption.THEME,
             icon = Icons.Default.Palette,
+        ),
+        OverflowOptionPresentationModel(
+            name = Res.string.edit_plan_start_day,
+            type = OverflowOption.EDIT_START_DAY,
+            icon = Icons.Default.Edit,
         ),
         OverflowOptionPresentationModel(
             name = Res.string.terms_of_service,

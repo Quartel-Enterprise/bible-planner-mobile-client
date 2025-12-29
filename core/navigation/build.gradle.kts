@@ -34,6 +34,7 @@ kotlin {
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
             implementation(projects.feature.deleteProgress)
+            implementation(projects.feature.editPlanStartDate)
 
             // Core
             implementation(projects.core.model)

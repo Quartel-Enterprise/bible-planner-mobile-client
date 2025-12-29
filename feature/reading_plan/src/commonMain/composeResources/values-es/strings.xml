@@ -34,4 +34,5 @@
     <string name="october">Octubre</string>
     <string name="november">Noviembre</string>
     <string name="december">Diciembre</string>
+    <string name="edit_plan_start_day">Día de inicio del plan</string>
 </resources>

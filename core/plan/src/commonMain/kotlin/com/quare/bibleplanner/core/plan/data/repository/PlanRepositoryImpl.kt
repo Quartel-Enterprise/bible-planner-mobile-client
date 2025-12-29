@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.utils.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.utils.date.toLocalDate
+import com.quare.bibleplanner.core.utils.date.toTimestampUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
@@ -24,8 +25,8 @@ class PlanRepositoryImpl(
             )
         }
 
-    override suspend fun setStartPlanTimestamp(epoch: Long) {
-        planLocalDataSource.setPlanStartTimestamp(epoch)
+    override suspend fun setStartPlanTimestamp(timestamp: Long) {
+        planLocalDataSource.setPlanStartTimestamp(timestamp)
     }
 
     override suspend fun deleteStartPlanTimestamp() {
