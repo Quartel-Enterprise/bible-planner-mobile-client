@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.planned_read_date
@@ -75,12 +76,13 @@ internal fun SharedTransitionScope.PlannedReadDateComponent(
 private fun CommonPlannedReadDateText(
     modifier: Modifier = Modifier,
     text: String,
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
 ) {
     Text(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = color,
     )
 }
 
