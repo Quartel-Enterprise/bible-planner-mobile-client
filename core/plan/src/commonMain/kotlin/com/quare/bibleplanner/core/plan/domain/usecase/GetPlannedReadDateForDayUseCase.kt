@@ -9,8 +9,19 @@ class GetPlannedReadDateForDayUseCase {
         weekNumber: Int,
         dayNumber: Int,
         startDate: LocalDate,
-    ): LocalDate {
-        val datePeriodToAdd = DatePeriod(days = dayNumber * weekNumber - 1)
-        return startDate.plus(datePeriodToAdd)
+    ): LocalDate = startDate.plus(
+        period = DatePeriod(
+            days = getDaysNumber(weekNumber, dayNumber),
+        ),
+    )
+
+    private fun getDaysNumber(
+        weekNumber: Int,
+        dayNumber: Int,
+    ): Int = (weekNumber - INDEX_OFFSET) * DAYS_PER_WEEK + (dayNumber - INDEX_OFFSET)
+
+    private companion object {
+        const val INDEX_OFFSET = 1
+        const val DAYS_PER_WEEK = 7
     }
 }
