@@ -9,32 +9,22 @@ import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.data.dto.BookPlanDto
 import com.quare.bibleplanner.core.plan.data.dto.DayPlanDto
 import com.quare.bibleplanner.core.plan.data.dto.WeekPlanDto
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
 
 class WeekPlanDtoToModelMapper(
     private val bookMapsProvider: BookMapsProvider,
     private val chaptersRangeMapper: ChaptersRangeMapper,
 ) {
-    fun map(
-        weekPlanDto: WeekPlanDto,
-        startDate: LocalDate,
-    ): WeekPlanModel {
+    fun map(weekPlanDto: WeekPlanDto): WeekPlanModel {
         val weekNumber = weekPlanDto.week
         return WeekPlanModel(
             number = weekNumber,
             days = weekPlanDto.days.map { dayDto ->
-                mapDay(weekNumber, dayDto, startDate)
+                mapDay(dayDto)
             },
         )
     }
 
-    private fun mapDay(
-        weekNumber: Int,
-        dayDto: DayPlanDto,
-        startDate: LocalDate,
-    ): DayModel = DayModel(
+    private fun mapDay(dayDto: DayPlanDto): DayModel = DayModel(
         number = dayDto.day,
         passages = dayDto.books.mapNotNull { bookDto ->
             mapBook(bookDto)
@@ -43,17 +33,8 @@ class WeekPlanDtoToModelMapper(
         readVerses = 0,
         totalVerses = 0,
         readTimestamp = null,
-        plannedReadDate = getPlannedReadDate(weekNumber = weekNumber, dayNumber = dayDto.day, startDate = startDate),
+        plannedReadDate = null,
     )
-
-    private fun getPlannedReadDate(
-        weekNumber: Int,
-        dayNumber: Int,
-        startDate: LocalDate,
-    ): LocalDate {
-        val datePeriodToAdd = DatePeriod(days = dayNumber * weekNumber - 1)
-        return startDate.plus(datePeriodToAdd)
-    }
 
     private fun mapBook(bookDto: BookPlanDto): PassagePlanModel? {
         val bookId = mapBookNameToBookId(bookDto.name) ?: return null

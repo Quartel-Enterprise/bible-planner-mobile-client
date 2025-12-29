@@ -6,34 +6,34 @@ import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.utils.date.LocalDateTimeProvider
+import com.quare.bibleplanner.core.utils.date.toLocalDate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
-import kotlin.time.Clock
 
 class PlanRepositoryImpl(
     private val planLocalDataSource: PlanLocalDataSource,
     private val weekPlanDtoToModelMapper: WeekPlanDtoToModelMapper,
     private val localDateTimeProvider: LocalDateTimeProvider,
 ) : PlanRepository {
-    override suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanModel> {
-        val startDate = getPlanStartDate()
-        return planLocalDataSource
-            .getPlans(readingPlanType)
-            .map {
-                weekPlanDtoToModelMapper.map(
-                    weekPlanDto = it,
-                    startDate = startDate,
-                )
-            }
-    }
+    override suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanModel> = planLocalDataSource
+        .getPlans(readingPlanType)
+        .map {
+            weekPlanDtoToModelMapper.map(
+                weekPlanDto = it,
+            )
+        }
 
-    private suspend fun getPlanStartDate(): LocalDate = localDateTimeProvider
-        .getLocalDateTime(
-            planLocalDataSource.getPlanStartTimeStamp() ?: Clock.System.now().toEpochMilliseconds().also {
-                setPlanStartTimestamp(it)
-            },
-        ).date
-
-    private suspend fun setPlanStartTimestamp(epoch: Long) {
+    override suspend fun setStartPlanTimestamp(epoch: Long) {
         planLocalDataSource.setPlanStartTimestamp(epoch)
     }
+
+    override suspend fun deleteStartPlanTimestamp() {
+        planLocalDataSource.removeLocalDate()
+    }
+
+    override fun getStartPlanTimestamp(): Flow<LocalDate?> =
+        planLocalDataSource.getPlanStartTimeStamp().map { timestamp ->
+            timestamp?.let(localDateTimeProvider::getLocalDateTime)?.toLocalDate()
+        }
 }

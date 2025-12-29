@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -25,10 +26,16 @@ class PlanLocalDataSource(
 
     private val startDateKey = longPreferencesKey(PLAN_START_DATE_KEY)
 
-    suspend fun getPlanStartTimeStamp(): Long? = dataStore.data
+    fun getPlanStartTimeStamp(): Flow<Long?> = dataStore.data
         .map { preferences ->
             preferences[startDateKey]
-        }.firstOrNull()
+        }
+
+    suspend fun removeLocalDate() {
+        dataStore.edit { preferences ->
+            preferences.remove(startDateKey)
+        }
+    }
 
     suspend fun setPlanStartTimestamp(epoch: Long) {
         dataStore.edit { preferences ->

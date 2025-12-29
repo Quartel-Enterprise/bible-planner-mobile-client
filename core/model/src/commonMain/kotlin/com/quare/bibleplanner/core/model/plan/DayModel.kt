@@ -9,5 +9,5 @@ data class DayModel(
     val totalVerses: Int,
     val readVerses: Int,
     val readTimestamp: Long?,
-    val plannedReadDate: LocalDate,
+    val plannedReadDate: LocalDate?,
 )

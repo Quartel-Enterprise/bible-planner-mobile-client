@@ -12,6 +12,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
+import kotlinx.datetime.LocalDate
 
 class GetPlansByWeekUseCase(
     private val planRepository: PlanRepository,
@@ -19,8 +21,12 @@ class GetPlansByWeekUseCase(
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<PlansModel> = booksRepository.getBooksFlow().flatMapLatest { books ->
-        val chronologicalOrder = planRepository.getPlans(ReadingPlanType.CHRONOLOGICAL)
-        val booksOrder = planRepository.getPlans(ReadingPlanType.BOOKS)
+        val chronologicalOrder = planRepository.getPlans(
+            readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+        )
+        val booksOrder = planRepository.getPlans(
+            readingPlanType = ReadingPlanType.BOOKS,
+        )
         flow {
             emit(
                 PlansModel(

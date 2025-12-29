@@ -34,11 +34,12 @@ internal fun WeekPlanItem(
                 weekPresentation = weekPresentation,
                 animatedContentScope = animatedContentScope,
             )
+            AnimatedDaysList(
+                weekPresentation = weekPresentation,
+                onEvent = onEvent,
+                animatedContentScope = animatedContentScope,
+            )
         }
-        AnimatedDaysList(
-            weekPresentation = weekPresentation,
-            onEvent = onEvent,
-        )
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
     }
 }

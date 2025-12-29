@@ -1,7 +1,9 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.component.week.day
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,7 +18,8 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPre
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun AnimatedDaysList(
+internal fun SharedTransitionScope.AnimatedDaysList(
+    animatedContentScope: AnimatedContentScope,
     weekPresentation: WeekPlanPresentationModel,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
@@ -34,6 +37,7 @@ internal fun AnimatedDaysList(
                         modifier = Modifier
                             .padding(horizontal = 16.dp),
                         onEvent = onEvent,
+                        animatedContentScope = animatedContentScope,
                     )
                 }
             }
