@@ -34,8 +34,6 @@ internal fun SharedTransitionScope.AnimatedDaysList(
                     DayItem(
                         weekNumber = number,
                         day = day,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp),
                         onEvent = onEvent,
                         animatedContentScope = animatedContentScope,
                     )
