@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.quare.bibleplanner.feature.readingplan"
+    namespace = "com.quare.bibleplanner.feature.onboardingstartdate"
 }
 
 kotlin {
@@ -19,7 +19,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "FeatureReadingPlan"
+            baseName = "FeatureOnboardingStartDate"
             isStatic = true
         }
     }
@@ -28,14 +28,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
-            implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.model)
-            implementation(projects.core.provider.dataStore)
             implementation(projects.core.utils)
-
-            // Features
-            implementation(projects.feature.onboardingStartDate)
+            implementation(projects.core.date)
+            implementation(projects.core.provider.dataStore)
 
             // UI
             implementation(projects.ui.component)
@@ -62,8 +59,9 @@ kotlin {
             implementation(libs.dataStore)
             implementation(libs.dataStore.preferences)
 
-            // Dates
+            // Date
             implementation(libs.kotlinx.datetime)
         }
     }
 }
+

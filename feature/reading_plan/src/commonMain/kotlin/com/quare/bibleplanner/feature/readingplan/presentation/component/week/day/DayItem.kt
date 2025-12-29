@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.component.week.day
 
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
@@ -48,12 +49,16 @@ internal fun SharedTransitionScope.DayItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                day.plannedReadDate?.let {
-                    PlannedReadDateComponent(
-                        modifier = Modifier,
-                        localDate = it,
-                        isRead = day.isRead,
-                    )
+                AnimatedVisibility(
+                    visible = day.plannedReadDate != null
+                ) {
+                    day.plannedReadDate?.let {
+                        PlannedReadDateComponent(
+                            modifier = Modifier,
+                            localDate = it,
+                            isRead = day.isRead,
+                        )
+                    }
                 }
                 DayItemTexts(
                     animatedContentScope = animatedContentScope,

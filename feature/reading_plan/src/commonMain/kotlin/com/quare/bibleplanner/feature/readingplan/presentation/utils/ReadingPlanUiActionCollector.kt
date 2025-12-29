@@ -9,6 +9,7 @@ import bibleplanner.feature.reading_plan.generated.resources.no_progress_to_dele
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.OnboardingStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -53,6 +54,7 @@ internal fun ReadingPlanUiActionCollector(
             }
 
             ReadingPlanUiAction.GoToChangeStartDate -> navController.navigate(EditPlanStartDateNavRoute)
+            ReadingPlanUiAction.GoToOnboarding -> navController.navigate(OnboardingStartDateNavRoute)
         }
     }
 }

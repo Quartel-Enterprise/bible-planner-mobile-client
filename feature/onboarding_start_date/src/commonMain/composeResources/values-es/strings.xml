@@ -1,0 +1,10 @@
+<resources>
+    <string name="onboarding_title">¿Cuándo te gustaría empezar?</string>
+    <string name="onboarding_description">Elegir una fecha de inicio te ayuda a mantener la consistencia con tu lectura diaria. Puedes empezar hoy o elegir una fecha para comenzar tu plan.</string>
+    <string name="onboarding_edit_date_info">Puedes editar esta fecha más tarde.</string>
+    <string name="dont_show_again">No volver a mostrar</string>
+    <string name="set_date">Establecer fecha</string>
+    <string name="start_now">Empezar ahora</string>
+    <string name="not_now">Definir después</string>
+</resources>
+

@@ -11,6 +11,7 @@ import com.quare.bibleplanner.feature.day.di.dayModule
 import com.quare.bibleplanner.feature.deleteprogress.di.deleteProgressModule
 import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModule
 import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
+import com.quare.bibleplanner.feature.onboardingstartdate.di.onboardingStartDateModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
 
@@ -26,6 +27,7 @@ object CommonKoinUtils {
         dayModule,
         deleteProgressModule,
         editPlanStartDateModule,
+        onboardingStartDateModule,
         roomModule,
         utilsModule,
         dateModule,

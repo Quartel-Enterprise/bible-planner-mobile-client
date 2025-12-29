@@ -10,6 +10,7 @@ import com.quare.bibleplanner.feature.day.presentation.day
 import com.quare.bibleplanner.feature.deleteprogress.presentation.deleteProgress
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
+import com.quare.bibleplanner.feature.onboardingstartdate.presentation.onboardingStartDate
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 
@@ -35,6 +36,7 @@ fun AppNavHost() {
             materialYou(navController)
             deleteProgress(navController)
             editPlanStartDate(navController)
+            onboardingStartDate(navController)
         }
     }
 }

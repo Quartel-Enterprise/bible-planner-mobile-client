@@ -7,11 +7,14 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
+import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
+import com.quare.bibleplanner.feature.onboardingstartdate.domain.repository.OnboardingStartDateRepository
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ListenToShowSetStartDateOnboarding
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.CalculateIsFirstUnreadWeekVisible
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
@@ -26,6 +29,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -41,6 +47,7 @@ internal class ReadingPlanViewModel(
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
     private val calculateIsFirstUnreadWeekVisible: CalculateIsFirstUnreadWeekVisible,
     private val deleteProgressMapper: DeleteProgressMapper,
+    private val listenToShowSetStartDateOnboarding: ListenToShowSetStartDateOnboarding,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
@@ -56,6 +63,11 @@ internal class ReadingPlanViewModel(
     init {
         viewModelScope.launch {
             initializeBooksIfNeeded()
+        }
+        viewModelScope.launch {
+            listenToShowSetStartDateOnboarding {
+                _uiAction.emit(ReadingPlanUiAction.GoToOnboarding)
+            }
         }
         observe(calculateBibleProgressUseCase()) { progress ->
             currentBibleProgress = progress
