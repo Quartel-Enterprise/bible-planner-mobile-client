@@ -10,7 +10,9 @@ class GetPlannedReadDateForDayUseCase {
         dayNumber: Int,
         startDate: LocalDate,
     ): LocalDate {
-        val datePeriodToAdd = DatePeriod(days = dayNumber * weekNumber - 1)
+        val datePeriodToAdd = DatePeriod(
+            days = (weekNumber - 1) * 7 + (dayNumber - 1)
+        )
         return startDate.plus(datePeriodToAdd)
     }
 }
