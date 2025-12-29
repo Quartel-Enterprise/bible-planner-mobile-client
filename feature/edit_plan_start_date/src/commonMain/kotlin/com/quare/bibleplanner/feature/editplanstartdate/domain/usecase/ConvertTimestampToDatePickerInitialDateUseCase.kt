@@ -35,4 +35,3 @@ internal class ConvertTimestampToDatePickerInitialDateUseCase {
         return localMidnight.toEpochMilliseconds()
     }
 }
-

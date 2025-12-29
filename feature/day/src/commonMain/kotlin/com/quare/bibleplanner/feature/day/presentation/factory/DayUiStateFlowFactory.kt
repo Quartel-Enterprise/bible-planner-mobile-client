@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.feature.day.presentation.factory
 
+import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase

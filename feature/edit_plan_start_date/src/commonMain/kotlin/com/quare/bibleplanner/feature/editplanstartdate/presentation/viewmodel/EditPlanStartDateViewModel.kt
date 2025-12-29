@@ -2,14 +2,14 @@ package com.quare.bibleplanner.feature.editplanstartdate.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.date.toLocalDate
 import com.quare.bibleplanner.core.date.toTimestampUTC
-import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
+import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
+import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 import com.quare.bibleplanner.ui.utils.observe
@@ -41,12 +41,14 @@ internal class EditPlanStartDateViewModel(
 
     private fun loadInitialState() {
         observe(planRepository.getStartPlanTimestamp()) { startDate ->
-            val initialTimestamp = startDate?.toTimestampUTC() ?: localDateTimeProvider.getLocalDateTime(
-                currentTimestampProvider.getCurrentTimestamp()
-            ).toLocalDate().toTimestampUTC()
+            val initialTimestamp = startDate?.toTimestampUTC() ?: localDateTimeProvider
+                .getLocalDateTime(
+                    currentTimestampProvider.getCurrentTimestamp(),
+                ).toLocalDate()
+                .toTimestampUTC()
             _uiState.update {
                 EditPlanStartDateUiState.Loaded(
-                    initialTimestamp = initialTimestamp
+                    initialTimestamp = initialTimestamp,
                 )
             }
         }
@@ -74,11 +76,10 @@ internal class EditPlanStartDateViewModel(
         viewModelScope.launch {
             setPlanStartTime(
                 strategy = SetPlanStartTimeUseCase.Strategy.SpecificTime(
-                    timestamp = getFinalTimestampAfterEdition(convertUtcDateToLocalDate(utcDateMillis))
-                )
+                    timestamp = getFinalTimestampAfterEdition(convertUtcDateToLocalDate(utcDateMillis)),
+                ),
             )
             dismissDialog()
         }
     }
 }
-

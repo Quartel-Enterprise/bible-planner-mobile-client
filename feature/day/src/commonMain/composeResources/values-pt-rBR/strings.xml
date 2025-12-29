@@ -28,4 +28,5 @@
     <string name="november">Novembro</string>
     <string name="december">Dezembro</string>
     <string name="vers">Versos</string>
+    <string name="planned_read_date">Data de leitura programada:</string>
 </resources>

@@ -57,6 +57,9 @@ internal fun SharedTransitionScope.DayItem(
                             modifier = Modifier,
                             plannedReadDate = plannedReadDate,
                             isRead = day.isRead,
+                            animatedContentScope = animatedContentScope,
+                            weekNumber = weekNumber,
+                            dayNumber = dayNumber,
                         )
                     }
                 }

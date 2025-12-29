@@ -7,4 +7,3 @@ internal sealed interface EditPlanStartDateUiState {
         val initialTimestamp: Long,
     ) : EditPlanStartDateUiState
 }
-

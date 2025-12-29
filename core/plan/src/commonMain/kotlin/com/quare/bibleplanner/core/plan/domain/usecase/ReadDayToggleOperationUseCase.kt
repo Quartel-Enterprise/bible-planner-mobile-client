@@ -22,7 +22,7 @@ class ReadDayToggleOperationUseCase(
         val containsReadDay = allWeeks.containsAtLeastOneReadDay()
         if (!containsReadDay) {
             setPlanStartTime(
-                strategy = SetPlanStartTimeUseCase.Strategy.Now
+                strategy = SetPlanStartTimeUseCase.Strategy.Now,
             )
         } else if (plans.anyPlanWithJustOneReadDay() && !newReadStatus) {
             deletePlanStartDate()
@@ -36,6 +36,7 @@ class ReadDayToggleOperationUseCase(
     }
 
     private fun PlansModel.toAllWeeks(): List<WeekPlanModel> = chronologicalOrder + booksOrder
+
     private fun PlansModel.anyPlanWithJustOneReadDay(): Boolean =
         chronologicalOrder.isJustOneReadDay() || booksOrder.isJustOneReadDay()
 

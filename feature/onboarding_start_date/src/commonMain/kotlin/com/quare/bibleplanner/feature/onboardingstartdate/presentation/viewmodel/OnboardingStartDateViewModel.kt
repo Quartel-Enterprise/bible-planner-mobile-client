@@ -53,7 +53,7 @@ internal class OnboardingStartDateViewModel(
     private fun onStartNowClick() {
         viewModelScope.launch {
             setPlanStartTime(
-                strategy = SetPlanStartTimeUseCase.Strategy.Now
+                strategy = SetPlanStartTimeUseCase.Strategy.Now,
             )
             _uiAction.emit(OnboardingStartDateUiAction.DISMISS)
         }
@@ -65,4 +65,3 @@ internal class OnboardingStartDateViewModel(
         }
     }
 }
-

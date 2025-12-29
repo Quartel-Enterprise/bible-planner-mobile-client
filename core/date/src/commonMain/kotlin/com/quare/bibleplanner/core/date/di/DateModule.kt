@@ -11,4 +11,3 @@ val dateModule = module {
     factoryOf(::CurrentTimestampProvider)
     factoryOf(::GetFinalTimestampAfterEditionUseCase)
 }
-

@@ -21,4 +21,3 @@ internal class ConvertUtcDateToLocalDateUseCase {
         .toLocalDateTime(TimeZone.UTC)
         .toLocalDate()
 }
-

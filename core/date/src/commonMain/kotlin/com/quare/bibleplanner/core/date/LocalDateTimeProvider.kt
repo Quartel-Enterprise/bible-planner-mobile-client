@@ -10,4 +10,3 @@ class LocalDateTimeProvider {
         .fromEpochMilliseconds(timestamp)
         .toLocalDateTime(TimeZone.currentSystemDefault())
 }
-

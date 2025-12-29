@@ -344,7 +344,7 @@ internal class ReadingPlanViewModel(
                     newReadStatus = newReadStatus,
                     weekNumber = event.weekNumber,
                     dayNumber = event.dayNumber,
-                    selectedReadingPlan = currentUiState.selectedReadingPlan
+                    selectedReadingPlan = currentUiState.selectedReadingPlan,
                 )
             }
         }

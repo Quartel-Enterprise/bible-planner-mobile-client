@@ -54,11 +54,7 @@ internal fun LazyListScope.passageList(
                         onToggle = chapterToggle,
                     )
                 }
-                val isLastChapter = chapterIndex == passage.chapters.size - 1
-                val isLastPassage = passageIndex == passages.size - 1
-                if (!(isLastChapter && isLastPassage)) {
-                    dividerItem(maxContentWidth)
-                }
+                dividerItem(maxContentWidth)
             }
         }
     }

@@ -15,4 +15,3 @@ fun LocalDateTime.toLocalDate(): LocalDate = LocalDate(
 )
 
 fun LocalDate.toTimestampUTC(): Long = atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
-

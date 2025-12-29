@@ -10,9 +10,7 @@ import bibleplanner.feature.onboarding_start_date.generated.resources.onboarding
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SetDateHeaderText(
-    modifier: Modifier = Modifier,
-) {
+internal fun SetDateHeaderText(modifier: Modifier = Modifier) {
     Text(
         modifier = modifier,
         text = stringResource(Res.string.onboarding_title),

@@ -8,7 +8,6 @@ class ListenToShowSetStartDateOnboarding(
     private val planRepository: PlanRepository,
     private val onboardingRepository: OnboardingStartDateRepository,
 ) {
-
     suspend operator fun invoke(callback: suspend () -> Unit) {
         val startPlanTimestamp = planRepository.getStartPlanTimestamp().first()
         val isDontShowAgainMarked = onboardingRepository.getDontShowAgainFlow().first()

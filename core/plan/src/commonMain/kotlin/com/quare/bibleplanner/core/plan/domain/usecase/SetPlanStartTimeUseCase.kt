@@ -7,9 +7,11 @@ class SetPlanStartTimeUseCase(
     private val planRepository: PlanRepository,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) {
-
     sealed interface Strategy {
-        data class SpecificTime(val timestamp: Long) : Strategy
+        data class SpecificTime(
+            val timestamp: Long,
+        ) : Strategy
+
         data object Now : Strategy
     }
 
@@ -18,7 +20,7 @@ class SetPlanStartTimeUseCase(
             when (strategy) {
                 is Strategy.SpecificTime -> strategy.timestamp
                 Strategy.Now -> currentTimestampProvider.getCurrentTimestamp()
-            }
+            },
         )
     }
 }

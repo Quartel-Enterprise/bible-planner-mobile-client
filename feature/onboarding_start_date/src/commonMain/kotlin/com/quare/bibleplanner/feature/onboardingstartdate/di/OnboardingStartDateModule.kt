@@ -15,4 +15,3 @@ val onboardingStartDateModule = module {
     // ViewModel
     viewModelOf(::OnboardingStartDateViewModel)
 }
-

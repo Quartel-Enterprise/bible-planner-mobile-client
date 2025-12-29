@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 
 internal class DeleteAllProgressViewModel(
     private val resetAllProgress: ResetAllProgressUseCase,
-    private val deletePlanStartDate: DeletePlanStartDateUseCase
+    private val deletePlanStartDate: DeletePlanStartDateUseCase,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DeleteAllProgressUiState> =
         MutableStateFlow(DeleteAllProgressUiState.Idle)

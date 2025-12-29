@@ -53,8 +53,13 @@ internal fun ReadingPlanUiActionCollector(
                 )
             }
 
-            ReadingPlanUiAction.GoToChangeStartDate -> navController.navigate(EditPlanStartDateNavRoute)
-            ReadingPlanUiAction.GoToOnboarding -> navController.navigate(OnboardingStartDateNavRoute)
+            ReadingPlanUiAction.GoToChangeStartDate -> {
+                navController.navigate(EditPlanStartDateNavRoute)
+            }
+
+            ReadingPlanUiAction.GoToOnboarding -> {
+                navController.navigate(OnboardingStartDateNavRoute)
+            }
         }
     }
 }

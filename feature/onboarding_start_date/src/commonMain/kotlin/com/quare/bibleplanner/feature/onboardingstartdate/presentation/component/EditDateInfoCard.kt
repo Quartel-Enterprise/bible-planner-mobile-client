@@ -46,4 +46,3 @@ internal fun EditDateInfoCard(modifier: Modifier = Modifier) {
         }
     }
 }
-

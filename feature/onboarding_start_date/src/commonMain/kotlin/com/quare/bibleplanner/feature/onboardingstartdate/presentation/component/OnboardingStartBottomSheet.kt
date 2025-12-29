@@ -39,7 +39,7 @@ internal fun OnboardingStartBottomSheet(
             SetDateHeader(
                 onCloseClick = {
                     onEvent(OnboardingStartDateUiEvent.OnDismiss)
-                }
+                },
             )
 
             SetDateOnboardingDescription(
@@ -61,7 +61,7 @@ internal fun OnboardingStartBottomSheet(
                         OnboardingStartDateUiEvent.OnDontShowAgainClick,
                     )
                 },
-                isDontShowAgainMarked = isDontShowAgainMarked
+                isDontShowAgainMarked = isDontShowAgainMarked,
             )
 
             ActionButtons(

@@ -14,10 +14,10 @@ internal fun SetDateHeader(
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         SetDateIconsHeader(
-            onCloseClick = onCloseClick
+            onCloseClick = onCloseClick,
         )
         SetDateHeaderText(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         )
     }
 }

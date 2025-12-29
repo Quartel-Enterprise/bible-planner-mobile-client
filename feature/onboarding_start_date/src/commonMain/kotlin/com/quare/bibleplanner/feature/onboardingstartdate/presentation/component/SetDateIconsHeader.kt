@@ -32,7 +32,7 @@ internal fun SetDateIconsHeader(
             modifier = Modifier
                 .clip(CircleShape)
                 .size(48.dp)
-                .align(Alignment.Center)
+                .align(Alignment.Center),
         ) {
             Icon(
                 modifier = Modifier.align(Alignment.Center).size(32.dp),

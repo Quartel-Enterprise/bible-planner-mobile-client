@@ -23,7 +23,10 @@ fun NavGraphBuilder.editPlanStartDate(navController: NavHostController) {
         }
 
         when (val state = uiState) {
-            is EditPlanStartDateUiState.Loading -> Unit
+            is EditPlanStartDateUiState.Loading -> {
+                Unit
+            }
+
             is EditPlanStartDateUiState.Loaded -> {
                 EditPlanStartDateDialog(
                     initialTimestamp = state.initialTimestamp,
@@ -33,4 +36,3 @@ fun NavGraphBuilder.editPlanStartDate(navController: NavHostController) {
         }
     }
 }
-
