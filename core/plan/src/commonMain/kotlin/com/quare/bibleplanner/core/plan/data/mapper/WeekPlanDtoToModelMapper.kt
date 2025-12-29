@@ -14,12 +14,15 @@ class WeekPlanDtoToModelMapper(
     private val bookMapsProvider: BookMapsProvider,
     private val chaptersRangeMapper: ChaptersRangeMapper,
 ) {
-    fun map(weekPlanDto: WeekPlanDto): WeekPlanModel = WeekPlanModel(
-        number = weekPlanDto.week,
-        days = weekPlanDto.days.map { dayDto ->
-            mapDay(dayDto)
-        },
-    )
+    fun map(weekPlanDto: WeekPlanDto): WeekPlanModel {
+        val weekNumber = weekPlanDto.week
+        return WeekPlanModel(
+            number = weekNumber,
+            days = weekPlanDto.days.map { dayDto ->
+                mapDay(dayDto)
+            },
+        )
+    }
 
     private fun mapDay(dayDto: DayPlanDto): DayModel = DayModel(
         number = dayDto.day,
@@ -30,6 +33,7 @@ class WeekPlanDtoToModelMapper(
         readVerses = 0,
         totalVerses = 0,
         readTimestamp = null,
+        plannedReadDate = null,
     )
 
     private fun mapBook(bookDto: BookPlanDto): PassagePlanModel? {

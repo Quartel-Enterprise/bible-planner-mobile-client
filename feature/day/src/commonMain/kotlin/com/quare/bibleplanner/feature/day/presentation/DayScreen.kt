@@ -54,6 +54,8 @@ internal fun DayScreen(
                 uiState = uiState,
                 onEvent = onEvent,
                 maxContentWidth = constrainedWidth,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
             )
         }
     }

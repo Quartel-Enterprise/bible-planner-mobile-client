@@ -27,6 +27,8 @@ kotlin {
             implementation(projects.core.provider.room)
             implementation(projects.core.books)
             implementation(projects.core.plan)
+            implementation(projects.core.utils)
+            implementation(projects.core.date)
 
             // Features
             implementation(projects.feature.readingPlan)
@@ -34,6 +36,8 @@ kotlin {
             implementation(projects.feature.themeSelection)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
+            implementation(projects.feature.editPlanStartDate)
+            implementation(projects.feature.onboardingStartDate)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

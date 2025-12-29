@@ -8,10 +8,11 @@ import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
-import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ListenToShowSetStartDateOnboarding
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.CalculateIsFirstUnreadWeekVisible
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
@@ -35,12 +36,13 @@ internal class ReadingPlanViewModel(
     getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
     calculateBibleProgressUseCase: CalculateBibleProgressUseCase,
     private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
-    private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
     private val calculateIsFirstUnreadWeekVisible: CalculateIsFirstUnreadWeekVisible,
     private val deleteProgressMapper: DeleteProgressMapper,
+    private val listenToShowSetStartDateOnboarding: ListenToShowSetStartDateOnboarding,
+    private val readDayToggleOperationUseCase: ReadDayToggleOperationUseCase,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
@@ -56,6 +58,11 @@ internal class ReadingPlanViewModel(
     init {
         viewModelScope.launch {
             initializeBooksIfNeeded()
+        }
+        viewModelScope.launch {
+            listenToShowSetStartDateOnboarding {
+                _uiAction.emit(ReadingPlanUiAction.GoToOnboarding)
+            }
         }
         observe(calculateBibleProgressUseCase()) { progress ->
             currentBibleProgress = progress
@@ -191,31 +198,7 @@ internal class ReadingPlanViewModel(
             }
 
             is ReadingPlanUiEvent.OnDayReadClick -> {
-                val currentUiState = _uiState.value
-
-                if (currentUiState !is ReadingPlanUiState.Loaded) {
-                    return
-                }
-
-                val week = currentPlansModel?.let { plansModel ->
-                    val selectedWeeks = when (currentUiState.selectedReadingPlan) {
-                        ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
-                        ReadingPlanType.BOOKS -> plansModel.booksOrder
-                    }
-                    selectedWeeks.find { it.number == event.weekNumber }
-                } ?: return
-
-                val day = week.days.find { it.number == event.dayNumber } ?: return
-                val newReadStatus = !day.isRead
-
-                viewModelScope.launch {
-                    updateDayReadStatus(
-                        weekNumber = event.weekNumber,
-                        dayNumber = event.dayNumber,
-                        isRead = newReadStatus,
-                        readingPlanType = currentUiState.selectedReadingPlan,
-                    )
-                }
+                onDayReadClick(event)
             }
 
             is ReadingPlanUiEvent.OnDayClick -> {
@@ -335,6 +318,35 @@ internal class ReadingPlanViewModel(
                     }
                 }
             }
+
+            ReadingPlanUiEvent.OnEditPlanClick -> {
+                emitUiAction(ReadingPlanUiAction.GoToChangeStartDate)
+            }
+        }
+    }
+
+    private fun onDayReadClick(event: ReadingPlanUiEvent.OnDayReadClick) {
+        val currentUiState = _uiState.value
+
+        if (currentUiState is ReadingPlanUiState.Loaded) {
+            val safeCurrentPlans = currentPlansModel ?: return
+            val week = safeCurrentPlans.let { plansModel ->
+                val selectedWeeks = when (currentUiState.selectedReadingPlan) {
+                    ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
+                    ReadingPlanType.BOOKS -> plansModel.booksOrder
+                }
+                selectedWeeks.find { it.number == event.weekNumber }
+            }
+            val day = week?.days?.find { it.number == event.dayNumber } ?: return
+            val newReadStatus = !day.isRead
+            viewModelScope.launch {
+                readDayToggleOperationUseCase(
+                    newReadStatus = newReadStatus,
+                    weekNumber = event.weekNumber,
+                    dayNumber = event.dayNumber,
+                    selectedReadingPlan = currentUiState.selectedReadingPlan,
+                )
+            }
         }
     }
 
@@ -367,6 +379,7 @@ internal class ReadingPlanViewModel(
         OverflowOption.DELETE_PROGRESS -> deleteProgressMapper.map(uiState.value)
         OverflowOption.PRIVACY_POLICY -> ReadingPlanUiAction.OpenLink("$BASE_URL/privacy")
         OverflowOption.TERMS -> ReadingPlanUiAction.OpenLink("$BASE_URL/terms")
+        OverflowOption.EDIT_START_DAY -> ReadingPlanUiAction.GoToChangeStartDate
     }
 
     private fun mapToPresentation(weeks: List<WeekPlanModel>): List<WeekPlanPresentationModel> =

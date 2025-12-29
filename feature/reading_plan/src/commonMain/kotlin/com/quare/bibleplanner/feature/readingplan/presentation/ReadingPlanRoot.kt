@@ -16,7 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.quare.bibleplanner.core.model.route.OnboardingStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.ReadingPlanNavRoute
+import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
+import com.quare.bibleplanner.feature.onboardingstartdate.domain.repository.OnboardingStartDateRepository
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
@@ -25,6 +28,8 @@ import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToTop
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToWeekAction
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)

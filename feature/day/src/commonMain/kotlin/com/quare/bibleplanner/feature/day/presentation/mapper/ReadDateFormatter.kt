@@ -1,26 +1,21 @@
 package com.quare.bibleplanner.feature.day.presentation.mapper
 
+import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.model.date.DateModel
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.ui.component.date.DatePresentationModel
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 internal class ReadDateFormatter(
     private val localDateTimeToDateMapper: LocalDateTimeToDateMapper,
     private val monthPresentationMapper: MonthPresentationMapper,
+    private val localDateTimeProvider: LocalDateTimeProvider,
 ) {
-    fun format(timestamp: Long): DatePresentationModel {
-        val localDateTime: LocalDateTime = Instant
-            .fromEpochMilliseconds(timestamp)
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-        val domainModel = localDateTimeToDateMapper.map(localDateTime)
-        return domainModel.toPresentation()
-    }
+    fun format(timestamp: Long): DatePresentationModel = localDateTimeToDateMapper
+        .map(
+            localDateTime = localDateTimeProvider.getLocalDateTime(timestamp),
+        ).toPresentation()
 
     private fun DateModel.toPresentation(): DatePresentationModel = DatePresentationModel(
         minute = minute.toString().padStart(2, '0'),

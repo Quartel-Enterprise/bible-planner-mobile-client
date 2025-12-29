@@ -30,6 +30,7 @@ kotlin {
             // Core
             implementation(projects.core.books)
             implementation(projects.core.model)
+            implementation(projects.core.plan)
 
             // UI
             implementation(projects.ui.utils)

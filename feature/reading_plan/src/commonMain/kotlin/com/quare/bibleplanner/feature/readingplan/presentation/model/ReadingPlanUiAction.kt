@@ -11,6 +11,10 @@ sealed interface ReadingPlanUiAction {
 
     data object GoToDeleteAllProgress : ReadingPlanUiAction
 
+    data object GoToChangeStartDate : ReadingPlanUiAction
+
+    data object GoToOnboarding : ReadingPlanUiAction
+
     data object ShowNoProgressToDelete : ReadingPlanUiAction
 
     data object GoToTheme : ReadingPlanUiAction

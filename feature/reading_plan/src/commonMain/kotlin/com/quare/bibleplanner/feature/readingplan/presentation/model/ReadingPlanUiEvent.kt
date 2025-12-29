@@ -40,4 +40,6 @@ internal sealed interface ReadingPlanUiEvent {
     data object OnScrollToWeekCompleted : ReadingPlanUiEvent
 
     data object OnScrollToTopCompleted : ReadingPlanUiEvent
+
+    data object OnEditPlanClick : ReadingPlanUiEvent
 }

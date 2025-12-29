@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
+import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 

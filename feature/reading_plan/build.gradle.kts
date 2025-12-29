@@ -29,10 +29,14 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.books)
+            implementation(projects.core.date)
             implementation(projects.core.plan)
             implementation(projects.core.model)
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.utils)
+
+            // Features
+            implementation(projects.feature.onboardingStartDate)
 
             // UI
             implementation(projects.ui.component)
@@ -58,6 +62,9 @@ kotlin {
             // Data Store
             implementation(libs.dataStore)
             implementation(libs.dataStore.preferences)
+
+            // Dates
+            implementation(libs.kotlinx.datetime)
         }
     }
 }

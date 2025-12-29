@@ -8,6 +8,8 @@ import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.no_progress_to_delete_message
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
+import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.OnboardingStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -49,6 +51,14 @@ internal fun ReadingPlanUiActionCollector(
                 snackbarHostState.showSnackbar(
                     getString(Res.string.no_progress_to_delete_message),
                 )
+            }
+
+            ReadingPlanUiAction.GoToChangeStartDate -> {
+                navController.navigate(EditPlanStartDateNavRoute)
+            }
+
+            ReadingPlanUiAction.GoToOnboarding -> {
+                navController.navigate(OnboardingStartDateNavRoute)
             }
         }
     }

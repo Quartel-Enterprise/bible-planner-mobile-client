@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.core.model.plan
 
+import kotlinx.datetime.LocalDate
+
 data class DayModel(
     val number: Int,
     val passages: List<PassagePlanModel>,
@@ -7,4 +9,5 @@ data class DayModel(
     val totalVerses: Int,
     val readVerses: Int,
     val readTimestamp: Long?,
+    val plannedReadDate: LocalDate?,
 )

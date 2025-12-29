@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.day.domain.usecase
+package com.quare.bibleplanner.core.date
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -7,7 +7,7 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-internal class GetFinalTimestampAfterEditionUseCase {
+class GetFinalTimestampAfterEditionUseCase {
     /**
      * Calculates the final timestamp by combining a local date with a duration.
      * The duration is added to the start of the day in the current system timezone.
@@ -18,7 +18,7 @@ internal class GetFinalTimestampAfterEditionUseCase {
      */
     operator fun invoke(
         selectedLocalDate: LocalDate,
-        eventDuration: Duration,
+        eventDuration: Duration = Duration.ZERO,
     ): Long {
         val timeZone = TimeZone.currentSystemDefault()
         val startOfDay = selectedLocalDate.atStartOfDayIn(timeZone)

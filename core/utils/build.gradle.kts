@@ -20,8 +20,15 @@ kotlin {
     jvm()
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
+            // Coroutines
             implementation(libs.kotlinx.coroutines.core)
+
+            // Date
+            implementation(libs.kotlinx.datetime)
+
+            // Koin
+            implementation(project.dependencies.platform(libs.koinBom))
+            implementation(libs.koinCore)
         }
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.day_number
 import com.quare.bibleplanner.core.books.util.getBookName
@@ -42,7 +40,7 @@ internal fun SharedTransitionScope.DayItemTexts(
         targetValue = if (day.isRead) {
             MaterialTheme.colorScheme.onSurfaceVariant
         } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
+            MaterialTheme.colorScheme.onSurface
         },
         label = "dayPassageColor",
     )
@@ -65,12 +63,10 @@ internal fun SharedTransitionScope.DayItemTexts(
                 animatedVisibilityScope = animatedContentScope,
             ),
         )
-        val dayReadingText = day.passages.toDayReadingFormat()
         Text(
-            text = dayReadingText,
+            text = day.passages.toDayReadingFormat(),
             style = MaterialTheme.typography.bodyMedium,
             color = passageColor,
-            modifier = Modifier.padding(top = 2.dp),
             textDecoration = if (day.isRead) {
                 TextDecoration.LineThrough
             } else {

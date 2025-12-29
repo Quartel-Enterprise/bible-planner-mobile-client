@@ -32,12 +32,12 @@ internal fun SharedTransitionScope.AnimatedDaysList(
             Column {
                 days.forEach { day ->
                     DayItem(
-                        animatedContentScope = animatedContentScope,
+                        weekNumber = number,
                         day = day,
                         modifier = Modifier
                             .padding(horizontal = 16.dp),
                         onEvent = onEvent,
-                        weekNumber = number,
+                        animatedContentScope = animatedContentScope,
                     )
                 }
             }
