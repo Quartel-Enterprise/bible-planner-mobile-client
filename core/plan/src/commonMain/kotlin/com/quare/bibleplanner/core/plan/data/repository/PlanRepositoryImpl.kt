@@ -5,9 +5,9 @@ import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
-import com.quare.bibleplanner.core.utils.date.LocalDateTimeProvider
-import com.quare.bibleplanner.core.utils.date.toLocalDate
-import com.quare.bibleplanner.core.utils.date.toTimestampUTC
+import com.quare.bibleplanner.core.date.LocalDateTimeProvider
+import com.quare.bibleplanner.core.date.toLocalDate
+import com.quare.bibleplanner.core.date.toTimestampUTC
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate

@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.utils.date
+package com.quare.bibleplanner.core.date
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -10,3 +10,4 @@ class LocalDateTimeProvider {
         .fromEpochMilliseconds(timestamp)
         .toLocalDateTime(TimeZone.currentSystemDefault())
 }
+

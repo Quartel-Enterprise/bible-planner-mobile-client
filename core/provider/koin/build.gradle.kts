@@ -28,6 +28,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.utils)
+            implementation(projects.core.date)
 
             // Features
             implementation(projects.feature.readingPlan)

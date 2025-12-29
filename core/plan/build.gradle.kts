@@ -32,6 +32,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.model)
             implementation(projects.core.utils)
+            implementation(projects.core.date)
 
             // Compose
             implementation(compose.runtime)

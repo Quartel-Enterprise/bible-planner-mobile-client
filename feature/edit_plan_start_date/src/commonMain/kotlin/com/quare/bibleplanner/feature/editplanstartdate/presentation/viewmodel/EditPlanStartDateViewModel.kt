@@ -3,10 +3,11 @@ package com.quare.bibleplanner.feature.editplanstartdate.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
-import com.quare.bibleplanner.core.utils.date.CurrentTimestampProvider
-import com.quare.bibleplanner.core.utils.date.GetFinalTimestampAfterEditionUseCase
-import com.quare.bibleplanner.core.utils.date.LocalDateTimeProvider
-import com.quare.bibleplanner.core.utils.date.toTimestampUTC
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
+import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
+import com.quare.bibleplanner.core.date.LocalDateTimeProvider
+import com.quare.bibleplanner.core.date.toLocalDate
+import com.quare.bibleplanner.core.date.toTimestampUTC
 import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
@@ -42,7 +43,7 @@ internal class EditPlanStartDateViewModel(
         observe(planRepository.getStartPlanTimestamp()) { startDate ->
             val initialTimestamp = startDate?.toTimestampUTC() ?: localDateTimeProvider.getLocalDateTime(
                 currentTimestampProvider.getCurrentTimestamp()
-            ).date.toTimestampUTC()
+            ).toLocalDate().toTimestampUTC()
             _uiState.update {
                 EditPlanStartDateUiState.Loaded(
                     initialTimestamp = initialTimestamp

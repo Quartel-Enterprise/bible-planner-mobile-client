@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.provider.koin
 
 import com.quare.bibleplanner.core.books.di.booksModule
+import com.quare.bibleplanner.core.date.di.dateModule
 import com.quare.bibleplanner.core.datastore.di.dataStoreProviderModule
 import com.quare.bibleplanner.core.plan.di.planModule
 import com.quare.bibleplanner.core.provider.platform.di.platformModule
@@ -27,5 +28,6 @@ object CommonKoinUtils {
         editPlanStartDateModule,
         roomModule,
         utilsModule,
+        dateModule,
     )
 }

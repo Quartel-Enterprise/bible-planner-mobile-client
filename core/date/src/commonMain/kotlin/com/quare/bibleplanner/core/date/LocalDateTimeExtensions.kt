@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.utils.date
+package com.quare.bibleplanner.core.date
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -15,3 +15,4 @@ fun LocalDateTime.toLocalDate(): LocalDate = LocalDate(
 )
 
 fun LocalDate.toTimestampUTC(): Long = atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+

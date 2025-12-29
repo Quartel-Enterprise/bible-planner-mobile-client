@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.editplanstartdate.domain.usecase
 
-import com.quare.bibleplanner.core.utils.date.toLocalDate
+import com.quare.bibleplanner.core.date.toLocalDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

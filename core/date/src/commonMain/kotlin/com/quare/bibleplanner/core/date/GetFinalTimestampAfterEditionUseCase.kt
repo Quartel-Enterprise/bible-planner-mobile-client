@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.utils.date
+package com.quare.bibleplanner.core.date
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -26,3 +26,4 @@ class GetFinalTimestampAfterEditionUseCase {
         return finalInstant.toEpochMilliseconds()
     }
 }
+

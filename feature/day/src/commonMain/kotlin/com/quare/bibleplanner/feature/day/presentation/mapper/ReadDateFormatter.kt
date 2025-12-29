@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.day.presentation.mapper
 
 import com.quare.bibleplanner.core.model.date.DateModel
-import com.quare.bibleplanner.core.utils.date.LocalDateTimeProvider
+import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.ui.component.date.DatePresentationModel
 import kotlin.time.ExperimentalTime
