@@ -1,3 +1,4 @@
+import com.bibleplanner.buildlogic.getAndroidSdkVersions
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -11,15 +12,16 @@ plugins {
 
 // Add project-specific dependencies
 kotlin {
+    val androidSdkVersions = getAndroidSdkVersions()
     androidLibrary {
+        compileSdk = androidSdkVersions.compileSdk
+        minSdk = androidSdkVersions.minSdk
         namespace = "com.quare.bibleplanner.shared"
-        compileSdk = project.property("compileSdkVersion").toString().toInt()
-        minSdk = project.property("minSdkVersion").toString().toInt()
     }
 
     android {
-        compileSdk = project.property("compileSdkVersion").toString().toInt()
-        minSdk = project.property("minSdkVersion").toString().toInt()
+        compileSdk = androidSdkVersions.compileSdk
+        minSdk = androidSdkVersions.minSdk
         namespace = "com.quare.bibleplanner.shared"
     }
 
