@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.bibleplanner.composeMultiplatform)
-    alias(libs.plugins.androidCommonConfig)
     alias(libs.plugins.composeHotReload)
 }
 

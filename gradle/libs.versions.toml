@@ -72,7 +72,6 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
-androidCommonConfig = { id = "com.quare.android.common" }
 
 bibleplanner-kotlinMultiplatform = { id = "bibleplanner.kotlin.multiplatform" }
 bibleplanner-composeMultiplatform = { id = "bibleplanner.kotlin.composeMultiplatform" }

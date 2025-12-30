@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.bibleplanner.kotlinMultiplatform)
     alias(libs.plugins.bibleplanner.composeMultiplatform)
-    alias(libs.plugins.androidCommonConfig)
 }
 
 kotlin {

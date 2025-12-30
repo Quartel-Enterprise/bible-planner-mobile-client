@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.bibleplanner.kotlinMultiplatform)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
-    alias(libs.plugins.androidCommonConfig)
 }
 
 kotlin {

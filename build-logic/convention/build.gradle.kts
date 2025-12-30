@@ -16,10 +16,6 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("androidCommonConfig") {
-            id = "com.quare.android.common"
-            implementationClass = "com.quare.blitzsplit.plugins.AndroidCommonConfigPlugin"
-        }
         register("kotlinMultiplatform") {
             id = "bibleplanner.kotlin.multiplatform"
             implementationClass = "KotlinMultiplatformConventionPlugin"
