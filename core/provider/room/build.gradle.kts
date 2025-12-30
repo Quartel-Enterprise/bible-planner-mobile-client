@@ -1,23 +1,13 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.androidCommonConfig)
 }
 
 kotlin {
-    androidTarget()
-
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "DataBaseProvider"
-            isStatic = true
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.core.provider.room"
     }
 
     jvm("desktop")
@@ -57,8 +47,6 @@ afterEvaluate {
     }
 }
 
-
-
 room {
     schemaDirectory("$projectDir/schemas")
 }
@@ -68,13 +56,4 @@ dependencies {
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
-}
-
-android {
-    namespace = "com.quare.bibleplanner.core.provider.room"
-    compileSdk = project.property("compileSdkVersion").toString().toInt()
-    
-    defaultConfig {
-        minSdk = project.property("minSdkVersion").toString().toInt()
-    }
 }

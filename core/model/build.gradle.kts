@@ -1,24 +1,13 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
     alias(libs.plugins.serialization)
     alias(libs.plugins.androidCommonConfig)
 }
 
 kotlin {
-    androidTarget()
-
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "CoreModel"
-            isStatic = true
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.core.model"
     }
-
     jvm()
     sourceSets {
         commonMain.dependencies {
@@ -28,16 +17,5 @@ kotlin {
             // Serialization
             implementation(libs.kotlin.serialization.json)
         }
-    }
-}
-
-
-
-android {
-    namespace = "com.quare.bibleplanner.core.model"
-    compileSdk = project.property("compileSdkVersion").toString().toInt()
-    
-    defaultConfig {
-        minSdk = project.property("minSdkVersion").toString().toInt()
     }
 }

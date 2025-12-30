@@ -5,20 +5,25 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.bibleplanner.composeMultiplatform)
     alias(libs.plugins.androidCommonConfig)
     alias(libs.plugins.composeHotReload)
 }
 
 // Add project-specific dependencies
 kotlin {
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.shared"
+        compileSdk = project.property("compileSdkVersion").toString().toInt()
+        minSdk = project.property("minSdkVersion").toString().toInt()
+    }
+
     android {
         compileSdk = project.property("compileSdkVersion").toString().toInt()
         minSdk = project.property("minSdkVersion").toString().toInt()
         namespace = "com.quare.bibleplanner.shared"
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
@@ -28,9 +33,9 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)

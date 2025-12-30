@@ -9,12 +9,17 @@ plugins {
 
 android {
     namespace = "com.quare.bibleplanner"
-    compileSdk = project.property("compileSdkVersion").toString().toInt()
-    
+    compileSdk = libs.versions.android.compileSdk
+        .get()
+        .toInt()
     defaultConfig {
         applicationId = "com.quare.bibleplanner"
-        minSdk = project.property("minSdkVersion").toString().toInt()
-        targetSdk = project.property("targetSdkVersion").toString().toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
+        targetSdk = libs.versions.android.targetSdk
+            .get()
+            .toInt()
         versionCode = project.property("versionCode").toString().toInt()
         versionName = project.property("versionName").toString()
     }
@@ -71,4 +76,3 @@ dependencies {
     implementation(compose.components.resources)
     implementation(libs.androidx.activity.compose)
 }
-
