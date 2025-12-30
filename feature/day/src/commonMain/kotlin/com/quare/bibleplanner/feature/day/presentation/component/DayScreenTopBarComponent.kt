@@ -43,14 +43,13 @@ internal fun DayScreenTopBarComponent(
                         with(sharedTransitionScope) {
                             Text(
                                 text = stringResource(
-                                    Res.string.day_title_part,
-                                    day.number,
+                                    Res.string.week_title_part,
+                                    weekNumber,
                                 ),
                                 modifier = Modifier.sharedElement(
                                     sharedContentState = rememberSharedContentState(
-                                        key = SharedTransitionAnimationUtils.buildDayNumberId(
+                                        key = SharedTransitionAnimationUtils.buildWeekNumberId(
                                             weekNumber = weekNumber,
-                                            dayNumebr = day.number,
                                         ),
                                     ),
                                     animatedVisibilityScope = animatedContentScope,
@@ -67,13 +66,14 @@ internal fun DayScreenTopBarComponent(
                             )
                             Text(
                                 text = stringResource(
-                                    Res.string.week_title_part,
-                                    weekNumber,
+                                    Res.string.day_title_part,
+                                    day.number,
                                 ),
                                 modifier = Modifier.sharedElement(
                                     sharedContentState = rememberSharedContentState(
-                                        key = SharedTransitionAnimationUtils.buildWeekNumberId(
+                                        key = SharedTransitionAnimationUtils.buildDayNumberId(
                                             weekNumber = weekNumber,
+                                            dayNumebr = day.number,
                                         ),
                                     ),
                                     animatedVisibilityScope = animatedContentScope,
