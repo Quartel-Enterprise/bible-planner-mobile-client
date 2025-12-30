@@ -4,12 +4,11 @@ plugins {
     alias(libs.plugins.androidCommonConfig)
 }
 
-android {
-    namespace = "com.quare.bibleplanner.core.date"
-}
+
 
 kotlin {
     androidTarget()
+
 
     listOf(
         iosArm64(),
@@ -34,5 +33,14 @@ kotlin {
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
         }
+    }
+}
+
+android {
+    namespace = "com.quare.bibleplanner.core.date"
+    compileSdk = project.property("compileSdkVersion").toString().toInt()
+    
+    defaultConfig {
+        minSdk = project.property("minSdkVersion").toString().toInt()
     }
 }

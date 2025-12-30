@@ -9,6 +9,7 @@ plugins {
 kotlin {
     androidTarget()
 
+
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
@@ -38,6 +39,13 @@ kotlin {
     }
 }
 
+
+
 android {
     namespace = "com.quare.bibleplanner.ui.utils"
+    compileSdk = project.property("compileSdkVersion").toString().toInt()
+    
+    defaultConfig {
+        minSdk = project.property("minSdkVersion").toString().toInt()
+    }
 }

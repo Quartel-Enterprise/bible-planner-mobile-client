@@ -6,13 +6,12 @@ plugins {
     alias(libs.plugins.androidCommonConfig)
 }
 
-android {
-    namespace = "com.quare.bibleplanner.feature.day"
-}
+
 
 kotlin {
-
     androidTarget()
+
+
 
     listOf(
         iosArm64(),
@@ -59,5 +58,14 @@ kotlin {
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewModel)
         }
+    }
+}
+
+android {
+    namespace = "com.quare.bibleplanner.feature.day"
+    compileSdk = project.property("compileSdkVersion").toString().toInt()
+    
+    defaultConfig {
+        minSdk = project.property("minSdkVersion").toString().toInt()
     }
 }

@@ -4,76 +4,34 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.androidCommonConfig)
     alias(libs.plugins.composeHotReload)
 }
 
-android {
-    namespace = "com.quare.bibleplanner"
-    compileSdk = project.property("compileSdkVersion").toString().toInt()
-
-    defaultConfig {
-        applicationId = "com.quare.bibleplanner"
-        minSdk = project.property("minSdkVersion").toString().toInt()
-        targetSdk = project.property("targetSdkVersion").toString().toInt()
-        versionCode = project.property("versionCode").toString().toInt()
-        versionName = project.property("versionName").toString()
-        ndk {
-            debugSymbolLevel = "FULL"
-        }
-        vectorDrawables {
-            useSupportLibrary = true
-        }
-
-        buildTypes {
-            release {
-                isMinifyEnabled = true
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro",
-                )
-                signingConfig = signingConfigs.getByName("debug")
-            }
-        }
-        buildFeatures {
-            buildConfig = true
-        }
-        packaging {
-            resources {
-                excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            }
-        }
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_21
-            targetCompatibility = JavaVersion.VERSION_21
-        }
-    }
-}
-
 // Add project-specific dependencies
 kotlin {
+    android {
+        compileSdk = project.property("compileSdkVersion").toString().toInt()
+        minSdk = project.property("minSdkVersion").toString().toInt()
+        namespace = "com.quare.bibleplanner.shared"
+    }
+    
+    listOf(
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
+    
+    jvm()
+    
     sourceSets {
-        androidTarget {
-            compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_21)
-            }
-        }
-
-        listOf(
-            iosArm64(),
-            iosSimulatorArm64(),
-        ).forEach { iosTarget ->
-            iosTarget.binaries.framework {
-                baseName = "ComposeApp"
-                isStatic = true
-            }
-        }
-
-        jvm()
-
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -86,19 +44,24 @@ kotlin {
         }
         commonMain.dependencies {
             // Feature
-            implementation(projects.feature.materialYou)
-            implementation(projects.feature.themeSelection)
+            api(projects.feature.materialYou)
+            api(projects.feature.themeSelection)
+            api(projects.feature.readingPlan)
+            api(projects.feature.day)
+            api(projects.feature.deleteProgress)
+            api(projects.feature.editPlanStartDate)
+            api(projects.feature.onboardingStartDate)
 
             // Core
-            implementation(projects.core.books)
-            implementation(projects.core.model)
-            implementation(projects.core.navigation)
-            implementation(projects.core.provider.koin)
-            implementation(projects.core.provider.room)
+            api(projects.core.books)
+            api(projects.core.model)
+            api(projects.core.navigation)
+            api(projects.core.provider.koin)
+            api(projects.core.provider.room)
 
             // UI
-            implementation(projects.ui.theme)
-            implementation(projects.ui.utils)
+            api(projects.ui.theme)
+            api(projects.ui.utils)
 
             // Compose
             implementation(compose.runtime)

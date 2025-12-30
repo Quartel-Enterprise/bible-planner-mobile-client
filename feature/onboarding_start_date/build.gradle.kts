@@ -6,13 +6,12 @@ plugins {
     alias(libs.plugins.androidCommonConfig)
 }
 
-android {
-    namespace = "com.quare.bibleplanner.feature.onboardingstartdate"
-}
+
 
 kotlin {
-
     androidTarget()
+
+
 
     listOf(
         iosArm64(),
@@ -62,5 +61,14 @@ kotlin {
             // Date
             implementation(libs.kotlinx.datetime)
         }
+    }
+}
+
+android {
+    namespace = "com.quare.bibleplanner.feature.onboardingstartdate"
+    compileSdk = project.property("compileSdkVersion").toString().toInt()
+    
+    defaultConfig {
+        minSdk = project.property("minSdkVersion").toString().toInt()
     }
 }

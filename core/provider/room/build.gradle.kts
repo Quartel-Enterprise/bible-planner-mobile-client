@@ -9,6 +9,7 @@ plugins {
 kotlin {
     androidTarget()
 
+
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
@@ -56,9 +57,7 @@ afterEvaluate {
     }
 }
 
-android {
-    namespace = "com.quare.bibleplanner.core.provider.room"
-}
+
 
 room {
     schemaDirectory("$projectDir/schemas")
@@ -69,4 +68,13 @@ dependencies {
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
+}
+
+android {
+    namespace = "com.quare.bibleplanner.core.provider.room"
+    compileSdk = project.property("compileSdkVersion").toString().toInt()
+    
+    defaultConfig {
+        minSdk = project.property("minSdkVersion").toString().toInt()
+    }
 }

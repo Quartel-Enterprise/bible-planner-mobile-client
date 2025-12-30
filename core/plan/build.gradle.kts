@@ -7,13 +7,12 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
-android {
-    namespace = "com.quare.bibleplanner.core.plan"
-}
+
 
 kotlin {
-
     androidTarget()
+
+
 
     listOf(
         iosArm64(),
@@ -58,5 +57,14 @@ kotlin {
             implementation(libs.dataStore)
             implementation(libs.dataStore.preferences)
         }
+    }
+}
+
+android {
+    namespace = "com.quare.bibleplanner.core.plan"
+    compileSdk = project.property("compileSdkVersion").toString().toInt()
+    
+    defaultConfig {
+        minSdk = project.property("minSdkVersion").toString().toInt()
     }
 }
