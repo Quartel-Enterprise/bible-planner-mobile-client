@@ -1,22 +1,11 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.androidCommonConfig)
-    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.composeMultiplatform)
 }
 
 kotlin {
-    androidTarget()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "UiComponent"
-            isStatic = true
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.ui.component"
     }
 
     jvm()
@@ -34,8 +23,4 @@ kotlin {
             implementation(compose.components.resources)
         }
     }
-}
-
-android {
-    namespace = "com.quare.bibleplanner.ui.component"
 }

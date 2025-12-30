@@ -1,20 +1,10 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.androidCommonConfig)
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
 }
 
 kotlin {
-    androidTarget()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "KoinInitializer"
-            isStatic = true
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.core.provider.koin"
     }
 
     jvm()
@@ -44,8 +34,4 @@ kotlin {
             implementation(libs.koinCore)
         }
     }
-}
-
-android {
-    namespace = "com.quare.bibleplanner.core.provider.koin"
 }

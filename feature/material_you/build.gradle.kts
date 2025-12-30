@@ -1,28 +1,13 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.androidCommonConfig)
-}
-
-android {
-    namespace = "com.quare.bibleplanner.feature.materialyou"
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.composeMultiplatform)
 }
 
 kotlin {
-
-    androidTarget()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "FeatureMaterialYou"
-            isStatic = true
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.feature.materialyou"
     }
+
     jvm()
 
     sourceSets {

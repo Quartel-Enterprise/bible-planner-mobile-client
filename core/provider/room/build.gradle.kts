@@ -1,22 +1,12 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
-    alias(libs.plugins.androidCommonConfig)
 }
 
 kotlin {
-    androidTarget()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "DataBaseProvider"
-            isStatic = true
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.core.provider.room"
     }
 
     jvm("desktop")
@@ -54,10 +44,6 @@ afterEvaluate {
                 enabled = false
             }
     }
-}
-
-android {
-    namespace = "com.quare.bibleplanner.core.provider.room"
 }
 
 room {

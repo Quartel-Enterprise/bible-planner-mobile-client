@@ -17,6 +17,9 @@ ksp = "2.3.3"
 datasSoreVersion = "1.2.0"
 facebookSdk = "18.1.3"
 
+android-minSdk = "26"
+android-compileSdk = "36"
+android-targetSdk = "36"
 [libraries]
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -59,12 +62,16 @@ facebook-sdk-android = { group = "com.facebook.android", name = "facebook-androi
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
-androidCommonConfig = { id = "com.quare.android.common" }
+
+bibleplanner-kotlinMultiplatform = { id = "bibleplanner.kotlin.multiplatform" }
+bibleplanner-composeMultiplatform = { id = "bibleplanner.kotlin.composeMultiplatform" }

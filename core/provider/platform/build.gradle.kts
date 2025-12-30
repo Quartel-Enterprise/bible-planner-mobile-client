@@ -1,22 +1,11 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.androidCommonConfig)
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.composeMultiplatform)
 }
 
 kotlin {
-    androidTarget()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "PlatformProvider"
-            isStatic = true
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.core.provider.platform"
     }
 
     jvm()
@@ -30,8 +19,4 @@ kotlin {
             implementation(libs.koinCore)
         }
     }
-}
-
-android {
-    namespace = "com.quare.bibleplanner.core.provider.platform"
 }

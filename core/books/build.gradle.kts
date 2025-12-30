@@ -1,25 +1,12 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.androidCommonConfig)
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
     alias(libs.plugins.serialization)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.bibleplanner.composeMultiplatform)
 }
 
 kotlin {
-    androidTarget()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "CoreBooks"
-            // Use a dynamic framework so iOS can bundle and embed resources properly
-            // Static frameworks do not carry resource files into the app bundle
-            isStatic = false
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.core.books"
     }
 
     jvm()
@@ -45,8 +32,4 @@ kotlin {
             implementation(libs.koinCore)
         }
     }
-}
-
-android {
-    namespace = "com.quare.bibleplanner.core.books"
 }

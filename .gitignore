@@ -33,3 +33,4 @@ setup-java.sh
 /composeApp/prefs.preferences_pb
 /composeApp/release/
 /.vscode
+/build-logic/convention/bin/

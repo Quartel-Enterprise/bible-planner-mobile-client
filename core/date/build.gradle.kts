@@ -1,24 +1,10 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.androidCommonConfig)
-}
-
-android {
-    namespace = "com.quare.bibleplanner.core.date"
+    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
 }
 
 kotlin {
-    androidTarget()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "CoreDate"
-            isStatic = true
-        }
+    androidLibrary {
+        namespace = "com.quare.bibleplanner.core.date"
     }
     jvm()
 
