@@ -23,7 +23,7 @@ internal fun NotesSection(
         NotesTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp, end = 16.dp),
+                .padding(end = 16.dp),
             notesText = notesText,
             onValueChange = { newValue ->
                 onEvent(DayUiEvent.OnNotesChanged(newValue))
