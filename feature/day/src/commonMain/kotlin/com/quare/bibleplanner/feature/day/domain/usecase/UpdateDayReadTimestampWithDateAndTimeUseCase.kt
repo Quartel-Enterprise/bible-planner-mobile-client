@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 
@@ -13,18 +14,21 @@ internal class UpdateDayReadTimestampWithDateAndTimeUseCase(
      *
      * @param weekNumber The week number
      * @param dayNumber The day number
+     * @param readingPlanType The reading plan type
      * @param selectedLocalDate The local date to use as the base
      * @param eventDuration The duration to add to the start of the day
      */
     suspend operator fun invoke(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: ReadingPlanType,
         selectedLocalDate: LocalDate,
         eventDuration: Duration,
     ) {
         updateDayReadTimestamp(
             weekNumber = weekNumber,
             dayNumber = dayNumber,
+            readingPlanType = readingPlanType,
             readTimestamp = getFinalTimestampAfterEdition(
                 selectedLocalDate = selectedLocalDate,
                 eventDuration = eventDuration,

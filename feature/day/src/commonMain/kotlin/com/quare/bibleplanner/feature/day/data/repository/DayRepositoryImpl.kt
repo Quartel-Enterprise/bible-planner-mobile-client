@@ -14,16 +14,15 @@ class DayRepositoryImpl(
     private val planRepository: PlanRepository,
     private val dayEntityToModelMapper: DayEntityToModelMapper,
 ) : DayRepository {
-    private val readingPlanType: ReadingPlanType = ReadingPlanType.CHRONOLOGICAL
-
     override fun getDayByWeekAndDayFlow(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: ReadingPlanType,
     ): Flow<DayModel?> {
         return dayLocalDataSource
-            .getDayByWeekAndDayFlow(weekNumber, dayNumber)
+            .getDayByWeekAndDayFlow(weekNumber, dayNumber, readingPlanType.name)
             .map { entity ->
-                val dayModel = getDayModelFromPlans(weekNumber, dayNumber) ?: return@map null
+                val dayModel = getDayModelFromPlans(weekNumber, dayNumber, readingPlanType) ?: return@map null
                 dayEntityToModelMapper.map(entity, dayModel)
             }
     }
@@ -31,24 +30,36 @@ class DayRepositoryImpl(
     override suspend fun getDayByWeekAndDay(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: ReadingPlanType,
     ): DayModel? {
-        val dayModel = getDayModelFromPlans(weekNumber, dayNumber) ?: return null
-        val entity = dayLocalDataSource.getDayByWeekAndDay(weekNumber, dayNumber)
+        val dayModel = getDayModelFromPlans(weekNumber, dayNumber, readingPlanType) ?: return null
+        val entity = dayLocalDataSource.getDayByWeekAndDay(weekNumber, dayNumber, readingPlanType.name)
         return dayEntityToModelMapper.map(entity, dayModel)
     }
 
     override suspend fun updateDayReadStatus(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: ReadingPlanType,
         isRead: Boolean,
         readTimestamp: Long?,
     ) {
-        dayLocalDataSource.updateDayReadStatus(weekNumber, dayNumber, isRead, readTimestamp)
+        dayLocalDataSource.updateDayReadStatus(weekNumber, dayNumber, readingPlanType.name, isRead, readTimestamp)
+    }
+
+    override suspend fun updateDayNotes(
+        weekNumber: Int,
+        dayNumber: Int,
+        readingPlanType: ReadingPlanType,
+        notes: String?,
+    ) {
+        dayLocalDataSource.updateDayNotes(weekNumber, dayNumber, readingPlanType.name, notes)
     }
 
     private suspend fun getDayModelFromPlans(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: ReadingPlanType,
     ): DayModel? {
         val plans = planRepository.getPlans(readingPlanType)
         val week = plans.find { it.number == weekNumber } ?: return null

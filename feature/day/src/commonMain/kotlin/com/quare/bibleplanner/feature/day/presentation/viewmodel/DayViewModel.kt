@@ -9,10 +9,13 @@ import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.day.domain.usecase.DayUseCases
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
+import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
 import com.quare.bibleplanner.ui.utils.observe
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
 
@@ -33,12 +37,15 @@ internal class DayViewModel(
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
     val uiState: StateFlow<DayUiState> = _uiState.asStateFlow()
 
-    private val _backUiAction: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val backUiAction: SharedFlow<Unit> = _backUiAction
+    private val _uiAction: MutableSharedFlow<DayUiAction> = MutableSharedFlow()
+    val uiAction: SharedFlow<DayUiAction> = _uiAction
     private val route = savedStateHandle.toRoute<DayNavRoute>()
     private val weekNumber = route.weekNumber
     private val dayNumber = route.dayNumber
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
+
+    private var notesSaveJob: Job? = null
+    private val notesDebounceDelay: Duration = 500.milliseconds
 
     init {
         loadDayDetails()
@@ -95,6 +102,14 @@ internal class DayViewModel(
                 onDateSelected(event)
             }
 
+            is DayUiEvent.OnNotesChanged -> {
+                onNotesChanged(event)
+            }
+
+            is DayUiEvent.OnNotesClear -> {
+                onNotesClear()
+            }
+
             is DayUiEvent.OnBackClick -> {
                 backToPreviousScreen()
             }
@@ -133,6 +148,7 @@ internal class DayViewModel(
             useCases.updateDayReadTimestampWithDateAndTime(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
+                readingPlanType = readingPlanType,
                 selectedLocalDate = selectedLocalDate,
                 eventDuration = eventDuration,
             )
@@ -183,9 +199,61 @@ internal class DayViewModel(
         }
     }
 
+    private fun onNotesChanged(event: DayUiEvent.OnNotesChanged) {
+        // Update local state immediately for responsive UI
+        updateLoadedState { loaded ->
+            loaded.copy(notesText = event.notes)
+        }
+
+        // Cancel previous save job if it exists
+        notesSaveJob?.cancel()
+
+        // Debounce database save to avoid excessive writes while user is typing
+        notesSaveJob = viewModelScope.launch {
+            delay(notesDebounceDelay)
+            useCases.updateDayNotes(
+                weekNumber = weekNumber,
+                dayNumber = dayNumber,
+                readingPlanType = readingPlanType,
+                notes = event.notes.ifBlank { null },
+            )
+        }
+    }
+
+    private fun onNotesClear() {
+        val currentState = _uiState.value as? DayUiState.Loaded ?: return
+        val hasNotes = currentState.notesText.isNotEmpty()
+
+        if (!hasNotes) {
+            // Show snackbar if there's nothing to delete
+            viewModelScope.launch {
+                _uiAction.emit(DayUiAction.ShowNothingToDeleteSnackbar)
+            }
+            return
+        }
+
+        // Update local state immediately
+        updateLoadedState { loaded ->
+            loaded.copy(notesText = "")
+        }
+
+        // Cancel previous save job if it exists
+        notesSaveJob?.cancel()
+
+        // Save empty notes to database immediately (no debounce for clear action)
+        viewModelScope.launch {
+            useCases.updateDayNotes(
+                weekNumber = weekNumber,
+                dayNumber = dayNumber,
+                readingPlanType = readingPlanType,
+                notes = null,
+            )
+        }
+    }
+
     private fun backToPreviousScreen() {
         viewModelScope.launch {
-            _backUiAction.emit(Unit)
+            _uiAction.emit(DayUiAction.NavigateBack)
         }
     }
 }

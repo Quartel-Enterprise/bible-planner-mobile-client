@@ -10,23 +10,35 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DayDao {
-    @Query("SELECT * FROM days WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber")
+    @Query(
+        "SELECT * FROM days WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber AND readingPlanType = :readingPlanType",
+    )
     fun getDayByWeekAndDayFlow(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: String,
     ): Flow<DayEntity?>
 
-    @Query("SELECT * FROM days WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber")
+    @Query(
+        "SELECT * FROM days WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber AND readingPlanType = :readingPlanType",
+    )
     suspend fun getDayByWeekAndDay(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: String,
     ): DayEntity?
 
-    @Query("SELECT * FROM days WHERE weekNumber = :weekNumber")
-    fun getDaysByWeekFlow(weekNumber: Int): Flow<List<DayEntity>>
+    @Query("SELECT * FROM days WHERE weekNumber = :weekNumber AND readingPlanType = :readingPlanType")
+    fun getDaysByWeekFlow(
+        weekNumber: Int,
+        readingPlanType: String,
+    ): Flow<List<DayEntity>>
 
-    @Query("SELECT * FROM days WHERE weekNumber = :weekNumber")
-    suspend fun getDaysByWeek(weekNumber: Int): List<DayEntity>
+    @Query("SELECT * FROM days WHERE weekNumber = :weekNumber AND readingPlanType = :readingPlanType")
+    suspend fun getDaysByWeek(
+        weekNumber: Int,
+        readingPlanType: String,
+    ): List<DayEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDay(day: DayEntity): Long
@@ -41,24 +53,45 @@ interface DayDao {
         """
         UPDATE days 
         SET isRead = :isRead, readTimestamp = :readTimestamp 
-        WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber
+        WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber AND readingPlanType = :readingPlanType
         """,
     )
     suspend fun updateDayReadStatus(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: String,
         isRead: Boolean,
         readTimestamp: Long?,
     )
 
-    @Query("DELETE FROM days WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber")
+    @Query(
+        """
+        UPDATE days 
+        SET notes = :notes 
+        WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber AND readingPlanType = :readingPlanType
+        """,
+    )
+    suspend fun updateDayNotes(
+        weekNumber: Int,
+        dayNumber: Int,
+        readingPlanType: String,
+        notes: String?,
+    )
+
+    @Query(
+        "DELETE FROM days WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber AND readingPlanType = :readingPlanType",
+    )
     suspend fun deleteDay(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: String,
     )
 
-    @Query("DELETE FROM days WHERE weekNumber = :weekNumber")
-    suspend fun deleteDaysByWeek(weekNumber: Int)
+    @Query("DELETE FROM days WHERE weekNumber = :weekNumber AND readingPlanType = :readingPlanType")
+    suspend fun deleteDaysByWeek(
+        weekNumber: Int,
+        readingPlanType: String,
+    )
 
     @Query("DELETE FROM days")
     suspend fun deleteAllDays()

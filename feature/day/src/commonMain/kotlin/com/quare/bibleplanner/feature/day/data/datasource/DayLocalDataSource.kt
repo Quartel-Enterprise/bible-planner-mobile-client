@@ -10,20 +10,23 @@ class DayLocalDataSource(
     fun getDayByWeekAndDayFlow(
         weekNumber: Int,
         dayNumber: Int,
-    ): Flow<DayEntity?> = dayDao.getDayByWeekAndDayFlow(weekNumber, dayNumber)
+        readingPlanType: String,
+    ): Flow<DayEntity?> = dayDao.getDayByWeekAndDayFlow(weekNumber, dayNumber, readingPlanType)
 
     suspend fun getDayByWeekAndDay(
         weekNumber: Int,
         dayNumber: Int,
-    ): DayEntity? = dayDao.getDayByWeekAndDay(weekNumber, dayNumber)
+        readingPlanType: String,
+    ): DayEntity? = dayDao.getDayByWeekAndDay(weekNumber, dayNumber, readingPlanType)
 
     suspend fun updateDayReadStatus(
         weekNumber: Int,
         dayNumber: Int,
+        readingPlanType: String,
         isRead: Boolean,
         readTimestamp: Long?,
     ) {
-        val existingDay = dayDao.getDayByWeekAndDay(weekNumber, dayNumber)
+        val existingDay = dayDao.getDayByWeekAndDay(weekNumber, dayNumber, readingPlanType)
         if (existingDay != null) {
             // Use @Update annotation instead of custom query to ensure Room Flow emits
             dayDao.updateDay(
@@ -37,10 +40,39 @@ class DayLocalDataSource(
                 DayEntity(
                     weekNumber = weekNumber,
                     dayNumber = dayNumber,
+                    readingPlanType = readingPlanType,
                     isRead = isRead,
                     readTimestamp = readTimestamp,
+                    notes = null,
                 ),
             )
+        }
+    }
+
+    suspend fun updateDayNotes(
+        weekNumber: Int,
+        dayNumber: Int,
+        readingPlanType: String,
+        notes: String?,
+    ) {
+        dayDao.run {
+            val existingDay = getDayByWeekAndDay(weekNumber, dayNumber, readingPlanType)
+            if (existingDay != null) {
+                updateDay(
+                    existingDay.copy(notes = notes),
+                )
+            } else {
+                insertDay(
+                    DayEntity(
+                        weekNumber = weekNumber,
+                        dayNumber = dayNumber,
+                        readingPlanType = readingPlanType,
+                        isRead = false,
+                        readTimestamp = null,
+                        notes = notes,
+                    ),
+                )
+            }
         }
     }
 }

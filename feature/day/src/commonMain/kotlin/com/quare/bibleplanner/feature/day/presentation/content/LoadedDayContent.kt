@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatusButton
 import com.quare.bibleplanner.feature.day.presentation.component.DayReadSection
+import com.quare.bibleplanner.feature.day.presentation.component.notes.NotesSection
 import com.quare.bibleplanner.feature.day.presentation.component.passageList
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -78,6 +79,14 @@ internal fun LoadedDayContent(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 isRead = isDayRead,
                 formattedReadDate = uiState.formattedReadDate,
+                onEvent = onEvent,
+            )
+        }
+
+        centeredContentItem(maxContentWidth) {
+            NotesSection(
+                modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                notesText = uiState.notesText,
                 onEvent = onEvent,
             )
         }
