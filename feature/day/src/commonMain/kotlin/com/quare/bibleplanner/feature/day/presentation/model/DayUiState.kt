@@ -16,5 +16,6 @@ internal sealed interface DayUiState {
         val chapterReadStatus: Map<Pair<Int, Int>, Boolean>,
         val completedPassagesCount: Int,
         val totalPassagesCount: Int,
+        val notesText: String,
     ) : DayUiState
 }

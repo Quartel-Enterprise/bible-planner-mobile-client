@@ -7,4 +7,5 @@ internal data class DayUseCases(
     val toggleChapterReadStatus: ToggleChapterReadStatusUseCase,
     val convertUtcDateToLocalDate: ConvertUtcDateToLocalDateUseCase,
     val updateDayReadTimestampWithDateAndTime: UpdateDayReadTimestampWithDateAndTimeUseCase,
+    val updateDayNotes: UpdateDayNotesUseCase,
 )

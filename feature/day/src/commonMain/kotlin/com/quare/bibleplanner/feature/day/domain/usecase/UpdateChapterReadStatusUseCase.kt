@@ -72,6 +72,7 @@ class UpdateChapterReadStatusUseCase(
             dayRepository.updateDayReadStatus(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
+                readingPlanType = readingPlanType,
                 isRead = true,
                 readTimestamp = readTimestamp,
             )
@@ -80,6 +81,7 @@ class UpdateChapterReadStatusUseCase(
             dayRepository.updateDayReadStatus(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
+                readingPlanType = readingPlanType,
                 isRead = false,
                 readTimestamp = null,
             )

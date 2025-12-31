@@ -12,12 +12,14 @@ class DayEntityToModelMapper {
             return dayModel.copy(
                 isRead = false,
                 readTimestamp = null,
+                notes = null,
             )
         }
 
         return dayModel.copy(
             isRead = entity.isRead,
             readTimestamp = entity.readTimestamp,
+            notes = entity.notes,
         )
     }
 }

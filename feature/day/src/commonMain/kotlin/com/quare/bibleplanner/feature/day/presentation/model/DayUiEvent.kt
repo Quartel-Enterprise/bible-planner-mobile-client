@@ -23,5 +23,11 @@ internal sealed interface DayUiEvent {
         val utcDateMillis: Long,
     ) : DayUiEvent
 
+    data class OnNotesChanged(
+        val notes: String,
+    ) : DayUiEvent
+
+    data object OnNotesClear : DayUiEvent
+
     data object OnBackClick : DayUiEvent
 }

@@ -29,4 +29,8 @@
     <string name="december">Diciembre</string>
     <string name="vers">Versos</string>
     <string name="planned_read_date">Fecha de lectura programada:</string>
+    <string name="notes">Notas</string>
+    <string name="notes_placeholder">Escribe tus notas personales sobre los pasajes…</string>
+    <string name="clear_notes">Limpiar notas</string>
+    <string name="nothing_to_delete_message">No hay nada que eliminar todavía</string>
 </resources>

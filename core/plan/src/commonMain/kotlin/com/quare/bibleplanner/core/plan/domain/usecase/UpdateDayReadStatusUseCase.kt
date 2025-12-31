@@ -37,6 +37,6 @@ class UpdateDayReadStatusUseCase(
         } else {
             null
         }
-        dayRepository.updateDayReadStatus(weekNumber, dayNumber, isRead, readTimestamp)
+        dayRepository.updateDayReadStatus(weekNumber, dayNumber, readingPlanType, isRead, readTimestamp)
     }
 }

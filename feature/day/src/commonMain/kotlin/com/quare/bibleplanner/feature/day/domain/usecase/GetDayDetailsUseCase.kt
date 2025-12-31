@@ -18,7 +18,7 @@ class GetDayDetailsUseCase(
     ): Flow<DayModel?> {
         return combine(
             getPlansByWeekUseCase(),
-            dayRepository.getDayByWeekAndDayFlow(weekNumber, dayNumber),
+            dayRepository.getDayByWeekAndDayFlow(weekNumber, dayNumber, readingPlanType),
         ) { plansModel, dayFromRepository ->
             val weeks = when (readingPlanType) {
                 ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
@@ -27,7 +27,7 @@ class GetDayDetailsUseCase(
             val week = weeks.find { it.number == weekNumber } ?: return@combine null
             val dayFromPlans = week.days.find { it.number == dayNumber } ?: return@combine null
 
-            // Use the day from repository (which has readTimestamp) but merge with updated read status from plans
+            // Use the day from repository (which has readTimestamp and notes) but merge with updated read status from plans
             dayFromRepository?.copy(
                 passages = dayFromPlans.passages,
                 isRead = dayFromPlans.isRead,
@@ -35,8 +35,10 @@ class GetDayDetailsUseCase(
                 readVerses = dayFromPlans.readVerses,
                 readTimestamp = dayFromRepository.readTimestamp, // Preserve readTimestamp from repository
                 plannedReadDate = dayFromPlans.plannedReadDate, // Preserve plannedReadDate from plans
+                notes = dayFromRepository.notes, // Preserve notes from repository
             ) ?: dayFromPlans.copy(
                 readTimestamp = null, // Ensure readTimestamp is set even if dayFromRepository is null
+                notes = null, // Ensure notes is set even if dayFromRepository is null
             )
         }
     }
