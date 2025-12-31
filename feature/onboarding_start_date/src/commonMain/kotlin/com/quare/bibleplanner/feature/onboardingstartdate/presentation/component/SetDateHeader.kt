@@ -17,7 +17,9 @@ internal fun SetDateHeader(
             onCloseClick = onCloseClick,
         )
         SetDateHeaderText(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
         )
     }
 }

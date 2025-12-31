@@ -9,20 +9,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 
 @Composable
 internal fun NotesTextField(
+    modifier: Modifier = Modifier,
     notesText: String,
-    onEvent: (DayUiEvent) -> Unit,
+    onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
         value = notesText,
-        onValueChange = { newValue ->
-            onEvent(DayUiEvent.OnNotesChanged(newValue))
-        },
-        modifier = Modifier
-            .fillMaxWidth()
+        onValueChange = onValueChange,
+        modifier = modifier
             .animateContentSize(
                 animationSpec = tween(300),
             ),
