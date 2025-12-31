@@ -30,7 +30,7 @@
     <string name="vers">Vers</string>
     <string name="planned_read_date">Planned read date:</string>
     <string name="notes">Notes</string>
-    <string name="notes_placeholder">Write your personal notes about the passages…</string>
+    <string name="notes_placeholder">Write your personal notes about the day's passages…</string>
     <string name="clear_notes">Clear notes</string>
     <string name="nothing_to_delete_message">There's nothing to delete yet</string>
 </resources>
