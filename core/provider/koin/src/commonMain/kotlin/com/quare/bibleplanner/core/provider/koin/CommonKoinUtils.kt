@@ -14,6 +14,7 @@ import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
 import com.quare.bibleplanner.feature.onboardingstartdate.di.onboardingStartDateModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
+import com.quare.bibleplanner.feature.unlockpremium.di.unlockPremiumModule
 
 object CommonKoinUtils {
     val modules = listOf(
@@ -28,6 +29,7 @@ object CommonKoinUtils {
         deleteProgressModule,
         editPlanStartDateModule,
         onboardingStartDateModule,
+        unlockPremiumModule,
         roomModule,
         utilsModule,
         dateModule,
