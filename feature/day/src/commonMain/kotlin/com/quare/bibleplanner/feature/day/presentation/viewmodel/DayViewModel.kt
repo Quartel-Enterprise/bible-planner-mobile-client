@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.feature.day.domain.usecase.DayUseCases
@@ -111,6 +112,10 @@ internal class DayViewModel(
 
             is DayUiEvent.OnNotesClear -> {
                 onNotesClear()
+            }
+
+            is DayUiEvent.OnNotesFocus -> {
+                onNotesFocus()
             }
 
             is DayUiEvent.OnBackClick -> {
@@ -234,6 +239,38 @@ internal class DayViewModel(
                     dayNumber = dayNumber,
                 ),
             )
+        }
+    }
+
+    private fun onNotesFocus() {
+        viewModelScope.launch {
+            val currentState = _uiState.value as? DayUiState.Loaded ?: return@launch
+
+            // If current day already has notes, allow focus
+            if (currentState.notesText.isNotEmpty()) {
+                return@launch
+            }
+
+            // Check if user has 3 or more days with notes
+            val daysWithNotesCount = useCases.getDaysWithNotesCount()
+            // TODO: Check if user is premium - for now, assume all users are free
+            val isPremium = false
+
+            if (daysWithNotesCount >= 3 && !isPremium) {
+                // Clear focus before navigating to warning dialog
+                updateLoadedState { loaded ->
+                    loaded.copy(shouldClearNotesFocus = true)
+                }
+                // Reset the flag after a brief moment to allow re-triggering if needed
+                viewModelScope.launch {
+                    delay(100)
+                    updateLoadedState { loaded ->
+                        loaded.copy(shouldClearNotesFocus = false)
+                    }
+                }
+                // Navigate to warning dialog
+                _uiAction.emit(DayUiAction.NavigateToRoute(AddNotesFreeWarningNavRoute))
+            }
         }
     }
 

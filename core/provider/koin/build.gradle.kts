@@ -21,6 +21,7 @@ kotlin {
             implementation(projects.core.date)
 
             // Features
+            implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.readingPlan)
             implementation(projects.feature.deleteProgress)
             implementation(projects.feature.themeSelection)

@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
+import com.quare.bibleplanner.core.plan.domain.usecase.GetDaysWithNotesCountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
 
@@ -9,4 +10,5 @@ internal data class DayUseCases(
     val convertUtcDateToLocalDate: ConvertUtcDateToLocalDateUseCase,
     val updateDayReadTimestampWithDateAndTime: UpdateDayReadTimestampWithDateAndTimeUseCase,
     val updateDayNotes: UpdateDayNotesUseCase,
+    val getDaysWithNotesCount: GetDaysWithNotesCountUseCase,
 )

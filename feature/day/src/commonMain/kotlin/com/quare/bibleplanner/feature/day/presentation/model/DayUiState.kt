@@ -17,5 +17,6 @@ internal sealed interface DayUiState {
         val completedPassagesCount: Int,
         val totalPassagesCount: Int,
         val notesText: String,
+        val shouldClearNotesFocus: Boolean,
     ) : DayUiState
 }

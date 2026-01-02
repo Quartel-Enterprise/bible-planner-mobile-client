@@ -93,6 +93,7 @@ internal class DayUiStateFlowFactory(
                 completedPassagesCount = completedCount,
                 totalPassagesCount = totalCount,
                 notesText = notesText,
+                shouldClearNotesFocus = false,
             )
         } else {
             DayUiState.Loading

@@ -80,6 +80,7 @@ internal fun LoadedDayPortraitScreenContent(
             NotesSection(
                 modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
                 notesText = uiState.notesText,
+                shouldClearFocus = uiState.shouldClearNotesFocus,
                 onEvent = onEvent,
             )
         }
