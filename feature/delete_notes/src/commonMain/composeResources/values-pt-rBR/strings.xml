@@ -1,0 +1,7 @@
+<resources>
+    <string name="delete_notes_title">Excluir Notas</string>
+    <string name="delete_notes_message">Tem certeza de que deseja excluir as notas deste dia? Esta ação não pode ser desfeita.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Excluir</string>
+</resources>
+

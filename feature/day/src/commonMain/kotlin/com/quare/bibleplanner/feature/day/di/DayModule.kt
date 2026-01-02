@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.day.di
 
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
+import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.day.data.datasource.DayLocalDataSource
 import com.quare.bibleplanner.feature.day.data.mapper.DayEntityToModelMapper
@@ -16,10 +17,10 @@ import com.quare.bibleplanner.feature.day.domain.usecase.GetBooksUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ToggleChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateChapterReadStatusUseCase
-import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayNotesUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampWithDateAndTimeUseCase
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
+import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.mapper.MonthPresentationMapper
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
@@ -46,7 +47,6 @@ val dayModule = module {
     factoryOf(::ToggleChapterReadStatusUseCase)
     factoryOf(::ConvertUtcDateToLocalDateUseCase)
     factoryOf(::UpdateDayReadTimestampWithDateAndTimeUseCase)
-    factoryOf(::UpdateDayNotesUseCase)
     factoryOf(::ConvertTimestampToDatePickerInitialDateUseCase)
     factoryOf(::EditDaySelectableDates)
     factoryOf(::LocalDateTimeToDateMapper)
@@ -58,6 +58,7 @@ val dayModule = module {
     factoryOf(::DayUiStateFlowFactory)
     factoryOf(::ReadDateFormatter)
     factoryOf(::MonthPresentationMapper)
+    factoryOf(::DeleteRouteNotesMapper)
 
     // ViewModel
     viewModelOf(::DayViewModel)

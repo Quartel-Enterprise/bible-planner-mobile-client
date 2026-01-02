@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.onboardingstartdate.presentation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
@@ -10,8 +11,11 @@ import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.OnboardingStartDateNavRoute
 import com.quare.bibleplanner.feature.onboardingstartdate.presentation.component.OnboardingStartBottomSheet
 import com.quare.bibleplanner.feature.onboardingstartdate.presentation.model.OnboardingStartDateUiAction
+import com.quare.bibleplanner.feature.onboardingstartdate.presentation.utils.OnboardingStartDateUiActionCollector
 import com.quare.bibleplanner.feature.onboardingstartdate.presentation.viewmodel.OnboardingStartDateViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,19 +25,10 @@ fun NavGraphBuilder.onboardingStartDate(navController: NavHostController) {
         val uiState by viewModel.uiState.collectAsState()
         val onEvent = viewModel::onEvent
 
-        ActionCollector(viewModel.uiAction) { uiAction ->
-            when (uiAction) {
-                OnboardingStartDateUiAction.DISMISS -> {
-                    navController.navigateUp()
-                }
-
-                OnboardingStartDateUiAction.NAVIGATE_TO_SET_DATE -> {
-                    navController.navigate(EditPlanStartDateNavRoute) {
-                        popUpTo(OnboardingStartDateNavRoute) { inclusive = true }
-                    }
-                }
-            }
-        }
+        OnboardingStartDateUiActionCollector(
+            uiActionFlow = viewModel.uiAction,
+            navController = navController,
+        )
 
         OnboardingStartBottomSheet(
             isDontShowAgainMarked = uiState.isDontShowAgainMarked,

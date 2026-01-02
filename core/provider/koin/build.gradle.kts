@@ -29,6 +29,7 @@ kotlin {
             implementation(projects.feature.editPlanStartDate)
             implementation(projects.feature.onboardingStartDate)
             implementation(projects.feature.unlockPremium)
+            implementation(projects.feature.deleteNotes)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

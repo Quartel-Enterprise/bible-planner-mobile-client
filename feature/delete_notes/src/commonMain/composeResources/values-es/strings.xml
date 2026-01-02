@@ -1,0 +1,7 @@
+<resources>
+    <string name="delete_notes_title">Eliminar Notas</string>
+    <string name="delete_notes_message">¿Estás seguro de que deseas eliminar las notas de este día? Esta acción no se puede deshacer.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+</resources>
+

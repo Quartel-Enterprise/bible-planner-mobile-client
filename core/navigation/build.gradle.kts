@@ -19,6 +19,7 @@ kotlin {
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
             implementation(projects.feature.deleteProgress)
+            implementation(projects.feature.deleteNotes)
             implementation(projects.feature.editPlanStartDate)
             implementation(projects.feature.onboardingStartDate)
             implementation(projects.feature.unlockPremium)

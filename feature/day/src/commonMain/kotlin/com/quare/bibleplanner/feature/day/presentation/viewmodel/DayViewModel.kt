@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.feature.day.domain.usecase.DayUseCases
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
+import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
@@ -33,6 +35,7 @@ internal class DayViewModel(
     savedStateHandle: SavedStateHandle,
     private val useCases: DayUseCases,
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
+    private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
     val uiState: StateFlow<DayUiState> = _uiState.asStateFlow()
@@ -222,31 +225,14 @@ internal class DayViewModel(
 
     private fun onNotesClear() {
         val currentState = _uiState.value as? DayUiState.Loaded ?: return
-        val hasNotes = currentState.notesText.isNotEmpty()
-
-        if (!hasNotes) {
-            // Show snackbar if there's nothing to delete
-            viewModelScope.launch {
-                _uiAction.emit(DayUiAction.ShowNothingToDeleteSnackbar)
-            }
-            return
-        }
-
-        // Update local state immediately
-        updateLoadedState { loaded ->
-            loaded.copy(notesText = "")
-        }
-
-        // Cancel previous save job if it exists
-        notesSaveJob?.cancel()
-
-        // Save empty notes to database immediately (no debounce for clear action)
         viewModelScope.launch {
-            useCases.updateDayNotes(
-                weekNumber = weekNumber,
-                dayNumber = dayNumber,
-                readingPlanType = readingPlanType,
-                notes = null,
+            _uiAction.emit(
+                deleteRouteNotesMapper.map(
+                    hasNotes = currentState.notesText.isNotEmpty(),
+                    readingPlanType = readingPlanType,
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
+                ),
             )
         }
     }
