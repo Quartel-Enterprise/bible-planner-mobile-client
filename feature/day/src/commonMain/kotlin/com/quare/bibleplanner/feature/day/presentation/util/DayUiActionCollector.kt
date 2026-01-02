@@ -27,6 +27,10 @@ internal fun DayUiActionCollector(
             is DayUiAction.NavigateBack -> {
                 navController.navigateUp()
             }
+
+            is DayUiAction.NavigateToRoute -> {
+                navController.navigate(action.route)
+            }
         }
     }
 }

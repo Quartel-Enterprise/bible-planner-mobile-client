@@ -5,11 +5,13 @@ import com.quare.bibleplanner.core.plan.data.mapper.ChaptersRangeMapper
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.data.repository.PlanRepositoryImpl
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
+import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.DeletePlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -32,4 +34,6 @@ val planModule = module {
     factoryOf(::DeletePlanStartDateUseCase)
     factoryOf(::ReadDayToggleOperationUseCase)
     factoryOf(::SetPlanStartTimeUseCase)
+    factoryOf(::UpdateDayNotesUseCase)
+    factoryOf(::DeleteDayNotesUseCase)
 }

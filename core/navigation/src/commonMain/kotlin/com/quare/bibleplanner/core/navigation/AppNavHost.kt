@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.quare.bibleplanner.core.model.route.ReadingPlanNavRoute
 import com.quare.bibleplanner.core.model.route.UnlockPremiumNavRoute
 import com.quare.bibleplanner.feature.day.presentation.day
+import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
 import com.quare.bibleplanner.feature.deleteprogress.presentation.deleteProgress
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
@@ -37,6 +38,7 @@ fun AppNavHost() {
             themeSettings(navController)
             materialYou(navController)
             deleteProgress(navController)
+            deleteNotes(navController)
             editPlanStartDate(navController)
             onboardingStartDate(navController)
             unlockPremium(navController)

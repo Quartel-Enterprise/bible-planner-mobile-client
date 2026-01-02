@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.day.domain.usecase
+package com.quare.bibleplanner.core.plan.domain.usecase
 
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
