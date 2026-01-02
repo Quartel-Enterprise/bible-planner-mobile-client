@@ -1,11 +1,11 @@
-package com.quare.bibleplanner.feature.day.presentation.content
+package com.quare.bibleplanner.feature.day.presentation.content.loaded
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
+import com.quare.bibleplanner.feature.day.presentation.content.loading.LoadingDayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
@@ -15,7 +15,6 @@ internal fun DayContent(
     uiState: DayUiState,
     onEvent: (DayUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    maxContentWidth: Dp,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
@@ -26,7 +25,6 @@ internal fun DayContent(
             modifier = modifier,
             uiState = uiState,
             onEvent = onEvent,
-            maxContentWidth = maxContentWidth,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,
         )
