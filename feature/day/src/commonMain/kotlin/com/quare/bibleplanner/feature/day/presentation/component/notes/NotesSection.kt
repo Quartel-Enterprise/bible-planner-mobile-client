@@ -12,7 +12,6 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 internal fun NotesSection(
     modifier: Modifier = Modifier,
     notesText: String,
-    shouldClearFocus: Boolean,
     onEvent: (DayUiEvent) -> Unit,
 ) {
     Column(
@@ -26,7 +25,6 @@ internal fun NotesSection(
                 .fillMaxWidth()
                 .padding(end = 16.dp),
             notesText = notesText,
-            shouldClearFocus = shouldClearFocus,
             onEvent = onEvent,
         )
     }

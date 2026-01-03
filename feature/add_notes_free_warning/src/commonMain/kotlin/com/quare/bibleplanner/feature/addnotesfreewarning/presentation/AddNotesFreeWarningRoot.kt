@@ -13,12 +13,16 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NavGraphBuilder.addNotesFreeWarning(navController: NavHostController) {
     dialog<AddNotesFreeWarningNavRoute> {
         val viewModel = koinViewModel<AddNotesFreeWarningViewModel>()
+        val maxFreeNotesAmount = viewModel.maxFreeNotesAmount
         AddNotesFreeWarningUiActionCollector(
+            maxFreeNotesAmount = maxFreeNotesAmount,
             uiActionFlow = viewModel.uiAction,
             navController = navController,
         )
         AddNotesFreeWarningDialog(
+            maxFreeNotesAmount = maxFreeNotesAmount,
             onEvent = viewModel::onEvent,
         )
     }
 }
+

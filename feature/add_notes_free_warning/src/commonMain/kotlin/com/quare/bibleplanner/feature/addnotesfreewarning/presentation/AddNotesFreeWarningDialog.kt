@@ -18,7 +18,10 @@ import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.model.Add
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun AddNotesFreeWarningDialog(onEvent: (AddNotesFreeWarningUiEvent) -> Unit) {
+fun AddNotesFreeWarningDialog(
+    maxFreeNotesAmount: Int,
+    onEvent: (AddNotesFreeWarningUiEvent) -> Unit,
+) {
     AlertDialog(
         onDismissRequest = {
             onEvent(AddNotesFreeWarningUiEvent.OnCancel)
@@ -34,7 +37,10 @@ fun AddNotesFreeWarningDialog(onEvent: (AddNotesFreeWarningUiEvent) -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = stringResource(Res.string.add_notes_free_warning_message),
+                    text = stringResource(
+                        Res.string.add_notes_free_warning_message,
+                        maxFreeNotesAmount,
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Start,
                 )

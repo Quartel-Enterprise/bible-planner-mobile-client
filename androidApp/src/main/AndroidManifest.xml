@@ -19,6 +19,7 @@
 
         <activity
             android:exported="true"
+            android:launchMode="standard"
             android:name="com.quare.bibleplanner.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

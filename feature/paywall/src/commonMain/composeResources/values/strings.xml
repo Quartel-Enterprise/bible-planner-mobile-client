@@ -1,0 +1,21 @@
+<resources>
+    <string name="close">Close</string>
+    <string name="restore">Restore</string>
+    <string name="paywall_title">Unlock Bible Planner Premium</string>
+    <string name="paywall_description">Deepen your study without limits. Join thousands of daily readers.</string>
+    <string name="feature_unlimited_notes">Create Unlimited Notes</string>
+    <string name="feature_unlimited_notes_subtext">Free plan limited to 3 notes.</string>
+    <string name="feature_support_development">Support Future Development</string>
+    <string name="feature_ad_free">Ad-free Experience</string>
+    <string name="plan_monthly">Monthly</string>
+    <string name="month">month</string>
+    <string name="year">year</string>
+    <string name="plan_annual">Annual</string>
+    <string name="save_percent">SAVE %1$d%</string>
+    <string name="start_premium_journey">Start Premium Journey</string>
+    <string name="footer_payment_info">Secure payment via %1$d. Cancel anytime.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_purchase_cancelled">Purchase was cancelled.</string>
+    <string name="error_network">Network error. Please try again.</string>
+    <string name="error_payment_pending">Payment is pending approval.</string>
+</resources>

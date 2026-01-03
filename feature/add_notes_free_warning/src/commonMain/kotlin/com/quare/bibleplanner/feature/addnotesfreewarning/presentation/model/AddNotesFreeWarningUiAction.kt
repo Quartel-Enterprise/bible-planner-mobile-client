@@ -5,3 +5,4 @@ internal sealed interface AddNotesFreeWarningUiAction {
 
     data object NavigateToPremium : AddNotesFreeWarningUiAction
 }
+

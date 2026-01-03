@@ -23,7 +23,8 @@ kotlin {
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.editPlanStartDate)
             implementation(projects.feature.onboardingStartDate)
-            implementation(projects.feature.unlockPremium)
+            implementation(projects.feature.paywall)
+            implementation(projects.feature.congrats)
 
             // Core
             implementation(projects.core.model)

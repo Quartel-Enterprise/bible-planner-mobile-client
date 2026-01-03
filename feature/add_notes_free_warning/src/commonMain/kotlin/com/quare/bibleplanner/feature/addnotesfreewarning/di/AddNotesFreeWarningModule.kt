@@ -8,3 +8,4 @@ val addNotesFreeWarningModule = module {
     // Presentation
     viewModelOf(::AddNotesFreeWarningViewModel)
 }
+

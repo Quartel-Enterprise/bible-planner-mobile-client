@@ -19,6 +19,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.date)
             implementation(projects.core.provider.room)
+            implementation(projects.core.provider.billing)
 
             // UI
             implementation(projects.ui.component)

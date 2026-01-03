@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CB3FB8DF2F08BA3400334921 /* PurchasesHybridCommon in Frameworks */ = {isa = PBXBuildFile; productRef = CB3FB8DE2F08BA3400334921 /* PurchasesHybridCommon */; };
+		CB3FB8E12F08BA3400334921 /* PurchasesHybridCommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = CB3FB8E02F08BA3400334921 /* PurchasesHybridCommonUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		7EDE84642348A1E60E5BAA36 /* BiblePlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BiblePlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +46,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB3FB8E12F08BA3400334921 /* PurchasesHybridCommonUI in Frameworks */,
+				CB3FB8DF2F08BA3400334921 /* PurchasesHybridCommon in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +92,8 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				CB3FB8DE2F08BA3400334921 /* PurchasesHybridCommon */,
+				CB3FB8E02F08BA3400334921 /* PurchasesHybridCommonUI */,
 			);
 			productName = iosApp;
 			productReference = 7EDE84642348A1E60E5BAA36 /* BiblePlanner.app */;
@@ -116,6 +125,9 @@
 			);
 			mainGroup = 09D6A778CFF1EFA38CC9DCF5;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CB3FB8DD2F08BA3400334921 /* XCRemoteSwiftPackageReference "purchases-hybrid-common" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 60DAEEE332E57B6736AFBE21 /* Products */;
 			projectDirPath = "";
@@ -370,6 +382,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CB3FB8DD2F08BA3400334921 /* XCRemoteSwiftPackageReference "purchases-hybrid-common" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-hybrid-common";
+			requirement = {
+				kind = exactVersion;
+				version = 17.25.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CB3FB8DE2F08BA3400334921 /* PurchasesHybridCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB3FB8DD2F08BA3400334921 /* XCRemoteSwiftPackageReference "purchases-hybrid-common" */;
+			productName = PurchasesHybridCommon;
+		};
+		CB3FB8E02F08BA3400334921 /* PurchasesHybridCommonUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB3FB8DD2F08BA3400334921 /* XCRemoteSwiftPackageReference "purchases-hybrid-common" */;
+			productName = PurchasesHybridCommonUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8B42730B58F3367CF457C9F9 /* Project object */;
 }

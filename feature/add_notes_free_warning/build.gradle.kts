@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.plan)
 
             // UI
             implementation(projects.ui.utils)
@@ -36,3 +37,4 @@ kotlin {
         }
     }
 }
+

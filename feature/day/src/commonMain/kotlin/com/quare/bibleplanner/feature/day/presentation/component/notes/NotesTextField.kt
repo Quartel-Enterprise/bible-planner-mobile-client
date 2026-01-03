@@ -6,12 +6,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 
@@ -20,16 +16,7 @@ internal fun NotesTextField(
     modifier: Modifier = Modifier,
     notesText: String,
     onEvent: (DayUiEvent) -> Unit,
-    shouldClearFocus: Boolean = false,
 ) {
-    val focusManager = LocalFocusManager.current
-
-    LaunchedEffect(shouldClearFocus) {
-        if (shouldClearFocus) {
-            focusManager.clearFocus()
-        }
-    }
-
     OutlinedTextField(
         value = notesText,
         onValueChange = { newValue ->

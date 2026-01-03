@@ -24,3 +24,4 @@ fun NavGraphBuilder.deleteNotes(navController: NavHostController) {
         )
     }
 }
+

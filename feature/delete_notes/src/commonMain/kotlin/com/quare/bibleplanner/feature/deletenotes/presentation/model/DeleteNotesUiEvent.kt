@@ -5,3 +5,4 @@ sealed interface DeleteNotesUiEvent {
 
     data object OnCancel : DeleteNotesUiEvent
 }
+

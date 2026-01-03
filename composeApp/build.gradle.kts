@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.composeHotReload)
 }
 
-// Add project-specific dependencies
 kotlin {
     val androidSdkVersions = getAndroidSdkVersions()
     androidLibrary {
@@ -64,6 +63,7 @@ kotlin {
             api(projects.core.navigation)
             api(projects.core.provider.koin)
             api(projects.core.provider.room)
+            api(projects.core.provider.billing)
 
             // UI
             api(projects.ui.theme)
