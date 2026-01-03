@@ -6,7 +6,6 @@ import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.di.initializeKoin
 import org.koin.dsl.module
 
-
 private var isInitialized = false
 
 fun MainViewController() = ComposeUIViewController(

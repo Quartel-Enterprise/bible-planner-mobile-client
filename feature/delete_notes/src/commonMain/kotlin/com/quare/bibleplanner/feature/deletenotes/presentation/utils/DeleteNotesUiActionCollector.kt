@@ -14,4 +14,3 @@ internal fun DeleteNotesUiActionCollector(
         navController.navigateUp()
     }
 }
-

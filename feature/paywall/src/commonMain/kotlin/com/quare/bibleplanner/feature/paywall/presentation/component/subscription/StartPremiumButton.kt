@@ -30,11 +30,11 @@ internal fun StartPremiumButton(
         enabled = !isLoading,
     ) {
         if (isLoading) {
-             androidx.compose.material3.CircularProgressIndicator(
-                 modifier = Modifier.size(24.dp),
-                 color = MaterialTheme.colorScheme.onPrimary,
-                 strokeWidth = 2.dp,
-             )
+            androidx.compose.material3.CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = 2.dp,
+            )
         } else {
             Text(
                 text = stringResource(Res.string.start_premium_journey),

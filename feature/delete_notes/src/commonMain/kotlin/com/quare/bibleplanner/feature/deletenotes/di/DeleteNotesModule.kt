@@ -8,4 +8,3 @@ val deleteNotesModule = module {
     // Presentation
     viewModelOf(::DeleteNotesViewModel)
 }
-

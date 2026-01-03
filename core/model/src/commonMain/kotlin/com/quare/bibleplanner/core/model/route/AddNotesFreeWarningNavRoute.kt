@@ -6,4 +6,3 @@ import kotlinx.serialization.Serializable
 data class AddNotesFreeWarningNavRoute(
     val maxFreeNotesAmount: Int,
 )
-

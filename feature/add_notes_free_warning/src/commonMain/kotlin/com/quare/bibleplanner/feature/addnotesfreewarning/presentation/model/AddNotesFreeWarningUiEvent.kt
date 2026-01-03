@@ -5,4 +5,3 @@ sealed interface AddNotesFreeWarningUiEvent {
 
     data object OnCancel : AddNotesFreeWarningUiEvent
 }
-

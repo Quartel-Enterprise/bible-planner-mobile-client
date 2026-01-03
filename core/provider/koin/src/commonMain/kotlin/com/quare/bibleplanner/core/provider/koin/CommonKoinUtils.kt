@@ -14,9 +14,9 @@ import com.quare.bibleplanner.feature.deleteprogress.di.deleteProgressModule
 import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModule
 import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
 import com.quare.bibleplanner.feature.onboardingstartdate.di.onboardingStartDateModule
+import com.quare.bibleplanner.feature.paywall.di.paywallModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
-import com.quare.bibleplanner.feature.paywall.di.paywallModule
 
 object CommonKoinUtils {
     val modules = listOf(

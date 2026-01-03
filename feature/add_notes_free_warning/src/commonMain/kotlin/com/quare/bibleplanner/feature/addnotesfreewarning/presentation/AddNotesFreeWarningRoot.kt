@@ -25,4 +25,3 @@ fun NavGraphBuilder.addNotesFreeWarning(navController: NavHostController) {
         )
     }
 }
-

@@ -27,7 +27,6 @@ actual val billingProviderModule = module {
     }
     factory {
         InitializeBillingUseCase {
-
         }
     }
 }

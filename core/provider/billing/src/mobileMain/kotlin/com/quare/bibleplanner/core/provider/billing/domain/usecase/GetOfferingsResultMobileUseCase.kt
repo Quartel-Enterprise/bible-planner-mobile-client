@@ -11,7 +11,6 @@ import kotlin.map
 internal class GetOfferingsResultMobileUseCase(
     private val packageMapper: PackageMapper,
 ) : GetOfferingsResultUseCase {
-
     override suspend fun invoke(): Result<List<StorePackage>> = Purchases.sharedInstance
         .awaitOfferingsResult()
         .map { offerings: Offerings ->

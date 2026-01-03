@@ -7,4 +7,3 @@ class GetDaysWithNotesCountUseCase(
 ) {
     suspend operator fun invoke(): Int = dayRepository.getDaysWithNotesCount()
 }
-

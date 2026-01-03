@@ -5,6 +5,8 @@ sealed interface PaywallUiState {
         val subscriptionPlans: List<SubscriptionPlanPresentationModel>,
         val isPurchasing: Boolean = false,
     ) : PaywallUiState
+
     data object Error : PaywallUiState
+
     data object Loading : PaywallUiState
 }

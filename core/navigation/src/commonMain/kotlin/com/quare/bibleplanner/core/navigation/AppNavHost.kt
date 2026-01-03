@@ -7,16 +7,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.quare.bibleplanner.core.model.route.ReadingPlanNavRoute
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
+import com.quare.bibleplanner.feature.congrats.presentation.congrats
 import com.quare.bibleplanner.feature.day.presentation.day
 import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
 import com.quare.bibleplanner.feature.deleteprogress.presentation.deleteProgress
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.onboardingstartdate.presentation.onboardingStartDate
+import com.quare.bibleplanner.feature.paywall.presentation.paywall
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
-import com.quare.bibleplanner.feature.paywall.presentation.paywall
-import com.quare.bibleplanner.feature.congrats.presentation.congrats
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -44,7 +44,7 @@ fun AppNavHost() {
             editPlanStartDate(navController)
             onboardingStartDate(navController)
             paywall(navController)
-        congrats(navController)
+            congrats(navController)
         }
     }
 }

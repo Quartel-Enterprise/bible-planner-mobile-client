@@ -11,7 +11,6 @@ import com.quare.bibleplanner.core.utils.isLastIndex
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.option.SubscriptionPlanCard
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.option.component.SubscriptionPlanDiscountBadge
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
-import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent.*
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
@@ -34,7 +33,7 @@ internal fun SubscriptionPlans(
                             title = stringResource(plan.title),
                             price = "${plan.priceDescription} / ${stringResource(plan.period)}",
                             isSelected = plan.isSelected,
-                            onClick = { onEvent(OnPlanSelected(plan.type)) },
+                            onClick = { onEvent(PaywallUiEvent.OnPlanSelected(plan.type)) },
                         )
                         plan.savePercentage?.let { savePercentage ->
                             SubscriptionPlanDiscountBadge(
@@ -59,7 +58,6 @@ internal fun SubscriptionPlans(
             }
 
             PaywallUiState.Loading -> {
-
             }
         }
     }

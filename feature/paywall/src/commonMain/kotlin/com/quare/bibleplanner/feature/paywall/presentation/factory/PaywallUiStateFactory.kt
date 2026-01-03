@@ -20,20 +20,20 @@ class PaywallUiStateFactory(
         val storePackages: List<StorePackage> = emptyList(),
     )
 
-    suspend fun create(): PaywallInitializationResult {
-        return getOfferingsResult()
-            .fold(
-                onSuccess = { offerings ->
-                    val monthlyPackage = offerings.find { it.type == StorePackageType.MONTHLY }
-                    val subscriptionPlans = offerings.mapNotNull { storePackage ->
-                        storePackage.toPresentationModel(getSavePercentage(storePackage, monthlyPackage))
-                    }
+    suspend fun create(): PaywallInitializationResult = getOfferingsResult()
+        .fold(
+            onSuccess = { offerings ->
+                val monthlyPackage = offerings.find { it.type == StorePackageType.MONTHLY }
+                val subscriptionPlans = offerings.mapNotNull { storePackage ->
+                    storePackage.toPresentationModel(getSavePercentage(storePackage, monthlyPackage))
+                }
 
-                    if (subscriptionPlans.isEmpty()) {
-                        PaywallInitializationResult(PaywallUiState.Error)
-                    } else {
-                        // Select Annual by default if available, otherwise first
-                        val initialPlans = subscriptionPlans.map { plan ->
+                if (subscriptionPlans.isEmpty()) {
+                    PaywallInitializationResult(PaywallUiState.Error)
+                } else {
+                    // Select Annual by default if available, otherwise first
+                    val initialPlans = subscriptionPlans
+                        .map { plan ->
                             if (plan.type == SubscriptionPlanType.Annual) {
                                 plan.copy(isSelected = true)
                             } else {
@@ -50,17 +50,16 @@ class PaywallUiStateFactory(
                             }
                         }
 
-                        PaywallInitializationResult(
-                            uiState = PaywallUiState.Success(initialPlans),
-                            storePackages = offerings,
-                        )
-                    }
-                },
-                onFailure = {
-                    PaywallInitializationResult(PaywallUiState.Error)
+                    PaywallInitializationResult(
+                        uiState = PaywallUiState.Success(initialPlans),
+                        storePackages = offerings,
+                    )
                 }
-            )
-    }
+            },
+            onFailure = {
+                PaywallInitializationResult(PaywallUiState.Error)
+            },
+        )
 
     private fun getSavePercentage(
         storePackage: StorePackage,
@@ -72,7 +71,7 @@ class PaywallUiStateFactory(
             val annualMonthlyPrice = annualPrice / 12.0
             val savings = (monthlyPrice - annualMonthlyPrice) / monthlyPrice
             (savings * 100).toInt()
-        } else{
+        } else {
             null
         }
     } else {

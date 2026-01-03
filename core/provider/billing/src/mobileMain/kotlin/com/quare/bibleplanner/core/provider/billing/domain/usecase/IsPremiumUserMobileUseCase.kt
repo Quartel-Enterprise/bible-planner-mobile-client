@@ -7,7 +7,6 @@ import com.revenuecat.purchases.kmp.models.EntitlementInfo
 import com.revenuecat.purchases.kmp.result.awaitCustomerInfoResult
 
 internal class IsPremiumUserMobileUseCase : IsPremiumUserUseCase {
-
     override suspend fun invoke(): Boolean = Purchases.sharedInstance
         .awaitCustomerInfoResult(CacheFetchPolicy.NOT_STALE_CACHED_OR_CURRENT)
         .getOrNull()

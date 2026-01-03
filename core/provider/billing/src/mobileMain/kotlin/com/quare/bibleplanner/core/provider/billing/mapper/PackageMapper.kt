@@ -6,7 +6,6 @@ import com.revenuecat.purchases.kmp.models.Package
 import com.revenuecat.purchases.kmp.models.PackageType
 
 internal class PackageMapper {
-
     fun toStorePackage(packageModel: Package): StorePackage = packageModel.run {
         StorePackage(
             identifier = identifier,

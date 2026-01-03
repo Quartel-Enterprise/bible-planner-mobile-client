@@ -2,11 +2,13 @@ package com.quare.bibleplanner.feature.paywall.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetPurchaseResultUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetRestorePurchaseResultUseCase
 import com.quare.bibleplanner.feature.paywall.presentation.factory.PaywallUiStateFactory
 import com.quare.bibleplanner.feature.paywall.presentation.mapper.PaywallExceptionMapper
+import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,8 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import com.quare.bibleplanner.core.model.route.CongratsNavRoute
-import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -64,7 +64,7 @@ internal class PaywallViewModel(
                             val planType = selectedPlan.type
 
                             (pkgType.name == "MONTHLY" && planType.name == "Monthly") ||
-                            (pkgType.name == "ANNUAL" && planType.name == "Annual")
+                                (pkgType.name == "ANNUAL" && planType.name == "Annual")
                         }
 
                         if (packageToPurchase != null) {
@@ -74,8 +74,7 @@ internal class PaywallViewModel(
                                 .onSuccess {
                                     _uiState.update { currentState.copy(isPurchasing = false) }
                                     _uiAction.emit(PaywallUiAction.NavigateTo(CongratsNavRoute))
-                                }
-                                .onFailure { error ->
+                                }.onFailure { error ->
                                     _uiState.update { currentState.copy(isPurchasing = false) }
                                     val messageRes = exceptionMapper.map(error)
                                     _uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes))
@@ -93,6 +92,7 @@ internal class PaywallViewModel(
                                 plan.copy(isSelected = plan.type == event.planType)
                             },
                         )
+
                         else -> currentState
                     }
                 }
@@ -102,22 +102,21 @@ internal class PaywallViewModel(
                 viewModelScope.launch {
                     val currentState = _uiState.value
                     if (currentState is PaywallUiState.Success) {
-                         _uiState.update { currentState.copy(isPurchasing = true) }
+                        _uiState.update { currentState.copy(isPurchasing = true) }
                     }
 
                     getRestorePurchaseResultUseCase()
                         .onSuccess {
-                             if (currentState is PaywallUiState.Success) {
-                                 _uiState.update { currentState.copy(isPurchasing = false) }
-                             }
-                             _uiAction.emit(PaywallUiAction.NavigateTo(CongratsNavRoute))
-                        }
-                        .onFailure { error ->
                             if (currentState is PaywallUiState.Success) {
-                                 _uiState.update { currentState.copy(isPurchasing = false) }
-                             }
+                                _uiState.update { currentState.copy(isPurchasing = false) }
+                            }
+                            _uiAction.emit(PaywallUiAction.NavigateTo(CongratsNavRoute))
+                        }.onFailure { error ->
+                            if (currentState is PaywallUiState.Success) {
+                                _uiState.update { currentState.copy(isPurchasing = false) }
+                            }
                             val messageRes = exceptionMapper.map(error)
-                             _uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes))
+                            _uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes))
                         }
                 }
             }

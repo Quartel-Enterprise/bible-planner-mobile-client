@@ -30,4 +30,3 @@ internal class AddNotesFreeWarningViewModel(
         AddNotesFreeWarningUiEvent.OnSubscribeToPremium -> AddNotesFreeWarningUiAction.NavigateToPremium
     }
 }
-
