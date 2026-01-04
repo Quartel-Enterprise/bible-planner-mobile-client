@@ -10,10 +10,10 @@ import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
-import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ListenToShowSetStartDateOnboarding
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.CalculateIsFirstUnreadWeekVisible
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -38,12 +39,12 @@ internal class ReadingPlanViewModel(
     calculateBibleProgress: CalculateBibleProgressUseCase,
     getPlanStartDate: GetPlanStartDateUseCase,
     private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
+    private val setPlanStartTimeUseCase: SetPlanStartTimeUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
     private val calculateIsFirstUnreadWeekVisible: CalculateIsFirstUnreadWeekVisible,
     private val deleteProgressMapper: DeleteProgressMapper,
-    private val listenToShowSetStartDateOnboarding: ListenToShowSetStartDateOnboarding,
     private val readDayToggleOperationUseCase: ReadDayToggleOperationUseCase,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
@@ -59,23 +60,12 @@ internal class ReadingPlanViewModel(
 
     init {
         viewModelScope.launch {
+            if (getPlanStartDate().first() == null) {
+                setPlanStartTimeUseCase(SetPlanStartTimeUseCase.Strategy.Now)
+            }
             initializeBooksIfNeeded()
         }
-        viewModelScope.launch {
-            listenToShowSetStartDateOnboarding {
-                _uiAction.emit(ReadingPlanUiAction.GoToOnboarding)
-            }
-        }
 
-        observe(getPlanStartDate()) { startDate ->
-            _uiState.update { currentState ->
-                val isSet = startDate != null
-                when (currentState) {
-                    is ReadingPlanUiState.Loaded -> currentState.copy(isStartDateSet = isSet)
-                    is ReadingPlanUiState.Loading -> currentState.copy(isStartDateSet = isSet)
-                }
-            }
-        }
         observe(calculateBibleProgress()) { progress ->
             currentBibleProgress = progress
             _uiState.update { currentState ->
@@ -111,7 +101,6 @@ internal class ReadingPlanViewModel(
                             weekPlans = weekPresentationModels,
                             isScrolledDown = currentState.isScrolledDown,
                         ),
-                        isStartDateSet = currentState.isStartDateSet,
                     )
                 } ?: when (currentState) {
                     is ReadingPlanUiState.Loaded -> {
@@ -164,7 +153,6 @@ internal class ReadingPlanViewModel(
                         weekPlans = weekPresentationModels,
                         isScrolledDown = isScrolledDown,
                     ),
-                    isStartDateSet = currentState.isStartDateSet,
                 )
             }
         }

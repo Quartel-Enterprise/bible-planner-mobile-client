@@ -18,7 +18,6 @@ import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModu
 import com.quare.bibleplanner.feature.main.di.mainModule
 import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
 import com.quare.bibleplanner.feature.more.di.moreModule
-import com.quare.bibleplanner.feature.onboardingstartdate.di.onboardingStartDateModule
 import com.quare.bibleplanner.feature.paywall.di.paywallModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
@@ -37,7 +36,6 @@ object CommonKoinUtils {
         deleteNotesModule,
         addNotesFreeWarningModule,
         editPlanStartDateModule,
-        onboardingStartDateModule,
         paywallModule,
         roomModule,
         utilsModule,

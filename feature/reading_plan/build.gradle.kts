@@ -20,7 +20,6 @@ kotlin {
             implementation(projects.core.utils)
 
             // Features
-            implementation(projects.feature.onboardingStartDate)
 
             // UI
             implementation(projects.ui.component)

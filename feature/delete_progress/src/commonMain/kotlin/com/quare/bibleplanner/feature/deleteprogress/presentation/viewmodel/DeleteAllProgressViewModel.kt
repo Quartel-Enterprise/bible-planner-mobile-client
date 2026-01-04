@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.deleteprogress.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
-import com.quare.bibleplanner.core.plan.domain.usecase.DeletePlanStartDateUseCase
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +15,6 @@ import kotlinx.coroutines.launch
 
 internal class DeleteAllProgressViewModel(
     private val resetAllProgress: ResetAllProgressUseCase,
-    private val deletePlanStartDate: DeletePlanStartDateUseCase,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DeleteAllProgressUiState> =
         MutableStateFlow(DeleteAllProgressUiState.Idle)
@@ -32,7 +30,6 @@ internal class DeleteAllProgressViewModel(
                     _uiState.update { DeleteAllProgressUiState.Loading }
                     try {
                         resetAllProgress()
-                        deletePlanStartDate()
                         _uiState.update { DeleteAllProgressUiState.Success }
                         _backUiAction.emit(Unit)
                     } catch (e: Exception) {

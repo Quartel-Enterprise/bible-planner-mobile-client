@@ -14,7 +14,6 @@ import com.quare.bibleplanner.feature.deleteprogress.presentation.deleteProgress
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
-import com.quare.bibleplanner.feature.onboardingstartdate.presentation.onboardingStartDate
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 
@@ -42,7 +41,7 @@ fun RootAppNavHost() {
             deleteNotes(navController)
             addNotesFreeWarning(navController)
             editPlanStartDate(navController)
-            onboardingStartDate(navController)
+
             paywall(navController)
             congrats(navController)
         }

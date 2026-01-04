@@ -9,7 +9,6 @@ internal sealed interface ReadingPlanUiState {
     val scrollToTop: Boolean
     val isScrolledDown: Boolean
     val isFirstUnreadWeekVisible: Boolean
-    val isStartDateSet: Boolean
 
     data class Loaded(
         val weekPlans: List<WeekPlanPresentationModel>,
@@ -20,7 +19,6 @@ internal sealed interface ReadingPlanUiState {
         override val scrollToTop: Boolean = false,
         override val isScrolledDown: Boolean = false,
         override val isFirstUnreadWeekVisible: Boolean = false,
-        override val isStartDateSet: Boolean = false,
     ) : ReadingPlanUiState
 
     data class Loading(
@@ -30,6 +28,5 @@ internal sealed interface ReadingPlanUiState {
         override val scrollToTop: Boolean = false,
         override val isScrolledDown: Boolean = false,
         override val isFirstUnreadWeekVisible: Boolean = false,
-        override val isStartDateSet: Boolean = false,
     ) : ReadingPlanUiState
 }

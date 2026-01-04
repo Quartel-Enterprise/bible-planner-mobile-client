@@ -26,7 +26,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ReadingPlanTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
-    isStartDateSet: Boolean,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val calendarIcon = Icons.Default.EditCalendar
@@ -35,27 +34,17 @@ internal fun ReadingPlanTopBar(
         title = {},
         scrollBehavior = scrollBehavior,
         actions = {
-            if (isStartDateSet) {
-                CommonIconButton(
+            OutlinedButton(
+                onClick = {
+                    onEvent(ReadingPlanUiEvent.OnOverflowOptionClick(OverflowOption.EDIT_START_DAY))
+                },
+            ) {
+                Icon(
                     imageVector = calendarIcon,
-                    onClick = {
-                        onEvent(ReadingPlanUiEvent.OnOverflowOptionClick(OverflowOption.EDIT_START_DAY))
-                    },
-                    contentDescription = startDayText,
+                    contentDescription = null,
                 )
-            } else {
-                OutlinedButton(
-                    onClick = {
-                        onEvent(ReadingPlanUiEvent.OnOverflowOptionClick(OverflowOption.EDIT_START_DAY))
-                    },
-                ) {
-                    Icon(
-                        imageVector = calendarIcon,
-                        contentDescription = null,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = startDayText)
-                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = startDayText)
             }
 
             CommonIconButton(
