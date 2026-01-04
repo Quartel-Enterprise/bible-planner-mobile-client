@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
+import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
@@ -34,7 +35,8 @@ internal class ReadingPlanViewModel(
     factory: ReadingPlanStateFactory,
     getPlansByWeek: GetPlansByWeekUseCase,
     getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
-    calculateBibleProgressUseCase: CalculateBibleProgressUseCase,
+    calculateBibleProgress: CalculateBibleProgressUseCase,
+    getPlanStartDate: GetPlanStartDateUseCase,
     private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
@@ -64,7 +66,17 @@ internal class ReadingPlanViewModel(
                 _uiAction.emit(ReadingPlanUiAction.GoToOnboarding)
             }
         }
-        observe(calculateBibleProgressUseCase()) { progress ->
+
+        observe(getPlanStartDate()) { startDate ->
+            _uiState.update { currentState ->
+                val isSet = startDate != null
+                when (currentState) {
+                    is ReadingPlanUiState.Loaded -> currentState.copy(isStartDateSet = isSet)
+                    is ReadingPlanUiState.Loading -> currentState.copy(isStartDateSet = isSet)
+                }
+            }
+        }
+        observe(calculateBibleProgress()) { progress ->
             currentBibleProgress = progress
             _uiState.update { currentState ->
                 when (currentState) {
@@ -99,6 +111,7 @@ internal class ReadingPlanViewModel(
                             weekPlans = weekPresentationModels,
                             isScrolledDown = currentState.isScrolledDown,
                         ),
+                        isStartDateSet = currentState.isStartDateSet,
                     )
                 } ?: when (currentState) {
                     is ReadingPlanUiState.Loaded -> {
@@ -151,6 +164,7 @@ internal class ReadingPlanViewModel(
                         weekPlans = weekPresentationModels,
                         isScrolledDown = isScrolledDown,
                     ),
+                    isStartDateSet = currentState.isStartDateSet,
                 )
             }
         }

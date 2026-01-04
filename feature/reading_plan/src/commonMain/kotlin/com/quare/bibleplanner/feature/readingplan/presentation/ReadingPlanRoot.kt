@@ -53,7 +53,7 @@ fun NavGraphBuilder.readingPlan(
             mainScaffoldState.setTopBar {
                 ReadingPlanTopBar(
                     scrollBehavior = topAppBarScrollBehavior,
-                    isShowingMenu = uiState.isShowingMenu,
+                    isStartDateSet = uiState.isStartDateSet,
                     onEvent = onEvent,
                 )
             }
