@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.di
 
 import com.quare.bibleplanner.AppViewModel
-import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
 import com.quare.bibleplanner.core.provider.koin.commonKoinInitializer
 import org.koin.core.KoinApplication
 import org.koin.core.module.Module
@@ -17,7 +16,7 @@ fun initializeKoin(
     platformModules: List<Module> = emptyList(),
 ) {
     commonKoinInitializer(
-        platformModules = listOf(appModule, billingProviderModule) + platformModules,
+        platformModules = listOf(appModule) + platformModules,
         config = config,
     )
 }

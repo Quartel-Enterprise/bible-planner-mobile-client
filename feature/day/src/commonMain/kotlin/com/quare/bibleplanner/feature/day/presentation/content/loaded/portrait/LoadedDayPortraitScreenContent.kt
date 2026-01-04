@@ -79,7 +79,7 @@ internal fun LoadedDayPortraitScreenContent(
         item {
             NotesSection(
                 modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
-                notesText = uiState.notesText,
+                notesText = day.notes.orEmpty(),
                 onEvent = onEvent,
             )
         }

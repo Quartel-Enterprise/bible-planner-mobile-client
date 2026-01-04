@@ -15,7 +15,9 @@ The `local.properties` file is used to store sensitive configuration and is not 
 2.  Add the following line:
 
 ```properties
-REVENUECAT_PRO_KEY=your_pro_key_here
+REVENUECAT_TEST_API_KEY=your_test_key_here
+REVENUECAT_PLAY_STORE_API_KEY=your_play_store_key_here
+REVENUECAT_APP_STORE_API_KEY=your_app_store_key_here
 ```
 
 3.  Save the file.

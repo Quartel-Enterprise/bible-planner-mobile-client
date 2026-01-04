@@ -10,8 +10,10 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBil
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBillingUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsPremiumVerificationRequiredUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsPremiumUserMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsPremiumUserUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserInRevenueCatUseCase
 import com.quare.bibleplanner.core.provider.billing.mapper.PackageMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
@@ -25,4 +27,6 @@ actual val billingProviderModule = module {
     factoryOf(::IsFreeUserMobileUseCase).bind<IsFreeUserUseCase>()
     factoryOf(::InitializeBillingMobileUseCase).bind<InitializeBillingUseCase>()
     factoryOf(::IsPremiumUserMobileUseCase).bind<IsPremiumUserUseCase>()
+    factoryOf(::IsPremiumVerificationRequiredUseCase)
+    factoryOf(::IsProUserInRevenueCatUseCase)
 }

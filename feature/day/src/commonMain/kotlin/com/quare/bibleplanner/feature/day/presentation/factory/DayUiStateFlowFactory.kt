@@ -72,9 +72,6 @@ internal class DayUiStateFlowFactory(
                 )
             }
 
-            // Preserve notesText from current state if it exists, otherwise initialize from day.notes
-            val notesText = currentState?.notesText ?: day.notes.orEmpty()
-
             val (completedCount, totalCount) = calculatePassageCounts(
                 passages = day.passages,
                 books = books,
@@ -92,8 +89,6 @@ internal class DayUiStateFlowFactory(
                 ),
                 completedPassagesCount = completedCount,
                 totalPassagesCount = totalCount,
-                notesText = notesText,
-                shouldClearNotesFocus = false,
             )
         } else {
             DayUiState.Loading

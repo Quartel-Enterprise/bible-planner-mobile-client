@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -29,6 +30,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
+import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalTime::class)
 internal class DayViewModel(
@@ -64,6 +66,10 @@ internal class DayViewModel(
                 currentState = _uiState.value as? DayUiState.Loaded,
             ),
         ) { state ->
+            Logger.d(
+                tag = "Notes",
+                messageString = "new notes state: ${(state as? DayUiState.Loaded)?.day?.notes}"
+            )
             _uiState.update { state }
         }
     }
@@ -197,9 +203,8 @@ internal class DayViewModel(
     private fun DayUiEvent.OnEditReadDate.toDuration(): Duration = (hour * 60 + minute).minutes
 
     private fun onNotesChanged(event: DayUiEvent.OnNotesChanged) {
-        // Update local state immediately for responsive UI
         updateLoadedState { loaded ->
-            loaded.copy(notesText = event.notes)
+            loaded.copy(day = loaded.day.copy(notes = event.notes))
         }
 
         // Cancel previous save job if it exists
@@ -239,8 +244,23 @@ internal class DayViewModel(
 
         viewModelScope.launch {
             if (useCases.shouldBlockAddNotes()) {
+                // Ensure there are not notes in the ui due to a fast typing before the verification happens
+                deleteNotesAsyncDueToBlockedAddNotes()
                 blockAddNotes()
             }
+        }
+    }
+
+    private fun CoroutineScope.deleteNotesAsyncDueToBlockedAddNotes() {
+        launch {
+            delay(500.milliseconds)
+            val loadedState = safeLoadedState ?: return@launch
+            if (!loadedState.hasNotes()) return@launch
+            useCases.deleteDayNotes(
+                weekNumber = weekNumber,
+                dayNumber = dayNumber,
+                readingPlanType = readingPlanType,
+            )
         }
     }
 
@@ -261,7 +281,7 @@ internal class DayViewModel(
         }
     }
 
-    private fun DayUiState.Loaded.hasNotes(): Boolean = notesText.isNotEmpty()
+    private fun DayUiState.Loaded.hasNotes(): Boolean = !day.notes.isNullOrEmpty()
 
     private fun backToPreviousScreen() {
         viewModelScope.launch {

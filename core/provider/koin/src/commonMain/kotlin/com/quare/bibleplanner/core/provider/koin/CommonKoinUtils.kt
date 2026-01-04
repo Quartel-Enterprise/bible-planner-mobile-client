@@ -4,10 +4,13 @@ import com.quare.bibleplanner.core.books.di.booksModule
 import com.quare.bibleplanner.core.datastore.di.dataStoreProviderModule
 import com.quare.bibleplanner.core.date.di.dateModule
 import com.quare.bibleplanner.core.plan.di.planModule
+import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
 import com.quare.bibleplanner.core.provider.platform.di.platformModule
 import com.quare.bibleplanner.core.provider.room.di.roomModule
+import com.quare.bibleplanner.core.remoteconfig.di.remoteConfigModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
+import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.day.di.dayModule
 import com.quare.bibleplanner.feature.deletenotes.di.deleteNotesModule
 import com.quare.bibleplanner.feature.deleteprogress.di.deleteProgressModule
@@ -37,5 +40,8 @@ object CommonKoinUtils {
         roomModule,
         utilsModule,
         dateModule,
+        remoteConfigModule,
+        billingProviderModule,
+        congratsModule,
     )
 }

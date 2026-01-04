@@ -15,6 +15,8 @@ kotlin {
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
+            implementation(projects.core.provider.billing)
+            implementation(projects.core.remoteConfig)
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.utils)
@@ -31,6 +33,7 @@ kotlin {
             implementation(projects.feature.onboardingStartDate)
             implementation(projects.feature.paywall)
             implementation(projects.feature.deleteNotes)
+            implementation(projects.feature.congrats)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

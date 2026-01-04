@@ -15,7 +15,11 @@ buildkonfig {
         if (localPropertiesFile.exists()) {
             properties.load(localPropertiesFile.inputStream())
         }
-        val revenueKeys = listOf("REVENUECAT_API_KEY")
+        val revenueKeys = listOf(
+            "REVENUECAT_TEST_API_KEY",
+            "REVENUECAT_APP_STORE_API_KEY",
+            "REVENUECAT_PLAY_STORE_API_KEY",
+        )
         revenueKeys.forEach { name ->
             buildConfigField(
                 type = FieldSpec.Type.STRING,
@@ -55,6 +59,7 @@ kotlin {
                 implementation(project.dependencies.platform(libs.koinBom))
                 implementation(libs.koinCore)
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(projects.core.remoteConfig)
             }
         }
 
@@ -68,10 +73,19 @@ kotlin {
 
         val androidMain by getting {
             dependsOn(mobileMain)
+            dependencies {
+                implementation(project.dependencies.platform(libs.firebase.bom))
+                api(libs.purchases.core)
+                api(libs.purchases.result)
+            }
         }
 
         val iosMain by creating {
             dependsOn(mobileMain)
+            dependencies {
+                implementation(libs.purchases.core)
+                implementation(libs.purchases.result)
+            }
         }
 
         val iosArm64Main by getting {

@@ -51,7 +51,10 @@ class PaywallUiStateFactory(
                         }
 
                     PaywallInitializationResult(
-                        uiState = PaywallUiState.Success(initialPlans),
+                        uiState = PaywallUiState.Success(
+                            subscriptionPlans = initialPlans,
+                            isPurchasing = false
+                        ),
                         storePackages = offerings,
                     )
                 }

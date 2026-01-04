@@ -71,6 +71,8 @@ kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 # Purchases
 purchases-core = { group = "com.revenuecat.purchases", name = "purchases-kmp-core", version.ref = "purchases" }
 purchases-result = { group = "com.revenuecat.purchases", name = "purchases-kmp-result", version.ref = "purchases" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "33.1.0" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -87,4 +89,6 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
 bibleplanner-kotlinMultiplatform = { id = "bibleplanner.kotlin.multiplatform" }
+
 bibleplanner-composeMultiplatform = { id = "bibleplanner.kotlin.composeMultiplatform" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }

@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.day.domain.model
 
+import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
@@ -16,4 +17,5 @@ internal data class DayUseCases(
     val updateDayNotes: UpdateDayNotesUseCase,
     val shouldBlockAddNotes: ShouldBlockAddNotesUseCase,
     val getMaxFreeNotesAmount: GetMaxFreeNotesAmountUseCase,
+    val deleteDayNotes: DeleteDayNotesUseCase
 )

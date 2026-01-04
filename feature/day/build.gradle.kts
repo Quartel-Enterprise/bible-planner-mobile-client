@@ -44,6 +44,9 @@ kotlin {
             implementation(libs.koinCore)
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewModel)
+
+            // Kermit
+            implementation(libs.kermit)
         }
     }
 }
