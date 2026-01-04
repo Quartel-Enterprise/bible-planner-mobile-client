@@ -126,8 +126,7 @@ private fun NarrowMainScreenContent(
                 modifier = Modifier
                     .graphicsLayer {
                         translationY = -scrollBehavior.state.heightOffset
-                    }
-                    .onGloballyPositioned { coordinates ->
+                    }.onGloballyPositioned { coordinates ->
                         scrollBehavior.state.heightOffsetLimit = -coordinates.size.height.toFloat()
                     },
             ) {

@@ -21,7 +21,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
-import com.quare.bibleplanner.ui.utils.MainScaffoldState
 import com.quare.bibleplanner.feature.readingplan.presentation.component.ReadingPlanTopBar
 import com.quare.bibleplanner.feature.readingplan.presentation.component.fabs.ReadingPlanFabsComponent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
@@ -31,6 +30,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.utils.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToTopObserver
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToWeekAction
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
+import com.quare.bibleplanner.ui.utils.MainScaffoldState
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 

@@ -11,19 +11,20 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.quare.bibleplanner.feature.more.presentation.model.MoreIcon
 import com.quare.bibleplanner.feature.more.presentation.model.MoreMenuItemPresentationModel
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 internal fun MoreScreen(
     items: List<MoreMenuItemPresentationModel>,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         itemsIndexed(items) { index, item ->
             MoreMenuItem(
@@ -46,8 +47,30 @@ private fun MoreMenuItem(
         val text = stringResource(name)
         ListItem(
             headlineContent = { Text(text) },
-            leadingContent = { Icon(imageVector = icon, contentDescription = text) },
+            leadingContent = { MoreItemIcon(icon, text) },
             modifier = Modifier.clickable(onClick = { onEvent(event) }),
         )
+    }
+}
+
+@Composable
+private fun MoreItemIcon(
+    icon: MoreIcon,
+    contentDescription: String?,
+) {
+    when (icon) {
+        is MoreIcon.DrawableResourceIcon -> {
+            Icon(
+                painter = painterResource(icon.resource),
+                contentDescription = contentDescription,
+            )
+        }
+
+        is MoreIcon.ImageVectorIcon -> {
+            Icon(
+                imageVector = icon.imageVector,
+                contentDescription = contentDescription,
+            )
+        }
     }
 }

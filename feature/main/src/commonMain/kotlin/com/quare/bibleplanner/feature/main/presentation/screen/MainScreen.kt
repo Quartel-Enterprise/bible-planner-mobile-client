@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreen(

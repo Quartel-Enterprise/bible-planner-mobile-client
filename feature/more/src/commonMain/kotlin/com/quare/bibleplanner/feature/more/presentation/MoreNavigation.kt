@@ -15,12 +15,12 @@ fun NavGraphBuilder.more(navController: NavController) {
         val viewModel = koinViewModel<MoreViewModel>()
         MoreUiActionCollector(
             uiActionFlow = viewModel.uiAction,
-            navController = navController
+            navController = navController,
         )
         val uiState by viewModel.uiState.collectAsState()
         MoreScreen(
             items = uiState.items,
-            onEvent = viewModel::onEvent
+            onEvent = viewModel::onEvent,
         )
     }
 }

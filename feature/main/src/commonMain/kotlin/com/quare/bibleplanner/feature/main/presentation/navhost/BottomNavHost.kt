@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
-import com.quare.bibleplanner.ui.utils.MainScaffoldState
 import com.quare.bibleplanner.feature.more.presentation.more
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
+import com.quare.bibleplanner.ui.utils.MainScaffoldState
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

@@ -390,6 +390,4 @@ internal class ReadingPlanViewModel(
             _uiAction.emit(uiAction)
         }
     }
-
-
 }

@@ -5,4 +5,5 @@ internal enum class MoreUiEvent {
     ON_TERMS_CLICK,
     ON_PRIVACY_CLICK,
     ON_BECOME_PREMIUM_CLICK,
+    ON_INSTAGRAM_CLICK,
 }
