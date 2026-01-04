@@ -375,10 +375,7 @@ internal class ReadingPlanViewModel(
     }
 
     private fun OverflowOption.toUiAction(): ReadingPlanUiAction? = when (this) {
-        OverflowOption.THEME -> ReadingPlanUiAction.GoToTheme
         OverflowOption.DELETE_PROGRESS -> deleteProgressMapper.map(uiState.value)
-        OverflowOption.PRIVACY_POLICY -> ReadingPlanUiAction.OpenLink("$BASE_URL/privacy")
-        OverflowOption.TERMS -> ReadingPlanUiAction.OpenLink("$BASE_URL/terms")
         OverflowOption.EDIT_START_DAY -> ReadingPlanUiAction.GoToChangeStartDate
     }
 
@@ -394,7 +391,5 @@ internal class ReadingPlanViewModel(
         }
     }
 
-    companion object {
-        private const val BASE_URL = "https://www.bibleplanner.app"
-    }
+
 }

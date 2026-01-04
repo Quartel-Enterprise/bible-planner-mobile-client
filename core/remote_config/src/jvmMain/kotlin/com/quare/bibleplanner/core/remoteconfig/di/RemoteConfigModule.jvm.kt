@@ -6,6 +6,10 @@ import org.koin.dsl.module
 
 actual val remoteConfigModule: Module = module {
     single {
-        RemoteConfigService { true }
+        object : RemoteConfigService {
+            override suspend fun getBoolean(key: String): Boolean = true
+
+            override suspend fun getInt(key: String): Int = 0
+        }
     }
 }

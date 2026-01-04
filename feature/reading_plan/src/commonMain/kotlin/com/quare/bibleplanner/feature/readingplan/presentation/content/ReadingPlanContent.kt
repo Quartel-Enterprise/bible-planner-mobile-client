@@ -39,6 +39,7 @@ internal fun ReadingPlanContent(
     val loadedUiState = uiState as? ReadingPlanUiState.Loaded
 
     BoxWithConstraints(modifier = modifier) {
+        val isLandscape = maxWidth > maxHeight
         LazyColumn(
             state = lazyListState,
             modifier = Modifier.fillMaxSize(),
@@ -111,7 +112,12 @@ internal fun ReadingPlanContent(
                     }
                 }
             }
-
+            // Add bottom padding to prevent FABs from covering the last items (only in portrait)
+            if (!isLandscape) {
+                item {
+                    VerticalSpacer(size = 140.dp)
+                }
+            }
         }
     }
 }

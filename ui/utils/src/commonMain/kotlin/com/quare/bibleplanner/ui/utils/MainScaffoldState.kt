@@ -12,7 +12,7 @@ class MainScaffoldState(
 ) {
     val topBar: MutableState<@Composable () -> Unit> = mutableStateOf({})
     val fab: MutableState<@Composable () -> Unit> = mutableStateOf({})
-    
+
     fun setTopBar(content: @Composable () -> Unit) {
         topBar.value = content
     }
@@ -21,11 +21,16 @@ class MainScaffoldState(
         fab.value = content
     }
 
-    fun clearTopBar() {
+    fun clearStates() {
+        clearTopBar()
+        clearFab()
+    }
+
+    private fun clearTopBar() {
         topBar.value = {}
     }
 
-    fun clearFab() {
+    private fun clearFab() {
         fab.value = {}
     }
 }

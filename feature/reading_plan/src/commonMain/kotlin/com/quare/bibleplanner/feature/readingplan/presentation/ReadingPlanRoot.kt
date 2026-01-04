@@ -1,10 +1,12 @@
 package com.quare.bibleplanner.feature.readingplan.presentation
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -37,6 +39,7 @@ fun NavGraphBuilder.readingPlan(
     navController: NavController,
     mainScaffoldState: MainScaffoldState,
     sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
     composable<BottomNavRoute.Plans> {
         val viewModel = koinViewModel<ReadingPlanViewModel>()
@@ -45,9 +48,8 @@ fun NavGraphBuilder.readingPlan(
         val lazyListState = rememberLazyListState()
         val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
         val snackbarHostState = mainScaffoldState.snackbarHostState
-
         // Update MainScaffoldState with local UI components
-        SideEffect {
+        LaunchedEffect(Unit) {
             mainScaffoldState.setTopBar {
                 ReadingPlanTopBar(
                     scrollBehavior = topAppBarScrollBehavior,
@@ -57,13 +59,6 @@ fun NavGraphBuilder.readingPlan(
             }
             mainScaffoldState.setFab {
                 ReadingPlanFabsComponent(uiState, onEvent)
-            }
-        }
-
-        DisposableEffect(Unit) {
-            onDispose {
-                mainScaffoldState.clearTopBar()
-                mainScaffoldState.clearFab()
             }
         }
 
@@ -81,7 +76,7 @@ fun NavGraphBuilder.readingPlan(
             lazyListState = lazyListState,
             topAppBarScrollBehavior = topAppBarScrollBehavior,
             onEvent = onEvent,
-            animatedContentScope = this,
+            animatedContentScope = animatedContentScope,
             sharedTransitionScope = sharedTransitionScope,
         )
     }

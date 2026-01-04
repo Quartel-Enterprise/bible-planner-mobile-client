@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
-import androidx.compose.runtime.remember
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

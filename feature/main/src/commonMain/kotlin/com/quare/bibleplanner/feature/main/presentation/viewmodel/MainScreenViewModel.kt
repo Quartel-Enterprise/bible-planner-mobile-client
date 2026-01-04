@@ -31,11 +31,14 @@ class MainScreenViewModel : ViewModel() {
 
     fun dispatchUiEvent(event: MainScreenUiEvent) {
         when (event) {
-            is MainScreenUiEvent.BottomNavItemClicked -> emitAction(
-                MainScreenUiAction.NavigateToBottomRoute(
-                    event.route,
-                ),
-            )
+            is MainScreenUiEvent.BottomNavItemClicked -> {
+                emitAction(MainScreenUiAction.ClearScaffoldStates)
+                emitAction(
+                    MainScreenUiAction.NavigateToBottomRoute(
+                        event.route,
+                    ),
+                )
+            }
         }
     }
 

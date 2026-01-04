@@ -32,6 +32,7 @@ fun NavGraphBuilder.mainScreen(
         ActionCollector(mainViewModel.uiAction) { uiAction ->
             when (uiAction) {
                 is MainScreenUiAction.NavigateToBottomRoute -> bottomNavController.goToBottomNavRoute(uiAction.route)
+                MainScreenUiAction.ClearScaffoldStates -> mainScaffoldState.clearStates()
             }
         }
         MainScreen(
@@ -43,6 +44,7 @@ fun NavGraphBuilder.mainScreen(
                     rootNavController = rootNavController,
                     paddingValues = paddingValues,
                     sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = this@composable,
                     mainScaffoldState = mainScaffoldState,
                 )
             },

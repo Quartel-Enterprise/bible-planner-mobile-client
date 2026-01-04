@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.main.presentation.navhost
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +19,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 @Composable
 fun BottomNavHost(
     sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     rootNavController: NavHostController,
     bottomNavController: NavHostController,
     paddingValues: PaddingValues,
@@ -31,7 +33,7 @@ fun BottomNavHost(
         navController = bottomNavController,
         startDestination = BottomNavRoute.Plans,
     ) {
-        readingPlan(rootNavController, mainScaffoldState, sharedTransitionScope)
+        readingPlan(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
         more(rootNavController)
     }
 }
