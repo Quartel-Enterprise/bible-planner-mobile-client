@@ -9,7 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.quare.bibleplanner.core.navigation.AppNavHost
+import com.quare.bibleplanner.core.navigation.RootAppNavHost
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
 import com.quare.bibleplanner.ui.theme.model.Theme
@@ -25,7 +25,7 @@ fun App(getSpecificColors: @Composable ((isAppInDarkTheme: Boolean) -> ColorSche
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background,
             ) {
-                AppNavHost()
+                RootAppNavHost()
             }
         }
     }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
@@ -33,19 +34,19 @@ internal fun ReadingPlanScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     snackbarHostState: SnackbarHostState,
-    scrollBehavior: TopAppBarScrollBehavior,
+    topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
         topBar = {
             ReadingPlanTopBar(
-                scrollBehavior = scrollBehavior,
+                scrollBehavior = topAppBarScrollBehavior,
                 isShowingMenu = uiState.isShowingMenu,
                 onEvent = onEvent,
             )

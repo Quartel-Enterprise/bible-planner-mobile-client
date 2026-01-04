@@ -14,7 +14,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Feature
-            implementation(projects.feature.readingPlan)
+            implementation(projects.feature.main)
             implementation(projects.feature.themeSelection)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)

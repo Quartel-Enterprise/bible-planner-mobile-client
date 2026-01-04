@@ -33,6 +33,7 @@ kotlin {
             implementation(projects.feature.onboardingStartDate)
             implementation(projects.feature.paywall)
             implementation(projects.feature.deleteNotes)
+            implementation(projects.feature.main)
             implementation(projects.feature.congrats)
 
             // Koin

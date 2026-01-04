@@ -3,4 +3,4 @@ package com.quare.bibleplanner.core.model.route
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object ReadingPlanNavRoute
+data object MainNavRoute

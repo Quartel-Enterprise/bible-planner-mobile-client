@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
@@ -16,10 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.quare.bibleplanner.core.model.route.OnboardingStartDateNavRoute
-import com.quare.bibleplanner.core.model.route.ReadingPlanNavRoute
-import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
-import com.quare.bibleplanner.feature.onboardingstartdate.domain.repository.OnboardingStartDateRepository
+import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
@@ -28,8 +26,6 @@ import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToTop
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToWeekAction
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -37,19 +33,19 @@ fun NavGraphBuilder.readingPlan(
     navController: NavController,
     sharedTransitionScope: SharedTransitionScope,
 ) {
-    composable<ReadingPlanNavRoute> {
+    composable<BottomNavRoute.Plans> {
         val viewModel = koinViewModel<ReadingPlanViewModel>()
         val onEvent = viewModel::onEvent
         val uiState by viewModel.uiState.collectAsState()
         val lazyListState = rememberLazyListState()
-        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+        val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
         val snackbarHostState = remember { SnackbarHostState() }
 
         ReadingPlanScreenObserver(
             lazyListState = lazyListState,
             uiActionFlow = viewModel.uiAction,
             snackbarHostState = snackbarHostState,
-            scrollBehavior = scrollBehavior,
+            scrollBehavior = topAppBarScrollBehavior,
             uiState = uiState,
             navController = navController,
             onEvent = onEvent,
@@ -58,7 +54,7 @@ fun NavGraphBuilder.readingPlan(
             uiState = uiState,
             snackbarHostState = snackbarHostState,
             lazyListState = lazyListState,
-            scrollBehavior = scrollBehavior,
+            topAppBarScrollBehavior = topAppBarScrollBehavior,
             onEvent = onEvent,
             animatedContentScope = this,
             sharedTransitionScope = sharedTransitionScope,
