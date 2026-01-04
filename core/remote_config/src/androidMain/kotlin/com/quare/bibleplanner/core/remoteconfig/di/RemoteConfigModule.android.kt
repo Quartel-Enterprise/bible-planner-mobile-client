@@ -20,12 +20,13 @@ actual val remoteConfigModule: Module = module {
     singleOf(::AndroidRemoteConfigService).bind<RemoteConfigService>()
 }
 
-private fun getAndroidFirebaseRemoteConfig(context: Context): FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance().apply {
-    val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-    val settings = remoteConfigSettings {
-        if (isDebuggable) {
-            minimumFetchIntervalInSeconds = 0
+private fun getAndroidFirebaseRemoteConfig(context: Context): FirebaseRemoteConfig =
+    FirebaseRemoteConfig.getInstance().apply {
+        val isDebuggable = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        val settings = remoteConfigSettings {
+            if (isDebuggable) {
+                minimumFetchIntervalInSeconds = 0
+            }
         }
+        setConfigSettingsAsync(settings)
     }
-    setConfigSettingsAsync(settings)
-}

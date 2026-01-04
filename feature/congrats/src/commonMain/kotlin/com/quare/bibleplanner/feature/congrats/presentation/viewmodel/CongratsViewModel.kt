@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class CongratsViewModel : ViewModel() {
-
     private val _uiAction = Channel<CongratsUiAction>()
     val uiAction: Flow<CongratsUiAction> = _uiAction.receiveAsFlow()
 

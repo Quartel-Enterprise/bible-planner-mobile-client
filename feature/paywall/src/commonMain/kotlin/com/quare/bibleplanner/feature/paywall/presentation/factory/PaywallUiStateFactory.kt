@@ -53,7 +53,7 @@ class PaywallUiStateFactory(
                     PaywallInitializationResult(
                         uiState = PaywallUiState.Success(
                             subscriptionPlans = initialPlans,
-                            isPurchasing = false
+                            isPurchasing = false,
                         ),
                         storePackages = offerings,
                     )

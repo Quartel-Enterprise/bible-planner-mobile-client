@@ -17,6 +17,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
 import com.quare.bibleplanner.ui.utils.observe
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,7 +31,6 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
-import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalTime::class)
 internal class DayViewModel(
@@ -68,7 +68,7 @@ internal class DayViewModel(
         ) { state ->
             Logger.d(
                 tag = "Notes",
-                messageString = "new notes state: ${(state as? DayUiState.Loaded)?.day?.notes}"
+                messageString = "new notes state: ${(state as? DayUiState.Loaded)?.day?.notes}",
             )
             _uiState.update { state }
         }

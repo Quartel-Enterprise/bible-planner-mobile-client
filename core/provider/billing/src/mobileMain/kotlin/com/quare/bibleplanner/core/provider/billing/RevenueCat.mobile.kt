@@ -9,7 +9,7 @@ fun configureRevenueCat(isDebug: Boolean) {
             BuildKonfig.REVENUECAT_TEST_API_KEY
         } else {
             getPlatformApiKey()
-        }
+        },
     )
     configureLog()
 }

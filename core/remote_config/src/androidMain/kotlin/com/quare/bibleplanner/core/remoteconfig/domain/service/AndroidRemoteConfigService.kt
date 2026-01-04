@@ -5,7 +5,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 internal class AndroidRemoteConfigService(
     private val firebaseRemoteConfig: FirebaseRemoteConfig,
 ) : RemoteConfigService {
-
     init {
         firebaseRemoteConfig.fetchAndActivate()
     }

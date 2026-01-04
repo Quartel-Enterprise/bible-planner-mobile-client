@@ -5,8 +5,8 @@ import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
 import com.quare.bibleplanner.di.initializeKoin
-import kotlin.experimental.ExperimentalNativeApi
 import org.koin.dsl.module
+import kotlin.experimental.ExperimentalNativeApi
 
 private var isInitialized = false
 

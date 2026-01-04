@@ -27,12 +27,9 @@ import com.quare.bibleplanner.feature.congrats.presentation.model.CongratsUiEven
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CongratsBottomSheet(
-    onEvent: (CongratsUiEvent) -> Unit,
-) {
+internal fun CongratsBottomSheet(onEvent: (CongratsUiEvent) -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         onDismissRequest = {
@@ -82,4 +79,3 @@ internal fun CongratsBottomSheet(
         }
     }
 }
-

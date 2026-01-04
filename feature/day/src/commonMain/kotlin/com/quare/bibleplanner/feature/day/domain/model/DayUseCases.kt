@@ -17,5 +17,5 @@ internal data class DayUseCases(
     val updateDayNotes: UpdateDayNotesUseCase,
     val shouldBlockAddNotes: ShouldBlockAddNotesUseCase,
     val getMaxFreeNotesAmount: GetMaxFreeNotesAmountUseCase,
-    val deleteDayNotes: DeleteDayNotesUseCase
+    val deleteDayNotes: DeleteDayNotesUseCase,
 )
