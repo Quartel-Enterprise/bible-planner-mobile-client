@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,8 +39,6 @@ internal fun ReadingPlanContent(
     val loadedUiState = uiState as? ReadingPlanUiState.Loaded
 
     BoxWithConstraints(modifier = modifier) {
-        val isLandscape = maxWidth > maxHeight
-
         LazyColumn(
             state = lazyListState,
             modifier = Modifier.fillMaxSize(),
@@ -112,12 +111,7 @@ internal fun ReadingPlanContent(
                     }
                 }
             }
-            // Add bottom padding to prevent FABs from covering the last items (only in portrait)
-            if (!isLandscape) {
-                item {
-                    VerticalSpacer(size = 140.dp)
-                }
-            }
+
         }
     }
 }

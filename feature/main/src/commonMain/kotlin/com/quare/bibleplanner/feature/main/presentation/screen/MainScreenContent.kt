@@ -1,15 +1,22 @@
 package com.quare.bibleplanner.feature.main.presentation.screen
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import com.quare.bibleplanner.ui.utils.MainScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -25,38 +32,63 @@ fun MainScreenContent(
     currentDestination: NavDestination?,
     bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
     onEvent: (MainScreenUiEvent) -> Unit,
-    content: @Composable () -> Unit,
+    mainScaffoldState: MainScaffoldState,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
-    NavigationSuiteScaffold(
+    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(BottomAppBarDefaults.exitAlwaysScrollBehavior().nestedScrollConnection),
-        navigationSuiteItems = {
-            bottomNavigationModels.forEach { bottomNavigationItemModel: BottomNavigationItemModel<Any> ->
-                val presentationItem = bottomNavigationItemModel.presentationModel
-                val isSelected = isSelected(currentDestination, bottomNavigationItemModel)
-                item(
-                    selected = isSelected,
-                    onClick = {
-                        onEvent(
-                            MainScreenUiEvent.BottomNavItemClicked(
-                                bottomNavigationItemModel.route,
-                            ),
-                        )
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = mainScaffoldState.topBar.value,
+        floatingActionButton = {
+            Box(
+                modifier = Modifier
+                    .graphicsLayer {
+                        translationY = -scrollBehavior.state.heightOffset
                     },
-                    icon = {
-                        Icon(
-                            imageVector = presentationItem.icon,
-                            contentDescription = stringResource(presentationItem.title),
-                        )
+            ) {
+                mainScaffoldState.fab.value()
+            }
+        },
+        snackbarHost = { SnackbarHost(mainScaffoldState.snackbarHostState) },
+        bottomBar = {
+            NavigationBar(
+                modifier = Modifier
+                    .graphicsLayer {
+                        translationY = -scrollBehavior.state.heightOffset
+                    }
+                    .onGloballyPositioned { coordinates ->
+                        scrollBehavior.state.heightOffsetLimit = -coordinates.size.height.toFloat()
                     },
-                    label = {
-                        Text(
-                            stringResource(presentationItem.title),
-                            textAlign = TextAlign.Center,
-                        )
-                    },
-                )
+            ) {
+                bottomNavigationModels.forEach { bottomNavigationItemModel: BottomNavigationItemModel<Any> ->
+                    val presentationItem = bottomNavigationItemModel.presentationModel
+                    val isSelected = isSelected(currentDestination, bottomNavigationItemModel)
+                    NavigationBarItem(
+                        selected = isSelected,
+                        onClick = {
+                            onEvent(
+                                MainScreenUiEvent.BottomNavItemClicked(
+                                    bottomNavigationItemModel.route,
+                                ),
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = presentationItem.icon,
+                                contentDescription = stringResource(presentationItem.title),
+                            )
+                        },
+                        label = {
+                            Text(
+                                stringResource(presentationItem.title),
+                                textAlign = TextAlign.Center,
+                            )
+                        },
+                    )
+                }
             }
         },
         content = content,

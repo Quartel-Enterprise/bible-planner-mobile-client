@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.feature.main.presentation.viewmodel
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.More
-import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Menu
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.main.generated.resources.Res
@@ -50,12 +50,12 @@ class MainScreenViewModel : ViewModel() {
         presentationModel = when (this) {
             BottomNavRoute.Plans -> BottomNavigationItemPresentationModel(
                 title = Res.string.plans,
-                icon = Icons.Default.Bookmark,
+                icon = Icons.Default.DateRange,
             )
 
             BottomNavRoute.More -> BottomNavigationItemPresentationModel(
                 title = Res.string.more,
-                icon = Icons.AutoMirrored.Filled.More,
+                icon = Icons.Default.Menu,
             )
         },
     )
