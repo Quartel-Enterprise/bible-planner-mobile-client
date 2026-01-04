@@ -20,9 +20,11 @@ kotlin {
             implementation(projects.feature.day)
             implementation(projects.feature.deleteProgress)
             implementation(projects.feature.deleteNotes)
+            implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.editPlanStartDate)
             implementation(projects.feature.onboardingStartDate)
-            implementation(projects.feature.unlockPremium)
+            implementation(projects.feature.paywall)
+            implementation(projects.feature.congrats)
 
             // Core
             implementation(projects.core.model)

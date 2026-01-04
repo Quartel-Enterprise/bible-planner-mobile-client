@@ -75,4 +75,6 @@ class DayLocalDataSource(
             }
         }
     }
+
+    suspend fun getDaysWithNotesCount(): Int = dayDao.getDaysWithNotesCount()
 }

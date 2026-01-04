@@ -4,10 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
-import com.quare.bibleplanner.feature.day.domain.usecase.DayUseCases
+import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
@@ -16,6 +17,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
 import com.quare.bibleplanner.ui.utils.observe
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -39,6 +41,7 @@ internal class DayViewModel(
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
     val uiState: StateFlow<DayUiState> = _uiState.asStateFlow()
+    private val safeLoadedState: DayUiState.Loaded? get() = uiState.value as? DayUiState.Loaded
 
     private val _uiAction: MutableSharedFlow<DayUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<DayUiAction> = _uiAction
@@ -63,6 +66,10 @@ internal class DayViewModel(
                 currentState = _uiState.value as? DayUiState.Loaded,
             ),
         ) { state ->
+            Logger.d(
+                tag = "Notes",
+                messageString = "new notes state: ${(state as? DayUiState.Loaded)?.day?.notes}",
+            )
             _uiState.update { state }
         }
     }
@@ -111,6 +118,10 @@ internal class DayViewModel(
 
             is DayUiEvent.OnNotesClear -> {
                 onNotesClear()
+            }
+
+            is DayUiEvent.OnNotesFocus -> {
+                onNotesFocus()
             }
 
             is DayUiEvent.OnBackClick -> {
@@ -175,14 +186,13 @@ internal class DayViewModel(
     private fun onChapterToggle(event: DayUiEvent.OnChapterToggle) {
         val currentState = _uiState.value as? DayUiState.Loaded ?: return
         val passageIndex = event.passageIndex
-        val chapterIndex = event.chapterIndex
 
         viewModelScope.launch {
             useCases.toggleChapterReadStatus(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
                 passageIndex = passageIndex,
-                chapterIndex = chapterIndex,
+                chapterIndex = event.chapterIndex,
                 passage = currentState.day.passages.getOrNull(passageIndex) ?: return@launch,
                 books = currentState.books,
                 readingPlanType = readingPlanType,
@@ -191,6 +201,75 @@ internal class DayViewModel(
     }
 
     private fun DayUiEvent.OnEditReadDate.toDuration(): Duration = (hour * 60 + minute).minutes
+
+    private fun onNotesChanged(event: DayUiEvent.OnNotesChanged) {
+        updateLoadedState { loaded ->
+            loaded.copy(day = loaded.day.copy(notes = event.notes))
+        }
+
+        // Cancel previous save job if it exists
+        notesSaveJob?.cancel()
+
+        notesSaveJob = event.toJob()
+    }
+
+    private fun DayUiEvent.OnNotesChanged.toJob(): Job = viewModelScope.launch {
+        // Debounce database save to avoid excessive writes while user is typing
+        delay(notesDebounceDelay)
+        useCases.updateDayNotes(
+            weekNumber = weekNumber,
+            dayNumber = dayNumber,
+            readingPlanType = readingPlanType,
+            notes = notes.ifBlank { null },
+        )
+    }
+
+    private fun onNotesClear() {
+        val loadedState = safeLoadedState ?: return
+        viewModelScope.launch {
+            _uiAction.emit(
+                deleteRouteNotesMapper.map(
+                    hasNotes = loadedState.hasNotes(),
+                    readingPlanType = readingPlanType,
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
+                ),
+            )
+        }
+    }
+
+    private fun onNotesFocus() {
+        val loadedState = safeLoadedState ?: return
+        if (loadedState.hasNotes()) return
+
+        viewModelScope.launch {
+            if (useCases.shouldBlockAddNotes()) {
+                // Ensure there are not notes in the ui due to a fast typing before the verification happens
+                deleteNotesAsyncDueToBlockedAddNotes()
+                blockAddNotes()
+            }
+        }
+    }
+
+    private fun CoroutineScope.deleteNotesAsyncDueToBlockedAddNotes() {
+        launch {
+            delay(500.milliseconds)
+            val loadedState = safeLoadedState ?: return@launch
+            if (!loadedState.hasNotes()) return@launch
+            useCases.deleteDayNotes(
+                weekNumber = weekNumber,
+                dayNumber = dayNumber,
+                readingPlanType = readingPlanType,
+            )
+        }
+    }
+
+    private suspend fun blockAddNotes() {
+        _uiAction.run {
+            emit(DayUiAction.ClearFocus)
+            emit(DayUiAction.NavigateToRoute(AddNotesFreeWarningNavRoute(useCases.getMaxFreeNotesAmount())))
+        }
+    }
 
     private fun updateLoadedState(transform: (DayUiState.Loaded) -> DayUiState.Loaded) {
         _uiState.update { currentState ->
@@ -202,40 +281,7 @@ internal class DayViewModel(
         }
     }
 
-    private fun onNotesChanged(event: DayUiEvent.OnNotesChanged) {
-        // Update local state immediately for responsive UI
-        updateLoadedState { loaded ->
-            loaded.copy(notesText = event.notes)
-        }
-
-        // Cancel previous save job if it exists
-        notesSaveJob?.cancel()
-
-        // Debounce database save to avoid excessive writes while user is typing
-        notesSaveJob = viewModelScope.launch {
-            delay(notesDebounceDelay)
-            useCases.updateDayNotes(
-                weekNumber = weekNumber,
-                dayNumber = dayNumber,
-                readingPlanType = readingPlanType,
-                notes = event.notes.ifBlank { null },
-            )
-        }
-    }
-
-    private fun onNotesClear() {
-        val currentState = _uiState.value as? DayUiState.Loaded ?: return
-        viewModelScope.launch {
-            _uiAction.emit(
-                deleteRouteNotesMapper.map(
-                    hasNotes = currentState.notesText.isNotEmpty(),
-                    readingPlanType = readingPlanType,
-                    weekNumber = weekNumber,
-                    dayNumber = dayNumber,
-                ),
-            )
-        }
-    }
+    private fun DayUiState.Loaded.hasNotes(): Boolean = !day.notes.isNullOrEmpty()
 
     private fun backToPreviousScreen() {
         viewModelScope.launch {

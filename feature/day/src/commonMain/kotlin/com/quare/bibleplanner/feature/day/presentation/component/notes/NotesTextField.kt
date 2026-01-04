@@ -2,25 +2,32 @@ package com.quare.bibleplanner.feature.day.presentation.component.notes
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 
 @Composable
 internal fun NotesTextField(
     modifier: Modifier = Modifier,
     notesText: String,
-    onValueChange: (String) -> Unit,
+    onEvent: (DayUiEvent) -> Unit,
 ) {
     OutlinedTextField(
         value = notesText,
-        onValueChange = onValueChange,
+        onValueChange = { newValue ->
+            onEvent(DayUiEvent.OnNotesChanged(newValue))
+        },
         modifier = modifier
-            .animateContentSize(
+            .onFocusChanged { focusState ->
+                if (focusState.isFocused) {
+                    onEvent(DayUiEvent.OnNotesFocus)
+                }
+            }.animateContentSize(
                 animationSpec = tween(300),
             ),
         placeholder = {

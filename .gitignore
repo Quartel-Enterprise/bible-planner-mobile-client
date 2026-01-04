@@ -34,3 +34,7 @@ setup-java.sh
 /composeApp/release/
 /.vscode
 /build-logic/convention/bin/
+
+# Firebase
+androidApp/google-services.json
+iosApp/iosApp/GoogleService-Info.plist

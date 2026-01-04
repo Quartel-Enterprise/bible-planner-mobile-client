@@ -36,3 +36,13 @@ indent_size = 4
 generated_code = true
 ij_formatter_enabled = false
 ktlint = disabled
+
+[**/build/**]
+generated_code = true
+ij_formatter_enabled = false
+ktlint = disabled
+
+[**/buildkonfig/**]
+generated_code = true
+ij_formatter_enabled = false
+ktlint = disabled
