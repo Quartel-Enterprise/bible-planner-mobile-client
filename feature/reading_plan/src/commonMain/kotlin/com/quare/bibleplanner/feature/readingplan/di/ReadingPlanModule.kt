@@ -9,7 +9,6 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedRead
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.FindFirstWeekWithUnreadBookUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.GetSelectedReadingPlanFlowUseCase
-import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ListenToShowSetStartDateOnboarding
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.SetSelectedReadingPlanUseCase
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.CalculateIsFirstUnreadWeekVisible
@@ -31,7 +30,6 @@ val readingPlanModule = module {
     factoryOf(::GetSelectedReadingPlanFlowUseCase).bind<GetSelectedReadingPlanFlow>()
     factoryOf(::SetSelectedReadingPlanUseCase).bind<SetSelectedReadingPlan>()
     factoryOf(::FindFirstWeekWithUnreadBookUseCase).bind<FindFirstWeekWithUnreadBook>()
-    factoryOf(::ListenToShowSetStartDateOnboarding)
 
     // Presentation
     viewModelOf(::ReadingPlanViewModel)

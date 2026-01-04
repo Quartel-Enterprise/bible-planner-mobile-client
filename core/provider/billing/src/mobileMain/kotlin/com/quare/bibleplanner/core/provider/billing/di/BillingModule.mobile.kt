@@ -10,6 +10,8 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBil
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBillingUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleInMobileUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsPremiumUserMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsPremiumUserUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsPremiumVerificationRequiredUseCase
@@ -29,4 +31,5 @@ actual val billingProviderModule = module {
     factoryOf(::IsPremiumUserMobileUseCase).bind<IsPremiumUserUseCase>()
     factoryOf(::IsPremiumVerificationRequiredUseCase)
     factoryOf(::IsProUserInRevenueCatUseCase)
+    factoryOf(::IsInstagramLinkVisibleInMobileUseCase).bind<IsInstagramLinkVisibleUseCase>()
 }

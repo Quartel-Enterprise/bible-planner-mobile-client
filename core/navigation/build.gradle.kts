@@ -14,7 +14,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Feature
-            implementation(projects.feature.readingPlan)
+            implementation(projects.feature.main)
             implementation(projects.feature.themeSelection)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
@@ -22,7 +22,7 @@ kotlin {
             implementation(projects.feature.deleteNotes)
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.editPlanStartDate)
-            implementation(projects.feature.onboardingStartDate)
+
             implementation(projects.feature.paywall)
             implementation(projects.feature.congrats)
 

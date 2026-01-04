@@ -1,0 +1,11 @@
+<resources>
+    <string name="more">Más</string>
+    <string name="theme_option">Tema</string>
+    <string name="terms_of_service">Términos de Servicio</string>
+    <string name="privacy_policy">Política de Privacidad</string>
+    <string name="become_premium">Hazte Premium</string>
+    <string name="instagram">Instagram</string>
+    <string name="start_date">Fecha de inicio del plan</string>
+    <string name="delete_progress_option">Eliminar todo el progreso</string>
+    <string name="no_progress_to_delete_message">No hay progreso para eliminar</string>
+</resources>

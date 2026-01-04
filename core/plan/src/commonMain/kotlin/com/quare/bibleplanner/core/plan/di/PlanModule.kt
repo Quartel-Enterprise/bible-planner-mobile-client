@@ -6,9 +6,9 @@ import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.data.repository.PlanRepositoryImpl
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
-import com.quare.bibleplanner.core.plan.domain.usecase.DeletePlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetDaysWithNotesCountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
@@ -33,11 +33,11 @@ val planModule = module {
     // Use cases
     factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
-    factoryOf(::DeletePlanStartDateUseCase)
     factoryOf(::ReadDayToggleOperationUseCase)
     factoryOf(::SetPlanStartTimeUseCase)
     factoryOf(::UpdateDayNotesUseCase)
     factoryOf(::DeleteDayNotesUseCase)
     factoryOf(::GetDaysWithNotesCountUseCase)
     factoryOf(::GetMaxFreeNotesAmountUseCase)
+    factoryOf(::GetPlanStartDateUseCase)
 }

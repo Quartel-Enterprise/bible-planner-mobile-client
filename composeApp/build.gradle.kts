@@ -56,7 +56,6 @@ kotlin {
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
             api(projects.feature.editPlanStartDate)
-            api(projects.feature.onboardingStartDate)
 
             // Core
             api(projects.core.books)

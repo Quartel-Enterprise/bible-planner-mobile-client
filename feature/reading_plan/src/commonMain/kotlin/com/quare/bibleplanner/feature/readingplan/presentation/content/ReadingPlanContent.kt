@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,6 @@ internal fun ReadingPlanContent(
 
     BoxWithConstraints(modifier = modifier) {
         val isLandscape = maxWidth > maxHeight
-
         LazyColumn(
             state = lazyListState,
             modifier = Modifier.fillMaxSize(),
@@ -53,7 +53,7 @@ internal fun ReadingPlanContent(
                         PlanTypesSegmentedButtons(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
+                                .padding(16.dp),
                             selectedReadingPlan = uiState.selectedReadingPlan,
                             onPlanClick = {
                                 onEvent(ReadingPlanUiEvent.OnPlanClick(it))
@@ -61,7 +61,6 @@ internal fun ReadingPlanContent(
                         )
                     }
                 }
-                VerticalSpacer()
             }
             item {
                 Box(

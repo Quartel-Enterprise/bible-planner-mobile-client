@@ -27,8 +27,14 @@ import bibleplanner.feature.reading_plan.generated.resources.november
 import bibleplanner.feature.reading_plan.generated.resources.october
 import bibleplanner.feature.reading_plan.generated.resources.september
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -52,6 +58,15 @@ fun SharedTransitionScope.PlannedReadDateComponent(
             TextDecoration.None
         }
         val textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+        val todayDate = kotlinx.datetime.Instant
+            .fromEpochMilliseconds(
+                kotlin.time.Clock.System
+                    .now()
+                    .toEpochMilliseconds(),
+            ).toLocalDateTime(TimeZone.currentSystemDefault())
+            .date
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -63,7 +78,7 @@ fun SharedTransitionScope.PlannedReadDateComponent(
                     ),
                     animatedVisibilityScope = animatedContentScope,
                 ),
-                text = plannedReadDate.day.toString().padStart(2, '0'),
+                text = plannedReadDate.dayOfMonth.toString().padStart(2, '0'),
                 style = textStyle,
                 textDecoration = textDecoration,
             )
@@ -79,17 +94,20 @@ fun SharedTransitionScope.PlannedReadDateComponent(
                 textDecoration = textDecoration,
             )
         }
-        Text(
-            modifier = Modifier.sharedElement(
-                sharedContentState = rememberSharedContentState(
-                    key = SharedTransitionAnimationUtils.buildPlannedYear(weekNumber, dayNumber),
+
+        if (plannedReadDate.year != todayDate.year) {
+            Text(
+                modifier = Modifier.sharedElement(
+                    sharedContentState = rememberSharedContentState(
+                        key = SharedTransitionAnimationUtils.buildPlannedYear(weekNumber, dayNumber),
+                    ),
+                    animatedVisibilityScope = animatedContentScope,
                 ),
-                animatedVisibilityScope = animatedContentScope,
-            ),
-            text = plannedReadDate.year.toString(),
-            style = textStyle,
-            textDecoration = textDecoration,
-        )
+                text = plannedReadDate.year.toString(),
+                style = textStyle,
+                textDecoration = textDecoration,
+            )
+        }
     }
 }
 

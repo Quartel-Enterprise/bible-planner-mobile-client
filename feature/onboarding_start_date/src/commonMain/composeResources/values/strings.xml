@@ -1,9 +1,0 @@
-<resources>
-    <string name="onboarding_title">When would you like to start?</string>
-    <string name="onboarding_description">Choosing a start date helps you stay consistent with your daily reading. You can start today or pick a date to begin your plan.</string>
-    <string name="onboarding_edit_date_info">You can edit this date later.</string>
-    <string name="dont_show_again">Don't show again</string>
-    <string name="set_date">Set Date</string>
-    <string name="start_now">Start Now</string>
-    <string name="not_now">Set later</string>
-</resources>

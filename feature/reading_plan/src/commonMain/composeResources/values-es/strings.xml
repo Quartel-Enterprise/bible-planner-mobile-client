@@ -1,5 +1,4 @@
 <resources>
-    <string name="reading_plan">Plan de Lectura</string>
     <string name="book_order">Orden de los Libros</string>
     <string name="chronological_order">Orden Cronológico</string>
     <string name="progress_label">Progreso: %1$d %</string>
@@ -8,12 +7,11 @@
     <string name="week_progress_complete">completo</string>
     <string name="day_number">Día %1$d</string>
     <string name="more_options">Más opciones</string>
-    <string name="theme_option">Tema</string>
+
     <string name="delete_progress_option">Eliminar progreso</string>
     <string name="go_to_unread">Ir a no leído</string>
     <string name="scroll_to_top">Desplazar arriba</string>
-    <string name="terms_of_service">Términos de Servicio</string>
-    <string name="privacy_policy">Política de Privacidad</string>
+
     <string name="no_progress_to_delete_message">Aún no has realizado ningún progreso para eliminar nada.</string>
     <string name="monday">Lunes</string>
     <string name="tuesday">Martes</string>
@@ -35,4 +33,5 @@
     <string name="november">Noviembre</string>
     <string name="december">Diciembre</string>
     <string name="edit_plan_start_day">Día de inicio del plan</string>
+    <string name="start_date">Fecha de inicio</string>
 </resources>

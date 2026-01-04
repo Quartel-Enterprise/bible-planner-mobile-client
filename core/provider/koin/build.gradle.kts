@@ -30,10 +30,12 @@ kotlin {
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
             implementation(projects.feature.editPlanStartDate)
-            implementation(projects.feature.onboardingStartDate)
+
             implementation(projects.feature.paywall)
             implementation(projects.feature.deleteNotes)
+            implementation(projects.feature.main)
             implementation(projects.feature.congrats)
+            implementation(projects.feature.more)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
