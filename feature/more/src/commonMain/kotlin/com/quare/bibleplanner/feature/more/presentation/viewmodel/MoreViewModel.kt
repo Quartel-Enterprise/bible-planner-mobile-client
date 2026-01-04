@@ -1,19 +1,15 @@
 package com.quare.bibleplanner.feature.more.presentation.viewmodel
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.more.generated.resources.Res
-import bibleplanner.feature.more.generated.resources.become_premium
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreMenuOptionsFactory
-import com.quare.bibleplanner.feature.more.presentation.model.MoreIcon
-import com.quare.bibleplanner.feature.more.presentation.model.MoreMenuItemPresentationModel
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,26 +19,26 @@ import kotlinx.coroutines.launch
 
 internal class MoreViewModel(
     private val isFreeUser: IsFreeUserUseCase,
+    private val isInstagramLinkVisible: IsInstagramLinkVisibleUseCase,
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
-    private val baseItems = MoreMenuOptionsFactory.options
     private val _uiState = MutableStateFlow(
-        MoreUiState(items = baseItems),
+        MoreUiState(items = MoreMenuOptionsFactory.baseOptions),
     )
     val uiState: StateFlow<MoreUiState> = _uiState
 
     init {
         viewModelScope.launch {
-            if (isFreeUser()) {
-                val premiumItem = MoreMenuItemPresentationModel(
-                    name = Res.string.become_premium,
-                    icon = MoreIcon.ImageVectorIcon(Icons.Default.Star),
-                    event = MoreUiEvent.ON_BECOME_PREMIUM_CLICK,
-                )
+            val isFreeDeferred = async { isFreeUser() }
+            val isInstagramDeferred = async { isInstagramLinkVisible() }
+            if (isFreeDeferred.await()) {
                 _uiState.update {
-                    it.copy(items = listOf(premiumItem) + baseItems)
+                    it.copy(items = listOf(MoreMenuOptionsFactory.premiumItemOption) + it.items)
                 }
+            }
+            if (isInstagramDeferred.await()) {
+                _uiState.update { it.copy(items = it.items + listOf(MoreMenuOptionsFactory.instagramOption)) }
             }
         }
     }

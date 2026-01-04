@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetPurchaseRe
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetRestorePurchaseResultUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBillingUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsPremiumUserUseCase
 import com.quare.bibleplanner.core.provider.billing.model.BillingUnavailableException
 import org.koin.dsl.module
@@ -28,6 +29,9 @@ actual val billingProviderModule = module {
     factory {
         InitializeBillingUseCase {
         }
+    }
+    factory {
+        IsInstagramLinkVisibleUseCase { true }
     }
 }
 
