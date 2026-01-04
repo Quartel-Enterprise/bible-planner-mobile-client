@@ -31,4 +31,6 @@ interface DayRepository {
         readingPlanType: ReadingPlanType,
         notes: String?,
     )
+
+    suspend fun getDaysWithNotesCount(): Int
 }

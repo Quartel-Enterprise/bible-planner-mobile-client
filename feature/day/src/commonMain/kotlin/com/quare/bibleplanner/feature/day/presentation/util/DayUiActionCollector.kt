@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.day.presentation.util
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
@@ -16,6 +17,7 @@ internal fun DayUiActionCollector(
     snackbarHostState: SnackbarHostState,
     navController: NavController,
 ) {
+    val focusManager = LocalFocusManager.current
     ActionCollector(uiActionFlow) { action ->
         when (action) {
             is DayUiAction.ShowNothingToDeleteSnackbar -> {
@@ -30,6 +32,10 @@ internal fun DayUiActionCollector(
 
             is DayUiAction.NavigateToRoute -> {
                 navController.navigate(action.route)
+            }
+
+            DayUiAction.ClearFocus -> {
+                focusManager.clearFocus()
             }
         }
     }

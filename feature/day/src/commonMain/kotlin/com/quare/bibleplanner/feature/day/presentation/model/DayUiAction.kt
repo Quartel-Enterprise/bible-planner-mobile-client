@@ -8,4 +8,6 @@ internal sealed interface DayUiAction {
     ) : DayUiAction
 
     data object NavigateBack : DayUiAction
+
+    data object ClearFocus : DayUiAction
 }

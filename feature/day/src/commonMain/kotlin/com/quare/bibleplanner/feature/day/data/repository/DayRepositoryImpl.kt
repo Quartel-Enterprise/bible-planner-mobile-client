@@ -56,6 +56,8 @@ class DayRepositoryImpl(
         dayLocalDataSource.updateDayNotes(weekNumber, dayNumber, readingPlanType.name, notes)
     }
 
+    override suspend fun getDaysWithNotesCount(): Int = dayLocalDataSource.getDaysWithNotesCount()
+
     private suspend fun getDayModelFromPlans(
         weekNumber: Int,
         dayNumber: Int,

@@ -119,3 +119,4 @@ This project is licensed under the MIT License. See [LICENSE.md](./LICENSE.md) f
 ## 📚 Learn More
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+- [RevenueCat Setup](docs/setup_revenuecat.md)

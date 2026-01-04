@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.utils)
             implementation(projects.core.date)
+            implementation(projects.core.remoteConfig)
 
             // Compose
             implementation(compose.runtime)

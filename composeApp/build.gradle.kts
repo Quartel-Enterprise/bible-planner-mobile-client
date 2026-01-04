@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.composeHotReload)
 }
 
-// Add project-specific dependencies
 kotlin {
     val androidSdkVersions = getAndroidSdkVersions()
     androidLibrary {
@@ -32,6 +31,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            export(projects.core.remoteConfig)
         }
     }
 
@@ -62,8 +62,10 @@ kotlin {
             api(projects.core.books)
             api(projects.core.model)
             api(projects.core.navigation)
+            api(projects.core.remoteConfig)
             api(projects.core.provider.koin)
             api(projects.core.provider.room)
+            api(projects.core.provider.billing)
 
             // UI
             api(projects.ui.theme)

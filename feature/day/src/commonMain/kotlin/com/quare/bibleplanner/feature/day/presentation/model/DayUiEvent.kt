@@ -29,5 +29,7 @@ internal sealed interface DayUiEvent {
 
     data object OnNotesClear : DayUiEvent
 
+    data object OnNotesFocus : DayUiEvent
+
     data object OnBackClick : DayUiEvent
 }

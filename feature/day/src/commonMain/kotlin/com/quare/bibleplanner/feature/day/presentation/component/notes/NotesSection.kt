@@ -25,9 +25,7 @@ internal fun NotesSection(
                 .fillMaxWidth()
                 .padding(end = 16.dp),
             notesText = notesText,
-            onValueChange = { newValue ->
-                onEvent(DayUiEvent.OnNotesChanged(newValue))
-            },
+            onEvent = onEvent,
         )
     }
 }

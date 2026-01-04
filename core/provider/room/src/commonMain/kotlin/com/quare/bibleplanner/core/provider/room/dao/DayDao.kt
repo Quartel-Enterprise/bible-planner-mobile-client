@@ -98,4 +98,13 @@ interface DayDao {
 
     @Query("UPDATE days SET isRead = 0, readTimestamp = NULL")
     suspend fun resetAllDaysProgress()
+
+    @Query(
+        """
+        SELECT COUNT(DISTINCT (weekNumber || '-' || dayNumber || '-' || readingPlanType))
+        FROM days 
+        WHERE notes IS NOT NULL AND notes != '' AND LENGTH(TRIM(notes)) > 0
+        """,
+    )
+    suspend fun getDaysWithNotesCount(): Int
 }
