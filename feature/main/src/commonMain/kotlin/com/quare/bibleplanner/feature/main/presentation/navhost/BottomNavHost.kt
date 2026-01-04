@@ -34,6 +34,6 @@ fun BottomNavHost(
         startDestination = BottomNavRoute.Plans,
     ) {
         readingPlan(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
-        more(rootNavController)
+        more(rootNavController, mainScaffoldState)
     }
 }

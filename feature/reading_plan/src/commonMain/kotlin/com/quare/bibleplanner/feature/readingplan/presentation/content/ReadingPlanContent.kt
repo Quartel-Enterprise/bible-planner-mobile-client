@@ -53,7 +53,7 @@ internal fun ReadingPlanContent(
                         PlanTypesSegmentedButtons(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
+                                .padding(16.dp),
                             selectedReadingPlan = uiState.selectedReadingPlan,
                             onPlanClick = {
                                 onEvent(ReadingPlanUiEvent.OnPlanClick(it))
@@ -61,7 +61,6 @@ internal fun ReadingPlanContent(
                         )
                     }
                 }
-                VerticalSpacer()
             }
             item {
                 Box(

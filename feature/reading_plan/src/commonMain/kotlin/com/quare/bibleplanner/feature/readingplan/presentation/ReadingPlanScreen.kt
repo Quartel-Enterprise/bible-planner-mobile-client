@@ -25,13 +25,10 @@ internal fun ReadingPlanScreen(
     lazyListState: LazyListState,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
-    topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+        modifier = Modifier.fillMaxSize(),
     ) {
         val constrainedWidth = maxWidth.coerceAtMost(MAX_CONTENT_WIDTH.dp)
         ReadingPlanContent(

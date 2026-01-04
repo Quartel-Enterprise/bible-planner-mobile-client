@@ -86,7 +86,6 @@ private fun WideMainScreenContent(
         }
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            topBar = mainScaffoldState.topBar.value,
             floatingActionButton = mainScaffoldState.fab.value,
             snackbarHost = { SnackbarHost(mainScaffoldState.snackbarHostState) },
             content = content,
@@ -109,7 +108,6 @@ private fun NarrowMainScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = mainScaffoldState.topBar.value,
         floatingActionButton = {
             Box(
                 modifier = Modifier

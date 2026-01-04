@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.more.presentation.viewmodel
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreMenuOptionsFactory
@@ -14,12 +15,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class MoreViewModel(
     private val isFreeUser: IsFreeUserUseCase,
     private val isInstagramLinkVisible: IsInstagramLinkVisibleUseCase,
+    private val calculateBibleProgress: CalculateBibleProgressUseCase,
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
@@ -44,15 +47,42 @@ internal class MoreViewModel(
     }
 
     fun onEvent(event: MoreUiEvent) {
-        emitAction(
-            when (event) {
-                MoreUiEvent.ON_THEME_CLICK -> MoreUiAction.GoToTheme
-                MoreUiEvent.ON_PRIVACY_CLICK -> MoreUiAction.OpenLink(PRIVACY_URL)
-                MoreUiEvent.ON_TERMS_CLICK -> MoreUiAction.OpenLink(TERMS_URL)
-                MoreUiEvent.ON_BECOME_PREMIUM_CLICK -> MoreUiAction.GoToPaywall
-                MoreUiEvent.ON_INSTAGRAM_CLICK -> MoreUiAction.OpenLink(getInstagramUrl())
-            },
-        )
+        when (event) {
+            MoreUiEvent.ON_THEME_CLICK -> {
+                emitAction(MoreUiAction.GoToTheme)
+            }
+
+            MoreUiEvent.ON_PRIVACY_CLICK -> {
+                emitAction(MoreUiAction.OpenLink(PRIVACY_URL))
+            }
+
+            MoreUiEvent.ON_TERMS_CLICK -> {
+                emitAction(MoreUiAction.OpenLink(TERMS_URL))
+            }
+
+            MoreUiEvent.ON_BECOME_PREMIUM_CLICK -> {
+                emitAction(MoreUiAction.GoToPaywall)
+            }
+
+            MoreUiEvent.ON_INSTAGRAM_CLICK -> {
+                emitAction(MoreUiAction.OpenLink(getInstagramUrl()))
+            }
+
+            MoreUiEvent.ON_EDIT_PLAN_START_DAY_CLICK -> {
+                emitAction(MoreUiAction.GoToEditPlanStartDay)
+            }
+
+            MoreUiEvent.ON_DELETE_PROGRESS_CLICK -> {
+                viewModelScope.launch {
+                    val progress = calculateBibleProgress().first()
+                    if (progress > 0) {
+                        emitAction(MoreUiAction.GoToDeleteProgress)
+                    } else {
+                        emitAction(MoreUiAction.ShowNoProgressToDelete)
+                    }
+                }
+            }
+        }
     }
 
     private fun getInstagramUrl(): String = when (Locale.current.language) {

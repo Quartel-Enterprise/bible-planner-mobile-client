@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.utils)
             implementation(projects.core.provider.billing)
+            implementation(projects.core.books)
 
             // UI
             implementation(projects.ui.component)

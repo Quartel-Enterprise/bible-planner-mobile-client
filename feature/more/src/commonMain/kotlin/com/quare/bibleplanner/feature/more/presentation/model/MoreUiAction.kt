@@ -8,4 +8,10 @@ internal sealed interface MoreUiAction {
     data class OpenLink(
         val url: String,
     ) : MoreUiAction
+
+    data object GoToEditPlanStartDay : MoreUiAction
+
+    data object GoToDeleteProgress : MoreUiAction
+
+    data object ShowNoProgressToDelete : MoreUiAction
 }

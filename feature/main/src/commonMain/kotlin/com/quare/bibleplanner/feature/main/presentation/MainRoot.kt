@@ -32,7 +32,7 @@ fun NavGraphBuilder.mainScreen(
         ActionCollector(mainViewModel.uiAction) { uiAction ->
             when (uiAction) {
                 is MainScreenUiAction.NavigateToBottomRoute -> bottomNavController.goToBottomNavRoute(uiAction.route)
-                MainScreenUiAction.ClearScaffoldStates -> mainScaffoldState.clearStates()
+                MainScreenUiAction.ClearFabs -> mainScaffoldState.clearFab()
             }
         }
         MainScreen(
