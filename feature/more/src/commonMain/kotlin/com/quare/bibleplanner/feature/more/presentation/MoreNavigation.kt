@@ -24,7 +24,7 @@ fun NavGraphBuilder.more(
         )
         val uiState by viewModel.uiState.collectAsState()
         MoreScreen(
-            items = uiState.items,
+            state = uiState,
             onEvent = viewModel::onEvent,
         )
     }

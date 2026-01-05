@@ -8,17 +8,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.model.plan.DayModel
+import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun SharedTransitionScope.AnimatedPlannedReadDateComponent(
     modifier: Modifier = Modifier,
-    day: DayModel,
+    dayPlan: DayPlanPresentationModel,
     animatedContentScope: AnimatedContentScope,
     weekNumber: Int,
     dayNumber: Int,
 ) {
+    val day = dayPlan.day
     AnimatedContent(
         modifier = modifier,
         targetState = day.plannedReadDate,
@@ -28,6 +29,7 @@ internal fun SharedTransitionScope.AnimatedPlannedReadDateComponent(
                 modifier = Modifier.padding(start = 16.dp),
                 plannedReadDate = plannedReadDate,
                 isRead = day.isRead,
+                shouldShowYear = dayPlan.shouldShowYear,
                 animatedContentScope = animatedContentScope,
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,

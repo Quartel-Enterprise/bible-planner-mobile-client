@@ -18,6 +18,11 @@ kotlin {
             implementation(projects.core.provider.billing)
             implementation(projects.core.books)
             implementation(projects.core.remoteConfig)
+            implementation(projects.core.plan)
+            implementation(libs.kotlinx.datetime)
+
+            // Features
+            implementation(projects.feature.themeSelection)
 
             // UI
             implementation(projects.ui.component)

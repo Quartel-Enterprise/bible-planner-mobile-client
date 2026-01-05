@@ -9,4 +9,17 @@
     <string name="delete_progress_option">Eliminar todo el progreso</string>
     <string name="no_progress_to_delete_message">No hay progreso para eliminar</string>
     <string name="donate_option">Donar</string>
+    <string name="premium_and_support">Premium y Soporte</string>
+    <string name="premium_section">Premium</string>
+    <string name="support_section">Soporte</string>
+    <string name="preferences">Preferencias</string>
+    <string name="data_section">Datos</string>
+    <string name="legal_section">Legal</string>
+    <string name="social_section">Social</string>
+    <string name="become_premium_subtitle">Desbloquea funciones exclusivas y apoya nuestra misión.</string>
+    <string name="donate_subtitle">Apoya nuestro trabajo y ayúdanos a mantener el desarrollo.</string>
+    <string name="today">Hoy</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="theme_system">Predeterminado del sistema</string>
 </resources>

@@ -13,38 +13,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import bibleplanner.feature.reading_plan.generated.resources.Res
-import bibleplanner.feature.reading_plan.generated.resources.april
-import bibleplanner.feature.reading_plan.generated.resources.august
-import bibleplanner.feature.reading_plan.generated.resources.december
-import bibleplanner.feature.reading_plan.generated.resources.february
-import bibleplanner.feature.reading_plan.generated.resources.january
-import bibleplanner.feature.reading_plan.generated.resources.july
-import bibleplanner.feature.reading_plan.generated.resources.june
-import bibleplanner.feature.reading_plan.generated.resources.march
-import bibleplanner.feature.reading_plan.generated.resources.may
-import bibleplanner.feature.reading_plan.generated.resources.november
-import bibleplanner.feature.reading_plan.generated.resources.october
-import bibleplanner.feature.reading_plan.generated.resources.september
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
-import kotlinx.datetime.Clock
+import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
-import kotlinx.datetime.todayIn
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.PlannedReadDateComponent(
+internal fun SharedTransitionScope.PlannedReadDateComponent(
     modifier: Modifier = Modifier,
     animatedContentScope: AnimatedContentScope,
     plannedReadDate: LocalDate,
     isRead: Boolean,
+    shouldShowYear: Boolean,
     weekNumber: Int,
     dayNumber: Int,
 ) {
@@ -59,14 +40,6 @@ fun SharedTransitionScope.PlannedReadDateComponent(
         }
         val textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-        val todayDate = kotlinx.datetime.Instant
-            .fromEpochMilliseconds(
-                kotlin.time.Clock.System
-                    .now()
-                    .toEpochMilliseconds(),
-            ).toLocalDateTime(TimeZone.currentSystemDefault())
-            .date
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -78,7 +51,7 @@ fun SharedTransitionScope.PlannedReadDateComponent(
                     ),
                     animatedVisibilityScope = animatedContentScope,
                 ),
-                text = plannedReadDate.dayOfMonth.toString().padStart(2, '0'),
+                text = plannedReadDate.day.toString().padStart(2, '0'),
                 style = textStyle,
                 textDecoration = textDecoration,
             )
@@ -95,7 +68,7 @@ fun SharedTransitionScope.PlannedReadDateComponent(
             )
         }
 
-        if (plannedReadDate.year != todayDate.year) {
+        if (shouldShowYear) {
             Text(
                 modifier = Modifier.sharedElement(
                     sharedContentState = rememberSharedContentState(
@@ -109,19 +82,4 @@ fun SharedTransitionScope.PlannedReadDateComponent(
             )
         }
     }
-}
-
-private fun Month.toStringResource(): StringResource = when (this) {
-    Month.JANUARY -> Res.string.january
-    Month.FEBRUARY -> Res.string.february
-    Month.MARCH -> Res.string.march
-    Month.APRIL -> Res.string.april
-    Month.MAY -> Res.string.may
-    Month.JUNE -> Res.string.june
-    Month.JULY -> Res.string.july
-    Month.AUGUST -> Res.string.august
-    Month.SEPTEMBER -> Res.string.september
-    Month.OCTOBER -> Res.string.october
-    Month.NOVEMBER -> Res.string.november
-    Month.DECEMBER -> Res.string.december
 }

@@ -11,10 +11,10 @@ import androidx.compose.material.icons.filled.Star
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_premium
 import bibleplanner.feature.more.generated.resources.delete_progress_option
+import bibleplanner.feature.more.generated.resources.donate_option
 import bibleplanner.feature.more.generated.resources.ic_instagram
 import bibleplanner.feature.more.generated.resources.instagram
 import bibleplanner.feature.more.generated.resources.privacy_policy
-import bibleplanner.feature.more.generated.resources.donate_option
 import bibleplanner.feature.more.generated.resources.start_date
 import bibleplanner.feature.more.generated.resources.terms_of_service
 import bibleplanner.feature.more.generated.resources.theme_option
@@ -62,12 +62,5 @@ internal object MoreMenuOptionsFactory {
         name = Res.string.start_date,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.EditCalendar),
         type = MoreOptionItemType.EDIT_PLAN_START_DAY,
-    )
-    val baseOptions = listOf(
-        theme,
-        editStartDate,
-        deleteProgress,
-        privacyPolicy,
-        termsOfService,
     )
 }

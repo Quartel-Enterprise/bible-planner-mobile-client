@@ -22,9 +22,9 @@ import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampU
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampWithDateAndTimeUseCase
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
-import com.quare.bibleplanner.feature.day.presentation.mapper.MonthPresentationMapper
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
+import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf

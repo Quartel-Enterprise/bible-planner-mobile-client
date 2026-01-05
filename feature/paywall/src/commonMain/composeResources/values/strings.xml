@@ -1,6 +1,7 @@
 <resources>
     <string name="close">Close</string>
-    <string name="restore">Restore</string>
+    <string name="restore_purchases">Restore purchases</string>
+    <string name="paywall_error_message">Unable to load subscription options. Please try again later.</string>
     <string name="paywall_title">Unlock Bible Planner Premium</string>
     <string name="paywall_description">Deepen your study without limits. Join thousands of daily readers.</string>
     <string name="feature_unlimited_notes">Create Unlimited Notes</string>
