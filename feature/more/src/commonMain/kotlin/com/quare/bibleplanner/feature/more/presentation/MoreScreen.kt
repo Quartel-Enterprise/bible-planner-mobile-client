@@ -34,10 +34,7 @@ import bibleplanner.feature.more.generated.resources.donate_option
 import bibleplanner.feature.more.generated.resources.donate_subtitle
 import bibleplanner.feature.more.generated.resources.legal_section
 import bibleplanner.feature.more.generated.resources.preferences
-import bibleplanner.feature.more.generated.resources.premium_and_support
-import bibleplanner.feature.more.generated.resources.premium_section
 import bibleplanner.feature.more.generated.resources.social_section
-import bibleplanner.feature.more.generated.resources.support_section
 import bibleplanner.feature.more.generated.resources.today
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreMenuOptionsFactory
 import com.quare.bibleplanner.feature.more.presentation.model.MoreIcon
@@ -60,12 +57,9 @@ internal fun MoreScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         if (state.isFreeUser || state.shouldShowDonateOption) {
-            val headerRes = when {
-                state.isFreeUser && state.shouldShowDonateOption -> Res.string.premium_and_support
-                state.isFreeUser -> Res.string.premium_section
-                else -> Res.string.support_section
+            state.headerRes?.let { headerRes ->
+                item { SectionHeader(stringResource(headerRes)) }
             }
-            item { SectionHeader(stringResource(headerRes)) }
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
