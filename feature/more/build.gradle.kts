@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.provider.billing)
             implementation(projects.core.books)
+            implementation(projects.core.remoteConfig)
 
             // UI
             implementation(projects.ui.component)

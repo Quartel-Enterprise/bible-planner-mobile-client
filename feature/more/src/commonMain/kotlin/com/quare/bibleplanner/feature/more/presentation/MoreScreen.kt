@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.feature.more.presentation.model.MoreIcon
 import com.quare.bibleplanner.feature.more.presentation.model.MoreMenuItemPresentationModel
+import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -29,7 +30,7 @@ internal fun MoreScreen(
         itemsIndexed(items) { index, item ->
             MoreMenuItem(
                 itemModel = item,
-                onEvent = onEvent,
+                onClick = { type -> onEvent(MoreUiEvent.OnItemClick(type)) },
             )
             if (index < items.lastIndex) {
                 HorizontalDivider()
@@ -41,14 +42,14 @@ internal fun MoreScreen(
 @Composable
 private fun MoreMenuItem(
     itemModel: MoreMenuItemPresentationModel,
-    onEvent: (event: MoreUiEvent) -> Unit,
+    onClick: (MoreOptionItemType) -> Unit,
 ) {
     itemModel.run {
         val text = stringResource(name)
         ListItem(
             headlineContent = { Text(text) },
             leadingContent = { MoreItemIcon(icon, text) },
-            modifier = Modifier.clickable(onClick = { onEvent(event) }),
+            modifier = Modifier.clickable(onClick = { onClick(itemModel.type) }),
         )
     }
 }

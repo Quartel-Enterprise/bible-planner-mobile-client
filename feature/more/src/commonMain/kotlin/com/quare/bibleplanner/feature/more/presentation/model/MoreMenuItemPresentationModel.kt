@@ -5,5 +5,5 @@ import org.jetbrains.compose.resources.StringResource
 internal data class MoreMenuItemPresentationModel(
     val name: StringResource,
     val icon: MoreIcon,
-    val event: MoreUiEvent,
+    val type: MoreOptionItemType,
 )

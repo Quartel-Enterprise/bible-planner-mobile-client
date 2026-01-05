@@ -1,15 +1,15 @@
 package com.quare.bibleplanner.feature.more.di
 
 import com.quare.bibleplanner.feature.more.presentation.viewmodel.MoreViewModel
-import org.koin.compose.viewmodel.dsl.viewModel
+import com.quare.bibleplanner.feature.more.usecase.ShouldShowDonateOptionUseCase
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val moreModule = module {
-    viewModel {
-        MoreViewModel(
-            isFreeUser = get(),
-            isInstagramLinkVisible = get(),
-            calculateBibleProgress = get(),
-        )
-    }
+    // Domain
+    factoryOf(::ShouldShowDonateOptionUseCase)
+
+    // Presentation
+    viewModelOf(::MoreViewModel)
 }
