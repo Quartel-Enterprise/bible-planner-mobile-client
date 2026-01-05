@@ -8,4 +8,7 @@ sealed interface BottomNavRoute {
 
     @Serializable
     data object More : BottomNavRoute
+
+    @Serializable
+    data object Books : BottomNavRoute
 }

@@ -19,6 +19,7 @@ kotlin {
             // Features
             implementation(projects.feature.readingPlan)
             implementation(projects.feature.more)
+            implementation(projects.feature.books)
 
             // UI
             implementation(projects.ui.component)

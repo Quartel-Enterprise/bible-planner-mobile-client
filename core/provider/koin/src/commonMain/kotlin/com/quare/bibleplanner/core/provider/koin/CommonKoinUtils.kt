@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.provider.room.di.roomModule
 import com.quare.bibleplanner.core.remoteconfig.di.remoteConfigModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
+import com.quare.bibleplanner.feature.books.di.featureBooksModule
 import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.day.di.dayModule
 import com.quare.bibleplanner.feature.deletenotes.di.deleteNotesModule
@@ -45,5 +46,6 @@ object CommonKoinUtils {
         congratsModule,
         mainModule,
         moreModule,
+        featureBooksModule,
     )
 }

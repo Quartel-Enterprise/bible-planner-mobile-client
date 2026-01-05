@@ -1,11 +1,13 @@
 package com.quare.bibleplanner.feature.main.presentation.viewmodel
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Menu
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.main.generated.resources.Res
+import bibleplanner.feature.main.generated.resources.books
 import bibleplanner.feature.main.generated.resources.more
 import bibleplanner.feature.main.generated.resources.plans
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
@@ -20,6 +22,7 @@ import kotlinx.coroutines.launch
 class MainScreenViewModel : ViewModel() {
     private val routes: List<BottomNavRoute> = listOf(
         BottomNavRoute.Plans,
+        BottomNavRoute.Books,
         BottomNavRoute.More,
     )
 
@@ -54,6 +57,11 @@ class MainScreenViewModel : ViewModel() {
             BottomNavRoute.Plans -> BottomNavigationItemPresentationModel(
                 title = Res.string.plans,
                 icon = Icons.Default.DateRange,
+            )
+
+            BottomNavRoute.Books -> BottomNavigationItemPresentationModel(
+                title = Res.string.books,
+                icon = Icons.AutoMirrored.Filled.MenuBook,
             )
 
             BottomNavRoute.More -> BottomNavigationItemPresentationModel(

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_books">Search book...</string>
+    <string name="categorize">Categorize</string>
+    <string name="only_read">Only Read</string>
+    <string name="favorites">Favorites</string>
+    <string name="old_testament">OLD TESTAMENT</string>
+    <string name="new_testament">NEW TESTAMENT</string>
+    <string name="show_more">Show More</string>
+    <string name="show_less">Show Less</string>
+    <string name="completed">Completed</string>
+    <string name="chapters_format">Chapters: %1$d/%2$d</string>
+    <string name="content_description_favorite">Favorite</string>
+    <string name="content_description_navigate">Navigate</string>
+    <string name="pentateuch">PENTATEUCH</string>
+    <string name="historical_books">HISTORICAL BOOKS</string>
+    <string name="wisdom_books">WISDOM BOOKS</string>
+    <string name="major_prophets">MAJOR PROPHETS</string>
+    <string name="minor_prophets">MINOR PROPHETS</string>
+    <string name="gospels">GOSPELS</string>
+    <string name="acts">ACTS</string>
+    <string name="pauline_epistles">PAULINE EPISTLES</string>
+    <string name="general_epistles">GENERAL EPISTLES</string>
+    <string name="revelation">REVELATION</string>
+</resources>
