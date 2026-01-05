@@ -8,4 +8,5 @@ internal enum class MoreUiEvent {
     ON_INSTAGRAM_CLICK,
     ON_EDIT_PLAN_START_DAY_CLICK,
     ON_DELETE_PROGRESS_CLICK,
+    ON_SPONSOR_CLICK,
 }
