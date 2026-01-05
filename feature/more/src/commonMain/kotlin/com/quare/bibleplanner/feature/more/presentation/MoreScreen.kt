@@ -2,6 +2,8 @@ package com.quare.bibleplanner.feature.more.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,7 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -46,8 +50,36 @@ import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+private const val WIDE_SCREEN_BREAKPOINT = 600
+private const val MAX_CONTENT_WIDTH = 1200
+
 @Composable
 internal fun MoreScreen(
+    state: MoreUiState,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        val isWideScreen = maxWidth > WIDE_SCREEN_BREAKPOINT.dp
+
+        if (isWideScreen) {
+            LandscapeLayout(
+                contentMaxWidth = maxWidth.coerceAtMost(MAX_CONTENT_WIDTH.dp),
+                state = state,
+                onEvent = onEvent,
+            )
+        } else {
+            PortraitLayout(
+                state = state,
+                onEvent = onEvent,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PortraitLayout(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
@@ -56,100 +88,261 @@ internal fun MoreScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        if (state.isFreeUser || state.shouldShowDonateOption) {
-            state.headerRes?.let { headerRes ->
-                item { SectionHeader(stringResource(headerRes)) }
-            }
+        moreScreenContent(
+            state = state,
+            onEvent = onEvent,
+        )
+    }
+}
+
+@Composable
+private fun LandscapeLayout(
+    contentMaxWidth: androidx.compose.ui.unit.Dp,
+    state: MoreUiState,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = androidx.compose.ui.Alignment.TopCenter,
+    ) {
+        LazyColumn(
+            modifier = Modifier.widthIn(max = contentMaxWidth),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            headerSection(state = state, onEvent = onEvent)
+
+            // Two-column layout for the rest
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    if (state.isFreeUser) {
-                        ActionCard(
-                            modifier = Modifier.weight(1f),
-                            title = stringResource(Res.string.become_premium),
-                            subtitle = stringResource(Res.string.become_premium_subtitle),
-                            icon = Icons.Default.Star,
-                            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BECOME_PREMIUM)) },
-                        )
+                    // Left column
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        PreferencesSectionContent(state = state, onEvent = onEvent)
+                        DataSectionContent(onEvent = onEvent)
                     }
-                    if (state.shouldShowDonateOption) {
-                        ActionCard(
-                            modifier = Modifier.weight(1f),
-                            title = stringResource(Res.string.donate_option),
-                            subtitle = stringResource(Res.string.donate_subtitle),
-                            icon = Icons.Default.Favorite,
-                            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DONATE)) },
-                        )
+
+                    // Right column
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        LegalSectionContent(onEvent = onEvent)
+                        if (state.isInstagramLinkVisible) {
+                            SocialSectionContent(onEvent = onEvent)
+                        }
                     }
                 }
             }
         }
+    }
+}
 
-        item { SectionHeader(stringResource(Res.string.preferences)) }
-        item {
-            SectionCard {
-                MoreMenuItem(
-                    itemModel = MoreMenuOptionsFactory.theme,
-                    subtitle = stringResource(state.themeSubtitle),
-                    onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
-                )
-                HorizontalDivider()
-                val planStartDateSubtitle = state.planStartDate
-                    ?.let { date ->
-                        val isToday = date == state.currentDate
-                        val prefix = if (isToday) "${stringResource(Res.string.today)}, " else ""
-                        val month = stringResource(date.month.toStringResource()).take(3)
-                        "$prefix${date.day} $month ${date.year}"
-                    }.orEmpty()
-                MoreMenuItem(
-                    itemModel = MoreMenuOptionsFactory.editStartDate,
-                    subtitle = planStartDateSubtitle,
-                    onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
-                )
-            }
+private fun LazyListScope.moreScreenContent(
+    state: MoreUiState,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    headerSection(state = state, onEvent = onEvent)
+    preferencesSection(state = state, onEvent = onEvent)
+    dataSection(onEvent = onEvent)
+    legalSection(onEvent = onEvent)
+    if (state.isInstagramLinkVisible) {
+        socialSection(onEvent = onEvent)
+    }
+}
+
+private fun LazyListScope.headerSection(
+    state: MoreUiState,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    if (state.isFreeUser || state.shouldShowDonateOption) {
+        state.headerRes?.let { headerRes ->
+            item { SectionHeader(stringResource(headerRes)) }
         }
-
-        item { SectionHeader(stringResource(Res.string.data_section)) }
         item {
-            SectionCard {
-                MoreMenuItem(
-                    itemModel = MoreMenuOptionsFactory.deleteProgress,
-                    onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
-                    isDestructive = true,
-                )
-            }
-        }
-
-        item { SectionHeader(stringResource(Res.string.legal_section)) }
-        item {
-            SectionCard {
-                MoreMenuItem(
-                    itemModel = MoreMenuOptionsFactory.privacyPolicy,
-                    onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
-                )
-                HorizontalDivider()
-                MoreMenuItem(
-                    itemModel = MoreMenuOptionsFactory.termsOfService,
-                    onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
-                )
-            }
-        }
-
-        if (state.isInstagramLinkVisible) {
-            item { SectionHeader(stringResource(Res.string.social_section)) }
-            item {
-                SectionCard {
-                    MoreMenuItem(
-                        itemModel = MoreMenuOptionsFactory.instagram,
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (state.isFreeUser) {
+                    ActionCard(
+                        modifier = Modifier.weight(1f),
+                        title = stringResource(Res.string.become_premium),
+                        subtitle = stringResource(Res.string.become_premium_subtitle),
+                        icon = Icons.Default.Star,
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BECOME_PREMIUM)) },
+                    )
+                }
+                if (state.shouldShowDonateOption) {
+                    ActionCard(
+                        modifier = Modifier.weight(1f),
+                        title = stringResource(Res.string.donate_option),
+                        subtitle = stringResource(Res.string.donate_subtitle),
+                        icon = Icons.Default.Favorite,
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DONATE)) },
                     )
                 }
             }
         }
     }
 }
+
+private fun LazyListScope.preferencesSection(
+    state: MoreUiState,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    item { SectionHeader(stringResource(Res.string.preferences)) }
+    item {
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.theme,
+                subtitle = stringResource(state.themeSubtitle),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.editStartDate,
+                subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
+            )
+        }
+    }
+}
+
+private fun LazyListScope.dataSection(
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    item { SectionHeader(stringResource(Res.string.data_section)) }
+    item {
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.deleteProgress,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
+                isDestructive = true,
+            )
+        }
+    }
+}
+
+private fun LazyListScope.legalSection(
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    item { SectionHeader(stringResource(Res.string.legal_section)) }
+    item {
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.privacyPolicy,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.termsOfService,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
+            )
+        }
+    }
+}
+
+private fun LazyListScope.socialSection(
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    item { SectionHeader(stringResource(Res.string.social_section)) }
+    item {
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.instagram,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun formatPlanStartDateSubtitle(
+    planStartDate: kotlinx.datetime.LocalDate?,
+    currentDate: kotlinx.datetime.LocalDate,
+): String {
+    return planStartDate
+        ?.let { date ->
+            val isToday = date == currentDate
+            val prefix = if (isToday) "${stringResource(Res.string.today)}, " else ""
+            val month = stringResource(date.month.toStringResource()).take(3)
+            "$prefix${date.day} $month ${date.year}"
+        }.orEmpty()
+}
+
+// Composable wrappers for use in Column contexts (landscape layout)
+@Composable
+private fun PreferencesSectionContent(
+    state: MoreUiState,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    SectionHeader(stringResource(Res.string.preferences))
+    SectionCard {
+        MoreMenuItem(
+            itemModel = MoreMenuOptionsFactory.theme,
+            subtitle = stringResource(state.themeSubtitle),
+            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
+        )
+        HorizontalDivider()
+        MoreMenuItem(
+            itemModel = MoreMenuOptionsFactory.editStartDate,
+            subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
+            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
+        )
+    }
+}
+
+@Composable
+private fun DataSectionContent(
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    SectionHeader(stringResource(Res.string.data_section))
+    SectionCard {
+        MoreMenuItem(
+            itemModel = MoreMenuOptionsFactory.deleteProgress,
+            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
+            isDestructive = true,
+        )
+    }
+}
+
+@Composable
+private fun LegalSectionContent(
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    SectionHeader(stringResource(Res.string.legal_section))
+    SectionCard {
+        MoreMenuItem(
+            itemModel = MoreMenuOptionsFactory.privacyPolicy,
+            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
+        )
+        HorizontalDivider()
+        MoreMenuItem(
+            itemModel = MoreMenuOptionsFactory.termsOfService,
+            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
+        )
+    }
+}
+
+@Composable
+private fun SocialSectionContent(
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    SectionHeader(stringResource(Res.string.social_section))
+    SectionCard {
+        MoreMenuItem(
+            itemModel = MoreMenuOptionsFactory.instagram,
+            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
+        )
+    }
+}
+
 
 @Composable
 private fun SectionHeader(title: String) {
