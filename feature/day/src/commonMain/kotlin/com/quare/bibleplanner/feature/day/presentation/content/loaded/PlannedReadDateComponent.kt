@@ -15,13 +15,9 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.planned_read_date
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
-import com.quare.bibleplanner.feature.day.presentation.mapper.MonthPresentationMapper
+import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-
-private val monthPresentationMapper = MonthPresentationMapper()
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -58,7 +54,7 @@ internal fun SharedTransitionScope.PlannedReadDateComponent(
                 ),
                 animatedVisibilityScope = animatedContentScope,
             ),
-            text = stringResource(plannedReadDate.month.toMonthResource()).take(3),
+            text = stringResource(plannedReadDate.month.toStringResource()).take(3),
         )
         CommonPlannedReadDateText(
             Modifier.sharedElement(
@@ -85,5 +81,3 @@ private fun CommonPlannedReadDateText(
         color = color,
     )
 }
-
-private fun Month.toMonthResource(): StringResource = monthPresentationMapper.map(this)

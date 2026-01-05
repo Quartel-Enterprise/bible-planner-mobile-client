@@ -28,16 +28,14 @@ internal fun SharedTransitionScope.AnimatedDaysList(
         enter = fadeIn() + expandVertically(),
         exit = fadeOut() + shrinkVertically(),
     ) {
-        weekPresentation.weekPlan.run {
-            Column {
-                days.forEach { day ->
-                    DayItem(
-                        weekNumber = number,
-                        day = day,
-                        onEvent = onEvent,
-                        animatedContentScope = animatedContentScope,
-                    )
-                }
+        Column {
+            weekPresentation.dayPlans.forEach { dayPlan ->
+                DayItem(
+                    weekNumber = weekPresentation.weekPlan.number,
+                    dayPlan = dayPlan,
+                    onEvent = onEvent,
+                    animatedContentScope = animatedContentScope,
+                )
             }
         }
     }

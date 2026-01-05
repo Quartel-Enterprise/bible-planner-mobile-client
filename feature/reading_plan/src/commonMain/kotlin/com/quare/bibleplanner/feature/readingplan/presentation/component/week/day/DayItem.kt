@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.model.plan.DayModel
+import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -21,10 +21,11 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 internal fun SharedTransitionScope.DayItem(
     animatedContentScope: AnimatedContentScope,
     weekNumber: Int,
-    day: DayModel,
+    dayPlan: DayPlanPresentationModel,
     modifier: Modifier = Modifier,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
+    val day = dayPlan.day
     val dayNumber = day.number
     Column(
         modifier = modifier
@@ -47,7 +48,7 @@ internal fun SharedTransitionScope.DayItem(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 AnimatedPlannedReadDateComponent(
-                    day = day,
+                    dayPlan = dayPlan,
                     animatedContentScope = animatedContentScope,
                     weekNumber = weekNumber,
                     dayNumber = dayNumber,
