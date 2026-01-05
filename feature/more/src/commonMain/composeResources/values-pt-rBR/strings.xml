@@ -8,4 +8,5 @@
     <string name="start_date">Data de início do plano</string>
     <string name="delete_progress_option">Excluir todo o progresso</string>
     <string name="no_progress_to_delete_message">Não há progresso para excluir</string>
+    <string name="sponsor_option">Patrocinar</string>
 </resources>

@@ -8,4 +8,5 @@
     <string name="start_date">Plan start date</string>
     <string name="delete_progress_option">Delete all progress</string>
     <string name="no_progress_to_delete_message">No progress to delete</string>
+    <string name="sponsor_option">Sponsor</string>
 </resources>

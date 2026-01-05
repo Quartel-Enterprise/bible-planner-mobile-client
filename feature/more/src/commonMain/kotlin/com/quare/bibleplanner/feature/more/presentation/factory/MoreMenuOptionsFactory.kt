@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.more.presentation.factory
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Shield
@@ -13,6 +14,7 @@ import bibleplanner.feature.more.generated.resources.delete_progress_option
 import bibleplanner.feature.more.generated.resources.ic_instagram
 import bibleplanner.feature.more.generated.resources.instagram
 import bibleplanner.feature.more.generated.resources.privacy_policy
+import bibleplanner.feature.more.generated.resources.sponsor_option
 import bibleplanner.feature.more.generated.resources.start_date
 import bibleplanner.feature.more.generated.resources.terms_of_service
 import bibleplanner.feature.more.generated.resources.theme_option
@@ -21,41 +23,52 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreMenuItemPresen
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 
 internal object MoreMenuOptionsFactory {
-    val baseOptions = listOf(
-        MoreMenuItemPresentationModel(
-            name = Res.string.theme_option,
-            icon = MoreIcon.ImageVectorIcon(Icons.Default.Palette),
-            event = MoreUiEvent.ON_THEME_CLICK,
-        ),
-        MoreMenuItemPresentationModel(
-            name = Res.string.start_date,
-            icon = MoreIcon.ImageVectorIcon(Icons.Default.EditCalendar),
-            event = MoreUiEvent.ON_EDIT_PLAN_START_DAY_CLICK,
-        ),
-        MoreMenuItemPresentationModel(
-            name = Res.string.delete_progress_option,
-            icon = MoreIcon.ImageVectorIcon(Icons.Default.Delete),
-            event = MoreUiEvent.ON_DELETE_PROGRESS_CLICK,
-        ),
-        MoreMenuItemPresentationModel(
-            name = Res.string.terms_of_service,
-            icon = MoreIcon.ImageVectorIcon(Icons.Default.Info),
-            event = MoreUiEvent.ON_TERMS_CLICK,
-        ),
-        MoreMenuItemPresentationModel(
-            name = Res.string.privacy_policy,
-            icon = MoreIcon.ImageVectorIcon(Icons.Default.Shield),
-            event = MoreUiEvent.ON_PRIVACY_CLICK,
-        ),
-    )
-    val premiumItemOption = MoreMenuItemPresentationModel(
+    val premium = MoreMenuItemPresentationModel(
         name = Res.string.become_premium,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.Star),
         event = MoreUiEvent.ON_BECOME_PREMIUM_CLICK,
     )
-    val instagramOption = MoreMenuItemPresentationModel(
+    val theme = MoreMenuItemPresentationModel(
+        name = Res.string.theme_option,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Palette),
+        event = MoreUiEvent.ON_THEME_CLICK,
+    )
+    val instagram = MoreMenuItemPresentationModel(
         name = Res.string.instagram,
         icon = MoreIcon.DrawableResourceIcon(Res.drawable.ic_instagram),
         event = MoreUiEvent.ON_INSTAGRAM_CLICK,
+    )
+    val privacyPolicy = MoreMenuItemPresentationModel(
+        name = Res.string.privacy_policy,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Shield),
+        event = MoreUiEvent.ON_PRIVACY_CLICK,
+    )
+    val termsOfService = MoreMenuItemPresentationModel(
+        name = Res.string.terms_of_service,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Info),
+        event = MoreUiEvent.ON_TERMS_CLICK,
+    )
+    val sponsor = MoreMenuItemPresentationModel(
+        name = Res.string.sponsor_option,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Favorite),
+        event = MoreUiEvent.ON_SPONSOR_CLICK,
+    )
+    val deleteProgress = MoreMenuItemPresentationModel(
+        name = Res.string.delete_progress_option,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Delete),
+        event = MoreUiEvent.ON_DELETE_PROGRESS_CLICK,
+    )
+    val editStartDate = MoreMenuItemPresentationModel(
+        name = Res.string.start_date,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.EditCalendar),
+        event = MoreUiEvent.ON_EDIT_PLAN_START_DAY_CLICK,
+    )
+    val baseOptions = listOf(
+        theme,
+        editStartDate,
+        deleteProgress,
+        privacyPolicy,
+        termsOfService,
+        sponsor,
     )
 }

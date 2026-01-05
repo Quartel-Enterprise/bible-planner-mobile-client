@@ -37,11 +37,11 @@ internal class MoreViewModel(
             val isInstagramDeferred = async { isInstagramLinkVisible() }
             if (isFreeDeferred.await()) {
                 _uiState.update {
-                    it.copy(items = listOf(MoreMenuOptionsFactory.premiumItemOption) + it.items)
+                    it.copy(items = listOf(MoreMenuOptionsFactory.premium) + it.items)
                 }
             }
             if (isInstagramDeferred.await()) {
-                _uiState.update { it.copy(items = it.items + listOf(MoreMenuOptionsFactory.instagramOption)) }
+                _uiState.update { it.copy(items = it.items + listOf(MoreMenuOptionsFactory.instagram)) }
             }
         }
     }
@@ -82,6 +82,10 @@ internal class MoreViewModel(
                     }
                 }
             }
+
+            MoreUiEvent.ON_SPONSOR_CLICK -> {
+                emitAction(MoreUiAction.OpenLink(SPONSOR_URL))
+            }
         }
     }
 
@@ -101,9 +105,9 @@ internal class MoreViewModel(
         private const val BASE_URL = "https://www.bibleplanner.app"
         private const val PRIVACY_URL = "$BASE_URL/privacy"
         private const val TERMS_URL = "$BASE_URL/terms"
-
-        private const val INSTAGRAM_PT_BR = "https://www.instagram.com/bible.planner.brasil"
-        private const val INSTAGRAM_ES = "https://www.instagram.com/bible.planner.espanol"
+        private const val SPONSOR_URL = "https://github.com/sponsors/Quartel-Enterprise"
         private const val INSTAGRAM_DEFAULT = "https://www.instagram.com/bible.planner"
+        private const val INSTAGRAM_PT_BR = "$INSTAGRAM_DEFAULT.brasil"
+        private const val INSTAGRAM_ES = "$INSTAGRAM_DEFAULT.espanol"
     }
 }
