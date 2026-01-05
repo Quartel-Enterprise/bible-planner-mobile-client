@@ -52,12 +52,12 @@ fun ResponsiveContent(
  */
 fun LazyListScope.centeredItem(
     contentMaxWidth: Dp,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Box(modifier = Modifier.width(contentMaxWidth)) {
                 content()

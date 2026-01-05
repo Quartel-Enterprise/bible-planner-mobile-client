@@ -15,13 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.ui.component.ResponsiveContent
-import com.quare.bibleplanner.ui.component.centeredItem
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanProgress
 import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanTypesSegmentedButtons
 import com.quare.bibleplanner.feature.readingplan.presentation.component.week.WeekPlanItem
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
+import com.quare.bibleplanner.ui.component.ResponsiveContent
+import com.quare.bibleplanner.ui.component.centeredItem
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -47,7 +47,7 @@ internal fun ReadingPlanScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
             )
-        }
+        },
     )
 }
 

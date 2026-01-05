@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.ui.component.centeredItem
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatusButton
 import com.quare.bibleplanner.feature.day.presentation.component.DayReadSection
@@ -18,6 +17,7 @@ import com.quare.bibleplanner.feature.day.presentation.component.portraitPassage
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedReadDateComponent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
+import com.quare.bibleplanner.ui.component.centeredItem
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal fun LazyListScope.loadedDayPortraitScreenContent(

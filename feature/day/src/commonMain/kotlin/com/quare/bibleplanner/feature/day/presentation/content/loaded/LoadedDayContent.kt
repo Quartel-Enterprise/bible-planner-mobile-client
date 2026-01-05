@@ -7,10 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.loadedDayLandscapeScreenContent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.portrait.loadedDayPortraitScreenContent
-import com.quare.bibleplanner.ui.component.ResponsiveContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-
+import com.quare.bibleplanner.ui.component.ResponsiveContent
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -43,6 +42,6 @@ internal fun LoadedDayContent(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
             )
-        }
+        },
     )
 }

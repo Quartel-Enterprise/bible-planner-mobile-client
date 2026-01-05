@@ -10,10 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.ui.component.centeredItem
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
 import com.quare.bibleplanner.core.utils.orFalse
+import com.quare.bibleplanner.ui.component.centeredItem
 
 internal fun LazyListScope.portraitPassageList(
     contentMaxWidth: Dp,

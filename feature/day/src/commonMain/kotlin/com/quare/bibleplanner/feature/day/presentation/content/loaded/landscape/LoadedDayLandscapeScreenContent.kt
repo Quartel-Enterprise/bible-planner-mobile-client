@@ -11,12 +11,12 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.ui.component.centeredItem
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.side.LoadedDayLandscapeScreenLeftContent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.side.LoadedDayLandscapeScreenRightContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
+import com.quare.bibleplanner.ui.component.centeredItem
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal fun LazyListScope.loadedDayLandscapeScreenContent(

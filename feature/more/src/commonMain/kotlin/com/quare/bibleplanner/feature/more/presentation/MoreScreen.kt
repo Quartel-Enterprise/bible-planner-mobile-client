@@ -74,7 +74,7 @@ internal fun MoreScreen(
                 state = state,
                 onEvent = onEvent,
             )
-        }
+        },
     )
 }
 
