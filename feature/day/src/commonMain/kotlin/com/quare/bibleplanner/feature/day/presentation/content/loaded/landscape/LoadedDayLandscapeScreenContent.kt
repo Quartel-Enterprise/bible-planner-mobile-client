@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.plan.DayModel
@@ -33,6 +34,7 @@ internal fun ResponsiveContentScope.loadedDayLandscapeScreenContent(
                 modifier = Modifier.weight(0.4f),
             ) {
                 LoadedDayLandscapeScreenLeftContent(
+                    modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
                     day = day,
                     uiState = uiState,
                     onEvent = onEvent,

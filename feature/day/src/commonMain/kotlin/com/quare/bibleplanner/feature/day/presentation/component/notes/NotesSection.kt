@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.component.notes
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,14 +17,13 @@ internal fun NotesSection(
 ) {
     Column(
         modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         NotesHeaderSection(
             onDeleteClick = { onEvent(DayUiEvent.OnNotesClear) },
         )
         NotesTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
             notesText = notesText,
             onEvent = onEvent,
         )

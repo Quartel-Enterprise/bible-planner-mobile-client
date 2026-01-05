@@ -53,7 +53,7 @@ internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
         with(sharedTransitionScope) {
             responsiveItem {
                 PlannedReadDateComponent(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp),
                     plannedReadDate = plannedReadDate,
                     animatedContentScope = animatedContentScope,
                     weekNumber = uiState.weekNumber,
@@ -65,7 +65,7 @@ internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
 
     responsiveItem {
         DayReadSection(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.padding(horizontal = 16.dp),
             isRead = isDayRead,
             formattedReadDate = uiState.formattedReadDate,
             onEvent = onEvent,
@@ -74,7 +74,7 @@ internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
 
     responsiveItem {
         NotesSection(
-            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+            modifier = Modifier.padding(start = 16.dp),
             notesText = day.notes.orEmpty(),
             onEvent = onEvent,
         )
