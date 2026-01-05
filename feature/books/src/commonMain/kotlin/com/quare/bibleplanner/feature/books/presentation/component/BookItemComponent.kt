@@ -49,10 +49,9 @@ fun BookItemComponent(
     modifier: Modifier = Modifier,
 ) {
     ElevatedCard(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
+        onClick = onClick,
     ) {
         ListItem(
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
