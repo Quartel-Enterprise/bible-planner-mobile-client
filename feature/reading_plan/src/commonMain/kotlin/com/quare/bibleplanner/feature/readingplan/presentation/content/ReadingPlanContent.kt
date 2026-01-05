@@ -17,6 +17,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.ui.component.ResponsiveContent
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.utils.LocalMainPadding
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -28,9 +29,10 @@ internal fun ReadingPlanScreen(
     lazyListState: LazyListState,
 ) {
     val loadedUiState = uiState as? ReadingPlanUiState.Loaded
-
+    val mainPadding = LocalMainPadding.current
     ResponsiveContent(
         lazyListState = lazyListState,
+        contentPadding = mainPadding,
         maxContentWidth = 600.dp,
         portraitContent = {
             readingPlanContent(

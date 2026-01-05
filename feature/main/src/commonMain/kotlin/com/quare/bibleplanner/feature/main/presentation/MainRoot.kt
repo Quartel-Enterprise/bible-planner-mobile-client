@@ -2,8 +2,11 @@ package com.quare.bibleplanner.feature.main.presentation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -38,11 +41,10 @@ fun NavGraphBuilder.mainScreen(
         MainScreen(
             mainViewModel = mainViewModel,
             navBackStackEntry = bottomNavBackStackEntry,
-            bottomNavHost = { paddingValues ->
+            bottomNavHost = {
                 BottomNavHost(
                     bottomNavController = bottomNavController,
                     rootNavController = rootNavController,
-                    paddingValues = paddingValues,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = this@composable,
                     mainScaffoldState = mainScaffoldState,
