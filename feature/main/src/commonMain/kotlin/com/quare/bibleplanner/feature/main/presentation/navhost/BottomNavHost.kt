@@ -3,9 +3,7 @@ package com.quare.bibleplanner.feature.main.presentation.navhost
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -22,14 +20,12 @@ fun BottomNavHost(
     animatedContentScope: AnimatedContentScope,
     rootNavController: NavHostController,
     bottomNavController: NavHostController,
-    paddingValues: PaddingValues,
     mainScaffoldState: MainScaffoldState,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
         modifier = modifier
-            .fillMaxSize()
-            .padding(top = paddingValues.calculateTopPadding()),
+            .fillMaxSize(),
         navController = bottomNavController,
         startDestination = BottomNavRoute.Plans,
     ) {

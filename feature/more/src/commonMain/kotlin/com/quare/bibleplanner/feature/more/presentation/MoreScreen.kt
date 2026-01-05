@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.room.util.TableInfo
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_premium
 import bibleplanner.feature.more.generated.resources.become_premium_subtitle
@@ -43,6 +44,7 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContent
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
+import com.quare.bibleplanner.ui.utils.LocalMainPadding
 import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -52,9 +54,10 @@ internal fun MoreScreen(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
+    val mainPadding = LocalMainPadding.current
     ResponsiveContent(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        modifier = Modifier.padding(16.dp),
+        contentPadding = mainPadding,
         verticalArrangement = Arrangement.spacedBy(16.dp),
         portraitContent = {
             moreScreenContent(
@@ -82,12 +85,15 @@ private fun ResponsiveContentScope.landscapeLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                PreferencesSectionContent(state = state, onEvent = onEvent)
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                LegalSectionContent(onEvent = onEvent)
-            }
+            PreferencesSectionContent(
+                modifier = Modifier.weight(1f),
+                state = state,
+                onEvent = onEvent,
+            )
+            LegalSectionContent(
+                modifier = Modifier.weight(1f),
+                onEvent = onEvent,
+            )
         }
     }
 
@@ -96,13 +102,15 @@ private fun ResponsiveContentScope.landscapeLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                DataSectionContent(onEvent = onEvent)
-            }
+            DataSectionContent(
+                modifier = Modifier.weight(1f),
+                onEvent = onEvent,
+            )
             if (state.isInstagramLinkVisible) {
-                Column(modifier = Modifier.weight(1f)) {
-                    SocialSectionContent(onEvent = onEvent)
-                }
+                SocialSectionContent(
+                    modifier = Modifier.weight(1f),
+                    onEvent = onEvent,
+                )
             }
         }
     }
@@ -246,61 +254,79 @@ private fun formatPlanStartDateSubtitle(
 // Composable wrappers for use in Column contexts (landscape layout)
 @Composable
 private fun PreferencesSectionContent(
+    modifier: Modifier = Modifier,
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
-    SectionHeader(stringResource(Res.string.preferences))
-    SectionCard {
-        MoreMenuItem(
-            itemModel = MoreMenuOptionsFactory.theme,
-            subtitle = stringResource(state.themeSubtitle),
-            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
-        )
-        HorizontalDivider()
-        MoreMenuItem(
-            itemModel = MoreMenuOptionsFactory.editStartDate,
-            subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
-            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
-        )
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(stringResource(Res.string.preferences))
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.theme,
+                subtitle = stringResource(state.themeSubtitle),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.editStartDate,
+                subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
+            )
+        }
     }
 }
 
 @Composable
-private fun DataSectionContent(onEvent: (MoreUiEvent) -> Unit) {
-    SectionHeader(stringResource(Res.string.data_section))
-    SectionCard {
-        MoreMenuItem(
-            itemModel = MoreMenuOptionsFactory.deleteProgress,
-            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
-            isDestructive = true,
-        )
+private fun DataSectionContent(
+    modifier: Modifier = Modifier,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(stringResource(Res.string.data_section))
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.deleteProgress,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
+                isDestructive = true,
+            )
+        }
     }
 }
 
 @Composable
-private fun LegalSectionContent(onEvent: (MoreUiEvent) -> Unit) {
-    SectionHeader(stringResource(Res.string.legal_section))
-    SectionCard {
-        MoreMenuItem(
-            itemModel = MoreMenuOptionsFactory.privacyPolicy,
-            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
-        )
-        HorizontalDivider()
-        MoreMenuItem(
-            itemModel = MoreMenuOptionsFactory.termsOfService,
-            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
-        )
+private fun LegalSectionContent(
+    modifier: Modifier = Modifier,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(stringResource(Res.string.legal_section))
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.privacyPolicy,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.termsOfService,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
+            )
+        }
     }
 }
 
 @Composable
-private fun SocialSectionContent(onEvent: (MoreUiEvent) -> Unit) {
-    SectionHeader(stringResource(Res.string.social_section))
-    SectionCard {
-        MoreMenuItem(
-            itemModel = MoreMenuOptionsFactory.instagram,
-            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
-        )
+private fun SocialSectionContent(
+    modifier: Modifier = Modifier,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(stringResource(Res.string.social_section))
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.instagram,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
+            )
+        }
     }
 }
 
