@@ -23,9 +23,8 @@ internal fun LoadedDayContent(
     val day = uiState.day
     ResponsiveContent(
         modifier = modifier,
-        portraitContent = { contentMaxWidth ->
+        portraitContent = {
             loadedDayPortraitScreenContent(
-                contentMaxWidth = contentMaxWidth,
                 day = day,
                 onEvent = onEvent,
                 uiState = uiState,
@@ -33,9 +32,8 @@ internal fun LoadedDayContent(
                 animatedContentScope = animatedContentScope,
             )
         },
-        landscapeContent = { contentMaxWidth ->
+        landscapeContent = {
             loadedDayLandscapeScreenContent(
-                contentMaxWidth = contentMaxWidth,
                 day = day,
                 uiState = uiState,
                 onEvent = onEvent,

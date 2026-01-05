@@ -25,8 +25,8 @@ fun ResponsiveContent(
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(0.dp),
     maxPortraitWidth: Dp = 600.dp,
     maxContentWidth: Dp = 1200.dp,
-    portraitContent: LazyListScope.(contentMaxWidth: Dp) -> Unit,
-    landscapeContent: (LazyListScope.(contentMaxWidth: Dp) -> Unit)? = null,
+    portraitContent: ResponsiveContentScope.() -> Unit,
+    landscapeContent: (ResponsiveContentScope.() -> Unit)? = null,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val isLandscape = landscapeContent != null && this.maxWidth > maxPortraitWidth
@@ -38,29 +38,14 @@ fun ResponsiveContent(
             contentPadding = contentPadding,
             verticalArrangement = verticalArrangement,
         ) {
+            val scope = ResponsiveContentScopeImpl(
+                lazyListScope = this,
+                contentMaxWidth = contentMaxWidth,
+            )
             if (isLandscape) {
-                landscapeContent(contentMaxWidth)
+                landscapeContent(scope)
             } else {
-                portraitContent(contentMaxWidth)
-            }
-        }
-    }
-}
-
-/**
- * Helper to wrap an item in a centered box with a max width.
- */
-fun LazyListScope.centeredItem(
-    contentMaxWidth: Dp,
-    content: @Composable () -> Unit,
-) {
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                content()
+                portraitContent(scope)
             }
         }
     }

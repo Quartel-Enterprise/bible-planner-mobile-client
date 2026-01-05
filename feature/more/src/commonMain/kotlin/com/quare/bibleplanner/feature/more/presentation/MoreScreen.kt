@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -28,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_premium
@@ -47,7 +45,7 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContent
-import com.quare.bibleplanner.ui.component.centeredItem
+import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -61,16 +59,14 @@ internal fun MoreScreen(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        portraitContent = { contentMaxWidth ->
+        portraitContent = {
             moreScreenContent(
                 state = state,
                 onEvent = onEvent,
-                contentMaxWidth = contentMaxWidth,
             )
         },
-        landscapeContent = { contentMaxWidth ->
+        landscapeContent = {
             landscapeLayout(
-                contentMaxWidth = contentMaxWidth,
                 state = state,
                 onEvent = onEvent,
             )
@@ -78,12 +74,11 @@ internal fun MoreScreen(
     )
 }
 
-private fun LazyListScope.landscapeLayout(
-    contentMaxWidth: Dp,
+private fun ResponsiveContentScope.landscapeLayout(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
-    headerSection(state = state, onEvent = onEvent, contentMaxWidth = contentMaxWidth)
+    headerSection(state = state, onEvent = onEvent)
 
     // Two-column layout for the rest
     item {
@@ -92,7 +87,7 @@ private fun LazyListScope.landscapeLayout(
             contentAlignment = Alignment.Center,
         ) {
             Row(
-                modifier = Modifier.width(contentMaxWidth),
+                modifier = Modifier.width(this@landscapeLayout.contentMaxWidth),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // Left column
@@ -119,32 +114,30 @@ private fun LazyListScope.landscapeLayout(
     }
 }
 
-private fun LazyListScope.moreScreenContent(
+private fun ResponsiveContentScope.moreScreenContent(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
-    contentMaxWidth: Dp,
 ) {
-    headerSection(state = state, onEvent = onEvent, contentMaxWidth = contentMaxWidth)
-    preferencesSection(state = state, onEvent = onEvent, contentMaxWidth = contentMaxWidth)
-    dataSection(onEvent = onEvent, contentMaxWidth = contentMaxWidth)
-    legalSection(onEvent = onEvent, contentMaxWidth = contentMaxWidth)
+    headerSection(state = state, onEvent = onEvent)
+    preferencesSection(state = state, onEvent = onEvent)
+    dataSection(onEvent = onEvent)
+    legalSection(onEvent = onEvent)
     if (state.isInstagramLinkVisible) {
-        socialSection(onEvent = onEvent, contentMaxWidth = contentMaxWidth)
+        socialSection(onEvent = onEvent)
     }
 }
 
-private fun LazyListScope.headerSection(
+private fun ResponsiveContentScope.headerSection(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
-    contentMaxWidth: Dp,
 ) {
     if (state.isFreeUser || state.shouldShowDonateOption) {
         state.headerRes?.let { headerRes ->
-            centeredItem(contentMaxWidth) {
+            responsiveItem {
                 SectionHeader(stringResource(headerRes))
             }
         }
-        centeredItem(contentMaxWidth) {
+        responsiveItem {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -172,15 +165,14 @@ private fun LazyListScope.headerSection(
     }
 }
 
-private fun LazyListScope.preferencesSection(
+private fun ResponsiveContentScope.preferencesSection(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
-    contentMaxWidth: Dp,
 ) {
-    centeredItem(contentMaxWidth) {
+    responsiveItem {
         SectionHeader(stringResource(Res.string.preferences))
     }
-    centeredItem(contentMaxWidth) {
+    responsiveItem {
         SectionCard {
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.theme,
@@ -197,14 +189,11 @@ private fun LazyListScope.preferencesSection(
     }
 }
 
-private fun LazyListScope.dataSection(
-    onEvent: (MoreUiEvent) -> Unit,
-    contentMaxWidth: Dp,
-) {
-    centeredItem(contentMaxWidth) {
+private fun ResponsiveContentScope.dataSection(onEvent: (MoreUiEvent) -> Unit) {
+    responsiveItem {
         SectionHeader(stringResource(Res.string.data_section))
     }
-    centeredItem(contentMaxWidth) {
+    responsiveItem {
         SectionCard {
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.deleteProgress,
@@ -215,14 +204,11 @@ private fun LazyListScope.dataSection(
     }
 }
 
-private fun LazyListScope.legalSection(
-    onEvent: (MoreUiEvent) -> Unit,
-    contentMaxWidth: Dp,
-) {
-    centeredItem(contentMaxWidth) {
+private fun ResponsiveContentScope.legalSection(onEvent: (MoreUiEvent) -> Unit) {
+    responsiveItem {
         SectionHeader(stringResource(Res.string.legal_section))
     }
-    centeredItem(contentMaxWidth) {
+    responsiveItem {
         SectionCard {
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.privacyPolicy,
@@ -237,14 +223,11 @@ private fun LazyListScope.legalSection(
     }
 }
 
-private fun LazyListScope.socialSection(
-    onEvent: (MoreUiEvent) -> Unit,
-    contentMaxWidth: Dp,
-) {
-    centeredItem(contentMaxWidth) {
+private fun ResponsiveContentScope.socialSection(onEvent: (MoreUiEvent) -> Unit) {
+    responsiveItem {
         SectionHeader(stringResource(Res.string.social_section))
     }
-    centeredItem(contentMaxWidth) {
+    responsiveItem {
         SectionCard {
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.instagram,

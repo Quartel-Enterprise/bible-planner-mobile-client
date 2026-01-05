@@ -5,9 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatusButton
@@ -17,11 +15,10 @@ import com.quare.bibleplanner.feature.day.presentation.component.portraitPassage
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedReadDateComponent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-import com.quare.bibleplanner.ui.component.centeredItem
+import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-internal fun LazyListScope.loadedDayPortraitScreenContent(
-    contentMaxWidth: Dp,
+internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
     day: DayModel,
     onEvent: (DayUiEvent) -> Unit,
     uiState: DayUiState.Loaded,
@@ -29,7 +26,7 @@ internal fun LazyListScope.loadedDayPortraitScreenContent(
     animatedContentScope: AnimatedContentScope,
 ) {
     val isDayRead = day.isRead
-    centeredItem(contentMaxWidth) {
+    responsiveItem {
         ChangeReadStatusButton(
             isDayRead = isDayRead,
             buttonModifier = Modifier
@@ -45,7 +42,6 @@ internal fun LazyListScope.loadedDayPortraitScreenContent(
     }
 
     portraitPassageList(
-        contentMaxWidth = contentMaxWidth,
         passages = day.passages,
         chapterReadStatus = uiState.chapterReadStatus,
         onChapterToggle = { passageIndex, chapterIndex ->
@@ -55,7 +51,7 @@ internal fun LazyListScope.loadedDayPortraitScreenContent(
 
     day.plannedReadDate?.let { plannedReadDate ->
         with(sharedTransitionScope) {
-            centeredItem(contentMaxWidth) {
+            responsiveItem {
                 PlannedReadDateComponent(
                     modifier = Modifier.padding(8.dp),
                     plannedReadDate = plannedReadDate,
@@ -67,7 +63,7 @@ internal fun LazyListScope.loadedDayPortraitScreenContent(
         }
     }
 
-    centeredItem(contentMaxWidth) {
+    responsiveItem {
         DayReadSection(
             modifier = Modifier.padding(horizontal = 8.dp),
             isRead = isDayRead,
@@ -76,7 +72,7 @@ internal fun LazyListScope.loadedDayPortraitScreenContent(
         )
     }
 
-    centeredItem(contentMaxWidth) {
+    responsiveItem {
         NotesSection(
             modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
             notesText = day.notes.orEmpty(),
