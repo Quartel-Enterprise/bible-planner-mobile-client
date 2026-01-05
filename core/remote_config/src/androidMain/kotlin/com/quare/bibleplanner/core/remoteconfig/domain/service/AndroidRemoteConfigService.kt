@@ -9,7 +9,8 @@ internal class AndroidRemoteConfigService(
     private val isInitialized = CompletableDeferred<Unit>()
 
     init {
-        firebaseRemoteConfig.fetchAndActivate()
+        firebaseRemoteConfig
+            .fetchAndActivate()
             .addOnCompleteListener {
                 isInitialized.complete(Unit)
             }
@@ -19,7 +20,7 @@ internal class AndroidRemoteConfigService(
 
     override suspend fun getInt(key: String): Int = getWithAwait { getLong(key).toInt() }
 
-    private suspend fun <T> getWithAwait(call: FirebaseRemoteConfig.() -> T) : T {
+    private suspend fun <T> getWithAwait(call: FirebaseRemoteConfig.() -> T): T {
         isInitialized.await()
         return call(firebaseRemoteConfig)
     }
