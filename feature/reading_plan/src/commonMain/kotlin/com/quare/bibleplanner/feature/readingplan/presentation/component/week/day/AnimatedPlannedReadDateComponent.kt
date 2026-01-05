@@ -26,7 +26,6 @@ internal fun SharedTransitionScope.AnimatedPlannedReadDateComponent(
     ) { plannedReadDate ->
         if (plannedReadDate != null) {
             PlannedReadDateComponent(
-                modifier = Modifier.padding(start = 16.dp),
                 plannedReadDate = plannedReadDate,
                 isRead = day.isRead,
                 shouldShowYear = dayPlan.shouldShowYear,
