@@ -18,9 +18,16 @@ import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedRea
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.Dp
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LoadedDayPortraitScreenContent(
+    contentMaxWidth: Dp,
     day: DayModel,
     onEvent: (DayUiEvent) -> Unit,
     uiState: DayUiState.Loaded,
@@ -28,25 +35,33 @@ internal fun LoadedDayPortraitScreenContent(
     animatedContentScope: AnimatedContentScope,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
     ) {
         val isDayRead = day.isRead
         item {
-            ChangeReadStatusButton(
-                isDayRead = isDayRead,
-                buttonModifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp,
-                    ),
-                onClick = {
-                    onEvent(DayUiEvent.OnDayReadToggle)
-                },
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                    ChangeReadStatusButton(
+                        isDayRead = isDayRead,
+                        buttonModifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 8.dp,
+                            ),
+                        onClick = {
+                            onEvent(DayUiEvent.OnDayReadToggle)
+                        },
+                    )
+                }
+            }
         }
 
         portraitPassageList(
+            contentMaxWidth = contentMaxWidth,
             passages = day.passages,
             chapterReadStatus = uiState.chapterReadStatus,
             onChapterToggle = { passageIndex, chapterIndex ->
@@ -57,31 +72,52 @@ internal fun LoadedDayPortraitScreenContent(
         day.plannedReadDate?.let { plannedReadDate ->
             with(sharedTransitionScope) {
                 item {
-                    PlannedReadDateComponent(
-                        modifier = Modifier.padding(8.dp),
-                        plannedReadDate = plannedReadDate,
-                        animatedContentScope = animatedContentScope,
-                        weekNumber = uiState.weekNumber,
-                        dayNumber = day.number,
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                            PlannedReadDateComponent(
+                                modifier = Modifier.padding(8.dp),
+                                plannedReadDate = plannedReadDate,
+                                animatedContentScope = animatedContentScope,
+                                weekNumber = uiState.weekNumber,
+                                dayNumber = day.number,
+                            )
+                        }
+                    }
                 }
             }
         }
         item {
-            DayReadSection(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                isRead = isDayRead,
-                formattedReadDate = uiState.formattedReadDate,
-                onEvent = onEvent,
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                    DayReadSection(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        isRead = isDayRead,
+                        formattedReadDate = uiState.formattedReadDate,
+                        onEvent = onEvent,
+                    )
+                }
+            }
         }
 
         item {
-            NotesSection(
-                modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
-                notesText = day.notes.orEmpty(),
-                onEvent = onEvent,
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                    NotesSection(
+                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                        notesText = day.notes.orEmpty(),
+                        onEvent = onEvent,
+                    )
+                }
+            }
         }
     }
 }

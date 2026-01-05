@@ -69,14 +69,14 @@ internal class MoreViewModel(
             val isFree = isFreeDeferred.await()
             val isInstagramVisible = isInstagramVisibleDeferred.await()
             val shouldShowDonate = shouldShowDonateDeferred.await()
-            
+
             val headerRes = when {
                 isFree && shouldShowDonate -> Res.string.premium_and_support
                 isFree -> Res.string.premium_section
                 shouldShowDonate -> Res.string.support_section
                 else -> null
             }
-            
+
             _uiState.update {
                 it.copy(
                     isFreeUser = isFree,

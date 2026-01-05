@@ -27,10 +27,11 @@ internal fun LoadedDayContent(
     val day = uiState.day
     BoxWithConstraints(modifier = modifier) {
         val isWideScreen = maxWidth > WIDE_SCREEN_BREAKPOINT.dp
+        val contentMaxWidth = maxWidth.coerceAtMost(MAX_CONTENT_WIDTH.dp)
 
         if (isWideScreen) {
             LoadedDayLandscapeScreenContent(
-                contentMaxWidth = maxWidth.coerceAtMost(MAX_CONTENT_WIDTH.dp),
+                contentMaxWidth = contentMaxWidth,
                 day = day,
                 uiState = uiState,
                 onEvent = onEvent,
@@ -39,6 +40,7 @@ internal fun LoadedDayContent(
             )
         } else {
             LoadedDayPortraitScreenContent(
+                contentMaxWidth = contentMaxWidth,
                 day = day,
                 onEvent = onEvent,
                 uiState = uiState,

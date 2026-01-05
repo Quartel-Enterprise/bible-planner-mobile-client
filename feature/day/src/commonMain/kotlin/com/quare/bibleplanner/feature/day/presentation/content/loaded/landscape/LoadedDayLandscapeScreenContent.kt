@@ -20,6 +20,9 @@ import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LoadedDayLandscapeScreenContent(
@@ -30,37 +33,39 @@ internal fun LoadedDayLandscapeScreenContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center,
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier.widthIn(max = contentMaxWidth),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
+        item {
             Box(
-                modifier = Modifier
-                    .weight(0.4f)
-                    .fillMaxHeight(),
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
             ) {
-                LoadedDayLandscapeScreenLeftContent(
-                    day = day,
-                    uiState = uiState,
-                    onEvent = onEvent,
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .weight(0.6f)
-                    .fillMaxHeight(),
-            ) {
-                LoadedDayLandscapeScreenRightContent(
-                    day = day,
-                    uiState = uiState,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope,
-                    onEvent = onEvent,
-                )
+                Row(
+                    modifier = Modifier.widthIn(max = contentMaxWidth),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Box(
+                        modifier = Modifier.weight(0.4f),
+                    ) {
+                        LoadedDayLandscapeScreenLeftContent(
+                            day = day,
+                            uiState = uiState,
+                            onEvent = onEvent,
+                        )
+                    }
+                    Box(
+                        modifier = Modifier.weight(0.6f),
+                    ) {
+                        LoadedDayLandscapeScreenRightContent(
+                            day = day,
+                            uiState = uiState,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedContentScope = animatedContentScope,
+                            onEvent = onEvent,
+                        )
+                    }
+                }
             }
         }
     }

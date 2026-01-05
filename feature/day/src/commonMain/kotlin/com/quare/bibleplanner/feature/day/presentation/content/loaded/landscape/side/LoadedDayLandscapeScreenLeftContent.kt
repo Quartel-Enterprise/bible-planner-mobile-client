@@ -17,6 +17,8 @@ import com.quare.bibleplanner.feature.day.presentation.component.ChapterItemComp
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
+import androidx.compose.foundation.layout.Column
+
 @Composable
 internal fun LoadedDayLandscapeScreenLeftContent(
     day: DayModel,
@@ -24,23 +26,21 @@ internal fun LoadedDayLandscapeScreenLeftContent(
     onEvent: (DayUiEvent) -> Unit,
 ) {
     val isDayRead = day.isRead
-    LazyColumn(
+    Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
-        item {
-            ChangeReadStatusButton(
-                isDayRead = isDayRead,
-                buttonModifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 8.dp,
-                    ),
-                onClick = {
-                    onEvent(DayUiEvent.OnDayReadToggle)
-                },
-            )
-        }
+        ChangeReadStatusButton(
+            isDayRead = isDayRead,
+            buttonModifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp,
+                ),
+            onClick = {
+                onEvent(DayUiEvent.OnDayReadToggle)
+            },
+        )
 
         day.passages.forEachIndexed { passageIndex, passage ->
             val onToggle = { onEvent(DayUiEvent.OnChapterToggle(passageIndex, -1)) }
@@ -49,48 +49,40 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                 .padding(start = 8.dp)
                 .padding(vertical = 8.dp)
             if (passage.chapters.isEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onToggle() },
-                    ) {
-                        ChapterItemComponent(
-                            modifier = commonModifier,
-                            bookName = passage.bookId.getBookName(),
-                            chapterPlanModel = null,
-                            isRead = passage.isRead,
-                            onToggle = onToggle,
-                        )
-                    }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onToggle() },
+                ) {
+                    ChapterItemComponent(
+                        modifier = commonModifier,
+                        bookName = passage.bookId.getBookName(),
+                        chapterPlanModel = null,
+                        isRead = passage.isRead,
+                        onToggle = onToggle,
+                    )
                 }
                 if (passageIndex < day.passages.size - 1) {
-                    item {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                    }
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                 }
             } else {
                 // Show each chapter as a separate item
                 passage.chapters.forEachIndexed { chapterIndex, chapter ->
                     val chapterToggle = { onEvent(DayUiEvent.OnChapterToggle(passageIndex, chapterIndex)) }
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { chapterToggle() },
-                        ) {
-                            ChapterItemComponent(
-                                modifier = commonModifier,
-                                bookName = passage.bookId.getBookName(),
-                                chapterPlanModel = chapter,
-                                isRead = uiState.chapterReadStatus[passageIndex to chapterIndex].orFalse(),
-                                onToggle = chapterToggle,
-                            )
-                        }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { chapterToggle() },
+                    ) {
+                        ChapterItemComponent(
+                            modifier = commonModifier,
+                            bookName = passage.bookId.getBookName(),
+                            chapterPlanModel = chapter,
+                            isRead = uiState.chapterReadStatus[passageIndex to chapterIndex].orFalse(),
+                            onToggle = chapterToggle,
+                        )
                     }
-                    item {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                    }
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                 }
             }
         }

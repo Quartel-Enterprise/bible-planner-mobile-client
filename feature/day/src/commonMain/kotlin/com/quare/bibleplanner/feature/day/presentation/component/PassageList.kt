@@ -15,7 +15,11 @@ import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
 import com.quare.bibleplanner.core.utils.orFalse
 
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.unit.Dp
+
 internal fun LazyListScope.portraitPassageList(
+    contentMaxWidth: Dp,
     passages: List<PassagePlanModel>,
     chapterReadStatus: Map<Pair<Int, Int>, Boolean>,
     onChapterToggle: (passageIndex: Int, chapterIndex: Int) -> Unit,
@@ -27,7 +31,7 @@ internal fun LazyListScope.portraitPassageList(
             .padding(start = 8.dp)
             .padding(vertical = 8.dp)
         if (passage.chapters.isEmpty()) {
-            centeredClickableItem(onToggle) {
+            centeredClickableItem(onClick = onToggle, contentMaxWidth = contentMaxWidth) {
                 ChapterItemComponent(
                     modifier = commonModifier,
                     bookName = passage.bookId.getBookName(),
@@ -37,13 +41,13 @@ internal fun LazyListScope.portraitPassageList(
                 )
             }
             if (passageIndex < passages.size - 1) {
-                dividerItem()
+                dividerItem(contentMaxWidth = contentMaxWidth)
             }
         } else {
             // Show each chapter as a separate item
             passage.chapters.forEachIndexed { chapterIndex, chapter ->
                 val chapterToggle = { onChapterToggle(passageIndex, chapterIndex) }
-                centeredClickableItem(chapterToggle) {
+                centeredClickableItem(onClick = chapterToggle, contentMaxWidth = contentMaxWidth) {
                     ChapterItemComponent(
                         modifier = commonModifier,
                         bookName = passage.bookId.getBookName(),
@@ -52,7 +56,7 @@ internal fun LazyListScope.portraitPassageList(
                         onToggle = chapterToggle,
                     )
                 }
-                dividerItem()
+                dividerItem(contentMaxWidth = contentMaxWidth)
             }
         }
     }
@@ -60,23 +64,37 @@ internal fun LazyListScope.portraitPassageList(
 
 private fun LazyListScope.centeredClickableItem(
     onClick: () -> Unit,
+    contentMaxWidth: Dp,
     content: @Composable () -> Unit,
 ) {
     item {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onClick() },
+            modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,
         ) {
-            content()
+            Box(
+                modifier = Modifier
+                    .widthIn(max = contentMaxWidth)
+                    .clickable { onClick() }
+            ) {
+                content()
+            }
         }
     }
 }
 
-private fun LazyListScope.dividerItem() {
+private fun LazyListScope.dividerItem(contentMaxWidth: Dp) {
     item {
-        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth())
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            HorizontalDivider(
+                modifier = Modifier
+                    .widthIn(max = contentMaxWidth)
+                    .padding(vertical = 4.dp)
+            )
+        }
     }
 }
 

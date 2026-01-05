@@ -26,9 +26,11 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_premium
@@ -83,39 +85,43 @@ private fun PortraitLayout(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        moreScreenContent(
-            state = state,
-            onEvent = onEvent,
-        )
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val contentMaxWidth = maxWidth.coerceAtMost(MAX_CONTENT_WIDTH.dp)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            moreScreenContent(
+                state = state,
+                onEvent = onEvent,
+                contentMaxWidth = contentMaxWidth
+            )
+        }
     }
 }
 
 @Composable
 private fun LandscapeLayout(
-    contentMaxWidth: androidx.compose.ui.unit.Dp,
+    contentMaxWidth: Dp,
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
-    Box(
+    LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = androidx.compose.ui.Alignment.TopCenter,
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        LazyColumn(
-            modifier = Modifier.widthIn(max = contentMaxWidth),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            headerSection(state = state, onEvent = onEvent)
+        headerSection(state = state, onEvent = onEvent, contentMaxWidth = contentMaxWidth)
 
-            // Two-column layout for the rest
-            item {
+        // Two-column layout for the rest
+        item {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.widthIn(max = contentMaxWidth),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     // Left column
@@ -146,46 +152,62 @@ private fun LandscapeLayout(
 private fun LazyListScope.moreScreenContent(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
+    contentMaxWidth: Dp,
 ) {
-    headerSection(state = state, onEvent = onEvent)
-    preferencesSection(state = state, onEvent = onEvent)
-    dataSection(onEvent = onEvent)
-    legalSection(onEvent = onEvent)
+    headerSection(state = state, onEvent = onEvent, contentMaxWidth = contentMaxWidth)
+    preferencesSection(state = state, onEvent = onEvent, contentMaxWidth = contentMaxWidth)
+    dataSection(onEvent = onEvent, contentMaxWidth = contentMaxWidth)
+    legalSection(onEvent = onEvent, contentMaxWidth = contentMaxWidth)
     if (state.isInstagramLinkVisible) {
-        socialSection(onEvent = onEvent)
+        socialSection(onEvent = onEvent, contentMaxWidth = contentMaxWidth)
     }
 }
 
 private fun LazyListScope.headerSection(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
+    contentMaxWidth: Dp,
 ) {
     if (state.isFreeUser || state.shouldShowDonateOption) {
         state.headerRes?.let { headerRes ->
-            item { SectionHeader(stringResource(headerRes)) }
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                        SectionHeader(stringResource(headerRes))
+                    }
+                }
+            }
         }
         item {
-            Row(
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if (state.isFreeUser) {
-                    ActionCard(
-                        modifier = Modifier.weight(1f),
-                        title = stringResource(Res.string.become_premium),
-                        subtitle = stringResource(Res.string.become_premium_subtitle),
-                        icon = Icons.Default.Star,
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BECOME_PREMIUM)) },
-                    )
-                }
-                if (state.shouldShowDonateOption) {
-                    ActionCard(
-                        modifier = Modifier.weight(1f),
-                        title = stringResource(Res.string.donate_option),
-                        subtitle = stringResource(Res.string.donate_subtitle),
-                        icon = Icons.Default.Favorite,
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DONATE)) },
-                    )
+                Row(
+                    modifier = Modifier
+                        .widthIn(max = contentMaxWidth),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    if (state.isFreeUser) {
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = stringResource(Res.string.become_premium),
+                            subtitle = stringResource(Res.string.become_premium_subtitle),
+                            icon = Icons.Default.Star,
+                            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BECOME_PREMIUM)) },
+                        )
+                    }
+                    if (state.shouldShowDonateOption) {
+                        ActionCard(
+                            modifier = Modifier.weight(1f),
+                            title = stringResource(Res.string.donate_option),
+                            subtitle = stringResource(Res.string.donate_subtitle),
+                            icon = Icons.Default.Favorite,
+                            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DONATE)) },
+                        )
+                    }
                 }
             }
         }
@@ -195,69 +217,129 @@ private fun LazyListScope.headerSection(
 private fun LazyListScope.preferencesSection(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
+    contentMaxWidth: Dp,
 ) {
-    item { SectionHeader(stringResource(Res.string.preferences)) }
     item {
-        SectionCard {
-            MoreMenuItem(
-                itemModel = MoreMenuOptionsFactory.theme,
-                subtitle = stringResource(state.themeSubtitle),
-                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
-            )
-            HorizontalDivider()
-            MoreMenuItem(
-                itemModel = MoreMenuOptionsFactory.editStartDate,
-                subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
-                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
-            )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                SectionHeader(stringResource(Res.string.preferences))
+            }
+        }
+    }
+    item {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                SectionCard {
+                    MoreMenuItem(
+                        itemModel = MoreMenuOptionsFactory.theme,
+                        subtitle = stringResource(state.themeSubtitle),
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
+                    )
+                    HorizontalDivider()
+                    MoreMenuItem(
+                        itemModel = MoreMenuOptionsFactory.editStartDate,
+                        subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
+                    )
+                }
+            }
         }
     }
 }
 
 private fun LazyListScope.dataSection(
     onEvent: (MoreUiEvent) -> Unit,
+    contentMaxWidth: Dp,
 ) {
-    item { SectionHeader(stringResource(Res.string.data_section)) }
     item {
-        SectionCard {
-            MoreMenuItem(
-                itemModel = MoreMenuOptionsFactory.deleteProgress,
-                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
-                isDestructive = true,
-            )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                SectionHeader(stringResource(Res.string.data_section))
+            }
+        }
+    }
+    item {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                SectionCard {
+                    MoreMenuItem(
+                        itemModel = MoreMenuOptionsFactory.deleteProgress,
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
+                        isDestructive = true,
+                    )
+                }
+            }
         }
     }
 }
 
 private fun LazyListScope.legalSection(
     onEvent: (MoreUiEvent) -> Unit,
+    contentMaxWidth: Dp,
 ) {
-    item { SectionHeader(stringResource(Res.string.legal_section)) }
     item {
-        SectionCard {
-            MoreMenuItem(
-                itemModel = MoreMenuOptionsFactory.privacyPolicy,
-                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
-            )
-            HorizontalDivider()
-            MoreMenuItem(
-                itemModel = MoreMenuOptionsFactory.termsOfService,
-                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
-            )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                SectionHeader(stringResource(Res.string.legal_section))
+            }
+        }
+    }
+    item {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                SectionCard {
+                    MoreMenuItem(
+                        itemModel = MoreMenuOptionsFactory.privacyPolicy,
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
+                    )
+                    HorizontalDivider()
+                    MoreMenuItem(
+                        itemModel = MoreMenuOptionsFactory.termsOfService,
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
+                    )
+                }
+            }
         }
     }
 }
 
 private fun LazyListScope.socialSection(
     onEvent: (MoreUiEvent) -> Unit,
+    contentMaxWidth: Dp,
 ) {
-    item { SectionHeader(stringResource(Res.string.social_section)) }
     item {
-        SectionCard {
-            MoreMenuItem(
-                itemModel = MoreMenuOptionsFactory.instagram,
-                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
-            )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                SectionHeader(stringResource(Res.string.social_section))
+            }
+        }
+    }
+    item {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                SectionCard {
+                    MoreMenuItem(
+                        itemModel = MoreMenuOptionsFactory.instagram,
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
+                    )
+                }
+            }
         }
     }
 }
@@ -266,15 +348,13 @@ private fun LazyListScope.socialSection(
 private fun formatPlanStartDateSubtitle(
     planStartDate: kotlinx.datetime.LocalDate?,
     currentDate: kotlinx.datetime.LocalDate,
-): String {
-    return planStartDate
-        ?.let { date ->
-            val isToday = date == currentDate
-            val prefix = if (isToday) "${stringResource(Res.string.today)}, " else ""
-            val month = stringResource(date.month.toStringResource()).take(3)
-            "$prefix${date.day} $month ${date.year}"
-        }.orEmpty()
-}
+): String = planStartDate
+    ?.let { date ->
+        val isToday = date == currentDate
+        val prefix = if (isToday) "${stringResource(Res.string.today)}, " else ""
+        val month = stringResource(date.month.toStringResource()).take(3)
+        "$prefix${date.day} $month ${date.year}"
+    }.orEmpty()
 
 // Composable wrappers for use in Column contexts (landscape layout)
 @Composable
@@ -299,9 +379,7 @@ private fun PreferencesSectionContent(
 }
 
 @Composable
-private fun DataSectionContent(
-    onEvent: (MoreUiEvent) -> Unit,
-) {
+private fun DataSectionContent(onEvent: (MoreUiEvent) -> Unit) {
     SectionHeader(stringResource(Res.string.data_section))
     SectionCard {
         MoreMenuItem(
@@ -313,9 +391,7 @@ private fun DataSectionContent(
 }
 
 @Composable
-private fun LegalSectionContent(
-    onEvent: (MoreUiEvent) -> Unit,
-) {
+private fun LegalSectionContent(onEvent: (MoreUiEvent) -> Unit) {
     SectionHeader(stringResource(Res.string.legal_section))
     SectionCard {
         MoreMenuItem(
@@ -331,9 +407,7 @@ private fun LegalSectionContent(
 }
 
 @Composable
-private fun SocialSectionContent(
-    onEvent: (MoreUiEvent) -> Unit,
-) {
+private fun SocialSectionContent(onEvent: (MoreUiEvent) -> Unit) {
     SectionHeader(stringResource(Res.string.social_section))
     SectionCard {
         MoreMenuItem(
@@ -342,7 +416,6 @@ private fun SocialSectionContent(
         )
     }
 }
-
 
 @Composable
 private fun SectionHeader(title: String) {

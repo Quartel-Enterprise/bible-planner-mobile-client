@@ -16,6 +16,8 @@ import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedRea
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
+import androidx.compose.foundation.layout.Column
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LoadedDayLandscapeScreenRightContent(
@@ -25,38 +27,32 @@ internal fun LoadedDayLandscapeScreenRightContent(
     animatedContentScope: AnimatedContentScope,
     onEvent: (DayUiEvent) -> Unit,
 ) {
-    LazyColumn(
+    Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
         day.plannedReadDate?.let { plannedReadDate ->
-            item {
-                with(sharedTransitionScope) {
-                    PlannedReadDateComponent(
-                        modifier = Modifier.padding(8.dp),
-                        plannedReadDate = plannedReadDate,
-                        animatedContentScope = animatedContentScope,
-                        weekNumber = uiState.weekNumber,
-                        dayNumber = day.number,
-                    )
-                }
+            with(sharedTransitionScope) {
+                PlannedReadDateComponent(
+                    modifier = Modifier.padding(8.dp),
+                    plannedReadDate = plannedReadDate,
+                    animatedContentScope = animatedContentScope,
+                    weekNumber = uiState.weekNumber,
+                    dayNumber = day.number,
+                )
             }
         }
 
-        item {
-            DayReadSection(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                isRead = day.isRead,
-                formattedReadDate = uiState.formattedReadDate,
-                onEvent = onEvent,
-            )
-        }
+        DayReadSection(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            isRead = day.isRead,
+            formattedReadDate = uiState.formattedReadDate,
+            onEvent = onEvent,
+        )
 
-        item {
-            NotesSection(
-                modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
-                notesText = day.notes.orEmpty(),
-                onEvent = onEvent,
-            )
-        }
+        NotesSection(
+            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+            notesText = day.notes.orEmpty(),
+            onEvent = onEvent,
+        )
     }
 }
