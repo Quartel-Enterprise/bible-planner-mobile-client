@@ -4,6 +4,7 @@ import ComposeApp
 
 class IosRemoteConfigService: RemoteConfigService {
     private let remoteConfig: RemoteConfig
+    private var initializationTask: Task<Void, Never>?
 
     init(remoteConfig: RemoteConfig) {
         self.remoteConfig = remoteConfig
@@ -12,18 +13,20 @@ class IosRemoteConfigService: RemoteConfigService {
         settings.minimumFetchInterval = 0
         #endif
         self.remoteConfig.configSettings = settings
-        
-        Task {
+
+        initializationTask = Task {
             await fetchAndActivate()
         }
     }
 
     func getBoolean(key: String) async throws -> KotlinBoolean {
+        await initializationTask?.value
         let value = remoteConfig.configValue(forKey: key).boolValue
         return KotlinBoolean(bool: value)
     }
 
     func getInt(key: String) async throws -> KotlinInt {
+        await initializationTask?.value
         let value = remoteConfig.configValue(forKey: key).numberValue.int32Value
         return KotlinInt(int: value)
     }
