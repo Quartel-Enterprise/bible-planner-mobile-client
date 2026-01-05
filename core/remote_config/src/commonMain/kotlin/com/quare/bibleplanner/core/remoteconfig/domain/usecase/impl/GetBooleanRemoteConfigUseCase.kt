@@ -5,6 +5,6 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteC
 
 internal class GetBooleanRemoteConfigUseCase(
     private val remoteConfigService: RemoteConfigService,
-): GetBooleanRemoteConfig {
+) : GetBooleanRemoteConfig {
     override suspend fun invoke(key: String): Boolean = remoteConfigService.getBoolean(key)
 }

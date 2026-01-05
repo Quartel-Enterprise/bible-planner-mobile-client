@@ -43,7 +43,7 @@ internal class MoreUiStateFactory(
             else -> null
         }
 
-        MoreUiState(
+        MoreUiState.Loaded(
             themeSubtitle = theme.toStringResource(),
             planStartDate = startDate,
             currentDate = Clock.System

@@ -5,6 +5,6 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetIntRemoteConfi
 
 internal class GetIntRemoteConfigUseCase(
     private val remoteConfigService: RemoteConfigService,
-): GetIntRemoteConfig {
+) : GetIntRemoteConfig {
     override suspend fun invoke(key: String): Int = remoteConfigService.getInt(key)
 }

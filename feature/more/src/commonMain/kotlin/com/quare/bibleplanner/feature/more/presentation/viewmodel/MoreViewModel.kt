@@ -3,8 +3,6 @@ package com.quare.bibleplanner.feature.more.presentation.viewmodel
 import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.more.generated.resources.Res
-import bibleplanner.feature.more.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
@@ -19,30 +17,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
 
 internal class MoreViewModel(
-    private val calculateBibleProgress: CalculateBibleProgressUseCase,
     uiStateFactory: MoreUiStateFactory,
+    private val calculateBibleProgress: CalculateBibleProgressUseCase,
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
-    private val _uiState = MutableStateFlow(
-        MoreUiState(
-            themeSubtitle = Res.string.theme_system,
-            planStartDate = null,
-            currentDate = Clock.System
-                .now()
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-                .date,
-            isFreeUser = false,
-            isInstagramLinkVisible = false,
-            shouldShowDonateOption = false,
-            headerRes = null,
-        ),
-    )
+    private val _uiState = MutableStateFlow<MoreUiState>(MoreUiState.Loading)
     val uiState: StateFlow<MoreUiState> = _uiState
 
     init {
