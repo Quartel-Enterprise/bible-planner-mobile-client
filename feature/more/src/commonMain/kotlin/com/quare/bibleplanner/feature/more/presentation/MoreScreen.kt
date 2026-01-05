@@ -24,33 +24,31 @@ internal fun MoreScreen(
 ) {
     val mainPadding = LocalMainPadding.current
 
-    AnimatedContent(state) { animatedState ->
-        when (animatedState) {
-            MoreUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+    when (state) {
+        MoreUiState.Loading -> {
+            Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
+        }
 
-            is MoreUiState.Loaded -> {
-                ResponsiveContent(
-                    modifier = Modifier.padding(16.dp),
-                    contentPadding = mainPadding,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    portraitContent = {
-                        moreScreenPortraitLayout(
-                            state = animatedState,
-                            onEvent = onEvent,
-                        )
-                    },
-                    landscapeContent = {
-                        moreScreenLandscapeLayout(
-                            state = animatedState,
-                            onEvent = onEvent,
-                        )
-                    },
-                )
-            }
+        is MoreUiState.Loaded -> {
+            ResponsiveContent(
+                modifier = Modifier.padding(16.dp),
+                contentPadding = mainPadding,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                portraitContent = {
+                    moreScreenPortraitLayout(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                },
+                landscapeContent = {
+                    moreScreenLandscapeLayout(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                },
+            )
         }
     }
 }
