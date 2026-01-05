@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.more.di
 
+import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
 import com.quare.bibleplanner.feature.more.presentation.viewmodel.MoreViewModel
 import com.quare.bibleplanner.feature.more.usecase.ShouldShowDonateOptionUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -11,5 +12,6 @@ val moreModule = module {
     factoryOf(::ShouldShowDonateOptionUseCase)
 
     // Presentation
+    factoryOf(::MoreUiStateFactory)
     viewModelOf(::MoreViewModel)
 }

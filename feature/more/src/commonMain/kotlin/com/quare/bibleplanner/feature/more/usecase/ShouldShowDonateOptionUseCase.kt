@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.more.usecase
 
-import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteConfig
 
 class ShouldShowDonateOptionUseCase(
-    private val remoteConfigService: RemoteConfigService,
+    private val getBooleanRemoteConfig: GetBooleanRemoteConfig,
 ) {
-    suspend operator fun invoke(): Boolean = remoteConfigService.getBoolean("show_donate")
+    suspend operator fun invoke(): Boolean = getBooleanRemoteConfig("show_donate")
 }

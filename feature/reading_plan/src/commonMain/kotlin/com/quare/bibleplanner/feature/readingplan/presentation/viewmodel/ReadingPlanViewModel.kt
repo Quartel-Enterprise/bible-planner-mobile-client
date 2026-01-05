@@ -7,7 +7,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
-import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
@@ -37,9 +37,9 @@ internal class ReadingPlanViewModel(
     getPlansByWeek: GetPlansByWeekUseCase,
     getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
     calculateBibleProgress: CalculateBibleProgressUseCase,
-    getPlanStartDate: GetPlanStartDateUseCase,
+    getPlanStartDate: GetPlanStartDateFlowUseCase,
     private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
-    private val setPlanStartTimeUseCase: SetPlanStartTimeUseCase,
+    private val setPlanStartTime: SetPlanStartTimeUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
@@ -61,7 +61,7 @@ internal class ReadingPlanViewModel(
     init {
         viewModelScope.launch {
             if (getPlanStartDate().first() == null) {
-                setPlanStartTimeUseCase(SetPlanStartTimeUseCase.Strategy.Now)
+                setPlanStartTime(SetPlanStartTimeUseCase.Strategy.Now)
             }
             initializeBooksIfNeeded()
         }
