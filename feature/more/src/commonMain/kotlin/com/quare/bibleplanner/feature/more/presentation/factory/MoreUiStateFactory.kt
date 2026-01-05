@@ -11,7 +11,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCa
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
-import com.quare.bibleplanner.feature.more.usecase.ShouldShowDonateOptionUseCase
+import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
 import com.quare.bibleplanner.ui.theme.model.Theme
 import kotlinx.coroutines.flow.Flow

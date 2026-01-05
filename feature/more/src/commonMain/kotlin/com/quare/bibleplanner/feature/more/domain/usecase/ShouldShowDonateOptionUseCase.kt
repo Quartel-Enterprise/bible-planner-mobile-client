@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.more.usecase
+package com.quare.bibleplanner.feature.more.domain.usecase
 
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteConfig
 
