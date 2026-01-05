@@ -4,15 +4,10 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ListItem
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 
@@ -27,7 +22,8 @@ internal fun SharedTransitionScope.DayItem(
 ) {
     val day = dayPlan.day
     val dayNumber = day.number
-    Column(
+
+    ListItem(
         modifier = modifier
             .clickable {
                 onEvent(
@@ -36,31 +32,24 @@ internal fun SharedTransitionScope.DayItem(
                         weekNumber = weekNumber,
                     ),
                 )
-            }.padding(vertical = 8.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                AnimatedPlannedReadDateComponent(
-                    dayPlan = dayPlan,
-                    animatedContentScope = animatedContentScope,
-                    weekNumber = weekNumber,
-                    dayNumber = dayNumber,
-                )
-                DayItemTexts(
-                    animatedContentScope = animatedContentScope,
-                    day = day,
-                    weekNumber = weekNumber,
-                )
-            }
+            },
+        leadingContent = {
+            AnimatedPlannedReadDateComponent(
+                dayPlan = dayPlan,
+                animatedContentScope = animatedContentScope,
+                weekNumber = weekNumber,
+                dayNumber = dayNumber,
+            )
+        },
+        headlineContent = {
+            DayItemTexts(
+                animatedContentScope = animatedContentScope,
+                day = day,
+                weekNumber = weekNumber,
+            )
+        },
+        trailingContent = {
             Checkbox(
-                modifier = Modifier.padding(end = 8.dp),
                 checked = day.isRead,
                 onCheckedChange = {
                     onEvent(
@@ -71,6 +60,6 @@ internal fun SharedTransitionScope.DayItem(
                     )
                 },
             )
-        }
-    }
+        },
+    )
 }

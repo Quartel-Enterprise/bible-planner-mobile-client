@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_books">Pesquisar livro...</string>
+    <string name="categorize">Categorizar</string>
+    <string name="only_read">Lidos</string>
+    <string name="favorites">Favoritos</string>
+    <string name="old_testament">VELHO TESTAMENTO</string>
+    <string name="new_testament">NOVO TESTAMENTO</string>
+    <string name="show_more">Mostrar Mais</string>
+    <string name="show_less">Mostrar Menos</string>
+    <string name="completed">Completo</string>
+    <string name="chapters_format">Capítulos: %1$d/%2$d</string>
+    <string name="content_description_favorite">Favorito</string>
+    <string name="content_description_navigate">Navegar</string>
+    <string name="pentateuch">PENTAEUCO</string>
+    <string name="historical_books">LIVROS HISTÓRICOS</string>
+    <string name="wisdom_books">SAPIENCIAIS</string>
+    <string name="major_prophets">PROFETAS MAIORES</string>
+    <string name="minor_prophets">PROFETAS MENORES</string>
+    <string name="gospels">EVANGELHOS</string>
+    <string name="acts">ATOS</string>
+    <string name="pauline_epistles">EPÍSTOLAS PAULINAS</string>
+    <string name="general_epistles">EPÍSTOLAS GERAIS</string>
+    <string name="revelation">APOCALIPSE</string>
+</resources>

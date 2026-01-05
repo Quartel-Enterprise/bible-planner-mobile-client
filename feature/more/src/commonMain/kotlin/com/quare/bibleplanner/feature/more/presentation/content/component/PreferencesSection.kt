@@ -1,0 +1,53 @@
+package com.quare.bibleplanner.feature.more.presentation.content.component
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import bibleplanner.feature.more.generated.resources.Res
+import bibleplanner.feature.more.generated.resources.preferences
+import bibleplanner.feature.more.generated.resources.today
+import com.quare.bibleplanner.feature.more.presentation.factory.MoreMenuOptionsFactory
+import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
+import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
+import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
+import com.quare.bibleplanner.ui.utils.toStringResource
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun PreferencesSection(
+    modifier: Modifier = Modifier,
+    state: MoreUiState.Loaded,
+    onEvent: (MoreUiEvent) -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(stringResource(Res.string.preferences))
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.theme,
+                subtitle = stringResource(state.themeSubtitle),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.editStartDate,
+                subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun formatPlanStartDateSubtitle(
+    planStartDate: kotlinx.datetime.LocalDate?,
+    currentDate: kotlinx.datetime.LocalDate,
+): String = planStartDate
+    ?.let { date ->
+        val isToday = date == currentDate
+        val prefix = if (isToday) "${stringResource(Res.string.today)}, " else ""
+        val month = stringResource(date.month.toStringResource()).take(3)
+        "$prefix${date.day} $month ${date.year}"
+    }.orEmpty()

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
+import com.quare.bibleplanner.feature.books.presentation.booksScreen
 import com.quare.bibleplanner.feature.more.presentation.more
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
@@ -30,6 +31,7 @@ fun BottomNavHost(
         startDestination = BottomNavRoute.Plans,
     ) {
         readingPlan(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
+        booksScreen(rootNavController)
         more(rootNavController, mainScaffoldState)
     }
 }

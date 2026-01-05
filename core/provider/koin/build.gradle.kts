@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.core.date)
 
             // Features
+            implementation(projects.feature.books)
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.readingPlan)
             implementation(projects.feature.deleteProgress)
