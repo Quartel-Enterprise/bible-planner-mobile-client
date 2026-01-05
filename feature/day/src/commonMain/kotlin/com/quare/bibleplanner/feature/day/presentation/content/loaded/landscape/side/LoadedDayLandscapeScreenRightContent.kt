@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,38 +26,32 @@ internal fun LoadedDayLandscapeScreenRightContent(
     animatedContentScope: AnimatedContentScope,
     onEvent: (DayUiEvent) -> Unit,
 ) {
-    LazyColumn(
+    Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
         day.plannedReadDate?.let { plannedReadDate ->
-            item {
-                with(sharedTransitionScope) {
-                    PlannedReadDateComponent(
-                        modifier = Modifier.padding(8.dp),
-                        plannedReadDate = plannedReadDate,
-                        animatedContentScope = animatedContentScope,
-                        weekNumber = uiState.weekNumber,
-                        dayNumber = day.number,
-                    )
-                }
+            with(sharedTransitionScope) {
+                PlannedReadDateComponent(
+                    modifier = Modifier.padding(8.dp),
+                    plannedReadDate = plannedReadDate,
+                    animatedContentScope = animatedContentScope,
+                    weekNumber = uiState.weekNumber,
+                    dayNumber = day.number,
+                )
             }
         }
 
-        item {
-            DayReadSection(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                isRead = day.isRead,
-                formattedReadDate = uiState.formattedReadDate,
-                onEvent = onEvent,
-            )
-        }
+        DayReadSection(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            isRead = day.isRead,
+            formattedReadDate = uiState.formattedReadDate,
+            onEvent = onEvent,
+        )
 
-        item {
-            NotesSection(
-                modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
-                notesText = day.notes.orEmpty(),
-                onEvent = onEvent,
-            )
-        }
+        NotesSection(
+            modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+            notesText = day.notes.orEmpty(),
+            onEvent = onEvent,
+        )
     }
 }

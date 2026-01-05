@@ -10,4 +10,5 @@ internal data class MoreUiState(
     val isFreeUser: Boolean,
     val isInstagramLinkVisible: Boolean,
     val shouldShowDonateOption: Boolean,
+    val headerRes: StringResource?,
 )

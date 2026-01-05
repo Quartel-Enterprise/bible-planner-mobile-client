@@ -4,6 +4,9 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.more.generated.resources.Res
+import bibleplanner.feature.more.generated.resources.premium_and_support
+import bibleplanner.feature.more.generated.resources.premium_section
+import bibleplanner.feature.more.generated.resources.support_section
 import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
@@ -53,6 +56,7 @@ internal class MoreViewModel(
             isFreeUser = false,
             isInstagramLinkVisible = false,
             shouldShowDonateOption = false,
+            headerRes = null,
         ),
     )
     val uiState: StateFlow<MoreUiState> = _uiState
@@ -62,11 +66,23 @@ internal class MoreViewModel(
             val isFreeDeferred = async { isFreeUser() }
             val isInstagramVisibleDeferred = async { isInstagramLinkVisible() }
             val shouldShowDonateDeferred = async { shouldShowDonateOption() }
+            val isFree = isFreeDeferred.await()
+            val isInstagramVisible = isInstagramVisibleDeferred.await()
+            val shouldShowDonate = shouldShowDonateDeferred.await()
+
+            val headerRes = when {
+                isFree && shouldShowDonate -> Res.string.premium_and_support
+                isFree -> Res.string.premium_section
+                shouldShowDonate -> Res.string.support_section
+                else -> null
+            }
+
             _uiState.update {
                 it.copy(
-                    isFreeUser = isFreeDeferred.await(),
-                    isInstagramLinkVisible = isInstagramVisibleDeferred.await(),
-                    shouldShowDonateOption = shouldShowDonateDeferred.await(),
+                    isFreeUser = isFree,
+                    isInstagramLinkVisible = isInstagramVisible,
+                    shouldShowDonateOption = shouldShowDonate,
+                    headerRes = headerRes,
                 )
             }
             combine(

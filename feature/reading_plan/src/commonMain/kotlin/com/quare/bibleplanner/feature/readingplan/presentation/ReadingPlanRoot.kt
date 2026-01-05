@@ -6,12 +6,9 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -20,6 +17,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.feature.readingplan.presentation.component.fabs.ReadingPlanFabsComponent
+import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanScreen
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
@@ -61,10 +59,10 @@ fun NavGraphBuilder.readingPlan(
         )
         ReadingPlanScreen(
             uiState = uiState,
-            lazyListState = lazyListState,
             onEvent = onEvent,
-            animatedContentScope = animatedContentScope,
             sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+            lazyListState = lazyListState,
         )
     }
 }
