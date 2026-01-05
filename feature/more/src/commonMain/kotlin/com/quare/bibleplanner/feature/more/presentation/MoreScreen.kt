@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.more.presentation
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -48,100 +46,72 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreMenuItemPresen
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
+import com.quare.bibleplanner.ui.component.ResponsiveContent
+import com.quare.bibleplanner.ui.component.centeredItem
 import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
-private const val WIDE_SCREEN_BREAKPOINT = 600
-private const val MAX_CONTENT_WIDTH = 1200
 
 @Composable
 internal fun MoreScreen(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
-    BoxWithConstraints(
+    ResponsiveContent(
         modifier = Modifier.fillMaxSize(),
-    ) {
-        val isWideScreen = maxWidth > WIDE_SCREEN_BREAKPOINT.dp
-
-        if (isWideScreen) {
-            LandscapeLayout(
-                contentMaxWidth = maxWidth.coerceAtMost(MAX_CONTENT_WIDTH.dp),
-                state = state,
-                onEvent = onEvent,
-            )
-        } else {
-            PortraitLayout(
-                state = state,
-                onEvent = onEvent,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PortraitLayout(
-    state: MoreUiState,
-    onEvent: (MoreUiEvent) -> Unit,
-) {
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val contentMaxWidth = maxWidth.coerceAtMost(MAX_CONTENT_WIDTH.dp)
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        portraitContent = { contentMaxWidth ->
             moreScreenContent(
                 state = state,
                 onEvent = onEvent,
                 contentMaxWidth = contentMaxWidth,
             )
+        },
+        landscapeContent = { contentMaxWidth ->
+            landscapeLayout(
+                contentMaxWidth = contentMaxWidth,
+                state = state,
+                onEvent = onEvent,
+            )
         }
-    }
+    )
 }
 
-@Composable
-private fun LandscapeLayout(
+private fun LazyListScope.landscapeLayout(
     contentMaxWidth: Dp,
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        headerSection(state = state, onEvent = onEvent, contentMaxWidth = contentMaxWidth)
+    headerSection(state = state, onEvent = onEvent, contentMaxWidth = contentMaxWidth)
 
-        // Two-column layout for the rest
-        item {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
+    // Two-column layout for the rest
+    item {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(
+                modifier = Modifier.width(contentMaxWidth),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Row(
-                    modifier = Modifier.width(contentMaxWidth),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                // Left column
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    // Left column
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        PreferencesSectionContent(state = state, onEvent = onEvent)
-                        DataSectionContent(onEvent = onEvent)
-                    }
+                    PreferencesSectionContent(state = state, onEvent = onEvent)
+                    DataSectionContent(onEvent = onEvent)
+                }
 
-                    // Right column
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        LegalSectionContent(onEvent = onEvent)
-                        if (state.isInstagramLinkVisible) {
-                            SocialSectionContent(onEvent = onEvent)
-                        }
+                // Right column
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    LegalSectionContent(onEvent = onEvent)
+                    if (state.isInstagramLinkVisible) {
+                        SocialSectionContent(onEvent = onEvent)
                     }
                 }
             }
@@ -170,44 +140,32 @@ private fun LazyListScope.headerSection(
 ) {
     if (state.isFreeUser || state.shouldShowDonateOption) {
         state.headerRes?.let { headerRes ->
-            item {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Box(modifier = Modifier.width(contentMaxWidth)) {
-                        SectionHeader(stringResource(headerRes))
-                    }
-                }
+            centeredItem(contentMaxWidth) {
+                SectionHeader(stringResource(headerRes))
             }
         }
-        item {
-            Box(
-                contentAlignment = Alignment.Center,
+        centeredItem(contentMaxWidth) {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Row(
-                    modifier = Modifier.width(contentMaxWidth),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (state.isFreeUser) {
-                        ActionCard(
-                            modifier = Modifier.weight(1f),
-                            title = stringResource(Res.string.become_premium),
-                            subtitle = stringResource(Res.string.become_premium_subtitle),
-                            icon = Icons.Default.Star,
-                            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BECOME_PREMIUM)) },
-                        )
-                    }
-                    if (state.shouldShowDonateOption) {
-                        ActionCard(
-                            modifier = Modifier.weight(1f),
-                            title = stringResource(Res.string.donate_option),
-                            subtitle = stringResource(Res.string.donate_subtitle),
-                            icon = Icons.Default.Favorite,
-                            onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DONATE)) },
-                        )
-                    }
+                if (state.isFreeUser) {
+                    ActionCard(
+                        modifier = Modifier.weight(1f),
+                        title = stringResource(Res.string.become_premium),
+                        subtitle = stringResource(Res.string.become_premium_subtitle),
+                        icon = Icons.Default.Star,
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BECOME_PREMIUM)) },
+                    )
+                }
+                if (state.shouldShowDonateOption) {
+                    ActionCard(
+                        modifier = Modifier.weight(1f),
+                        title = stringResource(Res.string.donate_option),
+                        subtitle = stringResource(Res.string.donate_subtitle),
+                        icon = Icons.Default.Favorite,
+                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DONATE)) },
+                    )
                 }
             }
         }
@@ -219,36 +177,22 @@ private fun LazyListScope.preferencesSection(
     onEvent: (MoreUiEvent) -> Unit,
     contentMaxWidth: Dp,
 ) {
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                SectionHeader(stringResource(Res.string.preferences))
-            }
-        }
+    centeredItem(contentMaxWidth) {
+        SectionHeader(stringResource(Res.string.preferences))
     }
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                SectionCard {
-                    MoreMenuItem(
-                        itemModel = MoreMenuOptionsFactory.theme,
-                        subtitle = stringResource(state.themeSubtitle),
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
-                    )
-                    HorizontalDivider()
-                    MoreMenuItem(
-                        itemModel = MoreMenuOptionsFactory.editStartDate,
-                        subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
-                    )
-                }
-            }
+    centeredItem(contentMaxWidth) {
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.theme,
+                subtitle = stringResource(state.themeSubtitle),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.editStartDate,
+                subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
+            )
         }
     }
 }
@@ -257,30 +201,16 @@ private fun LazyListScope.dataSection(
     onEvent: (MoreUiEvent) -> Unit,
     contentMaxWidth: Dp,
 ) {
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                SectionHeader(stringResource(Res.string.data_section))
-            }
-        }
+    centeredItem(contentMaxWidth) {
+        SectionHeader(stringResource(Res.string.data_section))
     }
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                SectionCard {
-                    MoreMenuItem(
-                        itemModel = MoreMenuOptionsFactory.deleteProgress,
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
-                        isDestructive = true,
-                    )
-                }
-            }
+    centeredItem(contentMaxWidth) {
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.deleteProgress,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
+                isDestructive = true,
+            )
         }
     }
 }
@@ -289,34 +219,20 @@ private fun LazyListScope.legalSection(
     onEvent: (MoreUiEvent) -> Unit,
     contentMaxWidth: Dp,
 ) {
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                SectionHeader(stringResource(Res.string.legal_section))
-            }
-        }
+    centeredItem(contentMaxWidth) {
+        SectionHeader(stringResource(Res.string.legal_section))
     }
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                SectionCard {
-                    MoreMenuItem(
-                        itemModel = MoreMenuOptionsFactory.privacyPolicy,
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
-                    )
-                    HorizontalDivider()
-                    MoreMenuItem(
-                        itemModel = MoreMenuOptionsFactory.termsOfService,
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
-                    )
-                }
-            }
+    centeredItem(contentMaxWidth) {
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.privacyPolicy,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.PRIVACY_POLICY)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.termsOfService,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.TERMS)) },
+            )
         }
     }
 }
@@ -325,29 +241,15 @@ private fun LazyListScope.socialSection(
     onEvent: (MoreUiEvent) -> Unit,
     contentMaxWidth: Dp,
 ) {
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                SectionHeader(stringResource(Res.string.social_section))
-            }
-        }
+    centeredItem(contentMaxWidth) {
+        SectionHeader(stringResource(Res.string.social_section))
     }
-    item {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(modifier = Modifier.width(contentMaxWidth)) {
-                SectionCard {
-                    MoreMenuItem(
-                        itemModel = MoreMenuOptionsFactory.instagram,
-                        onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
-                    )
-                }
-            }
+    centeredItem(contentMaxWidth) {
+        SectionCard {
+            MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.instagram,
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
+            )
         }
     }
 }
