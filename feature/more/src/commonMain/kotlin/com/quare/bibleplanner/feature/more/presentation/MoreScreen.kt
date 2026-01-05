@@ -80,34 +80,31 @@ private fun ResponsiveContentScope.landscapeLayout(
 ) {
     headerSection(state = state, onEvent = onEvent)
 
-    // Two-column layout for the rest
-    item {
-        Box(
+    responsiveItem {
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Row(
-                modifier = Modifier.width(this@landscapeLayout.contentMaxWidth),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                // Left column
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    PreferencesSectionContent(state = state, onEvent = onEvent)
-                    DataSectionContent(onEvent = onEvent)
-                }
+            Column(modifier = Modifier.weight(1f)) {
+                PreferencesSectionContent(state = state, onEvent = onEvent)
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                LegalSectionContent(onEvent = onEvent)
+            }
+        }
+    }
 
-                // Right column
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    LegalSectionContent(onEvent = onEvent)
-                    if (state.isInstagramLinkVisible) {
-                        SocialSectionContent(onEvent = onEvent)
-                    }
+    responsiveItem {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                DataSectionContent(onEvent = onEvent)
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                if (state.isInstagramLinkVisible) {
+                    SocialSectionContent(onEvent = onEvent)
                 }
             }
         }
