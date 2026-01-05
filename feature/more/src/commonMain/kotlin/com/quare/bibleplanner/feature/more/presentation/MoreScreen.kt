@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -95,7 +95,7 @@ private fun PortraitLayout(
             moreScreenContent(
                 state = state,
                 onEvent = onEvent,
-                contentMaxWidth = contentMaxWidth
+                contentMaxWidth = contentMaxWidth,
             )
         }
     }
@@ -121,7 +121,7 @@ private fun LandscapeLayout(
                 contentAlignment = Alignment.Center,
             ) {
                 Row(
-                    modifier = Modifier.widthIn(max = contentMaxWidth),
+                    modifier = Modifier.width(contentMaxWidth),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     // Left column
@@ -173,8 +173,9 @@ private fun LazyListScope.headerSection(
             item {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                    Box(modifier = Modifier.width(contentMaxWidth)) {
                         SectionHeader(stringResource(headerRes))
                     }
                 }
@@ -186,8 +187,7 @@ private fun LazyListScope.headerSection(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(
-                    modifier = Modifier
-                        .widthIn(max = contentMaxWidth),
+                    modifier = Modifier.width(contentMaxWidth),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     if (state.isFreeUser) {
@@ -222,8 +222,9 @@ private fun LazyListScope.preferencesSection(
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
                 SectionHeader(stringResource(Res.string.preferences))
             }
         }
@@ -231,8 +232,9 @@ private fun LazyListScope.preferencesSection(
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
                 SectionCard {
                     MoreMenuItem(
                         itemModel = MoreMenuOptionsFactory.theme,
@@ -258,8 +260,9 @@ private fun LazyListScope.dataSection(
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
                 SectionHeader(stringResource(Res.string.data_section))
             }
         }
@@ -267,8 +270,9 @@ private fun LazyListScope.dataSection(
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
                 SectionCard {
                     MoreMenuItem(
                         itemModel = MoreMenuOptionsFactory.deleteProgress,
@@ -288,8 +292,9 @@ private fun LazyListScope.legalSection(
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
                 SectionHeader(stringResource(Res.string.legal_section))
             }
         }
@@ -297,8 +302,9 @@ private fun LazyListScope.legalSection(
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
                 SectionCard {
                     MoreMenuItem(
                         itemModel = MoreMenuOptionsFactory.privacyPolicy,
@@ -322,8 +328,9 @@ private fun LazyListScope.socialSection(
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
                 SectionHeader(stringResource(Res.string.social_section))
             }
         }
@@ -331,8 +338,9 @@ private fun LazyListScope.socialSection(
     item {
         Box(
             modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+            Box(modifier = Modifier.width(contentMaxWidth)) {
                 SectionCard {
                     MoreMenuItem(
                         itemModel = MoreMenuOptionsFactory.instagram,

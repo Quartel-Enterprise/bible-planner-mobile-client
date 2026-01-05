@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,8 +17,6 @@ import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatu
 import com.quare.bibleplanner.feature.day.presentation.component.ChapterItemComponent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-
-import androidx.compose.foundation.layout.Column
 
 @Composable
 internal fun LoadedDayLandscapeScreenLeftContent(

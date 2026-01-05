@@ -3,11 +3,17 @@ package com.quare.bibleplanner.feature.day.presentation.content.loaded.portrait
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatusButton
@@ -17,12 +23,6 @@ import com.quare.bibleplanner.feature.day.presentation.component.portraitPassage
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedReadDateComponent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.Dp
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -43,7 +43,7 @@ internal fun LoadedDayPortraitScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                Box(modifier = Modifier.width(contentMaxWidth)) {
                     ChangeReadStatusButton(
                         isDayRead = isDayRead,
                         buttonModifier = Modifier
@@ -76,7 +76,7 @@ internal fun LoadedDayPortraitScreenContent(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                        Box(modifier = Modifier.width(contentMaxWidth)) {
                             PlannedReadDateComponent(
                                 modifier = Modifier.padding(8.dp),
                                 plannedReadDate = plannedReadDate,
@@ -94,7 +94,7 @@ internal fun LoadedDayPortraitScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                Box(modifier = Modifier.width(contentMaxWidth)) {
                     DayReadSection(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         isRead = isDayRead,
@@ -110,7 +110,7 @@ internal fun LoadedDayPortraitScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                Box(modifier = Modifier.widthIn(max = contentMaxWidth)) {
+                Box(modifier = Modifier.width(contentMaxWidth)) {
                     NotesSection(
                         modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
                         notesText = day.notes.orEmpty(),

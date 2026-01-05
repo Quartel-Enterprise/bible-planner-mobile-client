@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,8 +16,6 @@ import com.quare.bibleplanner.feature.day.presentation.component.notes.NotesSect
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedReadDateComponent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-
-import androidx.compose.foundation.layout.Column
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

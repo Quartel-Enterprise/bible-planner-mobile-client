@@ -4,19 +4,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.model.plan.PassagePlanModel
 import com.quare.bibleplanner.core.utils.orFalse
-
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.ui.unit.Dp
 
 internal fun LazyListScope.portraitPassageList(
     contentMaxWidth: Dp,
@@ -74,8 +74,8 @@ private fun LazyListScope.centeredClickableItem(
         ) {
             Box(
                 modifier = Modifier
-                    .widthIn(max = contentMaxWidth)
-                    .clickable { onClick() }
+                    .width(contentMaxWidth)
+                    .clickable { onClick() },
             ) {
                 content()
             }
@@ -91,8 +91,8 @@ private fun LazyListScope.dividerItem(contentMaxWidth: Dp) {
         ) {
             HorizontalDivider(
                 modifier = Modifier
-                    .widthIn(max = contentMaxWidth)
-                    .padding(vertical = 4.dp)
+                    .width(contentMaxWidth)
+                    .padding(vertical = 4.dp),
             )
         }
     }
