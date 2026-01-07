@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.more.presentation.content.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,6 +26,12 @@ internal fun SocialSection(
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.instagram,
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.INSTAGRAM)) },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = null,
+                    )
+                },
             )
         }
     }

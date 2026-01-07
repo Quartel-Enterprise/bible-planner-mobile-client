@@ -31,6 +31,11 @@ class IosRemoteConfigService: RemoteConfigService {
         return KotlinInt(int: value)
     }
 
+    func getString(key: String) async throws -> String {
+        await initializationTask?.value
+        return remoteConfig.configValue(forKey: key).stringValue ?? ""
+    }
+
     private func fetchAndActivate() async {
         do {
             let status = try await remoteConfig.fetchAndActivate()

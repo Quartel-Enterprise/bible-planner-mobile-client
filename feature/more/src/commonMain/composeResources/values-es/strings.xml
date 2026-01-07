@@ -16,10 +16,16 @@
     <string name="data_section">Datos</string>
     <string name="legal_section">Legal</string>
     <string name="social_section">Social</string>
+    <string name="web_section">Web</string>
+    <string name="web_app">Web App</string>
+    <string name="web_app_subtitle">Abre la versión web en tu navegador</string>
     <string name="become_pro_subtitle">Desbloquea funciones exclusivas y apoya nuestra misión.</string>
     <string name="donate_subtitle">Apoya nuestro trabajo y ayúdanos a mantener el desarrollo.</string>
     <string name="today">Hoy</string>
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Oscuro</string>
     <string name="theme_system">Predeterminado del sistema</string>
+    <string name="you_re_pro">Eres Pro</string>
+    <string name="pro_description">¡Gracias por tu apoyo!\nTu plan es válido hasta %s.</string>
+    <string name="pro_description_simple">¡Gracias por tu apoyo!</string>
 </resources>

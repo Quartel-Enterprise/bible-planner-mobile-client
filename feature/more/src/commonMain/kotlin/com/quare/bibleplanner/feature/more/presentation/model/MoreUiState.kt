@@ -16,6 +16,7 @@ internal sealed interface MoreUiState {
         val shouldShowDonateOption: Boolean,
         val headerRes: StringResource?,
         val showSubscriptionDetailsDialog: Boolean = false,
-        val isPremiumCardVisible: Boolean,
+        val isProCardVisible: Boolean,
+        val isWebAppVisible: Boolean,
     ) : MoreUiState
 }

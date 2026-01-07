@@ -39,7 +39,7 @@ internal fun ResponsiveContentScope.headerSection(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            if (state.isPremiumCardVisible) {
+            if (state.isProCardVisible) {
                 when (state.subscriptionStatus) {
                     SubscriptionStatus.Free -> {
                         ActionCard(
