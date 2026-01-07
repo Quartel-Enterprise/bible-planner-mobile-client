@@ -159,12 +159,6 @@ fun BookItemComponent(
                     )
 
                     HorizontalSpacer(16.dp)
-
-                    Icon(
-                        imageVector = Icons.Default.ChevronRight,
-                        contentDescription = stringResource(Res.string.content_description_navigate),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
                 }
             },
         )

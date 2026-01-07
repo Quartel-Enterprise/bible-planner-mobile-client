@@ -48,7 +48,7 @@ fun RootAppNavHost() {
 
             paywall(
                 snackbarHostState = mainScaffoldState.snackbarHostState,
-                navController = navController
+                navController = navController,
             )
             congrats(navController)
         }

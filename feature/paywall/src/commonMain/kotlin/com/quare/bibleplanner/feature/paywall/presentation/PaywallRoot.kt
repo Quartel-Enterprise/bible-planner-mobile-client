@@ -13,7 +13,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.paywall(
     snackbarHostState: SnackbarHostState,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     dialog<PaywallNavRoute> {
         val viewModel = koinViewModel<PaywallViewModel>()
