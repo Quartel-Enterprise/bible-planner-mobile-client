@@ -3,7 +3,7 @@ package com.quare.bibleplanner.feature.paywall.presentation.model
 import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
 
 sealed interface PaywallUiEvent {
-    data object OnBackClick : PaywallUiEvent
+    data object OnDismiss : PaywallUiEvent
 
     data class OnPlanSelected(
         val planType: SubscriptionPlanType,

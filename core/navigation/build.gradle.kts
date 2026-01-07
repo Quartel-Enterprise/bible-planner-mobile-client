@@ -33,6 +33,11 @@ kotlin {
 
             // Compose
             implementation(compose.runtime)
+            implementation(compose.material3)
+            implementation(compose.ui)
+
+            // UI
+            implementation(projects.ui.utils)
 
             // Navigation
             implementation(libs.compose.navigation)

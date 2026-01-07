@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.quare.bibleplanner.core.model.route.MainNavRoute
@@ -16,11 +17,13 @@ import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
+import com.quare.bibleplanner.ui.utils.MainScaffoldState
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun RootAppNavHost() {
     val navController = rememberNavController()
+    val mainScaffoldState: MainScaffoldState = remember { MainScaffoldState() }
     SharedTransitionLayout {
         NavHost(
             navController = navController,
@@ -28,6 +31,7 @@ fun RootAppNavHost() {
         ) {
             val sharedTransitionScope = this@SharedTransitionLayout
             mainScreen(
+                mainScaffoldState = mainScaffoldState,
                 rootNavController = navController,
                 sharedTransitionScope = sharedTransitionScope,
             )
@@ -42,7 +46,10 @@ fun RootAppNavHost() {
             addNotesFreeWarning(navController)
             editPlanStartDate(navController)
 
-            paywall(navController)
+            paywall(
+                snackbarHostState = mainScaffoldState.snackbarHostState,
+                navController = navController,
+            )
             congrats(navController)
         }
     }

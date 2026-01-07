@@ -24,6 +24,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.mainScreen(
+    mainScaffoldState: MainScaffoldState,
     rootNavController: NavHostController,
     sharedTransitionScope: SharedTransitionScope,
 ) {
@@ -31,7 +32,6 @@ fun NavGraphBuilder.mainScreen(
         val bottomNavController: NavHostController = rememberNavController()
         val bottomNavBackStackEntry by bottomNavController.currentBackStackEntryAsState()
         val mainViewModel: MainScreenViewModel = koinViewModel()
-        val mainScaffoldState: MainScaffoldState = remember { MainScaffoldState() }
         ActionCollector(mainViewModel.uiAction) { uiAction ->
             when (uiAction) {
                 is MainScreenUiAction.NavigateToBottomRoute -> bottomNavController.goToBottomNavRoute(uiAction.route)
