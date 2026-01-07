@@ -21,6 +21,7 @@ import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
 import com.quare.bibleplanner.feature.more.di.moreModule
 import com.quare.bibleplanner.feature.paywall.di.paywallModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
+import com.quare.bibleplanner.feature.subscriptiondetails.di.subscriptionDetailsModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
 
 object CommonKoinUtils {
@@ -47,5 +48,6 @@ object CommonKoinUtils {
         mainModule,
         moreModule,
         featureBooksModule,
+        subscriptionDetailsModule,
     )
 }

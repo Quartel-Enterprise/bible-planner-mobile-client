@@ -35,44 +35,66 @@ internal class MoreViewModel(
 
     fun onEvent(event: MoreUiEvent) {
         when (event) {
-            is MoreUiEvent.OnItemClick -> when (event.type) {
-                MoreOptionItemType.THEME -> {
-                    emitAction(MoreUiAction.GoToTheme)
-                }
+            is MoreUiEvent.OnItemClick -> {
+                when (event.type) {
+                    MoreOptionItemType.THEME -> {
+                        emitAction(MoreUiAction.GoToTheme)
+                    }
 
-                MoreOptionItemType.PRIVACY_POLICY -> {
-                    emitAction(MoreUiAction.OpenLink(PRIVACY_URL))
-                }
+                    MoreOptionItemType.PRIVACY_POLICY -> {
+                        emitAction(MoreUiAction.OpenLink(PRIVACY_URL))
+                    }
 
-                MoreOptionItemType.TERMS -> {
-                    emitAction(MoreUiAction.OpenLink(TERMS_URL))
-                }
+                    MoreOptionItemType.TERMS -> {
+                        emitAction(MoreUiAction.OpenLink(TERMS_URL))
+                    }
 
-                MoreOptionItemType.BECOME_PREMIUM -> {
-                    emitAction(MoreUiAction.GoToPaywall)
-                }
+                    MoreOptionItemType.BECOME_PRO -> {
+                        emitAction(MoreUiAction.GoToPaywall)
+                    }
 
-                MoreOptionItemType.INSTAGRAM -> {
-                    emitAction(MoreUiAction.OpenLink(getInstagramUrl()))
-                }
+                    MoreOptionItemType.INSTAGRAM -> {
+                        emitAction(MoreUiAction.OpenLink(getInstagramUrl()))
+                    }
 
-                MoreOptionItemType.EDIT_PLAN_START_DAY -> {
-                    emitAction(MoreUiAction.GoToEditPlanStartDay)
-                }
+                    MoreOptionItemType.EDIT_PLAN_START_DAY -> {
+                        emitAction(MoreUiAction.GoToEditPlanStartDay)
+                    }
 
-                MoreOptionItemType.DELETE_PROGRESS -> {
-                    viewModelScope.launch {
-                        val progress = calculateBibleProgress().first()
-                        if (progress > 0) {
-                            emitAction(MoreUiAction.GoToDeleteProgress)
-                        } else {
-                            emitAction(MoreUiAction.ShowNoProgressToDelete)
+                    MoreOptionItemType.DELETE_PROGRESS -> {
+                        viewModelScope.launch {
+                            val progress = calculateBibleProgress().first()
+                            if (progress > 0) {
+                                emitAction(MoreUiAction.GoToDeleteProgress)
+                            } else {
+                                emitAction(MoreUiAction.ShowNoProgressToDelete)
+                            }
                         }
                     }
-                }
 
-                MoreOptionItemType.DONATE -> {
-                    emitAction(MoreUiAction.OpenLink(SPONSOR_URL))
+                    MoreOptionItemType.DONATE -> {
+                        emitAction(MoreUiAction.OpenLink(SPONSOR_URL))
+                    }
+                }
+            }
+
+            MoreUiEvent.OnProCardClick -> {
+                _uiState.update {
+                    if (it is MoreUiState.Loaded) {
+                        it.copy(showSubscriptionDetailsDialog = true)
+                    } else {
+                        it
+                    }
+                }
+            }
+
+            MoreUiEvent.OnDismissSubscriptionDetailsDialog -> {
+                _uiState.update {
+                    if (it is MoreUiState.Loaded) {
+                        it.copy(showSubscriptionDetailsDialog = false)
+                    } else {
+                        it
+                    }
                 }
             }
         }

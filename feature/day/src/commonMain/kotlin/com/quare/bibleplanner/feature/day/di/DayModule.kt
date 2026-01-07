@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.di
 
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
-import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.day.data.datasource.DayLocalDataSource
 import com.quare.bibleplanner.feature.day.data.mapper.DayEntityToModelMapper

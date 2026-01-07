@@ -2,7 +2,7 @@
     <string name="close">Close</string>
     <string name="restore_purchases">Restore purchases</string>
     <string name="paywall_error_message">Unable to load subscription options. Please try again later.</string>
-    <string name="paywall_title">Unlock Bible Planner Premium</string>
+    <string name="paywall_title">Unlock Bible Planner Pro</string>
     <string name="paywall_description">Deepen your study without limits. Join thousands of daily readers.</string>
     <string name="feature_unlimited_notes">Create Unlimited Notes</string>
     <string name="feature_unlimited_notes_subtext">Free plan limited to 3 notes.</string>
@@ -13,7 +13,7 @@
     <string name="year">year</string>
     <string name="plan_annual">Annual</string>
     <string name="save_percent">SAVE %1$d%</string>
-    <string name="start_premium_journey">Start Premium Journey</string>
+    <string name="start_pro_journey">Start Pro Journey</string>
     <string name="footer_payment_info">Secure payment via %1$d. Cancel anytime.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
     <string name="error_purchase_cancelled">Purchase was cancelled.</string>

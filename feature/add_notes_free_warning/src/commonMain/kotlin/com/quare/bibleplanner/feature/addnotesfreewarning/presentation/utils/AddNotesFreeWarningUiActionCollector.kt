@@ -20,7 +20,7 @@ internal fun AddNotesFreeWarningUiActionCollector(
                 navController.navigateUp()
             }
 
-            AddNotesFreeWarningUiAction.NavigateToPremium -> {
+            AddNotesFreeWarningUiAction.NavigateToPro -> {
                 navController.navigate(PaywallNavRoute) {
                     popUpTo(AddNotesFreeWarningNavRoute(maxFreeNotesAmount)) {
                         inclusive = true

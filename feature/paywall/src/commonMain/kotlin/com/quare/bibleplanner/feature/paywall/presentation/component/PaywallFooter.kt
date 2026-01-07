@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.paywall.presentation.component.description.SecurePaymentDescription
-import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.StartPremiumButton
+import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.StartProButton
 
 @Composable
 internal fun PaywallFooter(
@@ -22,7 +22,7 @@ internal fun PaywallFooter(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        StartPremiumButton(
+        StartProButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

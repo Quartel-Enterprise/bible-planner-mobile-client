@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.books.presentation.model
 
-import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 

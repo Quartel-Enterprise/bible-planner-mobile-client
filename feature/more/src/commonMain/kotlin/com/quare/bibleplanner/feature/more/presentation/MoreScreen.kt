@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.more.presentation
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +13,7 @@ import com.quare.bibleplanner.feature.more.presentation.content.moreScreenLandsc
 import com.quare.bibleplanner.feature.more.presentation.content.moreScreenPortraitLayout
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
+import com.quare.bibleplanner.feature.subscriptiondetails.presentation.SubscriptionDetailsDialog
 import com.quare.bibleplanner.ui.component.ResponsiveContent
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
 
@@ -32,6 +32,11 @@ internal fun MoreScreen(
         }
 
         is MoreUiState.Loaded -> {
+            if (state.showSubscriptionDetailsDialog) {
+                SubscriptionDetailsDialog(
+                    onDismiss = { onEvent(MoreUiEvent.OnDismissSubscriptionDetailsDialog) },
+                )
+            }
             ResponsiveContent(
                 modifier = Modifier.padding(16.dp),
                 contentPadding = mainPadding,

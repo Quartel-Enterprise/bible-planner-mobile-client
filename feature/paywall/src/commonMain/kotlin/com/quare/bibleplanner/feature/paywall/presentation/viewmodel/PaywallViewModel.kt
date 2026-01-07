@@ -50,7 +50,7 @@ internal class PaywallViewModel(
                 }
             }
 
-            PaywallUiEvent.OnStartPremiumJourneyClick -> {
+            PaywallUiEvent.OnStartProJourneyClick -> {
                 viewModelScope.launch {
                     val currentState = _uiState.value
 

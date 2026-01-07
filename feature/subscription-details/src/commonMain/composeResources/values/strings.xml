@@ -1,0 +1,13 @@
+<resources>
+    <string name="subscription_status_title">Subscription Status</string>
+    <string name="active_status">Active</string>
+    <string name="plan_label">Plan</string>
+    <string name="plan_value_pro">Pro Plan</string>
+    <string name="purchase_details_title">Purchase Details</string>
+    <string name="purchase_date_label">Purchase Date</string>
+    <string name="renews_label">Renews</string>
+    <string name="expires_label">Expires</string>
+    <string name="origin_label">Origin</string>
+    <string name="store_name_android">Google Play</string>
+    <string name="store_name_ios">App Store</string>
+</resources>

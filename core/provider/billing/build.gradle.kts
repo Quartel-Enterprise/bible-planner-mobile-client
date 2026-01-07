@@ -60,6 +60,8 @@ kotlin {
                 implementation(libs.koinCore)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(projects.core.remoteConfig)
+                implementation(libs.kotlinx.datetime)
+                implementation(projects.core.date)
             }
         }
 

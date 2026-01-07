@@ -59,6 +59,7 @@ include(":feature:edit_plan_start_date")
 
 include(":feature:paywall")
 include(":feature:congrats")
+include(":feature:subscription-details")
 include(":core:provider:billing")
 include(":core:remote_config")
 include(":feature:more")
