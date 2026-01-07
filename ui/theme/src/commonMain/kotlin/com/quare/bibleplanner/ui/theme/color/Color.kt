@@ -2,6 +2,9 @@ package com.quare.bibleplanner.ui.theme.color
 
 import androidx.compose.ui.graphics.Color
 
+val goldLight = Color(0xFFDAA520)
+val successLight = Color(0xFF2E7D32)
+
 val primaryLight = Color(0xFF4C5C92)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFDCE1FF)
@@ -109,6 +112,9 @@ val surfaceContainerLowLightHighContrast = Color(0xFFF1F0F7)
 val surfaceContainerLightHighContrast = Color(0xFFE3E1E9)
 val surfaceContainerHighLightHighContrast = Color(0xFFD5D3DB)
 val surfaceContainerHighestLightHighContrast = Color(0xFFC7C6CD)
+
+val goldDark = Color(0xFFFFD700)
+val successDark = Color(0xFF4ADE80)
 
 val primaryDark = Color(0xFFB6C4FF)
 val onPrimaryDark = Color(0xFF1D2D61)

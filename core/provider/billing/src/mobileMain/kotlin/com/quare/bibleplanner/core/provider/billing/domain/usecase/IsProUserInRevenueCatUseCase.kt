@@ -1,9 +1,8 @@
 package com.quare.bibleplanner.core.provider.billing.domain.usecase
 
+import com.quare.bibleplanner.core.provider.billing.mapper.toProEntitlement
 import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.models.CacheFetchPolicy
-import com.revenuecat.purchases.kmp.models.CustomerInfo
-import com.revenuecat.purchases.kmp.models.EntitlementInfo
 import com.revenuecat.purchases.kmp.result.awaitCustomerInfoResult
 
 internal class IsProUserInRevenueCatUseCase {
@@ -11,6 +10,4 @@ internal class IsProUserInRevenueCatUseCase {
         .awaitCustomerInfoResult(CacheFetchPolicy.NOT_STALE_CACHED_OR_CURRENT)
         .getOrNull()
         ?.toProEntitlement() != null
-
-    private fun CustomerInfo.toProEntitlement(): EntitlementInfo? = entitlements.active["Bible Planner Pro"]
 }

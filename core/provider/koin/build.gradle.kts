@@ -36,6 +36,7 @@ kotlin {
             implementation(projects.feature.deleteNotes)
             implementation(projects.feature.main)
             implementation(projects.feature.congrats)
+            implementation(projects.feature.subscriptionDetails)
             implementation(projects.feature.more)
 
             // Koin

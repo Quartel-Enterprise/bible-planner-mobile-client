@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="congrats_title">Premium Desbloqueado</string>
+    <string name="congrats_title">Pro Desbloqueado</string>
     <string name="congrats_message">Aproveite o acesso total a todos os recursos e conteúdos exclusivos. Obrigado por atualizar!</string>
     <string name="congrats_button">Começar a Explorar</string>
 </resources>

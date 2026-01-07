@@ -14,12 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.paywall.generated.resources.Res
-import bibleplanner.feature.paywall.generated.resources.start_premium_journey
+import bibleplanner.feature.paywall.generated.resources.start_pro_journey
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun StartPremiumButton(
+internal fun StartProButton(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     onClick: () -> Unit,
@@ -37,7 +37,7 @@ internal fun StartPremiumButton(
             )
         } else {
             Text(
-                text = stringResource(Res.string.start_premium_journey),
+                text = stringResource(Res.string.start_pro_journey),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )

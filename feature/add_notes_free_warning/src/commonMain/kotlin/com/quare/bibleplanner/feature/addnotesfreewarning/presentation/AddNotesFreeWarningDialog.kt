@@ -49,7 +49,7 @@ fun AddNotesFreeWarningDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onEvent(AddNotesFreeWarningUiEvent.OnSubscribeToPremium)
+                    onEvent(AddNotesFreeWarningUiEvent.OnSubscribeToPro)
                 },
             ) {
                 Text(

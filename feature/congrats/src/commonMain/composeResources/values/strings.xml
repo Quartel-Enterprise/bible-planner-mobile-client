@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="congrats_title">Premium Unlocked</string>
+    <string name="congrats_title">Pro Unlocked</string>
     <string name="congrats_message">Enjoy full access to all features and exclusive content. Thank you for upgrading!</string>
     <string name="congrats_button">Start Exploring</string>
 </resources>

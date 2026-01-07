@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.provider.billing.domain.usecase
 
 class IsFreeUserMobileUseCase(
-    private val isPremiumUser: IsPremiumUserUseCase,
+    private val isProUser: IsProUserUseCase,
 ) : IsFreeUserUseCase {
-    override suspend fun invoke(): Boolean = !isPremiumUser()
+    override suspend fun invoke(): Boolean = !isProUser()
 }

@@ -9,7 +9,7 @@ sealed interface PaywallUiEvent {
         val planType: SubscriptionPlanType,
     ) : PaywallUiEvent
 
-    data object OnStartPremiumJourneyClick : PaywallUiEvent
+    data object OnStartProJourneyClick : PaywallUiEvent
 
     data object OnRestorePurchases : PaywallUiEvent
 }

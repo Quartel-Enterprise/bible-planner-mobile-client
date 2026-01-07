@@ -4,4 +4,8 @@ internal sealed interface MoreUiEvent {
     data class OnItemClick(
         val type: MoreOptionItemType,
     ) : MoreUiEvent
+
+    data object OnProCardClick : MoreUiEvent
+
+    data object OnDismissSubscriptionDetailsDialog : MoreUiEvent
 }

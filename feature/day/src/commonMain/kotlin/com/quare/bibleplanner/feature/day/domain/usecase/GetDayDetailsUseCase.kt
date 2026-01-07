@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
-import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
