@@ -5,5 +5,5 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteC
 internal class IsProMobileVerificationRequiredUseCase(
     private val getBooleanRemoteConfig: GetBooleanRemoteConfig,
 ) : IsProVerificationRequiredUseCase {
-    override suspend operator fun invoke(): Boolean = true // getBooleanRemoteConfig("is_premium_verification_required")
+    override suspend operator fun invoke(): Boolean = getBooleanRemoteConfig("is_premium_verification_required")
 }
