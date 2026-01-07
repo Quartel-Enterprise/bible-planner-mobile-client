@@ -100,6 +100,8 @@ fun BookItemComponent(
                             .clip(CircleShape),
                         color = MaterialTheme.colorScheme.primary,
                         trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        strokeCap = StrokeCap.Round,
+                        gapSize = (-15).dp,
                         drawStopIndicator = {},
                     )
                 }

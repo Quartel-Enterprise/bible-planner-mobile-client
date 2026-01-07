@@ -14,9 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.paywall_error_message
-import com.quare.bibleplanner.feature.paywall.presentation.component.description.PaywallDescription
 import com.quare.bibleplanner.feature.paywall.presentation.component.premiumfeature.PremiumFeaturesList
-import com.quare.bibleplanner.feature.paywall.presentation.component.premiumicon.PremiumIcon
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.SubscriptionPlans
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
@@ -34,31 +32,16 @@ internal fun PaywallItemsComponent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
-            VerticalSpacer(16)
-        }
-        item {
-            PremiumIcon()
-        }
-        item {
-            VerticalSpacer(24)
-        }
-        item {
             PaywallHeadline(modifier = Modifier.padding(horizontal = 16.dp))
         }
         item {
-            VerticalSpacer(8)
-        }
-        item {
-            PaywallDescription(modifier = Modifier.padding(horizontal = 16.dp))
-        }
-        item {
-            VerticalSpacer(32)
+            VerticalSpacer(16)
         }
         item {
             PremiumFeaturesList(modifier = Modifier.padding(horizontal = 16.dp))
         }
         item {
-            VerticalSpacer(32)
+            VerticalSpacer(16)
         }
         item {
             SubscriptionPlans(
@@ -99,7 +82,7 @@ internal fun PaywallItemsComponent(
                     ) {
                         Text(
                             text = stringResource(Res.string.paywall_error_message),
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp),
                             color = errorColor,
                         )
                     }

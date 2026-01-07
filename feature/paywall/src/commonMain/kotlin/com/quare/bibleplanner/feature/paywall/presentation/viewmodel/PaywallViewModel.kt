@@ -44,7 +44,7 @@ internal class PaywallViewModel(
 
     fun onEvent(event: PaywallUiEvent) {
         when (event) {
-            PaywallUiEvent.OnBackClick -> {
+            PaywallUiEvent.OnDismiss -> {
                 viewModelScope.launch {
                     _uiAction.emit(PaywallUiAction.NavigateBack)
                 }
