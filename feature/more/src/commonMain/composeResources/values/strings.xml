@@ -16,6 +16,9 @@
     <string name="data_section">Data</string>
     <string name="legal_section">Legal</string>
     <string name="social_section">Social</string>
+    <string name="web_section">Web</string>
+    <string name="web_app">Web App</string>
+    <string name="web_app_subtitle">Open the web version in your browser</string>
     <string name="become_pro_subtitle">Unlock exclusive features &amp; support our mission.</string>
     <string name="donate_subtitle">Support our work and help us keep the development.</string>
     <string name="today">Today</string>

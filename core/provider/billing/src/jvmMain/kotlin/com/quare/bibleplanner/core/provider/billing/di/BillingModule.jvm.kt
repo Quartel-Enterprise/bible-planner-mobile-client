@@ -10,7 +10,6 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLi
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
 import com.quare.bibleplanner.core.provider.billing.model.BillingUnavailableException
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.koin.dsl.module
 

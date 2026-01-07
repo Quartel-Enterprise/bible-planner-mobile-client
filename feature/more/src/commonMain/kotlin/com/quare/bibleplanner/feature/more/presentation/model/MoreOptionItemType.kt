@@ -7,6 +7,7 @@ enum class MoreOptionItemType {
     PRIVACY_POLICY,
     TERMS,
     DONATE,
+    WEB_APP,
     DELETE_PROGRESS,
     EDIT_PLAN_START_DAY,
 }

@@ -20,6 +20,8 @@ internal class AndroidRemoteConfigService(
 
     override suspend fun getInt(key: String): Int = getWithAwait { getLong(key).toInt() }
 
+    override suspend fun getString(key: String): String = getWithAwait { getString(key) }
+
     private suspend fun <T> getWithAwait(call: FirebaseRemoteConfig.() -> T): T {
         isInitialized.await()
         return call(firebaseRemoteConfig)

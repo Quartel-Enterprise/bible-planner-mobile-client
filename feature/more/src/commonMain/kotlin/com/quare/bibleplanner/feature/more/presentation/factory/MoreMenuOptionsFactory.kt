@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Star
@@ -16,6 +17,8 @@ import bibleplanner.feature.more.generated.resources.privacy_policy
 import bibleplanner.feature.more.generated.resources.start_date
 import bibleplanner.feature.more.generated.resources.terms_of_service
 import bibleplanner.feature.more.generated.resources.theme_option
+import bibleplanner.feature.more.generated.resources.web_app
+import bibleplanner.feature.more.generated.resources.web_app_subtitle
 import com.quare.bibleplanner.feature.more.presentation.model.MoreIcon
 import com.quare.bibleplanner.feature.more.presentation.model.MoreMenuItemPresentationModel
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
@@ -35,6 +38,12 @@ internal object MoreMenuOptionsFactory {
         name = Res.string.instagram,
         icon = MoreIcon.DrawableResourceIcon(Res.drawable.ic_instagram),
         type = MoreOptionItemType.INSTAGRAM,
+    )
+    val webApp = MoreMenuItemPresentationModel(
+        name = Res.string.web_app,
+        subtitle = Res.string.web_app_subtitle,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Language),
+        type = MoreOptionItemType.WEB_APP,
     )
     val privacyPolicy = MoreMenuItemPresentationModel(
         name = Res.string.privacy_policy,

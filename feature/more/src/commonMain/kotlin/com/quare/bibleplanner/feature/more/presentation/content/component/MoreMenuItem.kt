@@ -17,13 +17,15 @@ internal fun MoreMenuItem(
     subtitle: String? = null,
     onClick: () -> Unit,
     isDestructive: Boolean = false,
+    trailingContent: @Composable (() -> Unit)? = null,
 ) {
     val text = stringResource(itemModel.name)
+    val finalSubtitle = subtitle ?: itemModel.subtitle?.let { stringResource(it) }
     ListItem(
         headlineContent = {
             Text(text = text)
         },
-        supportingContent = subtitle?.let { { Text(it) } },
+        supportingContent = finalSubtitle?.let { { Text(it) } },
         leadingContent = {
             MoreItemIcon(
                 icon = itemModel.icon,
@@ -36,6 +38,7 @@ internal fun MoreMenuItem(
             )
         },
         modifier = Modifier.clickable(onClick = onClick),
+        trailingContent = trailingContent,
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
     )
 }

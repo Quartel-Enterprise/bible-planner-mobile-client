@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCa
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteConfig
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
@@ -27,12 +28,13 @@ import org.jetbrains.compose.resources.StringResource
 import kotlin.time.Clock
 
 internal class MoreUiStateFactory(
-    private val getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase,
+    private val getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase?,
     private val isInstagramLinkVisible: IsInstagramLinkVisibleUseCase,
     private val shouldShowDonateOption: ShouldShowDonateOptionUseCase,
     private val getPlanStartDate: GetPlanStartDateFlowUseCase,
     private val getThemeOptionFlow: GetThemeOptionFlow,
     private val isProVerificationRequiredUseCase: IsProVerificationRequiredUseCase,
+    private val getBooleanRemoteConfig: GetBooleanRemoteConfig,
 ) {
     fun create(): Flow<MoreUiState> {
         val configFlow = flow {
@@ -40,28 +42,28 @@ internal class MoreUiStateFactory(
                 val instagram = async { isInstagramLinkVisible() }
                 val donate = async { shouldShowDonateOption() }
                 val isPro = async { isProVerificationRequiredUseCase() }
+                val isWebAppEnabled = async { getBooleanRemoteConfig(MORE_WEB_APP_ENABLED) }
                 emit(
-                    Triple(
-                        instagram.await(),
-                        donate.await(),
-                        isPro.await(),
+                    Config(
+                        isInstagramVisible = instagram.await(),
+                        shouldShowDonate = donate.await(),
+                        isProVerificationRequired = isPro.await(),
+                        isWebAppVisible = isWebAppEnabled.await(),
                     ),
                 )
             }
         }
 
         return combine(
-            getSubscriptionStatusFlow(),
+            getSubscriptionStatusFlow?.invoke() ?: flowOf(null),
             getPlanStartDate(),
             getThemeOptionFlow(),
             configFlow,
         ) { subscriptionStatus, startDate, theme, config ->
-            val (isInstagramVisible, shouldShowDonate, isProVerificationRequired) = config
-
             val headerRes = when {
-                isProVerificationRequired && shouldShowDonate -> Res.string.pro_and_support
-                isProVerificationRequired -> Res.string.pro_section
-                shouldShowDonate -> Res.string.support_section
+                config.isProVerificationRequired && config.shouldShowDonate -> Res.string.pro_and_support
+                config.isProVerificationRequired -> Res.string.pro_section
+                config.shouldShowDonate -> Res.string.support_section
                 else -> null
             }
 
@@ -73,17 +75,29 @@ internal class MoreUiStateFactory(
                     .toLocalDateTime(TimeZone.currentSystemDefault())
                     .date,
                 subscriptionStatus = subscriptionStatus,
-                isInstagramLinkVisible = isInstagramVisible,
-                shouldShowDonateOption = shouldShowDonate,
+                isInstagramLinkVisible = config.isInstagramVisible,
+                shouldShowDonateOption = config.shouldShowDonate,
                 headerRes = headerRes,
-                isPremiumCardVisible = isProVerificationRequired,
+                isProCardVisible = config.isProVerificationRequired,
+                isWebAppVisible = config.isWebAppVisible,
             )
         }
     }
+
+    private data class Config(
+        val isInstagramVisible: Boolean,
+        val shouldShowDonate: Boolean,
+        val isProVerificationRequired: Boolean,
+        val isWebAppVisible: Boolean,
+    )
 
     private fun Theme.toStringResource(): StringResource = when (this) {
         Theme.LIGHT -> Res.string.theme_light
         Theme.DARK -> Res.string.theme_dark
         Theme.SYSTEM -> Res.string.theme_system
+    }
+
+    companion object {
+        private const val MORE_WEB_APP_ENABLED = "more_web_app_enabled"
     }
 }
