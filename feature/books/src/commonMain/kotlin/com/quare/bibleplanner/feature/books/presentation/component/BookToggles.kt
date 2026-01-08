@@ -14,13 +14,14 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 
 @Composable
-internal fun BookTogglesToggles(
+internal fun BookToggles(
     selectedTestament: BookTestament,
     selectedLayoutFormat: BookLayoutFormat,
     onEvent: (BooksUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),

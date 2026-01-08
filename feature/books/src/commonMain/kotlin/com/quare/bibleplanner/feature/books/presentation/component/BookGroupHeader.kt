@@ -16,9 +16,12 @@ import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun BookGroupHeader(group: BookGroup) {
+internal fun BookGroupHeader(
+    group: BookGroup,
+    modifier: Modifier = Modifier,
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 16.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,

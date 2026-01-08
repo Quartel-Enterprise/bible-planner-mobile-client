@@ -16,6 +16,7 @@ fun NavGraphBuilder.booksScreen(navController: NavController) {
 
         BooksScreen(
             state = state,
+            uiAction = viewModel.uiAction,
             onEvent = viewModel::onEvent,
         )
     }

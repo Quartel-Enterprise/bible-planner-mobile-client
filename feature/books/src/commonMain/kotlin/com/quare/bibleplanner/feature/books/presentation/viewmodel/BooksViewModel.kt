@@ -20,11 +20,15 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookGroupPresenta
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
+import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.utils.observe
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -35,6 +39,9 @@ class BooksViewModel(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState: StateFlow<BooksUiState> = _uiState
+
+    private val _uiAction = MutableSharedFlow<BooksUiAction>()
+    val uiAction: SharedFlow<BooksUiAction> = _uiAction.asSharedFlow()
 
     private val bookGroupMapper = BookGroupMapper()
     private val bookCategorizationMapper = BookCategorizationMapper(bookGroupMapper)
@@ -59,10 +66,16 @@ class BooksViewModel(
         when (event) {
             is BooksUiEvent.OnSearchQueryChange -> {
                 updateState(searchQuery = event.query)
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
             }
 
             is BooksUiEvent.OnTestamentSelect -> {
                 updateState(selectedTestament = event.testament)
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
             }
 
             is BooksUiEvent.OnBookClick -> {
@@ -97,6 +110,9 @@ class BooksViewModel(
                 }
                 isFilterMenuVisible = false
                 updateState()
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
             }
 
             is BooksUiEvent.OnToggleFavorite -> {
@@ -122,6 +138,9 @@ class BooksViewModel(
                 sortOrder = if (sortOrder == event.sortOrder) null else event.sortOrder
                 isSortMenuVisible = false
                 updateState()
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
             }
 
             is BooksUiEvent.OnDismissSortMenu -> {
