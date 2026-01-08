@@ -428,8 +428,7 @@ fun BookList(
             targetState = state.layoutFormat,
             label = "layout_transition",
             transitionSpec = {
-                fadeIn(animationSpec = tween(300)) togetherWith
-                    fadeOut(animationSpec = tween(300))
+                EnterTransition.None togetherWith ExitTransition.None
             },
         ) { targetLayoutFormat ->
             val animatedVisibilityScope = this
