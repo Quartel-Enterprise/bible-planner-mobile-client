@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.component.BookList
 import com.quare.bibleplanner.feature.books.presentation.component.BooksTopBar
+import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
@@ -33,16 +34,25 @@ fun BooksScreen(
 ) {
     val mainPadding = LocalMainPadding.current
     val searchGridState = rememberLazyGridState()
+    val searchListState = rememberLazyGridState()
     val oldTestamentGridState = rememberLazyGridState()
+    val oldTestamentListState = rememberLazyGridState()
     val newTestamentGridState = rememberLazyGridState()
+    val newTestamentListState = rememberLazyGridState()
 
     val isScrolled by remember(state) {
         derivedStateOf {
             val activeState = when {
                 state !is BooksUiState.Success -> searchGridState
-                !state.shouldShowTestamentToggle -> searchGridState
-                state.selectedTestament == BookTestament.OldTestament -> oldTestamentGridState
-                else -> newTestamentGridState
+                !state.shouldShowTestamentToggle -> {
+                    if (state.layoutFormat == BookLayoutFormat.Grid) searchGridState else searchListState
+                }
+                state.selectedTestament == BookTestament.OldTestament -> {
+                    if (state.layoutFormat == BookLayoutFormat.Grid) oldTestamentGridState else oldTestamentListState
+                }
+                else -> {
+                    if (state.layoutFormat == BookLayoutFormat.Grid) newTestamentGridState else newTestamentListState
+                }
             }
             activeState.firstVisibleItemIndex > 0 || activeState.firstVisibleItemScrollOffset > 0
         }
@@ -52,8 +62,11 @@ fun BooksScreen(
         when (action) {
             is BooksUiAction.ScrollToTop -> {
                 searchGridState.animateScrollToItem(0)
+                searchListState.animateScrollToItem(0)
                 oldTestamentGridState.animateScrollToItem(0)
+                oldTestamentListState.animateScrollToItem(0)
                 newTestamentGridState.animateScrollToItem(0)
+                newTestamentListState.animateScrollToItem(0)
             }
         }
     }
@@ -78,9 +91,12 @@ fun BooksScreen(
                     BookList(
                         state = state,
                         onEvent = onEvent,
-                        lazyGridState = searchGridState,
+                        searchGridState = searchGridState,
+                        searchListState = searchListState,
                         oldTestamentGridState = oldTestamentGridState,
+                        oldTestamentListState = oldTestamentListState,
                         newTestamentGridState = newTestamentGridState,
+                        newTestamentListState = newTestamentListState,
                     )
                 }
             }

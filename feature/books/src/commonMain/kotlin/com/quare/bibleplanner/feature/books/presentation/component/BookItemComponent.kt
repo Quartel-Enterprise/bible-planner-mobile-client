@@ -26,26 +26,21 @@ fun BookItemComponent(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
-    AnimatedContent(
-        targetState = layoutFormat,
-        label = "book_item_layout_transition",
-        transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-        modifier = modifier,
-    ) { targetFormat ->
-        if (targetFormat == BookLayoutFormat.List) {
-            BookListItemComponent(
-                book = book,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope,
-                onEvent = onEvent,
-            )
-        } else {
-            BookGridItemComponent(
-                book = book,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope,
-                onEvent = onEvent,
-            )
-        }
+    if (layoutFormat == BookLayoutFormat.List) {
+        BookListItemComponent(
+            book = book,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+    } else {
+        BookGridItemComponent(
+            book = book,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
     }
 }
