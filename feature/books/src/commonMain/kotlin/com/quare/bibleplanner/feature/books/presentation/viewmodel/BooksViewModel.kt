@@ -15,6 +15,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
 import com.quare.bibleplanner.feature.books.presentation.model.BookGroupPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +47,8 @@ class BooksViewModel(
 
     private var activeFilterTypes: Set<BookFilterType> = emptySet()
     private var isFilterMenuVisible: Boolean = false
+    private var isSortMenuVisible: Boolean = false
+    private var sortOrder: BookSortOrder? = null
 
     fun onEvent(event: BooksUiEvent) {
         when (event) {
@@ -87,6 +90,7 @@ class BooksViewModel(
                         }
                     }
                 }
+                isFilterMenuVisible = false
                 updateState()
             }
 
@@ -101,6 +105,27 @@ class BooksViewModel(
 
             is BooksUiEvent.OnToggleFilterMenu -> {
                 isFilterMenuVisible = event.isVisible
+                updateState()
+            }
+
+            is BooksUiEvent.OnToggleSortMenu -> {
+                isSortMenuVisible = event.isVisible
+                updateState()
+            }
+
+            is BooksUiEvent.OnSortOrderSelect -> {
+                sortOrder = if (sortOrder == event.sortOrder) null else event.sortOrder
+                isSortMenuVisible = false
+                updateState()
+            }
+
+            is BooksUiEvent.OnDismissSortMenu -> {
+                isSortMenuVisible = false
+                updateState()
+            }
+
+            is BooksUiEvent.OnDismissFilterMenu -> {
+                isFilterMenuVisible = false
                 updateState()
             }
 
@@ -142,14 +167,16 @@ class BooksViewModel(
             )
         }
 
-        val isSearchOrFilterActive = currentQuery.isNotBlank() || activeFilterTypes.isNotEmpty()
+        val isSearchFilterOrSortActive = currentQuery.isNotBlank() ||
+            activeFilterTypes.isNotEmpty() ||
+            sortOrder != null
 
         val filtered = presentationModels.filter { book ->
             val matchesQuery = if (currentQuery.isBlank()) true else book.name.contains(currentQuery, ignoreCase = true)
             val matchesOnlyRead = if (isOnlyRead) book.isCompleted else true
             val matchesOnlyUnread = if (isOnlyUnread) !book.isCompleted else true
             val matchesFavorites = if (isFavoritesOnly) book.isFavorite else true
-            val matchesTestament = if (isSearchOrFilterActive) {
+            val matchesTestament = if (isSearchFilterOrSortActive) {
                 true
             } else {
                 bookGroupMapper.fromBookId(book.id).testament ==
@@ -177,17 +204,35 @@ class BooksViewModel(
             ),
         )
 
-        val categorizedBooks = bookCategorizationMapper.map(filtered)
+        val categorizedBooks = bookCategorizationMapper
+            .map(filtered)
+            .mapValues { (_, groups) ->
+                groups.map { group ->
+                    group.copy(
+                        books = when (sortOrder) {
+                            BookSortOrder.AlphabeticalAscending -> group.books.sortedBy { it.id.name }
+                            BookSortOrder.AlphabeticalDescending -> group.books.sortedByDescending { it.id.name }
+                            null -> group.books
+                        },
+                    )
+                }
+            }
 
         _uiState.update {
             BooksUiState.Success(
                 books = presentationModels,
-                filteredBooks = filtered,
+                filteredBooks = when (sortOrder) {
+                    BookSortOrder.AlphabeticalAscending -> filtered.sortedBy { it.id.name }
+                    BookSortOrder.AlphabeticalDescending -> filtered.sortedByDescending { it.id.name }
+                    null -> filtered
+                },
                 selectedTestament = currentSelectedTestament,
                 searchQuery = currentQuery,
                 filterOptions = filterOptions,
-                shouldShowTestamentToggle = !isSearchOrFilterActive,
+                shouldShowTestamentToggle = !isSearchFilterOrSortActive,
                 isFilterMenuVisible = isFilterMenuVisible,
+                isSortMenuVisible = isSortMenuVisible,
+                sortOrder = sortOrder,
                 groupsInTestament = categorizedBooks[currentSelectedTestament].orEmpty(),
             )
         }

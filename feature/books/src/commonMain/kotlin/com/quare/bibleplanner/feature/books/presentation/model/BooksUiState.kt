@@ -14,5 +14,7 @@ sealed interface BooksUiState {
         val filterOptions: List<BookFilterOption>,
         val shouldShowTestamentToggle: Boolean,
         val isFilterMenuVisible: Boolean,
+        val isSortMenuVisible: Boolean,
+        val sortOrder: BookSortOrder?,
     ) : BooksUiState
 }

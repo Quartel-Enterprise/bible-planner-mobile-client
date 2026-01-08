@@ -18,6 +18,9 @@
     <string name="content_description_clear_search">Limpar pesquisa</string>
     <string name="content_description_selected">Selecionado</string>
     <string name="content_description_book_icon">Ícone de livro</string>
+    <string name="content_description_sort">Ordenar</string>
+    <string name="sort_alphabetical_ascending">Alfabética (A-Z)</string>
+    <string name="sort_alphabetical_descending">Alfabética (Z-A)</string>
     <string name="pentateuch">Pentateuco</string>
     <string name="historical_books">Livros Históricos</string>
     <string name="wisdom_books">Sapienciais</string>
@@ -28,4 +31,5 @@
     <string name="pauline_epistles">Epístolas Paulinas</string>
     <string name="general_epistles">Epístolas Gerais</string>
     <string name="revelation">Apocalipse</string>
+    <string name="reading_not_available_yet">Ainda não é possível ler os livros no aplicativo, mas será possível em breve nas próximas versões.</string>
 </resources>

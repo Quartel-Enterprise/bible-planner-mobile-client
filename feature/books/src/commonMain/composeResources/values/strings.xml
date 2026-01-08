@@ -18,6 +18,9 @@
     <string name="content_description_clear_search">Clear search</string>
     <string name="content_description_selected">Selected</string>
     <string name="content_description_book_icon">Book icon</string>
+    <string name="content_description_sort">Sort</string>
+    <string name="sort_alphabetical_ascending">Alphabetical (A-Z)</string>
+    <string name="sort_alphabetical_descending">Alphabetical (Z-A)</string>
     <string name="pentateuch">Pentateuch</string>
     <string name="historical_books">Historical Books</string>
     <string name="wisdom_books">Wisdom Books</string>
@@ -28,4 +31,5 @@
     <string name="pauline_epistles">Pauline Epistles</string>
     <string name="general_epistles">General Epistles</string>
     <string name="revelation">Revelation</string>
+    <string name="reading_not_available_yet">It is not possible to read the books on the app yet, but it will be possible soon in next versions.</string>
 </resources>

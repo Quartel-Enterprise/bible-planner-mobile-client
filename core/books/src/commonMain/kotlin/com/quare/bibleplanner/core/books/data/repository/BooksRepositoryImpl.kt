@@ -1,5 +1,9 @@
 package com.quare.bibleplanner.core.books.data.repository
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
@@ -19,6 +23,7 @@ class BooksRepositoryImpl(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
     private val booksWithChapterMapper: BooksWithChapterMapper,
+    private val dataStore: DataStore<Preferences>,
 ) : BooksRepository {
     override fun getBooksFlow(): Flow<List<BookDataModel>> = bookDao
         .getAllBooksWithChaptersDataFlow()
@@ -61,5 +66,19 @@ class BooksRepositoryImpl(
                 verseDao.insertVerses(verseEntities)
             }
         }
+    }
+
+    override fun getShowInformationBoxFlow(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] ?: true
+    }
+
+    override suspend fun setInformationBoxDismissed() {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] = false
+        }
+    }
+
+    companion object {
+        private const val SHOW_INFORMATION_BOX = "show_information_box"
     }
 }

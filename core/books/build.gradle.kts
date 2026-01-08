@@ -24,6 +24,9 @@ kotlin {
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
 
+            // DataStore
+            implementation(libs.dataStore.preferences)
+
             // Serialization
             implementation(libs.kotlin.serialization.json)
 

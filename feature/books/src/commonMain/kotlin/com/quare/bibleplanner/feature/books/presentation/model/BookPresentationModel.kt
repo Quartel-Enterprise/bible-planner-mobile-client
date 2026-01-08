@@ -9,5 +9,5 @@ data class BookPresentationModel(
     val progress: Float,
     val percentageText: String,
     val isCompleted: Boolean,
-    val isFavorite: Boolean = false,
+    val isFavorite: Boolean,
 )

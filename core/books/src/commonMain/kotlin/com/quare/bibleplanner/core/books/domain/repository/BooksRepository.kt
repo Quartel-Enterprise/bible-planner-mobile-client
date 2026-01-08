@@ -9,4 +9,8 @@ interface BooksRepository {
     suspend fun getBooks(): List<BookDataModel>
 
     suspend fun initializeDatabase()
+
+    fun getShowInformationBoxFlow(): Flow<Boolean>
+
+    suspend fun setInformationBoxDismissed()
 }
