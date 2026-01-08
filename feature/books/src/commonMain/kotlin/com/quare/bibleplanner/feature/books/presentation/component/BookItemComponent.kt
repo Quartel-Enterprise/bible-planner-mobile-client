@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.books.presentation.component
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.SharedTransitionScope.OverlayClip
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -91,6 +92,7 @@ private fun BookListItem(
                 .sharedElement(
                     rememberSharedContentState(key = "book-${book.id.name}"),
                     animatedVisibilityScope = animatedVisibilityScope,
+                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(16.dp)),
                 ),
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -111,6 +113,11 @@ private fun BookListItem(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
+                        .sharedBounds(
+                            rememberSharedContentState(key = "icon-box-${book.id.name}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(8.dp)),
+                        )
                         .background(backgroundColor),
                 ) {
                     Icon(
@@ -121,7 +128,12 @@ private fun BookListItem(
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         },
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier
+                            .size(20.dp)
+                            .sharedElement(
+                                rememberSharedContentState(key = "icon-${book.id.name}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                     )
                 }
 
@@ -133,9 +145,19 @@ private fun BookListItem(
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.sharedBounds(
+                            rememberSharedContentState(key = "title-${book.id.name}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
                     )
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.sharedBounds(
+                            rememberSharedContentState(key = "progress-info-${book.id.name}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Text(
                             text = if (book.isCompleted) {
                                 stringResource(Res.string.completed)
@@ -173,7 +195,12 @@ private fun BookListItem(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(4.dp)
-                            .clip(CircleShape),
+                            .clip(CircleShape)
+                            .sharedBounds(
+                                rememberSharedContentState(key = "progress-bar-${book.id.name}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                clipInOverlayDuringTransition = OverlayClip(CircleShape),
+                            ),
                         color = MaterialTheme.colorScheme.primary,
                         trackColor = MaterialTheme.colorScheme.surfaceVariant,
                         strokeCap = StrokeCap.Round,
@@ -192,6 +219,10 @@ private fun BookListItem(
                     },
                     modifier = Modifier
                         .size(24.dp)
+                        .sharedElement(
+                            rememberSharedContentState(key = "favorite-${book.id.name}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
                         .clickable { onToggleFavorite() },
                 )
             }
@@ -217,6 +248,7 @@ private fun BookGridItem(
                 .sharedElement(
                     rememberSharedContentState(key = "book-${book.id.name}"),
                     animatedVisibilityScope = animatedVisibilityScope,
+                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(16.dp)),
                 ),
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -228,6 +260,13 @@ private fun BookGridItem(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp)
+                        .sharedBounds(
+                            rememberSharedContentState(key = "icon-box-${book.id.name}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            clipInOverlayDuringTransition = OverlayClip(
+                                RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                            ),
+                        )
                         .background(
                             if (book.isCompleted) {
                                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
@@ -245,7 +284,12 @@ private fun BookGridItem(
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         },
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .sharedElement(
+                                rememberSharedContentState(key = "icon-${book.id.name}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                     )
 
                     // Favorite button positioned in the corner
@@ -267,6 +311,10 @@ private fun BookGridItem(
                             },
                             modifier = Modifier
                                 .size(20.dp)
+                                .sharedElement(
+                                    rememberSharedContentState(key = "favorite-${book.id.name}"),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                )
                                 .clickable { onToggleFavorite() },
                         )
                     }
@@ -282,12 +330,21 @@ private fun BookGridItem(
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.sharedBounds(
+                            rememberSharedContentState(key = "title-${book.id.name}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
                     )
 
                     VerticalSpacer(4.dp)
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .sharedBounds(
+                                rememberSharedContentState(key = "progress-info-${book.id.name}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            ),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -319,7 +376,12 @@ private fun BookGridItem(
                             .fillMaxWidth()
                             .padding(top = 4.dp)
                             .height(8.dp)
-                            .clip(CircleShape),
+                            .clip(CircleShape)
+                            .sharedBounds(
+                                rememberSharedContentState(key = "progress-bar-${book.id.name}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                clipInOverlayDuringTransition = OverlayClip(CircleShape),
+                            ),
                         color = MaterialTheme.colorScheme.primary,
                         trackColor = MaterialTheme.colorScheme.surfaceVariant,
                         strokeCap = StrokeCap.Round,
