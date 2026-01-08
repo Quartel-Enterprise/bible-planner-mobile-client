@@ -3,6 +3,8 @@ package com.quare.bibleplanner.feature.books.presentation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
@@ -11,6 +13,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -419,50 +422,57 @@ fun BookList(
     lazyGridState: LazyGridState,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
-    val isGrid = state.layoutFormat == BookLayoutFormat.Grid
-    val columns = if (isGrid) 2 else 1
     SharedTransitionLayout {
         val sharedTransitionScope = this
-        LazyVerticalGrid(
-            state = lazyGridState,
-            columns = GridCells.Fixed(columns),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(if (isGrid) 12.dp else 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item(span = { GridItemSpan(columns) }) {
-                AnimatedVisibility(
-                    visible = state.isInformationBoxVisible,
-                    enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
-                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
-                ) {
-                    BooksInformationBox(
-                        onDismiss = { onEvent(BooksUiEvent.OnDismissInformationBox) },
-                    )
-                }
-            }
+        AnimatedContent(
+            targetState = state.layoutFormat,
+            label = "layout_transition",
+            transitionSpec = {
+                fadeIn(animationSpec = tween(300)) togetherWith
+                    fadeOut(animationSpec = tween(300))
+            },
+        ) { targetLayoutFormat ->
+            val animatedVisibilityScope = this
+            val isGrid = targetLayoutFormat == BookLayoutFormat.Grid
+            val totalColumns = 2
 
-            if (state.shouldShowTestamentToggle) {
-                item(span = { GridItemSpan(columns) }) {
-                    Toggles(
-                        selectedTestament = state.selectedTestament,
-                        onTestamentSelect = { onEvent(BooksUiEvent.OnTestamentSelect(it)) },
-                        selectedLayoutFormat = state.layoutFormat,
-                        onLayoutFormatSelect = { onEvent(BooksUiEvent.OnLayoutFormatSelect(it)) },
-                    )
+            LazyVerticalGrid(
+                state = lazyGridState,
+                columns = GridCells.Fixed(totalColumns),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                item(span = { GridItemSpan(totalColumns) }) {
+                    AnimatedVisibility(
+                        visible = state.isInformationBoxVisible,
+                        enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
+                        exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
+                    ) {
+                        BooksInformationBox(
+                            onDismiss = { onEvent(BooksUiEvent.OnDismissInformationBox) },
+                        )
+                    }
                 }
-            }
-            if (!state.shouldShowTestamentToggle) {
-                items(
-                    items = state.filteredBooks,
-                    key = { it.id.name },
-                ) { book ->
-                    AnimatedContent(
-                        targetState = state.layoutFormat,
-                        label = "item_transition",
-                    ) { targetLayoutFormat ->
-                        val animatedVisibilityScope = this
+
+                if (state.shouldShowTestamentToggle) {
+                    item(span = { GridItemSpan(totalColumns) }) {
+                        Toggles(
+                            selectedTestament = state.selectedTestament,
+                            onTestamentSelect = { onEvent(BooksUiEvent.OnTestamentSelect(it)) },
+                            selectedLayoutFormat = state.layoutFormat,
+                            onLayoutFormatSelect = { onEvent(BooksUiEvent.OnLayoutFormatSelect(it)) },
+                        )
+                    }
+                }
+
+                if (!state.shouldShowTestamentToggle) {
+                    items(
+                        items = state.filteredBooks,
+                        key = { it.id.name },
+                        span = { GridItemSpan(if (isGrid) 1 else totalColumns) },
+                    ) { book ->
                         BookItemComponent(
                             book = book,
                             layoutFormat = targetLayoutFormat,
@@ -472,22 +482,17 @@ fun BookList(
                             onToggleFavorite = { onEvent(BooksUiEvent.OnToggleFavorite(book.id)) },
                         )
                     }
-                }
-            } else {
-                state.groupsInTestament.forEach { presentationGroup ->
-                    item(span = { GridItemSpan(columns) }) {
-                        BookGroupHeader(presentationGroup.group)
-                    }
+                } else {
+                    state.groupsInTestament.forEach { presentationGroup ->
+                        item(span = { GridItemSpan(totalColumns) }) {
+                            BookGroupHeader(presentationGroup.group)
+                        }
 
-                    items(
-                        items = presentationGroup.books,
-                        key = { it.id.name },
-                    ) { book ->
-                        AnimatedContent(
-                            targetState = state.layoutFormat,
-                            label = "item_transition",
-                        ) { targetLayoutFormat ->
-                            val animatedVisibilityScope = this
+                        items(
+                            items = presentationGroup.books,
+                            key = { it.id.name },
+                            span = { GridItemSpan(if (isGrid) 1 else totalColumns) },
+                        ) { book ->
                             BookItemComponent(
                                 book = book,
                                 layoutFormat = targetLayoutFormat,
