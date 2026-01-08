@@ -1,8 +1,15 @@
 package com.quare.bibleplanner.feature.books.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +23,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +37,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material3.DockedSearchBar
@@ -45,14 +61,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.content_description_clear_search
+import bibleplanner.feature.books.generated.resources.content_description_dismiss
+import bibleplanner.feature.books.generated.resources.content_description_info
 import bibleplanner.feature.books.generated.resources.content_description_search
 import bibleplanner.feature.books.generated.resources.content_description_selected
 import bibleplanner.feature.books.generated.resources.content_description_sort
 import bibleplanner.feature.books.generated.resources.filter
+import bibleplanner.feature.books.generated.resources.grid
+import bibleplanner.feature.books.generated.resources.list
 import bibleplanner.feature.books.generated.resources.new_testament
 import bibleplanner.feature.books.generated.resources.old_testament
 import bibleplanner.feature.books.generated.resources.reading_not_available_yet
@@ -64,6 +86,7 @@ import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.component.BookItemComponent
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
+import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
@@ -81,9 +104,15 @@ fun BooksScreen(
 ) {
     val mainPadding = LocalMainPadding.current
     val lazyListState = rememberLazyListState()
+    val lazyGridState = rememberLazyGridState()
+
     val isScrolled by remember {
         derivedStateOf {
-            lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
+            if (state is BooksUiState.Success && state.layoutFormat == BookLayoutFormat.Grid) {
+                lazyGridState.firstVisibleItemIndex > 0 || lazyGridState.firstVisibleItemScrollOffset > 0
+            } else {
+                lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
+            }
         }
     }
 
@@ -108,6 +137,7 @@ fun BooksScreen(
                         state = state,
                         onEvent = onEvent,
                         lazyListState = lazyListState,
+                        lazyGridState = lazyGridState,
                     )
                 }
             }
@@ -129,7 +159,8 @@ private fun BooksTopBar(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = contentPadding.calculateTopPadding(), bottom = 8.dp)
+                .background(MaterialTheme.colorScheme.background)
+                .padding(top = contentPadding.calculateTopPadding(), bottom = 12.dp)
                 .padding(horizontal = 16.dp),
         ) {
             Row(
@@ -137,15 +168,36 @@ private fun BooksTopBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                val query = (state as? BooksUiState.Success)?.searchQuery.orEmpty()
+                val successState = state as? BooksUiState.Success
                 BooksSearchBar(
-                    query = query,
+                    query = successState?.searchQuery.orEmpty(),
                     onQueryChange = { onEvent(BooksUiEvent.OnSearchQueryChange(it)) },
-                    onClearSearch = { onEvent(BooksUiEvent.OnClearSearch) },
+                    onClearSearch = { onEvent(BooksUiEvent.OnSearchQueryChange("")) },
                     modifier = Modifier.weight(1f),
+                    shape = CircleShape,
                 )
 
-                if (state is BooksUiState.Success) {
+                ActionCircleButton(
+                    imageVector = Icons.Default.SortByAlpha,
+                    onClick = {
+                        if (successState != null) {
+                            onEvent(BooksUiEvent.OnToggleSortMenu(!successState.isSortMenuVisible))
+                        }
+                    },
+                )
+
+                ActionCircleButton(
+                    imageVector = Icons.Default.FilterList,
+                    onClick = {
+                        if (successState != null) {
+                            onEvent(BooksUiEvent.OnToggleFilterMenu(!successState.isFilterMenuVisible))
+                        }
+                    },
+                )
+            }
+            if (state is BooksUiState.Success) {
+                // Dropdown menus for sort and filter
+                Box(modifier = Modifier.fillMaxWidth()) {
                     BooksSortMenu(
                         isVisible = state.isSortMenuVisible,
                         currentOrder = state.sortOrder,
@@ -153,9 +205,6 @@ private fun BooksTopBar(
                         onDismiss = { onEvent(BooksUiEvent.OnDismissSortMenu) },
                         onOrderSelect = { onEvent(BooksUiEvent.OnSortOrderSelect(it)) },
                     )
-
-                    HorizontalSpacer(4.dp)
-
                     BooksFilterMenu(
                         isVisible = state.isFilterMenuVisible,
                         filterOptions = state.filterOptions,
@@ -170,20 +219,72 @@ private fun BooksTopBar(
 }
 
 @Composable
-private fun BooksInformationBox(modifier: Modifier = Modifier) {
+private fun ActionCircleButton(
+    imageVector: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit,
+) {
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.size(48.dp),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+        ),
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun BooksInformationBox(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 12.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
     ) {
-        Text(
-            text = stringResource(Res.string.reading_not_available_yet),
-            modifier = Modifier.padding(16.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = stringResource(Res.string.content_description_info),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp),
+            )
+
+            HorizontalSpacer(16.dp)
+
+            Text(
+                text = stringResource(Res.string.reading_not_available_yet),
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+
+            HorizontalSpacer(12.dp)
+
+            CommonIconButton(
+                imageVector = Icons.Default.Close,
+                contentDescription = stringResource(Res.string.content_description_dismiss),
+                onClick = onDismiss,
+                modifier = Modifier.size(24.dp),
+            )
+        }
     }
 }
 
@@ -194,6 +295,7 @@ private fun BooksSearchBar(
     onQueryChange: (String) -> Unit,
     onClearSearch: () -> Unit,
     modifier: Modifier = Modifier,
+    shape: androidx.compose.ui.graphics.Shape = SearchBarDefaults.dockedShape,
 ) {
     DockedSearchBar(
         inputField = {
@@ -226,6 +328,7 @@ private fun BooksSearchBar(
         expanded = false,
         onExpandedChange = {},
         modifier = modifier,
+        shape = shape,
     ) {}
 }
 
@@ -238,38 +341,17 @@ private fun BooksSortMenu(
     onOrderSelect: (BookSortOrder) -> Unit,
 ) {
     val isSorted = currentOrder != null
-    Box {
-        CommonIconButton(
-            imageVector = Icons.Default.SortByAlpha,
-            contentDescription = stringResource(Res.string.content_description_sort),
-            onClick = { onToggleMenu(true) },
-            tint = if (isSorted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .size(40.dp)
-                .border(
-                    width = 1.dp,
-                    color = if (isSorted) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.outlineVariant
-                    },
-                    shape = CircleShape,
-                ).then(
-                    if (isSorted) {
-                        Modifier.background(
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            shape = CircleShape,
-                        )
-                    } else {
-                        Modifier
-                    },
-                ),
-        )
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // Added fillMaxWidth to ensure dropdown anchors correctly
+        // The IconButton is now replaced by ActionCircleButton in BooksTopBar,
+        // but the DropdownMenu still needs to be here and its visibility controlled.
+        // The anchor for the dropdown will implicitly be the Box or its parent.
         DropdownMenu(
             expanded = isVisible,
             onDismissRequest = onDismiss,
+            modifier = Modifier.align(Alignment.TopEnd), // Align to the top end
         ) {
-            BookSortOrder.entries.forEach { order ->
+            BookSortOrder.values().forEach { order ->
                 DropdownMenuItem(
                     text = {
                         Text(
@@ -309,36 +391,15 @@ private fun BooksFilterMenu(
     onFilterToggle: (BookFilterType) -> Unit,
 ) {
     val isFiltered = filterOptions.any { it.isSelected }
-    Box {
-        CommonIconButton(
-            imageVector = Icons.Default.FilterList,
-            contentDescription = stringResource(Res.string.filter),
-            onClick = { onToggleMenu(true) },
-            tint = if (isFiltered) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .size(40.dp)
-                .border(
-                    width = 1.dp,
-                    color = if (isFiltered) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.outlineVariant
-                    },
-                    shape = CircleShape,
-                ).then(
-                    if (isFiltered) {
-                        Modifier.background(
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            shape = CircleShape,
-                        )
-                    } else {
-                        Modifier
-                    },
-                ),
-        )
+    Box(modifier = Modifier.fillMaxWidth()) {
+        // Added fillMaxWidth to ensure dropdown anchors correctly
+        // The IconButton is now replaced by ActionCircleButton in BooksTopBar,
+        // but the DropdownMenu still needs to be here and its visibility controlled.
+        // The anchor for the dropdown will implicitly be the Box or its parent.
         DropdownMenu(
             expanded = isVisible,
             onDismissRequest = onDismiss,
+            modifier = Modifier.align(Alignment.TopEnd), // Align to the top end
         ) {
             filterOptions.forEach { option ->
                 DropdownMenuItem(
@@ -362,27 +423,107 @@ private fun BooksFilterMenu(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BookList(
     state: BooksUiState.Success,
     onEvent: (BooksUiEvent) -> Unit,
     lazyListState: LazyListState,
+    lazyGridState: LazyGridState,
 ) {
-    LazyColumn(
-        state = lazyListState,
-        contentPadding = PaddingValues(16.dp),
+    if (state.layoutFormat == BookLayoutFormat.List) {
+        LazyColumn(
+            state = lazyListState,
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item {
+                AnimatedVisibility(
+                    visible = state.isInformationBoxVisible,
+                    enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
+                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
+                ) {
+                    BooksInformationBox(
+                        onDismiss = { onEvent(BooksUiEvent.OnDismissInformationBox) },
+                    )
+                }
+            }
+
+            if (state.shouldShowTestamentToggle) {
+                item {
+                    Toggles(
+                        selectedTestament = state.selectedTestament,
+                        onTestamentSelect = { onEvent(BooksUiEvent.OnTestamentSelect(it)) },
+                        selectedLayoutFormat = state.layoutFormat,
+                        onLayoutFormatSelect = { onEvent(BooksUiEvent.OnLayoutFormatSelect(it)) },
+                    )
+                }
+            }
+
+            if (!state.shouldShowTestamentToggle) {
+                items(state.filteredBooks) { book ->
+                    BookItem(
+                        book = book,
+                        layoutFormat = state.layoutFormat,
+                        onEvent = onEvent,
+                    )
+                }
+            } else {
+                state.groupsInTestament.forEach { presentationGroup ->
+                    item {
+                        BookGroupHeader(presentationGroup.group)
+                    }
+
+                    items(presentationGroup.books) { book ->
+                        BookItem(
+                            book = book,
+                            layoutFormat = state.layoutFormat,
+                            onEvent = onEvent,
+                        )
+                    }
+                }
+            }
+        }
+    } else {
+        BookGrid(
+            state = state,
+            onEvent = onEvent,
+            lazyGridState = lazyGridState,
+        )
+    }
+}
+
+@Composable
+fun BookGrid(
+    state: BooksUiState.Success,
+    onEvent: (BooksUiEvent) -> Unit,
+    lazyGridState: LazyGridState,
+) {
+    LazyVerticalGrid(
+        state = lazyGridState,
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item {
-            BooksInformationBox()
+        item(span = { GridItemSpan(2) }) {
+            AnimatedVisibility(
+                visible = state.isInformationBoxVisible,
+                enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
+                exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
+            ) {
+                BooksInformationBox(
+                    onDismiss = { onEvent(BooksUiEvent.OnDismissInformationBox) },
+                )
+            }
         }
 
         if (state.shouldShowTestamentToggle) {
-            item {
-                TestamentToggle(
+            item(span = { GridItemSpan(2) }) {
+                Toggles(
                     selectedTestament = state.selectedTestament,
                     onTestamentSelect = { onEvent(BooksUiEvent.OnTestamentSelect(it)) },
+                    selectedLayoutFormat = state.layoutFormat,
+                    onLayoutFormatSelect = { onEvent(BooksUiEvent.OnLayoutFormatSelect(it)) },
                 )
             }
         }
@@ -391,21 +532,110 @@ fun BookList(
             items(state.filteredBooks) { book ->
                 BookItem(
                     book = book,
+                    layoutFormat = state.layoutFormat,
                     onEvent = onEvent,
                 )
             }
         } else {
             state.groupsInTestament.forEach { presentationGroup ->
-                item {
+                item(span = { GridItemSpan(2) }) {
                     BookGroupHeader(presentationGroup.group)
                 }
 
                 items(presentationGroup.books) { book ->
                     BookItem(
                         book = book,
+                        layoutFormat = state.layoutFormat,
                         onEvent = onEvent,
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Toggles(
+    selectedTestament: BookTestament,
+    onTestamentSelect: (BookTestament) -> Unit,
+    selectedLayoutFormat: BookLayoutFormat,
+    onLayoutFormatSelect: (BookLayoutFormat) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(modifier = Modifier.weight(1.2f)) {
+            TestamentToggle(
+                selectedTestament = selectedTestament,
+                onTestamentSelect = onTestamentSelect,
+            )
+        }
+        Box(modifier = Modifier.weight(0.8f)) {
+            LayoutToggle(
+                selectedLayoutFormat = selectedLayoutFormat,
+                onLayoutFormatSelect = onLayoutFormatSelect,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LayoutToggle(
+    selectedLayoutFormat: BookLayoutFormat,
+    onLayoutFormatSelect: (BookLayoutFormat) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                shape = CircleShape,
+            ).padding(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        val formats = listOf(BookLayoutFormat.List, BookLayoutFormat.Grid)
+        formats.forEach { format ->
+            val isSelected = selectedLayoutFormat == format
+            val shape = when (format) {
+                BookLayoutFormat.List -> CircleShape
+                BookLayoutFormat.Grid -> RoundedCornerShape(10.dp)
+            }
+
+            Box(
+                modifier = Modifier
+                    .height(32.dp)
+                    .weight(1f)
+                    .clip(shape)
+                    .background(
+                        if (isSelected) {
+                            MaterialTheme.colorScheme.primaryContainer
+                        } else {
+                            Color.Transparent
+                        },
+                    ).clickable { onLayoutFormatSelect(format) },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = when (format) {
+                        BookLayoutFormat.List -> Icons.Default.List
+                        BookLayoutFormat.Grid -> Icons.Default.GridView
+                    },
+                    contentDescription = stringResource(
+                        when (format) {
+                            BookLayoutFormat.List -> Res.string.list
+                            BookLayoutFormat.Grid -> Res.string.grid
+                        },
+                    ),
+                    tint = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier.size(18.dp),
+                )
             }
         }
     }
@@ -416,11 +646,10 @@ private fun TestamentToggle(
     selectedTestament: BookTestament,
     onTestamentSelect: (BookTestament) -> Unit,
 ) {
-    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-        val testaments = listOf(
-            BookTestament.OldTestament,
-            BookTestament.NewTestament,
-        )
+    SingleChoiceSegmentedButtonRow(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        val testaments = BookTestament.entries
         testaments.forEachIndexed { index, testament ->
             SegmentedButton(
                 selected = selectedTestament == testament,
@@ -429,14 +658,15 @@ private fun TestamentToggle(
                     index = index,
                     count = testaments.size,
                 ),
+                icon = {},
+                modifier = Modifier.height(36.dp),
             ) {
                 Text(
-                    text = stringResource(
-                        when (testament) {
-                            BookTestament.OldTestament -> Res.string.old_testament
-                            BookTestament.NewTestament -> Res.string.new_testament
-                        },
-                    ),
+                    text = stringResource(testament.titleRes),
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Visible,
+                    softWrap = false,
                 )
             }
         }
@@ -446,10 +676,12 @@ private fun TestamentToggle(
 @Composable
 private fun BookItem(
     book: BookPresentationModel,
+    layoutFormat: BookLayoutFormat,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     BookItemComponent(
         book = book,
+        layoutFormat = layoutFormat,
         onClick = { onEvent(BooksUiEvent.OnBookClick(book)) },
         onToggleFavorite = { onEvent(BooksUiEvent.OnToggleFavorite(book.id)) },
     )
@@ -457,19 +689,23 @@ private fun BookItem(
 
 @Composable
 private fun BookGroupHeader(group: BookGroup) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Line()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
             text = stringResource(group.titleRes),
-            style = MaterialTheme.typography.labelSmall,
-            color = Color.Gray,
-            modifier = Modifier.padding(horizontal = 8.dp),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            modifier = Modifier.padding(end = 8.dp),
         )
-        Line()
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        )
     }
-}
-
-@Composable
-private fun RowScope.Line() {
-    Box(modifier = Modifier.weight(1f).height(1.dp).background(Color.LightGray))
 }

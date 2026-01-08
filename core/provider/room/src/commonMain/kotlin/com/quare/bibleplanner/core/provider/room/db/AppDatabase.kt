@@ -19,7 +19,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
         VerseEntity::class,
         DayEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 @ConstructedBy(DatabaseConstructor::class)

@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.model.book.BookDataModel
+import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
@@ -40,6 +41,7 @@ class BooksRepositoryImpl(
             BookEntity(
                 id = book.id.name,
                 isRead = book.isRead,
+                isFavorite = book.isFavorite,
             )
         }
         bookDao.insertBooks(bookEntities)
@@ -76,6 +78,13 @@ class BooksRepositoryImpl(
         dataStore.edit { preferences ->
             preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] = false
         }
+    }
+
+    override suspend fun updateBookFavoriteStatus(
+        bookId: BookId,
+        isFavorite: Boolean,
+    ) {
+        bookDao.updateBookFavoriteStatus(bookId.name, isFavorite)
     }
 
     companion object {

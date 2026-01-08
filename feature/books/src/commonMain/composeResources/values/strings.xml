@@ -2,8 +2,8 @@
 <resources>
     <string name="search_books">Search book...</string>
     <string name="categorize">Categorize</string>
-    <string name="only_read">Only Read</string>
-    <string name="only_unread">Only Unread</string>
+    <string name="read">Read</string>
+    <string name="unread">Unread</string>
     <string name="favorites">Favorites</string>
     <string name="filter">Filter</string>
     <string name="old_testament">Old Testament</string>
@@ -31,5 +31,9 @@
     <string name="pauline_epistles">Pauline Epistles</string>
     <string name="general_epistles">General Epistles</string>
     <string name="revelation">Revelation</string>
+    <string name="content_description_dismiss">Dismiss</string>
+    <string name="content_description_info">Information</string>
     <string name="reading_not_available_yet">It is not possible to read the books on the app yet, but it will be possible soon in next versions.</string>
+    <string name="list">List</string>
+    <string name="grid">Grid</string>
 </resources>

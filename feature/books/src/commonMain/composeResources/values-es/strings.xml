@@ -2,7 +2,8 @@
 <resources>
     <string name="search_books">Buscar libro...</string>
     <string name="categorize">Categorizar</string>
-    <string name="only_read">Leídos</string>
+    <string name="read">Leídos</string>
+    <string name="unread">No leídos</string>
     <string name="favorites">Favoritos</string>
     <string name="old_testament">Antiguo Testamento</string>
     <string name="new_testament">Nuevo Testamento</string>

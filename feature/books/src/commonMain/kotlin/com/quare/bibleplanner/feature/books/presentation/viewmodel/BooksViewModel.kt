@@ -4,20 +4,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.favorites
-import bibleplanner.feature.books.generated.resources.only_read
-import bibleplanner.feature.books.generated.resources.only_unread
+import bibleplanner.feature.books.generated.resources.read
+import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.model.book.BookDataModel
+import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
 import com.quare.bibleplanner.feature.books.presentation.model.BookGroupPresentationModel
+import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
+import com.quare.bibleplanner.ui.utils.observe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -25,6 +30,8 @@ import kotlinx.coroutines.launch
 
 class BooksViewModel(
     private val booksRepository: BooksRepository,
+    private val toggleBookFavorite: ToggleBookFavoriteUseCase,
+    getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState: StateFlow<BooksUiState> = _uiState
@@ -32,23 +39,21 @@ class BooksViewModel(
     private val bookGroupMapper = BookGroupMapper()
     private val bookCategorizationMapper = BookCategorizationMapper(bookGroupMapper)
     private var allBooks: List<BookDataModel> = emptyList()
+    private var isInformationBoxVisible: Boolean = true
 
     init {
-        viewModelScope.launch {
-            booksRepository.getBooksFlow().collect { books ->
-                allBooks = books
-                updateState()
-            }
+        observe(getBooksWithInformationBoxVisibility()) { result ->
+            allBooks = result.books
+            isInformationBoxVisible = result.isInformationBoxVisible
+            updateState()
         }
     }
-
-    // Temporary local storage for favorites until data layer is ready
-    private val favoriteBookIds = mutableSetOf<com.quare.bibleplanner.core.model.book.BookId>()
 
     private var activeFilterTypes: Set<BookFilterType> = emptySet()
     private var isFilterMenuVisible: Boolean = false
     private var isSortMenuVisible: Boolean = false
     private var sortOrder: BookSortOrder? = null
+    private var layoutFormat: BookLayoutFormat = BookLayoutFormat.List
 
     fun onEvent(event: BooksUiEvent) {
         when (event) {
@@ -95,12 +100,12 @@ class BooksViewModel(
             }
 
             is BooksUiEvent.OnToggleFavorite -> {
-                if (favoriteBookIds.contains(event.bookId)) {
-                    favoriteBookIds.remove(event.bookId)
-                } else {
-                    favoriteBookIds.add(event.bookId)
+                val book = (uiState.value as? BooksUiState.Success)?.books?.find { it.id == event.bookId }
+                book?.let {
+                    viewModelScope.launch {
+                        toggleBookFavorite(event.bookId, !it.isFavorite)
+                    }
                 }
-                updateState() // Re-calculate presentation models
             }
 
             is BooksUiEvent.OnToggleFilterMenu -> {
@@ -129,8 +134,19 @@ class BooksViewModel(
                 updateState()
             }
 
+            is BooksUiEvent.OnDismissInformationBox -> {
+                viewModelScope.launch {
+                    booksRepository.setInformationBoxDismissed()
+                }
+            }
+
             is BooksUiEvent.OnClearSearch -> {
                 updateState(searchQuery = "")
+            }
+
+            is BooksUiEvent.OnLayoutFormatSelect -> {
+                layoutFormat = event.layoutFormat
+                updateState()
             }
         }
     }
@@ -163,7 +179,7 @@ class BooksViewModel(
                 progress = progress,
                 percentageText = "$percentage%",
                 isCompleted = isCompleted,
-                isFavorite = favoriteBookIds.contains(book.id),
+                isFavorite = book.isFavorite,
             )
         }
 
@@ -189,12 +205,12 @@ class BooksViewModel(
         val filterOptions = listOf(
             BookFilterOption(
                 type = BookFilterType.OnlyRead,
-                label = Res.string.only_read,
+                label = Res.string.read,
                 isSelected = isOnlyRead,
             ),
             BookFilterOption(
                 type = BookFilterType.OnlyUnread,
-                label = Res.string.only_unread,
+                label = Res.string.unread,
                 isSelected = isOnlyUnread,
             ),
             BookFilterOption(
@@ -233,7 +249,9 @@ class BooksViewModel(
                 isFilterMenuVisible = isFilterMenuVisible,
                 isSortMenuVisible = isSortMenuVisible,
                 sortOrder = sortOrder,
+                isInformationBoxVisible = isInformationBoxVisible,
                 groupsInTestament = categorizedBooks[currentSelectedTestament].orEmpty(),
+                layoutFormat = layoutFormat,
             )
         }
     }
