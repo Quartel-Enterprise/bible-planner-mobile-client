@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -22,25 +23,35 @@ fun BookItemComponent(
     modifier: Modifier = Modifier,
     book: BookPresentationModel,
     layoutFormat: BookLayoutFormat,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
-    if (layoutFormat == BookLayoutFormat.List) {
-        BookListItemComponent(
-            book = book,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope,
-            onEvent = onEvent,
-            modifier = modifier,
-        )
-    } else {
-        BookGridItemComponent(
-            book = book,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope,
-            onEvent = onEvent,
-            modifier = modifier,
-        )
+    SharedTransitionLayout {
+        val sharedTransitionScope = this
+        AnimatedContent(
+            targetState = layoutFormat,
+            label = "book_item_layout_transition",
+            transitionSpec = {
+                EnterTransition.None togetherWith ExitTransition.None
+            },
+        ) { targetLayoutFormat ->
+            val animatedVisibilityScope = this
+            if (targetLayoutFormat == BookLayoutFormat.List) {
+                BookListItemComponent(
+                    book = book,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    onEvent = onEvent,
+                    modifier = modifier,
+                )
+            } else {
+                BookGridItemComponent(
+                    book = book,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    onEvent = onEvent,
+                    modifier = modifier,
+                )
+            }
+        }
     }
 }

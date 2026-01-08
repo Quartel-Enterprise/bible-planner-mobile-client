@@ -166,6 +166,9 @@ class BooksViewModel(
             is BooksUiEvent.OnLayoutFormatSelect -> {
                 layoutFormat = event.layoutFormat
                 updateState()
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
             }
         }
     }

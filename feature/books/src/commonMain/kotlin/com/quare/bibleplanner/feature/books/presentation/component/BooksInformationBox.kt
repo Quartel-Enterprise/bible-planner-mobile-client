@@ -30,9 +30,7 @@ internal fun BooksInformationBox(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
+        modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(16.dp),
     ) {

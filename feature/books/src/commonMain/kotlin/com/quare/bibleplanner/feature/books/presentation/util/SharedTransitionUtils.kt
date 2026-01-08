@@ -2,10 +2,17 @@ package com.quare.bibleplanner.feature.books.presentation.util
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.addOutline
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 
 /**
  * An [SharedTransitionScope.OverlayClip] that returns null for the clip path,
@@ -19,6 +26,41 @@ val NoClip = object : SharedTransitionScope.OverlayClip {
         sharedContentState: SharedTransitionScope.SharedContentState,
         bounds: Rect,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ): Path? = null
 }
+
+/**
+ * An [SharedTransitionScope.OverlayClip] that clips to a specific [Shape] with optional padding.
+ * Padding is useful to maintain the shape while allowing shadows to be visible.
+ */
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun OverlayClip(
+    shape: Shape,
+    padding: Dp = 0.dp,
+) = object : SharedTransitionScope.OverlayClip {
+    override fun getClipPath(
+        sharedContentState: SharedTransitionScope.SharedContentState,
+        bounds: Rect,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Path? {
+        val paddingPx = with(density) { padding.toPx() }
+        val sizeWithPadding = Size(
+            bounds.width + paddingPx * 2,
+            bounds.height + paddingPx * 2,
+        )
+
+        return Path().apply {
+            addOutline(shape.createOutline(sizeWithPadding, layoutDirection, density))
+            translate(Offset(-paddingPx, -paddingPx))
+        }
+    }
+}
+
+/**
+ * A specialized [OverlayClip] for cards with shadows.
+ * It uses a 16dp margin to ensure shadows are not clipped.
+ */
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun ShadowClip(shape: Shape) = OverlayClip(shape, padding = 16.dp)

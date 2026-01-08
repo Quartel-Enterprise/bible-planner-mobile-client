@@ -43,13 +43,18 @@ fun BooksScreen(
     val isScrolled by remember(state) {
         derivedStateOf {
             val activeState = when {
-                state !is BooksUiState.Success -> searchGridState
+                state !is BooksUiState.Success -> {
+                    searchGridState
+                }
+
                 !state.shouldShowTestamentToggle -> {
                     if (state.layoutFormat == BookLayoutFormat.Grid) searchGridState else searchListState
                 }
+
                 state.selectedTestament == BookTestament.OldTestament -> {
                     if (state.layoutFormat == BookLayoutFormat.Grid) oldTestamentGridState else oldTestamentListState
                 }
+
                 else -> {
                     if (state.layoutFormat == BookLayoutFormat.Grid) newTestamentGridState else newTestamentListState
                 }

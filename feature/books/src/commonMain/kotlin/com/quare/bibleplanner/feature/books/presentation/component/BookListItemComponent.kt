@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.books.presentation.component
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import com.quare.bibleplanner.feature.books.presentation.util.NoClip
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,6 +35,9 @@ import bibleplanner.feature.books.generated.resources.content_description_favori
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
+import com.quare.bibleplanner.feature.books.presentation.util.NoClip
+import com.quare.bibleplanner.feature.books.presentation.util.OverlayClip
+import com.quare.bibleplanner.feature.books.presentation.util.ShadowClip
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
@@ -57,14 +59,15 @@ internal fun BookListItemComponent(
                 .sharedBounds(
                     rememberSharedContentState(key = "book-${book.id.name}"),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    clipInOverlayDuringTransition = NoClip,
+                    clipInOverlayDuringTransition = ShadowClip(RoundedCornerShape(16.dp)),
                 ),
             shape = RoundedCornerShape(16.dp),
         ) {
             Row(
                 modifier = Modifier
                     .padding(12.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp)),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 val backgroundColor = if (book.isCompleted) {
@@ -78,11 +81,7 @@ internal fun BookListItemComponent(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .sharedBounds(
-                            rememberSharedContentState(key = "icon-box-${book.id.name}"),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(8.dp)),
-                        ).background(backgroundColor),
+                        .background(backgroundColor),
                 ) {
                     Icon(
                         imageVector = if (book.isCompleted) Icons.Default.Check else Icons.AutoMirrored.Filled.MenuBook,
