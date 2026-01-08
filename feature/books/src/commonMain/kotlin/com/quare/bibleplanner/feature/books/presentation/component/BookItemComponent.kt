@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MenuBook
@@ -121,7 +122,7 @@ private fun BookListItem(
                         .background(backgroundColor),
                 ) {
                     Icon(
-                        imageVector = if (book.isCompleted) Icons.Default.Check else Icons.Default.MenuBook,
+                        imageVector = if (book.isCompleted) Icons.Default.Check else Icons.AutoMirrored.Filled.MenuBook,
                         contentDescription = null,
                         tint = if (book.isCompleted || book.progress > 0f) {
                             MaterialTheme.colorScheme.primary
