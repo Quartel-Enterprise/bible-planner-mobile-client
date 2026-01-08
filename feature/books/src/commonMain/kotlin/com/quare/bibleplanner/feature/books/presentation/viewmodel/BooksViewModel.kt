@@ -109,12 +109,12 @@ class BooksViewModel(
             }
 
             is BooksUiEvent.OnToggleFilterMenu -> {
-                isFilterMenuVisible = event.isVisible
+                isFilterMenuVisible = !isFilterMenuVisible
                 updateState()
             }
 
             is BooksUiEvent.OnToggleSortMenu -> {
-                isSortMenuVisible = event.isVisible
+                isSortMenuVisible = !isSortMenuVisible
                 updateState()
             }
 

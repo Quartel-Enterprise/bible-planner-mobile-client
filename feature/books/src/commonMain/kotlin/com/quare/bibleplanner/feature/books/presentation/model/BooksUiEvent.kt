@@ -24,13 +24,9 @@ sealed interface BooksUiEvent {
         val bookId: BookId,
     ) : BooksUiEvent
 
-    data class OnToggleFilterMenu(
-        val isVisible: Boolean,
-    ) : BooksUiEvent
+    data object OnToggleFilterMenu : BooksUiEvent
 
-    data class OnToggleSortMenu(
-        val isVisible: Boolean,
-    ) : BooksUiEvent
+    data object OnToggleSortMenu : BooksUiEvent
 
     data class OnSortOrderSelect(
         val sortOrder: BookSortOrder,
