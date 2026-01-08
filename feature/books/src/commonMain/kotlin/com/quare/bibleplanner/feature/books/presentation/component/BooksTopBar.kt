@@ -57,6 +57,7 @@ internal fun BooksTopBar(
                     ActionCircleButton(
                         imageVector = Icons.Default.SortByAlpha,
                         onClick = { onEvent(BooksUiEvent.OnToggleSortMenu) },
+                        isSelected = successState?.sortOrder != null,
                     )
                     if (successState != null) {
                         BooksSortMenu(
@@ -71,6 +72,7 @@ internal fun BooksTopBar(
                     ActionCircleButton(
                         imageVector = Icons.Default.FilterList,
                         onClick = { onEvent(BooksUiEvent.OnToggleFilterMenu) },
+                        isSelected = successState?.filterOptions?.any { it.isSelected } == true,
                     )
                     if (successState != null) {
                         BooksFilterMenu(
