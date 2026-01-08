@@ -53,10 +53,9 @@ internal fun BookListItemComponent(
             onClick = { onEvent(BooksUiEvent.OnBookClick(book)) },
             modifier = modifier
                 .fillMaxWidth()
-                .sharedElement(
+                .sharedBounds(
                     rememberSharedContentState(key = "book-${book.id.name}"),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(16.dp)),
                 ),
             shape = RoundedCornerShape(16.dp),
         ) {

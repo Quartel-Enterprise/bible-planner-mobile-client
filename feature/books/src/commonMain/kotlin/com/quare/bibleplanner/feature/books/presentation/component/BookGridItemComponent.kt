@@ -53,11 +53,14 @@ internal fun BookGridItemComponent(
         ElevatedCard(
             onClick = { onEvent(BooksUiEvent.OnBookClick(book)) },
             modifier = modifier
-                .fillMaxWidth()
-                .sharedElement(
+                .fillMaxWidth().sharedElement(
                     rememberSharedContentState(key = "book-${book.id.name}"),
                     animatedVisibilityScope = animatedVisibilityScope,
                     clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(16.dp)),
+                )
+                .sharedBounds(
+                    rememberSharedContentState(key = "book-${book.id.name}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
                 ),
             shape = RoundedCornerShape(16.dp),
         ) {
