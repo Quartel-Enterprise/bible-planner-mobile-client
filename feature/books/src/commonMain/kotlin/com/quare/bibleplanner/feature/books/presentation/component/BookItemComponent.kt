@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.completed
+import bibleplanner.feature.books.generated.resources.content_description_book_icon
 import bibleplanner.feature.books.generated.resources.content_description_favorite
 import bibleplanner.feature.books.generated.resources.content_description_navigate
 import com.quare.bibleplanner.core.books.util.getBookName
@@ -137,7 +138,7 @@ fun BookItemComponent(
 
                     Icon(
                         imageVector = icon,
-                        contentDescription = null, // Decorative icon inside progress
+                        contentDescription = stringResource(Res.string.content_description_book_icon),
                         tint = iconTint,
                         modifier = Modifier.size(24.dp),
                     )
