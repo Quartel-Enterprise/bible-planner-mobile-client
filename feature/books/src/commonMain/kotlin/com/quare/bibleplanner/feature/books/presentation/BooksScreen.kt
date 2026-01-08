@@ -1,6 +1,11 @@
 package com.quare.bibleplanner.feature.books.presentation
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -8,29 +13,23 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -71,12 +70,8 @@ import bibleplanner.feature.books.generated.resources.content_description_dismis
 import bibleplanner.feature.books.generated.resources.content_description_info
 import bibleplanner.feature.books.generated.resources.content_description_search
 import bibleplanner.feature.books.generated.resources.content_description_selected
-import bibleplanner.feature.books.generated.resources.content_description_sort
-import bibleplanner.feature.books.generated.resources.filter
 import bibleplanner.feature.books.generated.resources.grid
 import bibleplanner.feature.books.generated.resources.list
-import bibleplanner.feature.books.generated.resources.new_testament
-import bibleplanner.feature.books.generated.resources.old_testament
 import bibleplanner.feature.books.generated.resources.reading_not_available_yet
 import bibleplanner.feature.books.generated.resources.search_books
 import bibleplanner.feature.books.generated.resources.sort_alphabetical_ascending
@@ -93,26 +88,21 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
-import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BooksScreen(
     state: BooksUiState,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     val mainPadding = LocalMainPadding.current
-    val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
 
     val isScrolled by remember {
         derivedStateOf {
-            if (state is BooksUiState.Success && state.layoutFormat == BookLayoutFormat.Grid) {
-                lazyGridState.firstVisibleItemIndex > 0 || lazyGridState.firstVisibleItemScrollOffset > 0
-            } else {
-                lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
-            }
+            lazyGridState.firstVisibleItemIndex > 0 || lazyGridState.firstVisibleItemScrollOffset > 0
         }
     }
 
@@ -136,7 +126,6 @@ fun BooksScreen(
                     BookList(
                         state = state,
                         onEvent = onEvent,
-                        lazyListState = lazyListState,
                         lazyGridState = lazyGridState,
                     )
                 }
@@ -423,20 +412,26 @@ private fun BooksFilterMenu(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun BookList(
     state: BooksUiState.Success,
-    onEvent: (BooksUiEvent) -> Unit,
-    lazyListState: LazyListState,
     lazyGridState: LazyGridState,
+    onEvent: (BooksUiEvent) -> Unit,
 ) {
-    if (state.layoutFormat == BookLayoutFormat.List) {
-        LazyColumn(
-            state = lazyListState,
+    val isGrid = state.layoutFormat == BookLayoutFormat.Grid
+    val columns = if (isGrid) 2 else 1
+    SharedTransitionLayout {
+        val sharedTransitionScope = this
+        LazyVerticalGrid(
+            state = lazyGridState,
+            columns = GridCells.Fixed(columns),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(if (isGrid) 12.dp else 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize(),
         ) {
-            item {
+            item(span = { GridItemSpan(columns) }) {
                 AnimatedVisibility(
                     visible = state.isInformationBoxVisible,
                     enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
@@ -449,7 +444,7 @@ fun BookList(
             }
 
             if (state.shouldShowTestamentToggle) {
-                item {
+                item(span = { GridItemSpan(columns) }) {
                     Toggles(
                         selectedTestament = state.selectedTestament,
                         onTestamentSelect = { onEvent(BooksUiEvent.OnTestamentSelect(it)) },
@@ -458,96 +453,51 @@ fun BookList(
                     )
                 }
             }
-
             if (!state.shouldShowTestamentToggle) {
-                items(state.filteredBooks) { book ->
-                    BookItem(
-                        book = book,
-                        layoutFormat = state.layoutFormat,
-                        onEvent = onEvent,
-                    )
-                }
-            } else {
-                state.groupsInTestament.forEach { presentationGroup ->
-                    item {
-                        BookGroupHeader(presentationGroup.group)
-                    }
-
-                    items(presentationGroup.books) { book ->
-                        BookItem(
+                items(
+                    items = state.filteredBooks,
+                    key = { it.id.name },
+                ) { book ->
+                    AnimatedContent(
+                        targetState = state.layoutFormat,
+                        label = "item_transition",
+                    ) { targetLayoutFormat ->
+                        val animatedVisibilityScope = this
+                        BookItemComponent(
                             book = book,
-                            layoutFormat = state.layoutFormat,
-                            onEvent = onEvent,
+                            layoutFormat = targetLayoutFormat,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            onClick = { onEvent(BooksUiEvent.OnBookClick(book)) },
+                            onToggleFavorite = { onEvent(BooksUiEvent.OnToggleFavorite(book.id)) },
                         )
                     }
                 }
-            }
-        }
-    } else {
-        BookGrid(
-            state = state,
-            onEvent = onEvent,
-            lazyGridState = lazyGridState,
-        )
-    }
-}
+            } else {
+                state.groupsInTestament.forEach { presentationGroup ->
+                    item(span = { GridItemSpan(columns) }) {
+                        BookGroupHeader(presentationGroup.group)
+                    }
 
-@Composable
-fun BookGrid(
-    state: BooksUiState.Success,
-    onEvent: (BooksUiEvent) -> Unit,
-    lazyGridState: LazyGridState,
-) {
-    LazyVerticalGrid(
-        state = lazyGridState,
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        item(span = { GridItemSpan(2) }) {
-            AnimatedVisibility(
-                visible = state.isInformationBoxVisible,
-                enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
-                exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(),
-            ) {
-                BooksInformationBox(
-                    onDismiss = { onEvent(BooksUiEvent.OnDismissInformationBox) },
-                )
-            }
-        }
-
-        if (state.shouldShowTestamentToggle) {
-            item(span = { GridItemSpan(2) }) {
-                Toggles(
-                    selectedTestament = state.selectedTestament,
-                    onTestamentSelect = { onEvent(BooksUiEvent.OnTestamentSelect(it)) },
-                    selectedLayoutFormat = state.layoutFormat,
-                    onLayoutFormatSelect = { onEvent(BooksUiEvent.OnLayoutFormatSelect(it)) },
-                )
-            }
-        }
-
-        if (!state.shouldShowTestamentToggle) {
-            items(state.filteredBooks) { book ->
-                BookItem(
-                    book = book,
-                    layoutFormat = state.layoutFormat,
-                    onEvent = onEvent,
-                )
-            }
-        } else {
-            state.groupsInTestament.forEach { presentationGroup ->
-                item(span = { GridItemSpan(2) }) {
-                    BookGroupHeader(presentationGroup.group)
-                }
-
-                items(presentationGroup.books) { book ->
-                    BookItem(
-                        book = book,
-                        layoutFormat = state.layoutFormat,
-                        onEvent = onEvent,
-                    )
+                    items(
+                        items = presentationGroup.books,
+                        key = { it.id.name },
+                    ) { book ->
+                        AnimatedContent(
+                            targetState = state.layoutFormat,
+                            label = "item_transition",
+                        ) { targetLayoutFormat ->
+                            val animatedVisibilityScope = this
+                            BookItemComponent(
+                                book = book,
+                                layoutFormat = targetLayoutFormat,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                onClick = { onEvent(BooksUiEvent.OnBookClick(book)) },
+                                onToggleFavorite = { onEvent(BooksUiEvent.OnToggleFavorite(book.id)) },
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -671,20 +621,6 @@ private fun TestamentToggle(
             }
         }
     }
-}
-
-@Composable
-private fun BookItem(
-    book: BookPresentationModel,
-    layoutFormat: BookLayoutFormat,
-    onEvent: (BooksUiEvent) -> Unit,
-) {
-    BookItemComponent(
-        book = book,
-        layoutFormat = layoutFormat,
-        onClick = { onEvent(BooksUiEvent.OnBookClick(book)) },
-        onToggleFavorite = { onEvent(BooksUiEvent.OnToggleFavorite(book.id)) },
-    )
 }
 
 @Composable
