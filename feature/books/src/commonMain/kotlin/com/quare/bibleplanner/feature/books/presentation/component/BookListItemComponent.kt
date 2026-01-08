@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.books.presentation.component
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import com.quare.bibleplanner.feature.books.presentation.util.NoClip
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -56,6 +57,7 @@ internal fun BookListItemComponent(
                 .sharedBounds(
                     rememberSharedContentState(key = "book-${book.id.name}"),
                     animatedVisibilityScope = animatedVisibilityScope,
+                    clipInOverlayDuringTransition = NoClip,
                 ),
             shape = RoundedCornerShape(16.dp),
         ) {
