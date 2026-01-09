@@ -12,8 +12,10 @@ fun String.highlightText(
     AnnotatedString(this)
 } else {
     buildAnnotatedString {
-        val index = indexOf(
-            string = query,
+        val normalizedText = this@highlightText.removeAccents()
+        val normalizedQuery = query.removeAccents()
+        val index = normalizedText.indexOf(
+            string = normalizedQuery,
             startIndex = 0,
             ignoreCase = true,
         )

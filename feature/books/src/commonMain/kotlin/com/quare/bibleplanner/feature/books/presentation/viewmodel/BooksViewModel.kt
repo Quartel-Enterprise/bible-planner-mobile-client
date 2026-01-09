@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
+import com.quare.bibleplanner.ui.utils.removeAccents
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
@@ -263,7 +264,7 @@ class BooksViewModel(
             sortOrder != null
 
         val filtered = presentationModels.filter { book ->
-            val matchesQuery = if (currentQuery.isBlank()) true else book.name.contains(currentQuery, ignoreCase = true)
+            val matchesQuery = if (currentQuery.isBlank()) true else book.name.removeAccents().contains(currentQuery.removeAccents(), ignoreCase = true)
             val matchesOnlyRead = if (isOnlyRead) book.isCompleted else true
             val matchesOnlyUnread = if (isOnlyUnread) !book.isCompleted else true
             val matchesFavorites = if (isFavoritesOnly) book.isFavorite else true
@@ -301,8 +302,8 @@ class BooksViewModel(
                 groups.map { group ->
                     group.copy(
                         books = when (sortOrder) {
-                            BookSortOrder.AlphabeticalAscending -> group.books.sortedBy { it.id.name }
-                            BookSortOrder.AlphabeticalDescending -> group.books.sortedByDescending { it.id.name }
+                            BookSortOrder.AlphabeticalAscending -> group.books.sortedBy { it.name.removeAccents() }
+                            BookSortOrder.AlphabeticalDescending -> group.books.sortedByDescending { it.name.removeAccents() }
                             null -> group.books
                         },
                     )
@@ -313,8 +314,8 @@ class BooksViewModel(
             BooksUiState.Success(
                 books = presentationModels,
                 filteredBooks = when (sortOrder) {
-                    BookSortOrder.AlphabeticalAscending -> filtered.sortedBy { it.id.name }
-                    BookSortOrder.AlphabeticalDescending -> filtered.sortedByDescending { it.id.name }
+                    BookSortOrder.AlphabeticalAscending -> filtered.sortedBy { it.name.removeAccents() }
+                    BookSortOrder.AlphabeticalDescending -> filtered.sortedByDescending { it.name.removeAccents() }
                     null -> filtered
                 },
                 selectedTestament = currentSelectedTestament,
