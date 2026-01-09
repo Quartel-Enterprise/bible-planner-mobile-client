@@ -16,7 +16,6 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
-import com.quare.bibleplanner.ui.utils.removeAccents
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
@@ -27,6 +26,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.removeAccents
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -264,7 +264,14 @@ class BooksViewModel(
             sortOrder != null
 
         val filtered = presentationModels.filter { book ->
-            val matchesQuery = if (currentQuery.isBlank()) true else book.name.removeAccents().contains(currentQuery.removeAccents(), ignoreCase = true)
+            val matchesQuery = if (currentQuery.isBlank()) {
+                true
+            } else {
+                book.name.removeAccents().contains(
+                    currentQuery.removeAccents(),
+                    ignoreCase = true,
+                )
+            }
             val matchesOnlyRead = if (isOnlyRead) book.isCompleted else true
             val matchesOnlyUnread = if (isOnlyUnread) !book.isCompleted else true
             val matchesFavorites = if (isFavoritesOnly) book.isFavorite else true
@@ -303,7 +310,12 @@ class BooksViewModel(
                     group.copy(
                         books = when (sortOrder) {
                             BookSortOrder.AlphabeticalAscending -> group.books.sortedBy { it.name.removeAccents() }
-                            BookSortOrder.AlphabeticalDescending -> group.books.sortedByDescending { it.name.removeAccents() }
+
+                            BookSortOrder.AlphabeticalDescending -> group.books.sortedByDescending {
+                                it.name
+                                    .removeAccents()
+                            }
+
                             null -> group.books
                         },
                     )
