@@ -33,7 +33,7 @@ internal class MoreUiStateFactory(
     private val shouldShowDonateOption: ShouldShowDonateOptionUseCase,
     private val getPlanStartDate: GetPlanStartDateFlowUseCase,
     private val getThemeOptionFlow: GetThemeOptionFlow,
-    private val isProVerificationRequiredUseCase: IsProVerificationRequiredUseCase,
+    private val isProVerificationRequired: IsProVerificationRequiredUseCase,
     private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
 ) {
     fun create(): Flow<MoreUiState> {
@@ -41,7 +41,7 @@ internal class MoreUiStateFactory(
             coroutineScope {
                 val instagram = async { isInstagramLinkVisible() }
                 val donate = async { shouldShowDonateOption() }
-                val isPro = async { isProVerificationRequiredUseCase() }
+                val isPro = async { isProVerificationRequired() }
                 val isWebAppEnabled = async { isMoreWebAppEnabled() }
                 emit(
                     Config(

@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material3.Button
@@ -41,7 +43,8 @@ internal fun CongratsBottomSheet(onEvent: (CongratsUiEvent) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp, top = 16.dp),
+                .padding(bottom = 32.dp, top = 16.dp)
+                .verticalScroll(rememberScrollState()),
         ) {
             Icon(
                 imageVector = Icons.Rounded.CheckCircle,
