@@ -81,44 +81,11 @@ class BooksViewModel(
             }
 
             is BooksUiEvent.OnBookClick -> {
-                viewModelScope.launch {
-                    if (isMoreWebAppEnabled()) {
-                        _uiAction.emit(BooksUiAction.ShowReadingNotAvailableYetSnackbar(getWebAppUrl()))
-                    }
-                }
+                onBookClick()
             }
 
             is BooksUiEvent.OnToggleFilter -> {
-                activeFilterTypes = when (event.filterType) {
-                    BookFilterType.OnlyRead -> {
-                        if (activeFilterTypes.contains(BookFilterType.OnlyRead)) {
-                            activeFilterTypes - BookFilterType.OnlyRead
-                        } else {
-                            (activeFilterTypes - BookFilterType.OnlyUnread) + BookFilterType.OnlyRead
-                        }
-                    }
-
-                    BookFilterType.OnlyUnread -> {
-                        if (activeFilterTypes.contains(BookFilterType.OnlyUnread)) {
-                            activeFilterTypes - BookFilterType.OnlyUnread
-                        } else {
-                            (activeFilterTypes - BookFilterType.OnlyRead) + BookFilterType.OnlyUnread
-                        }
-                    }
-
-                    BookFilterType.Favorites -> {
-                        if (activeFilterTypes.contains(BookFilterType.Favorites)) {
-                            activeFilterTypes - BookFilterType.Favorites
-                        } else {
-                            activeFilterTypes + BookFilterType.Favorites
-                        }
-                    }
-                }
-                isFilterMenuVisible = false
-                updateState()
-                viewModelScope.launch {
-                    _uiAction.emit(BooksUiAction.ScrollToTop)
-                }
+                onToggleFilter(event.filterType)
             }
 
             is BooksUiEvent.OnToggleFavorite -> {
@@ -181,6 +148,49 @@ class BooksViewModel(
                 viewModelScope.launch {
                     _uiAction.emit(BooksUiAction.OpenWebAppLink(getWebAppUrl()))
                 }
+            }
+        }
+    }
+
+    private fun onToggleFilter(filterType: BookFilterType) {
+        activeFilterTypes = getActiveFilterTypes(filterType)
+        isFilterMenuVisible = false
+        updateState()
+        viewModelScope.launch {
+            _uiAction.emit(BooksUiAction.ScrollToTop)
+        }
+    }
+
+    private fun getActiveFilterTypes(filterType: BookFilterType): Set<BookFilterType> = when (filterType) {
+        BookFilterType.OnlyRead -> {
+            if (activeFilterTypes.contains(BookFilterType.OnlyRead)) {
+                activeFilterTypes - BookFilterType.OnlyRead
+            } else {
+                (activeFilterTypes - BookFilterType.OnlyUnread) + BookFilterType.OnlyRead
+            }
+        }
+
+        BookFilterType.OnlyUnread -> {
+            if (activeFilterTypes.contains(BookFilterType.OnlyUnread)) {
+                activeFilterTypes - BookFilterType.OnlyUnread
+            } else {
+                (activeFilterTypes - BookFilterType.OnlyRead) + BookFilterType.OnlyUnread
+            }
+        }
+
+        BookFilterType.Favorites -> {
+            if (activeFilterTypes.contains(BookFilterType.Favorites)) {
+                activeFilterTypes - BookFilterType.Favorites
+            } else {
+                activeFilterTypes + BookFilterType.Favorites
+            }
+        }
+    }
+
+    private fun onBookClick() {
+        viewModelScope.launch {
+            if (isMoreWebAppEnabled()) {
+                _uiAction.emit(BooksUiAction.ShowReadingNotAvailableYetSnackbar(getWebAppUrl()))
             }
         }
     }

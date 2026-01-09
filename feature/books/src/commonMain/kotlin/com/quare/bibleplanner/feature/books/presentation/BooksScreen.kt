@@ -91,7 +91,7 @@ fun BooksScreen(
                 val result = snackbarHostState.showSnackbar(
                     message = getString(Res.string.reading_not_available_yet),
                     actionLabel = getString(Res.string.open_site),
-                    duration = SnackbarDuration.Short
+                    duration = SnackbarDuration.Short,
                 )
                 if (result == SnackbarResult.ActionPerformed) {
                     uriHandler.openUri(action.url)
