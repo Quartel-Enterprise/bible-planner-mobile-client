@@ -19,4 +19,8 @@
     <string name="start_pro_journey">Comenzar Viaje Pro</string>
     <string name="footer_payment_info">Pago seguro a través de %1$s. Cancela en cualquier momento.</string>
     <string name="error_restore_purchase">No se encontró ninguna suscripción en la %1$s.</string>
+    <string name="error_unknown">Algo salió mal. Por favor, inténtalo de nuevo.</string>
+    <string name="error_purchase_cancelled">La compra fue cancelada.</string>
+    <string name="error_network">Error de red. Por favor, inténtalo de nuevo.</string>
+    <string name="error_payment_pending">El pago está pendiente de aprobación.</string>
 </resources>

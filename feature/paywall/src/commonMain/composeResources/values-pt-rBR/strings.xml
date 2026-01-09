@@ -19,4 +19,8 @@
     <string name="start_pro_journey">Começar Jornada Pro</string>
     <string name="footer_payment_info">Pagamento seguro via %1$s. Cancele a qualquer momento.</string>
     <string name="error_restore_purchase">Nenhuma assinatura ativa encontrada na %1$s.</string>
+    <string name="error_unknown">Algo deu errado. Por favor, tente novamente.</string>
+    <string name="error_purchase_cancelled">A compra foi cancelada.</string>
+    <string name="error_network">Erro de rede. Por favor, tente novamente.</string>
+    <string name="error_payment_pending">O pagamento está pendente de aprovação.</string>
 </resources>
