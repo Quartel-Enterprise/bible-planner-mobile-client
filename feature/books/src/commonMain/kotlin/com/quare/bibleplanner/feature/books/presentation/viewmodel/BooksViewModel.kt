@@ -9,7 +9,9 @@ import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
+import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookDataModel
+import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class BooksViewModel(
     private val booksRepository: BooksRepository,
@@ -48,6 +51,7 @@ class BooksViewModel(
     private val bookGroupMapper = BookGroupMapper()
     private val bookCategorizationMapper = BookCategorizationMapper(bookGroupMapper)
     private var allBooks: List<BookDataModel> = emptyList()
+    private var bookNames: Map<BookId, String> = emptyMap()
     private var isInformationBoxVisible: Boolean = true
 
     init {
@@ -67,7 +71,14 @@ class BooksViewModel(
                 }
             }
 
-            updateState()
+            if (bookNames.isEmpty() && allBooks.isNotEmpty()) {
+                viewModelScope.launch {
+                    bookNames = allBooks.associate { it.id to getString(it.id.toBookNameResource()) }
+                    updateState()
+                }
+            } else {
+                updateState()
+            }
         }
     }
 
@@ -234,9 +245,11 @@ class BooksViewModel(
             val percentage = (progress * 100).toInt()
             val isCompleted = progress >= 1f
 
+            val bookLocalizedName = bookNames[book.id] ?: book.id.name
+
             BookPresentationModel(
                 id = book.id,
-                name = book.id.name, // Use enum name for internal logic/filtering for now to avoid Composable call
+                name = bookLocalizedName,
                 chapterProgressText = "$readChapters/$totalChapters",
                 progress = progress,
                 percentageText = "$percentage%",

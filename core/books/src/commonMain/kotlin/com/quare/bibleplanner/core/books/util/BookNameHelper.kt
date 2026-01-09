@@ -75,7 +75,6 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Maps BookId to the corresponding string resource
  */
-@Composable
 fun BookId.toBookNameResource(): StringResource = when (this) {
     BookId.GEN -> Res.string.book_gen
     BookId.EXO -> Res.string.book_exo

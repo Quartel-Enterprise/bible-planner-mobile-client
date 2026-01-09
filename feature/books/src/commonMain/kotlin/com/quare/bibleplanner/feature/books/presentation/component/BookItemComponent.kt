@@ -14,6 +14,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 fun BookItemComponent(
     modifier: Modifier = Modifier,
     book: BookPresentationModel,
+    searchQuery: String,
     layoutFormat: BookLayoutFormat,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
@@ -27,6 +28,7 @@ fun BookItemComponent(
             if (targetLayoutFormat == BookLayoutFormat.List) {
                 BookListItemComponent(
                     book = book,
+                    searchQuery = searchQuery,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope,
                     onEvent = onEvent,
@@ -35,6 +37,7 @@ fun BookItemComponent(
             } else {
                 BookGridItemComponent(
                     book = book,
+                    searchQuery = searchQuery,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope,
                     onEvent = onEvent,

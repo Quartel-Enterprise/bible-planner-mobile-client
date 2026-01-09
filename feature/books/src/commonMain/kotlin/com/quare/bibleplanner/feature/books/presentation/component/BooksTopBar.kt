@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
+import com.quare.bibleplanner.ui.component.ActionCircleButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

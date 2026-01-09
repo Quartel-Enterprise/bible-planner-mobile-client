@@ -3,8 +3,8 @@ package com.quare.bibleplanner.core.books.data.repository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository

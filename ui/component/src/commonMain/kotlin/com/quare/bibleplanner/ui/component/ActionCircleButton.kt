@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.books.presentation.component
+package com.quare.bibleplanner.ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
@@ -14,10 +14,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun ActionCircleButton(
+fun ActionCircleButton(
     imageVector: ImageVector,
-    onClick: () -> Unit,
     isSelected: Boolean,
+    onClick: () -> Unit,
 ) {
     val backgroundColor = if (isSelected) {
         MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)

@@ -30,14 +30,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.completed
 import bibleplanner.feature.books.generated.resources.content_description_favorite
-import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.utils.highlightText
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -45,6 +46,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun BookGridItemComponent(
     modifier: Modifier = Modifier,
     book: BookPresentationModel,
+    searchQuery: String,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     onEvent: (BooksUiEvent) -> Unit,
@@ -137,7 +139,13 @@ internal fun BookGridItemComponent(
                         .fillMaxWidth(),
                 ) {
                     Text(
-                        text = book.id.getBookName(),
+                        text = book.name.highlightText(
+                            query = searchQuery,
+                            highlightStyle = SpanStyle(
+                                color = MaterialTheme.colorScheme.primary,
+                                background = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            ),
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,

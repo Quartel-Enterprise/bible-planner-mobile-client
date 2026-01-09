@@ -80,6 +80,7 @@ fun BooksItemsComponent(
                     ) { book ->
                         BookItemComponent(
                             book = book,
+                            searchQuery = state.searchQuery,
                             layoutFormat = state.layoutFormat,
                             onEvent = onEvent,
                         )
@@ -102,6 +103,7 @@ fun BooksItemsComponent(
                         ) { book ->
                             BookItemComponent(
                                 book = book,
+                                searchQuery = state.searchQuery,
                                 layoutFormat = state.layoutFormat,
                                 onEvent = onEvent,
                             )
