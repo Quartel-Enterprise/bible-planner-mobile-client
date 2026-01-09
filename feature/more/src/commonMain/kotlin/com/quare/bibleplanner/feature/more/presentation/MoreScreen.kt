@@ -14,7 +14,7 @@ import com.quare.bibleplanner.feature.more.presentation.content.moreScreenPortra
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.SubscriptionDetailsDialog
-import com.quare.bibleplanner.ui.component.ResponsiveContent
+import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
 
 @Composable
@@ -37,9 +37,10 @@ internal fun MoreScreen(
                     onDismiss = { onEvent(MoreUiEvent.OnDismissSubscriptionDetailsDialog) },
                 )
             }
-            ResponsiveContent(
+            ResponsiveColumn(
                 modifier = Modifier.padding(16.dp),
                 contentPadding = mainPadding,
+                maxContentWidth = 800.dp,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 portraitContent = {
                     moreScreenPortraitLayout(

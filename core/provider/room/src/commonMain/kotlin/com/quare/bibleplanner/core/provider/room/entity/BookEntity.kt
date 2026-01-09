@@ -8,4 +8,5 @@ data class BookEntity(
     @PrimaryKey
     val id: String, // BookId enum value as string
     val isRead: Boolean = false,
+    val isFavorite: Boolean = false,
 )

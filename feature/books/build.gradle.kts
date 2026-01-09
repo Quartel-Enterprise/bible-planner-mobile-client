@@ -12,8 +12,12 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            // Core
             implementation(projects.core.books)
             implementation(projects.core.model)
+            implementation(projects.core.remoteConfig)
+
+            // UI
             implementation(projects.ui.component)
             implementation(projects.ui.utils)
 

@@ -7,9 +7,11 @@ import com.quare.bibleplanner.core.books.data.provider.BookMapsProvider
 import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -34,4 +36,6 @@ val booksModule = module {
     factoryOf(::MarkPassagesReadUseCase)
     factoryOf(::ResetAllProgressUseCase)
     factoryOf(::CalculateBibleProgressUseCase)
+    factoryOf(::GetBooksWithInformationBoxVisibilityUseCase)
+    factoryOf(::ToggleBookFavoriteUseCase)
 }

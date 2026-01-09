@@ -13,8 +13,47 @@ import androidx.compose.ui.unit.Dp
 internal class ResponsiveContentScopeImpl(
     private val lazyListScope: LazyListScope,
     override val contentMaxWidth: Dp,
-) : ResponsiveContentScope,
-    LazyListScope by lazyListScope {
+) : ResponsiveContentScope {
+    override fun item(
+        key: Any?,
+        contentType: Any?,
+        content: @Composable () -> Unit,
+    ) {
+        lazyListScope.item(key = key, contentType = contentType) {
+            content()
+        }
+    }
+
+    override fun <T> items(
+        items: List<T>,
+        key: ((item: T) -> Any)?,
+        contentType: (item: T) -> Any?,
+        itemContent: @Composable (item: T) -> Unit,
+    ) {
+        lazyListScope.items(
+            items = items,
+            key = key,
+            contentType = contentType,
+        ) { item ->
+            itemContent(item)
+        }
+    }
+
+    override fun items(
+        count: Int,
+        key: ((index: Int) -> Any)?,
+        contentType: (index: Int) -> Any?,
+        itemContent: @Composable (index: Int) -> Unit,
+    ) {
+        lazyListScope.items(
+            count = count,
+            key = key,
+            contentType = contentType,
+        ) { index ->
+            itemContent(index)
+        }
+    }
+
     override fun responsiveItem(
         key: Any?,
         contentType: Any?,

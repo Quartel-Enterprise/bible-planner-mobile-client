@@ -9,7 +9,7 @@ import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.portrait.loadedDayPortraitScreenContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-import com.quare.bibleplanner.ui.component.ResponsiveContent
+import com.quare.bibleplanner.ui.component.ResponsiveColumn
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -21,7 +21,7 @@ internal fun LoadedDayContent(
     onEvent: (DayUiEvent) -> Unit,
 ) {
     val day = uiState.day
-    ResponsiveContent(
+    ResponsiveColumn(
         modifier = modifier,
         portraitContent = {
             loadedDayPortraitScreenContent(

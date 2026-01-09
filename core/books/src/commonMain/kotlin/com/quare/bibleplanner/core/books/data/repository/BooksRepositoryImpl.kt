@@ -1,9 +1,15 @@
 package com.quare.bibleplanner.core.books.data.repository
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.model.book.BookDataModel
+import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
@@ -19,6 +25,7 @@ class BooksRepositoryImpl(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
     private val booksWithChapterMapper: BooksWithChapterMapper,
+    private val dataStore: DataStore<Preferences>,
 ) : BooksRepository {
     override fun getBooksFlow(): Flow<List<BookDataModel>> = bookDao
         .getAllBooksWithChaptersDataFlow()
@@ -35,6 +42,7 @@ class BooksRepositoryImpl(
             BookEntity(
                 id = book.id.name,
                 isRead = book.isRead,
+                isFavorite = book.isFavorite,
             )
         }
         bookDao.insertBooks(bookEntities)
@@ -61,5 +69,48 @@ class BooksRepositoryImpl(
                 verseDao.insertVerses(verseEntities)
             }
         }
+    }
+
+    override fun getShowInformationBoxFlow(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] ?: true
+    }
+
+    override suspend fun setInformationBoxDismissed() {
+        dataStore.edit { preferences ->
+            preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] = false
+        }
+    }
+
+    override suspend fun updateBookFavoriteStatus(
+        bookId: BookId,
+        isFavorite: Boolean,
+    ) {
+        bookDao.updateBookFavoriteStatus(bookId.name, isFavorite)
+    }
+
+    override fun getBookLayoutFormatFlow(): Flow<String?> = dataStore.data.map { preferences ->
+        preferences[stringPreferencesKey(BOOK_LAYOUT_FORMAT)]
+    }
+
+    override suspend fun setBookLayoutFormat(layoutFormat: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(BOOK_LAYOUT_FORMAT)] = layoutFormat
+        }
+    }
+
+    override fun getSelectedTestamentFlow(): Flow<String?> = dataStore.data.map { preferences ->
+        preferences[stringPreferencesKey(SELECTED_TESTAMENT)]
+    }
+
+    override suspend fun setSelectedTestament(testament: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(SELECTED_TESTAMENT)] = testament
+        }
+    }
+
+    companion object {
+        private const val SHOW_INFORMATION_BOX = "show_information_box"
+        private const val BOOK_LAYOUT_FORMAT = "book_layout_format"
+        private const val SELECTED_TESTAMENT = "selected_testament"
     }
 }

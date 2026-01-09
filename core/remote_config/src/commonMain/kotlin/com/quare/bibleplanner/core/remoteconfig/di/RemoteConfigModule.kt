@@ -6,6 +6,10 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetStringRemoteCo
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.impl.GetBooleanRemoteConfigUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.impl.GetIntRemoteConfigUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.impl.GetStringRemoteConfigUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.impl.GetWebAppUrlUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.impl.IsMoreWebAppEnabledUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
@@ -16,6 +20,8 @@ val remoteConfigModule = module {
     factoryOf(::GetIntRemoteConfigUseCase).bind<GetIntRemoteConfig>()
     factoryOf(::GetBooleanRemoteConfigUseCase).bind<GetBooleanRemoteConfig>()
     factoryOf(::GetStringRemoteConfigUseCase).bind<GetStringRemoteConfig>()
+    factoryOf(::IsMoreWebAppEnabledUseCase).bind<IsMoreWebAppEnabled>()
+    factoryOf(::GetWebAppUrlUseCase).bind<GetWebAppUrl>()
 }
 
 internal expect val platFormRemoteConfigModule: Module

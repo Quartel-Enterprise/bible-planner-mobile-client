@@ -2,110 +2,241 @@ package com.quare.bibleplanner.feature.books.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import bibleplanner.feature.books.generated.resources.Res
+import bibleplanner.feature.books.generated.resources.favorites
+import bibleplanner.feature.books.generated.resources.read
+import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
+import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookDataModel
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
+import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
+import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookGroupMapper
+import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
+import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
+import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
+import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
+import com.quare.bibleplanner.ui.utils.observe
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 
 class BooksViewModel(
     private val booksRepository: BooksRepository,
+    private val toggleBookFavorite: ToggleBookFavoriteUseCase,
+    private val getWebAppUrl: GetWebAppUrl,
+    private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
+    getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState: StateFlow<BooksUiState> = _uiState
 
+    private val _uiAction = MutableSharedFlow<BooksUiAction>()
+    val uiAction: SharedFlow<BooksUiAction> = _uiAction.asSharedFlow()
+
     private val bookGroupMapper = BookGroupMapper()
+    private val bookCategorizationMapper = BookCategorizationMapper(bookGroupMapper)
     private var allBooks: List<BookDataModel> = emptyList()
+    private var bookNames: Map<BookId, String> = emptyMap()
+    private var isInformationBoxVisible: Boolean = true
 
     init {
-        viewModelScope.launch {
-            booksRepository.getBooksFlow().collect { books ->
-                allBooks = books
+        observe(getBooksWithInformationBoxVisibility()) { result ->
+            allBooks = result.books
+            isInformationBoxVisible = result.isInformationBoxVisible
+
+            result.layoutFormat?.let { persistedFormat ->
+                runCatching { BookLayoutFormat.valueOf(persistedFormat) }.getOrNull()?.let {
+                    layoutFormat = it
+                }
+            }
+
+            result.selectedTestament?.let { persistedTestament ->
+                runCatching { BookTestament.valueOf(persistedTestament) }.getOrNull()?.let {
+                    persistedTestamentValue = it
+                }
+            }
+
+            if (bookNames.isEmpty() && allBooks.isNotEmpty()) {
+                viewModelScope.launch {
+                    bookNames = allBooks.associate { it.id to getString(it.id.toBookNameResource()) }
+                    updateState()
+                }
+            } else {
                 updateState()
             }
         }
     }
 
-    // Temporary local storage for favorites until data layer is ready
-    private val favoriteBookIds = mutableSetOf<com.quare.bibleplanner.core.model.book.BookId>()
+    private var activeFilterTypes: Set<BookFilterType> = emptySet()
+    private var isFilterMenuVisible: Boolean = false
+    private var isSortMenuVisible: Boolean = false
+    private var sortOrder: BookSortOrder? = null
+    private var layoutFormat: BookLayoutFormat = BookLayoutFormat.List
+    private var persistedTestamentValue: BookTestament? = null
 
     fun onEvent(event: BooksUiEvent) {
         when (event) {
             is BooksUiEvent.OnSearchQueryChange -> {
                 updateState(searchQuery = event.query)
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
             }
 
-            is BooksUiEvent.OnToggleCategorize -> {
-                val current = (_uiState.value as? BooksUiState.Success)?.isCategorized ?: false
-                updateState(isCategorized = !current)
-            }
-
-            is BooksUiEvent.OnToggleGroupExpansion -> {
-                updateSuccessState { currentState ->
-                    val currentExpanded = currentState.expandedGroups
-                    val newExpanded = if (currentExpanded.contains(event.groupName)) {
-                        currentExpanded - event.groupName
-                    } else {
-                        currentExpanded + event.groupName
-                    }
-                    currentState.copy(expandedGroups = newExpanded)
+            is BooksUiEvent.OnTestamentSelect -> {
+                persistedTestamentValue = event.testament
+                updateState(selectedTestament = event.testament)
+                viewModelScope.launch {
+                    booksRepository.setSelectedTestament(event.testament.name)
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
                 }
             }
 
             is BooksUiEvent.OnBookClick -> {
-                // No-op for now
+                onBookClick()
             }
 
-            is BooksUiEvent.OnToggleOnlyRead -> {
-                val current = (_uiState.value as? BooksUiState.Success)?.isOnlyRead ?: false
-                updateState(isOnlyRead = !current)
-            }
-
-            is BooksUiEvent.OnToggleFavorites -> {
-                val current = (_uiState.value as? BooksUiState.Success)?.isFavoritesOnly ?: false
-                updateState(isFavoritesOnly = !current)
+            is BooksUiEvent.OnToggleFilter -> {
+                onToggleFilter(event.filterType)
             }
 
             is BooksUiEvent.OnToggleFavorite -> {
-                if (favoriteBookIds.contains(event.bookId)) {
-                    favoriteBookIds.remove(event.bookId)
-                } else {
-                    favoriteBookIds.add(event.bookId)
+                val book = (uiState.value as? BooksUiState.Success)?.books?.find { it.id == event.bookId }
+                book?.let {
+                    viewModelScope.launch {
+                        toggleBookFavorite(event.bookId, !it.isFavorite)
+                    }
                 }
-                updateState() // Re-calculate presentation models
+            }
+
+            is BooksUiEvent.OnToggleFilterMenu -> {
+                isFilterMenuVisible = !isFilterMenuVisible
+                updateState()
+            }
+
+            is BooksUiEvent.OnToggleSortMenu -> {
+                isSortMenuVisible = !isSortMenuVisible
+                updateState()
+            }
+
+            is BooksUiEvent.OnSortOrderSelect -> {
+                sortOrder = if (sortOrder == event.sortOrder) null else event.sortOrder
+                isSortMenuVisible = false
+                updateState()
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
+            }
+
+            is BooksUiEvent.OnDismissSortMenu -> {
+                isSortMenuVisible = false
+                updateState()
+            }
+
+            is BooksUiEvent.OnDismissFilterMenu -> {
+                isFilterMenuVisible = false
+                updateState()
+            }
+
+            is BooksUiEvent.OnDismissInformationBox -> {
+                viewModelScope.launch {
+                    booksRepository.setInformationBoxDismissed()
+                }
+            }
+
+            is BooksUiEvent.OnClearSearch -> {
+                updateState(searchQuery = "")
+            }
+
+            is BooksUiEvent.OnLayoutFormatSelect -> {
+                layoutFormat = event.layoutFormat
+                updateState()
+                viewModelScope.launch {
+                    booksRepository.setBookLayoutFormat(event.layoutFormat.name)
+                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
+            }
+
+            BooksUiEvent.OnWebAppLinkClick -> {
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.OpenWebAppLink(getWebAppUrl()))
+                }
             }
         }
     }
 
-    private fun updateSuccessState(transform: (BooksUiState.Success) -> BooksUiState.Success) {
-        _uiState.update { currentState ->
-            if (currentState is BooksUiState.Success) {
-                transform(currentState)
+    private fun onToggleFilter(filterType: BookFilterType) {
+        activeFilterTypes = getActiveFilterTypes(filterType)
+        isFilterMenuVisible = false
+        updateState()
+        viewModelScope.launch {
+            _uiAction.emit(BooksUiAction.ScrollToTop)
+        }
+    }
+
+    private fun getActiveFilterTypes(filterType: BookFilterType): Set<BookFilterType> = when (filterType) {
+        BookFilterType.OnlyRead -> {
+            if (activeFilterTypes.contains(BookFilterType.OnlyRead)) {
+                activeFilterTypes - BookFilterType.OnlyRead
             } else {
-                currentState
+                (activeFilterTypes - BookFilterType.OnlyUnread) + BookFilterType.OnlyRead
+            }
+        }
+
+        BookFilterType.OnlyUnread -> {
+            if (activeFilterTypes.contains(BookFilterType.OnlyUnread)) {
+                activeFilterTypes - BookFilterType.OnlyUnread
+            } else {
+                (activeFilterTypes - BookFilterType.OnlyRead) + BookFilterType.OnlyUnread
+            }
+        }
+
+        BookFilterType.Favorites -> {
+            if (activeFilterTypes.contains(BookFilterType.Favorites)) {
+                activeFilterTypes - BookFilterType.Favorites
+            } else {
+                activeFilterTypes + BookFilterType.Favorites
+            }
+        }
+    }
+
+    private fun onBookClick() {
+        viewModelScope.launch {
+            if (isMoreWebAppEnabled()) {
+                _uiAction.emit(BooksUiAction.ShowReadingNotAvailableYetSnackbar(getWebAppUrl()))
             }
         }
     }
 
     private fun updateState(
         searchQuery: String? = null,
-        isCategorized: Boolean? = null,
-        expandedGroups: Set<String>? = null,
-        isOnlyRead: Boolean? = null,
-        isFavoritesOnly: Boolean? = null,
+        selectedTestament: BookTestament? = null,
     ) {
         val currentState = _uiState.value
-        val currentQuery = searchQuery ?: (currentState as? BooksUiState.Success)?.searchQuery ?: ""
-        val currentIsCategorized = isCategorized ?: (currentState as? BooksUiState.Success)?.isCategorized ?: false
-        val currentExpanded = expandedGroups ?: (currentState as? BooksUiState.Success)?.expandedGroups ?: emptySet()
-        val currentIsOnlyRead = isOnlyRead ?: (currentState as? BooksUiState.Success)?.isOnlyRead ?: false
-        val currentIsFavoritesOnly =
-            isFavoritesOnly ?: (currentState as? BooksUiState.Success)?.isFavoritesOnly ?: false
+        val currentQuery = searchQuery ?: (currentState as? BooksUiState.Success)?.searchQuery.orEmpty()
+        val currentSelectedTestament = selectedTestament
+            ?: persistedTestamentValue
+            ?: (currentState as? BooksUiState.Success)?.selectedTestament
+            ?: BookTestament.OldTestament
+
+        val isOnlyRead = activeFilterTypes.contains(BookFilterType.OnlyRead)
+        val isOnlyUnread = activeFilterTypes.contains(BookFilterType.OnlyUnread)
+        val isFavoritesOnly = activeFilterTypes.contains(BookFilterType.Favorites)
 
         val presentationModels = allBooks.map { book ->
             val totalChapters = book.chapters.size
@@ -114,46 +245,88 @@ class BooksViewModel(
             val percentage = (progress * 100).toInt()
             val isCompleted = progress >= 1f
 
+            val bookLocalizedName = bookNames[book.id] ?: book.id.name
+
             BookPresentationModel(
                 id = book.id,
-                name = book.id.name, // Use enum name for internal logic/filtering for now to avoid Composable call
+                name = bookLocalizedName,
                 chapterProgressText = "$readChapters/$totalChapters",
                 progress = progress,
                 percentageText = "$percentage%",
                 isCompleted = isCompleted,
-                isFavorite = favoriteBookIds.contains(book.id),
+                isFavorite = book.isFavorite,
             )
         }
 
+        val isSearchFilterOrSortActive = currentQuery.isNotBlank() ||
+            activeFilterTypes.isNotEmpty() ||
+            sortOrder != null
+
         val filtered = presentationModels.filter { book ->
             val matchesQuery = if (currentQuery.isBlank()) true else book.name.contains(currentQuery, ignoreCase = true)
-            val matchesOnlyRead = if (currentIsOnlyRead) book.isCompleted else true
-            val matchesFavorites = if (currentIsFavoritesOnly) book.isFavorite else true
+            val matchesOnlyRead = if (isOnlyRead) book.isCompleted else true
+            val matchesOnlyUnread = if (isOnlyUnread) !book.isCompleted else true
+            val matchesFavorites = if (isFavoritesOnly) book.isFavorite else true
+            val matchesTestament = if (isSearchFilterOrSortActive) {
+                true
+            } else {
+                bookGroupMapper.fromBookId(book.id).testament ==
+                    currentSelectedTestament
+            }
 
-            matchesQuery && matchesOnlyRead && matchesFavorites
+            matchesQuery && matchesOnlyRead && matchesOnlyUnread && matchesFavorites && matchesTestament
         }
+
+        val filterOptions = listOf(
+            BookFilterOption(
+                type = BookFilterType.OnlyRead,
+                label = Res.string.read,
+                isSelected = isOnlyRead,
+            ),
+            BookFilterOption(
+                type = BookFilterType.OnlyUnread,
+                label = Res.string.unread,
+                isSelected = isOnlyUnread,
+            ),
+            BookFilterOption(
+                type = BookFilterType.Favorites,
+                label = Res.string.favorites,
+                isSelected = isFavoritesOnly,
+            ),
+        )
+
+        val categorizedBooks = bookCategorizationMapper
+            .map(filtered)
+            .mapValues { (_, groups) ->
+                groups.map { group ->
+                    group.copy(
+                        books = when (sortOrder) {
+                            BookSortOrder.AlphabeticalAscending -> group.books.sortedBy { it.id.name }
+                            BookSortOrder.AlphabeticalDescending -> group.books.sortedByDescending { it.id.name }
+                            null -> group.books
+                        },
+                    )
+                }
+            }
 
         _uiState.update {
             BooksUiState.Success(
                 books = presentationModels,
-                filteredBooks = filtered,
-                isCategorized = currentIsCategorized,
-                searchQuery = currentQuery,
-                expandedGroups = currentExpanded,
-                isOnlyRead = currentIsOnlyRead,
-                isFavoritesOnly = currentIsFavoritesOnly,
-                categorizedBooks = if (currentIsCategorized) {
-                    val groupedBooks = filtered.groupBy { bookGroupMapper.fromBookId(it.id) }
-                    groupedBooks.keys
-                        .groupBy { it.testament }
-                        .mapValues { (_, groups) ->
-                            groups.associateWith { group ->
-                                groupedBooks[group] ?: emptyList()
-                            }
-                        }
-                } else {
-                    emptyMap()
+                filteredBooks = when (sortOrder) {
+                    BookSortOrder.AlphabeticalAscending -> filtered.sortedBy { it.id.name }
+                    BookSortOrder.AlphabeticalDescending -> filtered.sortedByDescending { it.id.name }
+                    null -> filtered
                 },
+                selectedTestament = currentSelectedTestament,
+                searchQuery = currentQuery,
+                filterOptions = filterOptions,
+                shouldShowTestamentToggle = !isSearchFilterOrSortActive,
+                isFilterMenuVisible = isFilterMenuVisible,
+                isSortMenuVisible = isSortMenuVisible,
+                sortOrder = sortOrder,
+                isInformationBoxVisible = isInformationBoxVisible,
+                groupsInTestament = categorizedBooks[currentSelectedTestament].orEmpty(),
+                layoutFormat = layoutFormat,
             )
         }
     }

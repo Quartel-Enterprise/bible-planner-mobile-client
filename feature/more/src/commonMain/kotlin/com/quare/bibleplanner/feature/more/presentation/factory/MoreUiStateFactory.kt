@@ -11,7 +11,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCa
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
@@ -34,7 +34,7 @@ internal class MoreUiStateFactory(
     private val getPlanStartDate: GetPlanStartDateFlowUseCase,
     private val getThemeOptionFlow: GetThemeOptionFlow,
     private val isProVerificationRequiredUseCase: IsProVerificationRequiredUseCase,
-    private val getBooleanRemoteConfig: GetBooleanRemoteConfig,
+    private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
 ) {
     fun create(): Flow<MoreUiState> {
         val configFlow = flow {
@@ -42,7 +42,7 @@ internal class MoreUiStateFactory(
                 val instagram = async { isInstagramLinkVisible() }
                 val donate = async { shouldShowDonateOption() }
                 val isPro = async { isProVerificationRequiredUseCase() }
-                val isWebAppEnabled = async { getBooleanRemoteConfig(MORE_WEB_APP_ENABLED) }
+                val isWebAppEnabled = async { isMoreWebAppEnabled() }
                 emit(
                     Config(
                         isInstagramVisible = instagram.await(),

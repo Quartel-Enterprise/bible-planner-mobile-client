@@ -16,6 +16,7 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.provider.room)
+            implementation(projects.core.remoteConfig)
 
             // Compose
             implementation(compose.runtime)
@@ -23,6 +24,9 @@ kotlin {
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
+
+            // DataStore
+            implementation(libs.dataStore.preferences)
 
             // Serialization
             implementation(libs.kotlin.serialization.json)

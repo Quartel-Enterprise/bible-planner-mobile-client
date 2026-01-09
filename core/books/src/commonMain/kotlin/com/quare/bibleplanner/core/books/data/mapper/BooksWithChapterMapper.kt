@@ -28,6 +28,7 @@ class BooksWithChapterMapper {
             id = BookId.valueOf(book.id),
             chapters = chaptersModel,
             isRead = book.isRead,
+            isFavorite = book.isFavorite,
         )
     }
 }

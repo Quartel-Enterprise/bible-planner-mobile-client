@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.books.domain.repository
 
 import com.quare.bibleplanner.core.model.book.BookDataModel
+import com.quare.bibleplanner.core.model.book.BookId
 import kotlinx.coroutines.flow.Flow
 
 interface BooksRepository {
@@ -9,4 +10,21 @@ interface BooksRepository {
     suspend fun getBooks(): List<BookDataModel>
 
     suspend fun initializeDatabase()
+
+    fun getShowInformationBoxFlow(): Flow<Boolean>
+
+    suspend fun setInformationBoxDismissed()
+
+    suspend fun updateBookFavoriteStatus(
+        bookId: BookId,
+        isFavorite: Boolean,
+    )
+
+    fun getBookLayoutFormatFlow(): Flow<String?>
+
+    suspend fun setBookLayoutFormat(layoutFormat: String)
+
+    fun getSelectedTestamentFlow(): Flow<String?>
+
+    suspend fun setSelectedTestament(testament: String)
 }
