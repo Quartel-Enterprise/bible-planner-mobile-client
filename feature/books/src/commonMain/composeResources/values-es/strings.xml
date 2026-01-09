@@ -30,5 +30,5 @@
     <string name="pauline_epistles">Epístolas Paulinas</string>
     <string name="general_epistles">Epístolas Generales</string>
     <string name="revelation">Apocalipsis</string>
-    <string name="reading_not_available_yet">Aún no es posible leer los libros en la aplicación, pero será posible pronto en próximas versiones.</string>
+    <string name="reading_not_available_yet">Los libros estarán disponibles para lectura en versiones futuras, pero ya están disponibles en la versión web: www.web.bibleplanner.app</string>
 </resources>

@@ -16,6 +16,7 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.provider.room)
+            implementation(projects.core.remoteConfig)
 
             // Compose
             implementation(compose.runtime)

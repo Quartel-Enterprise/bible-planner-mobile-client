@@ -13,20 +13,31 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.content_description_dismiss
 import bibleplanner.feature.books.generated.resources.content_description_info
 import bibleplanner.feature.books.generated.resources.reading_not_available_yet
+import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
 
+private const val LINK_PRESENTATION = "www.web.bibleplanner.app"
+
 @Composable
 internal fun BooksInformationBox(
     onDismiss: () -> Unit,
+    onEvent: (BooksUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -47,11 +58,40 @@ internal fun BooksInformationBox(
 
             HorizontalSpacer(16.dp)
 
+            val fullText = stringResource(Res.string.reading_not_available_yet)
+            val primaryColor = MaterialTheme.colorScheme.primary
+            val annotatedString = remember(fullText, primaryColor) {
+                buildAnnotatedString {
+                    append(fullText)
+                    val startIndex = fullText.indexOf(LINK_PRESENTATION)
+                    if (startIndex != -1) {
+                        addLink(
+                            clickable = LinkAnnotation.Clickable(
+                                tag = "URL",
+                                styles = TextLinkStyles(
+                                    style = SpanStyle(
+                                        color = primaryColor,
+                                        textDecoration = TextDecoration.Underline,
+                                        fontStyle = FontStyle.Italic,
+                                    ),
+                                ),
+                                linkInteractionListener = {
+                                    onEvent(BooksUiEvent.OnWebAppLinkClick)
+                                },
+                            ),
+                            start = startIndex,
+                            end = startIndex + LINK_PRESENTATION.length,
+                        )
+                    }
+                }
+            }
+
             Text(
-                text = stringResource(Res.string.reading_not_available_yet),
+                text = annotatedString,
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                ),
             )
 
             HorizontalSpacer(12.dp)

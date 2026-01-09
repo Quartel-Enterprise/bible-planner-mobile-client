@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.component.BookList
 import com.quare.bibleplanner.feature.books.presentation.component.BooksTopBar
@@ -63,6 +64,7 @@ fun BooksScreen(
         }
     }
 
+    val uriHandler = LocalUriHandler.current
     ActionCollector(uiAction) { action ->
         when (action) {
             is BooksUiAction.ScrollToTop -> {
@@ -72,6 +74,10 @@ fun BooksScreen(
                 oldTestamentListState.animateScrollToItem(0)
                 newTestamentGridState.animateScrollToItem(0)
                 newTestamentListState.animateScrollToItem(0)
+            }
+
+            is BooksUiAction.OpenWebAppLink -> {
+                uriHandler.openUri(action.url)
             }
         }
     }

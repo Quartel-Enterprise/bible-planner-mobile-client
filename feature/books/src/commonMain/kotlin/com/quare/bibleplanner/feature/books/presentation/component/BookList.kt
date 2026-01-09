@@ -57,7 +57,13 @@ fun BookList(
 
     val currentLazyGridState = when {
         !state.shouldShowTestamentToggle -> if (isGrid) searchGridState else searchListState
-        state.selectedTestament == BookTestament.OldTestament -> if (isGrid) oldTestamentGridState else oldTestamentListState
+
+        state.selectedTestament == BookTestament.OldTestament -> if (isGrid) {
+            oldTestamentGridState
+        } else {
+            oldTestamentListState
+        }
+
         else -> if (isGrid) newTestamentGridState else newTestamentListState
     }
 
@@ -80,6 +86,7 @@ fun BookList(
             ) {
                 BooksInformationBox(
                     onDismiss = { onEvent(BooksUiEvent.OnDismissInformationBox) },
+                    onEvent = onEvent,
                 )
             }
         }

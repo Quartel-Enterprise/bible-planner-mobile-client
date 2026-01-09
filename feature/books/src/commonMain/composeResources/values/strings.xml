@@ -33,7 +33,7 @@
     <string name="revelation">Revelation</string>
     <string name="content_description_dismiss">Dismiss</string>
     <string name="content_description_info">Information</string>
-    <string name="reading_not_available_yet">It is not possible to read the books on the app yet, but it will be possible soon in next versions.</string>
+    <string name="reading_not_available_yet">Books will be available for reading in future versions, but they are already available in the web version: www.web.bibleplanner.app</string>
     <string name="list">List</string>
     <string name="grid">Grid</string>
 </resources>

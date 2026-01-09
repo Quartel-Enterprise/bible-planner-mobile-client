@@ -10,13 +10,12 @@ import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
-import com.quare.bibleplanner.feature.books.presentation.model.BookGroupPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
@@ -36,6 +35,7 @@ class BooksViewModel(
     private val booksRepository: BooksRepository,
     private val toggleBookFavorite: ToggleBookFavoriteUseCase,
     getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
+    private val getWebAppUrl: GetWebAppUrl,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState: StateFlow<BooksUiState> = _uiState
@@ -168,6 +168,12 @@ class BooksViewModel(
                 updateState()
                 viewModelScope.launch {
                     _uiAction.emit(BooksUiAction.ScrollToTop)
+                }
+            }
+
+            BooksUiEvent.OnWebAppLinkClick -> {
+                viewModelScope.launch {
+                    _uiAction.emit(BooksUiAction.OpenWebAppLink(getWebAppUrl()))
                 }
             }
         }

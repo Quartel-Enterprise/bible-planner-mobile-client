@@ -43,4 +43,6 @@ sealed interface BooksUiEvent {
     data class OnLayoutFormatSelect(
         val layoutFormat: BookLayoutFormat,
     ) : BooksUiEvent
+
+    data object OnWebAppLinkClick : BooksUiEvent
 }
