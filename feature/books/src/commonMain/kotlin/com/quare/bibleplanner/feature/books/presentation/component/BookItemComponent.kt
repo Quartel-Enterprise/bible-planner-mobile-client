@@ -1,16 +1,8 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
@@ -29,10 +21,7 @@ fun BookItemComponent(
         val sharedTransitionScope = this
         AnimatedContent(
             targetState = layoutFormat,
-            label = "book_item_layout_transition",
-            transitionSpec = {
-                EnterTransition.None togetherWith ExitTransition.None
-            },
+            label = "book_item_layout_transition_${book.id.name}",
         ) { targetLayoutFormat ->
             val animatedVisibilityScope = this
             if (targetLayoutFormat == BookLayoutFormat.List) {

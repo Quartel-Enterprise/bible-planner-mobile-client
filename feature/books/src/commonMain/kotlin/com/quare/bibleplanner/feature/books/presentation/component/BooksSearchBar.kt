@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -10,6 +11,8 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Shape
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.content_description_clear_search
 import bibleplanner.feature.books.generated.resources.content_description_search
@@ -21,10 +24,10 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BooksSearchBar(
+    modifier: Modifier = Modifier,
     query: String,
     onEvent: (BooksUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-    shape: androidx.compose.ui.graphics.Shape = SearchBarDefaults.dockedShape,
+    shape: Shape = SearchBarDefaults.dockedShape,
 ) {
     DockedSearchBar(
         inputField = {
@@ -34,7 +37,12 @@ internal fun BooksSearchBar(
                 onSearch = {},
                 expanded = false,
                 onExpandedChange = {},
-                placeholder = { Text(stringResource(Res.string.search_books)) },
+                placeholder = {
+                    Text(
+                        text = stringResource(Res.string.search_books),
+                        modifier = Modifier.alpha(0.6f).fillMaxWidth(),
+                    )
+                },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,

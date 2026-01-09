@@ -37,9 +37,6 @@ import bibleplanner.feature.books.generated.resources.content_description_favori
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
-import com.quare.bibleplanner.feature.books.presentation.util.NoClip
-import com.quare.bibleplanner.feature.books.presentation.util.OverlayClip
-import com.quare.bibleplanner.feature.books.presentation.util.ShadowClip
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 

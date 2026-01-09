@@ -35,9 +35,7 @@ import bibleplanner.feature.books.generated.resources.content_description_favori
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
-import com.quare.bibleplanner.feature.books.presentation.util.NoClip
-import com.quare.bibleplanner.feature.books.presentation.util.OverlayClip
-import com.quare.bibleplanner.feature.books.presentation.util.ShadowClip
+import com.quare.bibleplanner.feature.books.presentation.utils.getShadowClip
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
@@ -52,14 +50,15 @@ internal fun BookListItemComponent(
     modifier: Modifier = Modifier,
 ) {
     with(sharedTransitionScope) {
+        val bookIdName = book.id.name
         ElevatedCard(
             onClick = { onEvent(BooksUiEvent.OnBookClick(book)) },
             modifier = modifier
                 .fillMaxWidth()
                 .sharedBounds(
-                    rememberSharedContentState(key = "book-${book.id.name}"),
+                    sharedContentState = rememberSharedContentState(key = "book-$bookIdName"),
                     animatedVisibilityScope = animatedVisibilityScope,
-                    clipInOverlayDuringTransition = ShadowClip(RoundedCornerShape(16.dp)),
+                    clipInOverlayDuringTransition = getShadowClip(RoundedCornerShape(16.dp)),
                 ),
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -94,7 +93,7 @@ internal fun BookListItemComponent(
                         modifier = Modifier
                             .size(20.dp)
                             .sharedElement(
-                                rememberSharedContentState(key = "icon-${book.id.name}"),
+                                sharedContentState = rememberSharedContentState(key = "icon-$bookIdName"),
                                 animatedVisibilityScope = animatedVisibilityScope,
                             ),
                     )
@@ -109,14 +108,14 @@ internal fun BookListItemComponent(
                         maxLines = 1,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         modifier = Modifier.sharedBounds(
-                            rememberSharedContentState(key = "title-${book.id.name}"),
+                            sharedContentState = rememberSharedContentState(key = "title-$bookIdName"),
                             animatedVisibilityScope = animatedVisibilityScope,
                         ),
                     )
 
                     Row(
                         modifier = Modifier.sharedBounds(
-                            rememberSharedContentState(key = "progress-info-${book.id.name}"),
+                            sharedContentState = rememberSharedContentState(key = "progress-info-$bookIdName"),
                             animatedVisibilityScope = animatedVisibilityScope,
                         ),
                         verticalAlignment = Alignment.CenterVertically,
@@ -160,7 +159,7 @@ internal fun BookListItemComponent(
                             .height(4.dp)
                             .clip(CircleShape)
                             .sharedBounds(
-                                rememberSharedContentState(key = "progress-bar-${book.id.name}"),
+                                sharedContentState = rememberSharedContentState(key = "progress-bar-$bookIdName"),
                                 animatedVisibilityScope = animatedVisibilityScope,
                                 clipInOverlayDuringTransition = OverlayClip(CircleShape),
                             ),
@@ -183,7 +182,7 @@ internal fun BookListItemComponent(
                     modifier = Modifier
                         .size(24.dp)
                         .sharedElement(
-                            rememberSharedContentState(key = "favorite-${book.id.name}"),
+                            sharedContentState = rememberSharedContentState(key = "favorite-$bookIdName"),
                             animatedVisibilityScope = animatedVisibilityScope,
                         ).clickable { onEvent(BooksUiEvent.OnToggleFavorite(book.id)) },
                 )

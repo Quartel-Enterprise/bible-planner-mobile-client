@@ -3,23 +3,26 @@ package com.quare.bibleplanner.ui.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 
-internal class ResponsiveContentScopeImpl(
-    private val lazyListScope: LazyListScope,
+internal class ResponsiveGridScopeImpl(
+    private val lazyGridScope: LazyGridScope,
     override val contentMaxWidth: Dp,
-) : ResponsiveContentScope {
+) : ResponsiveGridScope {
     override fun item(
         key: Any?,
         contentType: Any?,
+        span: (LazyGridItemSpanScope.() -> GridItemSpan)?,
         content: @Composable () -> Unit,
     ) {
-        lazyListScope.item(key = key, contentType = contentType) {
+        lazyGridScope.item(key = key, span = span, contentType = contentType) {
             content()
         }
     }
@@ -28,11 +31,13 @@ internal class ResponsiveContentScopeImpl(
         items: List<T>,
         key: ((item: T) -> Any)?,
         contentType: (item: T) -> Any?,
+        span: (LazyGridItemSpanScope.(item: T) -> GridItemSpan)?,
         itemContent: @Composable (item: T) -> Unit,
     ) {
-        lazyListScope.items(
+        lazyGridScope.items(
             items = items,
             key = key,
+            span = span,
             contentType = contentType,
         ) { item ->
             itemContent(item)
@@ -43,11 +48,13 @@ internal class ResponsiveContentScopeImpl(
         count: Int,
         key: ((index: Int) -> Any)?,
         contentType: (index: Int) -> Any?,
+        span: (LazyGridItemSpanScope.(Int) -> GridItemSpan)?,
         itemContent: @Composable (index: Int) -> Unit,
     ) {
-        lazyListScope.items(
+        lazyGridScope.items(
             count = count,
             key = key,
+            span = span,
             contentType = contentType,
         ) { index ->
             itemContent(index)
@@ -57,52 +64,44 @@ internal class ResponsiveContentScopeImpl(
     override fun responsiveItem(
         key: Any?,
         contentType: Any?,
+        span: (LazyGridItemSpanScope.() -> GridItemSpan)?,
         content: @Composable () -> Unit,
     ) {
-        lazyListScope.centeredItem(contentMaxWidth, key, contentType, content)
-    }
-
-    override fun <T> responsiveItems(
-        items: List<T>,
-        key: ((item: T) -> Any)?,
-        contentType: (item: T) -> Any?,
-        itemContent: @Composable (item: T) -> Unit,
-    ) {
-        lazyListScope.items(
-            items = items,
+        lazyGridScope.item(
             key = key,
-            contentType = contentType,
-        ) { item ->
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(modifier = Modifier.width(this@ResponsiveContentScopeImpl.contentMaxWidth)) {
-                    itemContent(item)
-                }
-            }
-        }
-    }
-
-    /**
-     * Helper to wrap an item in a centered box with a max width.
-     */
-    private fun LazyListScope.centeredItem(
-        contentMaxWidth: Dp,
-        key: Any? = null,
-        contentType: Any? = null,
-        content: @Composable () -> Unit,
-    ) {
-        item(
-            key = key,
+            span = span,
             contentType = contentType,
         ) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                Box(modifier = Modifier.width(contentMaxWidth)) {
+                Box(modifier = Modifier.width(this@ResponsiveGridScopeImpl.contentMaxWidth)) {
                     content()
+                }
+            }
+        }
+    }
+
+    override fun <T> responsiveItems(
+        items: List<T>,
+        key: ((item: T) -> Any)?,
+        contentType: (item: T) -> Any?,
+        span: (LazyGridItemSpanScope.(item: T) -> GridItemSpan)?,
+        itemContent: @Composable (item: T) -> Unit,
+    ) {
+        lazyGridScope.items(
+            items = items,
+            key = key,
+            span = span,
+            contentType = contentType,
+        ) { item ->
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(modifier = Modifier.width(this@ResponsiveGridScopeImpl.contentMaxWidth)) {
+                    itemContent(item)
                 }
             }
         }

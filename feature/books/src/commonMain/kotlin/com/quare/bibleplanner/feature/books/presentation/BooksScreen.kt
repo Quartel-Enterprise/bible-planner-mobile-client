@@ -4,101 +4,34 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
-import bibleplanner.feature.books.generated.resources.Res
-import bibleplanner.feature.books.generated.resources.open_site
-import bibleplanner.feature.books.generated.resources.reading_not_available_yet
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
-import com.quare.bibleplanner.feature.books.presentation.component.BookList
+import com.quare.bibleplanner.feature.books.presentation.component.BooksItemsComponent
 import com.quare.bibleplanner.feature.books.presentation.component.BooksTopBar
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
-import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
-import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
-import kotlinx.coroutines.flow.Flow
-import org.jetbrains.compose.resources.getString
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BooksScreen(
     state: BooksUiState,
-    uiAction: Flow<BooksUiAction>,
-    snackbarHostState: SnackbarHostState,
+    isScrolled: Boolean,
+    searchGridState: LazyGridState,
+    searchListState: LazyGridState,
+    oldTestamentGridState: LazyGridState,
+    oldTestamentListState: LazyGridState,
+    newTestamentGridState: LazyGridState,
+    newTestamentListState: LazyGridState,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     val mainPadding = LocalMainPadding.current
-    val searchGridState = rememberLazyGridState()
-    val searchListState = rememberLazyGridState()
-    val oldTestamentGridState = rememberLazyGridState()
-    val oldTestamentListState = rememberLazyGridState()
-    val newTestamentGridState = rememberLazyGridState()
-    val newTestamentListState = rememberLazyGridState()
-
-    val isScrolled by remember(state) {
-        derivedStateOf {
-            val activeState = when {
-                state !is BooksUiState.Success -> {
-                    searchGridState
-                }
-
-                !state.shouldShowTestamentToggle -> {
-                    if (state.layoutFormat == BookLayoutFormat.Grid) searchGridState else searchListState
-                }
-
-                state.selectedTestament == BookTestament.OldTestament -> {
-                    if (state.layoutFormat == BookLayoutFormat.Grid) oldTestamentGridState else oldTestamentListState
-                }
-
-                else -> {
-                    if (state.layoutFormat == BookLayoutFormat.Grid) newTestamentGridState else newTestamentListState
-                }
-            }
-            activeState.firstVisibleItemIndex > 0 || activeState.firstVisibleItemScrollOffset > 0
-        }
-    }
-
-    val uriHandler = LocalUriHandler.current
-    ActionCollector(uiAction) { action ->
-        when (action) {
-            is BooksUiAction.ScrollToTop -> {
-                searchGridState.animateScrollToItem(0)
-                searchListState.animateScrollToItem(0)
-                oldTestamentGridState.animateScrollToItem(0)
-                oldTestamentListState.animateScrollToItem(0)
-                newTestamentGridState.animateScrollToItem(0)
-                newTestamentListState.animateScrollToItem(0)
-            }
-
-            is BooksUiAction.OpenWebAppLink -> {
-                uriHandler.openUri(action.url)
-            }
-
-            is BooksUiAction.ShowReadingNotAvailableYetSnackbar -> {
-                val result = snackbarHostState.showSnackbar(
-                    message = getString(Res.string.reading_not_available_yet),
-                    actionLabel = getString(Res.string.open_site),
-                    duration = SnackbarDuration.Short,
-                )
-                if (result == SnackbarResult.ActionPerformed) {
-                    uriHandler.openUri(action.url)
-                }
-            }
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -117,15 +50,20 @@ fun BooksScreen(
                 }
 
                 is BooksUiState.Success -> {
-                    BookList(
+                    val isGrid = state.layoutFormat == BookLayoutFormat.Grid
+                    val currentLazyGridState = if (state.shouldShowTestamentToggle) {
+                        when (state.selectedTestament) {
+                            BookTestament.OldTestament -> if (isGrid) oldTestamentGridState else oldTestamentListState
+                            BookTestament.NewTestament -> if (isGrid) newTestamentGridState else newTestamentListState
+                        }
+                    } else {
+                        if (isGrid) searchGridState else searchListState
+                    }
+
+                    BooksItemsComponent(
                         state = state,
                         onEvent = onEvent,
-                        searchGridState = searchGridState,
-                        searchListState = searchListState,
-                        oldTestamentGridState = oldTestamentGridState,
-                        oldTestamentListState = oldTestamentListState,
-                        newTestamentGridState = newTestamentGridState,
-                        newTestamentListState = newTestamentListState,
+                        currentLazyGridState = currentLazyGridState,
                     )
                 }
             }

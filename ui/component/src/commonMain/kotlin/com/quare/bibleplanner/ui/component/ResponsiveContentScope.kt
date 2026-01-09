@@ -1,18 +1,42 @@
 package com.quare.bibleplanner.ui.component
 
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 
 /**
- * A scope for [ResponsiveContent] that provides functions to create responsive, centered items
- * within a [LazyListScope].
+ * A scope for [ResponsiveColumn] that provides functions to create responsive, centered items.
  */
-interface ResponsiveContentScope : LazyListScope {
+interface ResponsiveContentScope {
     /**
      * The maximum width that the content should occupy.
      */
     val contentMaxWidth: Dp
+
+    /**
+     * Adds a single item that is not necessarily centered.
+     */
+    fun item(
+        key: Any? = null,
+        contentType: Any? = null,
+        content: @Composable () -> Unit,
+    )
+
+    /**
+     * Adds a list of items that are not necessarily centered.
+     */
+    fun <T> items(
+        items: List<T>,
+        key: ((item: T) -> Any)? = null,
+        contentType: (item: T) -> Any? = { null },
+        itemContent: @Composable (item: T) -> Unit,
+    )
+
+    fun items(
+        count: Int,
+        key: ((index: Int) -> Any)? = null,
+        contentType: (index: Int) -> Any? = { null },
+        itemContent: @Composable (index: Int) -> Unit,
+    )
 
     /**
      * Adds a single item to the [LazyListScope] that is centered and constrained to [contentMaxWidth].

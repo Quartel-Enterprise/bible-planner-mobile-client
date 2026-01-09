@@ -14,7 +14,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanTyp
 import com.quare.bibleplanner.feature.readingplan.presentation.component.week.WeekPlanItem
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
-import com.quare.bibleplanner.ui.component.ResponsiveContent
+import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
@@ -30,7 +30,7 @@ internal fun ReadingPlanScreen(
 ) {
     val loadedUiState = uiState as? ReadingPlanUiState.Loaded
     val mainPadding = LocalMainPadding.current
-    ResponsiveContent(
+    ResponsiveColumn(
         lazyListState = lazyListState,
         contentPadding = mainPadding,
         maxContentWidth = 600.dp,
