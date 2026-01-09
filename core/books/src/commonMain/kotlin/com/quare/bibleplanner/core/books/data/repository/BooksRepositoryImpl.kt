@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.books.data.repository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
@@ -87,7 +88,29 @@ class BooksRepositoryImpl(
         bookDao.updateBookFavoriteStatus(bookId.name, isFavorite)
     }
 
+    override fun getBookLayoutFormatFlow(): Flow<String?> = dataStore.data.map { preferences ->
+        preferences[stringPreferencesKey(BOOK_LAYOUT_FORMAT)]
+    }
+
+    override suspend fun setBookLayoutFormat(layoutFormat: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(BOOK_LAYOUT_FORMAT)] = layoutFormat
+        }
+    }
+
+    override fun getSelectedTestamentFlow(): Flow<String?> = dataStore.data.map { preferences ->
+        preferences[stringPreferencesKey(SELECTED_TESTAMENT)]
+    }
+
+    override suspend fun setSelectedTestament(testament: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(SELECTED_TESTAMENT)] = testament
+        }
+    }
+
     companion object {
         private const val SHOW_INFORMATION_BOX = "show_information_box"
+        private const val BOOK_LAYOUT_FORMAT = "book_layout_format"
+        private const val SELECTED_TESTAMENT = "selected_testament"
     }
 }

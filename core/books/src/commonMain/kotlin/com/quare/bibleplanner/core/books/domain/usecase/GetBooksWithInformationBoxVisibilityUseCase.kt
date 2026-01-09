@@ -13,12 +13,21 @@ class GetBooksWithInformationBoxVisibilityUseCase(
     data class Result(
         val books: List<BookDataModel>,
         val isInformationBoxVisible: Boolean,
+        val layoutFormat: String?,
+        val selectedTestament: String?,
     )
 
     operator fun invoke(): Flow<Result> = combine(
         booksRepository.getBooksFlow(),
         booksRepository.getShowInformationBoxFlow(),
-    ) { books, showBox ->
-        Result(books = books, isInformationBoxVisible = showBox && isMoreWebAppEnabled())
+        booksRepository.getBookLayoutFormatFlow(),
+        booksRepository.getSelectedTestamentFlow(),
+    ) { books, showBox, layoutFormat, selectedTestament ->
+        Result(
+            books = books,
+            isInformationBoxVisible = showBox && isMoreWebAppEnabled(),
+            layoutFormat = layoutFormat,
+            selectedTestament = selectedTestament,
+        )
     }
 }

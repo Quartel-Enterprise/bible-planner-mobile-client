@@ -19,4 +19,12 @@ interface BooksRepository {
         bookId: BookId,
         isFavorite: Boolean,
     )
+
+    fun getBookLayoutFormatFlow(): Flow<String?>
+
+    suspend fun setBookLayoutFormat(layoutFormat: String)
+
+    fun getSelectedTestamentFlow(): Flow<String?>
+
+    suspend fun setSelectedTestament(testament: String)
 }

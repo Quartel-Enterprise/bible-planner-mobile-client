@@ -35,9 +35,9 @@ import kotlinx.coroutines.launch
 class BooksViewModel(
     private val booksRepository: BooksRepository,
     private val toggleBookFavorite: ToggleBookFavoriteUseCase,
-    getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
     private val getWebAppUrl: GetWebAppUrl,
     private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
+    getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState: StateFlow<BooksUiState> = _uiState
@@ -54,6 +54,19 @@ class BooksViewModel(
         observe(getBooksWithInformationBoxVisibility()) { result ->
             allBooks = result.books
             isInformationBoxVisible = result.isInformationBoxVisible
+
+            result.layoutFormat?.let { persistedFormat ->
+                runCatching { BookLayoutFormat.valueOf(persistedFormat) }.getOrNull()?.let {
+                    layoutFormat = it
+                }
+            }
+
+            result.selectedTestament?.let { persistedTestament ->
+                runCatching { BookTestament.valueOf(persistedTestament) }.getOrNull()?.let {
+                    persistedTestamentValue = it
+                }
+            }
+
             updateState()
         }
     }
@@ -63,6 +76,7 @@ class BooksViewModel(
     private var isSortMenuVisible: Boolean = false
     private var sortOrder: BookSortOrder? = null
     private var layoutFormat: BookLayoutFormat = BookLayoutFormat.List
+    private var persistedTestamentValue: BookTestament? = null
 
     fun onEvent(event: BooksUiEvent) {
         when (event) {
@@ -74,8 +88,10 @@ class BooksViewModel(
             }
 
             is BooksUiEvent.OnTestamentSelect -> {
+                persistedTestamentValue = event.testament
                 updateState(selectedTestament = event.testament)
                 viewModelScope.launch {
+                    booksRepository.setSelectedTestament(event.testament.name)
                     _uiAction.emit(BooksUiAction.ScrollToTop)
                 }
             }
@@ -140,6 +156,7 @@ class BooksViewModel(
                 layoutFormat = event.layoutFormat
                 updateState()
                 viewModelScope.launch {
+                    booksRepository.setBookLayoutFormat(event.layoutFormat.name)
                     _uiAction.emit(BooksUiAction.ScrollToTop)
                 }
             }
@@ -202,6 +219,7 @@ class BooksViewModel(
         val currentState = _uiState.value
         val currentQuery = searchQuery ?: (currentState as? BooksUiState.Success)?.searchQuery.orEmpty()
         val currentSelectedTestament = selectedTestament
+            ?: persistedTestamentValue
             ?: (currentState as? BooksUiState.Success)?.selectedTestament
             ?: BookTestament.OldTestament
 
