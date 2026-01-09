@@ -21,6 +21,7 @@ import com.quare.bibleplanner.ui.utils.LocalMainPadding
 internal fun MoreScreen(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
+    becomeProTitleContent: @Composable () -> Unit,
 ) {
     val mainPadding = LocalMainPadding.current
 
@@ -46,12 +47,14 @@ internal fun MoreScreen(
                     moreScreenPortraitLayout(
                         state = state,
                         onEvent = onEvent,
+                        becomeProTitleContent = becomeProTitleContent,
                     )
                 },
                 landscapeContent = {
                     moreScreenLandscapeLayout(
                         state = state,
                         onEvent = onEvent,
+                        becomeProTitleContent = becomeProTitleContent,
                     )
                 },
             )

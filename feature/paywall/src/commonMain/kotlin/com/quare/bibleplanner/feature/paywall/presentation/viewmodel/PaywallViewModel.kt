@@ -11,6 +11,7 @@ import com.quare.bibleplanner.feature.paywall.presentation.mapper.PaywallExcepti
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
+import com.quare.bibleplanner.feature.paywall.presentation.utils.getStoreName
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -44,7 +45,7 @@ internal class PaywallViewModel(
 
     fun onEvent(event: PaywallUiEvent) {
         when (event) {
-            PaywallUiEvent.OnDismiss -> {
+            PaywallUiEvent.OnBackClick -> {
                 viewModelScope.launch {
                     _uiAction.emit(PaywallUiAction.NavigateBack)
                 }
@@ -116,7 +117,12 @@ internal class PaywallViewModel(
                                 _uiState.update { currentState.copy(isPurchasing = false) }
                             }
                             val messageRes = exceptionMapper.map(error)
-                            _uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes))
+                            _uiAction.emit(
+                                PaywallUiAction.ShowSnackbar(
+                                    message = messageRes,
+                                    args = listOf(getStoreName()),
+                                ),
+                            )
                         }
                 }
             }

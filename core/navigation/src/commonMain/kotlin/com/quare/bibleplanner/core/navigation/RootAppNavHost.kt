@@ -47,8 +47,8 @@ fun RootAppNavHost() {
             editPlanStartDate(navController)
 
             paywall(
-                snackbarHostState = mainScaffoldState.snackbarHostState,
                 navController = navController,
+                sharedTransitionScope = sharedTransitionScope,
             )
             congrats(navController)
         }

@@ -1,8 +1,11 @@
 <resources>
     <string name="close">Cerrar</string>
-    <string name="restore_purchases">Restaurar compras</string>
+    <string name="already_subscribed">¿Ya estás suscrito?</string>
+    <string name="restore_purchase">Restaura tu compra.</string>
     <string name="paywall_error_message">No se pudieron cargar las opciones de suscripción. Por favor, inténtalo de nuevo más tarde.</string>
-    <string name="paywall_title">Desbloquea Bible Planner Pro</string>
+    <string name="paywall_title">Hazte Pro</string>
+    <string name="paywall_title_part_1">Hazte</string>
+    <string name="paywall_title_part_2">Pro</string>
     <string name="paywall_description">Profundiza tu estudio sin límites. Únete a miles de lectores diarios.</string>
     <string name="feature_unlimited_notes">Crear Notas Ilimitadas</string>
     <string name="feature_unlimited_notes_subtext">Plan gratuito limitado a 3 notas.</string>
@@ -14,5 +17,6 @@
     <string name="plan_annual">Anual</string>
     <string name="save_percent">AHORRA %1$d%</string>
     <string name="start_pro_journey">Comenzar Viaje Pro</string>
-    <string name="footer_payment_info">Pago seguro a través de %1$d. Cancela en cualquier momento.</string>
+    <string name="footer_payment_info">Pago seguro a través de %1$s. Cancela en cualquier momento.</string>
+    <string name="error_restore_purchase">No se encontró ninguna suscripción en la %1$s.</string>
 </resources>

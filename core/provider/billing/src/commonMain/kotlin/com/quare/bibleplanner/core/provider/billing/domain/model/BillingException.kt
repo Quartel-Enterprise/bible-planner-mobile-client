@@ -1,11 +1,13 @@
 package com.quare.bibleplanner.core.provider.billing.domain.model
 
 sealed class BillingException : Exception() {
-    data object UserCancelled : BillingException()
+    class UserCancelled : BillingException()
 
-    data object NetworkError : BillingException()
+    class NetworkError : BillingException()
 
-    data object PaymentPending : BillingException()
+    class PaymentPending : BillingException()
+
+    class RestorePurchaseFailed : BillingException()
 
     data class Unknown(
         override val message: String? = null,

@@ -20,9 +20,9 @@ class GetPurchaseResultMobileUseCase : GetPurchaseResultUseCase {
                         val billingException = when (error) {
                             is PurchasesException -> {
                                 when (error.code) {
-                                    PurchasesErrorCode.PurchaseCancelledError -> BillingException.UserCancelled
-                                    PurchasesErrorCode.NetworkError -> BillingException.NetworkError
-                                    PurchasesErrorCode.PaymentPendingError -> BillingException.PaymentPending
+                                    PurchasesErrorCode.PurchaseCancelledError -> BillingException.UserCancelled()
+                                    PurchasesErrorCode.NetworkError -> BillingException.NetworkError()
+                                    PurchasesErrorCode.PaymentPendingError -> BillingException.PaymentPending()
                                     else -> BillingException.Unknown(error.message)
                                 }
                             }
