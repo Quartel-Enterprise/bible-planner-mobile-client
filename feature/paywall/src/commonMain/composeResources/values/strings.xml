@@ -1,8 +1,11 @@
 <resources>
     <string name="close">Close</string>
-    <string name="restore_purchases">Restore purchases</string>
+    <string name="already_subscribed">Already subscribed?</string>
+    <string name="restore_purchase">Restore your purchase.</string>
     <string name="paywall_error_message">Unable to load subscription options. Please try again later.</string>
-    <string name="paywall_title">Unlock Bible Planner Pro</string>
+    <string name="paywall_title">Become Pro</string>
+    <string name="paywall_title_part_1">Become</string>
+    <string name="paywall_title_part_2">Pro</string>
     <string name="paywall_description">Deepen your study without limits. Join thousands of daily readers.</string>
     <string name="feature_unlimited_notes">Create Unlimited Notes</string>
     <string name="feature_unlimited_notes_subtext">Free plan limited to 3 notes.</string>
@@ -14,9 +17,10 @@
     <string name="plan_annual">Annual</string>
     <string name="save_percent">SAVE %1$d%</string>
     <string name="start_pro_journey">Start Pro Journey</string>
-    <string name="footer_payment_info">Secure payment via %1$d. Cancel anytime.</string>
+    <string name="footer_payment_info">Secure payment via %1$s. Cancel anytime.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
     <string name="error_purchase_cancelled">Purchase was cancelled.</string>
     <string name="error_network">Network error. Please try again.</string>
     <string name="error_payment_pending">Payment is pending approval.</string>
+    <string name="error_restore_purchase">No active subscription found in the %1$s.</string>
 </resources>

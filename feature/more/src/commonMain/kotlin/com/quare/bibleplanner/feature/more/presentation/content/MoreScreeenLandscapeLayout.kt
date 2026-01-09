@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.more.presentation.content.component.DataSection
@@ -19,8 +20,13 @@ import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
     state: MoreUiState.Loaded,
     onEvent: (MoreUiEvent) -> Unit,
+    becomeProTitleContent: @Composable () -> Unit,
 ) {
-    headerSection(state = state, onEvent = onEvent)
+    headerSection(
+        state = state,
+        onEvent = onEvent,
+        becomeProTitleContent = becomeProTitleContent,
+    )
 
     responsiveItem {
         Row(

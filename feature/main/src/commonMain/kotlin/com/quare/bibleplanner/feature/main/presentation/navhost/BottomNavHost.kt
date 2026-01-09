@@ -32,6 +32,6 @@ fun BottomNavHost(
     ) {
         readingPlan(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
         booksScreen(mainScaffoldState)
-        more(rootNavController, mainScaffoldState)
+        more(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
     }
 }

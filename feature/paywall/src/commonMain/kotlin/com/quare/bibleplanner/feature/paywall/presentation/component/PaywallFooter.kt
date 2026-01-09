@@ -10,12 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.paywall.presentation.component.description.SecurePaymentDescription
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.StartProButton
+import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 
 @Composable
 internal fun PaywallFooter(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
-    onButtonClick: () -> Unit,
+    onEvent: (PaywallUiEvent) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -27,8 +28,9 @@ internal fun PaywallFooter(
                 .fillMaxWidth()
                 .height(56.dp),
             isLoading = isLoading,
-            onClick = onButtonClick,
+            onClick = { onEvent(PaywallUiEvent.OnStartProJourneyClick) },
         )
+        RestorePurchaseComponent(onEvent = onEvent)
         SecurePaymentDescription()
     }
 }

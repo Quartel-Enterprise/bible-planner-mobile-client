@@ -28,7 +28,7 @@ internal fun PaywallUiActionCollector(
             }
 
             is PaywallUiAction.ShowSnackbar -> {
-                val message = getString(uiAction.message)
+                val message = getString(uiAction.message, *uiAction.args.toTypedArray())
                 snackbarHostState.showSnackbar(message)
             }
         }

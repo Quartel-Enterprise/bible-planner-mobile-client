@@ -11,5 +11,6 @@ sealed interface PaywallUiAction {
 
     data class ShowSnackbar(
         val message: StringResource,
+        val args: List<Any> = emptyList(),
     ) : PaywallUiAction
 }

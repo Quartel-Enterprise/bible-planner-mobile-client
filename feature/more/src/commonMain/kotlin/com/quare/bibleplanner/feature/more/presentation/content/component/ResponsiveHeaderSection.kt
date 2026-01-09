@@ -8,10 +8,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.more.generated.resources.Res
-import bibleplanner.feature.more.generated.resources.become_pro
 import bibleplanner.feature.more.generated.resources.become_pro_subtitle
 import bibleplanner.feature.more.generated.resources.donate_option
 import bibleplanner.feature.more.generated.resources.donate_subtitle
@@ -28,6 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ResponsiveContentScope.headerSection(
     state: MoreUiState.Loaded,
     onEvent: (MoreUiEvent) -> Unit,
+    becomeProTitleContent: @Composable () -> Unit,
 ) {
     state.headerRes?.let { headerRes ->
         responsiveItem {
@@ -44,7 +47,7 @@ internal fun ResponsiveContentScope.headerSection(
                     SubscriptionStatus.Free -> {
                         ActionCard(
                             modifier = Modifier.weight(1f),
-                            title = stringResource(Res.string.become_pro),
+                            titleContent = becomeProTitleContent,
                             subtitle = stringResource(Res.string.become_pro_subtitle),
                             icon = Icons.Default.Star,
                             onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BECOME_PRO)) },
@@ -54,7 +57,13 @@ internal fun ResponsiveContentScope.headerSection(
                     is SubscriptionStatus.Pro -> {
                         ActionCard(
                             modifier = Modifier.weight(1f),
-                            title = stringResource(Res.string.you_re_pro),
+                            titleContent = {
+                                Text(
+                                    text = stringResource(Res.string.you_re_pro),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            },
                             subtitle = stringResource(Res.string.pro_description_simple),
                             icon = Icons.Default.Star,
                             iconTint = MaterialTheme.gold,
@@ -71,7 +80,13 @@ internal fun ResponsiveContentScope.headerSection(
             if (state.shouldShowDonateOption) {
                 ActionCard(
                     modifier = Modifier.weight(1f),
-                    title = stringResource(Res.string.donate_option),
+                    titleContent = {
+                        Text(
+                            text = stringResource(Res.string.donate_option),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    },
                     subtitle = stringResource(Res.string.donate_subtitle),
                     icon = Icons.Default.Favorite,
                     onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DONATE)) },

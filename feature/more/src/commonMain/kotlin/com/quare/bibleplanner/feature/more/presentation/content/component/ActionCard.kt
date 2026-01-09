@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun ActionCard(
     modifier: Modifier = Modifier,
-    title: String,
+    titleContent: @Composable () -> Unit,
     subtitle: String,
     icon: ImageVector,
     containerColor: Color = Color.Unspecified,
@@ -40,13 +40,18 @@ internal fun ActionCard(
         elevation = CardDefaults.elevatedCardElevation(),
         border = border,
     ) {
-        CardContent(title, subtitle, icon, iconTint)
+        CardContent(
+            titleContent = titleContent,
+            subtitle = subtitle,
+            icon = icon,
+            iconTint = iconTint,
+        )
     }
 }
 
 @Composable
 private fun CardContent(
-    title: String,
+    titleContent: @Composable () -> Unit,
     subtitle: String,
     icon: ImageVector,
     iconTint: Color,
@@ -60,11 +65,7 @@ private fun CardContent(
             contentDescription = null,
             tint = iconTint,
         )
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-        )
+        titleContent()
         Text(
             text = subtitle,
             style = MaterialTheme.typography.bodySmall,
