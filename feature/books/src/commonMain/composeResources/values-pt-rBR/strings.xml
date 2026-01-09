@@ -31,5 +31,6 @@
     <string name="pauline_epistles">Epístolas Paulinas</string>
     <string name="general_epistles">Epístolas Gerais</string>
     <string name="revelation">Apocalipse</string>
-    <string name="reading_not_available_yet">Os livros estarão disponíveis para leitura em versões futuras, mas que já estão disponíveis na versão web: www.web.bibleplanner.app</string>
+    <string name="reading_not_available_yet">Os livros estarão disponíveis para leitura em versões futuras do app, mas já estão disponíveis na versão web: www.web.bibleplanner.app</string>
+    <string name="open_site">Abrir site</string>
 </resources>

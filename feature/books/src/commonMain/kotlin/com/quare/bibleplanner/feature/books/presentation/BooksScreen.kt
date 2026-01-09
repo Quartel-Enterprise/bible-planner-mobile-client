@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -14,6 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import bibleplanner.feature.books.generated.resources.Res
+import bibleplanner.feature.books.generated.resources.open_site
+import bibleplanner.feature.books.generated.resources.reading_not_available_yet
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.component.BookList
 import com.quare.bibleplanner.feature.books.presentation.component.BooksTopBar
@@ -24,13 +30,14 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
+import org.jetbrains.compose.resources.getString
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BooksScreen(
     state: BooksUiState,
     uiAction: Flow<BooksUiAction>,
+    snackbarHostState: SnackbarHostState,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     val mainPadding = LocalMainPadding.current
@@ -78,6 +85,17 @@ fun BooksScreen(
 
             is BooksUiAction.OpenWebAppLink -> {
                 uriHandler.openUri(action.url)
+            }
+
+            is BooksUiAction.ShowReadingNotAvailableYetSnackbar -> {
+                val result = snackbarHostState.showSnackbar(
+                    message = getString(Res.string.reading_not_available_yet),
+                    actionLabel = getString(Res.string.open_site),
+                    duration = SnackbarDuration.Short
+                )
+                if (result == SnackbarResult.ActionPerformed) {
+                    uriHandler.openUri(action.url)
+                }
             }
         }
     }

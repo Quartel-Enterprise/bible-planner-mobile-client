@@ -31,4 +31,5 @@
     <string name="general_epistles">Epístolas Generales</string>
     <string name="revelation">Apocalipsis</string>
     <string name="reading_not_available_yet">Los libros estarán disponibles para lectura en versiones futuras, pero ya están disponibles en la versión web: www.web.bibleplanner.app</string>
+    <string name="open_site">Abrir sitio</string>
 </resources>

@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationB
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookGroupMapper
@@ -36,6 +37,7 @@ class BooksViewModel(
     private val toggleBookFavorite: ToggleBookFavoriteUseCase,
     getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
     private val getWebAppUrl: GetWebAppUrl,
+    private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState: StateFlow<BooksUiState> = _uiState
@@ -79,7 +81,11 @@ class BooksViewModel(
             }
 
             is BooksUiEvent.OnBookClick -> {
-                // No-op for now
+                viewModelScope.launch {
+                    if (isMoreWebAppEnabled()) {
+                        _uiAction.emit(BooksUiAction.ShowReadingNotAvailableYetSnackbar(getWebAppUrl()))
+                    }
+                }
             }
 
             is BooksUiEvent.OnToggleFilter -> {
