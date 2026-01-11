@@ -19,8 +19,12 @@ import org.koin.compose.viewmodel.koinViewModel
 fun App(getSpecificColors: @Composable ((isAppInDarkTheme: Boolean) -> ColorScheme?)? = null) {
     val viewModel: AppViewModel = koinViewModel()
     val theme by viewModel.themeState.collectAsState()
+    val contrast by viewModel.contrastState.collectAsState()
     ProvideCompositionLocals(theme) {
-        AppTheme(getSpecificColors) {
+        AppTheme(
+            getSpecificColors = getSpecificColors,
+            contrastType = contrast,
+        ) {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background,

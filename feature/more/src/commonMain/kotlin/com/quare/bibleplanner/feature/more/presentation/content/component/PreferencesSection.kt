@@ -27,9 +27,14 @@ internal fun PreferencesSection(
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(stringResource(Res.string.preferences))
         SectionCard {
+            val themeSubtitle = if (state.contrastRes != null) {
+                "${stringResource(state.themeRes)} • ${stringResource(state.contrastRes)}"
+            } else {
+                stringResource(state.themeRes)
+            }
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.theme,
-                subtitle = stringResource(state.themeSubtitle),
+                subtitle = themeSubtitle,
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
             )
             HorizontalDivider()

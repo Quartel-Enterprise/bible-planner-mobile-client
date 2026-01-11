@@ -8,7 +8,8 @@ internal sealed interface MoreUiState {
     data object Loading : MoreUiState
 
     data class Loaded(
-        val themeSubtitle: StringResource,
+        val themeRes: StringResource,
+        val contrastRes: StringResource?,
         val planStartDate: LocalDate?,
         val currentDate: LocalDate,
         val subscriptionStatus: SubscriptionStatus?,

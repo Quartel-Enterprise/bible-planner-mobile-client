@@ -4,7 +4,8 @@
         "Refactorización de la lógica de representación de fechas para que sea más dinámica.",
         "Mejoras en la interfaz de usuario para la visualización de versiones futuras.",
         "Corrección de traducciones en español y portugués.",
-        "Cambio de colores de iconos en la pantalla \"Más\" para algunos elementos."
+        "Cambio de colores de iconos en la pantalla \"Más\" para algunos elementos.",
+        "Mejora en la interfaz de selección de temas: nuevo diseño del layout, adición de la selección de contraste y reubicación de la opción de colores dinámicos."
     ],
     "1.7.0": [
         "Se introdujo la carga para indicar que algunas configuraciones remotas se están obteniendo del servidor.",

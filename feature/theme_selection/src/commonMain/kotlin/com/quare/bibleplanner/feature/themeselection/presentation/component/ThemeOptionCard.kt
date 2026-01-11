@@ -9,6 +9,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,55 +31,46 @@ fun ThemeOptionCard(
     onClick: (Theme) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val currentTheme = LocalTheme.current
-    val isSelected = currentTheme == model.preference
+    val isSelected = model.isActive
     val primary = MaterialTheme.colorScheme.primary
-    model.run {
-        val borderColor = if (isSelected) primary else Color.Transparent
-        val containerColor =
-            if (isSelected) primary.copy(alpha = 0.06f) else MaterialTheme.colorScheme.surface
+    val borderColor = if (isSelected) primary else Color.Transparent
+    val containerColor =
+        if (isSelected) primary.copy(alpha = 0.25f) else MaterialTheme.colorScheme.surface
 
-        Card(
-            onClick = { onClick(preference) },
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = containerColor),
-            border = BorderStroke(
-                width = if (isSelected) 2.dp else 1.dp,
-                color = if (isSelected) {
-                    borderColor
-                } else {
-                    MaterialTheme.colorScheme.outline.copy(
-                        alpha = 0.2f,
-                    )
-                },
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-            modifier = modifier,
+    Card(
+        onClick = { onClick(model.preference) },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        border = BorderStroke(
+            width = if (isSelected) 2.dp else 1.dp,
+            color = if (isSelected) {
+                borderColor
+            } else {
+                MaterialTheme.colorScheme.outline.copy(
+                    alpha = 0.2f,
+                )
+            },
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        modifier = modifier,
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                )
-                Text(
-                    text = stringResource(title),
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                )
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(subtitle),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                )
-            }
+            val title = stringResource(model.title)
+            Icon(
+                imageVector = model.icon,
+                contentDescription = title,
+                tint = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+            )
         }
     }
 }
