@@ -1,8 +1,7 @@
 package com.quare.bibleplanner.feature.themeselection.presentation.factory
 
-import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.core.provider.platform.isAndroid
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
+import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiState
@@ -13,7 +12,7 @@ internal class ThemeSelectionUiStateFactory(
     private val getThemeOptionFlow: GetThemeOptionFlow,
     private val getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
     private val getContrastTypeFlow: GetContrastTypeFlow,
-    private val platform: Platform,
+    private val isDynamicColorSupported: IsDynamicColorSupported,
 ) {
     fun create(): Flow<ThemeSelectionUiState> = combine(
         getThemeOptionFlow(),
@@ -21,7 +20,7 @@ internal class ThemeSelectionUiStateFactory(
         getContrastTypeFlow(),
     ) { theme, isDynamicColorEnabled, contrast ->
         ThemeSelectionUiState(
-            isMaterialYouToggleOn = isDynamicColorEnabled.takeIf { platform.isAndroid() },
+            isMaterialYouToggleOn = isDynamicColorEnabled.takeIf { isDynamicColorSupported() },
             options = ThemeOptionsFactory.themeOptions.map { themeOption ->
                 themeOption.copy(isActive = themeOption.preference == theme)
             },

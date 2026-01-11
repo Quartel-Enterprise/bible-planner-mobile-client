@@ -17,6 +17,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLi
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
+import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
@@ -44,6 +45,7 @@ internal class MoreUiStateFactory(
     private val getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
     private val isProVerificationRequired: IsProVerificationRequiredUseCase,
     private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
+    private val isDynamicColorSupported: IsDynamicColorSupported,
 ) {
     fun create(): Flow<MoreUiState> {
         val configFlow = flow {
@@ -85,8 +87,7 @@ internal class MoreUiStateFactory(
             MoreUiState.Loaded(
                 themeRes = theme.toStringResource(),
                 contrastRes = when {
-                    theme == Theme.SYSTEM -> null
-                    isDynamicColorsEnabled == true -> Res.string.dynamic_colors
+                    isDynamicColorsEnabled && isDynamicColorSupported() -> Res.string.dynamic_colors
                     else -> contrast.toStringResource()
                 },
                 planStartDate = startDate,
@@ -121,9 +122,5 @@ internal class MoreUiStateFactory(
         ContrastType.Standard -> Res.string.contrast_standard
         ContrastType.Medium -> Res.string.contrast_medium
         ContrastType.High -> Res.string.contrast_high
-    }
-
-    companion object {
-        private const val MORE_WEB_APP_ENABLED = "more_web_app_enabled"
     }
 }

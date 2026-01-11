@@ -15,6 +15,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val materialYouModule = module {
+    includes(MaterialYouPlatformModule)
+
     // Data
     singleOf(::MaterialYouRepositoryImpl).bind<MaterialYouRepository>()
 

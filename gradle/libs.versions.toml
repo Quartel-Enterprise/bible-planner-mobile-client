@@ -22,6 +22,7 @@ buildKonfig = "0.17.1"
 kermit = "2.0.8"
 ktor = "3.3.3"
 firebaseBom = "34.7.0"
+googeServices = "4.4.4"
 
 # Android versions
 android-minSdk = "26"
@@ -99,7 +100,6 @@ serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googeServices" }
 bibleplanner-kotlinMultiplatform = { id = "bibleplanner.kotlin.multiplatform" }
-
 bibleplanner-composeMultiplatform = { id = "bibleplanner.kotlin.composeMultiplatform" }
-google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
