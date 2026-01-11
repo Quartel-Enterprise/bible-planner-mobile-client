@@ -1,6 +1,7 @@
 package com.quare.bibleplanner
 
 import androidx.compose.ui.window.ComposeUIViewController
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
@@ -14,16 +15,20 @@ private var isInitialized = false
 fun MainViewController(remoteConfigService: RemoteConfigService) = ComposeUIViewController(
     configure = {
         if (!isInitialized) {
-            initializeKoin(
-                platformModules = listOf(
-                    module {
-                        single { getDatabaseBuilder() }
-                        single { remoteConfigService }
-                    },
-                ),
-            )
-            configureRevenueCat(isDebug = Platform.isDebugBinary)
-            isInitialized = true
+            try {
+                initializeKoin(
+                    platformModules = listOf(
+                        module {
+                            single { getDatabaseBuilder() }
+                            single { remoteConfigService }
+                        },
+                    ),
+                )
+                configureRevenueCat(isDebug = Platform.isDebugBinary)
+                isInitialized = true
+            } catch (e: Exception) {
+                Logger.e(e) { "Error initializing App" }
+            }
         }
     },
 ) { App() }
