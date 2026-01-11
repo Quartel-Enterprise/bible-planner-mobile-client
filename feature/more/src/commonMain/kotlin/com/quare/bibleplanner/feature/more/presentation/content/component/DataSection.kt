@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.more.presentation.content.component
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,7 +26,7 @@ internal fun DataSection(
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.deleteProgress,
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.DELETE_PROGRESS)) },
-                isDestructive = true,
+                iconColor = MaterialTheme.colorScheme.error,
             )
         }
     }

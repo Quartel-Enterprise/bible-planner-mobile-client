@@ -3,7 +3,8 @@
     "New release notes screen.",
     "Refactoring of date representation logic to be more dynamic.",
     "UI improvements for future version display.",
-    "Fix Spanish and Portuguese translations."
+    "Fix Spanish and Portuguese translations.",
+    "Change icon colors in the \"More\" screen for some items."
   ],
   "1.7.0": [
     "Introduce loading to indicate that some remote configs are fetching from the server.",

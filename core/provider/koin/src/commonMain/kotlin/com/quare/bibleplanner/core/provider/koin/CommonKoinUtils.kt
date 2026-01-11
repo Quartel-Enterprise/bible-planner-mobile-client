@@ -10,7 +10,7 @@ import com.quare.bibleplanner.core.provider.platform.di.platformModule
 import com.quare.bibleplanner.core.provider.room.di.roomModule
 import com.quare.bibleplanner.core.remoteconfig.di.remoteConfigModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
-import com.quare.bibleplanner.core.utils.json_reader.di.jsonReaderModule
+import com.quare.bibleplanner.core.utils.jsonreader.di.jsonReaderModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
 import com.quare.bibleplanner.feature.books.di.featureBooksModule
 import com.quare.bibleplanner.feature.congrats.di.congratsModule

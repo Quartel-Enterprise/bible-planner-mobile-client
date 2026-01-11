@@ -6,6 +6,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +21,7 @@ internal fun MoreMenuItem(
     itemModel: MoreMenuItemPresentationModel,
     subtitle: String? = null,
     onClick: () -> Unit,
-    isDestructive: Boolean = false,
+    iconColor: Color = LocalContentColor.current.copy(alpha = 0.5f),
     trailingContent: @Composable (() -> Unit)? = null,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedContentScope: AnimatedContentScope? = null,
@@ -67,11 +68,7 @@ internal fun MoreMenuItem(
             MoreItemIcon(
                 icon = itemModel.icon,
                 contentDescription = text,
-                tint = if (isDestructive) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.primary
-                },
+                iconColor = iconColor,
             )
         },
         modifier = Modifier.clickable(onClick = onClick),

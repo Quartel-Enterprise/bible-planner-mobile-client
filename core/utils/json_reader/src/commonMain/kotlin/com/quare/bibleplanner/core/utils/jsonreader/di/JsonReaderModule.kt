@@ -1,6 +1,6 @@
-package com.quare.bibleplanner.core.utils.json_reader.di
+package com.quare.bibleplanner.core.utils.jsonreader.di
 
-import com.quare.bibleplanner.core.utils.json_reader.JsonResourceReader
+import com.quare.bibleplanner.core.utils.jsonreader.JsonResourceReader
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module

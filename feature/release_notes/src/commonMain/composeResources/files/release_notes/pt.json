@@ -3,7 +3,8 @@
         "Nova tela de notas de atualização.",
         "Refatoração da lógica de representação de datas para ser mais dinâmica.",
         "Melhorias na interface do usuário para exibição de versões futuras.",
-        "Correção de traduções em espanhol e português."
+        "Correção de traduções em espanhol e português.",
+        "Alteração das cores dos ícones na tela \"Mais\" para alguns itens."
     ],
     "1.7.0": [
         "Introdução de carregamento para indicar que algumas configurações remotas estão sendo buscadas no servidor.",
