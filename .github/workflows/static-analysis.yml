@@ -35,7 +35,7 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Project
-        uses: ./.github/actions/setup-gradle-java
+        uses: ./.github/actions/gradle
 
       - name: Run Static Analysis
-        uses: ./.github/actions/run-ktlint
+        uses: ./.github/actions/ktlint
