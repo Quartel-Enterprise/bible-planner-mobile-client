@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -34,6 +35,7 @@ import com.quare.bibleplanner.feature.releasenotes.presentation.component.Releas
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesTab
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState
+import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
@@ -85,6 +87,7 @@ fun ReleaseNotesScreen(
                     .padding(paddingValues)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 16.dp),
                 portraitContent = {
                     when (uiState) {
                         ReleaseNotesUiState.Loading -> {
@@ -162,7 +165,7 @@ fun ReleaseNotesScreen(
                                         responsiveItem {
                                             ReleaseNoteCard(
                                                 note = note,
-                                                isLatest = true,
+                                                type = ReleaseVersionType.LATEST,
                                                 onGithubClick = {
                                                     onEvent(
                                                         ReleaseNotesUiEvent.OnGithubVersionClicked(it),
@@ -177,7 +180,7 @@ fun ReleaseNotesScreen(
                                     responsiveItems(uiState.upcomingReleases) { note ->
                                         ReleaseNoteCard(
                                             note = note,
-                                            isUpcoming = true,
+                                            type = ReleaseVersionType.UPCOMING,
                                             onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
                                         )
                                     }
@@ -187,7 +190,7 @@ fun ReleaseNotesScreen(
                                     responsiveItems(uiState.pastReleases) { note ->
                                         ReleaseNoteCard(
                                             note = note,
-                                            isLatest = false,
+                                            type = ReleaseVersionType.PAST,
                                             onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
                                         )
                                     }
