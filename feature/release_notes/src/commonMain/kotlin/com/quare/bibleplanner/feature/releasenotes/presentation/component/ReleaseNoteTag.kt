@@ -27,7 +27,7 @@ internal fun ReleaseNoteTag(
                 Res.string.release_notes_tag_upcoming
             } else {
                 Res.string.release_notes_tag_latest
-            }
+            },
         ),
         style = MaterialTheme.typography.labelSmall.copy(
             fontWeight = FontWeight.Bold,
@@ -44,9 +44,8 @@ internal fun ReleaseNoteTag(
                     MaterialTheme.colorScheme.tertiaryContainer
                 } else {
                     MaterialTheme.colorScheme.primaryContainer
-                }
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+                },
+            ).padding(horizontal = 8.dp, vertical = 4.dp),
     )
 }
 

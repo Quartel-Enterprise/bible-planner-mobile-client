@@ -20,7 +20,6 @@ import com.quare.bibleplanner.feature.releasenotes.domain.model.ReleaseNoteModel
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
 import com.quare.bibleplanner.ui.utils.format
 
-
 @Composable
 fun ReleaseNoteCard(
     modifier: Modifier = Modifier,
