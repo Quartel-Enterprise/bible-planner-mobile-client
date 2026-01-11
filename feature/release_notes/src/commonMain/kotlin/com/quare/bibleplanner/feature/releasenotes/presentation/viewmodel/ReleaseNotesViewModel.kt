@@ -70,8 +70,8 @@ class ReleaseNotesViewModel(
     }
 
     companion object {
-        private const val ALL_RELEASES_LINK = "https://github.com/Quartel-Enterprise/bible-planner-mobile-client/releases"
-        private const val ALL_RELEASES_PREFIX =
-            "https://github.com/Quartel-Enterprise/bible-planner-mobile-client/releases/tag/"
+        private const val ALL_RELEASES_LINK =
+            "https://github.com/Quartel-Enterprise/bible-planner-mobile-client/releases"
+        private const val ALL_RELEASES_PREFIX = "$ALL_RELEASES_LINK/tag/"
     }
 }
