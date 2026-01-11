@@ -7,8 +7,6 @@ import org.koin.dsl.module
 
 internal actual val MaterialYouPlatformModule: Module = module {
     factory {
-        IsDynamicColorSupported {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-        }
+        IsDynamicColorSupported { Build.VERSION.SDK_INT >= Build.VERSION_CODES.S }
     }
 }

@@ -5,8 +5,6 @@ import org.koin.dsl.module
 
 internal actual val MaterialYouPlatformModule = module {
     factory {
-        IsDynamicColorSupported {
-            false
-        }
+        IsDynamicColorSupported { false }
     }
 }
