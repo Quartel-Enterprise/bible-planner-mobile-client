@@ -6,7 +6,10 @@
     <string name="become_pro">Seja Pro</string>
     <string name="become_pro_part_1">Seja</string>
     <string name="become_pro_part_2">Pro</string>
-    <string name="instagram">Instagram</string>
+    <string name="ic_instagram">ic_instagram</string>
+    <string name="app_section">APP</string>
+    <string name="release_notes_option">Notas de Atualização</string>
+    <string name="release_notes_subtitle">Veja o que mudou</string>
     <string name="start_date">Data de início do plano</string>
     <string name="delete_progress_option">Excluir todo o progresso</string>
     <string name="no_progress_to_delete_message">Não há progresso para excluir</string>

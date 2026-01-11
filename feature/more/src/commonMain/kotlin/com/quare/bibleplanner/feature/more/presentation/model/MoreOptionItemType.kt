@@ -10,4 +10,5 @@ enum class MoreOptionItemType {
     WEB_APP,
     DELETE_PROGRESS,
     EDIT_PLAN_START_DAY,
+    RELEASE_NOTES,
 }

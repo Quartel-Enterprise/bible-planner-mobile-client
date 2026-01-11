@@ -12,6 +12,9 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            // Core
+            implementation(projects.core.date)
+
             // View Model
             implementation(libs.androidx.lifecycle.viewmodelCompose)
 

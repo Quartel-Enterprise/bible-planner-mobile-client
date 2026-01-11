@@ -16,6 +16,7 @@ import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanSta
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
+import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
 
@@ -45,6 +46,7 @@ fun RootAppNavHost() {
             deleteNotes(navController)
             addNotesFreeWarning(navController)
             editPlanStartDate(navController)
+            releaseNotes(navController, sharedTransitionScope)
 
             paywall(
                 navController = navController,

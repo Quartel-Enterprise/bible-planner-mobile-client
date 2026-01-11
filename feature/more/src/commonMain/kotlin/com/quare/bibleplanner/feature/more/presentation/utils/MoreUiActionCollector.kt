@@ -9,6 +9,7 @@ import bibleplanner.feature.more.generated.resources.no_progress_to_delete_messa
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -37,6 +38,8 @@ internal fun MoreUiActionCollector(
             MoreUiAction.ShowNoProgressToDelete -> snackbarHostState.showSnackbar(
                 getString(Res.string.no_progress_to_delete_message),
             )
+
+            MoreUiAction.GoToReleaseNotes -> navController.navigate(ReleaseNotesNavRoute)
         }
     }
 }

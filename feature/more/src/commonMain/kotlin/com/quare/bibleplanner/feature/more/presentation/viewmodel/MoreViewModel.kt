@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
+import com.quare.bibleplanner.core.utils.social.SocialUtils
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction
@@ -56,7 +57,7 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.INSTAGRAM -> {
-                        emitAction(MoreUiAction.OpenLink(getInstagramUrl()))
+                        emitAction(MoreUiAction.OpenLink(SocialUtils.getInstagramUrl()))
                     }
 
                     MoreOptionItemType.EDIT_PLAN_START_DAY -> {
@@ -83,6 +84,10 @@ internal class MoreViewModel(
                             emitAction(MoreUiAction.OpenLink(getWebAppUrl()))
                         }
                     }
+
+                    MoreOptionItemType.RELEASE_NOTES -> {
+                        emitAction(MoreUiAction.GoToReleaseNotes)
+                    }
                 }
             }
 
@@ -108,12 +113,6 @@ internal class MoreViewModel(
         }
     }
 
-    private fun getInstagramUrl(): String = when (Locale.current.language) {
-        "pt" -> INSTAGRAM_PT_BR
-        "es" -> INSTAGRAM_ES
-        else -> INSTAGRAM_DEFAULT
-    }
-
     private fun emitAction(action: MoreUiAction) {
         viewModelScope.launch {
             _uiAction.emit(action)
@@ -125,8 +124,5 @@ internal class MoreViewModel(
         private const val PRIVACY_URL = "$BASE_URL/privacy"
         private const val TERMS_URL = "$BASE_URL/terms"
         private const val SPONSOR_URL = "https://github.com/sponsors/Quartel-Enterprise"
-        private const val INSTAGRAM_DEFAULT = "https://www.instagram.com/bible.planner"
-        private const val INSTAGRAM_PT_BR = "$INSTAGRAM_DEFAULT.brasil"
-        private const val INSTAGRAM_ES = "$INSTAGRAM_DEFAULT.espanol"
     }
 }

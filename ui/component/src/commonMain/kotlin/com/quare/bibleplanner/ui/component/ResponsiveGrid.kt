@@ -26,7 +26,7 @@ fun ResponsiveGrid(
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(0.dp),
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(0.dp),
     maxPortraitWidth: Dp = 600.dp,
-    maxContentWidth: Dp = 1200.dp,
+    maxContentWidth: Dp = 800.dp,
     portraitContent: ResponsiveGridScope.() -> Unit,
     landscapeContent: (ResponsiveGridScope.() -> Unit)? = null,
 ) {

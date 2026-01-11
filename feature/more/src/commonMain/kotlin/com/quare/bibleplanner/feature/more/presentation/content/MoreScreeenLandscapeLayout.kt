@@ -1,5 +1,8 @@
 package com.quare.bibleplanner.feature.more.presentation.content
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.feature.more.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.DataSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.LegalSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.PreferencesSection
@@ -17,10 +21,13 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
     state: MoreUiState.Loaded,
     onEvent: (MoreUiEvent) -> Unit,
     becomeProTitleContent: @Composable () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
     headerSection(
         state = state,
@@ -59,6 +66,11 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
                         onEvent = onEvent,
                     )
                 }
+                AppSection(
+                    onEvent = onEvent,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
+                )
                 LegalSection(
                     onEvent = onEvent,
                 )

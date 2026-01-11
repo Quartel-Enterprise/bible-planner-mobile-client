@@ -25,6 +25,7 @@ kotlin {
 
             implementation(projects.feature.paywall)
             implementation(projects.feature.congrats)
+            implementation(projects.feature.releaseNotes)
 
             // Core
             implementation(projects.core.model)

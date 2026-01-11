@@ -1,5 +1,8 @@
 package com.quare.bibleplanner.feature.more.presentation
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,11 +20,14 @@ import com.quare.bibleplanner.feature.subscriptiondetails.presentation.Subscript
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun MoreScreen(
     state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
     becomeProTitleContent: @Composable () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
     val mainPadding = LocalMainPadding.current
 
@@ -41,13 +47,14 @@ internal fun MoreScreen(
             ResponsiveColumn(
                 modifier = Modifier.padding(16.dp),
                 contentPadding = mainPadding,
-                maxContentWidth = 800.dp,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 portraitContent = {
                     moreScreenPortraitLayout(
                         state = state,
                         onEvent = onEvent,
                         becomeProTitleContent = becomeProTitleContent,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope,
                     )
                 },
                 landscapeContent = {
@@ -55,6 +62,8 @@ internal fun MoreScreen(
                         state = state,
                         onEvent = onEvent,
                         becomeProTitleContent = becomeProTitleContent,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope,
                     )
                 },
             )

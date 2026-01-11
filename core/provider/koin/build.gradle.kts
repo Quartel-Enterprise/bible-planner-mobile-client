@@ -20,7 +20,9 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.utils)
+            implementation(projects.core.utils.jsonReader)
             implementation(projects.core.date)
+            implementation(projects.core.network)
 
             // Features
             implementation(projects.feature.books)
@@ -38,6 +40,7 @@ kotlin {
             implementation(projects.feature.congrats)
             implementation(projects.feature.subscriptionDetails)
             implementation(projects.feature.more)
+            implementation(projects.feature.releaseNotes)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

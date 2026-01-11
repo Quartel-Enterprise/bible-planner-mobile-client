@@ -1,0 +1,57 @@
+{
+  "1.8.0": [
+    "New release notes screen.",
+    "Refactoring of date representation logic to be more dynamic.",
+    "UI improvements for future version display.",
+    "Fix Spanish and Portuguese translations."
+  ],
+  "1.7.0": [
+    "Introduce loading to indicate that some remote configs are fetching from the server.",
+    "New paywall screen.",
+    "Web app links.",
+    "New books screen that allows you to track progress, perform searches, apply filters, sort, and favorite."
+  ],
+  "1.6.2": [
+    "Await for some remote configuration before bein able to proceed with other operations."
+  ],
+  "1.6.1": [
+    "Spacing fixes in a lot of screens, mainly for Android 15+ in system bars."
+  ],
+  "1.6.0": [
+    "New \"More\", screen focoused in general settings and useful links.",
+    "Fix scrolling in some screens in landscape format.",
+    "Use cards in the user interface for passage lists in day details screen."
+  ],
+  "1.5.0": [
+    "Introduce delete notes confirmation."
+  ],
+  "1.4.0": [
+    "Implement personal notes for reading plan days.",
+    "Correct formatting in the notes section.",
+    "Adjust in notes section."
+  ],
+  "1.3.0": [
+    "Add planned read dates to reading plan days.",
+    "Fix: correct calculation of planned read date.",
+    "Change text order in the top bar of day details screen."
+  ],
+  "1.2.2": [
+    "Fix: day details missing information when we should read specific verses."
+  ],
+  "1.2.1": [
+    "Fix date formatting to support localized month names."
+  ],
+  "1.2.0": [
+    "Add transition animation when navigating from plans screen to the day details screen. The animation was added in the words for the day and week.",
+    "Animate progress counters for day and progress in plans screen and day details screen.",
+    "Add visibility animation to the \"go to unread\" button.",
+    "Add English and Spanish localization for app name in iOS."
+  ],
+  "1.1.0": [
+    "Replace icon for change theme in the reading plans screen.",
+    "Show snackbar message when no reading progress to delete."
+  ],
+  "1.0.0": [
+    "The first version of Bible Planner 🚀."
+  ]
+}

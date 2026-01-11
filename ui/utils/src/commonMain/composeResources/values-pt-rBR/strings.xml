@@ -11,4 +11,26 @@
     <string name="october">Outubro</string>
     <string name="november">Novembro</string>
     <string name="december">Dezembro</string>
+    <string name="date_today">Hoje</string>
+    <string name="date_yesterday">Ontem</string>
+    <string name="date_tomorrow">Amanhã</string>
+    
+    <plurals name="date_days_ago">
+        <item quantity="one">%1$d dia atrás</item>
+        <item quantity="other">%1$d dias atrás</item>
+    </plurals>
+    
+    <string name="date_last_week">Semana passada</string>
+    
+    <plurals name="date_weeks_ago">
+        <item quantity="one">%1$d semana atrás</item>
+        <item quantity="other">%1$d semanas atrás</item>
+    </plurals>
+    
+    <string name="date_last_month">Mês passado</string>
+    
+    <plurals name="date_months_ago">
+        <item quantity="one">%1$d mês atrás</item>
+        <item quantity="other">%1$d meses atrás</item>
+    </plurals>
 </resources>

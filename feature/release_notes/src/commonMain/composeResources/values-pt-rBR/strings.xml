@@ -1,0 +1,13 @@
+<resources>
+    <string name="release_notes_screen_title">Notas de Atualização</string>
+    <string name="release_notes_subtitle">Veja o que mudou</string>
+    <string name="release_notes_view_all_github">Abrir no GitHub</string>
+    <string name="release_notes_tab_latest">Última Atualização</string>
+    <string name="release_notes_tab_upcoming">Versões Futuras</string>
+    <string name="release_notes_tab_past">Versões Anteriores</string>
+    <string name="release_notes_tag_latest">RECENTE</string>
+    <string name="release_notes_tag_upcoming">NÃO DISPONÍVEL AINDA</string>
+    <string name="release_notes_card_more_details">Mais detalhes no GitHub</string>
+    <string name="release_notes_past_version_date">Antigos</string>
+    <string name="release_notes_error_loading">Falha ao carregar as notas de atualização. Por favor, tente novamente mais tarde.</string>
+</resources>
