@@ -7,4 +7,10 @@
     <string name="system_title">Sistema</string>
     <string name="system_description">Adapta-se automaticamente às configurações do sistema</string>
     <string name="dynamic_colors_title">Cores dinâmicas</string>
+    <string name="standard_contrast">Padrão</string>
+    <string name="medium_contrast">Médio</string>
+    <string name="high_contrast">Alto</string>
+    <string name="select_contrast">Contraste</string>
+    <string name="select_theme">Tema</string>
+    <string name="information">Informação</string>
 </resources>

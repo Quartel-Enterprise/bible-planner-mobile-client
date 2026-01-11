@@ -4,7 +4,8 @@
     "Refactoring of date representation logic to be more dynamic.",
     "UI improvements for future version display.",
     "Fix Spanish and Portuguese translations.",
-    "Change icon colors in the \"More\" screen for some items."
+    "Change icon colors in the \"More\" screen for some items.",
+    "Improved Theme Selection UI: new layout, added contrast selection, and moved dynamic colors option."
   ],
   "1.7.0": [
     "Introduce loading to indicate that some remote configs are fetching from the server.",

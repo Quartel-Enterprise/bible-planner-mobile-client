@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.themeselection.presentation.model
 
+import com.quare.bibleplanner.ui.theme.model.ContrastType
 import com.quare.bibleplanner.ui.theme.model.Theme
 
 sealed interface ThemeSelectionUiEvent {
@@ -7,7 +8,11 @@ sealed interface ThemeSelectionUiEvent {
         val theme: Theme,
     ) : ThemeSelectionUiEvent
 
-    data object OnBackClicked : ThemeSelectionUiEvent
+    data class OnContrastSelected(
+        val contrastType: ContrastType,
+    ) : ThemeSelectionUiEvent
+
+    data object OnDismiss : ThemeSelectionUiEvent
 
     data object MaterialYouInfoClicked : ThemeSelectionUiEvent
 

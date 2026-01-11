@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.feature.themeselection.data.mapper.ThemePreferenceMapper
 import com.quare.bibleplanner.feature.themeselection.domain.repository.ThemeSelectionRepository
+import com.quare.bibleplanner.ui.theme.model.ContrastType
 import com.quare.bibleplanner.ui.theme.model.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -24,7 +25,18 @@ internal class ThemeSelectionRepositoryImpl(
         }
     }
 
+    override fun getContrastTypeFlow(): Flow<ContrastType> = dataStore.data.map { preferences ->
+        mapper.mapContrastPreferenceToModel(preferences[stringPreferencesKey(CONTRAST)])
+    }
+
+    override suspend fun setContrastType(contrastType: ContrastType) {
+        dataStore.edit {
+            it[stringPreferencesKey(CONTRAST)] = mapper.mapModelToContrastPreference(contrastType)
+        }
+    }
+
     companion object {
         private const val THEME = "theme"
+        private const val CONTRAST = "contrast"
     }
 }

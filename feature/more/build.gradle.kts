@@ -23,6 +23,7 @@ kotlin {
 
             // Features
             implementation(projects.feature.themeSelection)
+            implementation(projects.feature.materialYou)
             implementation(projects.feature.subscriptionDetails)
 
             // UI

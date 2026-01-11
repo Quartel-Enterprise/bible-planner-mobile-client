@@ -7,4 +7,10 @@
     <string name="system_title">System</string>
     <string name="system_description">Automatically adapts to system settings</string>
     <string name="dynamic_colors_title">Dynamic colors</string>
+    <string name="standard_contrast">Standard</string>
+    <string name="medium_contrast">Medium</string>
+    <string name="high_contrast">High</string>
+    <string name="select_contrast">Contrast</string>
+    <string name="select_theme">Theme</string>
+    <string name="information">Information</string>
 </resources>

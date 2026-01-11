@@ -34,4 +34,9 @@
     <string name="you_re_pro">Eres Pro</string>
     <string name="pro_description">¡Gracias por tu apoyo!\nTu plan es válido hasta %s.</string>
     <string name="pro_description_simple">¡Gracias por tu apoyo!</string>
+
+    <string name="contrast_standard">Contraste estándar</string>
+    <string name="contrast_medium">Contraste medio</string>
+    <string name="contrast_high">Contraste alto</string>
+    <string name="dynamic_colors">Colores dinámicos</string>
 </resources>
