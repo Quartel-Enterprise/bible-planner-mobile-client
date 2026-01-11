@@ -20,6 +20,11 @@ on:
       - '.editorconfig'
       - 'build.gradle.kts'
 
+# Cancels in-progress runs if a new commit is pushed to the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ktlint:
     runs-on: ubuntu-latest
