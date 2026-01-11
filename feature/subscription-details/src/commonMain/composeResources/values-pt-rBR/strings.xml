@@ -1,0 +1,13 @@
+<resources>
+    <string name="subscription_status_title">Status da Assinatura</string>
+    <string name="active_status">Ativo</string>
+    <string name="plan_label">Plano</string>
+    <string name="plan_value_pro">Plano Pro</string>
+    <string name="purchase_details_title">Detalhes da Compra</string>
+    <string name="purchase_date_label">Data da Compra</string>
+    <string name="renews_label">Renova em</string>
+    <string name="expires_label">Expira em</string>
+    <string name="origin_label">Origem</string>
+    <string name="store_name_android">Google Play</string>
+    <string name="store_name_ios">App Store</string>
+</resources>

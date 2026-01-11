@@ -32,4 +32,9 @@
     <string name="revelation">Apocalipsis</string>
     <string name="reading_not_available_yet">Los libros estarán disponibles para lectura en versiones futuras, pero ya están disponibles en la versión web: www.web.bibleplanner.app</string>
     <string name="open_site">Abrir sitio</string>
+    <string name="content_description_dismiss">Descartar</string>
+    <string name="content_description_info">Información</string>
+    <string name="filter">Filtrar</string>
+    <string name="grid">Cuadrícula</string>
+    <string name="list">Lista</string>
 </resources>
