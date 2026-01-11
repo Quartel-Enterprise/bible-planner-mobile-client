@@ -40,10 +40,16 @@ if ! command -v java &> /dev/null; then
 fi
 
 # Check Java version (handle different output formats)
-JAVA_VERSION_OUTPUT=$(java -version 2>&1 | head -n 1)
-if echo "$JAVA_VERSION_OUTPUT" | grep -q "version"; then
-    JAVA_VERSION=$(echo "$JAVA_VERSION_OUTPUT" | sed -E 's/.*version "([^"]*)".*/\1/' | sed -E 's/^1\.//' | cut -d'.' -f1)
-    if [ -n "$JAVA_VERSION" ] && [ "$JAVA_VERSION" != "21" ]; then
+JAVA_VERSION_OUTPUT=$(java -version 2>&1)
+JAVA_VERSION=$(echo "$JAVA_VERSION_OUTPUT" | head -n 1 | sed -E 's/.*version "([^"]*)".*/\1/' | sed -E 's/^1\.//' | cut -d'.' -f1)
+
+# Fallback if the first line doesn't match the "version" pattern (common in some OpenJDK builds)
+if [ -z "$JAVA_VERSION" ] || ! [[ "$JAVA_VERSION" =~ ^[0-9]+$ ]]; then
+    JAVA_VERSION=$(echo "$JAVA_VERSION_OUTPUT" | awk -F '"' '/openjdk version|java version/ {print $2}' | sed -E 's/^1\.//' | cut -d'.' -f1)
+fi
+
+if [ -n "$JAVA_VERSION" ] && [[ "$JAVA_VERSION" =~ ^[0-9]+$ ]]; then
+    if [ "$JAVA_VERSION" != "21" ]; then
         echo "⚠️  Warning: Java version is $JAVA_VERSION, but CI uses Java 21"
         echo "   Consider using Java 21 for consistency with CI"
         echo ""
