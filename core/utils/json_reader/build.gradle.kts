@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "com.quare.bibleplanner.core.utils.json_reader"
+        namespace = "com.quare.bibleplanner.core.utils.jsonreader"
     }
 
     jvm()

@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.utils.json_reader
+package com.quare.bibleplanner.core.utils.jsonreader
 
 import kotlinx.serialization.json.Json
 

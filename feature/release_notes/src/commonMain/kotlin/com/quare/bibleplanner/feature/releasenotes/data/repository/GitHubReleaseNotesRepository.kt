@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.releasenotes.data.repository
 
 import bibleplanner.feature.release_notes.generated.resources.Res
 import com.quare.bibleplanner.core.network.data.handler.RequestHandler
-import com.quare.bibleplanner.core.utils.json_reader.JsonResourceReader
+import com.quare.bibleplanner.core.utils.jsonreader.JsonResourceReader
 import com.quare.bibleplanner.core.utils.locale.AppLanguage
 import com.quare.bibleplanner.core.utils.locale.getCurrentLanguage
 import com.quare.bibleplanner.feature.releasenotes.data.mapper.GitHubReleaseDateMapper
