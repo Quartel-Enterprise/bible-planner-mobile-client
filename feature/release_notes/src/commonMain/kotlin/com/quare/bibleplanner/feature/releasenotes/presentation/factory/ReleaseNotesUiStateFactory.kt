@@ -17,15 +17,11 @@ class ReleaseNotesUiStateFactory(
     suspend fun create(): ReleaseNotesUiState = getReleaseNotesUseCase()
         .fold(
             onSuccess = { notes ->
-                val sortedNotes = notes.sortedWith(VersionComparator).reversed()
-
-                val upcoming = sortedNotes.filter { note ->
-                    val isAhead = VersionComparator.compare(note.version, APP_VERSION) > 0
-                    val isUnpublished = note.dateRepresentation == null
-                    isAhead || isUnpublished
+                val upcoming = notes.filter { note ->
+                    VersionComparator.compare(note.version, APP_VERSION) > 0
                 }
 
-                val publishedNotes = sortedNotes.filter { note ->
+                val publishedNotes = notes.filter { note ->
                     note.dateRepresentation != null && VersionComparator.compare(note.version, APP_VERSION) <= 0
                 }
 
