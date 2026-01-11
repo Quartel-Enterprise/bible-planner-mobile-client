@@ -1,0 +1,29 @@
+name: 'Run ktlint'
+description: 'Runs ktlint check and annotates results'
+runs:
+  using: "composite"
+  steps:
+    - name: Make ci-local script executable
+      shell: bash
+      run: chmod +x ./scripts/ci-local.sh
+
+    - name: Run ktlint check (same as local)
+      id: ktlint-check
+      shell: bash
+      run: |
+        ./scripts/ci-local.sh
+      continue-on-error: true
+
+    - name: Annotate ktlint results
+      uses: yutailang0119/action-ktlint@v5
+      with:
+        report-path: 'build/**/*.xml'
+        ignore-warnings: false
+      continue-on-error: false
+
+    - name: Fail if ktlint found errors
+      shell: bash
+      if: steps.ktlint-check.outcome == 'failure'
+      run: |
+        echo "❌ ktlint found formatting errors. Please run './gradlew ktlintFormat' to fix them."
+        exit 1

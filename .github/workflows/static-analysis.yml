@@ -34,36 +34,8 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
+      - name: Setup Project
+        uses: ./.github/actions/setup-gradle-java
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Make ci-local script executable
-        run: chmod +x ./scripts/ci-local.sh
-
-      - name: Run ktlint check (same as local)
-        id: ktlint-check
-        run: |
-          ./scripts/ci-local.sh
-        continue-on-error: true
-
-      - name: Annotate ktlint results
-        uses: yutailang0119/action-ktlint@v5
-        with:
-          report-path: 'build/**/*.xml'
-          ignore-warnings: false
-        continue-on-error: false
-
-      - name: Fail if ktlint found errors
-        if: steps.ktlint-check.outcome == 'failure'
-        run: |
-          echo "❌ ktlint found formatting errors. Please run './gradlew ktlintFormat' to fix them."
-          exit 1
+      - name: Run Static Analysis
+        uses: ./.github/actions/run-ktlint

@@ -1,0 +1,17 @@
+name: 'Setup Gradle and Java'
+description: 'Sets up JDK 21 and Gradle with caching'
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Make gradlew executable
+      shell: bash
+      run: chmod +x ./gradlew
