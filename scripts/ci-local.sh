@@ -41,21 +41,18 @@ fi
 
 # Check Java version (handle different output formats)
 JAVA_VERSION_OUTPUT=$(java -version 2>&1)
-JAVA_VERSION=$(echo "$JAVA_VERSION_OUTPUT" | head -n 1 | sed -E 's/.*version "([^"]*)".*/\1/' | sed -E 's/^1\.//' | cut -d'.' -f1)
-
-# Fallback if the first line doesn't match the "version" pattern (common in some OpenJDK builds)
-if [ -z "$JAVA_VERSION" ] || ! [[ "$JAVA_VERSION" =~ ^[0-9]+$ ]]; then
-    JAVA_VERSION=$(echo "$JAVA_VERSION_OUTPUT" | awk -F '"' '/openjdk version|java version/ {print $2}' | sed -E 's/^1\.//' | cut -d'.' -f1)
-fi
+# Extract version number: handles "21", "21.0.1", "1.8.0_..." etc.
+JAVA_VERSION=$(echo "$JAVA_VERSION_OUTPUT" | grep -Ei "(openjdk|java) version" | sed -E 's/.*version "([^"]*)".*/\1/' | sed -E 's/^1\.//' | cut -d'.' -f1 | cut -d'_' -f1 | tr -d '[:space:]')
 
 if [ -n "$JAVA_VERSION" ] && [[ "$JAVA_VERSION" =~ ^[0-9]+$ ]]; then
     if [ "$JAVA_VERSION" != "21" ]; then
         echo "⚠️  Warning: Java version is $JAVA_VERSION, but CI uses Java 21"
+        echo "   (Detected from: $(echo "$JAVA_VERSION_OUTPUT" | head -n 1))"
         echo "   Consider using Java 21 for consistency with CI"
         echo ""
     fi
 else
-    echo "⚠️  Warning: Could not determine Java version"
+    echo "⚠️  Warning: Could not determine Java version (Output: $(echo "$JAVA_VERSION_OUTPUT" | head -n 1))"
     echo ""
 fi
 
