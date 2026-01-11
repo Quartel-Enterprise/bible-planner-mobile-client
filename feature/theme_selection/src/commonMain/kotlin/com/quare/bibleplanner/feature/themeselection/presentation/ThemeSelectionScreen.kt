@@ -164,7 +164,7 @@ fun ThemeSelectionContent(
                     }
                 }
             }
-        }
+        },
     )
 }
 
