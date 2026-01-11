@@ -1,0 +1,13 @@
+<resources>
+    <string name="release_notes_screen_title">Release Notes</string>
+    <string name="release_notes_subtitle">See what changed</string>
+    <string name="release_notes_view_all_github">Open on GitHub</string>
+    <string name="release_notes_tab_latest">Latest Update</string>
+    <string name="release_notes_tab_upcoming">Future Versions</string>
+    <string name="release_notes_tab_past">Past Versions</string>
+    <string name="release_notes_tag_latest">LATEST</string>
+    <string name="release_notes_tag_upcoming">NOT AVAILABLE YET</string>
+    <string name="release_notes_card_more_details">More details on GitHub</string>
+    <string name="release_notes_past_version_date">Older</string>
+    <string name="release_notes_error_loading">Failed to load release notes. Please try again later.</string>
+</resources>

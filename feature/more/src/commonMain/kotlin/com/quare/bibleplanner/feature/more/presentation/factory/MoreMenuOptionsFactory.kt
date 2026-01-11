@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.more.presentation.factory
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
@@ -14,6 +15,8 @@ import bibleplanner.feature.more.generated.resources.delete_progress_option
 import bibleplanner.feature.more.generated.resources.ic_instagram
 import bibleplanner.feature.more.generated.resources.instagram
 import bibleplanner.feature.more.generated.resources.privacy_policy
+import bibleplanner.feature.more.generated.resources.release_notes_option
+import bibleplanner.feature.more.generated.resources.release_notes_subtitle
 import bibleplanner.feature.more.generated.resources.start_date
 import bibleplanner.feature.more.generated.resources.terms_of_service
 import bibleplanner.feature.more.generated.resources.theme_option
@@ -64,5 +67,11 @@ internal object MoreMenuOptionsFactory {
         name = Res.string.start_date,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.EditCalendar),
         type = MoreOptionItemType.EDIT_PLAN_START_DAY,
+    )
+    val releaseNotes = MoreMenuItemPresentationModel(
+        name = Res.string.release_notes_option,
+        subtitle = Res.string.release_notes_subtitle,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Description),
+        type = MoreOptionItemType.RELEASE_NOTES,
     )
 }

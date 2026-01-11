@@ -14,4 +14,6 @@ internal sealed interface MoreUiAction {
     data object GoToDeleteProgress : MoreUiAction
 
     data object ShowNoProgressToDelete : MoreUiAction
+
+    data object GoToReleaseNotes : MoreUiAction
 }

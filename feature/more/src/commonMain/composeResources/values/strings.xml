@@ -6,6 +6,10 @@
     <string name="become_pro">Become Pro</string>
     <string name="become_pro_part_1">Become</string>
     <string name="become_pro_part_2">Pro</string>
+    <string name="ic_instagram">ic_instagram</string>
+    <string name="app_section">APP</string>
+    <string name="release_notes_option">Release Notes</string>
+    <string name="release_notes_subtitle">See what changed</string>
     <string name="instagram">Instagram</string>
     <string name="start_date">Plan start date</string>
     <string name="delete_progress_option">Delete all progress</string>

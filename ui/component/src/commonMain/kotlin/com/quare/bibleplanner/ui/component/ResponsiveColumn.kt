@@ -19,7 +19,7 @@ fun ResponsiveColumn(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(0.dp),
     maxPortraitWidth: Dp = 600.dp,
-    maxContentWidth: Dp = 1200.dp,
+    maxContentWidth: Dp = 800.dp,
     portraitContent: ResponsiveContentScope.() -> Unit,
     landscapeContent: (ResponsiveContentScope.() -> Unit)? = null,
 ) {

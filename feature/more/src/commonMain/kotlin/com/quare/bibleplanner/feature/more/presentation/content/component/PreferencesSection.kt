@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.more.presentation.content.component
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.HorizontalDivider
@@ -16,6 +17,7 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun PreferencesSection(
     modifier: Modifier = Modifier,

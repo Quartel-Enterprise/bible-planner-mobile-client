@@ -45,6 +45,8 @@ fun NavGraphBuilder.more(
         MoreScreen(
             state = uiState,
             onEvent = viewModel::onEvent,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
             becomeProTitleContent = {
                 Row {
                     with(sharedTransitionScope) {

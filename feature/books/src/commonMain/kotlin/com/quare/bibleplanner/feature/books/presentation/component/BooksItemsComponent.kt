@@ -37,7 +37,6 @@ fun BooksItemsComponent(
         ResponsiveGrid(
             lazyGridState = currentLazyGridState,
             columns = GridCells.Fixed(totalColumns),
-            maxContentWidth = 800.dp,
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),

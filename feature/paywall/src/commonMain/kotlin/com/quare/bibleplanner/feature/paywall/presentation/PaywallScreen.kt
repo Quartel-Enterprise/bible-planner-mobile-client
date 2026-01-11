@@ -53,7 +53,6 @@ fun PaywallScreen(
         ResponsiveColumn(
             modifier = Modifier.padding(paddingValues),
             contentPadding = PaddingValues(bottom = 16.dp),
-            maxContentWidth = 800.dp,
             portraitContent = { portrait(uiState, onEvent) },
             landscapeContent = {
                 landscape(uiState, onEvent)
