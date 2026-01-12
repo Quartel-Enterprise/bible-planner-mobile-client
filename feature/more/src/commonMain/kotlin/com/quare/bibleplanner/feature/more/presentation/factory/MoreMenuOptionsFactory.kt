@@ -12,6 +12,8 @@ import androidx.compose.material.icons.filled.Star
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_pro
 import bibleplanner.feature.more.generated.resources.delete_progress_option
+import bibleplanner.feature.more.generated.resources.donate_option
+import bibleplanner.feature.more.generated.resources.donate_subtitle
 import bibleplanner.feature.more.generated.resources.ic_instagram
 import bibleplanner.feature.more.generated.resources.instagram
 import bibleplanner.feature.more.generated.resources.privacy_policy
@@ -31,6 +33,12 @@ internal object MoreMenuOptionsFactory {
         name = Res.string.become_pro,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.Star),
         type = MoreOptionItemType.BECOME_PRO,
+    )
+    val donate = MoreMenuItemPresentationModel(
+        name = Res.string.donate_option,
+        subtitle = Res.string.donate_subtitle,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Info),
+        type = MoreOptionItemType.DONATE,
     )
     val theme = MoreMenuItemPresentationModel(
         name = Res.string.theme_option,

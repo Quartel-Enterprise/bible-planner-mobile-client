@@ -41,6 +41,8 @@ kotlin {
             implementation(projects.feature.subscriptionDetails)
             implementation(projects.feature.more)
             implementation(projects.feature.releaseNotes)
+            implementation(projects.feature.donation)
+            implementation(projects.feature.donation.pixQr)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

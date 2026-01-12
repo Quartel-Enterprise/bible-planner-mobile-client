@@ -3,9 +3,7 @@ package com.quare.bibleplanner.feature.releasenotes.presentation.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
@@ -18,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.releasenotes.domain.model.ReleaseNoteModel
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVersionType
+import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.format
 
 @Composable
@@ -64,7 +63,7 @@ fun ReleaseNoteCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            VerticalSpacer(16.dp)
 
             note.changes.forEach { change ->
                 Row(modifier = Modifier.padding(vertical = 4.dp)) {

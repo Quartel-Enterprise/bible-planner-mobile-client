@@ -76,7 +76,7 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.DONATE -> {
-                        emitAction(MoreUiAction.OpenLink(SPONSOR_URL))
+                        emitAction(MoreUiAction.GoToDonation)
                     }
 
                     MoreOptionItemType.WEB_APP -> {
@@ -123,6 +123,5 @@ internal class MoreViewModel(
         private const val BASE_URL = "https://www.bibleplanner.app"
         private const val PRIVACY_URL = "$BASE_URL/privacy"
         private const val TERMS_URL = "$BASE_URL/terms"
-        private const val SPONSOR_URL = "https://github.com/sponsors/Quartel-Enterprise"
     }
 }

@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.no_progress_to_delete_message
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
+import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
@@ -40,6 +41,8 @@ internal fun MoreUiActionCollector(
             )
 
             MoreUiAction.GoToReleaseNotes -> navController.navigate(ReleaseNotesNavRoute)
+
+            MoreUiAction.GoToDonation -> navController.navigate(DonationNavRoute)
         }
     }
 }

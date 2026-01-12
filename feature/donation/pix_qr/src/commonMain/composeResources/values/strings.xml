@@ -1,0 +1,8 @@
+<resources>
+    <string name="pix_qr_title">PIX QR Code</string>
+    <string name="pix_qr_description">PIX QR Code</string>
+    <string name="pix_qr_instruction">Scan this QR code with your banking app</string>
+    <string name="pix_qr_share">Share</string>
+    <string name="pix_qr_close">Close</string>
+    <string name="pix_qr_share_message">🙏 Support Bible Planner with PIX!\n\nScan this QR code to donate and help us continue developing this app.\n\nDownload Bible Planner and organize your Bible reading:\n%1$d</string>
+</resources>

@@ -1,0 +1,21 @@
+<resources>
+    <string name="donation_title">Support this project</string>
+    <string name="donation_description">Your support helps keep the servers running and the word spreading. Every bit helps.</string>
+    <string name="donation_bitcoin">Bitcoin</string>
+    <string name="donation_bitcoin_description">On-chain &amp; Lightning</string>
+    <string name="donation_usdt">USDT</string>
+    <string name="donation_usdt_description">ERC20 / TRC20</string>
+    <string name="donation_pix">Brazilian Pix</string>
+    <string name="donation_pix_description">Random Key &amp; QR Code</string>
+    <string name="donation_gh_sponsors">GitHub Sponsors</string>
+    <string name="donation_gh_sponsors_description">Monthly or one-time</string>
+    <string name="donation_maybe_later">Maybe later</string>
+    <string name="donation_copied">Copied to clipboard!</string>
+    <string name="donation_onchain">On-chain</string>
+    <string name="donation_lightning">Lightning Network</string>
+    <string name="donation_trc20">TRC20</string>
+    <string name="donation_erc20">ERC20</string>
+    <string name="donation_address_copied">Address copied</string>
+    <string name="donation_pix_random_key">Random Key</string>
+    <string name="donation_pix_qr_code">QR Code</string>
+</resources>
