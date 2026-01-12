@@ -5,12 +5,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.dialog
 import bibleplanner.feature.donation.pix_qr.generated.resources.Res
-import bibleplanner.feature.donation.pix_qr.generated.resources.qr_code_pix_share
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.utils.shareContent
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.pixQr(navController: NavHostController) {
@@ -28,7 +26,6 @@ fun NavGraphBuilder.pixQr(navController: NavHostController) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun PixQrActionCollector(
     navController: NavHostController,

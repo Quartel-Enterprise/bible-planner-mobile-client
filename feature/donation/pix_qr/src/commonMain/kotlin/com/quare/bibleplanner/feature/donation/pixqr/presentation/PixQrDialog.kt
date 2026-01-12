@@ -41,10 +41,10 @@ fun PixQrDialog(onEvent: (PixQrUiEvent) -> Unit) {
                     text = stringResource(Res.string.pix_qr_title),
                     style = MaterialTheme.typography.headlineSmall,
                 )
-                ShareIconButton(
+                /*ShareIconButton(
                     onClick = { onEvent(PixQrUiEvent.Share) },
                     contentDescription = stringResource(Res.string.pix_qr_share),
-                )
+                )*/
             }
         },
         text = {
