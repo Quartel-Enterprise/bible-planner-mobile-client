@@ -1,4 +1,7 @@
 {
+    "1.8.1": [
+        "Se corrigió un error que podía causar la pérdida del progreso de lectura tras una actualización."
+    ],
     "1.8.0": [
         "Nueva pantalla de notas de la versión.",
         "Refactorización de la lógica de representación de fechas para que sea más dinámica.",

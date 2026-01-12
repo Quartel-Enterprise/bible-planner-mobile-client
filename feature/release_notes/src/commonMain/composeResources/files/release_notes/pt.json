@@ -1,4 +1,7 @@
 {
+    "1.8.1": [
+        "Correção de um problema que podia causar a perda do progresso de leitura após uma atualização."
+    ],
     "1.8.0": [
         "Nova tela de notas de atualização.",
         "Refatoração da lógica de representação de datas para ser mais dinâmica.",
