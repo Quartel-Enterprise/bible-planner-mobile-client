@@ -12,6 +12,8 @@ import com.quare.bibleplanner.feature.congrats.presentation.congrats
 import com.quare.bibleplanner.feature.day.presentation.day
 import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
 import com.quare.bibleplanner.feature.deleteprogress.presentation.deleteProgress
+import com.quare.bibleplanner.feature.donation.pixqr.presentation.pixQr
+import com.quare.bibleplanner.feature.donation.presentation.donation
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
@@ -53,6 +55,8 @@ fun RootAppNavHost() {
                 sharedTransitionScope = sharedTransitionScope,
             )
             congrats(navController)
+            donation(navController)
+            pixQr(navController)
         }
     }
 }

@@ -77,10 +77,12 @@ internal class MoreUiStateFactory(
             themeFlow,
             configFlow,
         ) { subscriptionStatus, startDate, (theme, contrast, isDynamicColorsEnabled), config ->
+            val shouldShowDonate = config.shouldShowDonate
+            val isProVerificationRequired = config.isProVerificationRequired
             val headerRes = when {
-                config.isProVerificationRequired && config.shouldShowDonate -> Res.string.pro_and_support
-                config.isProVerificationRequired -> Res.string.pro_section
-                config.shouldShowDonate -> Res.string.support_section
+                isProVerificationRequired && shouldShowDonate -> Res.string.pro_and_support
+                isProVerificationRequired -> Res.string.pro_section
+                shouldShowDonate -> Res.string.support_section
                 else -> null
             }
 

@@ -4,8 +4,6 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
@@ -22,6 +20,7 @@ import bibleplanner.feature.more.generated.resources.become_pro_part_2
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.feature.more.presentation.utils.MoreUiActionCollector
 import com.quare.bibleplanner.feature.more.presentation.viewmodel.MoreViewModel
+import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -59,7 +58,7 @@ fun NavGraphBuilder.more(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        HorizontalSpacer(4.dp)
                         Text(
                             modifier = Modifier.sharedElement(
                                 rememberSharedContentState(key = "become_pro_part_2"),

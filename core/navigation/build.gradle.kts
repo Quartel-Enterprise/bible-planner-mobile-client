@@ -26,6 +26,8 @@ kotlin {
             implementation(projects.feature.paywall)
             implementation(projects.feature.congrats)
             implementation(projects.feature.releaseNotes)
+            implementation(projects.feature.donation)
+            implementation(projects.feature.donation.pixQr)
 
             // Core
             implementation(projects.core.model)
