@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.more.presentation.viewmodel
 
-import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase

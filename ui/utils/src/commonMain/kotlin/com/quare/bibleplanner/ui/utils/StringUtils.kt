@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.ui.utils
 
+import androidx.compose.ui.platform.ClipEntry
+
 fun String.removeAccents(): String {
     val accents = "ÁÉÍÓÚáéíóúÂÊÔâêôÃÕãõÀàÇçÑñÜü"
     val replacements = "AEIOUaeiouAEOaeoAOaoAaCcNnUu"
@@ -14,3 +16,5 @@ fun String.removeAccents(): String {
     }
     return sb.toString()
 }
+
+expect fun String.toClipEntry(): ClipEntry

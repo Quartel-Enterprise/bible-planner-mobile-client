@@ -31,15 +31,15 @@ class DonationViewModel : ViewModel() {
                     if (_uiState.value.copiedType == event.type) {
                         _uiState.update { it.copy(copiedType = null) }
                     } else {
-                        val (text, label) = when (event.type) {
-                            DonationType.BTC_ONCHAIN -> DonationBuildKonfig.BTC_ONCHAIN to "Bitcoin On-chain"
-                            DonationType.BTC_LIGHTNING -> DonationBuildKonfig.BTC_LIGHTNING to "Bitcoin Lightning"
-                            DonationType.USDT_ERC20 -> DonationBuildKonfig.USDT_ERC20 to "USDT ERC20"
-                            DonationType.USDT_TRC20 -> DonationBuildKonfig.USDT_TRC20 to "USDT TRC20"
-                            DonationType.PIX -> DonationBuildKonfig.PIX_KEY to "PIX"
+                        val text = when (event.type) {
+                            DonationType.BTC_ONCHAIN -> DonationBuildKonfig.BTC_ONCHAIN
+                            DonationType.BTC_LIGHTNING -> DonationBuildKonfig.BTC_LIGHTNING
+                            DonationType.USDT_ERC20 -> DonationBuildKonfig.USDT_ERC20
+                            DonationType.USDT_TRC20 -> DonationBuildKonfig.USDT_TRC20
+                            DonationType.PIX -> DonationBuildKonfig.PIX_KEY
                         }
                         _uiState.update { it.copy(copiedType = event.type) }
-                        _uiAction.emit(DonationUiAction.Copy(text, label))
+                        _uiAction.emit(DonationUiAction.Copy(text))
                     }
                 }
             }

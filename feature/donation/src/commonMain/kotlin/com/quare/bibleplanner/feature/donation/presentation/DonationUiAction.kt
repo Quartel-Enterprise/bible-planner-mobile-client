@@ -7,7 +7,6 @@ sealed interface DonationUiAction {
 
     data class Copy(
         val text: String,
-        val label: String,
     ) : DonationUiAction
 
     data class OpenUrl(

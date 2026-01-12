@@ -55,7 +55,7 @@ fun RootAppNavHost() {
                 sharedTransitionScope = sharedTransitionScope,
             )
             congrats(navController)
-            donation(navController, mainScaffoldState)
+            donation(navController)
             pixQr(navController)
         }
     }
