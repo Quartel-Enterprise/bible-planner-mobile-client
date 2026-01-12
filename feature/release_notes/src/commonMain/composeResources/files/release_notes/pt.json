@@ -5,7 +5,8 @@
         "Melhorias na interface do usuário para exibição de versões futuras.",
         "Correção de traduções em espanhol e português.",
         "Alteração das cores dos ícones na tela \"Mais\" para alguns itens.",
-        "Melhoria na interface de seleção de temas: novo layout, adição da seleção de contraste e relocação da opção de cores dinâmicas."
+        "Melhoria na interface de seleção de temas: novo layout, adição da seleção de contraste e relocação da opção de cores dinâmicas.",
+        "Adicionadas novas opções de doação."
     ],
     "1.7.0": [
         "Introdução de carregamento para indicar que algumas configurações remotas estão sendo buscadas no servidor.",
