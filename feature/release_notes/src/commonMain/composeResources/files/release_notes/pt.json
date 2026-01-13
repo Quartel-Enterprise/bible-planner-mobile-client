@@ -1,4 +1,9 @@
 {
+    "1.9.0": [
+        "Refatoração da tela \"Mais\" para melhor organização e usabilidade.",
+        "Exibição da versão atual do aplicativo na tela \"Mais\".",
+        "A detecção da versão atual do aplicativo agora é dinâmica nas notas de lançamento."
+    ],
     "1.8.1": [
         "Correção de um problema que podia causar a perda do progresso de leitura após uma atualização."
     ],

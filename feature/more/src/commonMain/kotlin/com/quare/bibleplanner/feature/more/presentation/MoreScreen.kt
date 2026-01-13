@@ -47,7 +47,6 @@ internal fun MoreScreen(
             ResponsiveColumn(
                 modifier = Modifier.padding(16.dp),
                 contentPadding = mainPadding,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
                 portraitContent = {
                     moreScreenPortraitLayout(
                         state = state,

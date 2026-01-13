@@ -1,4 +1,9 @@
 {
+    "1.9.0": [
+        "Rediseño de la pantalla \"Más\" para una mejor organización y usabilidad.",
+        "Visualización de la versión actual de la aplicación en la pantalla \"Más\".",
+        "La detección de la versión actual de la aplicación ahora es dinámica en las notas de lanzamiento."
+    ],
     "1.8.1": [
         "Se corrigió un error que podía causar la pérdida del progreso de lectura tras una actualización."
     ],

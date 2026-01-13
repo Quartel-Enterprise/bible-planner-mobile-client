@@ -19,5 +19,6 @@ internal sealed interface MoreUiState {
         val showSubscriptionDetailsDialog: Boolean = false,
         val isProCardVisible: Boolean,
         val isWebAppVisible: Boolean,
+        val appVersion: String,
     ) : MoreUiState
 }

@@ -21,7 +21,7 @@ internal fun DataSection(
     onEvent: (MoreUiEvent) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionHeader(stringResource(Res.string.data_section))
+        SectionHeaderText(title = stringResource(Res.string.data_section))
         SectionCard {
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.deleteProgress,

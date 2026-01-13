@@ -19,6 +19,7 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppE
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
+import com.quare.bibleplanner.feature.more.generated.MoreBuildKonfig
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
@@ -103,6 +104,7 @@ internal class MoreUiStateFactory(
                 headerRes = headerRes,
                 isProCardVisible = config.isProVerificationRequired,
                 isWebAppVisible = config.isWebAppVisible,
+                appVersion = MoreBuildKonfig.APP_VERSION,
             )
         }
     }

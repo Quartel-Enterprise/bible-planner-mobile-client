@@ -74,6 +74,7 @@ buildkonfig {
         val value = properties.getProperty(ghToken).orEmpty()
 
         buildConfigField(FieldSpec.Type.STRING, ghToken, value)
+        buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", project.property("versionName").toString())
 
         if (!properties.containsKey(ghToken) || value.isBlank() || value == "your_token_here") {
             logger.warn(

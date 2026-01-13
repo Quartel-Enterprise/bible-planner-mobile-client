@@ -4,23 +4,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.EditCalendar
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Star
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_pro
 import bibleplanner.feature.more.generated.resources.delete_progress_option
-import bibleplanner.feature.more.generated.resources.donate_option
-import bibleplanner.feature.more.generated.resources.donate_subtitle
 import bibleplanner.feature.more.generated.resources.ic_instagram
 import bibleplanner.feature.more.generated.resources.instagram
-import bibleplanner.feature.more.generated.resources.privacy_policy
 import bibleplanner.feature.more.generated.resources.release_notes_option
 import bibleplanner.feature.more.generated.resources.release_notes_subtitle
 import bibleplanner.feature.more.generated.resources.start_date
-import bibleplanner.feature.more.generated.resources.terms_of_service
 import bibleplanner.feature.more.generated.resources.theme_option
 import bibleplanner.feature.more.generated.resources.web_app
 import bibleplanner.feature.more.generated.resources.web_app_subtitle
@@ -33,12 +27,6 @@ internal object MoreMenuOptionsFactory {
         name = Res.string.become_pro,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.Star),
         type = MoreOptionItemType.BECOME_PRO,
-    )
-    val donate = MoreMenuItemPresentationModel(
-        name = Res.string.donate_option,
-        subtitle = Res.string.donate_subtitle,
-        icon = MoreIcon.ImageVectorIcon(Icons.Default.Info),
-        type = MoreOptionItemType.DONATE,
     )
     val theme = MoreMenuItemPresentationModel(
         name = Res.string.theme_option,
@@ -55,16 +43,6 @@ internal object MoreMenuOptionsFactory {
         subtitle = Res.string.web_app_subtitle,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.Language),
         type = MoreOptionItemType.WEB_APP,
-    )
-    val privacyPolicy = MoreMenuItemPresentationModel(
-        name = Res.string.privacy_policy,
-        icon = MoreIcon.ImageVectorIcon(Icons.Default.Shield),
-        type = MoreOptionItemType.PRIVACY_POLICY,
-    )
-    val termsOfService = MoreMenuItemPresentationModel(
-        name = Res.string.terms_of_service,
-        icon = MoreIcon.ImageVectorIcon(Icons.Default.Info),
-        type = MoreOptionItemType.TERMS,
     )
     val deleteProgress = MoreMenuItemPresentationModel(
         name = Res.string.delete_progress_option,

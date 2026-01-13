@@ -23,7 +23,7 @@ internal fun WebSection(
     onEvent: (MoreUiEvent) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionHeader(stringResource(Res.string.web_section))
+        SectionHeaderText(title = stringResource(Res.string.web_section))
         SectionCard {
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.webApp,

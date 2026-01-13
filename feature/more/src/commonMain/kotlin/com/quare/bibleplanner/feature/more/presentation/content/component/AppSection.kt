@@ -24,7 +24,7 @@ internal fun AppSection(
     animatedContentScope: AnimatedContentScope,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionHeader(stringResource(Res.string.app_section))
+        SectionHeaderText(title = stringResource(Res.string.app_section))
         SectionCard {
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.releaseNotes,
