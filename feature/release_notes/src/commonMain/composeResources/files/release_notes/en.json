@@ -1,4 +1,7 @@
 {
+  "1.8.1": [
+    "Fix a bug that could cause reading progress to be lost after an update."
+  ],
   "1.8.0": [
     "New release notes screen.",
     "Refactoring of date representation logic to be more dynamic.",

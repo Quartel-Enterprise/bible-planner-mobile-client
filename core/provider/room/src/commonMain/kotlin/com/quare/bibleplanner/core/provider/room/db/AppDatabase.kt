@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.provider.room.db
 
+import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -19,7 +20,10 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
         VerseEntity::class,
         DayEntity::class,
     ],
-    version = 5,
+    version = 6,
+    autoMigrations = [
+        AutoMigration(from = 5, to = 6),
+    ],
     exportSchema = true,
 )
 @ConstructedBy(DatabaseConstructor::class)
