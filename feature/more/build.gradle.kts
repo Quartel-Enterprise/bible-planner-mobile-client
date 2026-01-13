@@ -1,6 +1,9 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlinMultiplatform)
     alias(libs.plugins.bibleplanner.composeMultiplatform)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -48,5 +51,15 @@ kotlin {
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewModel)
         }
+    }
+}
+
+buildkonfig {
+    packageName = "com.quare.bibleplanner.feature.more.generated"
+    objectName = "MoreBuildKonfig"
+    exposeObjectWithName = "MoreBuildKonfig"
+
+    defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", project.property("versionName").toString())
     }
 }

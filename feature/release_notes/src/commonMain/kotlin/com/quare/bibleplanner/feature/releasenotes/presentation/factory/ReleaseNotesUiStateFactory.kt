@@ -2,15 +2,14 @@ package com.quare.bibleplanner.feature.releasenotes.presentation.factory
 
 import com.quare.bibleplanner.feature.releasenotes.domain.usecase.GetReleaseNotesUseCase
 import com.quare.bibleplanner.feature.releasenotes.domain.utils.VersionComparator
+import com.quare.bibleplanner.feature.releasenotes.generated.ReleaseNotesBuildKonfig
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesTab
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState
 
 class ReleaseNotesUiStateFactory(
     private val getReleaseNotesUseCase: GetReleaseNotesUseCase,
 ) {
-    companion object {
-        private const val APP_VERSION = "1.8.0"
-    }
+    private val appVersion = ReleaseNotesBuildKonfig.APP_VERSION
 
     fun createInitialState(): ReleaseNotesUiState = ReleaseNotesUiState.Loading
 
@@ -18,11 +17,11 @@ class ReleaseNotesUiStateFactory(
         .fold(
             onSuccess = { notes ->
                 val upcoming = notes.filter { note ->
-                    VersionComparator.compare(note.version, APP_VERSION) > 0
+                    VersionComparator.compare(note.version, appVersion) > 0
                 }
 
                 val publishedNotes = notes.filter { note ->
-                    note.dateRepresentation != null && VersionComparator.compare(note.version, APP_VERSION) <= 0
+                    note.dateRepresentation != null && VersionComparator.compare(note.version, appVersion) <= 0
                 }
 
                 val latest = publishedNotes.firstOrNull()

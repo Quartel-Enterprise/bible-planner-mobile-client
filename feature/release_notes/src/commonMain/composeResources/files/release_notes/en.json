@@ -1,4 +1,9 @@
 {
+  "1.9.0": [
+    "Refactored the \"More\" screen for better organization and usability.",
+    "Display the current app version in the \"More\" screen.",
+    "Detection of the current app version is now dynamic in the release notes."
+  ],
   "1.8.1": [
     "Fix a bug that could cause reading progress to be lost after an update."
   ],

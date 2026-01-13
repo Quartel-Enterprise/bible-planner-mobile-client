@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.more.presentation.content.component.AppSection
+import com.quare.bibleplanner.feature.more.presentation.content.component.CurrentAppVersionText
 import com.quare.bibleplanner.feature.more.presentation.content.component.DataSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.LegalSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.PreferencesSection
@@ -20,6 +22,7 @@ import com.quare.bibleplanner.feature.more.presentation.content.component.header
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
+import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
@@ -34,7 +37,7 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
         onEvent = onEvent,
         becomeProTitleContent = becomeProTitleContent,
     )
-
+    item { VerticalSpacer() }
     responsiveItem {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -46,9 +49,6 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
             ) {
                 PreferencesSection(
                     state = state,
-                    onEvent = onEvent,
-                )
-                DataSection(
                     onEvent = onEvent,
                 )
                 if (state.isInstagramLinkVisible) {
@@ -66,14 +66,20 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
                         onEvent = onEvent,
                     )
                 }
+                DataSection(
+                    onEvent = onEvent,
+                )
                 AppSection(
                     onEvent = onEvent,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,
                 )
-                LegalSection(
-                    onEvent = onEvent,
-                )
+                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    LegalSection(
+                        onEvent = onEvent,
+                    )
+                    CurrentAppVersionText(appVersion = state.appVersion)
+                }
             }
         }
     }

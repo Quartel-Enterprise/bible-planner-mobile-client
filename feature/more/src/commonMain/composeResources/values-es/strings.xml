@@ -39,4 +39,5 @@
     <string name="contrast_medium">Contraste medio</string>
     <string name="contrast_high">Contraste alto</string>
     <string name="dynamic_colors">Colores dinámicos</string>
+    <string name="app_version_disclaimer">Versión %1$d</string>
 </resources>

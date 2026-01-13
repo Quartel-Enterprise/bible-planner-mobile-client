@@ -25,7 +25,7 @@ internal fun PreferencesSection(
     onEvent: (MoreUiEvent) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionHeader(stringResource(Res.string.preferences))
+        SectionHeaderText(title = stringResource(Res.string.preferences))
         SectionCard {
             val themeSubtitle = if (state.contrastRes != null) {
                 "${stringResource(state.themeRes)} • ${stringResource(state.contrastRes)}"

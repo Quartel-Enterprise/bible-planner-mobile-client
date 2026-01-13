@@ -24,6 +24,7 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
+import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.theme.gold
 import org.jetbrains.compose.resources.stringResource
 
@@ -34,8 +35,9 @@ internal fun ResponsiveContentScope.headerSection(
 ) {
     state.headerRes?.let { headerRes ->
         responsiveItem {
-            SectionHeader(stringResource(headerRes))
+            SectionHeaderText(title = stringResource(headerRes))
         }
+        item { VerticalSpacer() }
     }
     responsiveItem {
         Row(

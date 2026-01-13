@@ -23,7 +23,7 @@ internal fun SocialSection(
     onEvent: (MoreUiEvent) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionHeader(stringResource(Res.string.social_section))
+        SectionHeaderText(title = stringResource(Res.string.social_section))
         SectionCard {
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.instagram,
