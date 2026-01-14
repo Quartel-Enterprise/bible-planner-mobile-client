@@ -3,12 +3,14 @@ package com.quare.bibleplanner.feature.bookdetails.presentation
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -24,6 +26,7 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.component.Reading
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.SynopsisSection
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
+import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -34,9 +37,9 @@ fun BookDetailsScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onEvent: (BookDetailsUiEvent) -> Unit,
 ) {
-    val scrollState = rememberScrollState()
+    val listState = rememberLazyListState()
     val isScrolled by remember {
-        derivedStateOf { scrollState.value > 0 }
+        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0 }
     }
 
     Scaffold(
@@ -61,40 +64,94 @@ fun BookDetailsScreen(
                 }
 
                 is BookDetailsUiState.Success -> {
-                    Column(
+                    ResponsiveColumn(
+                        lazyListState = listState,
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(scrollState)
                             .padding(horizontal = 16.dp),
-                    ) {
-                        VerticalSpacer(16)
-                        ReadingProgressCard(
-                            progress = state.progress,
-                            readChaptersCount = state.readChaptersCount,
-                            totalChaptersCount = state.totalChaptersCount,
-                            bookIdName = state.id.name,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        )
-                        VerticalSpacer(24)
-                        SynopsisSection(
-                            synopsis = state.synopsis,
-                            bookCategoryName = state.bookCategoryName,
-                            bookGroup = state.bookGroup,
-                            isExpanded = state.isSynopsisExpanded,
-                            onToggleExpanded = { onEvent(BookDetailsUiEvent.OnToggleSynopsisExpanded) },
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        )
-                        VerticalSpacer(24)
-                        ChaptersGrid(
-                            chapters = state.chapters,
-                            areAllChaptersRead = state.areAllChaptersRead,
-                            onChapterClick = { onEvent(BookDetailsUiEvent.OnChapterClick(it)) },
-                            onToggleAllClick = { onEvent(BookDetailsUiEvent.OnToggleAllChapters) },
-                        )
-                        VerticalSpacer(32)
-                    }
+                        portraitContent = {
+                            responsiveItem(key = "top_spacer") { VerticalSpacer(16) }
+                            responsiveItem(key = "progress_card") {
+                                ReadingProgressCard(
+                                    progress = state.progress,
+                                    readChaptersCount = state.readChaptersCount,
+                                    totalChaptersCount = state.totalChaptersCount,
+                                    bookIdName = state.id.name,
+                                    sharedTransitionScope = sharedTransitionScope,
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                )
+                            }
+                            responsiveItem(key = "mid_spacer_1") { VerticalSpacer(24) }
+                            responsiveItem(key = "synopsis") {
+                                SynopsisSection(
+                                    synopsis = state.synopsis,
+                                    bookCategoryName = state.bookCategoryName,
+                                    bookGroup = state.bookGroup,
+                                    isExpanded = state.isSynopsisExpanded,
+                                    onToggleExpanded = { onEvent(BookDetailsUiEvent.OnToggleSynopsisExpanded) },
+                                    sharedTransitionScope = sharedTransitionScope,
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                )
+                            }
+                            responsiveItem(key = "mid_spacer_2") { VerticalSpacer(24) }
+                            responsiveItem(key = "chapters") {
+                                ChaptersGrid(
+                                    chapters = state.chapters,
+                                    areAllChaptersRead = state.areAllChaptersRead,
+                                    onChapterClick = { onEvent(BookDetailsUiEvent.OnChapterClick(it)) },
+                                    onToggleAllClick = { onEvent(BookDetailsUiEvent.OnToggleAllChapters) },
+                                )
+                            }
+                            responsiveItem(key = "bottom_spacer") { VerticalSpacer(32) }
+                        },
+                        landscapeContent = {
+                            responsiveItem(key = "landscape_layout") {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(32.dp),
+                                    verticalAlignment = Alignment.Top,
+                                ) {
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                    ) {
+                                        VerticalSpacer(16)
+                                        ReadingProgressCard(
+                                            progress = state.progress,
+                                            readChaptersCount = state.readChaptersCount,
+                                            totalChaptersCount = state.totalChaptersCount,
+                                            bookIdName = state.id.name,
+                                            sharedTransitionScope = sharedTransitionScope,
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                        )
+                                        VerticalSpacer(24)
+                                        SynopsisSection(
+                                            synopsis = state.synopsis,
+                                            bookCategoryName = state.bookCategoryName,
+                                            bookGroup = state.bookGroup,
+                                            isExpanded = state.isSynopsisExpanded,
+                                            onToggleExpanded = { onEvent(BookDetailsUiEvent.OnToggleSynopsisExpanded) },
+                                            sharedTransitionScope = sharedTransitionScope,
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                        )
+                                        VerticalSpacer(32)
+                                    }
+
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                    ) {
+                                        VerticalSpacer(16)
+                                        ChaptersGrid(
+                                            chapters = state.chapters,
+                                            areAllChaptersRead = state.areAllChaptersRead,
+                                            onChapterClick = { onEvent(BookDetailsUiEvent.OnChapterClick(it)) },
+                                            onToggleAllClick = { onEvent(BookDetailsUiEvent.OnToggleAllChapters) },
+                                        )
+                                        VerticalSpacer(32)
+                                    }
+                                }
+                            }
+                        },
+                    )
                 }
             }
         }
