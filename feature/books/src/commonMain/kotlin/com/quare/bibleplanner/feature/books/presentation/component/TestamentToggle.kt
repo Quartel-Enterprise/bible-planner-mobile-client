@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
+import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import org.jetbrains.compose.resources.stringResource
 

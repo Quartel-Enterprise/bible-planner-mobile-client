@@ -1,5 +1,8 @@
 package com.quare.bibleplanner.feature.books.presentation
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.SnackbarDuration
@@ -12,13 +15,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.open_site
 import bibleplanner.feature.books.generated.resources.reading_not_available_yet
+import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
-import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
@@ -31,7 +35,13 @@ import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
 
-fun NavGraphBuilder.booksScreen(mainScaffoldState: MainScaffoldState) {
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun NavGraphBuilder.booksScreen(
+    mainScaffoldState: MainScaffoldState,
+    rootNavController: NavController,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+) {
     composable<BottomNavRoute.Books> {
         val viewModel = koinViewModel<BooksViewModel>()
         val state by viewModel.uiState.collectAsState()
@@ -69,6 +79,7 @@ fun NavGraphBuilder.booksScreen(mainScaffoldState: MainScaffoldState) {
             newTestamentListState = newTestamentListState,
             uriHandler = uriHandler,
             snackbarHostState = snackbarHostState,
+            navController = rootNavController,
         )
 
         BooksScreen(
@@ -81,6 +92,8 @@ fun NavGraphBuilder.booksScreen(mainScaffoldState: MainScaffoldState) {
             newTestamentGridState = newTestamentGridState,
             newTestamentListState = newTestamentListState,
             isScrolled = isScrolled,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
         )
     }
 }

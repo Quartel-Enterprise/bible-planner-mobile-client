@@ -26,6 +26,7 @@ kotlin {
 
             // Features
             implementation(projects.feature.books)
+            implementation(projects.feature.bookDetails)
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.readingPlan)
             implementation(projects.feature.deleteProgress)

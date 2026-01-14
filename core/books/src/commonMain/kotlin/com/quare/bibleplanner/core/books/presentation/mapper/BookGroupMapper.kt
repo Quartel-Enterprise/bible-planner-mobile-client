@@ -1,17 +1,17 @@
-package com.quare.bibleplanner.feature.books.presentation.mapper
+package com.quare.bibleplanner.core.books.presentation.mapper
 
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.Acts
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.GeneralEpistles
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.Gospels
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.HistoricalBooks
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.MajorProphets
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.MinorProphets
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.PaulineEpistles
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.Pentateuch
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.Revelation
+import com.quare.bibleplanner.core.books.presentation.model.BookGroup.WisdomBooks
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.Acts
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.GeneralEpistles
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.Gospels
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.HistoricalBooks
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.MajorProphets
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.MinorProphets
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.PaulineEpistles
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.Pentateuch
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.Revelation
-import com.quare.bibleplanner.feature.books.presentation.binding.BookGroup.WisdomBooks
 
 class BookGroupMapper {
     fun fromBookId(bookId: BookId): BookGroup = when (bookId) {

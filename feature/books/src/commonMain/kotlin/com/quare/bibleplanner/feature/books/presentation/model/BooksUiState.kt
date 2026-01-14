@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.books.presentation.model
 
-import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
+import com.quare.bibleplanner.core.books.presentation.model.BookGroupPresentationModel
+import com.quare.bibleplanner.core.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 
 sealed interface BooksUiState {
     data object Loading : BooksUiState

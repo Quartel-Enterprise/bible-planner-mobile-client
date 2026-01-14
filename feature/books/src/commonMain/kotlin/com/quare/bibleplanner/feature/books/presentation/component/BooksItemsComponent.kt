@@ -1,7 +1,9 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,7 +19,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
+import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
@@ -28,6 +30,8 @@ import com.quare.bibleplanner.ui.component.ResponsiveGrid
 fun BooksItemsComponent(
     state: BooksUiState.Success,
     currentLazyGridState: LazyGridState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     BoxWithConstraints {
@@ -82,6 +86,8 @@ fun BooksItemsComponent(
                             searchQuery = state.searchQuery,
                             layoutFormat = state.layoutFormat,
                             onEvent = onEvent,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope,
                         )
                     }
                 } else {
@@ -92,6 +98,8 @@ fun BooksItemsComponent(
                         ) {
                             BookGroupHeader(
                                 group = presentationGroup.group,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope,
                             )
                         }
 
@@ -105,6 +113,8 @@ fun BooksItemsComponent(
                                 searchQuery = state.searchQuery,
                                 layoutFormat = state.layoutFormat,
                                 onEvent = onEvent,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope,
                             )
                         }
                     }

@@ -66,4 +66,18 @@
     <string name="book_third_jn">3 Juan</string>
     <string name="book_jud">Judas</string>
     <string name="book_rev">Apocalipsis</string>
+
+    <!-- Book Categories -->
+    <string name="pentateuch">Pentateuco</string>
+    <string name="historical_books">Libros Históricos</string>
+    <string name="wisdom_books">Sapienciales</string>
+    <string name="major_prophets">Profetas Mayores</string>
+    <string name="minor_prophets">Profetas Menores</string>
+    <string name="gospels">Evangelios</string>
+    <string name="acts">Hechos</string>
+    <string name="pauline_epistles">Epístolas Paulinas</string>
+    <string name="general_epistles">Epístolas Generales</string>
+    <string name="revelation">Apocalipsis</string>
+    <string name="old_testament">Antiguo Testamento</string>
+    <string name="new_testament">Nuevo Testamento</string>
 </resources>

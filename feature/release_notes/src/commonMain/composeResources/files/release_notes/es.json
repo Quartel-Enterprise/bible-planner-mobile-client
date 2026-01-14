@@ -1,7 +1,9 @@
 {
     "1.10.0": [
         "Carga de configuración dinámica mejorada en iOS para evitar problemas de sincronización.",
-        "Se agregaron descripciones de permisos de red localizados en iOS."
+        "Se agregaron descripciones de permisos de red localizados en iOS.",
+        "Nueva pantalla de detalles del libro para seguir tu progreso capítulo por capítulo.",
+        "Accesibilidad mejorada para el botón de favoritos."
     ],
     "1.9.0": [
         "Rediseño de la pantalla \"Más\" para una mejor organización y usabilidad.",

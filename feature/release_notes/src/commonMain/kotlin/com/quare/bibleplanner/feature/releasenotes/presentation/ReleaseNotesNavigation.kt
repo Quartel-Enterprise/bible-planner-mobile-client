@@ -16,7 +16,7 @@ fun NavGraphBuilder.releaseNotes(
     composable<ReleaseNotesNavRoute> {
         val uriHandler = LocalUriHandler.current
         ReleaseNotesRoot(
-            navigateBack = { navController.popBackStack() },
+            navigateBack = { navController.navigateUp() },
             openUrl = { url -> uriHandler.openUri(url) },
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = this,

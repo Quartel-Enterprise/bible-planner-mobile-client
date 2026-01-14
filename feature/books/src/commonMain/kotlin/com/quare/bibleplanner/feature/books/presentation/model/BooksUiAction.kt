@@ -10,4 +10,8 @@ sealed interface BooksUiAction {
     data class ShowReadingNotAvailableYetSnackbar(
         val url: String,
     ) : BooksUiAction
+
+    data class NavigateToBookDetails(
+        val bookId: String,
+    ) : BooksUiAction
 }

@@ -12,6 +12,8 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
+import com.quare.bibleplanner.core.books.presentation.mapper.BookCategorizationMapper
+import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -27,9 +29,14 @@ val booksModule = module {
     // Mappers
     factoryOf(::BooksWithChapterMapper)
     factoryOf(::FileNameToBookIdMapper)
+    factoryOf(::BookGroupMapper)
 
     // Repository
     singleOf(::BooksRepositoryImpl).bind<BooksRepository>()
+
+    // Mappers
+    factoryOf(::BookGroupMapper)
+    factoryOf(::BookCategorizationMapper)
 
     // Use cases
     factoryOf(::InitializeBooksIfNeeded)

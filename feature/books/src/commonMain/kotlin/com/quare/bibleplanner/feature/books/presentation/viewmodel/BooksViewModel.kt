@@ -9,18 +9,17 @@ import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
+import com.quare.bibleplanner.core.books.presentation.mapper.BookCategorizationMapper
+import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
+import com.quare.bibleplanner.core.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
-import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
-import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
-import com.quare.bibleplanner.feature.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
-import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
@@ -40,7 +39,8 @@ class BooksViewModel(
     private val booksRepository: BooksRepository,
     private val toggleBookFavorite: ToggleBookFavoriteUseCase,
     private val getWebAppUrl: GetWebAppUrl,
-    private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
+    private val bookGroupMapper: BookGroupMapper,
+    private val bookCategorizationMapper: BookCategorizationMapper,
     getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
@@ -49,8 +49,6 @@ class BooksViewModel(
     private val _uiAction = MutableSharedFlow<BooksUiAction>()
     val uiAction: SharedFlow<BooksUiAction> = _uiAction.asSharedFlow()
 
-    private val bookGroupMapper = BookGroupMapper()
-    private val bookCategorizationMapper = BookCategorizationMapper(bookGroupMapper)
     private var allBooks: List<BookDataModel> = emptyList()
     private var bookNames: Map<BookId, String> = emptyMap()
     private var isInformationBoxVisible: Boolean = true
@@ -109,7 +107,7 @@ class BooksViewModel(
             }
 
             is BooksUiEvent.OnBookClick -> {
-                onBookClick()
+                onBookClick(event.book)
             }
 
             is BooksUiEvent.OnToggleFilter -> {
@@ -216,11 +214,9 @@ class BooksViewModel(
         }
     }
 
-    private fun onBookClick() {
+    private fun onBookClick(book: BookPresentationModel) {
         viewModelScope.launch {
-            if (isMoreWebAppEnabled()) {
-                _uiAction.emit(BooksUiAction.ShowReadingNotAvailableYetSnackbar(getWebAppUrl()))
-            }
+            _uiAction.emit(BooksUiAction.NavigateToBookDetails(book.id.name))
         }
     }
 
@@ -251,7 +247,7 @@ class BooksViewModel(
             BookPresentationModel(
                 id = book.id,
                 name = bookLocalizedName,
-                chapterProgressText = "$readChapters/$totalChapters",
+                chapterProgressText = "$readChapters / $totalChapters",
                 progress = progress,
                 percentageText = "$percentage%",
                 isCompleted = isCompleted,

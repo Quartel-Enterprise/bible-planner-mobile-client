@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Pentateuch -->
+    <string name="bible_book_genesis_synopsis">Genesis is the first book of the Bible and lays the foundation for the entire biblical narrative. Its name comes from Greek and means “origin” or “beginning.” The book presents the creation of the world, the emergence of humanity, and the beginning of the relationship between God and creation. Throughout its accounts, it develops themes such as purpose, responsibility, faith, and divine promise, forming the theological basis that guides all subsequent Scriptures.</string>
+    <string name="bible_book_exodus_synopsis">Exodus describes the formation of a people through God’s liberating action. The book highlights themes such as deliverance, covenant, identity, and obedience, showing how faith is expressed both in spiritual experience and in communal life. Exodus emphasizes God’s presence among His people and establishes principles that shape their relationship with Him.</string>
+    <string name="bible_book_leviticus_synopsis">Leviticus addresses holiness and how the people are called to live in communion with God. The book organizes religious, ethical, and social practices, showing that faith encompasses every dimension of life. Its central message is that closeness to God requires reverence, responsibility, and commitment to spiritual values.</string>
+    <string name="bible_book_numbers_synopsis">Numbers portrays the journey of a people in the process of spiritual growth. The book addresses challenges of community life, leadership, and trust in God, reflecting on how individual and collective choices shape the path of faith. It highlights the importance of perseverance and faithfulness during times of transition.</string>
+    <string name="bible_book_deuteronomy_synopsis">Deuteronomy gathers speeches that reaffirm the covenant between God and His people. The book calls for remembrance, love, and obedience, connecting faith with everyday practice. Its message emphasizes that faithfulness to God is expressed through conscious choices and a life guided by His teachings.</string>
+
+    <!-- Historical Books -->
+    <string name="bible_book_joshua_synopsis">Joshua addresses the fulfillment of divine promises and the importance of trusting God. The book reflects on belonging, responsibility, and collective commitment, highlighting the need for courage and faithfulness in living according to God’s guidance.</string>
+    <string name="bible_book_judges_synopsis">Judges presents cycles of spiritual decline and renewal. The book reveals challenges of leadership and the consequences of lacking continuous commitment to God, underscoring the importance of moral responsibility and lasting faithfulness.</string>
+    <string name="bible_book_ruth_synopsis">Ruth is a gentle narrative about loyalty, kindness, and divine providence in everyday life. The book values relationships marked by faithfulness and shows how simple actions can generate hope and belonging.</string>
+    <string name="bible_book_1_samuel_synopsis">1 Samuel explores changes in leadership and the contrast between outward appearance and inward devotion. The book emphasizes listening to God and acting with integrity, both in personal life and in public responsibility.</string>
+    <string name="bible_book_2_samuel_synopsis">2 Samuel reflects on power, responsibility, and the challenges of leadership. The book shows how faith coexists with human limitations, highlighting God’s faithfulness even amid complex decisions.</string>
+    <string name="bible_book_1_kings_synopsis">1 Kings examines leadership, worship, and spiritual commitment in times of prosperity and crisis. The book calls for sincere devotion and warns against the dangers of spiritual complacency.</string>
+    <string name="bible_book_2_kings_synopsis">2 Kings continues the reflection on faithfulness and the consequences of collective choices. The book emphasizes repentance, perseverance, and attentiveness to God’s guidance.</string>
+    <string name="bible_book_1_chronicles_synopsis">1 Chronicles revisits history with a focus on worship, identity, and spiritual continuity. The book encourages valuing memory and faithfulness as foundations for the future.</string>
+    <string name="bible_book_2_chronicles_synopsis">2 Chronicles highlights spiritual reform, prayer, and responsible leadership. The book reinforces that restoration is possible when there is sincere seeking of God.</string>
+    <string name="bible_book_ezra_synopsis">Ezra deals with spiritual and communal rebuilding after periods of disruption. The book emphasizes the centrality of God’s Word and commitment to renewing faith.</string>
+    <string name="bible_book_nehemiah_synopsis">Nehemiah addresses rebuilding, perseverance, and collective effort. The book shows how leadership, prayer, and unity can restore both structures and spiritual values.</string>
+    <string name="bible_book_esther_synopsis">Esther presents courage, wisdom, and responsibility in challenging contexts. The book invites reflection on identity, influence, and acting at the right moment.</string>
+
+    <!-- Wisdom & Poetry -->
+    <string name="bible_book_job_synopsis">Job reflects on suffering, justice, and the mystery of God’s ways. The book invites sincere and humble faith, even when answers are unclear, and values perseverance through hardship.</string>
+    <string name="bible_book_psalms_synopsis">Psalms brings together prayers and songs that express joy, sorrow, trust, and hope. The book provides spiritual language for worship and for living out faith across all human experiences.</string>
+    <string name="bible_book_proverbs_synopsis">Proverbs presents practical teachings for everyday life. The book emphasizes wisdom, character, and discernment, showing that living well involves responsible choices and that reverence for the Lord is the foundation of true understanding.</string>
+    <string name="bible_book_ecclesiastes_synopsis">Ecclesiastes questions the meaning of life and the limits of human effort. The book invites deep reflection on time, purpose, and fragility, encouraging wisdom that recognizes what is temporary and seeks what truly matters.</string>
+    <string name="bible_book_song_of_songs_synopsis">Song of Songs celebrates love and commitment through poetic language. The book values affection, intimacy, and the beauty of human bonds, highlighting the dignity and depth of love.</string>
+
+    <!-- Major Prophets -->
+    <string name="bible_book_isaiah_synopsis">Isaiah combines warning and hope, calling for justice and faithfulness. The book exposes spiritual and social inconsistencies while pointing toward restoration and God’s redemptive work in history.</string>
+    <string name="bible_book_jeremiah_synopsis">Jeremiah calls for sincere repentance and renewal of the covenant with God. The book emphasizes perseverance, truth, and hope, showing that God’s faithfulness remains even in times of crisis.</string>
+    <string name="bible_book_lamentations_synopsis">Lamentations expresses grief, loss, and reflection in the face of devastation. The book shows that lament can be a genuine path of faith, preserving space for hope and the search for mercy.</string>
+    <string name="bible_book_ezekiel_synopsis">Ezekiel presents visions that emphasize holiness, responsibility, and restoration brought by God. The book highlights inner renewal and spiritual transformation, pointing to faith that reaches both heart and community.</string>
+    <string name="bible_book_daniel_synopsis">Daniel addresses faithfulness and trust in God amid external pressures. The book highlights integrity, wisdom, and hope, reinforcing divine sovereignty and the importance of a prayerful and steadfast life.</string>
+
+    <!-- Minor Prophets -->
+    <string name="bible_book_hosea_synopsis">Hosea portrays God’s persistent love and the call to return after unfaithfulness. The book emphasizes mercy and restoration, inviting renewed relationship marked by truth and commitment.</string>
+    <string name="bible_book_joel_synopsis">Joel calls for sincere repentance and spiritual renewal. The book highlights divine compassion and the hope of restoration, emphasizing wholehearted seeking of God.</string>
+    <string name="bible_book_amos_synopsis">Amos denounces injustice and empty religiosity. The book calls for ethics, social justice, and a faith that is consistent with practice, stressing that true worship is reflected in integrity and care for others.</string>
+    <string name="bible_book_obadiah_synopsis">Obadiah warns against pride and indifference toward the suffering of others. The book highlights God’s justice and sovereignty, calling for humility and responsibility among nations.</string>
+    <string name="bible_book_jonah_synopsis">Jonah reflects on mercy, compassion, and the breadth of God’s love. The book challenges narrow views of grace and invites a more open and forgiving heart.</string>
+    <string name="bible_book_micah_synopsis">Micah combines denunciation of injustice with a call to justice, mercy, and humility before God. The book points to hope and restoration, reaffirming God’s faithfulness amid human failure.</string>
+    <string name="bible_book_nahum_synopsis">Nahum proclaims divine justice in the face of violence and oppression. The book affirms that evil is not overlooked and encourages trust in God’s righteous judgment.</string>
+    <string name="bible_book_habakkuk_synopsis">Habakkuk dialogues with God about suffering and evil. The book leads toward persevering trust, showing that faith can remain firm even when answers are delayed and circumstances are challenging.</string>
+    <string name="bible_book_zephaniah_synopsis">Zephaniah calls for repentance and spiritual renewal. The book balances warning with hope, highlighting the possibility of restoration and renewed joy in God’s presence.</string>
+    <string name="bible_book_haggai_synopsis">Haggai encourages the reordering of spiritual priorities. The book emphasizes commitment and faithfulness, calling for a life centered on God and the rebuilding of values that strengthen the community.</string>
+    <string name="bible_book_zechariah_synopsis">Zechariah presents visions of hope and renewal. The book encourages perseverance and faithfulness, pointing to God’s ongoing work and a future marked by restoration and peace.</string>
+    <string name="bible_book_malachi_synopsis">Malachi confronts spiritual complacency and calls for sincere faithfulness. The book invites integrity in worship and daily life, rekindling hope in God’s continued work.</string>
+
+    <!-- Gospels -->
+    <string name="bible_book_matthew_synopsis">Matthew presents Jesus in light of God’s promises and teaches the values of the Kingdom. The book emphasizes instruction, mercy, and mission, inviting a practical and committed faith.</string>
+    <string name="bible_book_mark_synopsis">Mark highlights action and service as central to Jesus’ life and to discipleship. The book calls for courageous and concrete faith, showing how following Christ reshapes priorities and attitudes.</string>
+    <string name="bible_book_luke_synopsis">Luke emphasizes God’s compassion and the broad reach of His message. The book highlights justice, prayer, and joy, presenting faith as hope that touches everyday life and diverse people.</string>
+    <string name="bible_book_john_synopsis">John invites readers into deep, relational faith, emphasizing love, truth, and life. The book presents belief as trust that leads to communion with God and inner transformation.</string>
+
+    <!-- History (New Testament) -->
+    <string name="bible_book_acts_synopsis">Acts recounts the expansion of the Christian faith and the formation of the early church. The book highlights community, courage, and the work of the Holy Spirit as the message spreads into new contexts and cultures.</string>
+
+    <!-- Pauline Epistles -->
+    <string name="bible_book_romans_synopsis">Romans explains God’s grace and how faith transforms identity and life. The book explores themes such as sin, justification, hope, and renewal, offering a solid vision of the gospel and its practical implications.</string>
+    <string name="bible_book_1_corinthians_synopsis">1 Corinthians guides a diverse community toward unity and spiritual maturity. The book addresses ethics, communal life, worship, and love, calling for a coherent faith that builds and strengthens relationships.</string>
+    <string name="bible_book_2_corinthians_synopsis">2 Corinthians emphasizes comfort amid difficulties and integrity in service. The book values sincerity, generosity, and perseverance, showing how weakness and dependence on God can become sources of strength.</string>
+    <string name="bible_book_galatians_synopsis">Galatians defends the freedom of the gospel and life led by the Spirit. The book contrasts grace and legalism, highlighting faith expressed through love, unity, and transformed character.</string>
+    <string name="bible_book_ephesians_synopsis">Ephesians celebrates unity in Christ and the new identity of God’s people. The book emphasizes grace, love, and spiritual maturity, encouraging a life that reflects Kingdom values in community.</string>
+    <string name="bible_book_philippians_synopsis">Philippians encourages joy and steadfastness in all circumstances. The book highlights humility, gratitude, and hope, pointing to Christ as the center of faith and the model for communal life.</string>
+    <string name="bible_book_colossians_synopsis">Colossians emphasizes the centrality of Christ and the call to live rooted in Him. The book highlights spiritual growth, gratitude, and renewed character, connecting faith with daily practice.</string>
+    <string name="bible_book_1_thessalonians_synopsis">1 Thessalonians strengthens hope and encourages perseverance, holiness, and mutual support. The book highlights active faith and community life marked by love and encouragement.</string>
+    <string name="bible_book_2_thessalonians_synopsis">2 Thessalonians calls for steadfastness amid pressure and confusion. The book emphasizes discernment, perseverance, and responsibility, encouraging constancy and trust in God.</string>
+    <string name="bible_book_1_timothy_synopsis">1 Timothy provides guidance on leadership and the organization of church life. The book emphasizes sound teaching, godly character, and responsibility, showing how faith is expressed through service and integrity.</string>
+    <string name="bible_book_2_timothy_synopsis">2 Timothy encourages courage and perseverance in difficult times. The book highlights faithfulness to God’s Word, discipleship, and endurance, calling believers to remain firm and confident in God.</string>
+    <string name="bible_book_titus_synopsis">Titus emphasizes wise leadership and good works as fruit of genuine faith. The book connects sound teaching with daily conduct, highlighting integrity, responsibility, and service.</string>
+    <string name="bible_book_philemon_synopsis">Philemon is a personal letter about reconciliation and dignity in relationships. The book shows how faith can transform social bonds through forgiveness, respect, and a posture of grace.</string>
+
+    <!-- General Epistles -->
+    <string name="bible_book_hebrews_synopsis">Hebrews presents Jesus as the ultimate foundation of faith and calls for perseverance. The book encourages confidence, spiritual maturity, and faithfulness, showing how God’s promises sustain the Christian journey.</string>
+    <string name="bible_book_james_synopsis">James emphasizes practical faith expressed through actions and words. The book addresses wisdom, perseverance, and care for others, calling for integrity that aligns belief with behavior.</string>
+    <string name="bible_book_1_peter_synopsis">1 Peter encourages hope and holiness amid trials. The book reinforces identity in Christ and calls for humility, courage, and good conduct, highlighting resilient and confident faith.</string>
+    <string name="bible_book_2_peter_synopsis">2 Peter warns against false teachings and invites growth in godliness. The book emphasizes firmness in truth and spiritual maturity, encouraging consistency and discernment in the life of faith.</string>
+    <string name="bible_book_1_john_synopsis">1 John emphasizes assurance in faith through love and obedience. The book highlights truth, fellowship, and God’s transforming love, encouraging a sincere and confident walk with God.</string>
+    <string name="bible_book_2_john_synopsis">2 John calls believers to walk in truth and love with discernment. The book encourages faithfulness in community life, reminding that genuine love remains rooted in God’s teaching.</string>
+    <string name="bible_book_3_john_synopsis">3 John highlights hospitality, integrity, and healthy leadership. The book values support for what is good and true, showing how everyday choices strengthen community life.</string>
+    <string name="bible_book_jude_synopsis">Jude urges perseverance in the faith with discernment. The book calls for steadfastness amid confusion, encouraging commitment to God’s love and truth.</string>
+
+    <!-- Apocalypse -->
+    <string name="bible_book_revelation_synopsis">Revelation presents a symbolic vision of hope, worship, and final justice. The book encourages perseverance and faithfulness, pointing to renewal and confidence that God guides history toward its ultimate purpose.</string>
+
+    <string name="synopsis">Synopsis</string>
+    <string name="chapters">Chapters</string>
+    <string name="reading_progress">Reading Progress</string>
+    <string name="read_count">%1$d / %2$d read</string>
+    <string name="tap_to_mark">tap to mark</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
+    <string name="mark_all_as_read">Mark all as read</string>
+    <string name="mark_all_as_unread">Mark all as unread</string>
+    <string name="read_count_suffix"> read</string>
+
+</resources>
