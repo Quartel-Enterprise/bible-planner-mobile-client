@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.books.presentation
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,7 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.quare.bibleplanner.feature.books.presentation.binding.BookTestament
+import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.component.BooksItemsComponent
 import com.quare.bibleplanner.feature.books.presentation.component.BooksTopBar
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
@@ -29,6 +31,8 @@ fun BooksScreen(
     oldTestamentListState: LazyGridState,
     newTestamentGridState: LazyGridState,
     newTestamentListState: LazyGridState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
     val mainPadding = LocalMainPadding.current
@@ -64,6 +68,8 @@ fun BooksScreen(
                         state = state,
                         onEvent = onEvent,
                         currentLazyGridState = currentLazyGridState,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope,
                     )
                 }
             }

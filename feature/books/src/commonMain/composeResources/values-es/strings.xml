@@ -5,8 +5,6 @@
     <string name="read">Leídos</string>
     <string name="unread">No leídos</string>
     <string name="favorites">Favoritos</string>
-    <string name="old_testament">Antiguo Testamento</string>
-    <string name="new_testament">Nuevo Testamento</string>
     <string name="show_more">Mostrar más</string>
     <string name="show_less">Mostrar menos</string>
     <string name="completed">Completado</string>
@@ -20,16 +18,6 @@
     <string name="content_description_sort">Ordenar</string>
     <string name="sort_alphabetical_ascending">Alfabética (A-Z)</string>
     <string name="sort_alphabetical_descending">Alfabética (Z-A)</string>
-    <string name="pentateuch">Pentateuco</string>
-    <string name="historical_books">Libros Históricos</string>
-    <string name="wisdom_books">Sapienciales</string>
-    <string name="major_prophets">Profetas Mayores</string>
-    <string name="minor_prophets">Profetas Menores</string>
-    <string name="gospels">Evangelios</string>
-    <string name="acts">Hechos</string>
-    <string name="pauline_epistles">Epístolas Paulinas</string>
-    <string name="general_epistles">Epístolas Generales</string>
-    <string name="revelation">Apocalipsis</string>
     <string name="reading_not_available_yet">Los libros estarán disponibles para lectura en versiones futuras, pero ya están disponibles en la versión web: www.web.bibleplanner.app</string>
     <string name="open_site">Abrir sitio</string>
     <string name="content_description_dismiss">Descartar</string>

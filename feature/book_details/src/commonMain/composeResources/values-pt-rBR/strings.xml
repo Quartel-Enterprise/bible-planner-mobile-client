@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Pentateuch -->
+    <string name="bible_book_genesis_synopsis">Gênesis é o primeiro livro da Bíblia e estabelece os fundamentos de toda a narrativa bíblica. Seu nome deriva do grego e significa “origem” ou “começo”. O livro apresenta a criação do mundo, o surgimento da humanidade e o início da relação entre Deus e a criação. Ao longo de seus relatos, desenvolve temas como propósito, responsabilidade, fé e promessa divina, formando a base teológica que orienta todos os demais livros das Escrituras.</string>
+    <string name="bible_book_exodus_synopsis">Êxodo narra a formação de um povo a partir da ação libertadora de Deus. O livro destaca temas como libertação, aliança, identidade e obediência, mostrando como a fé se expressa na vida espiritual e na organização comunitária. Êxodo enfatiza a presença de Deus junto ao seu povo e estabelece princípios que moldam sua relação com Ele.</string>
+    <string name="bible_book_leviticus_synopsis">Levítico trata da santidade e da forma como o povo é chamado a viver em comunhão com Deus. O livro organiza práticas religiosas, éticas e sociais, mostrando que a fé envolve todas as dimensões da vida. Sua mensagem central é que a proximidade com Deus requer reverência, responsabilidade e compromisso com valores espirituais.</string>
+    <string name="bible_book_numbers_synopsis">Números retrata a jornada de um povo em processo de amadurecimento espiritual. O livro aborda desafios da convivência, liderança e confiança em Deus, refletindo sobre como escolhas individuais e coletivas impactam o caminho da fé. Ele destaca a importância da perseverança e da fidelidade em tempos de transição.</string>
+    <string name="bible_book_deuteronomy_synopsis">Deuteronômio reúne discursos que reforçam a aliança entre Deus e seu povo. O livro convida à memória, ao amor e à obediência, conectando fé e prática cotidiana. Sua mensagem enfatiza que a fidelidade a Deus se expressa em escolhas conscientes e em uma vida guiada por seus ensinamentos.</string>
+
+    <!-- Historical Books -->
+    <string name="bible_book_joshua_synopsis">Josué aborda o cumprimento das promessas divinas e a importância da confiança em Deus. O livro reflete sobre pertencimento, responsabilidade e compromisso coletivo, destacando a necessidade de coragem e fidelidade para viver de acordo com a orientação divina.</string>
+    <string name="bible_book_judges_synopsis">Juízes apresenta ciclos de afastamento e renovação espiritual. O livro revela os desafios da liderança e as consequências da falta de compromisso contínuo com Deus, ressaltando a importância da responsabilidade moral e da fidelidade duradoura.</string>
+    <string name="bible_book_ruth_synopsis">Rute é uma narrativa sensível sobre lealdade, bondade e providência divina no cotidiano. O livro valoriza relações humanas marcadas por fidelidade e mostra como atitudes simples podem gerar esperança e pertencimento.</string>
+    <string name="bible_book_1_samuel_synopsis">1 Samuel explora mudanças na liderança e o contraste entre aparência exterior e devoção interior. O livro destaca a importância de ouvir a Deus e agir com integridade, tanto na vida pessoal quanto na esfera pública.</string>
+    <string name="bible_book_2_samuel_synopsis">2 Samuel reflete sobre poder, responsabilidade e os desafios da liderança. O livro mostra como a fé convive com limitações humanas, ressaltando a fidelidade de Deus mesmo diante de escolhas complexas.</string>
+    <string name="bible_book_1_kings_synopsis">1 Reis examina liderança, adoração e compromisso espiritual em contextos de prosperidade e crise. O livro chama à devoção sincera e alerta para os riscos da acomodação espiritual.</string>
+    <string name="bible_book_2_kings_synopsis">2 Reis continua a reflexão sobre fidelidade e consequências das escolhas coletivas. O livro enfatiza a importância do arrependimento, da perseverança e da escuta atenta à orientação divina.</string>
+    <string name="bible_book_1_chronicles_synopsis">1 Crônicas revisita a história com foco na adoração, identidade e continuidade espiritual. O livro incentiva a valorização da memória e da fidelidade como fundamentos para o futuro.</string>
+    <string name="bible_book_2_chronicles_synopsis">2 Crônicas destaca reforma espiritual, oração e liderança responsável. O livro reforça que a restauração é possível quando há busca sincera por Deus.</string>
+    <string name="bible_book_ezra_synopsis">Esdras trata da reconstrução espiritual e comunitária após períodos de ruptura. O livro enfatiza a centralidade da Palavra e o compromisso com a renovação da fé.</string>
+    <string name="bible_book_nehemiah_synopsis">Neemias aborda reconstrução, perseverança e trabalho coletivo. O livro mostra como liderança, oração e união podem restaurar tanto estruturas quanto valores espirituais.</string>
+    <string name="bible_book_esther_synopsis">Ester apresenta coragem, sabedoria e responsabilidade em contextos desafiadores. O livro convida à reflexão sobre identidade, influência e ação no momento certo.</string>
+
+    <!-- Wisdom & Poetry -->
+    <string name="bible_book_job_synopsis">Jó reflete sobre sofrimento, justiça e o mistério dos caminhos de Deus. O livro convida a uma fé sincera e humilde, mesmo quando as respostas não são claras, e valoriza a perseverança diante das provações.</string>
+    <string name="bible_book_psalms_synopsis">Salmos reúne orações e cânticos que expressam alegria, dor, confiança e esperança. O livro oferece linguagem espiritual para adoração e para a vivência da fé em diferentes circunstâncias do coração humano.</string>
+    <string name="bible_book_proverbs_synopsis">Provérbios apresenta ensinamentos práticos para a vida cotidiana. O livro enfatiza sabedoria, caráter e discernimento, mostrando que viver bem envolve escolhas responsáveis e que o temor do Senhor é a base do verdadeiro entendimento.</string>
+    <string name="bible_book_ecclesiastes_synopsis">Eclesiastes questiona o sentido da vida e os limites do esforço humano. O livro convida à reflexão profunda sobre tempo, propósito e fragilidade, encorajando uma sabedoria que reconhece o que é passageiro e busca o que é essencial.</string>
+    <string name="bible_book_song_of_songs_synopsis">Cântico dos Cânticos celebra o amor e o compromisso com linguagem poética. O livro valoriza o afeto, a intimidade e a beleza dos vínculos humanos, destacando a dignidade e a profundidade do amor.</string>
+
+    <!-- Major Prophets -->
+    <string name="bible_book_isaiah_synopsis">Isaías combina advertência e esperança, chamando à justiça e à fidelidade. O livro denuncia incoerências espirituais e sociais, mas também aponta para restauração e para a ação redentora de Deus na história.</string>
+    <string name="bible_book_jeremiah_synopsis">Jeremias convida ao arrependimento sincero e à renovação da aliança com Deus. O livro enfatiza perseverança, verdade e esperança, mostrando que a fidelidade divina permanece mesmo em tempos de crise.</string>
+    <string name="bible_book_lamentations_synopsis">Lamentações expressa dor, luto e reflexão diante da perda. O livro mostra que o lamento pode ser um caminho legítimo de fé, preservando espaço para a esperança e para a busca por misericórdia.</string>
+    <string name="bible_book_ezekiel_synopsis">Ezequiel apresenta visões que ressaltam a santidade, a responsabilidade e a restauração promovida por Deus. O livro destaca renovação interior e transformação espiritual, apontando para uma fé que alcança o coração e a comunidade.</string>
+    <string name="bible_book_daniel_synopsis">Daniel aborda fidelidade e confiança em Deus diante de pressões externas. O livro destaca integridade, sabedoria e esperança, reforçando a soberania divina e a importância de uma vida marcada por oração e firmeza.</string>
+
+    <!-- Minor Prophets -->
+    <string name="bible_book_hosea_synopsis">Oséias retrata o amor persistente de Deus e o chamado ao retorno após a infidelidade. O livro enfatiza misericórdia e restauração, convidando a uma relação renovada marcada por verdade e compromisso.</string>
+    <string name="bible_book_joel_synopsis">Joel convoca à conversão sincera e à renovação espiritual. O livro destaca a compaixão divina e a esperança de restauração, mostrando a importância de buscar a Deus com o coração inteiro.</string>
+    <string name="bible_book_amos_synopsis">Amós denuncia injustiça e religiosidade vazia. O livro chama à ética, à justiça social e a uma fé coerente, ressaltando que a verdadeira adoração se reflete em integridade e cuidado com o próximo.</string>
+    <string name="bible_book_obadiah_synopsis">Obadias alerta contra orgulho e indiferença diante do sofrimento alheio. O livro destaca a justiça e a soberania de Deus, chamando à humildade e à responsabilidade nas relações entre povos.</string>
+    <string name="bible_book_jonah_synopsis">Jonas reflete sobre misericórdia, compaixão e a amplitude do amor de Deus. O livro desafia visões estreitas da graça divina e convida a um coração mais disposto a perdoar e acolher.</string>
+    <string name="bible_book_micah_synopsis">Miquéias combina denúncia de injustiças com um chamado à justiça, misericórdia e humildade diante de Deus. O livro aponta para esperança e restauração, reforçando a fidelidade divina em meio às falhas humanas.</string>
+    <string name="bible_book_nahum_synopsis">Naum proclama a justiça divina diante da violência e da opressão. O livro reforça que o mal não é ignorado e encoraja a confiança de que Deus é justo e atento ao sofrimento.</string>
+    <string name="bible_book_habakkuk_synopsis">Habacuque dialoga com Deus sobre o sofrimento e o mal. O livro conduz à confiança perseverante, mostrando que a fé pode permanecer firme mesmo quando as respostas demoram e a realidade é desafiadora.</string>
+    <string name="bible_book_zephaniah_synopsis">Sofonias chama ao arrependimento e à renovação espiritual. O livro equilibra advertência com esperança, destacando a possibilidade de restauração e de uma alegria renovada na presença de Deus.</string>
+    <string name="bible_book_haggai_synopsis">Ageu incentiva a reorganização de prioridades espirituais. O livro destaca compromisso e fidelidade, encorajando uma vida centrada em Deus e a reconstrução de valores que fortalecem a comunidade.</string>
+    <string name="bible_book_zechariah_synopsis">Zacarias apresenta visões de esperança e renovação. O livro encoraja perseverança e chama à fidelidade, apontando para a ação contínua de Deus e para um futuro de restauração e paz.</string>
+    <string name="bible_book_malachi_synopsis">Malaquias confronta acomodação espiritual e chama à fidelidade sincera. O livro convida à integridade no culto e na vida diária, reacendendo a esperança na continuidade do agir de Deus.</string>
+
+    <!-- Gospels -->
+    <string name="bible_book_matthew_synopsis">Mateus apresenta Jesus à luz das promessas e mostra o chamado a viver os valores do Reino. O livro enfatiza ensino, misericórdia e missão, convidando a uma fé prática e comprometida.</string>
+    <string name="bible_book_mark_synopsis">Marcos destaca a ação e o serviço como marcas da vida de Jesus e do discipulado. O livro convida a uma fé corajosa e concreta, em que seguir a Cristo transforma prioridades e atitudes.</string>
+    <string name="bible_book_luke_synopsis">Lucas ressalta a compaixão de Deus e o alcance amplo de sua mensagem. O livro enfatiza justiça, oração e alegria, mostrando a fé como esperança que toca a vida cotidiana e pessoas diversas.</string>
+    <string name="bible_book_john_synopsis">João convida à fé profunda e relacional, enfatizando amor, verdade e vida. O livro apresenta a crença como confiança que conduz à comunhão com Deus e a uma transformação interior.</string>
+
+    <!-- History (New Testament) -->
+    <string name="bible_book_acts_synopsis">Atos narra a expansão da fé cristã e a formação da igreja primitiva. O livro destaca comunidade, coragem e a ação do Espírito Santo, mostrando como a mensagem se espalha em novos contextos e culturas.</string>
+
+    <!-- Pauline Epistles -->
+    <string name="bible_book_romans_synopsis">Romanos explica a graça de Deus e como a fé transforma identidade e vida. O livro aprofunda temas como pecado, justificação, esperança e renovação, oferecendo uma visão sólida do evangelho e de suas implicações práticas.</string>
+    <string name="bible_book_1_corinthians_synopsis">1 Coríntios orienta uma comunidade diversa a buscar unidade e maturidade espiritual. O livro aborda ética, vida comunitária, culto e amor, chamando a uma fé coerente que edifica e fortalece relacionamentos.</string>
+    <string name="bible_book_2_corinthians_synopsis">2 Coríntios enfatiza consolo em meio às dificuldades e integridade no serviço. O livro valoriza sinceridade, generosidade e perseverança, mostrando como fraqueza e dependência de Deus podem se tornar força.</string>
+    <string name="bible_book_galatians_synopsis">Gálatas defende a liberdade do evangelho e a vida guiada pelo Espírito. O livro contrasta graça e legalismo, destacando que a fé autêntica se expressa em amor, unidade e transformação de caráter.</string>
+    <string name="bible_book_ephesians_synopsis">Efésios celebra a unidade em Cristo e a nova identidade do povo de Deus. O livro enfatiza graça, amor e maturidade espiritual, incentivando uma vida que reflita valores do Reino em comunidade.</string>
+    <string name="bible_book_philippians_synopsis">Filipenses encoraja alegria e firmeza em qualquer circunstância. O livro destaca humildade, gratidão e esperança, apontando Cristo como centro da fé e modelo para a vida em comunhão.</string>
+    <string name="bible_book_colossians_synopsis">Colossenses ressalta a centralidade de Cristo e o chamado a viver enraizado nele. O livro enfatiza crescimento espiritual, gratidão e caráter renovado, conectando fé e prática cotidiana.</string>
+    <string name="bible_book_1_thessalonians_synopsis">1 Tessalonicenses fortalece a esperança e encoraja perseverança, santidade e apoio mútuo. O livro destaca uma fé ativa e uma vida comunitária marcada por amor e encorajamento.</string>
+    <string name="bible_book_2_thessalonians_synopsis">2 Tessalonicenses chama à firmeza em meio a pressões e confusões. O livro enfatiza discernimento, perseverança e responsabilidade, incentivando constância e confiança em Deus.</string>
+    <string name="bible_book_1_timothy_synopsis">1 Timóteo traz orientações sobre liderança e organização da vida da igreja. O livro enfatiza sã doutrina, caráter piedoso e responsabilidade, mostrando como a fé se expressa em serviço e integridade.</string>
+    <string name="bible_book_2_timothy_synopsis">2 Timóteo encoraja coragem e perseverança em tempos difíceis. O livro destaca fidelidade à Palavra, formação de discípulos e resistência, chamando a permanecer firme e confiante em Deus.</string>
+    <string name="bible_book_titus_synopsis">Tito enfatiza liderança sábia e boas obras como fruto de uma fé verdadeira. O livro conecta ensino saudável e conduta diária, ressaltando integridade, responsabilidade e serviço.</string>
+    <string name="bible_book_philemon_synopsis">Filemom é uma carta pessoal sobre reconciliação e dignidade nas relações. O livro evidencia como a fé pode transformar vínculos, promovendo perdão, respeito e uma postura de graça no convívio humano.</string>
+
+    <!-- General Epistles -->
+    <string name="bible_book_hebrews_synopsis">Hebreus apresenta Jesus como fundamento definitivo da fé e convida à perseverança. O livro incentiva confiança, maturidade espiritual e fidelidade, mostrando como as promessas de Deus sustentam a caminhada cristã.</string>
+    <string name="bible_book_james_synopsis">Tiago enfatiza uma fé prática, visível em atitudes e palavras. O livro aborda sabedoria, perseverança e cuidado com o próximo, chamando a uma integridade que alinhe crença e comportamento.</string>
+    <string name="bible_book_1_peter_synopsis">1 Pedro encoraja esperança e santidade em meio a provações. O livro reforça identidade em Cristo e chama à humildade, coragem e boa conduta, destacando uma fé resistente e confiante.</string>
+    <string name="bible_book_2_peter_synopsis">2 Pedro alerta contra enganos e convida ao crescimento em piedade. O livro enfatiza firmeza na verdade e maturidade espiritual, incentivando constância e discernimento na caminhada cristã.</string>
+    <string name="bible_book_1_john_synopsis">1 João enfatiza segurança na fé por meio de amor e obediência. O livro destaca verdade, comunhão e o amor transformador de Deus, encorajando uma vida sincera e confiante.</string>
+    <string name="bible_book_2_john_synopsis">2 João chama a andar em verdade e amor com discernimento. O livro incentiva fidelidade à doutrina e vida comunitária saudável, lembrando que amor genuíno permanece enraizado em Deus.</string>
+    <string name="bible_book_3_john_synopsis">3 João destaca hospitalidade, integridade e liderança saudável. O livro valoriza apoio ao que é bom e verdadeiro, mostrando como escolhas cotidianas fortalecem a comunidade.</string>
+    <string name="bible_book_jude_synopsis">Judas exorta a perseverar na fé com discernimento. O livro chama à firmeza diante de influências confusas, incentivando constância no amor de Deus e compromisso com a verdade.</string>
+
+    <!-- Revelation -->
+    <string name="bible_book_revelation_synopsis">Apocalipse apresenta uma visão simbólica de esperança, adoração e justiça final. O livro encoraja perseverança e fidelidade, apontando para a renovação e para a confiança de que Deus conduz a história ao seu propósito.</string>
+
+    <string name="synopsis">Sinopse</string>
+    <string name="chapters">Capítulos</string>
+    <string name="reading_progress">Progresso de Leitura</string>
+    <string name="read_count">%1$d / %2$d lidos</string>
+    <string name="tap_to_mark">toque para marcar</string>
+    <string name="show_more">Ver mais</string>
+    <string name="show_less">Ver menos</string>
+    <string name="mark_all_as_read">Marcar todos como lidos</string>
+    <string name="mark_all_as_unread">Marcar todos como não lidos</string>
+    <string name="read_count_suffix"> lidos</string>
+    
+</resources>

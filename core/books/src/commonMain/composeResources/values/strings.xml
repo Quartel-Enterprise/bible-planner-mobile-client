@@ -66,4 +66,18 @@
     <string name="book_third_jn">3 John</string>
     <string name="book_jud">Jude</string>
     <string name="book_rev">Revelation</string>
+
+    <!-- Book Categories -->
+    <string name="pentateuch">Pentateuch</string>
+    <string name="historical_books">Historical Books</string>
+    <string name="wisdom_books">Wisdom Books</string>
+    <string name="major_prophets">Major Prophets</string>
+    <string name="minor_prophets">Minor Prophets</string>
+    <string name="gospels">Gospels</string>
+    <string name="acts">Acts</string>
+    <string name="pauline_epistles">Pauline Epistles</string>
+    <string name="general_epistles">General Epistles</string>
+    <string name="revelation">Revelation</string>
+    <string name="old_testament">Old Testament</string>
+    <string name="new_testament">New Testament</string>
 </resources>

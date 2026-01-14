@@ -31,7 +31,7 @@ fun BottomNavHost(
         startDestination = BottomNavRoute.Plans,
     ) {
         readingPlan(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
-        booksScreen(mainScaffoldState)
+        booksScreen(mainScaffoldState, rootNavController, sharedTransitionScope, animatedContentScope)
         more(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
     }
 }

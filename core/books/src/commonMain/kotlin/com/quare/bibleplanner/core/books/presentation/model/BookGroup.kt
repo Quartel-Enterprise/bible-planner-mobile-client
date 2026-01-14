@@ -1,16 +1,16 @@
-package com.quare.bibleplanner.feature.books.presentation.binding
+package com.quare.bibleplanner.core.books.presentation.model
 
-import bibleplanner.feature.books.generated.resources.Res
-import bibleplanner.feature.books.generated.resources.acts
-import bibleplanner.feature.books.generated.resources.general_epistles
-import bibleplanner.feature.books.generated.resources.gospels
-import bibleplanner.feature.books.generated.resources.historical_books
-import bibleplanner.feature.books.generated.resources.major_prophets
-import bibleplanner.feature.books.generated.resources.minor_prophets
-import bibleplanner.feature.books.generated.resources.pauline_epistles
-import bibleplanner.feature.books.generated.resources.pentateuch
-import bibleplanner.feature.books.generated.resources.revelation
-import bibleplanner.feature.books.generated.resources.wisdom_books
+import bibleplanner.core.books.generated.resources.Res
+import bibleplanner.core.books.generated.resources.acts
+import bibleplanner.core.books.generated.resources.general_epistles
+import bibleplanner.core.books.generated.resources.gospels
+import bibleplanner.core.books.generated.resources.historical_books
+import bibleplanner.core.books.generated.resources.major_prophets
+import bibleplanner.core.books.generated.resources.minor_prophets
+import bibleplanner.core.books.generated.resources.pauline_epistles
+import bibleplanner.core.books.generated.resources.pentateuch
+import bibleplanner.core.books.generated.resources.revelation
+import bibleplanner.core.books.generated.resources.wisdom_books
 import org.jetbrains.compose.resources.StringResource
 
 sealed interface BookGroup {

@@ -33,8 +33,16 @@ class MarkPassagesReadUseCase(
             val bookId = passage.bookId.name
 
             if (passage.chapters.isEmpty()) {
-                // No specific chapters -> toggle the whole book read flag
+                // No specific chapters -> toggle the whole book (including chapters and verses)
                 bookDao.updateBookReadStatus(
+                    bookId = bookId,
+                    isRead = targetRead,
+                )
+                chapterDao.updateChaptersReadStatusByBook(
+                    bookId = bookId,
+                    isRead = targetRead,
+                )
+                verseDao.updateVersesReadStatusByBook(
                     bookId = bookId,
                     isRead = targetRead,
                 )

@@ -12,6 +12,7 @@ import com.quare.bibleplanner.core.remoteconfig.di.remoteConfigModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
 import com.quare.bibleplanner.core.utils.jsonreader.di.jsonReaderModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
+import com.quare.bibleplanner.feature.bookdetails.di.bookDetailsModule
 import com.quare.bibleplanner.feature.books.di.featureBooksModule
 import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.day.di.dayModule
@@ -59,5 +60,6 @@ object CommonKoinUtils {
         donationModule,
         networkModule,
         pixQrModule,
+        bookDetailsModule,
     )
 }

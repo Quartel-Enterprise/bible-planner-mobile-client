@@ -43,6 +43,12 @@ interface ChapterDao {
         isRead: Boolean,
     )
 
+    @Query("UPDATE chapters SET isRead = :isRead WHERE bookId = :bookId")
+    suspend fun updateChaptersReadStatusByBook(
+        bookId: String,
+        isRead: Boolean,
+    )
+
     @Query("DELETE FROM chapters WHERE id = :chapterId")
     suspend fun deleteChapter(chapterId: Long)
 

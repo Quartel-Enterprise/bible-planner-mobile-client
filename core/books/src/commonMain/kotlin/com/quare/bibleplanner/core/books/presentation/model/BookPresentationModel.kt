@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.books.presentation.model
+package com.quare.bibleplanner.core.books.presentation.model
 
 import com.quare.bibleplanner.core.model.book.BookId
 

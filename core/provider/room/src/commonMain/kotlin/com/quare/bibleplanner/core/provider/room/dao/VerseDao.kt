@@ -49,6 +49,12 @@ interface VerseDao {
         isRead: Boolean,
     )
 
+    @Query("UPDATE verses SET isRead = :isRead WHERE chapterId IN (SELECT id FROM chapters WHERE bookId = :bookId)")
+    suspend fun updateVersesReadStatusByBook(
+        bookId: String,
+        isRead: Boolean,
+    )
+
     @Query("DELETE FROM verses WHERE id = :verseId")
     suspend fun deleteVerse(verseId: Long)
 
