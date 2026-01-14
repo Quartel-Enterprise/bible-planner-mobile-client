@@ -1,3 +1,4 @@
 /* Localized versions of Info.plist keys */
 
 CFBundleDisplayName = "Bible Planner";
+NSLocalNetworkUsageDescription = "This app needs access to the network to load dynamic configurations.";

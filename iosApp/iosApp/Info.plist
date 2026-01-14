@@ -8,5 +8,7 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>Bible Planner</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app needs access to the network to load dynamic configurations.</string>
 </dict>
 </plist>

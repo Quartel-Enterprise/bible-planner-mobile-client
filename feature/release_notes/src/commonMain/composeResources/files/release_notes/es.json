@@ -1,4 +1,8 @@
 {
+    "1.10.0": [
+        "Carga de configuración dinámica mejorada en iOS para evitar problemas de sincronización.",
+        "Se agregaron descripciones de permisos de red localizados en iOS."
+    ],
     "1.9.0": [
         "Rediseño de la pantalla \"Más\" para una mejor organización y usabilidad.",
         "Visualización de la versión actual de la aplicación en la pantalla \"Más\".",

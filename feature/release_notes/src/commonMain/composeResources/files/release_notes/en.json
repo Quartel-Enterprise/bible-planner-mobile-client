@@ -1,4 +1,8 @@
 {
+  "1.10.0": [
+    "Improved dynamic configuration loading on iOS to prevent synchronization issues.",
+    "Added localized network permission descriptions on iOS."
+  ],
   "1.9.0": [
     "Refactored the \"More\" screen for better organization and usability.",
     "Display the current app version in the \"More\" screen.",
