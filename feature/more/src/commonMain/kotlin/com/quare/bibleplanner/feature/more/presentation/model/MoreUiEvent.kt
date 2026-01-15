@@ -8,4 +8,6 @@ internal sealed interface MoreUiEvent {
     data object OnProCardClick : MoreUiEvent
 
     data object OnDismissSubscriptionDetailsDialog : MoreUiEvent
+
+    data object OnLoginClick : MoreUiEvent
 }

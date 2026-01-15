@@ -23,6 +23,7 @@ kermit = "2.0.8"
 ktor = "3.3.3"
 firebaseBom = "34.7.0"
 googeServices = "4.4.4"
+supabase = "3.3.0"
 
 # Android versions
 android-minSdk = "26"
@@ -74,8 +75,14 @@ kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 # Purchases
 purchases-core = { group = "com.revenuecat.purchases", name = "purchases-kmp-core", version.ref = "purchases" }
 purchases-result = { group = "com.revenuecat.purchases", name = "purchases-kmp-result", version.ref = "purchases" }
-firebase-config = { group = "com.google.firebase", name = "firebase-config" }
+
+# Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config" }
+
+# Supabase
+supabase-bom = { group = "io.github.jan-tennert.supabase", name = "bom", version.ref = "supabase" }
+supabase-auth = { group = "io.github.jan-tennert.supabase", name = "auth-kt" }
 
 # Ktor
 ktor_client_core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

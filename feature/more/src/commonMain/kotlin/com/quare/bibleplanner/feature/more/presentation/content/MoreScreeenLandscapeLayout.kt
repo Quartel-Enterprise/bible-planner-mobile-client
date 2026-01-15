@@ -15,6 +15,7 @@ import com.quare.bibleplanner.feature.more.presentation.content.component.AppSec
 import com.quare.bibleplanner.feature.more.presentation.content.component.CurrentAppVersionText
 import com.quare.bibleplanner.feature.more.presentation.content.component.DataSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.LegalSection
+import com.quare.bibleplanner.feature.more.presentation.content.component.LoginCard
 import com.quare.bibleplanner.feature.more.presentation.content.component.PreferencesSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.SocialSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.WebSection
@@ -32,6 +33,12 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
+    responsiveItem {
+        LoginCard(
+            onLoginClick = { onEvent(MoreUiEvent.OnLoginClick) },
+        )
+    }
+    item { VerticalSpacer() }
     headerSection(
         state = state,
         onEvent = onEvent,
