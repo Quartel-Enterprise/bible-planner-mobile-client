@@ -28,6 +28,7 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetails
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -84,7 +85,7 @@ fun BookDetailsScreen(
                             responsiveItem(key = "mid_spacer_1") { VerticalSpacer(24) }
                             responsiveItem(key = "synopsis") {
                                 SynopsisSection(
-                                    synopsis = state.synopsis,
+                                    synopsis = stringResource(state.synopsisStringResource),
                                     bookCategoryName = state.bookCategoryName,
                                     bookGroup = state.bookGroup,
                                     isExpanded = state.isSynopsisExpanded,
@@ -125,7 +126,7 @@ fun BookDetailsScreen(
                                         )
                                         VerticalSpacer(24)
                                         SynopsisSection(
-                                            synopsis = state.synopsis,
+                                            synopsis = stringResource(state.synopsisStringResource),
                                             bookCategoryName = state.bookCategoryName,
                                             bookGroup = state.bookGroup,
                                             isExpanded = state.isSynopsisExpanded,

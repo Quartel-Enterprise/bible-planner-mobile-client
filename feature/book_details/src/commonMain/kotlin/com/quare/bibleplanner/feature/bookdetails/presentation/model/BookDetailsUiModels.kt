@@ -3,14 +3,15 @@ package com.quare.bibleplanner.feature.bookdetails.presentation.model
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookId
+import org.jetbrains.compose.resources.StringResource
 
 sealed interface BookDetailsUiState {
     data object Loading : BookDetailsUiState
 
     data class Success(
         val id: BookId,
-        val name: String,
-        val synopsis: String,
+        val nameStringResource: StringResource,
+        val synopsisStringResource: StringResource,
         val chapters: List<BookChapterModel>,
         val progress: Float,
         val readChaptersCount: Int,
