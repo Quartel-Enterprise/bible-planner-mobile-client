@@ -43,8 +43,6 @@ class BookDetailsViewModel(
                 val readChapters = book.chapters.count { it.isRead }
                 val progress = if (totalChapters > 0) readChapters.toFloat() / totalChapters else 0f
 
-                val bookName = getString(book.id.toBookNameResource())
-                val synopsis = getString(book.id.toSynopsisResource())
                 val bookGroup = bookGroupMapper.fromBookId(book.id)
                 val bookCategoryName = getString(bookGroup.titleRes)
 
@@ -52,8 +50,8 @@ class BookDetailsViewModel(
                     val isSynopsisExpanded = (currentState as? BookDetailsUiState.Success)?.isSynopsisExpanded ?: false
                     BookDetailsUiState.Success(
                         id = book.id,
-                        name = bookName,
-                        synopsis = synopsis,
+                        nameStringResource = book.id.toBookNameResource(),
+                        synopsisStringResource = book.id.toSynopsisResource(),
                         chapters = book.chapters,
                         progress = progress,
                         readChaptersCount = readChapters,
