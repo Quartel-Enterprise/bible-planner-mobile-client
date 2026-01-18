@@ -36,10 +36,11 @@ buildkonfig {
 private fun getRevenueErrorMessage(keyName: String): String =
     "⚠️ $keyName not found in local.properties. RevenueCat features will not work correctly. See docs/setup_revenuecat.md for setup instructions."
 kotlin {
-    jvm()
     androidLibrary {
         namespace = "com.quare.bibleplanner.core.provider.billing"
     }
+
+    jvm()
 
     listOf(
         iosArm64(),
