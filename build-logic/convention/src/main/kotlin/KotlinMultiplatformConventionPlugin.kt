@@ -8,8 +8,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KotlinMultiplatformConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
-        pluginManager.apply("org.jetbrains.kotlin.multiplatform")
-        pluginManager.apply("com.android.kotlin.multiplatform.library")
+        with(pluginManager) {
+            apply("org.jetbrains.kotlin.multiplatform")
+            apply("com.android.kotlin.multiplatform.library")
+        }
 
         val sdkVersions = getAndroidSdkVersions()
 
