@@ -3,10 +3,11 @@ plugins {
 }
 
 kotlin {
-    jvm()
     androidLibrary {
         namespace = "com.quare.bibleplanner.core.remoteconfig"
     }
+
+    jvm()
 
     listOf(
         iosArm64(),

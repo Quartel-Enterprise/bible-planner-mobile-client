@@ -1,10 +1,10 @@
 [versions]
 # Lib versions
-agp = "8.13.2"
+agp = "9.0.0"
 androidx-activity = "1.12.2"
 androidx-lifecycle = "2.9.6"
 composeHotReload = "1.0.0"
-composeMultiplatform = "1.9.3"
+composeMultiplatform = "1.10.0"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 ktlint = "14.0.1"
@@ -21,7 +21,7 @@ purchases = "2.2.17+17.26.1"
 buildKonfig = "0.17.1"
 kermit = "2.0.8"
 ktor = "3.3.3"
-firebaseBom = "34.7.0"
+firebaseBom = "34.8.0"
 googeServices = "4.4.4"
 supabase = "3.3.0"
 coil = "3.3.0"
@@ -108,7 +108,6 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
