@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -61,7 +61,7 @@ internal fun LayoutToggle(
             ) {
                 Icon(
                     imageVector = when (format) {
-                        BookLayoutFormat.List -> Icons.Default.List
+                        BookLayoutFormat.List -> Icons.AutoMirrored.Filled.List
                         BookLayoutFormat.Grid -> Icons.Default.GridView
                     },
                     contentDescription = stringResource(

@@ -12,7 +12,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
+            implementation(libs.runtime)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

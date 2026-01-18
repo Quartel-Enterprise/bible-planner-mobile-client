@@ -75,8 +75,8 @@ dependencies {
     implementation(libs.facebook.sdk.android)
 
     // Compose
-    implementation(compose.material3)
-    implementation(compose.ui)
-    implementation(compose.components.resources)
+    implementation(libs.material3)
+    implementation(libs.ui)
+    implementation(libs.components.resources)
     implementation(libs.androidx.activity.compose)
 }

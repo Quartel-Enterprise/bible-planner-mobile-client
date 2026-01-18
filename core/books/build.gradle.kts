@@ -19,8 +19,8 @@ kotlin {
             implementation(projects.core.remoteConfig)
 
             // Compose
-            implementation(compose.runtime)
-            implementation(compose.components.resources)
+            implementation(libs.runtime)
+            implementation(libs.components.resources)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
