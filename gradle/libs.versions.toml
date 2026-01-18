@@ -4,7 +4,7 @@ agp = "8.13.2"
 androidx-activity = "1.12.2"
 androidx-lifecycle = "2.9.6"
 composeHotReload = "1.0.0"
-composeMultiplatform = "1.9.3"
+composeMultiplatform = "1.10.0"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 ktlint = "14.0.1"
@@ -21,7 +21,7 @@ purchases = "2.2.17+17.26.1"
 buildKonfig = "0.17.1"
 kermit = "2.0.8"
 ktor = "3.3.3"
-firebaseBom = "34.7.0"
+firebaseBom = "34.8.0"
 googeServices = "4.4.4"
 
 # Android versions
@@ -74,6 +74,8 @@ kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 # Purchases
 purchases-core = { group = "com.revenuecat.purchases", name = "purchases-kmp-core", version.ref = "purchases" }
 purchases-result = { group = "com.revenuecat.purchases", name = "purchases-kmp-result", version.ref = "purchases" }
+
+# Firebase
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 
