@@ -1,10 +1,9 @@
-import com.android.build.api.dsl.androidLibrary
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
 import com.bibleplanner.buildlogic.getAndroidSdkVersions
-import com.bibleplanner.buildlogic.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KotlinMultiplatformConventionPlugin : Plugin<Project> {
@@ -14,17 +13,15 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             apply("com.android.kotlin.multiplatform.library")
         }
 
+        val sdkVersions = getAndroidSdkVersions()
+
         // Configure Kotlin Multiplatform extension
         extensions.configure<KotlinMultiplatformExtension> {
 
-            val sdkVersions = getAndroidSdkVersions()
-            androidLibrary {
+            (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension>("androidLibrary") {
                 compileSdk = sdkVersions.compileSdk
                 minSdk = sdkVersions.minSdk
                 experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_21)
-                }
             }
 
             // Configure iOS targets
