@@ -1,74 +1,75 @@
 {
-    "1.10.0": [
-        "Carregamento de configurações dinâmicas aprimorado no iOS para evitar problemas de sincronização.",
-        "Adicionadas descrições localizadas de permissão de rede no iOS.",
-        "Nova tela de detalhes do livro para acompanhar seu progresso capítulo a capítulo.",
-        "Acessibilidade aprimorada para o botão de favorito."
-    ],
-    "1.9.0": [
-        "Refatoração da tela \"Mais\" para melhor organização e usabilidade.",
-        "Exibição da versão atual do aplicativo na tela \"Mais\".",
-        "A detecção da versão atual do aplicativo agora é dinâmica nas notas de lançamento."
-    ],
-    "1.8.1": [
-        "Correção de um problema que podia causar a perda do progresso de leitura após uma atualização."
-    ],
-    "1.8.0": [
-        "Nova tela de notas de atualização.",
-        "Refatoração da lógica de representação de datas para ser mais dinâmica.",
-        "Melhorias na interface do usuário para exibição de versões futuras.",
-        "Correção de traduções em espanhol e português.",
-        "Alteração das cores dos ícones na tela \"Mais\" para alguns itens.",
-        "Melhoria na interface de seleção de temas: novo layout, adição da seleção de contraste e relocação da opção de cores dinâmicas.",
-        "Adicionadas novas opções de doação."
-    ],
-    "1.7.0": [
-        "Introdução de carregamento para indicar que algumas configurações remotas estão sendo buscadas no servidor.",
-        "Nova tela de paywall.",
-        "Links para o web app.",
-        "Nova tela de livros que permite acompanhar o progresso, realizar buscas, aplicar filtros, ordenar e favoritar."
-    ],
-    "1.6.2": [
-        "Aguardar algumas configurações remotas antes de poder prosseguir com outras operações."
-    ],
-    "1.6.1": [
-        "Correções de espaçamento em várias telas, principalmente para Android 15+ nas barras do sistema."
-    ],
-    "1.6.0": [
-        "Nova tela \"Mais\", focada em configurações gerais e links úteis.",
-        "Correção da rolagem em algumas telas no formato paisagem.",
-        "Uso de cartões na interface do usuário para listas de passagens na tela de detalhes do dia."
-    ],
-    "1.5.0": [
-        "Introdução da confirmação de exclusão de notas."
-    ],
-    "1.4.0": [
-        "Implementação de notas pessoais para os dias do plano de leitura.",
-        "Correção da formatação na seção de notas.",
-        "Ajuste na seção de notas."
-    ],
-    "1.3.0": [
-        "Adição de datas de leitura planejadas aos dias do plano de leitura.",
-        "Correção: cálculo correto da data de leitura planejada.",
-        "Mudança na ordem do texto na barra superior da tela de detalhes do dia."
-    ],
-    "1.2.2": [
-        "Correção: falta de informação nos detalhes do dia quando devemos ler versículos específicos."
-    ],
-    "1.2.1": [
-        "Correção na formatação da data para suportar nomes de meses localizados."
-    ],
-    "1.2.0": [
-        "Adição de animação de transição ao navegar da tela de planos para a tela de detalhes do dia. A animação foi adicionada nas palavras do dia e da semana.",
-        "Animação dos contadores de progresso para o dia e progresso na tela de planos e tela de detalhes do dia.",
-        "Adição de animação de visibilidade ao botão \"ir para não lidos\".",
-        "Adição de localização em inglês e espanhol para o nome do app no iOS."
-    ],
-    "1.1.0": [
-        "Substituição do ícone para mudar o tema na tela de planos de leitura.",
-        "Exibição de mensagem no snackbar quando não há progresso de leitura para excluir."
-    ],
-    "1.0.0": [
-        "A primeira versão do Bible Planner 🚀."
-    ]
+  "1.11.0": [],
+  "1.10.0": [
+    "Carregamento de configurações dinâmicas aprimorado no iOS para evitar problemas de sincronização.",
+    "Adicionadas descrições localizadas de permissão de rede no iOS.",
+    "Nova tela de detalhes do livro para acompanhar seu progresso capítulo a capítulo.",
+    "Acessibilidade aprimorada para o botão de favorito."
+  ],
+  "1.9.0": [
+    "Refatoração da tela \"Mais\" para melhor organização e usabilidade.",
+    "Exibição da versão atual do aplicativo na tela \"Mais\".",
+    "A detecção da versão atual do aplicativo agora é dinâmica nas notas de lançamento."
+  ],
+  "1.8.1": [
+    "Correção de um problema que podia causar a perda do progresso de leitura após uma atualização."
+  ],
+  "1.8.0": [
+    "Nova tela de notas de atualização.",
+    "Refatoração da lógica de representação de datas para ser mais dinâmica.",
+    "Melhorias na interface do usuário para exibição de versões futuras.",
+    "Correção de traduções em espanhol e português.",
+    "Alteração das cores dos ícones na tela \"Mais\" para alguns itens.",
+    "Melhoria na interface de seleção de temas: novo layout, adição da seleção de contraste e relocação da opção de cores dinâmicas.",
+    "Adicionadas novas opções de doação."
+  ],
+  "1.7.0": [
+    "Introdução de carregamento para indicar que algumas configurações remotas estão sendo buscadas no servidor.",
+    "Nova tela de paywall.",
+    "Links para o web app.",
+    "Nova tela de livros que permite acompanhar o progresso, realizar buscas, aplicar filtros, ordenar e favoritar."
+  ],
+  "1.6.2": [
+    "Aguardar algumas configurações remotas antes de poder prosseguir com outras operações."
+  ],
+  "1.6.1": [
+    "Correções de espaçamento em várias telas, principalmente para Android 15+ nas barras do sistema."
+  ],
+  "1.6.0": [
+    "Nova tela \"Mais\", focada em configurações gerais e links úteis.",
+    "Correção da rolagem em algumas telas no formato paisagem.",
+    "Uso de cartões na interface do usuário para listas de passagens na tela de detalhes do dia."
+  ],
+  "1.5.0": [
+    "Introdução da confirmação de exclusão de notas."
+  ],
+  "1.4.0": [
+    "Implementação de notas pessoais para os dias do plano de leitura.",
+    "Correção da formatação na seção de notas.",
+    "Ajuste na seção de notas."
+  ],
+  "1.3.0": [
+    "Adição de datas de leitura planejadas aos dias do plano de leitura.",
+    "Correção: cálculo correto da data de leitura planejada.",
+    "Mudança na ordem do texto na barra superior da tela de detalhes do dia."
+  ],
+  "1.2.2": [
+    "Correção: falta de informação nos detalhes do dia quando devemos ler versículos específicos."
+  ],
+  "1.2.1": [
+    "Correção na formatação da data para suportar nomes de meses localizados."
+  ],
+  "1.2.0": [
+    "Adição de animação de transição ao navegar da tela de planos para a tela de detalhes do dia. A animação foi adicionada nas palavras do dia e da semana.",
+    "Animação dos contadores de progresso para o dia e progresso na tela de planos e tela de detalhes do dia.",
+    "Adição de animação de visibilidade ao botão \"ir para não lidos\".",
+    "Adição de localização em inglês e espanhol para o nome do app no iOS."
+  ],
+  "1.1.0": [
+    "Substituição do ícone para mudar o tema na tela de planos de leitura.",
+    "Exibição de mensagem no snackbar quando não há progresso de leitura para excluir."
+  ],
+  "1.0.0": [
+    "A primeira versão do Bible Planner 🚀."
+  ]
 }
