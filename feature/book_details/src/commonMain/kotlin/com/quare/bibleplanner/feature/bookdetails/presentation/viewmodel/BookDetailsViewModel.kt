@@ -25,7 +25,7 @@ import org.jetbrains.compose.resources.getString
 class BookDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val booksRepository: BooksRepository,
-    private val markPassagesReadUseCase: MarkPassagesReadUseCase,
+    private val markPassagesRead: MarkPassagesReadUseCase,
     private val bookGroupMapper: BookGroupMapper,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<BookDetailsNavRoute>()
@@ -96,7 +96,7 @@ class BookDetailsViewModel(
                         isRead = !current.areAllChaptersRead,
                         chapterRanges = null,
                     )
-                    markPassagesReadUseCase(listOf(passage))
+                    markPassagesRead(listOf(passage))
                 }
             }
 
@@ -114,7 +114,7 @@ class BookDetailsViewModel(
                         isRead = false, // Not used by the use case for determining target state
                         chapterRanges = null,
                     )
-                    markPassagesReadUseCase(listOf(passage))
+                    markPassagesRead(listOf(passage))
                 }
             }
         }

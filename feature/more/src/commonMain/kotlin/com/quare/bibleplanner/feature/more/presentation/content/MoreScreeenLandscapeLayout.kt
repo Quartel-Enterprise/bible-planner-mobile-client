@@ -36,6 +36,7 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
     responsiveItem {
         LoginCard(
             onLoginClick = { onEvent(MoreUiEvent.OnLoginClick) },
+            accountStatusModel = state.accountStatusModel,
         )
     }
     item { VerticalSpacer() }

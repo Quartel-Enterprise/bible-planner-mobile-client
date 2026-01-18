@@ -22,7 +22,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.plan)
-            implementation(libs.kotlinx.datetime)
+            implementation(projects.core.user)
 
             // Features
             implementation(projects.feature.themeSelection)
@@ -50,6 +50,15 @@ kotlin {
             implementation(libs.koinCore)
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewModel)
+
+            // Date
+            implementation(libs.kotlinx.datetime)
+
+            // Supabase
+            implementation(project.dependencies.platform(libs.supabase.bom))
+            implementation(libs.supabase.auth)
+            implementation(libs.supabase.compose.auth)
+            implementation(libs.supabase.compose.auth.ui)
         }
     }
 }

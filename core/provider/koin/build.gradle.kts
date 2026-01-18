@@ -22,7 +22,9 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.utils.jsonReader)
             implementation(projects.core.date)
+            implementation(projects.core.provider.supabase)
             implementation(projects.core.network)
+            implementation(projects.core.user)
 
             // Features
             implementation(projects.feature.books)
