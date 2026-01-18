@@ -119,7 +119,7 @@ fun ThemeSelectionContent(
                             )
 
                             AnimatedVisibility(
-                                visible = uiState.isMaterialYouToggleOn != true,
+                                visible = !uiState.isMaterialYouToggleOn,
                                 enter = expandVertically() + fadeIn(),
                                 exit = shrinkVertically() + fadeOut(),
                             ) {
@@ -136,16 +136,14 @@ fun ThemeSelectionContent(
                                 .weight(1f)
                                 .padding(top = 8.dp),
                         ) {
-                            uiState.isMaterialYouToggleOn?.let { isMaterialYouOn ->
-                                DynamicColorOption(
-                                    isChecked = isMaterialYouOn,
-                                    onToggle = { onEvent(ThemeSelectionUiEvent.MaterialYouToggleClicked(it)) },
-                                    onInfoClick = { onEvent(ThemeSelectionUiEvent.MaterialYouInfoClicked) },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(bottom = 8.dp),
-                                )
-                            }
+                            DynamicColorOption(
+                                isChecked = uiState.isMaterialYouToggleOn,
+                                onToggle = { onEvent(ThemeSelectionUiEvent.MaterialYouToggleClicked(it)) },
+                                onInfoClick = { onEvent(ThemeSelectionUiEvent.MaterialYouInfoClicked) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                            )
                         }
                     } else {
                         Column(modifier = Modifier.weight(1f)) {

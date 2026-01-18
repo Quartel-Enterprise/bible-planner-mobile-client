@@ -36,9 +36,9 @@ kotlin {
             implementation(projects.core.provider.room)
 
             // Compose
-            implementation(compose.runtime)
-            implementation(compose.material3)
-            implementation(compose.ui)
+            implementation(libs.runtime)
+            implementation(libs.material3)
+            implementation(libs.ui)
 
             // UI
             implementation(projects.ui.utils)

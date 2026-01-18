@@ -4,7 +4,6 @@ agp = "9.0.0"
 androidx-activity = "1.12.2"
 androidx-lifecycle = "2.9.6"
 composeHotReload = "1.0.0"
-composeMultiplatform = "1.10.0"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 ktlint = "14.0.1"
@@ -23,6 +22,13 @@ kermit = "2.0.8"
 ktor = "3.3.3"
 firebaseBom = "34.8.0"
 googeServices = "4.4.4"
+material3 = "1.9.0"
+materialIconsExtended = "1.7.3"
+composeMultiplatform = "1.10.0"
+composeUi = "1.10.0"
+runtime = "1.10.0"
+foundation = "1.10.0"
+componentsResources = "1.10.0"
 supabase = "3.3.0"
 coil = "3.3.0"
 
@@ -101,6 +107,16 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor_client_auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor_client_content_negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor_client_content_serialization_json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+# Compose multiplatform
+foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "foundation" }
+material-icons-extended = { group = "org.jetbrains.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
+material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material3" }
+material3-adaptive-navigation-suite = { group = "org.jetbrains.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "material3" }
+runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "runtime" }
+ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "composeUi" }
+ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "composeUi" }
+components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "componentsResources" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
