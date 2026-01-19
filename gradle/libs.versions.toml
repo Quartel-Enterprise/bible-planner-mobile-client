@@ -29,6 +29,8 @@ composeUi = "1.10.0"
 runtime = "1.10.0"
 foundation = "1.10.0"
 componentsResources = "1.10.0"
+supabase = "3.3.0"
+coil = "3.3.0"
 
 # Android versions
 android-minSdk = "26"
@@ -82,8 +84,20 @@ purchases-core = { group = "com.revenuecat.purchases", name = "purchases-kmp-cor
 purchases-result = { group = "com.revenuecat.purchases", name = "purchases-kmp-result", version.ref = "purchases" }
 
 # Firebase
-firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config" }
+
+# Supabase
+supabase-bom = { group = "io.github.jan-tennert.supabase", name = "bom", version.ref = "supabase" }
+supabase-auth = { group = "io.github.jan-tennert.supabase", name = "auth-kt" }
+supabase-postgrest = { group = "io.github.jan-tennert.supabase", name = "postgrest-kt" }
+supabase-realtime = { group = "io.github.jan-tennert.supabase", name = "realtime-kt" }
+supabase-compose-auth = { group = "io.github.jan-tennert.supabase", name = "compose-auth" }
+supabase-compose-auth-ui = { group = "io.github.jan-tennert.supabase", name = "compose-auth-ui" }
+
+# Coil
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 
 # Ktor
 ktor_client_core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }

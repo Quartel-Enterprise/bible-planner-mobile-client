@@ -40,4 +40,8 @@
     <string name="contrast_high">High Contrast</string>
     <string name="dynamic_colors">Dynamic colors</string>
     <string name="app_version_disclaimer">Version %1$d</string>
+
+    <string name="login_card_title">You're not logged in</string>
+    <string name="login_card_subtitle">Log in for a better experience.</string>
+    <string name="login_card_button">Sign in</string>
 </resources>

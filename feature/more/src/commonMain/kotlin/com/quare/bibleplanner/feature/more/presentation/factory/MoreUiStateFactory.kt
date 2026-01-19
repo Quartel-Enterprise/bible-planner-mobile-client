@@ -15,9 +15,12 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCa
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.login.IsLoginVisible
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
+import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
+import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.generated.MoreBuildKonfig
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
@@ -25,6 +28,9 @@ import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastT
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
 import com.quare.bibleplanner.ui.theme.model.ContrastType
 import com.quare.bibleplanner.ui.theme.model.Theme
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -47,20 +53,25 @@ internal class MoreUiStateFactory(
     private val isProVerificationRequired: IsProVerificationRequiredUseCase,
     private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
     private val isDynamicColorSupported: IsDynamicColorSupported,
+    private val supabaseClient: SupabaseClient,
+    private val sessionUserMapper: SessionUserMapper,
+    private val isLoginVisible: IsLoginVisible,
 ) {
     fun create(): Flow<MoreUiState> {
-        val configFlow = flow {
+        val remoteConfigsFlow = flow {
             coroutineScope {
-                val instagram = async { isInstagramLinkVisible() }
-                val donate = async { shouldShowDonateOption() }
-                val isPro = async { isProVerificationRequired() }
-                val isWebAppEnabled = async { isMoreWebAppEnabled() }
+                val isInstagramVisibleDeferred = async { isInstagramLinkVisible() }
+                val shouldShowDonateDeferred = async { shouldShowDonateOption() }
+                val isProDeferred = async { isProVerificationRequired() }
+                val isWebAppEnabledDeferred = async { isMoreWebAppEnabled() }
+                val isLoginVisibleDeferred = async { isLoginVisible() }
                 emit(
-                    Config(
-                        isInstagramVisible = instagram.await(),
-                        shouldShowDonate = donate.await(),
-                        isProVerificationRequired = isPro.await(),
-                        isWebAppVisible = isWebAppEnabled.await(),
+                    RemoteConfigs(
+                        isInstagramVisible = isInstagramVisibleDeferred.await(),
+                        shouldShowDonate = shouldShowDonateDeferred.await(),
+                        isProVerificationRequired = isProDeferred.await(),
+                        isWebAppVisible = isWebAppEnabledDeferred.await(),
+                        isLoginVisible = isLoginVisibleDeferred.await(),
                     ),
                 )
             }
@@ -70,28 +81,42 @@ internal class MoreUiStateFactory(
             getThemeOptionFlow(),
             getContrastTypeFlow(),
             getIsDynamicColorsEnabledFlow(),
-        ) { theme, contrast, isDynamic -> Triple(theme, contrast, isDynamic) }
+        ) { theme, contrast, isDynamic -> ThemeConfiguration(theme, contrast, isDynamic) }
+
+        val sessionStatsFlow = supabaseClient.auth.sessionStatus
+
+        val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(
+            remoteConfigsFlow,
+            themeFlow,
+            sessionStatsFlow,
+        ) { remoteConfigs, themeConfiguration, sessionStatus ->
+            MoreScreenConfiguration(
+                remoteConfigs = remoteConfigs,
+                themeConfiguration = themeConfiguration,
+                sessionStatus = sessionStatus,
+            )
+        }
 
         return combine(
             getSubscriptionStatusFlow?.invoke() ?: flowOf(null),
             getPlanStartDate(),
-            themeFlow,
-            configFlow,
-        ) { subscriptionStatus, startDate, (theme, contrast, isDynamicColorsEnabled), config ->
-            val shouldShowDonate = config.shouldShowDonate
-            val isProVerificationRequired = config.isProVerificationRequired
+            moreScreenFlows,
+        ) { subscriptionStatus, startDate, moreScreenConfiguration ->
+            val remoteConfigs = moreScreenConfiguration.remoteConfigs
+            val themeConfiguration = moreScreenConfiguration.themeConfiguration
+            val shouldShowDonate = remoteConfigs.shouldShowDonate
+            val isProVerificationRequired = remoteConfigs.isProVerificationRequired
             val headerRes = when {
                 isProVerificationRequired && shouldShowDonate -> Res.string.pro_and_support
                 isProVerificationRequired -> Res.string.pro_section
                 shouldShowDonate -> Res.string.support_section
                 else -> null
             }
-
             MoreUiState.Loaded(
-                themeRes = theme.toStringResource(),
+                themeRes = themeConfiguration.theme.toStringResource(),
                 contrastRes = when {
-                    isDynamicColorsEnabled && isDynamicColorSupported() -> Res.string.dynamic_colors
-                    else -> contrast.toStringResource()
+                    themeConfiguration.isDynamicColorsEnabled && isDynamicColorSupported() -> Res.string.dynamic_colors
+                    else -> themeConfiguration.contrast.toStringResource()
                 },
                 planStartDate = startDate,
                 currentDate = Clock.System
@@ -99,21 +124,54 @@ internal class MoreUiStateFactory(
                     .toLocalDateTime(TimeZone.currentSystemDefault())
                     .date,
                 subscriptionStatus = subscriptionStatus,
-                isInstagramLinkVisible = config.isInstagramVisible,
-                shouldShowDonateOption = config.shouldShowDonate,
+                isInstagramLinkVisible = remoteConfigs.isInstagramVisible,
+                shouldShowDonateOption = remoteConfigs.shouldShowDonate,
                 headerRes = headerRes,
-                isProCardVisible = config.isProVerificationRequired,
-                isWebAppVisible = config.isWebAppVisible,
+                isProCardVisible = remoteConfigs.isProVerificationRequired,
+                isWebAppVisible = remoteConfigs.isWebAppVisible,
                 appVersion = MoreBuildKonfig.APP_VERSION,
+                accountStatusModel = when (val sessionStatus = moreScreenConfiguration.sessionStatus) {
+                    is SessionStatus.Authenticated -> {
+                        sessionStatus.session.user
+                            ?.let(sessionUserMapper::map)
+                            ?.let(AccountStatusModel::LoggedIn) ?: AccountStatusModel.Error
+                    }
+
+                    SessionStatus.Initializing -> {
+                        AccountStatusModel.Loading
+                    }
+
+                    is SessionStatus.NotAuthenticated -> {
+                        AccountStatusModel.LoggedOut
+                    }
+
+                    is SessionStatus.RefreshFailure -> {
+                        AccountStatusModel.Error
+                    }
+                },
+                isLoginVisible = remoteConfigs.isLoginVisible,
             )
         }
     }
 
-    private data class Config(
+    private data class MoreScreenConfiguration(
+        val remoteConfigs: RemoteConfigs,
+        val themeConfiguration: ThemeConfiguration,
+        val sessionStatus: SessionStatus,
+    )
+
+    private data class RemoteConfigs(
         val isInstagramVisible: Boolean,
         val shouldShowDonate: Boolean,
         val isProVerificationRequired: Boolean,
         val isWebAppVisible: Boolean,
+        val isLoginVisible: Boolean,
+    )
+
+    private data class ThemeConfiguration(
+        val theme: Theme,
+        val contrast: ContrastType,
+        val isDynamicColorsEnabled: Boolean,
     )
 
     private fun Theme.toStringResource(): StringResource = when (this) {

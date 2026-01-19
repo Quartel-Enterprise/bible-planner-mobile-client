@@ -22,10 +22,13 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.utils.jsonReader)
             implementation(projects.core.date)
+            implementation(projects.core.provider.supabase)
             implementation(projects.core.network)
+            implementation(projects.core.user)
 
             // Features
             implementation(projects.feature.books)
+            implementation(projects.feature.login)
             implementation(projects.feature.bookDetails)
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.readingPlan)
@@ -34,7 +37,6 @@ kotlin {
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
             implementation(projects.feature.editPlanStartDate)
-
             implementation(projects.feature.paywall)
             implementation(projects.feature.deleteNotes)
             implementation(projects.feature.main)

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="continue_with_apple">Continuar con Apple</string>
+    <string name="continue_with_google">Continuar con Google</string>
+    <string name="terms_agreement_part_1">Al continuar, aceptas nuestros </string>
+    <string name="terms_of_service">Términos de Servicio</string>
+    <string name="terms_agreement_part_2"> y\n</string>
+    <string name="privacy_policy">Política de Privacidad</string>
+    <string name="terms_agreement_part_3">.</string>
+    <string name="not_now">Ahora no</string>
+</resources>

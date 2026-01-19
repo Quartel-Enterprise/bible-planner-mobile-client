@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.utils.social.SocialUtils
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction
+import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction.OpenLink
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.utils.observe
@@ -44,11 +45,11 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.PRIVACY_POLICY -> {
-                        emitAction(MoreUiAction.OpenLink(PRIVACY_URL))
+                        emitAction(OpenLink(PRIVACY_URL))
                     }
 
                     MoreOptionItemType.TERMS -> {
-                        emitAction(MoreUiAction.OpenLink(TERMS_URL))
+                        emitAction(OpenLink(TERMS_URL))
                     }
 
                     MoreOptionItemType.BECOME_PRO -> {
@@ -56,7 +57,7 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.INSTAGRAM -> {
-                        emitAction(MoreUiAction.OpenLink(SocialUtils.getInstagramUrl()))
+                        emitAction(OpenLink(SocialUtils.getInstagramUrl()))
                     }
 
                     MoreOptionItemType.EDIT_PLAN_START_DAY -> {
@@ -80,7 +81,7 @@ internal class MoreViewModel(
 
                     MoreOptionItemType.WEB_APP -> {
                         viewModelScope.launch {
-                            emitAction(MoreUiAction.OpenLink(getWebAppUrl()))
+                            emitAction(OpenLink(getWebAppUrl()))
                         }
                     }
 
@@ -108,6 +109,10 @@ internal class MoreViewModel(
                         it
                     }
                 }
+            }
+
+            MoreUiEvent.OnLoginClick -> {
+                emitAction(MoreUiAction.GoToLogin)
             }
         }
     }

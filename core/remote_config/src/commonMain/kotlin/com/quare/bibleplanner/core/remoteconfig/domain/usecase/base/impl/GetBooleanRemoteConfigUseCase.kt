@@ -1,7 +1,7 @@
-package com.quare.bibleplanner.core.remoteconfig.domain.usecase.impl
+package com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.impl
 
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetBooleanRemoteConfig
 
 internal class GetBooleanRemoteConfigUseCase(
     private val remoteConfigService: RemoteConfigService,

@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.plan.domain.usecase
 
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetIntRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
 
 class GetMaxFreeNotesAmountUseCase(
     private val getIntRemoteConfig: GetIntRemoteConfig,

@@ -39,4 +39,8 @@
     <string name="contrast_high">Alto contraste</string>
     <string name="dynamic_colors">Cores dinâmicas</string>
     <string name="app_version_disclaimer">Versão %1$d</string>
+
+    <string name="login_card_title">Você não está logado</string>
+    <string name="login_card_subtitle">Faça login para ter uma melhor experiência.</string>
+    <string name="login_card_button">Entrar</string>
 </resources>

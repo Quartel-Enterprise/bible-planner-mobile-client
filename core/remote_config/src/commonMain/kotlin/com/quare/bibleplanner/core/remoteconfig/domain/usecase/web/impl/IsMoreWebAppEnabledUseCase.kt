@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.impl
 
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetBooleanRemoteConfig
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 
 internal class IsMoreWebAppEnabledUseCase(

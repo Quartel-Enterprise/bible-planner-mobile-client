@@ -23,12 +23,12 @@ kotlin {
             implementation(projects.feature.deleteNotes)
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.editPlanStartDate)
-
             implementation(projects.feature.paywall)
             implementation(projects.feature.congrats)
             implementation(projects.feature.releaseNotes)
             implementation(projects.feature.donation)
             implementation(projects.feature.donation.pixQr)
+            implementation(projects.feature.login)
 
             // Core
             implementation(projects.core.model)

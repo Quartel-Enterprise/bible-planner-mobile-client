@@ -8,7 +8,9 @@ import com.quare.bibleplanner.core.plan.di.planModule
 import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
 import com.quare.bibleplanner.core.provider.platform.di.platformModule
 import com.quare.bibleplanner.core.provider.room.di.roomModule
+import com.quare.bibleplanner.core.provider.supabase.supabaseModule
 import com.quare.bibleplanner.core.remoteconfig.di.remoteConfigModule
+import com.quare.bibleplanner.core.user.di.userModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
 import com.quare.bibleplanner.core.utils.jsonreader.di.jsonReaderModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
@@ -21,6 +23,7 @@ import com.quare.bibleplanner.feature.deleteprogress.di.deleteProgressModule
 import com.quare.bibleplanner.feature.donation.di.donationModule
 import com.quare.bibleplanner.feature.donation.pixqr.di.pixQrModule
 import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModule
+import com.quare.bibleplanner.feature.login.di.loginModule
 import com.quare.bibleplanner.feature.main.di.mainModule
 import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
 import com.quare.bibleplanner.feature.more.di.moreModule
@@ -61,5 +64,8 @@ object CommonKoinUtils {
         networkModule,
         pixQrModule,
         bookDetailsModule,
+        loginModule,
+        supabaseModule,
+        userModule,
     )
 }
