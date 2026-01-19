@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCa
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.login.IsLoginVisible
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
@@ -54,20 +55,23 @@ internal class MoreUiStateFactory(
     private val isDynamicColorSupported: IsDynamicColorSupported,
     private val supabaseClient: SupabaseClient,
     private val sessionUserMapper: SessionUserMapper,
+    private val isLoginVisible: IsLoginVisible,
 ) {
     fun create(): Flow<MoreUiState> {
         val remoteConfigsFlow = flow {
             coroutineScope {
-                val instagram = async { isInstagramLinkVisible() }
-                val donate = async { shouldShowDonateOption() }
-                val isPro = async { isProVerificationRequired() }
-                val isWebAppEnabled = async { isMoreWebAppEnabled() }
+                val isInstagramVisibleDeferred = async { isInstagramLinkVisible() }
+                val shouldShowDonateDeferred = async { shouldShowDonateOption() }
+                val isProDeferred = async { isProVerificationRequired() }
+                val isWebAppEnabledDeferred = async { isMoreWebAppEnabled() }
+                val isLoginVisibleDeferred = async { isLoginVisible() }
                 emit(
                     RemoteConfigs(
-                        isInstagramVisible = instagram.await(),
-                        shouldShowDonate = donate.await(),
-                        isProVerificationRequired = isPro.await(),
-                        isWebAppVisible = isWebAppEnabled.await(),
+                        isInstagramVisible = isInstagramVisibleDeferred.await(),
+                        shouldShowDonate = shouldShowDonateDeferred.await(),
+                        isProVerificationRequired = isProDeferred.await(),
+                        isWebAppVisible = isWebAppEnabledDeferred.await(),
+                        isLoginVisible = isLoginVisibleDeferred.await(),
                     ),
                 )
             }
@@ -145,6 +149,7 @@ internal class MoreUiStateFactory(
                         AccountStatusModel.Error
                     }
                 },
+                isLoginVisible = remoteConfigs.isLoginVisible,
             )
         }
     }
@@ -160,6 +165,7 @@ internal class MoreUiStateFactory(
         val shouldShowDonate: Boolean,
         val isProVerificationRequired: Boolean,
         val isWebAppVisible: Boolean,
+        val isLoginVisible: Boolean,
     )
 
     private data class ThemeConfiguration(

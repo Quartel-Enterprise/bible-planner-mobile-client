@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.remoteconfig.domain.usecase
+package com.quare.bibleplanner.core.remoteconfig.domain.usecase.base
 
 /**
  * Use case to retrieve a boolean value from remote configuration.

@@ -1,11 +1,13 @@
 package com.quare.bibleplanner.core.remoteconfig.di
 
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteConfig
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetIntRemoteConfig
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetStringRemoteConfig
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.impl.GetBooleanRemoteConfigUseCase
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.impl.GetIntRemoteConfigUseCase
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.impl.GetStringRemoteConfigUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetBooleanRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetStringRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.impl.GetBooleanRemoteConfigUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.impl.GetIntRemoteConfigUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.impl.GetStringRemoteConfigUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.login.IsLoginVisible
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.login.usecase.IsLoginVisibleUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.impl.GetWebAppUrlUseCase
@@ -22,6 +24,7 @@ val remoteConfigModule = module {
     factoryOf(::GetStringRemoteConfigUseCase).bind<GetStringRemoteConfig>()
     factoryOf(::IsMoreWebAppEnabledUseCase).bind<IsMoreWebAppEnabled>()
     factoryOf(::GetWebAppUrlUseCase).bind<GetWebAppUrl>()
+    factoryOf(::IsLoginVisibleUseCase).bind<IsLoginVisible>()
 }
 
 internal expect val platFormRemoteConfigModule: Module

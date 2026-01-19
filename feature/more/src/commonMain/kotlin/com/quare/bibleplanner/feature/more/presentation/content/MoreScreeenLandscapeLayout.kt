@@ -33,13 +33,15 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    responsiveItem {
-        LoginCard(
-            onLoginClick = { onEvent(MoreUiEvent.OnLoginClick) },
-            accountStatusModel = state.accountStatusModel,
-        )
+    if (state.isLoginVisible) {
+        responsiveItem {
+            LoginCard(
+                onLoginClick = { onEvent(MoreUiEvent.OnLoginClick) },
+                accountStatusModel = state.accountStatusModel,
+            )
+        }
+        item { VerticalSpacer() }
     }
-    item { VerticalSpacer() }
     headerSection(
         state = state,
         onEvent = onEvent,

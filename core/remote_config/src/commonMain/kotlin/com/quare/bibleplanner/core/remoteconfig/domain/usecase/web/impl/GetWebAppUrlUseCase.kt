@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.impl
 
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetStringRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetStringRemoteConfig
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 
 internal class GetWebAppUrlUseCase(

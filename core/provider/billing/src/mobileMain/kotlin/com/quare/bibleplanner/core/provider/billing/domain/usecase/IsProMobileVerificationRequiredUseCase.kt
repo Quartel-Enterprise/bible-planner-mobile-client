@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.provider.billing.domain.usecase
 
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.GetBooleanRemoteConfig
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetBooleanRemoteConfig
 
 internal class IsProMobileVerificationRequiredUseCase(
     private val getBooleanRemoteConfig: GetBooleanRemoteConfig,

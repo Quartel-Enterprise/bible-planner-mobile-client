@@ -27,7 +27,6 @@ import bibleplanner.feature.more.generated.resources.login_card_button
 import bibleplanner.feature.more.generated.resources.login_card_subtitle
 import bibleplanner.feature.more.generated.resources.login_card_title
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
-import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

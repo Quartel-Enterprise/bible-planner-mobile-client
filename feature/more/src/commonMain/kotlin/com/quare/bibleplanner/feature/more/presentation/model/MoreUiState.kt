@@ -21,6 +21,7 @@ internal sealed interface MoreUiState {
         val isProCardVisible: Boolean,
         val isWebAppVisible: Boolean,
         val appVersion: String,
+        val isLoginVisible: Boolean,
         val accountStatusModel: AccountStatusModel,
     ) : MoreUiState
 }
