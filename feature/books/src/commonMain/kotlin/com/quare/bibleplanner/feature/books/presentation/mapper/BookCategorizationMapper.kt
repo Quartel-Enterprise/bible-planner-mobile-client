@@ -1,8 +1,9 @@
-package com.quare.bibleplanner.core.books.presentation.mapper
+package com.quare.bibleplanner.feature.books.presentation.mapper
 
-import com.quare.bibleplanner.core.books.presentation.model.BookGroupPresentationModel
-import com.quare.bibleplanner.core.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
+import com.quare.bibleplanner.feature.books.presentation.model.BookGroupPresentationModel
+import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 
 class BookCategorizationMapper(
     private val bookGroupMapper: BookGroupMapper,

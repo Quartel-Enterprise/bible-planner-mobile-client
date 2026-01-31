@@ -31,8 +31,6 @@ internal class DownloadBibleUseCase(
     private val json = Json { ignoreUnknownKeys = true }
     private val syncScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-// Removed completedChapters as a property to avoid shared state issues
-
     suspend operator fun invoke(versionId: String) {
         try {
             val version = bibleVersionDao.getVersionById(versionId)
@@ -105,8 +103,17 @@ internal class DownloadBibleUseCase(
         versionId: String,
         chapterDto: SyncChapterDto,
     ) {
+        val verseTextEntities = getVerseTextEntities(chapterId, chapterDto, versionId)
+        verseDao.upsertVerseTexts(verseTextEntities)
+    }
+
+    private suspend fun getVerseTextEntities(
+        chapterId: Long,
+        chapterDto: SyncChapterDto,
+        versionId: String,
+    ): List<VerseTextEntity> {
         val existingVerses = verseDao.getVersesByChapterId(chapterId).associateBy { it.number }
-        val verseTextEntities = chapterDto.verses.mapNotNull { verseDto ->
+        return chapterDto.verses.mapNotNull { verseDto ->
             existingVerses[verseDto.number]?.let { verseEntity ->
                 VerseTextEntity(
                     verseId = verseEntity.id,
@@ -115,7 +122,6 @@ internal class DownloadBibleUseCase(
                 )
             }
         }
-        verseDao.upsertVerseTexts(verseTextEntities)
     }
 
     companion object {
