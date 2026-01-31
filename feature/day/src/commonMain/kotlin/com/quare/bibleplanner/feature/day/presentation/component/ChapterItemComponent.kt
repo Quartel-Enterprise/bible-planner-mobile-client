@@ -12,14 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.vers
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChapterItemComponent(
     modifier: Modifier = Modifier,
     bookName: String,
-    chapterPlanModel: ChapterPlanModel?,
+    chapterPlanModel: ChapterModel?,
     isRead: Boolean,
     onToggle: () -> Unit,
 ) {

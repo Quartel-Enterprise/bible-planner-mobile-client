@@ -2,8 +2,8 @@ package com.quare.bibleplanner.feature.day.domain.usecase
 
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 
 internal class CalculateChapterReadStatusUseCase {
     /**
@@ -17,7 +17,7 @@ internal class CalculateChapterReadStatusUseCase {
      * @return null if the chapter index is invalid
      */
     operator fun invoke(
-        passage: PassagePlanModel,
+        passage: PassageModel,
         chapterIndex: Int,
         books: List<BookDataModel>,
     ): Boolean? {
@@ -40,7 +40,7 @@ internal class CalculateChapterReadStatusUseCase {
     }
 
     private fun isChapterRead(
-        chapter: ChapterPlanModel,
+        chapter: ChapterModel,
         bookChapter: BookChapterModel,
     ): Boolean {
         val startVerse = chapter.startVerse

@@ -2,9 +2,9 @@ package com.quare.bibleplanner.core.plan.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.DayModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
@@ -84,9 +84,9 @@ class GetPlansByWeekUseCase(
     }
 
     private fun calculatePassageReadStatus(
-        passage: PassagePlanModel,
+        passage: PassageModel,
         books: List<BookDataModel>,
-    ): PassagePlanModel {
+    ): PassageModel {
         val book = books.find { it.id == passage.bookId } ?: return passage.copy(isRead = false)
 
         // If no chapters specified (empty list), check if entire book is read
@@ -102,7 +102,7 @@ class GetPlansByWeekUseCase(
     }
 
     private fun isChapterPlanRead(
-        chapterPlan: ChapterPlanModel,
+        chapterPlan: ChapterModel,
         book: BookDataModel,
     ): Boolean {
         val chapter = book.chapters.find { it.number == chapterPlan.number }
@@ -135,14 +135,14 @@ class GetPlansByWeekUseCase(
     }
 
     private fun calculateTotalVerses(
-        passages: List<PassagePlanModel>,
+        passages: List<PassageModel>,
         books: List<BookDataModel>,
     ): Int = passages.sumOf { passage ->
         calculatePassageTotalVerses(passage, books)
     }
 
     private fun calculatePassageTotalVerses(
-        passage: PassagePlanModel,
+        passage: PassageModel,
         books: List<BookDataModel>,
     ): Int {
         val book = books.find { it.id == passage.bookId } ?: return 0
@@ -158,7 +158,7 @@ class GetPlansByWeekUseCase(
     }
 
     private fun calculateChapterPlanTotalVerses(
-        chapterPlan: ChapterPlanModel,
+        chapterPlan: ChapterModel,
         book: BookDataModel,
     ): Int {
         val chapter = book.chapters.find { it.number == chapterPlan.number }
@@ -186,14 +186,14 @@ class GetPlansByWeekUseCase(
     }
 
     private fun calculateReadVerses(
-        passages: List<PassagePlanModel>,
+        passages: List<PassageModel>,
         books: List<BookDataModel>,
     ): Int = passages.sumOf { passage ->
         calculatePassageReadVerses(passage, books)
     }
 
     private fun calculatePassageReadVerses(
-        passage: PassagePlanModel,
+        passage: PassageModel,
         books: List<BookDataModel>,
     ): Int {
         val book = books.find { it.id == passage.bookId } ?: return 0
@@ -211,7 +211,7 @@ class GetPlansByWeekUseCase(
     }
 
     private fun calculateChapterPlanReadVerses(
-        chapterPlan: ChapterPlanModel,
+        chapterPlan: ChapterModel,
         book: BookDataModel,
     ): Int {
         val chapter = book.chapters.find { it.number == chapterPlan.number }

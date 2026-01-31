@@ -1,7 +1,9 @@
-package com.quare.bibleplanner.core.provider.room.entity
+package com.quare.bibleplanner.core.provider.room.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
+import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
+import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 
 data class ChapterWithVerses(
     @Embedded
@@ -11,5 +13,5 @@ data class ChapterWithVerses(
         parentColumn = "id",
         entityColumn = "chapterId",
     )
-    val verses: List<VerseEntity>,
+    val verses: List<VerseWithTexts>,
 )

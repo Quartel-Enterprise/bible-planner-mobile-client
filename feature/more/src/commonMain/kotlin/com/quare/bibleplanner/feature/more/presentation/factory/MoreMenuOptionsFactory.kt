@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.more.presentation.factory
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.EditCalendar
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Star
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_pro
+import bibleplanner.feature.more.generated.resources.bible_version_option
 import bibleplanner.feature.more.generated.resources.delete_progress_option
 import bibleplanner.feature.more.generated.resources.ic_instagram
 import bibleplanner.feature.more.generated.resources.instagram
@@ -59,5 +61,10 @@ internal object MoreMenuOptionsFactory {
         subtitle = Res.string.release_notes_subtitle,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.Description),
         type = MoreOptionItemType.RELEASE_NOTES,
+    )
+    val bibleVersion = MoreMenuItemPresentationModel(
+        name = Res.string.bible_version_option,
+        icon = MoreIcon.ImageVectorIcon(Icons.AutoMirrored.Filled.MenuBook),
+        type = MoreOptionItemType.BIBLE_VERSION,
     )
 }

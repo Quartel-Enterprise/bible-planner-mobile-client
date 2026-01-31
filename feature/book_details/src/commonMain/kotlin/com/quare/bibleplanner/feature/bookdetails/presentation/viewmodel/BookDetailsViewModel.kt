@@ -5,12 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.books.domain.usecase.MarkBookReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
@@ -27,6 +28,7 @@ class BookDetailsViewModel(
     private val booksRepository: BooksRepository,
     private val markPassagesRead: MarkPassagesReadUseCase,
     private val bookGroupMapper: BookGroupMapper,
+    private val markBookRead: MarkBookReadUseCase,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<BookDetailsNavRoute>()
     private val bookId = BookId.valueOf(route.bookId)
@@ -90,31 +92,26 @@ class BookDetailsViewModel(
             BookDetailsUiEvent.OnToggleAllChapters -> {
                 val current = _uiState.value as? BookDetailsUiState.Success ?: return
                 viewModelScope.launch {
-                    val passage = PassagePlanModel(
-                        bookId = bookId,
-                        chapters = emptyList(), // Passing empty list triggers optimized bulk update for the whole book
-                        isRead = !current.areAllChaptersRead,
-                        chapterRanges = null,
-                    )
-                    markPassagesRead(listOf(passage))
+                    markBookRead(bookId = bookId, isRead = !current.areAllChaptersRead)
                 }
             }
 
             is BookDetailsUiEvent.OnChapterClick -> {
                 viewModelScope.launch {
-                    val passage = PassagePlanModel(
+                    val passage = PassageModel(
                         bookId = bookId,
                         chapters = listOf(
-                            ChapterPlanModel(
+                            ChapterModel(
                                 number = event.chapterNumber,
                                 startVerse = null,
                                 endVerse = null,
+                                bookId = bookId,
                             ),
                         ),
                         isRead = false, // Not used by the use case for determining target state
                         chapterRanges = null,
                     )
-                    markPassagesRead(listOf(passage))
+                    markPassagesRead(passage)
                 }
             }
         }

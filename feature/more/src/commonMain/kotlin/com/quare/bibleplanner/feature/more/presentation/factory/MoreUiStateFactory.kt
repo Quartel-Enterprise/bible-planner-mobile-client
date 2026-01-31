@@ -11,10 +11,14 @@ import bibleplanner.feature.more.generated.resources.support_section
 import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
+import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
+import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
+import com.quare.bibleplanner.core.provider.room.entity.BibleVersionDownloadStatus
+import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.login.IsLoginVisible
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
@@ -56,44 +60,23 @@ internal class MoreUiStateFactory(
     private val supabaseClient: SupabaseClient,
     private val sessionUserMapper: SessionUserMapper,
     private val isLoginVisible: IsLoginVisible,
+    private val bibleVersionRepository: BibleVersionRepository,
+    private val bibleVersionDao: BibleVersionDao,
 ) {
     fun create(): Flow<MoreUiState> {
-        val remoteConfigsFlow = flow {
-            coroutineScope {
-                val isInstagramVisibleDeferred = async { isInstagramLinkVisible() }
-                val shouldShowDonateDeferred = async { shouldShowDonateOption() }
-                val isProDeferred = async { isProVerificationRequired() }
-                val isWebAppEnabledDeferred = async { isMoreWebAppEnabled() }
-                val isLoginVisibleDeferred = async { isLoginVisible() }
-                emit(
-                    RemoteConfigs(
-                        isInstagramVisible = isInstagramVisibleDeferred.await(),
-                        shouldShowDonate = shouldShowDonateDeferred.await(),
-                        isProVerificationRequired = isProDeferred.await(),
-                        isWebAppVisible = isWebAppEnabledDeferred.await(),
-                        isLoginVisible = isLoginVisibleDeferred.await(),
-                    ),
-                )
-            }
-        }
-
-        val themeFlow = combine(
-            getThemeOptionFlow(),
-            getContrastTypeFlow(),
-            getIsDynamicColorsEnabledFlow(),
-        ) { theme, contrast, isDynamic -> ThemeConfiguration(theme, contrast, isDynamic) }
-
-        val sessionStatsFlow = supabaseClient.auth.sessionStatus
-
         val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(
-            remoteConfigsFlow,
-            themeFlow,
-            sessionStatsFlow,
-        ) { remoteConfigs, themeConfiguration, sessionStatus ->
+            getMoreScreenRemoteConfigsFlow(),
+            getThemeConfigurationFlow(),
+            supabaseClient.auth.sessionStatus,
+            bibleVersionRepository.getSelectedVersionAbbreviationFlow(),
+            bibleVersionDao.getAllVersionsFlow(),
+        ) { remoteConfigs, themeConfiguration, sessionStatus, bibleVersion, allVersions ->
             MoreScreenConfiguration(
                 remoteConfigs = remoteConfigs,
                 themeConfiguration = themeConfiguration,
                 sessionStatus = sessionStatus,
+                bibleVersion = bibleVersion,
+                allVersions = allVersions,
             )
         }
 
@@ -112,6 +95,15 @@ internal class MoreUiStateFactory(
                 shouldShowDonate -> Res.string.support_section
                 else -> null
             }
+
+            val bibleVersionAbbrev = moreScreenConfiguration.bibleVersion
+            val bibleVersionEntity = moreScreenConfiguration.allVersions.find { it.id == bibleVersionAbbrev }
+            val downloadProgress = if (bibleVersionEntity?.isDownloaded() == true) {
+                null
+            } else {
+                bibleVersionEntity?.downloadProgress ?: 0f
+            }
+
             MoreUiState.Loaded(
                 themeRes = themeConfiguration.theme.toStringResource(),
                 contrastRes = when {
@@ -150,6 +142,33 @@ internal class MoreUiStateFactory(
                     }
                 },
                 isLoginVisible = remoteConfigs.isLoginVisible,
+                bibleVersionName = bibleVersionAbbrev,
+                bibleDownloadProgress = downloadProgress,
+            )
+        }
+    }
+
+    private fun getThemeConfigurationFlow(): Flow<ThemeConfiguration> = combine(
+        getThemeOptionFlow(),
+        getContrastTypeFlow(),
+        getIsDynamicColorsEnabledFlow(),
+    ) { theme, contrast, isDynamic -> ThemeConfiguration(theme, contrast, isDynamic) }
+
+    private fun getMoreScreenRemoteConfigsFlow(): Flow<RemoteConfigs> = flow {
+        coroutineScope {
+            val isInstagramVisibleDeferred = async { isInstagramLinkVisible() }
+            val shouldShowDonateDeferred = async { shouldShowDonateOption() }
+            val isProDeferred = async { isProVerificationRequired() }
+            val isWebAppEnabledDeferred = async { isMoreWebAppEnabled() }
+            val isLoginVisibleDeferred = async { isLoginVisible() }
+            emit(
+                RemoteConfigs(
+                    isInstagramVisible = isInstagramVisibleDeferred.await(),
+                    shouldShowDonate = shouldShowDonateDeferred.await(),
+                    isProVerificationRequired = isProDeferred.await(),
+                    isWebAppVisible = isWebAppEnabledDeferred.await(),
+                    isLoginVisible = isLoginVisibleDeferred.await(),
+                ),
             )
         }
     }
@@ -158,6 +177,8 @@ internal class MoreUiStateFactory(
         val remoteConfigs: RemoteConfigs,
         val themeConfiguration: ThemeConfiguration,
         val sessionStatus: SessionStatus,
+        val bibleVersion: String,
+        val allVersions: List<BibleVersionEntity>,
     )
 
     private data class RemoteConfigs(
@@ -185,4 +206,6 @@ internal class MoreUiStateFactory(
         ContrastType.Medium -> Res.string.contrast_medium
         ContrastType.High -> Res.string.contrast_high
     }
+
+    private fun BibleVersionEntity.isDownloaded(): Boolean = status == BibleVersionDownloadStatus.DONE
 }

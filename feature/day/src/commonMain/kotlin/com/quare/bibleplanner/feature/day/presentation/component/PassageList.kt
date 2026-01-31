@@ -11,12 +11,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 
 internal fun ResponsiveContentScope.portraitPassageList(
-    passages: List<PassagePlanModel>,
+    passages: List<PassageModel>,
     chapterReadStatus: Map<Pair<Int, Int>, Boolean>,
     onChapterToggle: (passageIndex: Int, chapterIndex: Int) -> Unit,
 ) {

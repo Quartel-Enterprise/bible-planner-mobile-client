@@ -1,0 +1,70 @@
+package com.quare.bibleplanner.feature.bibleversion.domain
+
+import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseDao
+import com.quare.bibleplanner.core.provider.room.entity.BibleVersionDownloadStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+
+internal class BibleVersionDownloaderFacadeImpl(
+    private val bibleVersionDao: BibleVersionDao,
+    private val verseDao: VerseDao,
+    private val downloadBibleUseCase: DownloadBibleUseCase,
+) : BibleVersionDownloaderFacade {
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val activeDownloads = mutableMapOf<String, Job>()
+
+    override fun downloadVersion(versionId: String) {
+        if (activeDownloads.containsKey(versionId)) return
+
+        val job = scope.launch {
+            try {
+                // Ensure Entity Exists
+                bibleVersionDao.getVersionById(versionId) ?: return@launch
+
+                bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.IN_PROGRESS)
+                downloadBibleUseCase(versionId)
+
+                // Note: DownloadBibleUseCase now updates status to DONE upon successful completion of all chapters.
+                // We double check here if it's not DONE (meaning it was cancelled or failed mid-way)
+                val updated = bibleVersionDao.getVersionById(versionId)
+                if (updated != null && updated.status != BibleVersionDownloadStatus.DONE) {
+                    bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.PAUSED)
+                }
+            } catch (e: Exception) {
+                // If it's a cancellation, status is already PAUSED by the cancel method or should be set here
+                bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.PAUSED)
+            } finally {
+                activeDownloads.remove(versionId)
+            }
+        }
+        activeDownloads[versionId] = job
+        // Wait for job to complete if needed?
+        // Method signature is suspend, but logic launches a job.
+        // If we want "fire and forget" regarding the caller waiting, we keep the job async.
+        // But the caller might expect it to block?
+        // DownloadBibleUseCase is suspend.
+        // If we want it to run in background, launching in scope is correct.
+    }
+
+    override suspend fun pauseDownload(versionId: String) {
+        activeDownloads[versionId]?.cancel()
+        activeDownloads.remove(versionId)
+        bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.PAUSED)
+    }
+
+    override suspend fun resumeDownload(versionId: String) {
+        downloadVersion(versionId)
+    }
+
+    override suspend fun deleteDownload(versionId: String) {
+        pauseDownload(versionId)
+        verseDao.deleteVerseTextsByVersion(versionId)
+        bibleVersionDao.updateDownloadProgress(versionId, 0f)
+        bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.NOT_STARTED)
+    }
+}

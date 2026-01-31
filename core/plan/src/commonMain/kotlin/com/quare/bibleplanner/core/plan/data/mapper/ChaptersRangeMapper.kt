@@ -1,16 +1,16 @@
 package com.quare.bibleplanner.core.plan.data.mapper
 
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
 
 class ChaptersRangeMapper {
-    fun map(chapters: List<ChapterPlanModel>): String = chapters.run {
+    fun map(chapters: List<ChapterModel>): String = chapters.run {
         if (isEmpty()) return ""
 
         val sortedChapters = sortedBy { it.number }
         val ranges = mutableListOf<String>()
 
-        var currentRangeStart: ChapterPlanModel? = null
-        var currentRangeEnd: ChapterPlanModel? = null
+        var currentRangeStart: ChapterModel? = null
+        var currentRangeEnd: ChapterModel? = null
 
         for (chapter in sortedChapters) {
             when {
@@ -43,8 +43,8 @@ class ChaptersRangeMapper {
     }
 
     private fun canGroupChapters(
-        first: ChapterPlanModel,
-        second: ChapterPlanModel,
+        first: ChapterModel,
+        second: ChapterModel,
     ): Boolean {
         // Can only group if chapters are consecutive
         if (second.number != first.number + 1) return false
@@ -58,8 +58,8 @@ class ChaptersRangeMapper {
     }
 
     private fun formatChapterRange(
-        start: ChapterPlanModel,
-        end: ChapterPlanModel?,
+        start: ChapterModel,
+        end: ChapterModel?,
     ): String {
         val endChapter = end ?: start
         val startVerseStr = formatVerseRange(start.startVerse, start.endVerse)

@@ -15,11 +15,14 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE,
         ),
     ],
-    indices = [Index(value = ["chapterId"])],
+    indices = [
+        Index(value = ["chapterId"]),
+        Index(value = ["chapterId", "number"], unique = true),
+    ],
 )
 data class VerseEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long,
     val number: Int,
     val chapterId: Long,
     val isRead: Boolean = false,

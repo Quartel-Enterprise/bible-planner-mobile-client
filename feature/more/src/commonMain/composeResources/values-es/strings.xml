@@ -1,6 +1,7 @@
 <resources>
     <string name="more">Más</string>
     <string name="theme_option">Tema</string>
+    <string name="bible_version_option">Versión de la Biblia</string>
     <string name="terms_of_service">Términos de Servicio</string>
     <string name="privacy_policy">Política de Privacidad</string>
     <string name="become_pro">Hazte Pro</string>

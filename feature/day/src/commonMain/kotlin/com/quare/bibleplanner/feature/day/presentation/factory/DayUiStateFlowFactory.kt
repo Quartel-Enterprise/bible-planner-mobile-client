@@ -2,8 +2,8 @@ package com.quare.bibleplanner.feature.day.presentation.factory
 
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
@@ -100,7 +100,7 @@ internal class DayUiStateFlowFactory(
      * Returns a Pair of (completedCount, totalCount).
      */
     private fun calculatePassageCounts(
-        passages: List<PassagePlanModel>,
+        passages: List<PassageModel>,
         books: List<BookDataModel>,
     ): Pair<Int, Int> {
         var totalCount = 0
@@ -136,8 +136,8 @@ internal class DayUiStateFlowFactory(
      * Check if a specific chapter within a passage is read by checking the book data.
      */
     private fun isChapterReadForCount(
-        passage: PassagePlanModel,
-        chapter: ChapterPlanModel,
+        passage: PassageModel,
+        chapter: ChapterModel,
         books: List<BookDataModel>,
     ): Boolean {
         val book = books.find { it.id == passage.bookId } ?: return false

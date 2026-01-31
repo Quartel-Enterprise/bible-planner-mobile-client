@@ -6,6 +6,7 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.compose.auth.ComposeAuth
 import io.github.jan.supabase.compose.auth.googleNativeLogin
 import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.storage.Storage
 import org.koin.dsl.module
 
 val supabaseModule = module {
@@ -18,6 +19,7 @@ val supabaseModule = module {
             install(ComposeAuth) {
                 googleNativeLogin(SupabaseBuildKonfig.SUPABASE_GOOGLE_WEB_CLIENT_ID)
             }
+            install(Storage)
         }
     }
 }

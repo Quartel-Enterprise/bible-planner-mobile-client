@@ -59,6 +59,7 @@ include(":feature:delete_notes")
 include(":feature:add_notes_free_warning")
 include(":feature:edit_plan_start_date")
 include(":feature:login")
+include(":feature:bible_version")
 
 include(":feature:paywall")
 include(":feature:congrats")

@@ -1,9 +1,11 @@
 package com.quare.bibleplanner.core.utils
 
+import co.touchlab.kermit.Logger
+
 actual fun shareContent(
     message: String,
     imageBytes: ByteArray?,
 ) {
     // No-op for JVM
-    println("Sharing on JVM: $message")
+    Logger.d { "Sharing on JVM: $message" }
 }

@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
@@ -12,8 +12,8 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class UpdateChapterReadStatusUseCase(
     private val dayRepository: DayRepository,
-    private val markPassagesReadUseCase: MarkPassagesReadUseCase,
-    private val getPlansByWeekUseCase: GetPlansByWeekUseCase,
+    private val markPassagesRead: MarkPassagesReadUseCase,
+    private val getPlansByWeek: GetPlansByWeekUseCase,
 ) {
     suspend operator fun invoke(
         weekNumber: Int,
@@ -24,7 +24,7 @@ class UpdateChapterReadStatusUseCase(
         readingPlanType: ReadingPlanType = ReadingPlanType.CHRONOLOGICAL,
     ) {
         // Get the day to access its passages
-        val plansModel = getPlansByWeekUseCase().first()
+        val plansModel = getPlansByWeek().first()
         val weeks = when (readingPlanType) {
             ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
             ReadingPlanType.BOOKS -> plansModel.booksOrder
@@ -45,7 +45,7 @@ class UpdateChapterReadStatusUseCase(
             if (chapterIndex < 0 || chapterIndex >= passage.chapters.size) return
             val chapter = passage.chapters[chapterIndex]
             // Create a passage with just this chapter
-            PassagePlanModel(
+            PassageModel(
                 bookId = passage.bookId,
                 chapters = listOf(chapter),
                 isRead = false,
@@ -54,10 +54,10 @@ class UpdateChapterReadStatusUseCase(
         }
 
         // Update the specific chapter
-        markPassagesReadUseCase(listOf(chapterToUpdate))
+        markPassagesRead(chapterToUpdate)
 
         // Check if all passages are now read
-        val updatedPlansModel = getPlansByWeekUseCase().first()
+        val updatedPlansModel = getPlansByWeek().first()
         val updatedWeeks = when (readingPlanType) {
             ReadingPlanType.CHRONOLOGICAL -> updatedPlansModel.chronologicalOrder
             ReadingPlanType.BOOKS -> updatedPlansModel.booksOrder

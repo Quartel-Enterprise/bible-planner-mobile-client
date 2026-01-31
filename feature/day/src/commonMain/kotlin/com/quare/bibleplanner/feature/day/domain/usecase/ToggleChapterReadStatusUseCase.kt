@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
 import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 
 internal class ToggleChapterReadStatusUseCase(
@@ -13,7 +13,7 @@ internal class ToggleChapterReadStatusUseCase(
         dayNumber: Int,
         passageIndex: Int,
         chapterIndex: Int,
-        passage: PassagePlanModel,
+        passage: PassageModel,
         books: List<BookDataModel>,
         readingPlanType: ReadingPlanType,
     ) {

@@ -4,11 +4,17 @@ import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
 import com.quare.bibleplanner.core.books.data.provider.BookMapsProvider
+import com.quare.bibleplanner.core.books.data.repository.BibleVersionRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
+import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.MarkBookReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
@@ -33,16 +39,21 @@ val booksModule = module {
 
     // Repository
     singleOf(::BooksRepositoryImpl).bind<BooksRepository>()
+    singleOf(::BibleVersionRepositoryImpl).bind<BibleVersionRepository>()
 
     // Mappers
     factoryOf(::BookGroupMapper)
     factoryOf(::BookCategorizationMapper)
 
     // Use cases
-    factoryOf(::InitializeBooksIfNeeded)
+    factoryOf(::InitializeBooksIfNeededUseCase)
+    factoryOf(::InitializeBibleVersionsUseCase)
     factoryOf(::MarkPassagesReadUseCase)
     factoryOf(::ResetAllProgressUseCase)
     factoryOf(::CalculateBibleProgressUseCase)
     factoryOf(::GetBooksWithInformationBoxVisibilityUseCase)
     factoryOf(::ToggleBookFavoriteUseCase)
+    factoryOf(::MarkBookReadUseCase)
+    factoryOf(::IsChapterReadUseCase)
+    factoryOf(::IsPassageReadUseCase)
 }
