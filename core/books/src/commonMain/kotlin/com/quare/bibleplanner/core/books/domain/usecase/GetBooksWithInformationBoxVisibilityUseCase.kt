@@ -17,17 +17,19 @@ class GetBooksWithInformationBoxVisibilityUseCase(
         val selectedTestament: String?,
     )
 
-    operator fun invoke(): Flow<Result> = combine(
-        booksRepository.getBooksFlow(),
-        booksRepository.getShowInformationBoxFlow(),
-        booksRepository.getBookLayoutFormatFlow(),
-        booksRepository.getSelectedTestamentFlow(),
-    ) { books, showBox, layoutFormat, selectedTestament ->
-        Result(
-            books = books,
-            isInformationBoxVisible = showBox && isMoreWebAppEnabled(),
-            layoutFormat = layoutFormat,
-            selectedTestament = selectedTestament,
-        )
+    operator fun invoke(): Flow<Result> = booksRepository.run {
+        combine(
+            getBooksFlow(),
+            getShowInformationBoxFlow(),
+            getBookLayoutFormatFlow(),
+            getSelectedTestamentFlow(),
+        ) { books, showBox, layoutFormat, selectedTestament ->
+            Result(
+                books = books,
+                isInformationBoxVisible = showBox && isMoreWebAppEnabled(),
+                layoutFormat = layoutFormat,
+                selectedTestament = selectedTestament,
+            )
+        }
     }
 }
