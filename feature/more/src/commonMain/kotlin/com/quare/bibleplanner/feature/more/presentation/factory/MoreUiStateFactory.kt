@@ -12,12 +12,12 @@ import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
-import com.quare.bibleplanner.core.provider.room.entity.BibleVersionDownloadStatus
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.login.IsLoginVisible
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
@@ -207,5 +207,5 @@ internal class MoreUiStateFactory(
         ContrastType.High -> Res.string.contrast_high
     }
 
-    private fun BibleVersionEntity.isDownloaded(): Boolean = status == BibleVersionDownloadStatus.DONE
+    private fun BibleVersionEntity.isDownloaded(): Boolean = status == DownloadStatus.DONE
 }

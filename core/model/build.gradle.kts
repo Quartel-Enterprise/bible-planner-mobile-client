@@ -15,6 +15,10 @@ kotlin {
 
             // Serialization
             implementation(libs.kotlin.serialization.json)
+
+            // Koin
+            implementation(project.dependencies.platform(libs.koinBom))
+            implementation(libs.koinCore)
         }
     }
 }

@@ -2,14 +2,15 @@ package com.quare.bibleplanner.feature.bibleversion.domain
 
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
-import com.quare.bibleplanner.core.provider.room.entity.BibleVersionDownloadStatus
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
-import com.quare.bibleplanner.feature.bibleversion.data.remote.mapper.SupabaseBookAbbreviationMapper
-import com.quare.bibleplanner.feature.bibleversion.data.remote.model.SyncChapterDto
+import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncChapterDto
+import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.storage.BucketApi
 import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,7 @@ internal class DownloadBibleUseCase(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
     private val supabaseBookAbbreviationMapper: SupabaseBookAbbreviationMapper,
+    private val bucketApi: BucketApi,
 ) {
     private val json = Json { ignoreUnknownKeys = true }
     private val syncScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -36,7 +38,7 @@ internal class DownloadBibleUseCase(
             val version = bibleVersionDao.getVersionById(versionId)
                 ?: return
 
-            if (version.status == BibleVersionDownloadStatus.DONE) return
+            if (version.status == DownloadStatus.DONE) return
 
             val pentateuch = listOf(BookId.GEN, BookId.EXO, BookId.LEV, BookId.NUM, BookId.DEU)
             val newTestament = BookId.entries.filter { it.ordinal >= BookId.MAT.ordinal }
@@ -51,7 +53,7 @@ internal class DownloadBibleUseCase(
             }
 
             // Mark as DONE after all chapters are downloaded
-            bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.DONE)
+            bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
         } catch (e: Exception) {
             Logger.e { "Global sync error: ${e.message}" }
         }
@@ -74,7 +76,7 @@ internal class DownloadBibleUseCase(
 
                             if (!exists) {
                                 val fileName = "bible/$lowerVersionId/$supabaseBookDir/${chapter.number}.json"
-                                val bytes = supabaseClient.storage.from("content").downloadPublic(fileName)
+                                val bytes = bucketApi.downloadPublic(fileName)
                                 val chapterDto = json.decodeFromString<SyncChapterDto>(bytes.decodeToString())
 
                                 saveChapterToDatabase(

@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
-import com.quare.bibleplanner.core.provider.room.entity.BibleVersionDownloadStatus
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacade
 
 class ObserveSelectedVersionUseCase(
@@ -20,6 +20,6 @@ class ObserveSelectedVersionUseCase(
         }
     }
 
-    private fun shouldDownloadAfterLaunchApp(status: BibleVersionDownloadStatus): Boolean =
-        status == BibleVersionDownloadStatus.NOT_STARTED || status == BibleVersionDownloadStatus.IN_PROGRESS
+    private fun shouldDownloadAfterLaunchApp(status: DownloadStatus): Boolean =
+        status == DownloadStatus.NOT_STARTED || status == DownloadStatus.IN_PROGRESS
 }

@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.feature.bibleversion.domain
 
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
-import com.quare.bibleplanner.core.provider.room.entity.BibleVersionDownloadStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 internal class BibleVersionDownloaderFacadeImpl(
     private val bibleVersionDao: BibleVersionDao,
     private val verseDao: VerseDao,
-    private val downloadBibleUseCase: DownloadBibleUseCase,
+    private val downloadBible: DownloadBibleUseCase,
 ) : BibleVersionDownloaderFacade {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val activeDownloads = mutableMapOf<String, Job>()
@@ -26,18 +26,18 @@ internal class BibleVersionDownloaderFacadeImpl(
                 // Ensure Entity Exists
                 bibleVersionDao.getVersionById(versionId) ?: return@launch
 
-                bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.IN_PROGRESS)
-                downloadBibleUseCase(versionId)
+                bibleVersionDao.updateStatus(versionId, DownloadStatus.IN_PROGRESS)
+                downloadBible(versionId)
 
                 // Note: DownloadBibleUseCase now updates status to DONE upon successful completion of all chapters.
                 // We double check here if it's not DONE (meaning it was cancelled or failed mid-way)
                 val updated = bibleVersionDao.getVersionById(versionId)
-                if (updated != null && updated.status != BibleVersionDownloadStatus.DONE) {
-                    bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.PAUSED)
+                if (updated != null && updated.status != DownloadStatus.DONE) {
+                    bibleVersionDao.updateStatus(versionId, DownloadStatus.PAUSED)
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // If it's a cancellation, status is already PAUSED by the cancel method or should be set here
-                bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.PAUSED)
+                bibleVersionDao.updateStatus(versionId, DownloadStatus.PAUSED)
             } finally {
                 activeDownloads.remove(versionId)
             }
@@ -54,7 +54,7 @@ internal class BibleVersionDownloaderFacadeImpl(
     override suspend fun pauseDownload(versionId: String) {
         activeDownloads[versionId]?.cancel()
         activeDownloads.remove(versionId)
-        bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.PAUSED)
+        bibleVersionDao.updateStatus(versionId, DownloadStatus.PAUSED)
     }
 
     override suspend fun resumeDownload(versionId: String) {
@@ -65,6 +65,6 @@ internal class BibleVersionDownloaderFacadeImpl(
         pauseDownload(versionId)
         verseDao.deleteVerseTextsByVersion(versionId)
         bibleVersionDao.updateDownloadProgress(versionId, 0f)
-        bibleVersionDao.updateStatus(versionId, BibleVersionDownloadStatus.NOT_STARTED)
+        bibleVersionDao.updateStatus(versionId, DownloadStatus.NOT_STARTED)
     }
 }

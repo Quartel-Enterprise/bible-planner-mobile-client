@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.bibleversion.data.remote.mapper
+package com.quare.bibleplanner.feature.bibleversion.data.mapper
 
 import com.quare.bibleplanner.core.model.book.BookId
 

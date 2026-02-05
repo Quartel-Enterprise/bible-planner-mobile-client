@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.quare.bibleplanner.core.provider.room.entity.BibleVersionDownloadStatus
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -35,7 +35,7 @@ interface BibleVersionDao {
     @Query("UPDATE bible_versions SET status = :status WHERE id = :id")
     suspend fun updateStatus(
         id: String,
-        status: BibleVersionDownloadStatus,
+        status: DownloadStatus,
     )
 
     @Query("DELETE FROM bible_versions WHERE id = :id")

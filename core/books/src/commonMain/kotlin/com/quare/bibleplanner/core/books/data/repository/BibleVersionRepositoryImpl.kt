@@ -5,7 +5,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
-import com.quare.bibleplanner.core.model.BibleVersion
 import com.quare.bibleplanner.core.utils.locale.AppLanguage
 import com.quare.bibleplanner.core.utils.locale.getCurrentLanguage
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +14,7 @@ class BibleVersionRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
 ) : BibleVersionRepository {
     override fun getSelectedVersionAbbreviationFlow(): Flow<String> = dataStore.data.map { preferences ->
-        preferences[stringPreferencesKey(BIBLE_VERSION_KEY)] ?: getDefaultVersion().name
+        preferences[stringPreferencesKey(BIBLE_VERSION_KEY)] ?: getDefaultVersion()
     }
 
     override suspend fun setSelectedVersionAbbreviation(abbreviation: String) {
@@ -24,10 +23,10 @@ class BibleVersionRepositoryImpl(
         }
     }
 
-    private fun getDefaultVersion(): BibleVersion = if (getCurrentLanguage() == AppLanguage.PORTUGUESE_BRAZIL) {
-        BibleVersion.ACF
+    private fun getDefaultVersion(): String = if (getCurrentLanguage() == AppLanguage.PORTUGUESE_BRAZIL) {
+        "ACF"
     } else {
-        BibleVersion.WEB
+        "WEB"
     }
 
     companion object {

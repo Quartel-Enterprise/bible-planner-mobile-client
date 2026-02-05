@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.bibleversion.data.remote.model
+package com.quare.bibleplanner.feature.bibleversion.data.dto
 
 import kotlinx.serialization.Serializable
 

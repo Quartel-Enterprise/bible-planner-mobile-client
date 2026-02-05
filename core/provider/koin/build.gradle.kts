@@ -25,6 +25,7 @@ kotlin {
             implementation(projects.core.provider.supabase)
             implementation(projects.core.network)
             implementation(projects.core.user)
+            implementation(projects.core.model)
 
             // Features
             implementation(projects.feature.books)

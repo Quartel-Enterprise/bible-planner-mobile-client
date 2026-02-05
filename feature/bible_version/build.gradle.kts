@@ -19,6 +19,7 @@ kotlin {
             implementation(projects.core.provider.supabase)
             implementation(projects.core.model)
             implementation(projects.core.books)
+            implementation(projects.core.network)
 
             // UI
             implementation(projects.ui.component)
@@ -51,6 +52,10 @@ kotlin {
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.storage)
+
+            // Data Store
+            implementation(libs.dataStore)
+            implementation(libs.dataStore.preferences)
         }
     }
 }
