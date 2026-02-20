@@ -1,9 +1,9 @@
-package com.quare.bibleplanner.feature.bibleversion.domain.usecase
+package com.quare.bibleplanner.core.books.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.repository.BibleVersionMetadataRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
-import com.quare.bibleplanner.feature.bibleversion.domain.repository.BibleVersionMetadataRepository
 
 internal class InitializeBibleVersionsUseCaseImpl(
     private val bibleVersionDao: BibleVersionDao,

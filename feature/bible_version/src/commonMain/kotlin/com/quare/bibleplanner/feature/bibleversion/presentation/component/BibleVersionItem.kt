@@ -5,7 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.quare.bibleplanner.feature.bibleversion.domain.model.BibleVersionModel
+import com.quare.bibleplanner.core.books.domain.model.BibleVersionModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 
 @Composable
@@ -15,7 +15,10 @@ internal fun BibleVersionItem(
 ) {
     ListItem(
         leadingContent = {
-            RadioButton(selected = false, onClick = {})
+            RadioButton(
+                selected = version.isSelected,
+                onClick = {},
+            )
         },
         headlineContent = {
             Text(

@@ -2,8 +2,8 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.books.domain.model.BibleVersionModel
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacade
-import com.quare.bibleplanner.feature.bibleversion.domain.model.BibleVersionModel
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent

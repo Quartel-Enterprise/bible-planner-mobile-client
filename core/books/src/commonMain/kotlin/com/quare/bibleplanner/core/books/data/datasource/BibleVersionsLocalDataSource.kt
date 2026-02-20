@@ -1,11 +1,11 @@
-package com.quare.bibleplanner.feature.bibleversion.data.datasource
+package com.quare.bibleplanner.core.books.data.datasource
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.quare.bibleplanner.feature.bibleversion.data.dto.VersionDto
+import com.quare.bibleplanner.core.books.data.dto.VersionDto
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 

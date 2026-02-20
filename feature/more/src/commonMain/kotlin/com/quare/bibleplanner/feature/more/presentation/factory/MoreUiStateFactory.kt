@@ -11,7 +11,7 @@ import bibleplanner.feature.more.generated.resources.support_section
 import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
-import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionAbbreviationFlowUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
@@ -60,15 +60,15 @@ internal class MoreUiStateFactory(
     private val supabaseClient: SupabaseClient,
     private val sessionUserMapper: SessionUserMapper,
     private val isLoginVisible: IsLoginVisible,
-    private val bibleVersionRepository: BibleVersionRepository,
     private val bibleVersionDao: BibleVersionDao,
+    private val getSelectedVersionAbbreviationFlow: GetSelectedVersionAbbreviationFlowUseCase,
 ) {
     fun create(): Flow<MoreUiState> {
         val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(
             getMoreScreenRemoteConfigsFlow(),
             getThemeConfigurationFlow(),
             supabaseClient.auth.sessionStatus,
-            bibleVersionRepository.getSelectedVersionAbbreviationFlow(),
+            getSelectedVersionAbbreviationFlow(),
             bibleVersionDao.getAllVersionsFlow(),
         ) { remoteConfigs, themeConfiguration, sessionStatus, bibleVersion, allVersions ->
             MoreScreenConfiguration(

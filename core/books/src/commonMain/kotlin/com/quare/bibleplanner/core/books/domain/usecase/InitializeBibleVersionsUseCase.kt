@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.bibleversion.domain.usecase
+package com.quare.bibleplanner.core.books.domain.usecase
 
 interface InitializeBibleVersionsUseCase {
     suspend operator fun invoke()

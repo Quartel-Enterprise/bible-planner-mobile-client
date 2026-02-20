@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.bibleversion.domain.model
+package com.quare.bibleplanner.core.books.domain.model
 
 data class VersionModel(
     val id: String,

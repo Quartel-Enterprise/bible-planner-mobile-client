@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.domain.usecase.impl
 
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
-import com.quare.bibleplanner.feature.bibleversion.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelectedVersionUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async

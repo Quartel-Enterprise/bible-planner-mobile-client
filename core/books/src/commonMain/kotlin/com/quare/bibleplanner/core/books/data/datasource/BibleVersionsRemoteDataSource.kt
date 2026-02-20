@@ -1,6 +1,6 @@
-package com.quare.bibleplanner.feature.bibleversion.data.datasource
+package com.quare.bibleplanner.core.books.data.datasource
 
-import com.quare.bibleplanner.feature.bibleversion.data.dto.VersionDto
+import com.quare.bibleplanner.core.books.data.dto.VersionDto
 import io.github.jan.supabase.storage.BucketApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

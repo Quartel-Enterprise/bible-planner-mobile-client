@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.bibleversion.data.dto
+package com.quare.bibleplanner.core.books.data.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
