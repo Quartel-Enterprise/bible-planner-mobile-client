@@ -17,5 +17,9 @@ sealed interface BibleVersionUiEvent {
         val id: String,
     ) : BibleVersionUiEvent
 
+    data class OnSelect(
+        val id: String,
+    ) : BibleVersionUiEvent
+
     data object OnDismiss : BibleVersionUiEvent
 }

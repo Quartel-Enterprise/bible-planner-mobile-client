@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 class GetBibleVersionsUseCase(
     private val repository: BibleVersionRepository,
 ) {
-    operator fun invoke(): Flow<List<BibleVersionModel>> = repository.getBibleVersions()
+    operator fun invoke(): Flow<List<BibleVersionModel>> = repository.getBibleVersionsFlow()
 }

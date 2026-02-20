@@ -5,7 +5,5 @@ interface BibleVersionDownloaderFacade {
 
     suspend fun pauseDownload(versionId: String)
 
-    suspend fun resumeDownload(versionId: String)
-
     suspend fun deleteDownload(versionId: String)
 }

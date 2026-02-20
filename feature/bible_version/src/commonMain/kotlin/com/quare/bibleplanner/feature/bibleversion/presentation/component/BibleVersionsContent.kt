@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.domain.model.BibleVersionModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
@@ -43,6 +44,7 @@ internal fun BibleVersionsContent(
         LazyColumn {
             items(versions) { version ->
                 BibleVersionItem(
+                    modifier = Modifier.padding(8.dp).clip(MaterialTheme.shapes.medium),
                     version = version,
                     onEvent = onEvent,
                 )

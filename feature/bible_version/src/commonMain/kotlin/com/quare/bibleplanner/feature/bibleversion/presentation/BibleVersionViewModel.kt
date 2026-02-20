@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.model.BibleVersionModel
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class BibleVersionViewModel(
     getBibleVersionsUseCase: GetBibleVersionsUseCase,
+    private val setSelectedVersion: SetSelectedVersionUseCase,
     private val downloaderFacade: BibleVersionDownloaderFacade,
 ) : ViewModel() {
     private val _uiAction: MutableSharedFlow<BibleVersionUiAction> = MutableSharedFlow()
@@ -34,6 +36,7 @@ class BibleVersionViewModel(
             is BibleVersionUiEvent.OnPause -> pauseDownload(event.id)
             is BibleVersionUiEvent.OnResume -> resumeDownload(event.id)
             is BibleVersionUiEvent.OnDelete -> deleteVersion(event.id)
+            is BibleVersionUiEvent.OnSelect -> selectVersion(event.id)
             BibleVersionUiEvent.OnDismiss -> dismiss()
         }
     }
@@ -50,13 +53,19 @@ class BibleVersionViewModel(
 
     private fun resumeDownload(id: String) {
         viewModelScope.launch {
-            downloaderFacade.resumeDownload(id)
+            downloaderFacade.downloadVersion(id)
         }
     }
 
     private fun deleteVersion(id: String) {
         viewModelScope.launch {
             downloaderFacade.deleteDownload(id)
+        }
+    }
+
+    private fun selectVersion(id: String) {
+        viewModelScope.launch {
+            setSelectedVersion(id)
         }
     }
 

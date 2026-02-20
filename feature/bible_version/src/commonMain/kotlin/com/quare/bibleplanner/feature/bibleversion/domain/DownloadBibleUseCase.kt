@@ -9,9 +9,7 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncChapterDto
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
-import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.storage.BucketApi
-import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -23,7 +21,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 
 internal class DownloadBibleUseCase(
-    private val supabaseClient: SupabaseClient,
     private val bibleVersionDao: BibleVersionDao,
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
