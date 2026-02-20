@@ -3,19 +3,20 @@ package com.quare.bibleplanner.core.books.di
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataSource
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
-import com.quare.bibleplanner.core.books.data.mapper.BibleSelectionMapper
+import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
 import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
 import com.quare.bibleplanner.core.books.data.provider.BookMapsProvider
-import com.quare.bibleplanner.core.books.data.repository.BibleVersionMetadataRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BibleVersionRepositoryImpl
+import com.quare.bibleplanner.core.books.data.repository.BibleRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
-import com.quare.bibleplanner.core.books.domain.repository.BibleVersionMetadataRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
+import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionAbbreviationFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCaseImpl
@@ -38,8 +39,8 @@ val booksModule = module {
     factoryOf(::BibleVersionsRemoteDataSource)
     factoryOf(::BibleVersionsLocalDataSource)
     factoryOf(::VersionMapper)
-    singleOf(::BibleVersionMetadataRepositoryImpl).bind<BibleVersionMetadataRepository>()
-    factoryOf(::BibleSelectionMapper)
+    singleOf(::BibleVersionRepositoryImpl).bind<BibleVersionRepository>()
+    factoryOf(::BibleMapper)
 
     // Providers
     singleOf(::BookMapsProvider)
@@ -51,7 +52,7 @@ val booksModule = module {
 
     // Repository
     singleOf(::BooksRepositoryImpl).bind<BooksRepository>()
-    singleOf(::BibleVersionRepositoryImpl).bind<BibleVersionRepository>()
+    singleOf(::BibleRepositoryImpl).bind<BibleRepository>()
 
     // Mappers
     factoryOf(::BookGroupMapper)
@@ -60,6 +61,7 @@ val booksModule = module {
     factoryOf(::InitializeBibleVersionsUseCaseImpl).bind<InitializeBibleVersionsUseCase>()
     factoryOf(::InitializeBooksIfNeededUseCase)
     factoryOf(::GetSelectedVersionAbbreviationFlowUseCase)
+    factoryOf(::GetSelectedBibleUseCase)
     factoryOf(::MarkPassagesReadUseCase)
     factoryOf(::ResetAllProgressUseCase)
     factoryOf(::CalculateBibleProgressUseCase)

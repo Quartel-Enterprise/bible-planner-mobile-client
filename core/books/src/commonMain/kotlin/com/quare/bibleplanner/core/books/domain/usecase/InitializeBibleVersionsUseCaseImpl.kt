@@ -1,13 +1,13 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.repository.BibleVersionMetadataRepository
+import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 
 internal class InitializeBibleVersionsUseCaseImpl(
     private val bibleVersionDao: BibleVersionDao,
-    private val metadataRepository: BibleVersionMetadataRepository,
+    private val metadataRepository: BibleVersionRepository,
 ) : InitializeBibleVersionsUseCase {
     override suspend fun invoke() {
         metadataRepository

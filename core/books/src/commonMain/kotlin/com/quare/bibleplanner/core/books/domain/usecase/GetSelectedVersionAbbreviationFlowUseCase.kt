@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
+import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetSelectedVersionAbbreviationFlowUseCase(
-    private val bibleVersionRepository: BibleVersionRepository,
+    private val bibleRepository: BibleRepository,
 ) {
-    operator fun invoke(): Flow<String> = bibleVersionRepository.getSelectedVersionAbbreviationFlow()
+    operator fun invoke(): Flow<String> = bibleRepository.getSelectedVersionIdFlow()
 }

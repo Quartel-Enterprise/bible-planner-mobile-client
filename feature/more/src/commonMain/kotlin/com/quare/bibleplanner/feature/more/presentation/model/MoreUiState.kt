@@ -23,7 +23,7 @@ internal sealed interface MoreUiState {
         val appVersion: String,
         val isLoginVisible: Boolean,
         val accountStatusModel: AccountStatusModel,
-        val bibleVersionName: String,
+        val bibleVersionName: String?,
         val bibleDownloadProgress: Float?,
     ) : MoreUiState
 }

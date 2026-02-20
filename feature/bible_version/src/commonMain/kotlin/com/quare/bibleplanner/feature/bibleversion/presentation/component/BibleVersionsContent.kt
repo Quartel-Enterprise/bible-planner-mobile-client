@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.bible_version.generated.resources.Res
 import bibleplanner.feature.bible_version.generated.resources.bible_versions
 import bibleplanner.feature.bible_version.generated.resources.manage_bible_versions_description
-import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun BibleVersionsContent(
     modifier: Modifier = Modifier,
-    selectionMap: Map<Language, List<BibleSelectionModel>>,
+    selectionMap: Map<Language, List<BibleModel>>,
     onEvent: (BibleVersionUiEvent) -> Unit,
 ) {
     Column(

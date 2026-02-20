@@ -11,7 +11,7 @@ import bibleplanner.feature.more.generated.resources.support_section
 import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
-import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionAbbreviationFlowUseCase
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
@@ -25,6 +25,7 @@ import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.generated.MoreBuildKonfig
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
@@ -61,21 +62,21 @@ internal class MoreUiStateFactory(
     private val sessionUserMapper: SessionUserMapper,
     private val isLoginVisible: IsLoginVisible,
     private val bibleVersionDao: BibleVersionDao,
-    private val getSelectedVersionAbbreviationFlow: GetSelectedVersionAbbreviationFlowUseCase,
+    private val getSelectedBible: GetSelectedBibleUseCase
 ) {
     fun create(): Flow<MoreUiState> {
         val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(
             getMoreScreenRemoteConfigsFlow(),
             getThemeConfigurationFlow(),
             supabaseClient.auth.sessionStatus,
-            getSelectedVersionAbbreviationFlow(),
+            getSelectedBible(),
             bibleVersionDao.getAllVersionsFlow(),
-        ) { remoteConfigs, themeConfiguration, sessionStatus, bibleVersion, allVersions ->
+        ) { remoteConfigs, themeConfiguration, sessionStatus, selectedBible, allVersions ->
             MoreScreenConfiguration(
                 remoteConfigs = remoteConfigs,
                 themeConfiguration = themeConfiguration,
                 sessionStatus = sessionStatus,
-                bibleVersion = bibleVersion,
+                selectedBible = selectedBible,
                 allVersions = allVersions,
             )
         }
@@ -96,8 +97,8 @@ internal class MoreUiStateFactory(
                 else -> null
             }
 
-            val bibleVersionAbbrev = moreScreenConfiguration.bibleVersion
-            val bibleVersionEntity = moreScreenConfiguration.allVersions.find { it.id == bibleVersionAbbrev }
+            val selectedBible = moreScreenConfiguration.selectedBible
+            val bibleVersionEntity = moreScreenConfiguration.allVersions.find { it.id == selectedBible?.version?.id }
             val downloadProgress = if (bibleVersionEntity?.isDownloaded() == true) {
                 null
             } else {
@@ -142,7 +143,7 @@ internal class MoreUiStateFactory(
                     }
                 },
                 isLoginVisible = remoteConfigs.isLoginVisible,
-                bibleVersionName = bibleVersionAbbrev,
+                bibleVersionName = selectedBible?.version?.name,
                 bibleDownloadProgress = downloadProgress,
             )
         }
@@ -177,7 +178,7 @@ internal class MoreUiStateFactory(
         val remoteConfigs: RemoteConfigs,
         val themeConfiguration: ThemeConfiguration,
         val sessionStatus: SessionStatus,
-        val bibleVersion: String,
+        val selectedBible: BibleModel?,
         val allVersions: List<BibleVersionEntity>,
     )
 

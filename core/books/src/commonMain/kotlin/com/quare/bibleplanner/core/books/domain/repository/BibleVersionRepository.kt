@@ -1,12 +1,7 @@
 package com.quare.bibleplanner.core.books.domain.repository
 
-import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
-import kotlinx.coroutines.flow.Flow
+import com.quare.bibleplanner.core.books.domain.model.VersionModel
 
 interface BibleVersionRepository {
-    fun getSelectableBibleVersions(): Flow<List<BibleSelectionModel>>
-
-    fun getSelectedVersionAbbreviationFlow(): Flow<String>
-
-    suspend fun setSelectedVersionId(id: String)
+    suspend fun getVersions(): Result<List<VersionModel>>
 }

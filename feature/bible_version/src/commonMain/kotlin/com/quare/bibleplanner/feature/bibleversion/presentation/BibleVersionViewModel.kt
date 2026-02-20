@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
@@ -24,7 +24,7 @@ class BibleVersionViewModel(
     private val _uiAction: MutableSharedFlow<BibleVersionUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<BibleVersionUiAction> = _uiAction
 
-    val uiState: StateFlow<Map<Language, List<BibleSelectionModel>>> = getBibleVersionsUseCase()
+    val uiState: StateFlow<Map<Language, List<BibleModel>>> = getBibleVersionsUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

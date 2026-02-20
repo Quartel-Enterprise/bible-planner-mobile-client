@@ -9,14 +9,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
+import bibleplanner.feature.bible_version.generated.resources.Res
+import bibleplanner.feature.bible_version.generated.resources.english
+import bibleplanner.feature.bible_version.generated.resources.portuguese_brazil
+import bibleplanner.feature.bible_version.generated.resources.spanish
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun BibleVersionsListComponent(
     modifier: Modifier = Modifier,
-    selectionMap: Map<Language, List<BibleSelectionModel>>,
+    selectionMap: Map<Language, List<BibleModel>>,
     onEvent: (BibleVersionUiEvent) -> Unit,
 ) {
     LazyColumn(modifier = modifier) {
@@ -25,9 +30,9 @@ internal fun BibleVersionsListComponent(
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp),
                     text = when (language) {
-                        Language.ENGLISH -> "English"
-                        Language.PORTUGUESE_BRAZIL -> "Portuguese (Brazil)"
-                        Language.SPANISH -> "Spanish"
+                        Language.ENGLISH -> stringResource(Res.string.english)
+                        Language.PORTUGUESE_BRAZIL -> stringResource(Res.string.portuguese_brazil)
+                        Language.SPANISH -> stringResource(Res.string.spanish)
                     },
                     style = MaterialTheme.typography.labelMedium,
                 )

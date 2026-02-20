@@ -7,13 +7,13 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 
 @Composable
 internal fun BibleVersionItem(
     modifier: Modifier = Modifier,
-    model: BibleSelectionModel,
+    model: BibleModel,
     onEvent: (BibleVersionUiEvent) -> Unit,
 ) {
     val versionId = model.version.id
@@ -41,7 +41,7 @@ internal fun BibleVersionItem(
         },
         trailingContent = {
             BibleVersionItemDownloadStatusComponent(
-                status = model.status,
+                status = model.downloadStatus,
                 onEvent = { onEvent(it(versionId)) },
             )
         },

@@ -6,4 +6,7 @@
     <string name="delete">Eliminar</string>
     <string name="bible_versions">Versiones de la Biblia</string>
     <string name="manage_bible_versions_description">Administra tus versiones de la Biblia descargadas y selecciona una para leer.</string>
+    <string name="english">Inglés</string>
+    <string name="portuguese_brazil">Portugués (Brasil)</string>
+    <string name="spanish">Español</string>
 </resources>

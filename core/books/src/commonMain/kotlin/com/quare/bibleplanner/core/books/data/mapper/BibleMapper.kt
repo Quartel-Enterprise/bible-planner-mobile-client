@@ -1,25 +1,25 @@
 package com.quare.bibleplanner.core.books.data.mapper
 
-import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusMapper
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 
-internal class BibleSelectionMapper(
+internal class BibleMapper(
     private val downloadStatusMapper: DownloadStatusMapper,
 ) {
     fun map(
         dataBaseVersions: List<BibleVersionEntity>,
         supportedVersions: List<VersionModel>,
-    ): List<BibleSelectionModel> = supportedVersions.mapNotNull { versionModel: VersionModel ->
+    ): List<BibleModel> = supportedVersions.mapNotNull { versionModel: VersionModel ->
         dataBaseVersions.find { it.id == versionModel.id }?.toDomain(versionModel)
     }
 
-    private fun BibleVersionEntity.toDomain(versionModel: VersionModel): BibleSelectionModel = run {
-        BibleSelectionModel(
+    private fun BibleVersionEntity.toDomain(versionModel: VersionModel): BibleModel = run {
+        BibleModel(
             version = versionModel,
-            status = toStatus(),
+            downloadStatus = toStatus(),
             isSelected = false,
         )
     }
