@@ -3,7 +3,7 @@ package com.quare.bibleplanner.core.books.di
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataSource
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
-import com.quare.bibleplanner.core.books.data.mapper.BibleVersionMapper
+import com.quare.bibleplanner.core.books.data.mapper.BibleSelectionMapper
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
 import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
@@ -39,7 +39,7 @@ val booksModule = module {
     factoryOf(::BibleVersionsLocalDataSource)
     factoryOf(::VersionMapper)
     singleOf(::BibleVersionMetadataRepositoryImpl).bind<BibleVersionMetadataRepository>()
-    factoryOf(::BibleVersionMapper)
+    factoryOf(::BibleSelectionMapper)
 
     // Providers
     singleOf(::BookMapsProvider)

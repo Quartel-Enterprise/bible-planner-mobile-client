@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="download">Descargar</string>
+    <string name="pause">Pausar</string>
+    <string name="resume">Reanudar</string>
+    <string name="delete">Eliminar</string>
+    <string name="bible_versions">Versiones de la Biblia</string>
+    <string name="manage_bible_versions_description">Administra tus versiones de la Biblia descargadas y selecciona una para leer.</string>
+</resources>

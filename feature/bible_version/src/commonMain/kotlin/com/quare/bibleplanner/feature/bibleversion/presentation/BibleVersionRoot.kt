@@ -28,8 +28,8 @@ fun NavGraphBuilder.bibleVersionRoot(navController: NavHostController) {
         )
         ModalBottomSheet(onDismissRequest = { onEvent(BibleVersionUiEvent.OnDismiss) }) {
             BibleVersionsContent(
-                modifier = Modifier.padding(bottom = 32.dp),
-                versions = versions,
+                modifier = Modifier.padding(bottom = 32.dp).padding(horizontal = 16.dp),
+                selectionMap = versions,
                 onEvent = onEvent,
             )
         }

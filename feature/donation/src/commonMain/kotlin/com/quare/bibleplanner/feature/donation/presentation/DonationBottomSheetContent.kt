@@ -11,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.Icon
@@ -47,7 +46,7 @@ import bibleplanner.feature.donation.generated.resources.donation_usdt
 import bibleplanner.feature.donation.generated.resources.donation_usdt_description
 import bibleplanner.feature.donation.generated.resources.ic_bitcoin
 import bibleplanner.feature.donation.generated.resources.ic_pix
-import com.quare.bibleplanner.core.utils.locale.AppLanguage
+import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.core.utils.locale.getCurrentLanguage
 import com.quare.bibleplanner.feature.donation.generated.DonationBuildKonfig
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
@@ -204,7 +203,7 @@ fun DonationBottomSheetContent(
             )
         }
 
-        if (getCurrentLanguage() == AppLanguage.PORTUGUESE_BRAZIL) {
+        if (getCurrentLanguage() == Language.PORTUGUESE_BRAZIL) {
             pixSection()
             VerticalSpacer(12.dp)
             bitcoinSection()

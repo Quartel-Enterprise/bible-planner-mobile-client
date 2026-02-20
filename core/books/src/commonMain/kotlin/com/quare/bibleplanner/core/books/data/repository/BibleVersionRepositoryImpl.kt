@@ -4,8 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.quare.bibleplanner.core.books.data.mapper.BibleVersionMapper
-import com.quare.bibleplanner.core.books.domain.model.BibleVersionModel
+import com.quare.bibleplanner.core.books.data.mapper.BibleSelectionMapper
+import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionMetadataRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
@@ -20,26 +20,26 @@ import kotlinx.coroutines.flow.map
 internal class BibleVersionRepositoryImpl(
     private val bibleVersionDao: BibleVersionDao,
     private val metadataRepository: BibleVersionMetadataRepository,
-    private val bibleVersionMapper: BibleVersionMapper,
+    private val bibleSelectionMapper: BibleSelectionMapper,
     private val dataStore: DataStore<Preferences>,
 ) : BibleVersionRepository {
     private val bibleVersionKey = stringPreferencesKey(BIBLE_VERSION_KEY)
 
-    override fun getBibleVersionsFlow(): Flow<List<BibleVersionModel>> = flow {
+    override fun getSelectableBibleVersions(): Flow<List<BibleSelectionModel>> = flow {
         val supportedVersions: List<VersionModel> = metadataRepository.getVersions().getOrDefault(emptyList())
         emitAll(
             combine(
                 getSelectedVersionAbbreviationFlow(),
                 bibleVersionDao.getAllVersionsFlow().map {
-                    bibleVersionMapper.map(
+                    bibleSelectionMapper.map(
                         dataBaseVersions = it,
                         supportedVersions = supportedVersions,
                     )
                 },
-            ) { selectedVersion, versions ->
-                versions.map { version ->
-                    version.copy(
-                        isSelected = version.id.equals(
+            ) { selectedVersion, selectionModels ->
+                selectionModels.map { selectionModel ->
+                    selectionModel.copy(
+                        isSelected = selectionModel.version.id.equals(
                             other = selectedVersion,
                             ignoreCase = true,
                         ),

@@ -10,13 +10,13 @@ class SetSelectedVersionUseCase(
     private val bibleVersionDownloaderFacade: BibleVersionDownloaderFacade,
 ) {
     suspend operator fun invoke(selectedId: String) {
-        val versions = repository.getBibleVersionsFlow().first()
-        versions.forEach { version ->
-            val versionId = version.id
+        val selectionModels = repository.getSelectableBibleVersions().first()
+        selectionModels.forEach { model ->
+            val versionId = model.version.id
             bibleVersionDownloaderFacade.run {
                 if (versionId == selectedId) {
                     downloadVersion(versionId)
-                } else if (version.status is DownloadStatusModel.InProgress.Downloading) {
+                } else if (model.status is DownloadStatusModel.InProgress.Downloading) {
                     pauseDownload(versionId)
                 }
             }

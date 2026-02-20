@@ -3,21 +3,24 @@ package com.quare.bibleplanner.feature.bibleversion.presentation.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.books.domain.model.BibleVersionModel
+import bibleplanner.feature.bible_version.generated.resources.Res
+import bibleplanner.feature.bible_version.generated.resources.bible_versions
+import bibleplanner.feature.bible_version.generated.resources.manage_bible_versions_description
+import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
+import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
+import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun BibleVersionsContent(
     modifier: Modifier = Modifier,
-    versions: List<BibleVersionModel>,
+    selectionMap: Map<Language, List<BibleSelectionModel>>,
     onEvent: (BibleVersionUiEvent) -> Unit,
 ) {
     Column(
@@ -25,30 +28,20 @@ internal fun BibleVersionsContent(
     ) {
         Text(
             modifier = Modifier.padding(
-                horizontal = 16.dp,
                 vertical = 8.dp,
             ),
-            text = "Bible Versions",
+            text = stringResource(Res.string.bible_versions),
             style = MaterialTheme.typography.titleLarge,
         )
         Text(
-            modifier = Modifier.padding(
-                horizontal = 16.dp,
-                vertical = 8.dp,
-            ),
-            text = "Manage your downloaded Bible versions and select one to read.",
-            style = MaterialTheme.typography.labelMedium,
+            text = stringResource(Res.string.manage_bible_versions_description),
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-
-        LazyColumn {
-            items(versions) { version ->
-                BibleVersionItem(
-                    modifier = Modifier.padding(8.dp).clip(MaterialTheme.shapes.medium),
-                    version = version,
-                    onEvent = onEvent,
-                )
-            }
-        }
+        VerticalSpacer(8)
+        BibleVersionsListComponent(
+            selectionMap = selectionMap,
+            onEvent = onEvent,
+        )
     }
 }

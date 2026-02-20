@@ -24,13 +24,16 @@ internal class BibleVersionDownloaderFacadeImpl(
         val job = scope.launch {
             try {
                 // Ensure Entity Exists
-                bibleVersionDao.getVersionById(versionId) ?: return@launch
+                val version = bibleVersionDao.getVersionById(versionId) ?: return@launch
+
+                // If already downloaded, skip
+                if (version.status == DownloadStatus.DONE) return@launch
 
                 bibleVersionDao.updateStatus(versionId, DownloadStatus.IN_PROGRESS)
                 downloadBible(versionId)
 
-                // Note: DownloadBibleUseCase now updates status to DONE upon successful completion of all chapters.
-                // We double check here if it's not DONE (meaning it was cancelled or failed mid-way)
+                // Note: DownloadBibleUseCase now updates the status to DONE upon successful completion of all chapters.
+                // We double-check here if it's not DONE (meaning it was canceled or failed midway)
                 val updated = bibleVersionDao.getVersionById(versionId)
                 if (updated != null && updated.status != DownloadStatus.DONE) {
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.PAUSED)
@@ -43,12 +46,6 @@ internal class BibleVersionDownloaderFacadeImpl(
             }
         }
         activeDownloads[versionId] = job
-        // Wait for job to complete if needed?
-        // Method signature is suspend, but logic launches a job.
-        // If we want "fire and forget" regarding the caller waiting, we keep the job async.
-        // But the caller might expect it to block?
-        // DownloadBibleUseCase is suspend.
-        // If we want it to run in background, launching in scope is correct.
     }
 
     override suspend fun pauseDownload(versionId: String) {

@@ -2,9 +2,10 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.bibleplanner.core.books.domain.model.BibleVersionModel
+import com.quare.bibleplanner.core.books.domain.model.BibleSelectionModel
+import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacade
-import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
@@ -16,18 +17,18 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class BibleVersionViewModel(
-    getBibleVersionsUseCase: GetBibleVersionsUseCase,
+    getBibleVersionsUseCase: GetBibleVersionsByLanguageUseCase,
     private val setSelectedVersion: SetSelectedVersionUseCase,
     private val downloaderFacade: BibleVersionDownloaderFacade,
 ) : ViewModel() {
     private val _uiAction: MutableSharedFlow<BibleVersionUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<BibleVersionUiAction> = _uiAction
 
-    val uiState: StateFlow<List<BibleVersionModel>> = getBibleVersionsUseCase()
+    val uiState: StateFlow<Map<Language, List<BibleSelectionModel>>> = getBibleVersionsUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList(),
+            initialValue = emptyMap(),
         )
 
     fun onEvent(event: BibleVersionUiEvent) {

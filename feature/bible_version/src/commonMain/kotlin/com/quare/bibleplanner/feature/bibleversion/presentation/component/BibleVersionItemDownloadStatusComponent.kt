@@ -18,9 +18,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import bibleplanner.feature.bible_version.generated.resources.Res
+import bibleplanner.feature.bible_version.generated.resources.delete
+import bibleplanner.feature.bible_version.generated.resources.download
+import bibleplanner.feature.bible_version.generated.resources.pause
+import bibleplanner.feature.bible_version.generated.resources.resume
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun BibleVersionItemDownloadStatusComponent(
@@ -31,7 +37,7 @@ internal fun BibleVersionItemDownloadStatusComponent(
         DownloadStatusModel.NotStarted -> {
             CommonIconButton(
                 imageVector = Icons.Rounded.Download,
-                contentDescription = "Download",
+                contentDescription = stringResource(Res.string.download),
                 onClick = { onEvent(BibleVersionUiEvent::OnDownload) },
             )
         }
@@ -44,7 +50,7 @@ internal fun BibleVersionItemDownloadStatusComponent(
             CircularProgressAction(
                 progress = status.progress,
                 imageVector = Icons.Rounded.Pause,
-                contentDescription = "Pause",
+                contentDescription = stringResource(Res.string.pause),
                 onClick = { onEvent(BibleVersionUiEvent::OnPause) },
             )
         }
@@ -57,7 +63,7 @@ internal fun BibleVersionItemDownloadStatusComponent(
                 CircularProgressAction(
                     progress = status.progress,
                     imageVector = Icons.Rounded.PlayArrow,
-                    contentDescription = "Resume",
+                    contentDescription = stringResource(Res.string.resume),
                     progressColor = MaterialTheme.colorScheme.outlineVariant,
                     onClick = { onEvent(BibleVersionUiEvent::OnResume) },
                 )
@@ -71,7 +77,7 @@ internal fun BibleVersionItemDownloadStatusComponent(
 private fun DeleteIcon(onEvent: ((String) -> BibleVersionUiEvent) -> Unit) {
     CommonIconButton(
         imageVector = Icons.Rounded.Delete,
-        contentDescription = "Delete",
+        contentDescription = stringResource(Res.string.delete),
         onClick = { onEvent(BibleVersionUiEvent::OnDelete) },
     )
 }
@@ -91,12 +97,13 @@ private fun CircularProgressAction(
     ) {
         CircularProgressIndicator(
             progress = { progress },
-            modifier = Modifier.size(42.dp),
+            modifier = Modifier.size(32.dp),
             strokeWidth = 3.dp,
             strokeCap = StrokeCap.Round,
             color = progressColor,
         )
         CommonIconButton(
+            modifier = Modifier.size(24.dp),
             imageVector = imageVector,
             contentDescription = contentDescription,
             onClick = onClick,

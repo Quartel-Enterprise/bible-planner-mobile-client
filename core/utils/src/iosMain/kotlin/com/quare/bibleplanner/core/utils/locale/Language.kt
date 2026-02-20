@@ -5,13 +5,13 @@ import platform.Foundation.currentLocale
 import platform.Foundation.languageCode
 import platform.Foundation.regionCode
 
-actual fun getCurrentLanguage(): AppLanguage {
+actual fun getCurrentLanguage(): Language {
     val locale = NSLocale.currentLocale
     val language = locale.languageCode
     val region = locale.regionCode
     return when {
-        language == "pt" && region == "BR" -> AppLanguage.PORTUGUESE_BRAZIL
-        language.startsWith("es") -> AppLanguage.SPANISH
-        else -> AppLanguage.ENGLISH
+        language == "pt" && region == "BR" -> Language.PORTUGUESE_BRAZIL
+        language.startsWith("es") -> Language.SPANISH
+        else -> Language.ENGLISH
     }
 }

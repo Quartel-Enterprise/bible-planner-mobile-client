@@ -20,6 +20,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.books)
             implementation(projects.core.network)
+            implementation(projects.core.utils)
 
             // UI
             implementation(projects.ui.component)
