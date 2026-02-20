@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetSelectedBibleUseCase(
-    private val bibleRepository: BibleRepository
+    private val bibleRepository: BibleRepository,
 ) {
     operator fun invoke(): Flow<BibleModel?> = bibleRepository.getBiblesFlow().map { selectableVersions ->
         selectableVersions.find { it.isSelected }

@@ -12,6 +12,7 @@ import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
@@ -25,7 +26,6 @@ import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
-import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.generated.MoreBuildKonfig
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
@@ -62,7 +62,7 @@ internal class MoreUiStateFactory(
     private val sessionUserMapper: SessionUserMapper,
     private val isLoginVisible: IsLoginVisible,
     private val bibleVersionDao: BibleVersionDao,
-    private val getSelectedBible: GetSelectedBibleUseCase
+    private val getSelectedBible: GetSelectedBibleUseCase,
 ) {
     fun create(): Flow<MoreUiState> {
         val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(

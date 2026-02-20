@@ -8,11 +8,11 @@ import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
 import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
 import com.quare.bibleplanner.core.books.data.provider.BookMapsProvider
-import com.quare.bibleplanner.core.books.data.repository.BibleVersionRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BibleRepositoryImpl
+import com.quare.bibleplanner.core.books.data.repository.BibleVersionRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
-import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase

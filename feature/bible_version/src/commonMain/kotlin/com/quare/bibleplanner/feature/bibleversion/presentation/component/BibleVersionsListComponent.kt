@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation.component
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,18 +30,21 @@ internal fun BibleVersionsListComponent(
             item {
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    text = when (language) {
-                        Language.ENGLISH -> stringResource(Res.string.english)
-                        Language.PORTUGUESE_BRAZIL -> stringResource(Res.string.portuguese_brazil)
-                        Language.SPANISH -> stringResource(Res.string.spanish)
-                    },
+                    text = stringResource(
+                        when (language) {
+                            Language.ENGLISH -> Res.string.english
+                            Language.PORTUGUESE_BRAZIL -> Res.string.portuguese_brazil
+                            Language.SPANISH -> Res.string.spanish
+                        },
+                    ),
                     style = MaterialTheme.typography.labelMedium,
                 )
             }
             selectionMap[language]?.let { versions ->
                 items(versions) { version ->
                     BibleVersionItem(
-                        modifier = Modifier.padding(vertical = 8.dp).clip(MaterialTheme.shapes.medium),
+                        modifier = Modifier
+                            .padding(vertical = 8.dp),
                         model = version,
                         onEvent = onEvent,
                     )

@@ -9,4 +9,7 @@
     <string name="english">Inglés</string>
     <string name="portuguese_brazil">Portugués (Brasil)</string>
     <string name="spanish">Español</string>
+    <string name="downloaded">Descargado</string>
+    <string name="downloading_progress">Descargando: %1$s%</string>
+    <string name="paused_progress">Descarga pausada al %1$s%</string>
 </resources>
