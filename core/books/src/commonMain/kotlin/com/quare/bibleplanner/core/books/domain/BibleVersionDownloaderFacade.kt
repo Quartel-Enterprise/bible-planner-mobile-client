@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.bibleversion.domain
+package com.quare.bibleplanner.core.books.domain
 
 interface BibleVersionDownloaderFacade {
     fun downloadVersion(versionId: String)

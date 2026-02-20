@@ -2,9 +2,10 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
+import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
@@ -59,9 +60,7 @@ class BibleVersionViewModel(
     }
 
     private fun deleteVersion(id: String) {
-        viewModelScope.launch {
-            downloaderFacade.deleteDownload(id)
-        }
+        emitUiAction(BibleVersionUiAction.NavigateToRoute(DeleteVersionNavRoute(id)))
     }
 
     private fun selectVersion(id: String) {
@@ -71,8 +70,12 @@ class BibleVersionViewModel(
     }
 
     private fun dismiss() {
+        emitUiAction(BibleVersionUiAction.BackToPreviousRoute)
+    }
+
+    private fun emitUiAction(uiAction: BibleVersionUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(BibleVersionUiAction.BackToPreviousRoute)
+            _uiAction.emit(uiAction)
         }
     }
 }

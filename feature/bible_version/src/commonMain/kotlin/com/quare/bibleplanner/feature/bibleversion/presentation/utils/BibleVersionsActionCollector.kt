@@ -8,12 +8,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Composable
 internal fun BibleVersionsActionCollector(
-    navHostController: NavHostController,
+    navController: NavHostController,
     uiActionFlow: Flow<BibleVersionUiAction>,
 ) {
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            BibleVersionUiAction.BackToPreviousRoute -> navHostController.navigateUp()
+            BibleVersionUiAction.BackToPreviousRoute -> navController.navigateUp()
+            is BibleVersionUiAction.NavigateToRoute -> navController.navigate(action.route)
         }
     }
 }

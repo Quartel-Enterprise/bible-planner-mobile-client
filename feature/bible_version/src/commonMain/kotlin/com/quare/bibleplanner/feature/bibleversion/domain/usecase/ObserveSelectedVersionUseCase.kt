@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionAbbreviationFlowUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
-import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacade
 
 class ObserveSelectedVersionUseCase(
     private val bibleVersionDao: BibleVersionDao,

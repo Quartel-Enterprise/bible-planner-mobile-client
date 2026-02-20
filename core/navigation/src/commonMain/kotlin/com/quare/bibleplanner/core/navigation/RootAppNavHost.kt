@@ -8,12 +8,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
-import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionRoot
+import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelection
 import com.quare.bibleplanner.feature.bookdetails.presentation.bookDetails
 import com.quare.bibleplanner.feature.congrats.presentation.congrats
 import com.quare.bibleplanner.feature.day.presentation.day
 import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
 import com.quare.bibleplanner.feature.deleteprogress.presentation.deleteProgress
+import com.quare.bibleplanner.feature.deleteversion.presentation.deleteVersion
 import com.quare.bibleplanner.feature.donation.pixqr.presentation.pixQr
 import com.quare.bibleplanner.feature.donation.presentation.donation
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
@@ -65,7 +66,8 @@ fun RootAppNavHost() {
                 navController = navController,
                 sharedTransitionScope = sharedTransitionScope,
             )
-            bibleVersionRoot(navController)
+            bibleVersionSelection(navController)
+            deleteVersion(navController)
         }
     }
 }

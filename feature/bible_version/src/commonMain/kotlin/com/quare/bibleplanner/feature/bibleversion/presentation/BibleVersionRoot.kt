@@ -17,13 +17,13 @@ import com.quare.bibleplanner.feature.bibleversion.presentation.utils.BibleVersi
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.bibleVersionRoot(navController: NavHostController) {
+fun NavGraphBuilder.bibleVersionSelection(navController: NavHostController) {
     dialog<BibleVersionSelectorRoute> {
         val viewModel: BibleVersionViewModel = koinViewModel()
         val onEvent = viewModel::onEvent
         val versions by viewModel.uiState.collectAsState()
         BibleVersionsActionCollector(
-            navHostController = navController,
+            navController = navController,
             uiActionFlow = viewModel.uiAction,
         )
         ModalBottomSheet(onDismissRequest = { onEvent(BibleVersionUiEvent.OnDismiss) }) {

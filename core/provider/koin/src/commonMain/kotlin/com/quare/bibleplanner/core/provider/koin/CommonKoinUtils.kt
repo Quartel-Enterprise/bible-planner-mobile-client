@@ -22,6 +22,7 @@ import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.day.di.dayModule
 import com.quare.bibleplanner.feature.deletenotes.di.deleteNotesModule
 import com.quare.bibleplanner.feature.deleteprogress.di.deleteProgressModule
+import com.quare.bibleplanner.feature.deleteversion.di.deleteVersionModule
 import com.quare.bibleplanner.feature.donation.di.donationModule
 import com.quare.bibleplanner.feature.donation.pixqr.di.pixQrModule
 import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModule
@@ -46,6 +47,7 @@ object CommonKoinUtils {
         readingPlanModule,
         dayModule,
         deleteProgressModule,
+        deleteVersionModule,
         deleteNotesModule,
         addNotesFreeWarningModule,
         editPlanStartDateModule,

@@ -9,6 +9,8 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncChapterDto
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamentIdsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import io.github.jan.supabase.storage.BucketApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,39 +28,43 @@ internal class DownloadBibleUseCase(
     private val verseDao: VerseDao,
     private val supabaseBookAbbreviationMapper: SupabaseBookAbbreviationMapper,
     private val bucketApi: BucketApi,
+    private val getPentateuchIds: GetPentateuchIdsUseCase,
+    private val getNewTestamentIds: GetNewTestamentIdsUseCase,
 ) {
     private val json = Json { ignoreUnknownKeys = true }
     private val syncScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    suspend operator fun invoke(versionId: String) {
+    private val successResult = Result.success(Unit)
+
+    suspend operator fun invoke(versionId: String): Result<Unit> {
         try {
             val version = bibleVersionDao.getVersionById(versionId)
-                ?: return
+                ?: return Result.failure(IllegalStateException("Version not found"))
 
-            if (version.status == DownloadStatus.DONE) return
+            if (version.status == DownloadStatus.DONE) return successResult
 
-            val pentateuch = listOf(BookId.GEN, BookId.EXO, BookId.LEV, BookId.NUM, BookId.DEU)
-            val newTestament = BookId.entries.filter { it.ordinal >= BookId.MAT.ordinal }
+            val pentateuch = getPentateuchIds()
+            val newTestament = getNewTestamentIds()
             val rest = BookId.entries.filter { it !in pentateuch && it !in newTestament }
-            val prioritizedBooks = pentateuch + newTestament + rest
+            val prioritizedBookIds = pentateuch + newTestament + rest
 
             val progressMutex = Mutex()
-            val lowerVersionId = versionId.uppercase()
 
-            for (bookId in prioritizedBooks) {
-                downloadChapters(versionId, lowerVersionId, progressMutex, bookId)
+            prioritizedBookIds.forEach { bookId ->
+                downloadChapters(versionId, progressMutex, bookId)
             }
 
             // Mark as DONE after all chapters are downloaded
             bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
+            return successResult
         } catch (e: Exception) {
             Logger.e { "Global sync error: ${e.message}" }
+            return Result.failure(e)
         }
     }
 
     private suspend fun downloadChapters(
         versionId: String,
-        lowerVersionId: String,
         progressMutex: Mutex,
         bookId: BookId,
     ) {
@@ -72,22 +78,22 @@ internal class DownloadBibleUseCase(
                             val exists = verseDao.countVersesByChapterAndVersion(chapter.id, versionId) > 0
 
                             if (!exists) {
-                                val fileName = "bible/$lowerVersionId/$supabaseBookDir/${chapter.number}.json"
+                                val fileName = "bible/${versionId.uppercase()}/$supabaseBookDir/${chapter.number}.json"
                                 val bytes = bucketApi.downloadPublic(fileName)
-                                val chapterDto = json.decodeFromString<SyncChapterDto>(bytes.decodeToString())
-
                                 saveChapterToDatabase(
                                     chapterId = chapter.id,
                                     versionId = versionId,
-                                    chapterDto = chapterDto,
+                                    chapterDto = json.decodeFromString<SyncChapterDto>(bytes.decodeToString()),
                                 )
                             }
 
                             progressMutex.withLock {
                                 // Re-calculate progress to be safe
                                 val currentCount = verseDao.countChaptersWithVersesByVersion(versionId)
-                                val progress = currentCount.toFloat() / TOTAL_CHAPTERS
-                                bibleVersionDao.updateDownloadProgress(versionId, progress)
+                                bibleVersionDao.updateDownloadProgress(
+                                    id = versionId,
+                                    progress = currentCount.toFloat() / TOTAL_CHAPTERS,
+                                )
                             }
                         } catch (e: Exception) {
                             Logger.e { "Error syncing $bookId:${chapter.number}: ${e.message}" }

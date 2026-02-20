@@ -1,10 +1,12 @@
 package com.quare.bibleplanner.feature.bibleversion.di
 
+import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
-import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacadeImpl
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamentIdsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.BibleVersionViewModel
 import kotlinx.serialization.json.Json
@@ -28,6 +30,8 @@ val bibleVersionModule = module {
     factoryOf(::SupabaseBookAbbreviationMapper)
     singleOf(::DownloadBibleUseCase)
     factoryOf(::SetSelectedVersionUseCase)
+    factoryOf(::GetNewTestamentIdsUseCase)
+    factoryOf(::GetPentateuchIdsUseCase)
 
     // Presentation
     viewModelOf(::BibleVersionViewModel)
