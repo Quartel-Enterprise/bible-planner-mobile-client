@@ -11,7 +11,6 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseC
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
-import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -33,7 +32,6 @@ val planModule = module {
     // Use cases
     factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
-    factoryOf(::ReadDayToggleOperationUseCase)
     factoryOf(::SetPlanStartTimeUseCase)
     factoryOf(::UpdateDayNotesUseCase)
     factoryOf(::DeleteDayNotesUseCase)

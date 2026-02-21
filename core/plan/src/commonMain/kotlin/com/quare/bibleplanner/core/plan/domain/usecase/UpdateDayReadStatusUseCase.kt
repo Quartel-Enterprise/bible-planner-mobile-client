@@ -10,7 +10,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class UpdateDayReadStatusUseCase(
     private val dayRepository: DayRepository,
-    private val updatePassageReadStatusUseCase: UpdatePassageReadStatusUseCase,
+    private val updatePassageReadStatus: UpdatePassageReadStatusUseCase,
     private val getPlansByWeekUseCase: GetPlansByWeekUseCase,
 ) {
     suspend operator fun invoke(
@@ -29,7 +29,7 @@ class UpdateDayReadStatusUseCase(
         val day = week.days.find { it.number == dayNumber } ?: return
 
         // Update all passages
-        updatePassageReadStatusUseCase(day.passages)
+        updatePassageReadStatus(day.passages)
 
         // Update day read status with timestamp
         val readTimestamp = if (isRead) {

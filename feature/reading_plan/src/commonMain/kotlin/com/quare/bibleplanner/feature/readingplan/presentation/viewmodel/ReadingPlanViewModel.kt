@@ -316,14 +316,12 @@ internal class ReadingPlanViewModel(
 
         if (currentUiState is ReadingPlanUiState.Loaded) {
             val safeCurrentPlans = currentPlansModel ?: return
-            val week = safeCurrentPlans.let { plansModel ->
-                val selectedWeeks = when (currentUiState.selectedReadingPlan) {
-                    ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
-                    ReadingPlanType.BOOKS -> plansModel.booksOrder
-                }
-                selectedWeeks.find { it.number == event.weekNumber }
+            val selectedWeeks = when (currentUiState.selectedReadingPlan) {
+                ReadingPlanType.CHRONOLOGICAL -> safeCurrentPlans.chronologicalOrder
+                ReadingPlanType.BOOKS -> safeCurrentPlans.booksOrder
             }
-            val day = week?.days?.find { it.number == event.dayNumber } ?: return
+            val week = selectedWeeks.find { it.number == event.weekNumber } ?: return
+            val day = week.days.find { it.number == event.dayNumber } ?: return
             val newReadStatus = !day.isRead
             viewModelScope.launch {
                 updateDayReadStatus(

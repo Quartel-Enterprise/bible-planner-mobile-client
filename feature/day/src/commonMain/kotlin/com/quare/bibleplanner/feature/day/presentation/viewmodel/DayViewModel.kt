@@ -174,11 +174,11 @@ internal class DayViewModel(
         val newReadStatus = !currentState.day.isRead
 
         viewModelScope.launch {
-            useCases.readDayToggleOperation(
+            useCases.updateDayReadStatus(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
-                newReadStatus = newReadStatus,
-                selectedReadingPlan = readingPlanType,
+                isRead = newReadStatus,
+                readingPlanType = readingPlanType,
             )
         }
     }
