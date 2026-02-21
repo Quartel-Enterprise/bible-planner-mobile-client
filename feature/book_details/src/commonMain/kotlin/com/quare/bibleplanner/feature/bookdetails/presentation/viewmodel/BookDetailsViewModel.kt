@@ -5,18 +5,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
-import com.quare.bibleplanner.core.books.domain.usecase.MarkBookReadUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiAction
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
 import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -26,15 +29,18 @@ import org.jetbrains.compose.resources.getString
 class BookDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val booksRepository: BooksRepository,
-    private val markPassagesRead: MarkPassagesReadUseCase,
+    private val markPassagesRead: UpdatePassageReadStatusUseCase,
     private val bookGroupMapper: BookGroupMapper,
-    private val markBookRead: MarkBookReadUseCase,
+    private val markBookRead: UpdateBookReadStatusUseCase,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<BookDetailsNavRoute>()
     private val bookId = BookId.valueOf(route.bookId)
 
     private val _uiState = MutableStateFlow<BookDetailsUiState>(BookDetailsUiState.Loading)
     val uiState: StateFlow<BookDetailsUiState> = _uiState
+
+    private val _uiAction = MutableSharedFlow<BookDetailsUiAction>()
+    val uiAction: SharedFlow<BookDetailsUiAction> = _uiAction
 
     init {
         viewModelScope.launch {
@@ -71,13 +77,19 @@ class BookDetailsViewModel(
 
     fun onEvent(event: BookDetailsUiEvent) {
         when (event) {
-            BookDetailsUiEvent.OnBackClick -> { // Handled in Root
+            BookDetailsUiEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    _uiAction.emit(BookDetailsUiAction.NavigateBack)
+                }
             }
 
             BookDetailsUiEvent.OnToggleFavorite -> {
                 val current = _uiState.value as? BookDetailsUiState.Success ?: return
                 viewModelScope.launch {
-                    booksRepository.updateBookFavoriteStatus(bookId, !current.isFavorite)
+                    booksRepository.updateBookFavoriteStatus(
+                        bookId = bookId,
+                        isFavorite = !current.isFavorite,
+                    )
                 }
             }
 

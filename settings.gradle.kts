@@ -61,6 +61,7 @@ include(":feature:add_notes_free_warning")
 include(":feature:edit_plan_start_date")
 include(":feature:login")
 include(":feature:bible_version")
+include(":feature:read")
 
 include(":feature:paywall")
 include(":feature:congrats")

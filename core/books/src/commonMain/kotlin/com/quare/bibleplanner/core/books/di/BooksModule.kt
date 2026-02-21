@@ -17,14 +17,14 @@ import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionAbbreviationFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.MarkBookReadUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
@@ -60,14 +60,14 @@ val booksModule = module {
     // Use cases
     factoryOf(::InitializeBibleVersionsUseCaseImpl).bind<InitializeBibleVersionsUseCase>()
     factoryOf(::InitializeBooksIfNeededUseCase)
-    factoryOf(::GetSelectedVersionAbbreviationFlowUseCase)
+    factoryOf(::GetSelectedVersionIdFlowUseCase)
     factoryOf(::GetSelectedBibleUseCase)
-    factoryOf(::MarkPassagesReadUseCase)
+    factoryOf(::UpdatePassageReadStatusUseCase)
     factoryOf(::ResetAllProgressUseCase)
     factoryOf(::CalculateBibleProgressUseCase)
     factoryOf(::GetBooksWithInformationBoxVisibilityUseCase)
     factoryOf(::ToggleBookFavoriteUseCase)
-    factoryOf(::MarkBookReadUseCase)
+    factoryOf(::UpdateBookReadStatusUseCase)
     factoryOf(::IsChapterReadUseCase)
     factoryOf(::IsPassageReadUseCase)
 }

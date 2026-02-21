@@ -2,10 +2,12 @@ package com.quare.bibleplanner.core.provider.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
+import com.quare.bibleplanner.core.provider.room.relation.VerseWithTexts
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -28,6 +30,13 @@ interface VerseDao {
      */
     @Query("SELECT * FROM verses WHERE chapterId = :chapterId ORDER BY number")
     suspend fun getVersesByChapterId(chapterId: Long): List<VerseEntity>
+
+    /**
+     * Retrieves the list of verses with their texts for a specific chapter.
+     */
+    @Transaction
+    @Query("SELECT * FROM verses WHERE chapterId = :chapterId ORDER BY number")
+    suspend fun getVersesWithTextsByChapterId(chapterId: Long): List<VerseWithTexts>
 
     /**
      * Gets a flow of a single verse by its unique identifier.

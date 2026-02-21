@@ -73,5 +73,6 @@ object CommonKoinUtils {
         userModule,
         bibleVersionModule,
         modelModule,
+        com.quare.bibleplanner.feature.read.di.featureReadModule,
     )
 }

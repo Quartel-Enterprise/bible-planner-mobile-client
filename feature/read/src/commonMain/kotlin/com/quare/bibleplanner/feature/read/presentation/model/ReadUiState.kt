@@ -1,0 +1,36 @@
+package com.quare.bibleplanner.feature.read.presentation.model
+
+import org.jetbrains.compose.resources.StringResource
+
+/**
+ * Represents the UI state for the Read screen.
+ */
+sealed interface ReadUiState {
+    val bookStringResource: StringResource
+    val chapterNumber: Int
+
+    /**
+     * Initial loading state when fetching chapter data.
+     */
+    data class Loading(
+        override val chapterNumber: Int,
+        override val bookStringResource: StringResource,
+    ) : ReadUiState
+
+    /**
+     * State when chapter content is successfully loaded.
+     */
+    data class Success(
+        override val chapterNumber: Int,
+        override val bookStringResource: StringResource,
+        val verses: List<VerseUiModel>,
+    ) : ReadUiState
+
+    /**
+     * State when an error occurs while fetching data.
+     */
+    data class Error(
+        override val chapterNumber: Int,
+        override val bookStringResource: StringResource,
+    ) : ReadUiState
+}

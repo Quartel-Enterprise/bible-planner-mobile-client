@@ -1,14 +1,14 @@
 package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
-import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionAbbreviationFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 
 class ObserveSelectedVersionUseCase(
     private val bibleVersionDao: BibleVersionDao,
     private val bibleVersionDownloaderFacade: BibleVersionDownloaderFacade,
-    private val getSelectedVersionAbbreviationFlow: GetSelectedVersionAbbreviationFlowUseCase,
+    private val getSelectedVersionAbbreviationFlow: GetSelectedVersionIdFlowUseCase,
 ) {
     suspend operator fun invoke() {
         getSelectedVersionAbbreviationFlow().collect { abbreviation ->

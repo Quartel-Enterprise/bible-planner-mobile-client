@@ -31,6 +31,7 @@ kotlin {
             implementation(projects.feature.donation.pixQr)
             implementation(projects.feature.login)
             implementation(projects.feature.bibleVersion)
+            implementation(projects.feature.read)
 
             // Core
             implementation(projects.core.model)

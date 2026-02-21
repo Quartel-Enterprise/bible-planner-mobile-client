@@ -7,7 +7,7 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
-class MarkBookReadUseCase(
+class UpdateBookReadStatusUseCase(
     private val bookDao: BookDao,
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,

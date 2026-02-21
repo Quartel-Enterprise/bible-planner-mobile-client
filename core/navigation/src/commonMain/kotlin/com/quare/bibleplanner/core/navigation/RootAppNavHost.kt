@@ -22,6 +22,7 @@ import com.quare.bibleplanner.feature.login.presentation.loginRoot
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
+import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
@@ -68,6 +69,7 @@ fun RootAppNavHost() {
             )
             bibleVersionSelection(navController)
             deleteVersion(navController)
+            read(navController)
         }
     }
 }

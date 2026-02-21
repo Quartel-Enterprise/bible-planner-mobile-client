@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
@@ -12,7 +12,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class UpdateChapterReadStatusUseCase(
     private val dayRepository: DayRepository,
-    private val markPassagesRead: MarkPassagesReadUseCase,
+    private val markPassagesRead: UpdatePassageReadStatusUseCase,
     private val getPlansByWeek: GetPlansByWeekUseCase,
 ) {
     suspend operator fun invoke(
