@@ -42,7 +42,7 @@ class UpdatePassageReadStatusUseCase(
                 // No specific chapters -> toggle the whole book (including chapters and verses)
                 updateBookReadStatus(
                     bookId = passage.bookId,
-                    isRead = targetRead
+                    isRead = targetRead,
                 )
             } else {
                 passage.chapters.forEach { chapterPlan ->
@@ -72,7 +72,7 @@ class UpdatePassageReadStatusUseCase(
         if (startVerse == null && endVerse == null) {
             updateWholeChapterReadStatus(
                 chapterId = chapter.id,
-                isRead = isRead
+                isRead = isRead,
             )
         } else if (startVerse != null && endVerse != null) { // Specific range -> update only the verses in that range
             updateSpecificRangeChapterReadStatus(chapter, startVerse, endVerse, isRead)

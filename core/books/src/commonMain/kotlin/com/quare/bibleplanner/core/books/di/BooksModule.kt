@@ -23,10 +23,10 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsU
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
