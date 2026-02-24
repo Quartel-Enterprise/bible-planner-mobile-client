@@ -5,13 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.plan.ChapterModel
-import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiAction
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
@@ -29,9 +27,9 @@ import org.jetbrains.compose.resources.getString
 class BookDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val booksRepository: BooksRepository,
-    private val markPassagesRead: UpdatePassageReadStatusUseCase,
     private val bookGroupMapper: BookGroupMapper,
     private val markBookRead: UpdateBookReadStatusUseCase,
+    private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatusUseCase,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<BookDetailsNavRoute>()
     private val bookId = BookId.valueOf(route.bookId)
@@ -110,20 +108,10 @@ class BookDetailsViewModel(
 
             is BookDetailsUiEvent.OnChapterClick -> {
                 viewModelScope.launch {
-                    val passage = PassageModel(
+                    toggleWholeChapterReadStatus(
                         bookId = bookId,
-                        chapters = listOf(
-                            ChapterModel(
-                                number = event.chapterNumber,
-                                startVerse = null,
-                                endVerse = null,
-                                bookId = bookId,
-                            ),
-                        ),
-                        isRead = false, // Not used by the use case for determining target state
-                        chapterRanges = null,
+                        chapterNumber = event.chapterNumber,
                     )
-                    markPassagesRead(passage)
                 }
             }
         }

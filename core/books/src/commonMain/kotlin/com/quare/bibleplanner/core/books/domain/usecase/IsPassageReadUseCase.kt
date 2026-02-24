@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
+import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
@@ -26,7 +27,7 @@ class IsPassageReadUseCase(
                     } else {
                         chapters.all { chapter ->
                             isChapterRead(
-                                com.quare.bibleplanner.core.model.plan.ChapterModel(
+                                ChapterModel(
                                     number = chapter.number,
                                     bookId = bookId,
                                     startVerse = null,
@@ -37,8 +38,8 @@ class IsPassageReadUseCase(
                     }
                 }
             } else {
-                all { chapterPlan ->
-                    isChapterRead(chapterPlan)
+                all { chapter ->
+                    isChapterRead(chapter)
                 }
             }
         }

@@ -24,8 +24,10 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsU
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateSpecificRangeChapterReadStatusUseCase
@@ -70,6 +72,7 @@ val booksModule = module {
     factoryOf(::GetSelectedBibleUseCase)
     factoryOf(::UpdatePassageReadStatusUseCase)
     factoryOf(::ResetAllProgressUseCase)
+    factoryOf(::ToggleWholeChapterReadStatusUseCase)
     factoryOf(::CalculateBibleProgressUseCase)
     factoryOf(::GetBooksWithInformationBoxVisibilityUseCase)
     factoryOf(::ToggleBookFavoriteUseCase)
@@ -77,5 +80,6 @@ val booksModule = module {
     factoryOf(::UpdateWholeBookReadStatusIfNeededUseCase)
     factoryOf(::UpdateWholeChapterReadStatusUseCase)
     factoryOf(::IsChapterReadUseCase)
+    factoryOf(::IsWholeChapterReadUseCase)
     factoryOf(::IsPassageReadUseCase)
 }

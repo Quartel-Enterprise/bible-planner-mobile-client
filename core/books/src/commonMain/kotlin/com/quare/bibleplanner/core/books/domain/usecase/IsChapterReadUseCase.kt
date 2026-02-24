@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 class IsChapterReadUseCase(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
+    private val isWholeChapterRead: IsWholeChapterReadUseCase,
 ) {
     suspend operator fun invoke(chapterModel: ChapterModel): Boolean {
         val chapter = chapterDao.getChapterByBookIdAndNumber(
@@ -16,11 +17,12 @@ class IsChapterReadUseCase(
 
         val startVerse = chapterModel.startVerse
         val endVerse = chapterModel.endVerse
+        val chapterId = chapter.id
 
         return when {
-            // If verse range is specified, check those specific verses
+            // If a verse range is specified, check those specific verses
             startVerse != null && endVerse != null -> {
-                val verses = verseDao.getVersesByChapterId(chapter.id)
+                val verses = verseDao.getVersesByChapterId(chapterId)
                 val requiredVerses = startVerse..endVerse
                 requiredVerses.all { verseNumber ->
                     verses.any { it.number == verseNumber && it.isRead }
@@ -29,7 +31,7 @@ class IsChapterReadUseCase(
 
             // If only start verse is specified, check from that verse to end of chapter
             startVerse != null -> {
-                val verses = verseDao.getVersesByChapterId(chapter.id)
+                val verses = verseDao.getVersesByChapterId(chapterId)
                 verses
                     .filter { it.number >= startVerse }
                     .all { it.isRead }
@@ -40,8 +42,7 @@ class IsChapterReadUseCase(
                 if (chapter.isRead) {
                     true
                 } else {
-                    val verses = verseDao.getVersesByChapterId(chapter.id)
-                    verses.isNotEmpty() && verses.all { it.isRead }
+                    isWholeChapterRead(chapterId)
                 }
             }
         }
