@@ -8,8 +8,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiAction
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.viewmodel.BookDetailsViewModel
+import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -20,19 +22,16 @@ fun NavGraphBuilder.bookDetails(
     composable<BookDetailsNavRoute> {
         val viewModel = koinViewModel<BookDetailsViewModel>()
         val state by viewModel.uiState.collectAsState()
-        val animatedVisibilityScope = this
-
+        ActionCollector(viewModel.uiAction) { uiAction ->
+            when (uiAction) {
+                BookDetailsUiAction.NavigateBack -> navController.navigateUp()
+            }
+        }
         BookDetailsScreen(
             state = state,
             sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope,
-            onEvent = { event ->
-                if (event == BookDetailsUiEvent.OnBackClick) {
-                    navController.navigateUp()
-                } else {
-                    viewModel.onEvent(event)
-                }
-            },
+            animatedVisibilityScope = this,
+            onEvent = viewModel::onEvent,
         )
     }
 }

@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.books.domain.usecase.AreAllPassagesReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
@@ -27,6 +28,9 @@ import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdateSpecificRangeChapterReadStatusUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdateWholeBookReadStatusIfNeededUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.UpdateWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -60,6 +64,8 @@ val booksModule = module {
     // Use cases
     factoryOf(::InitializeBibleVersionsUseCaseImpl).bind<InitializeBibleVersionsUseCase>()
     factoryOf(::InitializeBooksIfNeededUseCase)
+    factoryOf(::AreAllPassagesReadUseCase)
+    factoryOf(::UpdateSpecificRangeChapterReadStatusUseCase)
     factoryOf(::GetSelectedVersionIdFlowUseCase)
     factoryOf(::GetSelectedBibleUseCase)
     factoryOf(::UpdatePassageReadStatusUseCase)
@@ -68,6 +74,8 @@ val booksModule = module {
     factoryOf(::GetBooksWithInformationBoxVisibilityUseCase)
     factoryOf(::ToggleBookFavoriteUseCase)
     factoryOf(::UpdateBookReadStatusUseCase)
+    factoryOf(::UpdateWholeBookReadStatusIfNeededUseCase)
+    factoryOf(::UpdateWholeChapterReadStatusUseCase)
     factoryOf(::IsChapterReadUseCase)
     factoryOf(::IsPassageReadUseCase)
 }

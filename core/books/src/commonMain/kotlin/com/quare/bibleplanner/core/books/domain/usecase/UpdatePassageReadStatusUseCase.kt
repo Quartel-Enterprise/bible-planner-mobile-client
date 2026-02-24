@@ -1,12 +1,7 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
-import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
-import com.quare.bibleplanner.core.provider.room.dao.BookDao
-import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
-import com.quare.bibleplanner.core.provider.room.dao.VerseDao
-import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 
 /**
  * Toggle read state for the given passages.
@@ -18,11 +13,10 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
  * Book / Chapter / Verse read flags.
  */
 class UpdatePassageReadStatusUseCase(
-    private val bookDao: BookDao,
-    private val chapterDao: ChapterDao,
-    private val verseDao: VerseDao,
     private val updateBookReadStatus: UpdateBookReadStatusUseCase,
-    private val isPassageRead: IsPassageReadUseCase,
+    private val areAllPassagesRead: AreAllPassagesReadUseCase,
+    private val updateWholeChapterReadStatus: UpdateWholeChapterReadStatusUseCase,
+    private val updateSpecificRangeChapterReadStatus: UpdateSpecificRangeChapterReadStatusUseCase,
 ) {
     suspend operator fun invoke(passage: PassageModel) {
         invoke(listOf(passage))
@@ -32,9 +26,7 @@ class UpdatePassageReadStatusUseCase(
         if (passages.isEmpty()) return
 
         // Determine if the whole set is currently read so we can toggle.
-        val isCurrentlyFullyRead = passages.all { passage ->
-            isPassageRead(passage)
-        }
+        val isCurrentlyFullyRead = areAllPassagesRead(passages)
         val targetRead = !isCurrentlyFullyRead
 
         passages.forEach { passage ->
@@ -46,7 +38,7 @@ class UpdatePassageReadStatusUseCase(
                 )
             } else {
                 passage.chapters.forEach { chapterPlan ->
-                    updateChapterPlanReadStatus(
+                    updateChapterReadStatus(
                         chapterPlan = chapterPlan,
                         isRead = targetRead,
                     )
@@ -55,76 +47,31 @@ class UpdatePassageReadStatusUseCase(
         }
     }
 
-    private suspend fun updateChapterPlanReadStatus(
+    private suspend fun updateChapterReadStatus(
         chapterPlan: ChapterModel,
         isRead: Boolean,
     ) {
         val bookId = chapterPlan.bookId
-        val chapter = chapterDao.getChapterByBookIdAndNumber(
-            bookId = bookId.name,
-            chapterNumber = chapterPlan.number,
-        ) ?: return
 
         val startVerse = chapterPlan.startVerse
         val endVerse = chapterPlan.endVerse
+        val chapterNumber = chapterPlan.number
 
         // No verse range -> update the whole chapter (and all its verses)
-        if (startVerse == null && endVerse == null) {
+        if (startVerse == null || endVerse == null) {
             updateWholeChapterReadStatus(
-                chapterId = chapter.id,
+                chapterNumber = chapterNumber,
                 isRead = isRead,
+                bookId = bookId,
             )
-        } else if (startVerse != null && endVerse != null) { // Specific range -> update only the verses in that range
-            updateSpecificRangeChapterReadStatus(chapter, startVerse, endVerse, isRead)
-        }
-
-        // Check if the whole book status needs update
-        updateWholeBookReadStatusIfNeeded(bookId)
-    }
-
-    private suspend fun updateWholeChapterReadStatus(
-        chapterId: Long,
-        isRead: Boolean,
-    ) {
-        chapterDao.updateChapterReadStatus(
-            chapterId = chapterId,
-            isRead = isRead,
-        )
-        verseDao.updateVersesReadStatusByChapter(
-            chapterId = chapterId,
-            isRead = isRead,
-        )
-    }
-
-    private suspend fun updateSpecificRangeChapterReadStatus(
-        chapter: ChapterEntity,
-        startVerse: Int,
-        endVerse: Int,
-        isRead: Boolean,
-    ) {
-        verseDao.updateVerseReadStatusRange(
-            chapterId = chapter.id,
-            startVerse = startVerse,
-            endVerse = endVerse,
-            isRead = isRead,
-        )
-
-        // Check if Chapter status needs update after modifying verses
-        val verses = verseDao.getVersesByChapterId(chapter.id)
-        val isChapterFullyRead = verses.isNotEmpty() && verses.all { it.isRead }
-
-        if (chapter.isRead != isChapterFullyRead) {
-            chapterDao.updateChapterReadStatus(chapter.id, isChapterFullyRead)
-        }
-    }
-
-    private suspend fun updateWholeBookReadStatusIfNeeded(bookId: BookId) {
-        val updatedChaptersInBook = chapterDao.getChaptersByBookId(bookId.name)
-        val allChaptersRead = updatedChaptersInBook.all { it.isRead }
-
-        val currentBook = bookDao.getBookById(bookId.name)
-        if (currentBook?.isRead != allChaptersRead) {
-            bookDao.updateBookReadStatus(bookId.name, allChaptersRead)
+        } else { // Specific range -> update only the verses in that range
+            updateSpecificRangeChapterReadStatus(
+                startVerse = startVerse,
+                endVerse = endVerse,
+                isRead = isRead,
+                chapterNumber = chapterNumber,
+                bookId = bookId,
+            )
         }
     }
 }

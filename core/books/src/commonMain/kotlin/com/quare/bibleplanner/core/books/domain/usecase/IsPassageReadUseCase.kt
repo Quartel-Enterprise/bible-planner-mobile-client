@@ -10,8 +10,9 @@ class IsPassageReadUseCase(
     private val isChapterRead: IsChapterReadUseCase,
 ) {
     suspend operator fun invoke(passage: PassageModel): Boolean {
-        val bookId = passage.bookId.name
-        val book = bookDao.getBookById(bookId) ?: return false
+        val bookId = passage.bookId
+        val bookIdName = bookId.name
+        val book = bookDao.getBookById(bookIdName) ?: return false
 
         return passage.chapters.run {
             // If no chapters specified (empty list), check if entire book is read
@@ -19,7 +20,7 @@ class IsPassageReadUseCase(
                 if (book.isRead) {
                     true
                 } else {
-                    val chapters = chapterDao.getChaptersByBookId(bookId)
+                    val chapters = chapterDao.getChaptersByBookId(bookIdName)
                     if (chapters.isEmpty()) {
                         false
                     } else {
@@ -27,7 +28,7 @@ class IsPassageReadUseCase(
                             isChapterRead(
                                 com.quare.bibleplanner.core.model.plan.ChapterModel(
                                     number = chapter.number,
-                                    bookId = passage.bookId,
+                                    bookId = bookId,
                                     startVerse = null,
                                     endVerse = null,
                                 ),
