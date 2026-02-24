@@ -25,6 +25,7 @@ fun NavGraphBuilder.bookDetails(
         ActionCollector(viewModel.uiAction) { uiAction ->
             when (uiAction) {
                 BookDetailsUiAction.NavigateBack -> navController.navigateUp()
+                is BookDetailsUiAction.NavigateToRoute -> navController.navigate(uiAction.route)
             }
         }
         BookDetailsScreen(

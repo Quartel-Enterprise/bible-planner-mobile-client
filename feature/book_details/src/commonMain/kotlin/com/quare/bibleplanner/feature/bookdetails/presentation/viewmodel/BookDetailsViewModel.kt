@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiAction
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
@@ -108,9 +109,13 @@ class BookDetailsViewModel(
 
             is BookDetailsUiEvent.OnChapterClick -> {
                 viewModelScope.launch {
-                    toggleWholeChapterReadStatus(
-                        bookId = bookId,
-                        chapterNumber = event.chapterNumber,
+                    _uiAction.emit(
+                        BookDetailsUiAction.NavigateToRoute(
+                            route = ReadNavRoute(
+                                bookId = bookId.name,
+                                chapterNumber = event.chapterNumber,
+                            ),
+                        ),
                     )
                 }
             }

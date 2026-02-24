@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
@@ -25,11 +26,11 @@ class ReadViewModel(
     savedStateHandle: SavedStateHandle,
     private val verseDao: VerseDao,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
+    private val getChapterId: GetChapterIdUseCase,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<ReadNavRoute>()
     private val bookId = BookId.valueOf(route.bookId)
     private val bookStringResource = bookId.toBookNameResource()
-    private val chapterId = route.chapterId
     private val loadingState = route.toLoadingState()
     private val errorState = route.toErrorState()
 
@@ -64,7 +65,12 @@ class ReadViewModel(
     private fun loadChapterContent() {
         _uiState.update { loadingState }
         observe(getSelectedVersionIdFlow()) { versionId ->
-            val versesWithTexts = verseDao.getVersesWithTextsByChapterId(chapterId)
+            val versesWithTexts = verseDao.getVersesWithTextsByChapterId(
+                chapterId = getChapterId(bookId, chapterNumber = route.chapterNumber) ?: run {
+                    updateToErrorState()
+                    return@observe
+                },
+            )
             if (versesWithTexts.isEmpty()) {
                 updateToErrorState()
                 return@observe
