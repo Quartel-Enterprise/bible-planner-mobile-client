@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.bookdetails.presentation.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -38,11 +40,15 @@ import bibleplanner.feature.book_details.generated.resources.mark_all_as_read
 import bibleplanner.feature.book_details.generated.resources.mark_all_as_unread
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChaptersGrid(
+    bookName: String,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     chapters: List<BookChapterModel>,
     areAllChaptersRead: Boolean,
     onChapterClick: (Int) -> Unit,
@@ -83,6 +89,9 @@ fun ChaptersGrid(
 
             chapters.forEach { chapter ->
                 ChapterItem(
+                    bookName = bookName,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope,
                     chapter = chapter,
                     onClick = { onChapterClick(chapter.number) },
                     modifier = Modifier.width(itemWidth),
@@ -94,6 +103,9 @@ fun ChaptersGrid(
 
 @Composable
 private fun ChapterItem(
+    bookName: String,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     chapter: BookChapterModel,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -125,6 +137,12 @@ private fun ChapterItem(
         contentAlignment = Alignment.Center,
     ) {
         Text(
+            modifier = SharedTransitionModifierFactory.getReadTopBarSharedTransitionBookChapterModifier(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+                chapterNumber = chapter.number,
+                bookName = bookName,
+            ),
             text = chapter.number.toString(),
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Medium,

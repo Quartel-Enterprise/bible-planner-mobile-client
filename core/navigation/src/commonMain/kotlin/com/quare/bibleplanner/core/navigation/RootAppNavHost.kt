@@ -39,15 +39,8 @@ fun RootAppNavHost() {
         ) {
             val sharedTransitionScope = this@SharedTransitionLayout
             loginRoot(navController)
-            mainScreen(
-                mainScaffoldState = mainScaffoldState,
-                rootNavController = navController,
-                sharedTransitionScope = sharedTransitionScope,
-            )
-            day(
-                navController = navController,
-                sharedTransitionScope = sharedTransitionScope,
-            )
+            mainScreen(mainScaffoldState, navController, sharedTransitionScope)
+            day(navController, sharedTransitionScope)
             themeSettings(navController)
             materialYou(navController)
             deleteProgress(navController)
@@ -55,21 +48,14 @@ fun RootAppNavHost() {
             addNotesFreeWarning(navController)
             editPlanStartDate(navController)
             releaseNotes(navController, sharedTransitionScope)
-
-            paywall(
-                navController = navController,
-                sharedTransitionScope = sharedTransitionScope,
-            )
+            paywall(navController, sharedTransitionScope)
             congrats(navController)
             donation(navController)
             pixQr(navController)
-            bookDetails(
-                navController = navController,
-                sharedTransitionScope = sharedTransitionScope,
-            )
+            bookDetails(navController, sharedTransitionScope)
             bibleVersionSelection(navController)
             deleteVersion(navController)
-            read(navController)
+            read(navController, sharedTransitionScope)
         }
     }
 }

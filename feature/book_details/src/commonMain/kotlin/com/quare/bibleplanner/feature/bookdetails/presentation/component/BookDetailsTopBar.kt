@@ -16,6 +16,7 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetails
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.FavoriteIconButton
+import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -35,16 +36,16 @@ fun BookDetailsTopBar(
         CenterAlignedTopAppBar(
             title = {
                 if (state is BookDetailsUiState.Success) {
-                    with(sharedTransitionScope) {
-                        Text(
-                            text = stringResource(state.nameStringResource),
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.sharedBounds(
-                                rememberSharedContentState(key = "title-${state.id.name}"),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            ),
-                        )
-                    }
+                    val bookName = stringResource(state.nameStringResource)
+                    Text(
+                        text = bookName,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = SharedTransitionModifierFactory.getBookNameSharedTransitionModifier(
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            sharedTransitionScope = sharedTransitionScope,
+                            bookName = bookName,
+                        ),
+                    )
                 }
             },
             navigationIcon = {

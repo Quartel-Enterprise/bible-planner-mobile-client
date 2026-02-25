@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,23 +18,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.feature.read.presentation.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
+import com.quare.bibleplanner.ui.component.icon.BackIcon
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReadScreen(
     state: ReadUiState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onEvent: (ReadUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "${stringResource(state.bookStringResource)} ${state.chapterNumber}")
+            ReadTopBar(
+                animatedVisibilityScope = animatedVisibilityScope,
+                sharedTransitionScope = sharedTransitionScope,
+                titleStringResource = state.bookStringResource,
+                chapterNumber = state.chapterNumber,
+                onBackClick = {
+                    onEvent(ReadUiEvent.OnArrowBackClick)
                 },
             )
         },
