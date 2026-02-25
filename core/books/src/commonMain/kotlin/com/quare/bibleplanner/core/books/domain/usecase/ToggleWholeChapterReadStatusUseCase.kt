@@ -10,10 +10,10 @@ class ToggleWholeChapterReadStatusUseCase(
         bookId: BookId,
         chapterNumber: Int,
     ) {
-        val newStatus = !isWholeChapterRead(chapterNumber, bookId)
+        val newReadStatus = !isWholeChapterRead(chapterNumber, bookId)
         updateWholeChapterRead(
             chapterNumber = chapterNumber,
-            isRead = newStatus,
+            isRead = newReadStatus,
             bookId = bookId,
         )
     }

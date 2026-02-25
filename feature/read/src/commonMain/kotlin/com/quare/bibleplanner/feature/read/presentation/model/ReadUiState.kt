@@ -8,6 +8,7 @@ import org.jetbrains.compose.resources.StringResource
 sealed interface ReadUiState {
     val bookStringResource: StringResource
     val chapterNumber: Int
+    val isChapterRead: Boolean
 
     /**
      * Initial loading state when fetching chapter data.
@@ -15,6 +16,7 @@ sealed interface ReadUiState {
     data class Loading(
         override val chapterNumber: Int,
         override val bookStringResource: StringResource,
+        override val isChapterRead: Boolean,
     ) : ReadUiState
 
     /**
@@ -23,6 +25,7 @@ sealed interface ReadUiState {
     data class Success(
         override val chapterNumber: Int,
         override val bookStringResource: StringResource,
+        override val isChapterRead: Boolean,
         val verses: List<VerseUiModel>,
     ) : ReadUiState
 
@@ -32,5 +35,6 @@ sealed interface ReadUiState {
     data class Error(
         override val chapterNumber: Int,
         override val bookStringResource: StringResource,
+        override val isChapterRead: Boolean,
     ) : ReadUiState
 }

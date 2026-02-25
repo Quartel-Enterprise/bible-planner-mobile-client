@@ -16,7 +16,6 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
-import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -30,11 +29,17 @@ class BooksRepositoryImpl(
 ) : BooksRepository {
     override fun getBooksFlow(): Flow<List<BookDataModel>> = bookDao
         .getAllBooksWithChaptersFlow()
-        .map(booksWithChapterMapper::map)
+        .map(booksWithChapterMapper::mapList)
+
+    override fun getBookByIdFlow(bookId: BookId): Flow<BookDataModel?> = bookDao
+        .getBookWithChaptersByIdFlow(bookId.name)
+        .map { entity ->
+            entity?.let(booksWithChapterMapper::mapModel)
+        }
 
     override suspend fun getBooks(): List<BookDataModel> = bookDao
         .getAllBooksWithChapters()
-        .let(booksWithChapterMapper::map)
+        .let(booksWithChapterMapper::mapList)
 
     override suspend fun initializeDatabase() {
         val books = booksLocalDataSource.getBooks()

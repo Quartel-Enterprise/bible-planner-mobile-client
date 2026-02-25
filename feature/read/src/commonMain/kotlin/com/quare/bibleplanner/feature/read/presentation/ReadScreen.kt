@@ -2,8 +2,10 @@ package com.quare.bibleplanner.feature.read.presentation
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,14 +45,11 @@ fun ReadScreen(
         modifier = modifier,
         topBar = {
             ReadTopBar(
+                state = state,
                 isScrolled = isScrolled,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
-                titleStringResource = state.bookStringResource,
-                chapterNumber = state.chapterNumber,
-                onBackClick = {
-                    onEvent(ReadUiEvent.OnArrowBackClick)
-                },
+                onEvent = onEvent,
             )
         },
     ) { paddingValues ->
@@ -87,10 +87,19 @@ fun ReadScreen(
                         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                     ) {
                         items(state.verses) { verse ->
-                            Text(
-                                text = "${verse.number}. ${verse.text}",
+                            Row(
                                 modifier = Modifier.padding(vertical = 4.dp),
-                            )
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                Text(
+                                    text = verse.number.toString(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                )
+                                Text(
+                                    text = verse.text,
+                                )
+                            }
                         }
                     }
                 }

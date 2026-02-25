@@ -16,10 +16,12 @@ import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepositor
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.AreAllPassagesReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
@@ -69,6 +71,8 @@ val booksModule = module {
     factoryOf(::InitializeBooksIfNeededUseCase)
     factoryOf(::AreAllPassagesReadUseCase)
     factoryOf(::UpdateSpecificRangeChapterReadStatusUseCase)
+    factoryOf(::GetBookByIdFlowUseCase)
+    factoryOf(::GetVersesWithTextsByChapterIdFlowUseCase)
     factoryOf(::GetSelectedVersionIdFlowUseCase)
     factoryOf(::GetSelectedBibleUseCase)
     factoryOf(::UpdatePassageReadStatusUseCase)

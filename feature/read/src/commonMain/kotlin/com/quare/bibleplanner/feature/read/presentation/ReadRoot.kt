@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -17,8 +18,11 @@ fun NavGraphBuilder.read(
     composable<ReadNavRoute> {
         val viewModel: ReadViewModel = koinViewModel()
         val state by viewModel.uiState.collectAsStateWithLifecycle()
-        ActionCollector(viewModel.uiAction) {
-            navController.navigateUp()
+        ActionCollector(viewModel.uiAction) { uiAction ->
+            when (uiAction) {
+                ReadUiAction.NavigateBack -> navController.navigateUp()
+                is ReadUiAction.NavigateToRoute -> navController.navigate(uiAction.route)
+            }
         }
         ReadScreen(
             state = state,

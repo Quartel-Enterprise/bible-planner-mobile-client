@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.day.di
 
+import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.day.data.datasource.DayLocalDataSource
@@ -12,7 +13,6 @@ import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersRea
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ConvertUtcDateToLocalDateUseCase
-import com.quare.bibleplanner.feature.day.domain.usecase.GetBooksUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ShouldBlockAddNotesUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ToggleChapterReadStatusUseCase
@@ -38,7 +38,7 @@ val dayModule = module {
 
     // Domain
     factoryOf(::GetDayDetailsUseCase)
-    factoryOf(::GetBooksUseCase)
+    factoryOf(::GetBooksFlowUseCase)
     factoryOf(::UpdateDayReadStatusUseCase)
     factoryOf(::UpdateChapterReadStatusUseCase)
     factoryOf(::UpdateDayReadTimestampUseCase)

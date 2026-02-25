@@ -7,9 +7,9 @@ import com.quare.bibleplanner.core.model.book.VerseModel
 import com.quare.bibleplanner.core.provider.room.relation.BookWithChapters
 
 class BooksWithChapterMapper {
-    fun map(bookWithChapters: List<BookWithChapters>): List<BookDataModel> = bookWithChapters.map { it.toModel() }
+    fun mapList(bookWithChapters: List<BookWithChapters>): List<BookDataModel> = bookWithChapters.map(::mapModel)
 
-    private fun BookWithChapters.toModel(): BookDataModel {
+    fun mapModel(bookWithChapters: BookWithChapters): BookDataModel = bookWithChapters.run {
         val chaptersModel = chapters.map { chapterWithVerses ->
             val versesModel = chapterWithVerses.verses.flatMap { verseWithTexts ->
                 if (verseWithTexts.texts.isNotEmpty()) {
@@ -48,7 +48,7 @@ class BooksWithChapterMapper {
             chaptersModel.isNotEmpty() && chaptersModel.all { it.isRead }
         )
 
-        return BookDataModel(
+        BookDataModel(
             id = BookId.valueOf(book.id),
             chapters = chaptersModel,
             isRead = isBookRead,

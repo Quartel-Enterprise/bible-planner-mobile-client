@@ -39,6 +39,13 @@ interface VerseDao {
     suspend fun getVersesWithTextsByChapterId(chapterId: Long): List<VerseWithTexts>
 
     /**
+     * Retrieves the list of verses with their texts for a specific chapter by flow.
+     */
+    @Transaction
+    @Query("SELECT * FROM verses WHERE chapterId = :chapterId ORDER BY number")
+    fun getVersesWithTextsByChapterIdFlow(chapterId: Long): Flow<List<VerseWithTexts>>
+
+    /**
      * Gets a flow of a single verse by its unique identifier.
      *
      * @param verseId The unique identifier of the verse.
