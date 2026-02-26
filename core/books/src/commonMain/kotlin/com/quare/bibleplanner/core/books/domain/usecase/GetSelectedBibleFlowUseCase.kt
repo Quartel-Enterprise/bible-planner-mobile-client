@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GetSelectedBibleUseCase(
+class GetSelectedBibleFlowUseCase(
     private val bibleRepository: BibleRepository,
 ) {
     operator fun invoke(): Flow<BibleModel?> = bibleRepository.getBiblesFlow().map { selectableVersions ->

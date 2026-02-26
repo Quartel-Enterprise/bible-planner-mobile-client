@@ -12,7 +12,7 @@ import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
-import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
@@ -62,7 +62,7 @@ internal class MoreUiStateFactory(
     private val sessionUserMapper: SessionUserMapper,
     private val isLoginVisible: IsLoginVisible,
     private val bibleVersionDao: BibleVersionDao,
-    private val getSelectedBible: GetSelectedBibleUseCase,
+    private val getSelectedBible: GetSelectedBibleFlowUseCase,
 ) {
     fun create(): Flow<MoreUiState> {
         val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(

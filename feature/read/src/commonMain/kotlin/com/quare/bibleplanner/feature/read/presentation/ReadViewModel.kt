@@ -62,7 +62,7 @@ class ReadViewModel(
                 }
             }
 
-            ReadUiEvent.ChangeBibleVersion -> {
+            ReadUiEvent.ManageBibleVersions -> {
                 viewModelScope.launch {
                     _uiAction.emit(ReadUiAction.NavigateToRoute(BibleVersionSelectorRoute))
                 }

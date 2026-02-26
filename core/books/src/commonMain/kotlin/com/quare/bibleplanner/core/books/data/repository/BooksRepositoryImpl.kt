@@ -78,16 +78,6 @@ class BooksRepositoryImpl(
         }
     }
 
-    override fun getShowInformationBoxFlow(): Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] ?: true
-    }
-
-    override suspend fun setInformationBoxDismissed() {
-        dataStore.edit { preferences ->
-            preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] = false
-        }
-    }
-
     override suspend fun updateBookFavoriteStatus(
         bookId: BookId,
         isFavorite: Boolean,
@@ -116,7 +106,6 @@ class BooksRepositoryImpl(
     }
 
     companion object {
-        private const val SHOW_INFORMATION_BOX = "show_information_box"
         private const val BOOK_LAYOUT_FORMAT = "book_layout_format"
         private const val SELECTED_TESTAMENT = "selected_testament"
     }

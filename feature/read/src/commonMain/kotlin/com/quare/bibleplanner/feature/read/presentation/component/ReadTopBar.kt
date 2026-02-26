@@ -22,7 +22,6 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,7 +84,7 @@ fun ReadTopBar(
                 CommonIconButton(
                     imageVector = Icons.Default.ChangeCircle,
                     onClick = {
-                        onEvent(ReadUiEvent.ChangeBibleVersion)
+                        onEvent(ReadUiEvent.ManageBibleVersions)
                     },
                     contentDescription = "Change Bible Version",
                 )

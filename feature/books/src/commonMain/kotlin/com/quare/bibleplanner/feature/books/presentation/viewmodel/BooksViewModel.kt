@@ -51,12 +51,10 @@ class BooksViewModel(
 
     private var allBooks: List<BookDataModel> = emptyList()
     private var bookNames: Map<BookId, String> = emptyMap()
-    private var isInformationBoxVisible: Boolean = true
 
     init {
         observe(getBooksWithInformationBoxVisibility()) { result ->
             allBooks = result.books
-            isInformationBoxVisible = result.isInformationBoxVisible
 
             result.layoutFormat?.let { persistedFormat ->
                 runCatching { BookLayoutFormat.valueOf(persistedFormat) }.getOrNull()?.let {
@@ -150,12 +148,6 @@ class BooksViewModel(
             is BooksUiEvent.OnDismissFilterMenu -> {
                 isFilterMenuVisible = false
                 updateState()
-            }
-
-            is BooksUiEvent.OnDismissInformationBox -> {
-                viewModelScope.launch {
-                    booksRepository.setInformationBoxDismissed()
-                }
             }
 
             is BooksUiEvent.OnClearSearch -> {
@@ -333,7 +325,6 @@ class BooksViewModel(
                 isFilterMenuVisible = isFilterMenuVisible,
                 isSortMenuVisible = isSortMenuVisible,
                 sortOrder = sortOrder,
-                isInformationBoxVisible = isInformationBoxVisible,
                 groupsInTestament = categorizedBooks[currentSelectedTestament].orEmpty(),
                 layoutFormat = layoutFormat,
             )

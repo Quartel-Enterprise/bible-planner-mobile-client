@@ -19,7 +19,8 @@ import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUs
 import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleNameFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
@@ -74,7 +75,8 @@ val booksModule = module {
     factoryOf(::GetBookByIdFlowUseCase)
     factoryOf(::GetVersesWithTextsByChapterIdFlowUseCase)
     factoryOf(::GetSelectedVersionIdFlowUseCase)
-    factoryOf(::GetSelectedBibleUseCase)
+    factoryOf(::GetSelectedBibleFlowUseCase)
+    factoryOf(::GetSelectedBibleNameFlowUseCase)
     factoryOf(::UpdatePassageReadStatusUseCase)
     factoryOf(::ResetAllProgressUseCase)
     factoryOf(::ToggleWholeChapterReadStatusUseCase)

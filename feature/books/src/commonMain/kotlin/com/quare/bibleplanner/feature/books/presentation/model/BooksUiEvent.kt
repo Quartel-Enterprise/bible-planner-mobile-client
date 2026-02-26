@@ -36,8 +36,6 @@ sealed interface BooksUiEvent {
 
     data object OnDismissFilterMenu : BooksUiEvent
 
-    data object OnDismissInformationBox : BooksUiEvent
-
     data object OnClearSearch : BooksUiEvent
 
     data class OnLayoutFormatSelect(

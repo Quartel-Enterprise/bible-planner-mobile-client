@@ -16,7 +16,6 @@ sealed interface BooksUiState {
         val isFilterMenuVisible: Boolean,
         val isSortMenuVisible: Boolean,
         val sortOrder: BookSortOrder?,
-        val isInformationBoxVisible: Boolean,
         val layoutFormat: BookLayoutFormat,
     ) : BooksUiState
 }

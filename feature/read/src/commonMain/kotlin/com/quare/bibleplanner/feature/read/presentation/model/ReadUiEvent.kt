@@ -22,5 +22,5 @@ sealed interface ReadUiEvent {
     /**
      * Event triggered when the user wants to change the Bible version.
      */
-    data object ChangeBibleVersion : ReadUiEvent
+    data object ManageBibleVersions : ReadUiEvent
 }

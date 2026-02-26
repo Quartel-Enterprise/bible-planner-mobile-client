@@ -1,9 +1,11 @@
 package com.quare.bibleplanner.feature.read.presentation.factory
 
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleNameFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +18,7 @@ class ReadDataPresentationModelFactory(
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
     private val getChapterId: GetChapterIdUseCase,
     private val getVersesWithTextsByChapterIdFlow: GetVersesWithTextsByChapterIdFlowUseCase,
+    private val getSelectedBibleNameFlow: GetSelectedBibleNameFlowUseCase,
 ) {
     fun create(
         bookId: BookId,
@@ -23,32 +26,42 @@ class ReadDataPresentationModelFactory(
         bookStringResource: StringResource,
         isInitiallyRead: Boolean,
     ): Flow<ReadUiState> = flow {
-        val errorState = ReadUiState.Error(
-            bookStringResource = bookStringResource,
-            chapterNumber = chapterNumber,
-            isChapterRead = isInitiallyRead,
-        )
         getChapterId(
             bookId = bookId,
             chapterNumber = chapterNumber,
         )?.let { chapterId ->
-            getReadUiStateFlow(chapterId, errorState, bookStringResource, chapterNumber)
+            getReadUiStateFlow(chapterId, bookStringResource, chapterNumber)
         }?.let { readUiStateFlow ->
             emitAll(readUiStateFlow)
-        } ?: emit(errorState)
+        } ?: emit(
+            ReadUiState.Error.Unknown(
+                bookStringResource = bookStringResource,
+                chapterNumber = chapterNumber,
+                isChapterRead = isInitiallyRead,
+                errorUiEvent = ReadUiEvent.OnRetryClick,
+            ),
+        )
     }
 
     private fun getReadUiStateFlow(
         chapterId: Long,
-        errorState: ReadUiState.Error,
         bookStringResource: StringResource,
         chapterNumber: Int,
     ): Flow<ReadUiState> = combine(
         getSelectedVersionIdFlow(),
         getVersesWithTextsByChapterIdFlow(chapterId),
-    ) { versionId, versesWithTexts ->
+        getSelectedBibleNameFlow(),
+    ) { versionId, versesWithTexts, selectedBibleName ->
+        val isChapterRead = versesWithTexts.all { it.verse.isRead }
+        val chapterNotFoundState = ReadUiState.Error.ChapterNotFound(
+            bookStringResource = bookStringResource,
+            chapterNumber = chapterNumber,
+            isChapterRead = isChapterRead,
+            selectedBibleVersionName = selectedBibleName,
+            errorUiEvent = ReadUiEvent.ManageBibleVersions,
+        )
         if (versesWithTexts.isEmpty()) {
-            errorState
+            chapterNotFoundState
         } else {
             val verseUiModels = versesWithTexts.map { verseWithTexts ->
                 verseWithTexts.texts.find { it.bibleVersionId == versionId }?.text?.let { safeText ->
@@ -56,13 +69,13 @@ class ReadDataPresentationModelFactory(
                         number = verseWithTexts.verse.number,
                         text = safeText,
                     )
-                } ?: return@combine errorState
+                } ?: return@combine chapterNotFoundState
             }
             ReadUiState.Success(
                 bookStringResource = bookStringResource,
                 chapterNumber = chapterNumber,
                 verses = verseUiModels,
-                isChapterRead = versesWithTexts.all { it.verse.isRead },
+                isChapterRead = isChapterRead,
             )
         }
     }

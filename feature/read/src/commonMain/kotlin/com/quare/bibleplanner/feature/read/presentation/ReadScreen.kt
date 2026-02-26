@@ -7,14 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,10 +23,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.read.presentation.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
+import com.quare.bibleplanner.ui.component.ResponsiveColumn
+import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,38 +74,77 @@ fun ReadScreen(
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+                        verticalArrangement = Arrangement.spacedBy(
+                            space = 8.dp,
+                            alignment = Alignment.CenterVertically,
+                        ),
                     ) {
-                        Text(text = "Error loading data")
+                        val (errorMessage, buttonText) = when (state) {
+                            is ReadUiState.Error.ChapterNotFound -> "You haven't downloaded \"${stringResource(
+                                state.bookStringResource,
+                            )} ${state.chapterNumber}\" in the \"${state.selectedBibleVersionName}\" version yet." to
+                                "Manage Bible Versions"
+
+                            is ReadUiState.Error.Unknown -> "An unknown error occurred." to "Retry"
+                        }
+                        Text(
+                            text = errorMessage,
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                        )
                         Button(
-                            onClick = { onEvent(ReadUiEvent.OnRetryClick) },
+                            onClick = { onEvent(state.errorUiEvent) },
                         ) {
-                            Text(text = "Retry") // Would ideally be a string resource
+                            Text(text = buttonText) // Would ideally be a string resource
                         }
                     }
                 }
 
                 is ReadUiState.Success -> {
-                    LazyColumn(
-                        state = listState,
+                    ResponsiveColumn(
                         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                    ) {
-                        items(state.verses) { verse ->
-                            Row(
-                                modifier = Modifier.padding(vertical = 4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            ) {
-                                Text(
-                                    text = verse.number.toString(),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                )
-                                Text(
-                                    text = verse.text,
-                                )
+                        lazyListState = listState,
+                        maxContentWidth = 600.dp,
+                        portraitContent = {
+                            responsiveItems(
+                                state.verses,
+                                key = { "verse-${it.number}" },
+                            ) { verse ->
+                                Row(
+                                    modifier = Modifier.padding(vertical = 4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                ) {
+                                    Text(
+                                        text = verse.number.toString(),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    )
+                                    Text(
+                                        text = verse.text,
+                                    )
+                                }
                             }
-                        }
-                    }
+                            responsiveItem { VerticalSpacer() }
+                            responsiveItem {
+                                val toggleReadClick = { onEvent(ReadUiEvent.ToggleReadStatus) }
+                                if (state.isChapterRead) {
+                                    OutlinedButton(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = toggleReadClick,
+                                    ) {
+                                        Text("Mark as Unread")
+                                    }
+                                } else {
+                                    Button(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        onClick = toggleReadClick,
+                                    ) {
+                                        Text("Mark as Read")
+                                    }
+                                }
+                            }
+                        },
+                    )
                 }
             }
         }

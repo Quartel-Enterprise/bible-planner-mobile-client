@@ -13,10 +13,6 @@ interface BooksRepository {
 
     suspend fun initializeDatabase()
 
-    fun getShowInformationBoxFlow(): Flow<Boolean>
-
-    suspend fun setInformationBoxDismissed()
-
     suspend fun updateBookFavoriteStatus(
         bookId: BookId,
         isFavorite: Boolean,

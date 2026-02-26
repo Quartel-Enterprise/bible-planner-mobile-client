@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.feature.read.presentation
 
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -17,7 +17,7 @@ fun NavGraphBuilder.read(
 ) {
     composable<ReadNavRoute> {
         val viewModel: ReadViewModel = koinViewModel()
-        val state by viewModel.uiState.collectAsStateWithLifecycle()
+        val state by viewModel.uiState.collectAsState()
         ActionCollector(viewModel.uiAction) { uiAction ->
             when (uiAction) {
                 ReadUiAction.NavigateBack -> navController.navigateUp()
