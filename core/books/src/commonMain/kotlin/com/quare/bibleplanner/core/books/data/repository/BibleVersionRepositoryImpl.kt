@@ -36,7 +36,7 @@ internal class BibleVersionRepositoryImpl(
                     } else {
                         cachedVersions.orEmpty().map(versionMapper::map)
                     }
-                }.recover { error ->
+                }.recoverCatching { error ->
                     cachedVersions?.map(versionMapper::map) ?: throw error
                 }
         }
