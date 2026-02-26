@@ -1,5 +1,7 @@
 {
-  "1.11.0": [],
+  "1.11.0": [
+    "Bíblia disponível para download e leitura offline."
+  ],
   "1.10.0": [
     "Carregamento de configurações dinâmicas aprimorado no iOS para evitar problemas de sincronização.",
     "Adicionadas descrições localizadas de permissão de rede no iOS.",
