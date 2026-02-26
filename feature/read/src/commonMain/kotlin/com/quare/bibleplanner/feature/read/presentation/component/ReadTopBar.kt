@@ -21,6 +21,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import bibleplanner.feature.read.generated.resources.Res
+import bibleplanner.feature.read.generated.resources.change_bible_version
 import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
 import org.jetbrains.compose.resources.stringResource
 
@@ -86,7 +88,7 @@ fun ReadTopBar(
                     onClick = {
                         onEvent(ReadUiEvent.ManageBibleVersions)
                     },
-                    contentDescription = "Change Bible Version",
+                    contentDescription = stringResource(Res.string.change_bible_version),
                 )
             },
         )

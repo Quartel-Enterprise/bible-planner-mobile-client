@@ -29,6 +29,13 @@ import com.quare.bibleplanner.feature.read.presentation.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
+import bibleplanner.feature.read.generated.resources.Res
+import bibleplanner.feature.read.generated.resources.chapter_not_downloaded_error
+import bibleplanner.feature.read.generated.resources.manage_bible_versions
+import bibleplanner.feature.read.generated.resources.mark_as_read
+import bibleplanner.feature.read.generated.resources.mark_as_unread
+import bibleplanner.feature.read.generated.resources.retry
+import bibleplanner.feature.read.generated.resources.unknown_error_occurred
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
@@ -80,12 +87,16 @@ fun ReadScreen(
                         ),
                     ) {
                         val (errorMessage, buttonText) = when (state) {
-                            is ReadUiState.Error.ChapterNotFound -> "You haven't downloaded \"${stringResource(
-                                state.bookStringResource,
-                            )} ${state.chapterNumber}\" in the \"${state.selectedBibleVersionName}\" version yet." to
-                                "Manage Bible Versions"
+                            is ReadUiState.Error.ChapterNotFound -> stringResource(
+                                resource = Res.string.chapter_not_downloaded_error,
+                                stringResource(state.bookStringResource),
+                                state.chapterNumber,
+                                state.selectedBibleVersionName,
+                            ) to stringResource(Res.string.manage_bible_versions)
 
-                            is ReadUiState.Error.Unknown -> "An unknown error occurred." to "Retry"
+                            is ReadUiState.Error.Unknown -> stringResource(Res.string.unknown_error_occurred) to stringResource(
+                                Res.string.retry,
+                            )
                         }
                         Text(
                             text = errorMessage,
@@ -95,7 +106,7 @@ fun ReadScreen(
                         Button(
                             onClick = { onEvent(state.errorUiEvent) },
                         ) {
-                            Text(text = buttonText) // Would ideally be a string resource
+                            Text(text = buttonText)
                         }
                     }
                 }
@@ -132,14 +143,14 @@ fun ReadScreen(
                                         modifier = Modifier.fillMaxWidth(),
                                         onClick = toggleReadClick,
                                     ) {
-                                        Text("Mark as Unread")
+                                        Text(text = stringResource(Res.string.mark_as_unread))
                                     }
                                 } else {
                                     Button(
                                         modifier = Modifier.fillMaxWidth(),
                                         onClick = toggleReadClick,
                                     ) {
-                                        Text("Mark as Read")
+                                        Text(text = stringResource(Res.string.mark_as_read))
                                     }
                                 }
                             }
