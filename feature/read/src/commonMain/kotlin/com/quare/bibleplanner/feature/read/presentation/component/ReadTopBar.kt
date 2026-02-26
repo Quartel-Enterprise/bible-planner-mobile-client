@@ -17,12 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import bibleplanner.feature.read.generated.resources.Res
+import bibleplanner.feature.read.generated.resources.change_bible_version
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.change_bible_version
 import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
 import org.jetbrains.compose.resources.stringResource
 

@@ -22,4 +22,6 @@ sealed interface BibleVersionUiEvent {
     ) : BibleVersionUiEvent
 
     data object OnDismiss : BibleVersionUiEvent
+
+    data object TryToDownloadBibleVersionsAgain : BibleVersionUiEvent
 }

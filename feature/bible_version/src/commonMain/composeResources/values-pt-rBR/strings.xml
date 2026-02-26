@@ -12,4 +12,6 @@
     <string name="downloaded">Baixado</string>
     <string name="downloading_progress">Baixando: %1$s%</string>
     <string name="paused_progress">Download pausado em %1$s%</string>
+    <string name="download_bible_versions_error">Não foi possível baixar as versões da Bíblia para o seu dispositivo. Verifique sua conexão com a internet e tente novamente.</string>
+    <string name="try_again">Tentar Novamente</string>
 </resources>

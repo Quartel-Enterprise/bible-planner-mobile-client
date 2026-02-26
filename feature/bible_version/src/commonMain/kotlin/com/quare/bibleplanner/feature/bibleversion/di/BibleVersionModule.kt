@@ -9,6 +9,7 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamen
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.BibleVersionViewModel
+import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -32,6 +33,7 @@ val bibleVersionModule = module {
     factoryOf(::SetSelectedVersionUseCase)
     factoryOf(::GetNewTestamentIdsUseCase)
     factoryOf(::GetPentateuchIdsUseCase)
+    factoryOf(::BibleVersionsUiStateFactory)
 
     // Presentation
     viewModelOf(::BibleVersionViewModel)

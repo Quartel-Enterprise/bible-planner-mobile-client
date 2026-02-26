@@ -3,43 +3,80 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
-import com.quare.bibleplanner.core.books.domain.model.BibleModel
+import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
-import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
+import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
+import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionsUiState
+import com.quare.bibleplanner.ui.utils.observe
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BibleVersionViewModel(
-    getBibleVersionsUseCase: GetBibleVersionsByLanguageUseCase,
     private val setSelectedVersion: SetSelectedVersionUseCase,
     private val downloaderFacade: BibleVersionDownloaderFacade,
+    private val initializeBibleVersions: InitializeBibleVersionsUseCase,
+    uiStateFactory: BibleVersionsUiStateFactory,
 ) : ViewModel() {
     private val _uiAction: MutableSharedFlow<BibleVersionUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<BibleVersionUiAction> = _uiAction
 
-    val uiState: StateFlow<Map<Language, List<BibleModel>>> = getBibleVersionsUseCase()
+    private val _uiState: MutableStateFlow<BibleVersionsUiState> = MutableStateFlow(BibleVersionsUiState.Loading)
+
+    val uiState: StateFlow<BibleVersionsUiState> = uiStateFactory
+        .create()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyMap(),
+            initialValue = BibleVersionsUiState.Loading,
         )
+
+    init {
+        observe(uiStateFactory.create()) { newState ->
+            _uiState.update { newState }
+        }
+    }
 
     fun onEvent(event: BibleVersionUiEvent) {
         when (event) {
-            is BibleVersionUiEvent.OnDownload -> downloadVersion(event.id)
-            is BibleVersionUiEvent.OnPause -> pauseDownload(event.id)
-            is BibleVersionUiEvent.OnResume -> resumeDownload(event.id)
-            is BibleVersionUiEvent.OnDelete -> deleteVersion(event.id)
-            is BibleVersionUiEvent.OnSelect -> selectVersion(event.id)
-            BibleVersionUiEvent.OnDismiss -> dismiss()
+            is BibleVersionUiEvent.OnDownload -> {
+                downloadVersion(event.id)
+            }
+
+            is BibleVersionUiEvent.OnPause -> {
+                pauseDownload(event.id)
+            }
+
+            is BibleVersionUiEvent.OnResume -> {
+                resumeDownload(event.id)
+            }
+
+            is BibleVersionUiEvent.OnDelete -> {
+                deleteVersion(event.id)
+            }
+
+            is BibleVersionUiEvent.OnSelect -> {
+                selectVersion(event.id)
+            }
+
+            BibleVersionUiEvent.OnDismiss -> {
+                dismiss()
+            }
+
+            BibleVersionUiEvent.TryToDownloadBibleVersionsAgain -> {
+                _uiState.update { BibleVersionsUiState.Loading }
+                viewModelScope.launch {
+                    initializeBibleVersions()
+                }
+            }
         }
     }
 

@@ -21,7 +21,7 @@ fun NavGraphBuilder.bibleVersionSelection(navController: NavHostController) {
     dialog<BibleVersionSelectorRoute> {
         val viewModel: BibleVersionViewModel = koinViewModel()
         val onEvent = viewModel::onEvent
-        val versions by viewModel.uiState.collectAsState()
+        val uiState by viewModel.uiState.collectAsState()
         BibleVersionsActionCollector(
             navController = navController,
             uiActionFlow = viewModel.uiAction,
@@ -29,7 +29,7 @@ fun NavGraphBuilder.bibleVersionSelection(navController: NavHostController) {
         ModalBottomSheet(onDismissRequest = { onEvent(BibleVersionUiEvent.OnDismiss) }) {
             BibleVersionsContent(
                 modifier = Modifier.padding(bottom = 32.dp).padding(horizontal = 16.dp),
-                selectionMap = versions,
+                uiState = uiState,
                 onEvent = onEvent,
             )
         }

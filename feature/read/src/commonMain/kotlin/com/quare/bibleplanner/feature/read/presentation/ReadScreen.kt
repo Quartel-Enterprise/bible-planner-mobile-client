@@ -25,10 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.read.presentation.component.ReadTopBar
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
-import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.chapter_not_downloaded_error
 import bibleplanner.feature.read.generated.resources.manage_bible_versions
@@ -36,6 +32,10 @@ import bibleplanner.feature.read.generated.resources.mark_as_read
 import bibleplanner.feature.read.generated.resources.mark_as_unread
 import bibleplanner.feature.read.generated.resources.retry
 import bibleplanner.feature.read.generated.resources.unknown_error_occurred
+import com.quare.bibleplanner.feature.read.presentation.component.ReadTopBar
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
+import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
@@ -94,9 +94,10 @@ fun ReadScreen(
                                 state.selectedBibleVersionName,
                             ) to stringResource(Res.string.manage_bible_versions)
 
-                            is ReadUiState.Error.Unknown -> stringResource(Res.string.unknown_error_occurred) to stringResource(
-                                Res.string.retry,
-                            )
+                            is ReadUiState.Error.Unknown -> stringResource(Res.string.unknown_error_occurred) to
+                                stringResource(
+                                    Res.string.retry,
+                                )
                         }
                         Text(
                             text = errorMessage,
