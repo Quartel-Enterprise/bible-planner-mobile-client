@@ -21,4 +21,5 @@
     <string name="notes_placeholder">Write your personal notes about the day's passages…</string>
     <string name="clear_notes">Clear notes</string>
     <string name="nothing_to_delete_message">There's nothing to delete yet</string>
+    <string name="failed_to_toggle_chapter_message">Failed to toggle chapter read status</string>
 </resources>

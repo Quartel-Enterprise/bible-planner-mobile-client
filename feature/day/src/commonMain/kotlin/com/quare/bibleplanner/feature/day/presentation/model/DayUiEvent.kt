@@ -1,10 +1,13 @@
 package com.quare.bibleplanner.feature.day.presentation.model
 
+import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
+import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
+
 internal sealed interface DayUiEvent {
-    data class OnChapterToggle(
-        val passageIndex: Int,
-        val chapterIndex: Int,
-    ) : DayUiEvent
+
+    data class OnChapterCheckboxClick(val strategy: UpdateReadStatusOfPassageStrategy) : DayUiEvent
+
+    data class OnChapterClick(val strategy: ChapterClickStrategy) : DayUiEvent
 
     data object OnDayReadToggle : DayUiEvent
 

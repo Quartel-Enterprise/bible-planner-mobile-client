@@ -1,42 +1,55 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
+import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
+import kotlinx.coroutines.flow.first
 
-internal class CalculateChapterReadStatusUseCase {
+internal class IsChapterReadStatusUseCase(
+    private val getBooksFlow: GetBooksFlowUseCase
+) {
     /**
      * Calculates the new read status for a chapter after toggling.
-     * Returns the new status (toggled from current status).
+     * Returns the new status (toggled from the current status).
      *
      * @param passage The passage containing the chapter
-     * @param chapterIndex The index of the chapter to toggle (-1 for entire book)
-     * @param books The list of books to check the actual read status
+     * @param strategy The strategy to determine the new read status
      * @return The new read status (true if should be marked as read, false otherwise)
      * @return null if the chapter index is invalid
      */
-    operator fun invoke(
+    suspend operator fun invoke(
         passage: PassageModel,
-        chapterIndex: Int,
-        books: List<BookDataModel>,
-    ): Boolean? {
-        return if (chapterIndex == -1) {
-            // Entire book (no chapters) - toggle the passage read status
-            !passage.isRead
-        } else {
-            // Specific chapter - check if it's currently read
-            if (chapterIndex < 0 || chapterIndex >= passage.chapters.size) {
-                return null
-            }
-            val chapter = passage.chapters[chapterIndex]
-            val book = books.find { it.id == passage.bookId } ?: return null
-            val bookChapter = book.chapters.find { it.number == chapter.number } ?: return null
+        strategy: UpdateReadStatusOfPassageStrategy,
+    ): Result<Boolean> = when (strategy) {
+        is UpdateReadStatusOfPassageStrategy.Chapter -> calculateFromSafeChapterIndex(
+            chapterIndex = strategy.chapterIndex,
+            passage = passage,
+        )
 
-            // Check if chapter is read based on verse ranges
-            val isCurrentlyRead = isChapterRead(chapter, bookChapter)
-            !isCurrentlyRead
+        is UpdateReadStatusOfPassageStrategy.EntireBook -> Result.success(!passage.isRead)
+    }
+
+    private suspend fun calculateFromSafeChapterIndex(
+        chapterIndex: Int,
+        passage: PassageModel,
+    ): Result<Boolean> {
+        val errorResult = Result.failure<Boolean>(IllegalStateException())
+        if (chapterIndex < 0 || chapterIndex >= passage.chapters.size) {
+            return errorResult
         }
+        val chapter = passage.chapters[chapterIndex]
+        val book = getBooksFlow().first().find { it.id == passage.bookId } ?: return errorResult
+        val bookChapter = book.chapters.find { it.number == chapter.number } ?: return errorResult
+
+        // Check if a chapter is read based on verse ranges
+        val isCurrentlyRead = isChapterRead(
+            chapter = chapter,
+            bookChapter = bookChapter
+        )
+        return Result.success(!isCurrentlyRead)
     }
 
     private fun isChapterRead(

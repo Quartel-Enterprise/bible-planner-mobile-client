@@ -80,7 +80,6 @@ internal class DayUiStateFlowFactory(
             DayUiState.Loaded(
                 day = day,
                 weekNumber = weekNumber,
-                books = books,
                 datePickerUiState = datePickerUiState,
                 formattedReadDate = day.readTimestamp?.let(readDateFormatter::format),
                 chapterReadStatus = calculateAllChaptersReadStatus(

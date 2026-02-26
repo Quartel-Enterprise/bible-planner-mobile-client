@@ -4,10 +4,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import bibleplanner.feature.day.generated.resources.Res
+import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
@@ -84,7 +88,7 @@ internal class DayViewModel(
 
     fun onEvent(event: DayUiEvent) {
         when (event) {
-            is DayUiEvent.OnChapterToggle -> {
+            is DayUiEvent.OnChapterCheckboxClick -> {
                 onChapterToggle(event)
             }
 
@@ -127,6 +131,28 @@ internal class DayViewModel(
             is DayUiEvent.OnBackClick -> {
                 backToPreviousScreen()
             }
+
+            is DayUiEvent.OnChapterClick -> {
+                onChapterClick(event.strategy)
+            }
+        }
+    }
+
+    private fun onChapterClick(strategy: ChapterClickStrategy) {
+        val chapterNumber = when (strategy) {
+            is ChapterClickStrategy.NavigateToChapter -> strategy.chapterNumber
+            is ChapterClickStrategy.NavigateToFirstChapterOfTheBook -> 1
+        }
+        viewModelScope.launch {
+            _uiAction.emit(
+                DayUiAction.NavigateToRoute(
+                    ReadNavRoute(
+                        bookId = strategy.bookId.name,
+                        chapterNumber = chapterNumber,
+                        isChapterRead = strategy.isChapterRead
+                    )
+                )
+            )
         }
     }
 
@@ -183,20 +209,19 @@ internal class DayViewModel(
         }
     }
 
-    private fun onChapterToggle(event: DayUiEvent.OnChapterToggle) {
+    private fun onChapterToggle(event: DayUiEvent.OnChapterCheckboxClick) {
         val currentState = _uiState.value as? DayUiState.Loaded ?: return
-        val passageIndex = event.passageIndex
 
         viewModelScope.launch {
             useCases.toggleChapterReadStatus(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
-                passageIndex = passageIndex,
-                chapterIndex = event.chapterIndex,
-                passage = currentState.day.passages.getOrNull(passageIndex) ?: return@launch,
-                books = currentState.books,
+                strategy = event.strategy,
+                passage = currentState.day.passages.getOrNull(event.strategy.passageIndex) ?: return@launch,
                 readingPlanType = readingPlanType,
-            )
+            ).onFailure {
+                _uiAction.emit(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message))
+            }
         }
     }
 
