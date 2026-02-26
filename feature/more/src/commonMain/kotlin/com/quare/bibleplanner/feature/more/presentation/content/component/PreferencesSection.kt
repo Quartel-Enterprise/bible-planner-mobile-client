@@ -38,14 +38,15 @@ internal fun PreferencesSection(
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
             )
             HorizontalDivider()
-            val bibleSubtitle = if (state.bibleDownloadProgress != null) {
-                "${state.bibleVersionName} (${(state.bibleDownloadProgress * 100).toInt()}%)"
-            } else {
-                state.bibleVersionName
-            }
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.bibleVersion,
-                subtitle = bibleSubtitle,
+                subtitle = state.bibleVersionName?.let { safeBibleVersionName ->
+                    if (state.bibleDownloadProgress != null) {
+                        "$safeBibleVersionName (${(state.bibleDownloadProgress * 100).toInt()}%)"
+                    } else {
+                        safeBibleVersionName
+                    }
+                },
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BIBLE_VERSION)) },
             )
             HorizontalDivider()
