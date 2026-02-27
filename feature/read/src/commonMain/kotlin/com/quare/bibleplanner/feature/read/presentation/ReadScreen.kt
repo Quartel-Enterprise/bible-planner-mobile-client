@@ -30,11 +30,13 @@ import bibleplanner.feature.read.generated.resources.chapter_not_downloaded_erro
 import bibleplanner.feature.read.generated.resources.manage_bible_versions
 import bibleplanner.feature.read.generated.resources.retry
 import bibleplanner.feature.read.generated.resources.unknown_error_occurred
+import com.quare.bibleplanner.feature.read.presentation.component.NavigationSuggestionRow
 import com.quare.bibleplanner.feature.read.presentation.component.ReadBottomBar
 import com.quare.bibleplanner.feature.read.presentation.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
+import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,81 +71,82 @@ fun ReadScreen(
             )
         },
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.TopCenter,
-        ) {
-            when (state) {
-                is ReadUiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+        val commonModifier = Modifier.fillMaxSize().padding(paddingValues)
+        when (state) {
+            is ReadUiState.Loading -> {
+                Box(modifier = commonModifier, contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
+            }
 
-                is ReadUiState.Error -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(
-                            space = 8.dp,
-                            alignment = Alignment.CenterVertically,
-                        ),
-                    ) {
-                        val (errorMessage, buttonText) = when (state) {
-                            is ReadUiState.Error.ChapterNotFound -> stringResource(
-                                resource = Res.string.chapter_not_downloaded_error,
-                                stringResource(state.bookStringResource),
-                                state.chapterNumber,
-                                state.selectedBibleVersionName,
-                            ) to stringResource(Res.string.manage_bible_versions)
+            is ReadUiState.Error -> {
+                Column(
+                    modifier = commonModifier,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(
+                        space = 8.dp,
+                        alignment = Alignment.CenterVertically,
+                    ),
+                ) {
+                    val (errorMessage, buttonText) = when (state) {
+                        is ReadUiState.Error.ChapterNotFound -> stringResource(
+                            resource = Res.string.chapter_not_downloaded_error,
+                            stringResource(state.bookStringResource),
+                            state.chapterNumber,
+                            state.selectedBibleVersionName,
+                        ) to stringResource(Res.string.manage_bible_versions)
 
-                            is ReadUiState.Error.Unknown -> stringResource(Res.string.unknown_error_occurred) to
-                                stringResource(
-                                    Res.string.retry,
-                                )
-                        }
-                        Text(
-                            text = errorMessage,
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center,
-                        )
-                        Button(
-                            onClick = { onEvent(state.errorUiEvent) },
-                        ) {
-                            Text(text = buttonText)
-                        }
+                        is ReadUiState.Error.Unknown -> stringResource(Res.string.unknown_error_occurred) to
+                            stringResource(
+                                Res.string.retry,
+                            )
                     }
-                }
-
-                is ReadUiState.Success -> {
-                    ResponsiveColumn(
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                        lazyListState = listState,
-                        maxContentWidth = 600.dp,
-                        portraitContent = {
-                            responsiveItems(
-                                state.verses,
-                                key = { "verse-${it.number}" },
-                            ) { verse ->
-                                Row(
-                                    modifier = Modifier.padding(vertical = 4.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                ) {
-                                    Text(
-                                        text = verse.number.toString(),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                    )
-                                    Text(
-                                        text = verse.text,
-                                    )
-                                }
-                            }
-                        },
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
                     )
+                    Button(
+                        onClick = { onEvent(state.errorUiEvent) },
+                    ) {
+                        Text(text = buttonText)
+                    }
                 }
+            }
+
+            is ReadUiState.Success -> {
+                ResponsiveColumn(
+                    modifier = commonModifier.padding(horizontal = 16.dp),
+                    lazyListState = listState,
+                    maxContentWidth = 600.dp,
+                    portraitContent = {
+                        responsiveItems(
+                            state.verses,
+                            key = { "verse-${it.number}" },
+                        ) { verse ->
+                            Row(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                Text(
+                                    text = verse.number.toString(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                )
+                                Text(
+                                    text = verse.text,
+                                )
+                            }
+                        }
+                        responsiveItem { VerticalSpacer() }
+                        responsiveItem {
+                            NavigationSuggestionRow(
+                                state = state,
+                                onEvent = onEvent
+                            )
+                        }
+                    },
+                )
             }
         }
     }
