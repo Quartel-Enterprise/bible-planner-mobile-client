@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.read.presentation.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
@@ -54,25 +55,31 @@ fun ReadBottomBar(
             val toggleReadClick = { onEvent(ReadUiEvent.ToggleReadStatus) }
             previous?.let { safePrevious ->
                 TextButton(onClick = { onEvent(ReadUiEvent.OnNavigationSuggestionClick(safePrevious)) }) {
-                    val contentDescription = "${safePrevious.bookId.getBookName()} ${safePrevious.chapterNumber}"
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        imageVector = Icons.Default.ArrowBackIosNew,
-                        contentDescription = contentDescription,
-                    )
-                    Text(text = "${safePrevious.bookId.getBookName()} ${safePrevious.chapterNumber}")
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val contentDescription = "${safePrevious.bookId.getBookName()} ${safePrevious.chapterNumber}"
+                        Icon(
+                            modifier = Modifier.size(16.dp),
+                            imageVector = Icons.Default.ArrowBackIosNew,
+                            contentDescription = contentDescription,
+                        )
+                        Text(text = "${safePrevious.bookId.getBookName()} ${safePrevious.chapterNumber}")
+                    }
                 }
             }
+            val readButtonModifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp)
             if (state.isChapterRead) {
                 OutlinedButton(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    modifier = readButtonModifier,
                     onClick = toggleReadClick,
                 ) {
                     Text(text = stringResource(Res.string.mark_as_unread))
                 }
             } else {
                 Button(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    modifier = readButtonModifier,
                     onClick = toggleReadClick,
                 ) {
                     Text(text = stringResource(Res.string.mark_as_read))
@@ -80,13 +87,18 @@ fun ReadBottomBar(
             }
             next?.let { safeNext ->
                 TextButton(onClick = { onEvent(ReadUiEvent.OnNavigationSuggestionClick(safeNext)) }) {
-                    val contentDescription = "${safeNext.bookId.getBookName()} ${safeNext.chapterNumber}"
-                    Text(text = "${safeNext.bookId.getBookName()} ${safeNext.chapterNumber}")
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                        contentDescription = contentDescription,
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val contentDescription = "${safeNext.bookId.getBookName()} ${safeNext.chapterNumber}"
+                        Text(text = "${safeNext.bookId.getBookName()} ${safeNext.chapterNumber}")
+                        Icon(
+                            modifier = Modifier.size(16.dp),
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                            contentDescription = contentDescription,
+                        )
+                    }
                 }
             }
         }

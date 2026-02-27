@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChangeCircle
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -77,12 +76,6 @@ fun ReadTopBar(
                 )
             },
             actions = {
-                Checkbox(
-                    checked = state.isChapterRead,
-                    onCheckedChange = {
-                        onEvent(ReadUiEvent.ToggleReadStatus)
-                    },
-                )
                 CommonIconButton(
                     imageVector = Icons.Default.ChangeCircle,
                     onClick = {
