@@ -25,7 +25,7 @@ internal fun NavigationSuggestionButton(
 ) {
     TextButton(
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
     ) {
         val text = "${suggestion.bookId.getBookName()} ${suggestion.chapterNumber}"
         val icon = if (isNext) Icons.AutoMirrored.Filled.ArrowForwardIos else Icons.Default.ArrowBackIosNew

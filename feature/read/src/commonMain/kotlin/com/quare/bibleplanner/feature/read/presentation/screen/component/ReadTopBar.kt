@@ -38,7 +38,7 @@ fun ReadTopBar(
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 bookName = bookName,
-                chapterNumber = chapterNumber
+                chapterNumber = chapterNumber,
             )
         },
         navigationIcon = {

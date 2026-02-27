@@ -21,7 +21,7 @@ internal fun ReadToggleComponent(
         Text("Read")
         Checkbox(
             checked = isChecked,
-            onCheckedChange = { toggleReadStatus() }
+            onCheckedChange = { toggleReadStatus() },
         )
     }
 }

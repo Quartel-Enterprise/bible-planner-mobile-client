@@ -25,7 +25,7 @@ internal fun ReadLandscapeChapterHeader(
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             BackIcon(onBackClick = { onEvent(ReadUiEvent.OnArrowBackClick) })

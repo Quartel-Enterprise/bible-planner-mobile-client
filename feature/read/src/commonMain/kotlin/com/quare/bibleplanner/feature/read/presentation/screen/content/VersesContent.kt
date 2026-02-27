@@ -14,7 +14,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 internal fun LazyListScope.versesContent(state: ReadUiState.Success) {
     items(
         items = state.verses,
-        key = { "verse-${it.number}" }
+        key = { "verse-${it.number}" },
     ) { verse ->
         Row(
             modifier = Modifier.padding(vertical = 4.dp),

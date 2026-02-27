@@ -12,13 +12,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadBottomBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadErrorContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadScreenSuccessPortraitContent
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +63,7 @@ fun ReadPortraitScreen(
                 ReadErrorContent(
                     modifier = commonModifier,
                     state = state,
-                    onEvent = onEvent
+                    onEvent = onEvent,
                 )
             }
 
@@ -72,7 +72,7 @@ fun ReadPortraitScreen(
                     modifier = commonModifier,
                     listState = listState,
                     state = state,
-                    onEvent = onEvent
+                    onEvent = onEvent,
                 )
             }
         }

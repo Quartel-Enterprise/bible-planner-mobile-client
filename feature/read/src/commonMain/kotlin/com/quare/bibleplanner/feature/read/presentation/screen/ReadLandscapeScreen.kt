@@ -42,7 +42,7 @@ fun ReadLandscapeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Row(
                 modifier = Modifier
@@ -61,7 +61,7 @@ fun ReadLandscapeScreen(
                 VerticalDivider()
                 ReadLandscapeRightContent(
                     state = state,
-                    onEvent = onEvent
+                    onEvent = onEvent,
                 )
             }
         }
@@ -79,7 +79,7 @@ internal fun ReadLandscapeLeftContent(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         ReadLandscapeChapterHeader(
             modifier = Modifier.fillMaxWidth(),
@@ -87,13 +87,13 @@ internal fun ReadLandscapeLeftContent(
             sharedTransitionScope = sharedTransitionScope,
             bookName = bookName,
             state = state,
-            onEvent = onEvent
+            onEvent = onEvent,
         )
         VerticalSpacer(8)
         ChangeReadStatusButton(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
             isRead = state.isChapterRead,
-            onClick = { onEvent(ReadUiEvent.ToggleReadStatus) }
+            onClick = { onEvent(ReadUiEvent.ToggleReadStatus) },
         )
         NavigationSuggestionComponent(
             navigationSuggestions = state.navigationSuggestions,
@@ -112,10 +112,11 @@ private fun ReadLandscapeRightContent(
         is ReadUiState.Error -> ReadErrorContent(
             modifier = modifier,
             state = state,
-            onEvent = onEvent
+            onEvent = onEvent,
         )
 
         is ReadUiState.Loading -> ReadLoadingContent(modifier)
+
         is ReadUiState.Success -> LazyColumn(modifier = modifier, contentPadding = PaddingValues(8.dp)) {
             versesContent(state)
         }

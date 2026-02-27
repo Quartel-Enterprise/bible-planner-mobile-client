@@ -13,7 +13,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ChangeBibleVersionIconButton(
     modifier: Modifier = Modifier,
-    onEvent: (ReadUiEvent) -> Unit
+    onEvent: (ReadUiEvent) -> Unit,
 ) {
     CommonIconButton(
         modifier = modifier,

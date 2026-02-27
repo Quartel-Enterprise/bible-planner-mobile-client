@@ -9,9 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.read.presentation.screen.component.NavigationSuggestionComponent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
+import com.quare.bibleplanner.feature.read.presentation.screen.component.NavigationSuggestionComponent
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadToggleComponent
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
@@ -36,7 +36,7 @@ internal fun ReadScreenSuccessPortraitContent(
                     ReadToggleComponent(
                         modifier = Modifier.align(Alignment.Center),
                         isChecked = state.isChapterRead,
-                        toggleReadStatus = { onEvent(ReadUiEvent.ToggleReadStatus) }
+                        toggleReadStatus = { onEvent(ReadUiEvent.ToggleReadStatus) },
                     )
                 },
                 onEvent = onEvent,

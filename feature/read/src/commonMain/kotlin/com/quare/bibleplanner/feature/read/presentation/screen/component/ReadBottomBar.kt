@@ -34,9 +34,9 @@ fun ReadBottomBar(
                     ReadToggleComponent(
                         modifier = Modifier.align(Alignment.Center),
                         isChecked = state.isChapterRead,
-                        toggleReadStatus = { onEvent(ReadUiEvent.ToggleReadStatus) }
+                        toggleReadStatus = { onEvent(ReadUiEvent.ToggleReadStatus) },
                     )
-                }
+                },
             )
         }
     }
