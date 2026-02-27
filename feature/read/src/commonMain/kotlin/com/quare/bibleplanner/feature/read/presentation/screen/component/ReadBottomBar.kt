@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.read.presentation.component
+package com.quare.bibleplanner.feature.read.presentation.screen.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,9 +27,16 @@ fun ReadBottomBar(
         windowInsets = WindowInsets.navigationBars,
     ) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            NavigationSuggestionRow(
-                state = state,
+            NavigationSuggestionComponent(
+                navigationSuggestions = state.navigationSuggestions,
                 onEvent = onEvent,
+                centerComponent = {
+                    ReadToggleComponent(
+                        modifier = Modifier.align(Alignment.Center),
+                        isChecked = state.isChapterRead,
+                        toggleReadStatus = { onEvent(ReadUiEvent.ToggleReadStatus) }
+                    )
+                }
             )
         }
     }

@@ -4,7 +4,7 @@
     <string name="manage_bible_versions">Gerenciar Versões da Bíblia</string>
     <string name="unknown_error_occurred">Ocorreu um erro desconhecido.</string>
     <string name="retry">Tentar novamente</string>
+    <string name="change_bible_version">Mudar Versão da Bíblia</string>
     <string name="mark_as_unread">Marcar como Não Lido</string>
     <string name="mark_as_read">Marcar como Lido</string>
-    <string name="change_bible_version">Mudar Versão da Bíblia</string>
 </resources>

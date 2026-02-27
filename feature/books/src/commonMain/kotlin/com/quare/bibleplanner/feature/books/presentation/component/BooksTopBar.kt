@@ -28,6 +28,7 @@ import com.quare.bibleplanner.ui.component.ActionCircleButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BooksTopBar(
+    modifier: Modifier = Modifier,
     state: BooksUiState,
     onEvent: (BooksUiEvent) -> Unit,
     contentPadding: PaddingValues,
@@ -35,7 +36,7 @@ internal fun BooksTopBar(
 ) {
     Surface(
         shadowElevation = if (isScrolled) 4.dp else 0.dp,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),

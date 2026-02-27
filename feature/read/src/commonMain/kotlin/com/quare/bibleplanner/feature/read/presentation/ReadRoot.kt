@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.feature.read.presentation.screen.ReadScreen
 import com.quare.bibleplanner.feature.read.presentation.utils.ReadUiActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -21,11 +22,13 @@ fun NavGraphBuilder.read(
             uiActionFlow = viewModel.uiAction,
             navController = navController,
         )
+        val animatedVisibilityScope = this
+        val onEvent = viewModel::onEvent
         ReadScreen(
             state = state,
-            onEvent = viewModel::onEvent,
+            onEvent = onEvent,
             sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = this,
+            animatedVisibilityScope = animatedVisibilityScope,
         )
     }
 }
