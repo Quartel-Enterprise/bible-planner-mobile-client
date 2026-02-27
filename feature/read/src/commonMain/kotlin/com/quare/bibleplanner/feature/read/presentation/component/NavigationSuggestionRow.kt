@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -26,12 +27,8 @@ internal fun NavigationSuggestionRow(
 ) {
     val (previous, next) = state.navigationSuggestions.run { previous to next }
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = if (previous != null && next != null) {
-            Arrangement.SpaceBetween
-        } else {
-            Arrangement.Start
-        },
+        modifier = modifier.widthIn(max = 600.dp),
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val toggleReadClick = { onEvent(ReadUiEvent.ToggleReadStatus) }
