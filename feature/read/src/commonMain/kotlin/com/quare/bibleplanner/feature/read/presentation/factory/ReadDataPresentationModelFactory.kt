@@ -86,6 +86,7 @@ class ReadDataPresentationModelFactory(
                     VerseUiModel(
                         number = verseWithTexts.verse.number,
                         text = safeText,
+                        isSelected = false, // TODO: will be used in the future for the copy/share feature
                     )
                 } ?: return@combine chapterNotFoundState
             }

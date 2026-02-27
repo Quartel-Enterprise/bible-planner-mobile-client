@@ -5,6 +5,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -17,10 +18,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -49,24 +48,25 @@ fun ReadScreen(
     onEvent: (ReadUiEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
-    val isScrolled by remember {
-        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0 }
-    }
-    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+    val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+    val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
-        modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(bottomBarScrollBehavior.nestedScrollConnection)
+            .nestedScroll(topBarScrollBehavior.nestedScrollConnection),
         topBar = {
             ReadTopBar(
                 state = state,
-                isScrolled = isScrolled,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,
                 onEvent = onEvent,
+                topAppBarScrollBehavior = topBarScrollBehavior,
             )
         },
         bottomBar = {
             ReadBottomBar(
-                scrollBehavior = scrollBehavior,
+                scrollBehavior = bottomBarScrollBehavior,
                 state = state,
                 onEvent = onEvent,
             )
@@ -117,6 +117,7 @@ fun ReadScreen(
 
             is ReadUiState.Success -> {
                 ResponsiveColumn(
+                    contentPadding = PaddingValues(bottom = 8.dp),
                     modifier = commonModifier.padding(horizontal = 16.dp),
                     lazyListState = listState,
                     maxContentWidth = 600.dp,

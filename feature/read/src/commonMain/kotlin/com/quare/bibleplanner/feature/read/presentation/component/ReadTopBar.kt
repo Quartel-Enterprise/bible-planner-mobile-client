@@ -4,14 +4,12 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChangeCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,59 +29,54 @@ fun ReadTopBar(
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    isScrolled: Boolean,
     state: ReadUiState,
+    topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadUiEvent) -> Unit,
 ) {
-    Surface(
-        shadowElevation = if (isScrolled) 4.dp else 0.dp,
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.surface,
-    ) {
-        val bookName = stringResource(state.bookStringResource)
-        val chapterNumber = state.chapterNumber
-        TopAppBar(
-            modifier = modifier,
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    Text(
-                        modifier = SharedTransitionModifierFactory.getBookNameSharedTransitionModifier(
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            sharedTransitionScope = sharedTransitionScope,
-                            bookName = bookName,
-                        ),
-                        text = bookName,
-                    )
-                    Text(
-                        text = "$chapterNumber",
-                        modifier = SharedTransitionModifierFactory.getReadTopBarSharedTransitionBookChapterModifier(
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            sharedTransitionScope = sharedTransitionScope,
-                            chapterNumber = chapterNumber,
-                            bookName = bookName,
-                        ),
-                    )
-                }
-            },
-            navigationIcon = {
-                BackIcon(
-                    onBackClick = {
-                        onEvent(ReadUiEvent.OnArrowBackClick)
-                    },
+    val bookName = stringResource(state.bookStringResource)
+    val chapterNumber = state.chapterNumber
+    TopAppBar(
+        scrollBehavior = topAppBarScrollBehavior,
+        modifier = modifier,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    modifier = SharedTransitionModifierFactory.getBookNameSharedTransitionModifier(
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        sharedTransitionScope = sharedTransitionScope,
+                        bookName = bookName,
+                    ),
+                    text = bookName,
                 )
-            },
-            actions = {
-                CommonIconButton(
-                    imageVector = Icons.Default.ChangeCircle,
-                    onClick = {
-                        onEvent(ReadUiEvent.ManageBibleVersions)
-                    },
-                    contentDescription = stringResource(Res.string.change_bible_version),
+                Text(
+                    text = "$chapterNumber",
+                    modifier = SharedTransitionModifierFactory.getReadTopBarSharedTransitionBookChapterModifier(
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        sharedTransitionScope = sharedTransitionScope,
+                        chapterNumber = chapterNumber,
+                        bookName = bookName,
+                    ),
                 )
-            },
-        )
-    }
+            }
+        },
+        navigationIcon = {
+            BackIcon(
+                onBackClick = {
+                    onEvent(ReadUiEvent.OnArrowBackClick)
+                },
+            )
+        },
+        actions = {
+            CommonIconButton(
+                imageVector = Icons.Default.ChangeCircle,
+                onClick = {
+                    onEvent(ReadUiEvent.ManageBibleVersions)
+                },
+                contentDescription = stringResource(Res.string.change_bible_version),
+            )
+        },
+    )
 }
