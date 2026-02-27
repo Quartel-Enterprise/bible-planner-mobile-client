@@ -21,7 +21,7 @@ class ReadDataPresentationModelFactory(
     private val getChapterId: GetChapterIdUseCase,
     private val getVersesWithTextsByChapterIdFlow: GetVersesWithTextsByChapterIdFlowUseCase,
     private val getSelectedBibleNameFlow: GetSelectedBibleNameFlowUseCase,
-    private val getReadNavigationSuggestionsModelFlow : GetReadNavigationSuggestionsModelUseCase,
+    private val getReadNavigationSuggestionsModelFlow: GetReadNavigationSuggestionsModelUseCase,
 ) {
     fun create(
         bookId: BookId,
@@ -43,7 +43,7 @@ class ReadDataPresentationModelFactory(
                     chapterId = chapterId,
                     bookStringResource = bookStringResource,
                     chapterNumber = chapterNumber,
-                    navigationSuggestions = navigationSuggestions
+                    navigationSuggestions = navigationSuggestions,
                 )
             }?.let { readUiStateFlow ->
                 emitAll(readUiStateFlow)
@@ -63,7 +63,7 @@ class ReadDataPresentationModelFactory(
         chapterId: Long,
         bookStringResource: StringResource,
         chapterNumber: Int,
-        navigationSuggestions: ReadNavigationSuggestionsModel
+        navigationSuggestions: ReadNavigationSuggestionsModel,
     ): Flow<ReadUiState> = combine(
         getSelectedVersionIdFlow(),
         getVersesWithTextsByChapterIdFlow(chapterId),

@@ -9,7 +9,7 @@ import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassage
 import kotlinx.coroutines.flow.first
 
 internal class IsChapterReadStatusUseCase(
-    private val getBooksFlow: GetBooksFlowUseCase
+    private val getBooksFlow: GetBooksFlowUseCase,
 ) {
     /**
      * Calculates the new read status for a chapter after toggling.
@@ -47,7 +47,7 @@ internal class IsChapterReadStatusUseCase(
         // Check if a chapter is read based on verse ranges
         val isCurrentlyRead = isChapterRead(
             chapter = chapter,
-            bookChapter = bookChapter
+            bookChapter = bookChapter,
         )
         return Result.success(!isCurrentlyRead)
     }

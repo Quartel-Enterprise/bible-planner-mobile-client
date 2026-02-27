@@ -78,9 +78,9 @@ fun ReadScreen(
             ReadBottomBar(
                 scrollBehavior = scrollBehavior,
                 state = state,
-                onEvent = onEvent
+                onEvent = onEvent,
             )
-        }
+        },
     ) { paddingValues ->
         Box(
             modifier = Modifier

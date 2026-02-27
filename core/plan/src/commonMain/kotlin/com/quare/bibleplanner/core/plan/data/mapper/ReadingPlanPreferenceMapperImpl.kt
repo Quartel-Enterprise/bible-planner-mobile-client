@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.readingplan.data.mapper
+package com.quare.bibleplanner.core.plan.data.mapper
 
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 

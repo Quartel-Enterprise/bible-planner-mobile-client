@@ -5,5 +5,6 @@ sealed interface ReadUiAction {
 
     data class NavigateToRoute(
         val route: Any,
+        val replace: Boolean,
     ) : ReadUiAction
 }

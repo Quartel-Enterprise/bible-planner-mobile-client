@@ -1,9 +1,5 @@
 package com.quare.bibleplanner.feature.readingplan.di
 
-import com.quare.bibleplanner.feature.readingplan.data.mapper.ReadingPlanPreferenceMapper
-import com.quare.bibleplanner.feature.readingplan.data.mapper.ReadingPlanPreferenceMapperImpl
-import com.quare.bibleplanner.feature.readingplan.data.repository.ReadingPlanRepositoryImpl
-import com.quare.bibleplanner.feature.readingplan.domain.repository.ReadingPlanRepository
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
@@ -22,9 +18,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val readingPlanModule = module {
-    // Data
-    factoryOf(::ReadingPlanRepositoryImpl).bind<ReadingPlanRepository>()
-    factoryOf(::ReadingPlanPreferenceMapperImpl).bind<ReadingPlanPreferenceMapper>()
 
     // Domain
     factoryOf(::GetSelectedReadingPlanFlowUseCase).bind<GetSelectedReadingPlanFlow>()

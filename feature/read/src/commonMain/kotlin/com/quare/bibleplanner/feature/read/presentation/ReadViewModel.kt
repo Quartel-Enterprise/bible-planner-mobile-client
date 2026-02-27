@@ -65,7 +65,12 @@ class ReadViewModel(
 
             ReadUiEvent.ManageBibleVersions -> {
                 viewModelScope.launch {
-                    _uiAction.emit(ReadUiAction.NavigateToRoute(BibleVersionSelectorRoute))
+                    _uiAction.emit(
+                        ReadUiAction.NavigateToRoute(
+                            route = BibleVersionSelectorRoute,
+                            replace = false,
+                        ),
+                    )
                 }
             }
 
@@ -74,13 +79,14 @@ class ReadViewModel(
                 viewModelScope.launch {
                     _uiAction.emit(
                         ReadUiAction.NavigateToRoute(
-                            ReadNavRoute(
+                            route = ReadNavRoute(
                                 bookId = suggestion.bookId.name,
                                 chapterNumber = suggestion.chapterNumber,
                                 isChapterRead = uiState.value.isChapterRead,
                                 isFromBookDetails = route.isFromBookDetails,
-                            )
-                        )
+                            ),
+                            replace = true,
+                        ),
                     )
                 }
             }
@@ -115,6 +121,6 @@ class ReadViewModel(
         navigationSuggestions = ReadNavigationSuggestionsModel(
             previous = null,
             next = null,
-        )
+        ),
     )
 }

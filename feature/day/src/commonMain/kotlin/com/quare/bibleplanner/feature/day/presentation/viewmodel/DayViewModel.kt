@@ -151,8 +151,8 @@ internal class DayViewModel(
                         chapterNumber = chapterNumber,
                         isChapterRead = strategy.isChapterRead,
                         isFromBookDetails = false,
-                    )
-                )
+                    ),
+                ),
             )
         }
     }
@@ -214,15 +214,16 @@ internal class DayViewModel(
         val currentState = _uiState.value as? DayUiState.Loaded ?: return
 
         viewModelScope.launch {
-            useCases.toggleChapterReadStatus(
-                weekNumber = weekNumber,
-                dayNumber = dayNumber,
-                strategy = event.strategy,
-                passage = currentState.day.passages.getOrNull(event.strategy.passageIndex) ?: return@launch,
-                readingPlanType = readingPlanType,
-            ).onFailure {
-                _uiAction.emit(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message))
-            }
+            useCases
+                .toggleChapterReadStatus(
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
+                    strategy = event.strategy,
+                    passage = currentState.day.passages.getOrNull(event.strategy.passageIndex) ?: return@launch,
+                    readingPlanType = readingPlanType,
+                ).onFailure {
+                    _uiAction.emit(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message))
+                }
         }
     }
 

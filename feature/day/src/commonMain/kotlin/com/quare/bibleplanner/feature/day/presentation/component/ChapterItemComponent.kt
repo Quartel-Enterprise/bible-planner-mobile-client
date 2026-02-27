@@ -56,7 +56,7 @@ internal fun ChapterItemComponent(
                             bookName = bookName,
                         ),
                         text = chapterNumber.toString(),
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                 }
             }

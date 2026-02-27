@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.date.toLocalDate
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
+import com.quare.bibleplanner.core.plan.data.mapper.ReadingPlanPreferenceMapper
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,7 @@ class PlanRepositoryImpl(
     private val planLocalDataSource: PlanLocalDataSource,
     private val weekPlanDtoToModelMapper: WeekPlanDtoToModelMapper,
     private val localDateTimeProvider: LocalDateTimeProvider,
+    private val readingPlanPreferenceMapper: ReadingPlanPreferenceMapper,
 ) : PlanRepository {
     override suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanModel> = planLocalDataSource
         .getPlans(readingPlanType)
@@ -36,4 +38,15 @@ class PlanRepositoryImpl(
         planLocalDataSource.getPlanStartTimeStamp().map { timestamp ->
             timestamp?.let(localDateTimeProvider::getLocalDateTime)?.toLocalDate()
         }
+
+    override fun getSelectedReadingPlanFlow(): Flow<ReadingPlanType> =
+        planLocalDataSource.getSelectedReadingPlanFlow().map { value ->
+            readingPlanPreferenceMapper.mapPreferenceToModel(value)
+        }
+
+    override suspend fun setSelectedReadingPlan(readingPlanType: ReadingPlanType) {
+        planLocalDataSource.setSelectedReadingPlan(
+            readingPlanPreferenceMapper.mapModelToPreference(readingPlanType),
+        )
+    }
 }

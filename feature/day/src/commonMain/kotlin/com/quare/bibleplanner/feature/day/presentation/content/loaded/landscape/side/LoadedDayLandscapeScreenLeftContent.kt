@@ -62,9 +62,9 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                                     DayUiEvent.OnChapterClick(
                                         ChapterClickStrategy.NavigateToFirstChapterOfTheBook(
                                             bookId = passage.bookId,
-                                            isChapterRead = passage.isRead
-                                        )
-                                    )
+                                            isChapterRead = passage.isRead,
+                                        ),
+                                    ),
                                 )
                             },
                     ) {
@@ -78,8 +78,8 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                             onToggle = {
                                 onEvent(
                                     DayUiEvent.OnChapterCheckboxClick(
-                                        UpdateReadStatusOfPassageStrategy.EntireBook(passageIndex)
-                                    )
+                                        UpdateReadStatusOfPassageStrategy.EntireBook(passageIndex),
+                                    ),
                                 )
                             },
                         )
@@ -100,8 +100,8 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                                                 bookId = passage.bookId,
                                                 isChapterRead = passage.isRead,
                                                 chapterNumber = passage.chapters[chapterIndex].number,
-                                            )
-                                        )
+                                            ),
+                                        ),
                                     )
                                 },
                         ) {
@@ -117,9 +117,9 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                                         DayUiEvent.OnChapterCheckboxClick(
                                             UpdateReadStatusOfPassageStrategy.Chapter(
                                                 passageIndex = passageIndex,
-                                                chapterIndex = chapterIndex
-                                            )
-                                        )
+                                                chapterIndex = chapterIndex,
+                                            ),
+                                        ),
                                     )
                                 },
                             )

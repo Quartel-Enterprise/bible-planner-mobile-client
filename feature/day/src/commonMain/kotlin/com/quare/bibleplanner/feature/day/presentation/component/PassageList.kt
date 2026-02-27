@@ -52,9 +52,9 @@ internal fun ResponsiveContentScope.portraitPassageList(
                                         DayUiEvent.OnChapterClick(
                                             ChapterClickStrategy.NavigateToFirstChapterOfTheBook(
                                                 bookId = passage.bookId,
-                                                isChapterRead = passage.isRead
-                                            )
-                                        )
+                                                isChapterRead = passage.isRead,
+                                            ),
+                                        ),
                                     )
                                 },
                         ) {
@@ -65,7 +65,11 @@ internal fun ResponsiveContentScope.portraitPassageList(
                                 bookName = passage.bookId.getBookName(),
                                 chapterPlanModel = null,
                                 isRead = passage.isRead,
-                                onToggle =  { onChapterToggle(UpdateReadStatusOfPassageStrategy.EntireBook(passageIndex)) },
+                                onToggle = {
+                                    onChapterToggle(
+                                        UpdateReadStatusOfPassageStrategy.EntireBook(passageIndex),
+                                    )
+                                },
                             )
                         }
                         if (passageIndex < passages.size - 1) {
@@ -84,8 +88,8 @@ internal fun ResponsiveContentScope.portraitPassageList(
                                                     bookId = passage.bookId,
                                                     isChapterRead = passage.isRead,
                                                     chapterNumber = passage.chapters[chapterIndex].number,
-                                                )
-                                            )
+                                                ),
+                                            ),
                                         )
                                     },
                             ) {
@@ -100,8 +104,8 @@ internal fun ResponsiveContentScope.portraitPassageList(
                                         onChapterToggle(
                                             UpdateReadStatusOfPassageStrategy.Chapter(
                                                 passageIndex = passageIndex,
-                                                chapterIndex = chapterIndex
-                                            )
+                                                chapterIndex = chapterIndex,
+                                            ),
                                         )
                                     },
                                 )

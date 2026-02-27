@@ -26,5 +26,7 @@ sealed interface ReadUiEvent {
      */
     data object ManageBibleVersions : ReadUiEvent
 
-    data class OnNavigationSuggestionClick(val suggestion: ReadNavigationSuggestionModel) : ReadUiEvent
+    data class OnNavigationSuggestionClick(
+        val suggestion: ReadNavigationSuggestionModel,
+    ) : ReadUiEvent
 }
