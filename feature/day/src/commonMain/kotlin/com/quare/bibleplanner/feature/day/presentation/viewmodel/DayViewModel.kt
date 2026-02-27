@@ -70,10 +70,6 @@ internal class DayViewModel(
                 currentState = _uiState.value as? DayUiState.Loaded,
             ),
         ) { state ->
-            Logger.d(
-                tag = "Notes",
-                messageString = "new notes state: ${(state as? DayUiState.Loaded)?.day?.notes}",
-            )
             _uiState.update { state }
         }
     }

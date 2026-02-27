@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.read.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
@@ -20,12 +19,12 @@ class GetReadNavigationSuggestionsModelUseCase(
 ) {
     /**
      * Get read navigation suggestions model
-     * @param shouldForceChronologicalOrder if true we should get the model from the chronological order, if not we should verify the selected plan
+     * @param shouldForceCanonOrder if true we should get the model from the canon order, if not we should verify the selected plan
      * @param currentBookId the book id reference to calculate next and previous
      * @param currentChapterNumber the chapter number reference to calculate next and previous
      */
     operator fun invoke(
-        shouldForceChronologicalOrder: Boolean,
+        shouldForceCanonOrder: Boolean,
         currentBookId: BookId,
         currentChapterNumber: Int,
     ): Flow<ReadNavigationSuggestionsModel> = combine(
@@ -33,8 +32,8 @@ class GetReadNavigationSuggestionsModelUseCase(
         planRepository.getSelectedReadingPlanFlow(),
         booksRepository.getBooksFlow(),
     ) { plans, selectedPlanType, books ->
-        val activePlanType = if (shouldForceChronologicalOrder) {
-            ReadingPlanType.CHRONOLOGICAL
+        val activePlanType = if (shouldForceCanonOrder) {
+            ReadingPlanType.BOOKS
         } else {
             selectedPlanType
         }

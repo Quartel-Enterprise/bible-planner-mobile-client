@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -28,54 +29,64 @@ internal fun BibleVersionsContent(
     uiState: BibleVersionsUiState,
     onEvent: (BibleVersionUiEvent) -> Unit,
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier.fillMaxWidth(),
     ) {
-        Text(
-            modifier = Modifier.padding(
-                vertical = 8.dp,
-            ),
-            text = stringResource(Res.string.bible_versions),
-            style = MaterialTheme.typography.titleLarge,
-        )
-        Text(
-            text = stringResource(Res.string.manage_bible_versions_description),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        VerticalSpacer(8)
+        item {
+            Text(
+                modifier = Modifier.padding(
+                    vertical = 8.dp,
+                ),
+                text = stringResource(Res.string.bible_versions),
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+        item {
+            Text(
+                text = stringResource(Res.string.manage_bible_versions_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        item {
+            VerticalSpacer(8)
+        }
         when (uiState) {
             BibleVersionsUiState.Error -> {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    VerticalSpacer()
-                    Text(
-                        text = stringResource(Res.string.download_bible_versions_error),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    VerticalSpacer()
-                    Button(
-                        modifier = Modifier.fillMaxWidth(0.5f),
-                        onClick = { onEvent(BibleVersionUiEvent.TryToDownloadBibleVersionsAgain) },
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(text = stringResource(Res.string.try_again))
+                        VerticalSpacer()
+                        Text(
+                            text = stringResource(Res.string.download_bible_versions_error),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        VerticalSpacer()
+                        Button(
+                            modifier = Modifier.fillMaxWidth(0.5f),
+                            onClick = { onEvent(BibleVersionUiEvent.TryToDownloadBibleVersionsAgain) },
+                        ) {
+                            Text(text = stringResource(Res.string.try_again))
+                        }
                     }
                 }
             }
 
             BibleVersionsUiState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
 
             is BibleVersionsUiState.Success -> {
-                BibleVersionsListComponent(
+                bibleVersionsListComponent(
                     selectionMap = uiState.data,
                     onEvent = onEvent,
                 )

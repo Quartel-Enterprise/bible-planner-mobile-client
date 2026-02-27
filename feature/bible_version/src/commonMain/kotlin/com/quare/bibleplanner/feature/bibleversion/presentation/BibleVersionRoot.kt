@@ -17,7 +17,7 @@ import com.quare.bibleplanner.feature.bibleversion.presentation.utils.BibleVersi
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.bibleVersionSelection(navController: NavHostController) {
+fun NavGraphBuilder.bibleVersionSelectionRoot(navController: NavHostController) {
     dialog<BibleVersionSelectorRoute> {
         val viewModel: BibleVersionViewModel = koinViewModel()
         val onEvent = viewModel::onEvent

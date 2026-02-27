@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.read.presentation.component
+package com.quare.bibleplanner.feature.read.presentation.screen.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,11 +18,15 @@ import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestion
 
 @Composable
 internal fun NavigationSuggestionButton(
+    modifier: Modifier = Modifier,
     suggestion: ReadNavigationSuggestionModel,
     isNext: Boolean,
     onClick: () -> Unit,
 ) {
-    TextButton(onClick = onClick) {
+    TextButton(
+        modifier = modifier,
+        onClick = onClick,
+    ) {
         val text = "${suggestion.bookId.getBookName()} ${suggestion.chapterNumber}"
         val icon = if (isNext) Icons.AutoMirrored.Filled.ArrowForwardIos else Icons.Default.ArrowBackIosNew
         Row(

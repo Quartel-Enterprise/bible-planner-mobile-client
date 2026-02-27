@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,6 +41,7 @@ fun BooksScreen(
     Scaffold(
         topBar = {
             BooksTopBar(
+                modifier = Modifier.navigationBarsPadding(),
                 state = state,
                 onEvent = onEvent,
                 contentPadding = mainPadding,
