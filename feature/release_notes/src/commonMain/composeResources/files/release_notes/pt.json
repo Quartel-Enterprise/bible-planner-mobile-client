@@ -1,6 +1,7 @@
 {
   "1.11.0": [
-    "Bíblia disponível para download e leitura offline."
+    "Bíblia disponível para download e leitura offline.",
+    "Usuário agora pode selecionar o texto da sinopse do livro."
   ],
   "1.10.0": [
     "Carregamento de configurações dinâmicas aprimorado no iOS para evitar problemas de sincronização.",
