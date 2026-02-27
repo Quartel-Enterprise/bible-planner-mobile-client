@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.presentation.factory.ReadDataPresentationModelFactory
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
@@ -67,6 +68,22 @@ class ReadViewModel(
                     _uiAction.emit(ReadUiAction.NavigateToRoute(BibleVersionSelectorRoute))
                 }
             }
+
+            is ReadUiEvent.OnNavigationSuggestionClick -> {
+                val suggestion = event.suggestion
+                viewModelScope.launch {
+                    _uiAction.emit(
+                        ReadUiAction.NavigateToRoute(
+                            ReadNavRoute(
+                                bookId = suggestion.bookId.name,
+                                chapterNumber = suggestion.chapterNumber,
+                                isChapterRead = uiState.value.isChapterRead,
+                                isFromBookDetails = route.isFromBookDetails,
+                            )
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -84,6 +101,7 @@ class ReadViewModel(
                 chapterNumber = chapterNumber,
                 bookStringResource = bookStringResource,
                 isInitiallyRead = isChapterRead,
+                isFromBookDetails = route.isFromBookDetails,
             ),
         ) { state ->
             _uiState.update { state }
@@ -94,5 +112,9 @@ class ReadViewModel(
         chapterNumber = chapterNumber,
         bookStringResource = bookStringResource,
         isChapterRead = isChapterRead,
+        navigationSuggestions = ReadNavigationSuggestionsModel(
+            previous = null,
+            next = null,
+        )
     )
 }

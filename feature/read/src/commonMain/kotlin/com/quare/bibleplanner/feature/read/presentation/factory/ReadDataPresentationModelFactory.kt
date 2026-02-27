@@ -5,6 +5,8 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleNameFlow
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
+import com.quare.bibleplanner.feature.read.domain.usecase.GetReadNavigationSuggestionsModelUseCase
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
@@ -19,34 +21,49 @@ class ReadDataPresentationModelFactory(
     private val getChapterId: GetChapterIdUseCase,
     private val getVersesWithTextsByChapterIdFlow: GetVersesWithTextsByChapterIdFlowUseCase,
     private val getSelectedBibleNameFlow: GetSelectedBibleNameFlowUseCase,
+    private val getReadNavigationSuggestionsModelFlow : GetReadNavigationSuggestionsModelUseCase,
 ) {
     fun create(
         bookId: BookId,
         chapterNumber: Int,
         bookStringResource: StringResource,
         isInitiallyRead: Boolean,
+        isFromBookDetails: Boolean,
     ): Flow<ReadUiState> = flow {
-        getChapterId(
-            bookId = bookId,
-            chapterNumber = chapterNumber,
-        )?.let { chapterId ->
-            getReadUiStateFlow(chapterId, bookStringResource, chapterNumber)
-        }?.let { readUiStateFlow ->
-            emitAll(readUiStateFlow)
-        } ?: emit(
-            ReadUiState.Error.Unknown(
-                bookStringResource = bookStringResource,
+        getReadNavigationSuggestionsModelFlow(
+            shouldForceChronologicalOrder = isFromBookDetails,
+            currentBookId = bookId,
+            currentChapterNumber = chapterNumber,
+        ).collect { navigationSuggestions ->
+            getChapterId(
+                bookId = bookId,
                 chapterNumber = chapterNumber,
-                isChapterRead = isInitiallyRead,
-                errorUiEvent = ReadUiEvent.OnRetryClick,
-            ),
-        )
+            )?.let { chapterId ->
+                getReadUiStateFlow(
+                    chapterId = chapterId,
+                    bookStringResource = bookStringResource,
+                    chapterNumber = chapterNumber,
+                    navigationSuggestions = navigationSuggestions
+                )
+            }?.let { readUiStateFlow ->
+                emitAll(readUiStateFlow)
+            } ?: emit(
+                ReadUiState.Error.Unknown(
+                    bookStringResource = bookStringResource,
+                    chapterNumber = chapterNumber,
+                    isChapterRead = isInitiallyRead,
+                    errorUiEvent = ReadUiEvent.OnRetryClick,
+                    navigationSuggestions = navigationSuggestions,
+                ),
+            )
+        }
     }
 
     private fun getReadUiStateFlow(
         chapterId: Long,
         bookStringResource: StringResource,
         chapterNumber: Int,
+        navigationSuggestions: ReadNavigationSuggestionsModel
     ): Flow<ReadUiState> = combine(
         getSelectedVersionIdFlow(),
         getVersesWithTextsByChapterIdFlow(chapterId),
@@ -59,6 +76,7 @@ class ReadDataPresentationModelFactory(
             isChapterRead = isChapterRead,
             selectedBibleVersionName = selectedBibleName,
             errorUiEvent = ReadUiEvent.ManageBibleVersions,
+            navigationSuggestions = navigationSuggestions,
         )
         if (versesWithTexts.isEmpty()) {
             chapterNotFoundState
@@ -76,6 +94,7 @@ class ReadDataPresentationModelFactory(
                 chapterNumber = chapterNumber,
                 verses = verseUiModels,
                 isChapterRead = isChapterRead,
+                navigationSuggestions = navigationSuggestions,
             )
         }
     }

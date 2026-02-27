@@ -1,11 +1,14 @@
 package com.quare.bibleplanner.feature.read.presentation.model
 
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import org.jetbrains.compose.resources.StringResource
 
 /**
  * Represents the UI state for the Read screen.
  */
 sealed interface ReadUiState {
+    val navigationSuggestions: ReadNavigationSuggestionsModel
     val bookStringResource: StringResource
     val chapterNumber: Int
     val isChapterRead: Boolean
@@ -17,6 +20,7 @@ sealed interface ReadUiState {
         override val chapterNumber: Int,
         override val bookStringResource: StringResource,
         override val isChapterRead: Boolean,
+        override val navigationSuggestions: ReadNavigationSuggestionsModel,
     ) : ReadUiState
 
     /**
@@ -26,6 +30,7 @@ sealed interface ReadUiState {
         override val chapterNumber: Int,
         override val bookStringResource: StringResource,
         override val isChapterRead: Boolean,
+        override val navigationSuggestions: ReadNavigationSuggestionsModel,
         val verses: List<VerseUiModel>,
     ) : ReadUiState
 
@@ -40,6 +45,7 @@ sealed interface ReadUiState {
             override val bookStringResource: StringResource,
             override val isChapterRead: Boolean,
             override val errorUiEvent: ReadUiEvent,
+            override val navigationSuggestions: ReadNavigationSuggestionsModel,
         ) : Error
 
         data class ChapterNotFound(
@@ -47,6 +53,7 @@ sealed interface ReadUiState {
             override val bookStringResource: StringResource,
             override val isChapterRead: Boolean,
             override val errorUiEvent: ReadUiEvent,
+            override val navigationSuggestions: ReadNavigationSuggestionsModel,
             val selectedBibleVersionName: String,
         ) : Error
     }

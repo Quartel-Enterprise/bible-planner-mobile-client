@@ -149,7 +149,8 @@ internal class DayViewModel(
                     ReadNavRoute(
                         bookId = strategy.bookId.name,
                         chapterNumber = chapterNumber,
-                        isChapterRead = strategy.isChapterRead
+                        isChapterRead = strategy.isChapterRead,
+                        isFromBookDetails = false,
                     )
                 )
             )

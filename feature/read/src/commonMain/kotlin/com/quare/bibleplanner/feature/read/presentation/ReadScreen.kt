@@ -10,19 +10,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.BottomAppBarScrollBehavior
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
@@ -32,11 +42,12 @@ import bibleplanner.feature.read.generated.resources.mark_as_read
 import bibleplanner.feature.read.generated.resources.mark_as_unread
 import bibleplanner.feature.read.generated.resources.retry
 import bibleplanner.feature.read.generated.resources.unknown_error_occurred
+import com.quare.bibleplanner.core.books.util.getBookName
+import com.quare.bibleplanner.feature.read.presentation.component.ReadBottomBar
 import com.quare.bibleplanner.feature.read.presentation.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
-import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,14 +57,14 @@ fun ReadScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     onEvent: (ReadUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
     val isScrolled by remember {
         derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0 }
     }
+    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             ReadTopBar(
                 state = state,
@@ -63,6 +74,13 @@ fun ReadScreen(
                 onEvent = onEvent,
             )
         },
+        bottomBar = {
+            ReadBottomBar(
+                scrollBehavior = scrollBehavior,
+                state = state,
+                onEvent = onEvent
+            )
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -134,25 +152,6 @@ fun ReadScreen(
                                     Text(
                                         text = verse.text,
                                     )
-                                }
-                            }
-                            responsiveItem { VerticalSpacer() }
-                            responsiveItem {
-                                val toggleReadClick = { onEvent(ReadUiEvent.ToggleReadStatus) }
-                                if (state.isChapterRead) {
-                                    OutlinedButton(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onClick = toggleReadClick,
-                                    ) {
-                                        Text(text = stringResource(Res.string.mark_as_unread))
-                                    }
-                                } else {
-                                    Button(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onClick = toggleReadClick,
-                                    ) {
-                                        Text(text = stringResource(Res.string.mark_as_read))
-                                    }
                                 }
                             }
                         },

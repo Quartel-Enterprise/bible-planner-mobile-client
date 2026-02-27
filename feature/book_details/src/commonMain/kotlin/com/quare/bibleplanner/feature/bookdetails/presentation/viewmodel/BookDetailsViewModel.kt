@@ -121,6 +121,7 @@ class BookDetailsViewModel(
                                         .find { chapterModel ->
                                             chapterModel.number == event.chapterNumber
                                         }?.isRead ?: return@launch,
+                                    isFromBookDetails = true,
                                 ),
                             ),
                         )

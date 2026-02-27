@@ -15,6 +15,7 @@ kotlin {
             // Core
             implementation(projects.core.books)
             implementation(projects.core.model)
+            implementation(projects.core.plan)
             implementation(projects.core.provider.room)
 
             // UI

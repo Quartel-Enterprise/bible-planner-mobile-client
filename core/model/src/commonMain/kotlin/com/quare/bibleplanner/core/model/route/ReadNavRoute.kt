@@ -7,4 +7,5 @@ data class ReadNavRoute(
     val bookId: String,
     val chapterNumber: Int,
     val isChapterRead: Boolean,
+    val isFromBookDetails: Boolean,
 )

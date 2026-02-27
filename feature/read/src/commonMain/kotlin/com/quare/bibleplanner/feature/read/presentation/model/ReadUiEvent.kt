@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.model
 
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
+
 /**
  * Represents actions that can be performed by the user on the Read screen.
  */
@@ -23,4 +25,6 @@ sealed interface ReadUiEvent {
      * Event triggered when the user wants to change the Bible version.
      */
     data object ManageBibleVersions : ReadUiEvent
+
+    data class OnNavigationSuggestionClick(val suggestion: ReadNavigationSuggestionModel) : ReadUiEvent
 }
