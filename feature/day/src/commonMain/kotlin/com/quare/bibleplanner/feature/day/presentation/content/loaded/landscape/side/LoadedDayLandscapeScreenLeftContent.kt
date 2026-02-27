@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.side
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,8 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 @Composable
 internal fun LoadedDayLandscapeScreenLeftContent(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     day: DayModel,
     uiState: DayUiState.Loaded,
     onEvent: (DayUiEvent) -> Unit,
@@ -65,6 +69,8 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                             },
                     ) {
                         ChapterItemComponent(
+                            animatedContentScope = animatedContentScope,
+                            sharedTransitionScope = sharedTransitionScope,
                             modifier = commonModifier,
                             bookName = passage.bookId.getBookName(),
                             chapterPlanModel = null,
@@ -100,6 +106,8 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                                 },
                         ) {
                             ChapterItemComponent(
+                                animatedContentScope = animatedContentScope,
+                                sharedTransitionScope = sharedTransitionScope,
                                 modifier = commonModifier,
                                 bookName = passage.bookId.getBookName(),
                                 chapterPlanModel = chapter,

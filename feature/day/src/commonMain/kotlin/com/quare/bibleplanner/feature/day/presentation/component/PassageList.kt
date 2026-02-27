@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.day.presentation.component
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,8 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 
 internal fun ResponsiveContentScope.portraitPassageList(
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     passages: List<PassageModel>,
     chapterReadStatus: Map<Pair<Int, Int>, Boolean>,
     onEvent: (DayUiEvent) -> Unit,
@@ -55,6 +59,8 @@ internal fun ResponsiveContentScope.portraitPassageList(
                                 },
                         ) {
                             ChapterItemComponent(
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedContentScope = animatedContentScope,
                                 modifier = commonModifier,
                                 bookName = passage.bookId.getBookName(),
                                 chapterPlanModel = null,
@@ -84,6 +90,8 @@ internal fun ResponsiveContentScope.portraitPassageList(
                                     },
                             ) {
                                 ChapterItemComponent(
+                                    sharedTransitionScope = sharedTransitionScope,
+                                    animatedContentScope = animatedContentScope,
                                     modifier = commonModifier,
                                     bookName = passage.bookId.getBookName(),
                                     chapterPlanModel = chapter,
