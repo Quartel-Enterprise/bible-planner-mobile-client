@@ -1,37 +1,33 @@
 [versions]
 # Lib versions
-agp = "9.0.0"
-androidx-activity = "1.12.2"
+agp = "9.0.1"
+androidx-activity = "1.12.4"
 androidx-lifecycle = "2.9.6"
 composeHotReload = "1.0.0"
 coreKtx = "1.17.0"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 kotlinx-coroutines = "1.10.2"
 ktlint = "14.0.1"
 kotlinx-datetime = "0.7.1"
-kotlinSerializationJson = "1.9.0"
-navigationComposeMultiplatform = "2.9.1"
+kotlinSerializationJson = "1.10.0"
+navigationComposeMultiplatform = "2.9.2"
 koinVersion = "4.1.1"
 room = "2.8.4"
 sqlite = "2.6.2"
 ksp = "2.3.3"
 datasSoreVersion = "1.2.0"
 facebookSdk = "18.1.3"
-purchases = "2.2.17+17.26.1"
+purchases = "2.7.0+17.41.0"
 buildKonfig = "0.17.1"
 kermit = "2.0.8"
-ktor = "3.3.3"
-firebaseBom = "34.8.0"
+ktor = "3.4.0"
+firebaseBom = "34.10.0"
 googeServices = "4.4.4"
 material3 = "1.9.0"
 materialIconsExtended = "1.7.3"
-composeMultiplatform = "1.10.0"
-composeUi = "1.10.0"
-runtime = "1.10.0"
-foundation = "1.10.0"
-componentsResources = "1.10.0"
+composeMultiplatform = "1.10.1"
 supabase = "3.3.0"
-coil = "3.3.0"
+coil = "3.4.0"
 
 # Android versions
 android-minSdk = "26"
@@ -112,14 +108,14 @@ ktor_client_content_negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor_client_content_serialization_json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 # Compose multiplatform
-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "foundation" }
+foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "composeMultiplatform" }
 material-icons-extended = { group = "org.jetbrains.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material3" }
 material3-adaptive-navigation-suite = { group = "org.jetbrains.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "material3" }
-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "runtime" }
-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "composeUi" }
-ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "composeUi" }
-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "componentsResources" }
+runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "composeMultiplatform" }
+ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "composeMultiplatform" }
+ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "composeMultiplatform" }
+components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "composeMultiplatform" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
