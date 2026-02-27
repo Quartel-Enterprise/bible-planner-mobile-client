@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomAppBarDefaults
@@ -141,6 +142,7 @@ fun ReadScreen(
                         responsiveItem { VerticalSpacer() }
                         responsiveItem {
                             NavigationSuggestionRow(
+                                modifier = Modifier.navigationBarsPadding(),
                                 state = state,
                                 onEvent = onEvent
                             )
