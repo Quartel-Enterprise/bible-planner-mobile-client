@@ -36,7 +36,7 @@ internal fun NavigationSuggestionRow(
             NavigationSuggestionButton(
                 suggestion = safePrevious,
                 isNext = false,
-                onClick = { onEvent(ReadUiEvent.OnNavigationSuggestionClick(safePrevious)) }
+                onClick = { onEvent(ReadUiEvent.OnNavigationSuggestionClick(safePrevious)) },
             )
         }
         val readButtonModifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 16.dp)
@@ -59,7 +59,7 @@ internal fun NavigationSuggestionRow(
             NavigationSuggestionButton(
                 suggestion = safeNext,
                 isNext = true,
-                onClick = { onEvent(ReadUiEvent.OnNavigationSuggestionClick(safeNext)) }
+                onClick = { onEvent(ReadUiEvent.OnNavigationSuggestionClick(safeNext)) },
             )
         }
     }

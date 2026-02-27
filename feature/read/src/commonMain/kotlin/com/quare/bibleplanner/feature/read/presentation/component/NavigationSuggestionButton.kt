@@ -27,7 +27,7 @@ internal fun NavigationSuggestionButton(
         val icon = if (isNext) Icons.AutoMirrored.Filled.ArrowForwardIos else Icons.Default.ArrowBackIosNew
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             if (!isNext) {
                 Icon(

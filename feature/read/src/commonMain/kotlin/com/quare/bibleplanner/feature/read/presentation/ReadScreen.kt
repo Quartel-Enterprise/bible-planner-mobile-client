@@ -145,7 +145,7 @@ fun ReadScreen(
                             NavigationSuggestionRow(
                                 modifier = Modifier.navigationBarsPadding(),
                                 state = state,
-                                onEvent = onEvent
+                                onEvent = onEvent,
                             )
                         }
                     },

@@ -29,7 +29,7 @@ fun ReadBottomBar(
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             NavigationSuggestionRow(
                 state = state,
-                onEvent = onEvent
+                onEvent = onEvent,
             )
         }
     }
