@@ -31,7 +31,7 @@ class ReadDataPresentationModelFactory(
         isFromBookDetails: Boolean,
     ): Flow<ReadUiState> = flow {
         getReadNavigationSuggestionsModelFlow(
-            shouldForceChronologicalOrder = isFromBookDetails,
+            shouldForceCanonOrder = isFromBookDetails,
             currentBookId = bookId,
             currentChapterNumber = chapterNumber,
         ).collect { navigationSuggestions ->
