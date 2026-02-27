@@ -18,7 +18,15 @@ internal fun ReadUiActionCollector(
             }
 
             is ReadUiAction.NavigateToRoute -> {
-                navController.navigate(uiAction.route)
+                navController.navigate(uiAction.route) {
+                    if (uiAction.replace) {
+                        navController.currentDestination?.route?.let { currentRoute ->
+                            popUpTo(currentRoute) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
             }
         }
     }
