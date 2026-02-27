@@ -16,7 +16,7 @@ import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.day_number
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.model.plan.DayModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import org.jetbrains.compose.resources.stringResource
 
@@ -77,7 +77,7 @@ internal fun SharedTransitionScope.DayItemTexts(
 }
 
 @Composable
-private fun List<PassagePlanModel>.toDayReadingFormat(): String {
+private fun List<PassageModel>.toDayReadingFormat(): String {
     val passagesPresentation = map { passage ->
         passage.run {
             val bookName = passage.bookId.getBookName()

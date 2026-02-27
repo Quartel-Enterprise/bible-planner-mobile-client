@@ -11,4 +11,5 @@ enum class MoreOptionItemType {
     DELETE_PROGRESS,
     EDIT_PLAN_START_DAY,
     RELEASE_NOTES,
+    BIBLE_VERSION,
 }

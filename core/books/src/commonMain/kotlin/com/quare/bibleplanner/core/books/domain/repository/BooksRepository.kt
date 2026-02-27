@@ -7,13 +7,11 @@ import kotlinx.coroutines.flow.Flow
 interface BooksRepository {
     fun getBooksFlow(): Flow<List<BookDataModel>>
 
+    fun getBookByIdFlow(bookId: BookId): Flow<BookDataModel?>
+
     suspend fun getBooks(): List<BookDataModel>
 
     suspend fun initializeDatabase()
-
-    fun getShowInformationBoxFlow(): Flow<Boolean>
-
-    suspend fun setInformationBoxDismissed()
 
     suspend fun updateBookFavoriteStatus(
         bookId: BookId,

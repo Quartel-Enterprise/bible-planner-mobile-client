@@ -19,10 +19,13 @@ kotlin {
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
+
+            // Logging
+            implementation(libs.kermit)
         }
         androidMain.dependencies {
             implementation(libs.koinAndroid)
-            implementation("androidx.core:core-ktx:1.15.0")
+            implementation(libs.androidx.core.ktx)
         }
     }
 }

@@ -2,9 +2,9 @@ package com.quare.bibleplanner.core.plan.data.mapper
 
 import com.quare.bibleplanner.core.books.data.provider.BookMapsProvider
 import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.DayModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.data.dto.BookPlanDto
 import com.quare.bibleplanner.core.plan.data.dto.DayPlanDto
@@ -37,12 +37,12 @@ class WeekPlanDtoToModelMapper(
         notes = null,
     )
 
-    private fun mapBook(bookDto: BookPlanDto): PassagePlanModel? {
+    private fun mapBook(bookDto: BookPlanDto): PassageModel? {
         val bookId = mapBookNameToBookId(bookDto.name) ?: return null
 
         // If chapters is null, create a passage with empty chapters list
         // This represents reading the entire book (e.g., Obadiah - single chapter book)
-        val chaptersDto = bookDto.chapters ?: return PassagePlanModel(
+        val chaptersDto = bookDto.chapters ?: return PassageModel(
             bookId = bookId,
             chapters = emptyList(),
             isRead = false,
@@ -58,10 +58,11 @@ class WeekPlanDtoToModelMapper(
             if (startChapter == endChapter) {
                 // Single chapter range
                 add(
-                    ChapterPlanModel(
+                    ChapterModel(
                         number = startChapter,
                         startVerse = startVerse,
                         endVerse = endVerse,
+                        bookId = bookId,
                     ),
                 )
             } else {
@@ -75,17 +76,18 @@ class WeekPlanDtoToModelMapper(
                     }
 
                     add(
-                        ChapterPlanModel(
+                        ChapterModel(
                             number = chapterNumber,
                             startVerse = chapterStartVerse,
                             endVerse = chapterEndVerse,
+                            bookId = bookId,
                         ),
                     )
                 }
             }
         }
 
-        return PassagePlanModel(
+        return PassageModel(
             bookId = bookId,
             chapters = chapters,
             isRead = false,

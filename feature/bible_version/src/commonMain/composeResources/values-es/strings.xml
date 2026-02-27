@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="download">Descargar</string>
+    <string name="pause">Pausar</string>
+    <string name="resume">Reanudar</string>
+    <string name="delete">Eliminar</string>
+    <string name="bible_versions">Versiones de la Biblia</string>
+    <string name="manage_bible_versions_description">Administra tus versiones de la Biblia descargadas y selecciona una para leer.</string>
+    <string name="english">Inglés</string>
+    <string name="portuguese_brazil">Portugués (Brasil)</string>
+    <string name="spanish">Español</string>
+    <string name="downloaded">Descargado</string>
+    <string name="downloading_progress">Descargando: %1$s%</string>
+    <string name="paused_progress">Descarga pausada al %1$s%</string>
+    <string name="download_bible_versions_error">No pudimos descargar las versiones de la Biblia a su dispositivo. Verifique su conexión a Internet e intente nuevamente.</string>
+    <string name="try_again">Intentar Nuevamente</string>
+</resources>

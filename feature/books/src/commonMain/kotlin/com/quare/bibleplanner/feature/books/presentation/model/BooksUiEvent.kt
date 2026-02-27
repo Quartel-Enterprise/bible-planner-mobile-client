@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.books.presentation.model
 
-import com.quare.bibleplanner.core.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.model.book.BookId
 
@@ -36,8 +35,6 @@ sealed interface BooksUiEvent {
     data object OnDismissSortMenu : BooksUiEvent
 
     data object OnDismissFilterMenu : BooksUiEvent
-
-    data object OnDismissInformationBox : BooksUiEvent
 
     data object OnClearSearch : BooksUiEvent
 

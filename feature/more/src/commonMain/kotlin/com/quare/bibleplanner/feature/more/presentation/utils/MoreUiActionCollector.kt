@@ -27,25 +27,13 @@ internal fun MoreUiActionCollector(
     val uriHandler = LocalUriHandler.current
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            MoreUiAction.GoToTheme -> navController.navigate(ThemeNavRoute)
-
-            MoreUiAction.GoToPaywall -> navController.navigate(PaywallNavRoute)
-
             is MoreUiAction.OpenLink -> uriHandler.openUri(action.url)
-
-            MoreUiAction.GoToDeleteProgress -> navController.navigate(DeleteAllProgressNavRoute)
-
-            MoreUiAction.GoToEditPlanStartDay -> navController.navigate(EditPlanStartDateNavRoute)
 
             MoreUiAction.ShowNoProgressToDelete -> snackbarHostState.showSnackbar(
                 getString(Res.string.no_progress_to_delete_message),
             )
 
-            MoreUiAction.GoToReleaseNotes -> navController.navigate(ReleaseNotesNavRoute)
-
-            MoreUiAction.GoToDonation -> navController.navigate(DonationNavRoute)
-
-            MoreUiAction.GoToLogin -> navController.navigate(LoginNavRoute)
+            is MoreUiAction.GoToRoute -> navController.navigate(action.route)
         }
     }
 }

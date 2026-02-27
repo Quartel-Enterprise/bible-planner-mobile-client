@@ -20,6 +20,7 @@ kotlin {
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
             implementation(projects.feature.deleteProgress)
+            implementation(projects.feature.deleteVersion)
             implementation(projects.feature.deleteNotes)
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.editPlanStartDate)
@@ -29,6 +30,8 @@ kotlin {
             implementation(projects.feature.donation)
             implementation(projects.feature.donation.pixQr)
             implementation(projects.feature.login)
+            implementation(projects.feature.bibleVersion)
+            implementation(projects.feature.read)
 
             // Core
             implementation(projects.core.model)

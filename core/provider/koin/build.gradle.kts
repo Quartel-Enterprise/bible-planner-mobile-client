@@ -25,6 +25,7 @@ kotlin {
             implementation(projects.core.provider.supabase)
             implementation(projects.core.network)
             implementation(projects.core.user)
+            implementation(projects.core.model)
 
             // Features
             implementation(projects.feature.books)
@@ -33,6 +34,7 @@ kotlin {
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.readingPlan)
             implementation(projects.feature.deleteProgress)
+            implementation(projects.feature.deleteVersion)
             implementation(projects.feature.themeSelection)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
@@ -46,6 +48,8 @@ kotlin {
             implementation(projects.feature.releaseNotes)
             implementation(projects.feature.donation)
             implementation(projects.feature.donation.pixQr)
+            implementation(projects.feature.bibleVersion)
+            implementation(projects.feature.read)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

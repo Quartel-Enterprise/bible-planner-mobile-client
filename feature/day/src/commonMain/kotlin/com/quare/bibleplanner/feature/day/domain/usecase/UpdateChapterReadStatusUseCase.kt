@@ -1,10 +1,11 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.usecase.MarkPassagesReadUseCase
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import kotlinx.coroutines.flow.first
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -12,79 +13,87 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class UpdateChapterReadStatusUseCase(
     private val dayRepository: DayRepository,
-    private val markPassagesReadUseCase: MarkPassagesReadUseCase,
-    private val getPlansByWeekUseCase: GetPlansByWeekUseCase,
+    private val markPassagesRead: UpdatePassageReadStatusUseCase,
+    private val getPlansByWeek: GetPlansByWeekUseCase,
 ) {
     suspend operator fun invoke(
         weekNumber: Int,
         dayNumber: Int,
-        passageIndex: Int,
-        chapterIndex: Int,
+        strategy: UpdateReadStatusOfPassageStrategy,
         isRead: Boolean,
-        readingPlanType: ReadingPlanType = ReadingPlanType.CHRONOLOGICAL,
-    ) {
+        readingPlanType: ReadingPlanType,
+    ): Result<Unit> {
         // Get the day to access its passages
-        val plansModel = getPlansByWeekUseCase().first()
+        val errorResult = Result.failure<Unit>(IllegalStateException())
+        val plansModel = getPlansByWeek().first()
         val weeks = when (readingPlanType) {
             ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
             ReadingPlanType.BOOKS -> plansModel.booksOrder
         }
-        val week = weeks.find { it.number == weekNumber } ?: return
-        val day = week.days.find { it.number == dayNumber } ?: return
+        val week = weeks.find { it.number == weekNumber } ?: return errorResult
+        val day = week.days.find { it.number == dayNumber } ?: return errorResult
+        val passageIndex = strategy.passageIndex
 
-        if (passageIndex < 0 || passageIndex >= day.passages.size) return
+        if (passageIndex < 0 || passageIndex >= day.passages.size) return errorResult
 
         val passage = day.passages[passageIndex]
 
-        // If chapterIndex is -1, it means the passage has no chapters (entire book)
+        // If chapterIndex is null, it means the passage has no chapters (entire book)
         // Otherwise, create a passage with just the specific chapter
-        val chapterToUpdate = if (chapterIndex == -1) {
-            // Update the entire book
-            passage
-        } else {
-            if (chapterIndex < 0 || chapterIndex >= passage.chapters.size) return
-            val chapter = passage.chapters[chapterIndex]
-            // Create a passage with just this chapter
-            PassagePlanModel(
-                bookId = passage.bookId,
-                chapters = listOf(chapter),
-                isRead = false,
-                chapterRanges = passage.chapterRanges,
-            )
+        val passageToUpdate = when (strategy) {
+            is UpdateReadStatusOfPassageStrategy.Chapter -> {
+                val chapterIndex = strategy.chapterIndex
+                if (chapterIndex < 0 || chapterIndex >= passage.chapters.size) return errorResult
+                val chapter = passage.chapters[chapterIndex]
+                // Create a passage with just this chapter
+                PassageModel(
+                    bookId = passage.bookId,
+                    chapters = listOf(chapter),
+                    isRead = false,
+                    chapterRanges = passage.chapterRanges,
+                )
+            }
+
+            is UpdateReadStatusOfPassageStrategy.EntireBook -> {
+                passage
+            }
         }
 
         // Update the specific chapter
-        markPassagesReadUseCase(listOf(chapterToUpdate))
+        markPassagesRead(passageToUpdate)
 
         // Check if all passages are now read
-        val updatedPlansModel = getPlansByWeekUseCase().first()
+        val updatedPlansModel = getPlansByWeek().first()
         val updatedWeeks = when (readingPlanType) {
             ReadingPlanType.CHRONOLOGICAL -> updatedPlansModel.chronologicalOrder
             ReadingPlanType.BOOKS -> updatedPlansModel.booksOrder
         }
-        val updatedWeek = updatedWeeks.find { it.number == weekNumber } ?: return
-        val updatedDay = updatedWeek.days.find { it.number == dayNumber } ?: return
+        val updatedWeek = updatedWeeks.find { it.number == weekNumber } ?: return errorResult
+        val updatedDay = updatedWeek.days.find { it.number == dayNumber } ?: return errorResult
 
         // If all passages are read, update day read status
         val allPassagesRead = updatedDay.passages.all { it.isRead }
-        if (allPassagesRead) {
-            val readTimestamp = Clock.System.now().toEpochMilliseconds()
-            dayRepository.updateDayReadStatus(
-                weekNumber = weekNumber,
-                dayNumber = dayNumber,
-                readingPlanType = readingPlanType,
-                isRead = true,
-                readTimestamp = readTimestamp,
-            )
-        } else {
-            // If not all passages are read, unmark day as read
-            dayRepository.updateDayReadStatus(
-                weekNumber = weekNumber,
-                dayNumber = dayNumber,
-                readingPlanType = readingPlanType,
-                isRead = false,
-                readTimestamp = null,
-            )
+        dayRepository.run {
+            if (allPassagesRead) {
+                val readTimestamp = Clock.System.now().toEpochMilliseconds()
+                updateDayReadStatus(
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
+                    readingPlanType = readingPlanType,
+                    isRead = true,
+                    readTimestamp = readTimestamp,
+                )
+            } else {
+                // If not all passages are read, unmark day as read
+                updateDayReadStatus(
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
+                    readingPlanType = readingPlanType,
+                    isRead = false,
+                    readTimestamp = null,
+                )
+            }
         }
+        return Result.success(Unit)
     }
 }

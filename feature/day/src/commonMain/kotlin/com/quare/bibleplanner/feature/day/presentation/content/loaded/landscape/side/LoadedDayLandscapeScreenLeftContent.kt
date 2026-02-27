@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.side
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.utils.orFalse
+import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
+import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatusButton
 import com.quare.bibleplanner.feature.day.presentation.component.ChapterItemComponent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
@@ -22,6 +26,8 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 @Composable
 internal fun LoadedDayLandscapeScreenLeftContent(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     day: DayModel,
     uiState: DayUiState.Loaded,
     onEvent: (DayUiEvent) -> Unit,
@@ -43,7 +49,6 @@ internal fun LoadedDayLandscapeScreenLeftContent(
             shape = RoundedCornerShape(16.dp),
         ) {
             day.passages.forEachIndexed { passageIndex, passage ->
-                val onToggle = { onEvent(DayUiEvent.OnChapterToggle(passageIndex, -1)) }
                 val commonModifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 8.dp)
@@ -52,14 +57,31 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onToggle() },
+                            .clickable {
+                                onEvent(
+                                    DayUiEvent.OnChapterClick(
+                                        ChapterClickStrategy.NavigateToFirstChapterOfTheBook(
+                                            bookId = passage.bookId,
+                                            isChapterRead = passage.isRead,
+                                        ),
+                                    ),
+                                )
+                            },
                     ) {
                         ChapterItemComponent(
+                            animatedContentScope = animatedContentScope,
+                            sharedTransitionScope = sharedTransitionScope,
                             modifier = commonModifier,
                             bookName = passage.bookId.getBookName(),
                             chapterPlanModel = null,
                             isRead = passage.isRead,
-                            onToggle = onToggle,
+                            onToggle = {
+                                onEvent(
+                                    DayUiEvent.OnChapterCheckboxClick(
+                                        UpdateReadStatusOfPassageStrategy.EntireBook(passageIndex),
+                                    ),
+                                )
+                            },
                         )
                     }
                     if (passageIndex < day.passages.size - 1) {
@@ -68,18 +90,38 @@ internal fun LoadedDayLandscapeScreenLeftContent(
                 } else {
                     // Show each chapter as a separate item
                     passage.chapters.forEachIndexed { chapterIndex, chapter ->
-                        val chapterToggle = { onEvent(DayUiEvent.OnChapterToggle(passageIndex, chapterIndex)) }
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { chapterToggle() },
+                                .clickable {
+                                    onEvent(
+                                        DayUiEvent.OnChapterClick(
+                                            ChapterClickStrategy.NavigateToChapter(
+                                                bookId = passage.bookId,
+                                                isChapterRead = passage.isRead,
+                                                chapterNumber = passage.chapters[chapterIndex].number,
+                                            ),
+                                        ),
+                                    )
+                                },
                         ) {
                             ChapterItemComponent(
+                                animatedContentScope = animatedContentScope,
+                                sharedTransitionScope = sharedTransitionScope,
                                 modifier = commonModifier,
                                 bookName = passage.bookId.getBookName(),
                                 chapterPlanModel = chapter,
                                 isRead = uiState.chapterReadStatus[passageIndex to chapterIndex].orFalse(),
-                                onToggle = chapterToggle,
+                                onToggle = {
+                                    onEvent(
+                                        DayUiEvent.OnChapterCheckboxClick(
+                                            UpdateReadStatusOfPassageStrategy.Chapter(
+                                                passageIndex = passageIndex,
+                                                chapterIndex = chapterIndex,
+                                            ),
+                                        ),
+                                    )
+                                },
                             )
                         }
 

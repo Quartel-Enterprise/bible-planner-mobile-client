@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chapter_not_downloaded_error">Aún no has descargado "%1$s %2$d" en la versión "%3$s".</string>
+    <string name="manage_bible_versions">Administrar Versiones de la Biblia</string>
+    <string name="unknown_error_occurred">Ocurrió un error desconocido.</string>
+    <string name="retry">Reintentar</string>
+    <string name="mark_as_unread">Marcar como No Leído</string>
+    <string name="mark_as_read">Marcar como Leído</string>
+    <string name="change_bible_version">Cambiar Versión de la Biblia</string>
+</resources>

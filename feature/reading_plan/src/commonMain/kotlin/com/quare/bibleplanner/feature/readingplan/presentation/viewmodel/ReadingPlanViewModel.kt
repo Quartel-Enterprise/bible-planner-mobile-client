@@ -3,13 +3,10 @@ package com.quare.bibleplanner.feature.readingplan.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeeded
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
-import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
-import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
@@ -28,7 +25,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -37,9 +33,6 @@ internal class ReadingPlanViewModel(
     getPlansByWeek: GetPlansByWeekUseCase,
     getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
     calculateBibleProgress: CalculateBibleProgressUseCase,
-    getPlanStartDate: GetPlanStartDateFlowUseCase,
-    private val initializeBooksIfNeeded: InitializeBooksIfNeeded,
-    private val setPlanStartTime: SetPlanStartTimeUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
@@ -59,13 +52,6 @@ internal class ReadingPlanViewModel(
     private var isFirstLoad = true
 
     init {
-        viewModelScope.launch {
-            if (getPlanStartDate().first() == null) {
-                setPlanStartTime(SetPlanStartTimeUseCase.Strategy.Now)
-            }
-            initializeBooksIfNeeded()
-        }
-
         observe(calculateBibleProgress()) { progress ->
             currentBibleProgress = progress
             _uiState.update { currentState ->
@@ -330,14 +316,12 @@ internal class ReadingPlanViewModel(
 
         if (currentUiState is ReadingPlanUiState.Loaded) {
             val safeCurrentPlans = currentPlansModel ?: return
-            val week = safeCurrentPlans.let { plansModel ->
-                val selectedWeeks = when (currentUiState.selectedReadingPlan) {
-                    ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
-                    ReadingPlanType.BOOKS -> plansModel.booksOrder
-                }
-                selectedWeeks.find { it.number == event.weekNumber }
+            val selectedWeeks = when (currentUiState.selectedReadingPlan) {
+                ReadingPlanType.CHRONOLOGICAL -> safeCurrentPlans.chronologicalOrder
+                ReadingPlanType.BOOKS -> safeCurrentPlans.booksOrder
             }
-            val day = week?.days?.find { it.number == event.dayNumber } ?: return
+            val week = selectedWeeks.find { it.number == event.weekNumber } ?: return
+            val day = week.days.find { it.number == event.dayNumber } ?: return
             val newReadStatus = !day.isRead
             viewModelScope.launch {
                 updateDayReadStatus(

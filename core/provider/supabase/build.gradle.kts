@@ -20,6 +20,7 @@ kotlin {
             implementation(libs.supabase.auth)
             implementation(libs.supabase.compose.auth)
             implementation(libs.supabase.compose.auth.ui)
+            implementation(libs.supabase.storage)
 
             // Ktor
             implementation(libs.ktor.client.core)
@@ -30,6 +31,9 @@ kotlin {
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
+
+            // Logging
+            implementation(libs.kermit)
         }
     }
 }

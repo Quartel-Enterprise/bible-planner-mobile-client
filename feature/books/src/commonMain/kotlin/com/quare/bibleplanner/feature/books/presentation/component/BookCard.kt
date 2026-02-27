@@ -10,7 +10,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.utils.getShadowClip
 
 @OptIn(ExperimentalSharedTransitionApi::class)

@@ -39,6 +39,18 @@ internal fun PreferencesSection(
             )
             HorizontalDivider()
             MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.bibleVersion,
+                subtitle = state.bibleVersionName?.let { safeBibleVersionName ->
+                    if (state.bibleDownloadProgress != null) {
+                        "$safeBibleVersionName (${(state.bibleDownloadProgress * 100).toInt()}%)"
+                    } else {
+                        safeBibleVersionName
+                    }
+                },
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BIBLE_VERSION)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.editStartDate,
                 subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },

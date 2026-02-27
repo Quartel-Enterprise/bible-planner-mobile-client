@@ -4,7 +4,7 @@ import kotlinx.datetime.LocalDate
 
 data class DayModel(
     val number: Int,
-    val passages: List<PassagePlanModel>,
+    val passages: List<PassageModel>,
     val isRead: Boolean,
     val totalVerses: Int,
     val readVerses: Int,

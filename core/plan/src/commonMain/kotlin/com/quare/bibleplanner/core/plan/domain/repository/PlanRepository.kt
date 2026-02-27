@@ -13,4 +13,8 @@ interface PlanRepository {
     suspend fun deleteStartPlanTimestamp()
 
     fun getStartPlanTimestamp(): Flow<LocalDate?>
+
+    fun getSelectedReadingPlanFlow(): Flow<ReadingPlanType>
+
+    suspend fun setSelectedReadingPlan(readingPlanType: ReadingPlanType)
 }

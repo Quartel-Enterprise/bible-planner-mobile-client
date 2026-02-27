@@ -56,14 +56,17 @@ kotlin {
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
             api(projects.feature.editPlanStartDate)
+            api(projects.feature.bibleVersion)
 
             // Core
             api(projects.core.books)
             api(projects.core.model)
             api(projects.core.navigation)
+            api(projects.core.plan)
             api(projects.core.remoteConfig)
             api(projects.core.provider.koin)
             api(projects.core.provider.room)
+            api(projects.core.provider.supabase)
             api(projects.core.provider.billing)
 
             // UI
@@ -92,6 +95,9 @@ kotlin {
             // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+
+            // Date
+            implementation(libs.kotlinx.datetime)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)

@@ -2,6 +2,8 @@ package com.quare.bibleplanner.core.plan.di
 
 import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
 import com.quare.bibleplanner.core.plan.data.mapper.ChaptersRangeMapper
+import com.quare.bibleplanner.core.plan.data.mapper.ReadingPlanPreferenceMapper
+import com.quare.bibleplanner.core.plan.data.mapper.ReadingPlanPreferenceMapperImpl
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.data.repository.PlanRepositoryImpl
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
@@ -11,7 +13,6 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseC
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
-import com.quare.bibleplanner.core.plan.domain.usecase.ReadDayToggleOperationUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -26,6 +27,7 @@ val planModule = module {
     // Mappers
     factoryOf(::WeekPlanDtoToModelMapper)
     factoryOf(::ChaptersRangeMapper)
+    singleOf(::ReadingPlanPreferenceMapperImpl).bind<ReadingPlanPreferenceMapper>()
 
     // Repository
     singleOf(::PlanRepositoryImpl).bind<PlanRepository>()
@@ -33,7 +35,6 @@ val planModule = module {
     // Use cases
     factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
-    factoryOf(::ReadDayToggleOperationUseCase)
     factoryOf(::SetPlanStartTimeUseCase)
     factoryOf(::UpdateDayNotesUseCase)
     factoryOf(::DeleteDayNotesUseCase)

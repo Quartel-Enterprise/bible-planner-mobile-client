@@ -3,6 +3,14 @@ package com.quare.bibleplanner.feature.more.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
+import com.quare.bibleplanner.core.model.route.DonationNavRoute
+import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.LoginNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
+import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.core.utils.social.SocialUtils
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
@@ -41,7 +49,7 @@ internal class MoreViewModel(
             is MoreUiEvent.OnItemClick -> {
                 when (event.type) {
                     MoreOptionItemType.THEME -> {
-                        emitAction(MoreUiAction.GoToTheme)
+                        goToRoute(ThemeNavRoute)
                     }
 
                     MoreOptionItemType.PRIVACY_POLICY -> {
@@ -53,7 +61,7 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.BECOME_PRO -> {
-                        emitAction(MoreUiAction.GoToPaywall)
+                        goToRoute(PaywallNavRoute)
                     }
 
                     MoreOptionItemType.INSTAGRAM -> {
@@ -61,22 +69,15 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.EDIT_PLAN_START_DAY -> {
-                        emitAction(MoreUiAction.GoToEditPlanStartDay)
+                        goToRoute(EditPlanStartDateNavRoute)
                     }
 
                     MoreOptionItemType.DELETE_PROGRESS -> {
-                        viewModelScope.launch {
-                            val progress = calculateBibleProgress().first()
-                            if (progress > 0) {
-                                emitAction(MoreUiAction.GoToDeleteProgress)
-                            } else {
-                                emitAction(MoreUiAction.ShowNoProgressToDelete)
-                            }
-                        }
+                        deleteProgressClick()
                     }
 
                     MoreOptionItemType.DONATE -> {
-                        emitAction(MoreUiAction.GoToDonation)
+                        goToRoute(DonationNavRoute)
                     }
 
                     MoreOptionItemType.WEB_APP -> {
@@ -86,7 +87,11 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.RELEASE_NOTES -> {
-                        emitAction(MoreUiAction.GoToReleaseNotes)
+                        goToRoute(ReleaseNotesNavRoute)
+                    }
+
+                    MoreOptionItemType.BIBLE_VERSION -> {
+                        goToRoute(BibleVersionSelectorRoute)
                     }
                 }
             }
@@ -112,9 +117,26 @@ internal class MoreViewModel(
             }
 
             MoreUiEvent.OnLoginClick -> {
-                emitAction(MoreUiAction.GoToLogin)
+                goToRoute(LoginNavRoute)
             }
         }
+    }
+
+    private fun deleteProgressClick() {
+        viewModelScope.launch {
+            val progress = calculateBibleProgress().first()
+            _uiAction.emit(
+                if (progress > 0) {
+                    MoreUiAction.GoToRoute(DeleteAllProgressNavRoute)
+                } else {
+                    MoreUiAction.ShowNoProgressToDelete
+                },
+            )
+        }
+    }
+
+    private fun goToRoute(route: Any) {
+        emitAction(MoreUiAction.GoToRoute(route))
     }
 
     private fun emitAction(action: MoreUiAction) {

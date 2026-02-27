@@ -97,6 +97,9 @@ fun BookDetailsScreen(
                             responsiveItem(key = "mid_spacer_2") { VerticalSpacer(24) }
                             responsiveItem(key = "chapters") {
                                 ChaptersGrid(
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    sharedTransitionScope = sharedTransitionScope,
+                                    bookName = stringResource(state.nameStringResource),
                                     chapters = state.chapters,
                                     areAllChaptersRead = state.areAllChaptersRead,
                                     onChapterClick = { onEvent(BookDetailsUiEvent.OnChapterClick(it)) },
@@ -146,6 +149,9 @@ fun BookDetailsScreen(
                                             areAllChaptersRead = state.areAllChaptersRead,
                                             onChapterClick = { onEvent(BookDetailsUiEvent.OnChapterClick(it)) },
                                             onToggleAllClick = { onEvent(BookDetailsUiEvent.OnToggleAllChapters) },
+                                            bookName = stringResource(state.nameStringResource),
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                            sharedTransitionScope = sharedTransitionScope,
                                         )
                                         VerticalSpacer(32)
                                     }

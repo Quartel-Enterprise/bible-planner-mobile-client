@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import bibleplanner.core.plan.generated.resources.Res
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.data.dto.WeekPlanDto
@@ -24,6 +25,7 @@ class PlanLocalDataSource(
     private val json = Json { ignoreUnknownKeys = true }
 
     private val startDateKey = longPreferencesKey(PLAN_START_DATE_KEY)
+    private val selectedReadingPlanKey = stringPreferencesKey(SELECTED_READING_PLAN_KEY)
 
     fun getPlanStartTimeStamp(): Flow<Long?> = dataStore.data
         .map { preferences ->
@@ -39,6 +41,17 @@ class PlanLocalDataSource(
     suspend fun setPlanStartTimestamp(epoch: Long) {
         dataStore.edit { preferences ->
             preferences[startDateKey] = epoch
+        }
+    }
+
+    fun getSelectedReadingPlanFlow(): Flow<String?> = dataStore.data
+        .map { preferences ->
+            preferences[selectedReadingPlanKey]
+        }
+
+    suspend fun setSelectedReadingPlan(readingPlan: String) {
+        dataStore.edit { preferences ->
+            preferences[selectedReadingPlanKey] = readingPlan
         }
     }
 
@@ -79,5 +92,6 @@ class PlanLocalDataSource(
         private const val CHRONOLOGICAL_ORDER_DIRECTORY = "chronological_order"
         private const val WEEKS_COUNT = 52
         private const val PLAN_START_DATE_KEY = "plan_start_date"
+        private const val SELECTED_READING_PLAN_KEY = "selected_reading_plan"
     }
 }

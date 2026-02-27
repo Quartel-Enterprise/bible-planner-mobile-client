@@ -20,10 +20,8 @@ internal fun DayUiActionCollector(
     val focusManager = LocalFocusManager.current
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            is DayUiAction.ShowNothingToDeleteSnackbar -> {
-                snackbarHostState.showSnackbar(
-                    getString(Res.string.nothing_to_delete_message),
-                )
+            is DayUiAction.ShowSnackBar -> {
+                snackbarHostState.showSnackbar(getString(action.message))
             }
 
             is DayUiAction.NavigateBack -> {

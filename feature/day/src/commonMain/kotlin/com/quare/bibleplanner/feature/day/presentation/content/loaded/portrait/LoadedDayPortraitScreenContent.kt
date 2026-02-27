@@ -44,9 +44,9 @@ internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
     portraitPassageList(
         passages = day.passages,
         chapterReadStatus = uiState.chapterReadStatus,
-        onChapterToggle = { passageIndex, chapterIndex ->
-            onEvent(DayUiEvent.OnChapterToggle(passageIndex, chapterIndex))
-        },
+        onEvent = onEvent,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedContentScope = animatedContentScope,
     )
 
     day.plannedReadDate?.let { plannedReadDate ->

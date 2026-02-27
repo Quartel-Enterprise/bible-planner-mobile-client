@@ -38,6 +38,8 @@ internal fun ResponsiveContentScope.loadedDayLandscapeScreenContent(
                     day = day,
                     uiState = uiState,
                     onEvent = onEvent,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
                 )
             }
             Box(

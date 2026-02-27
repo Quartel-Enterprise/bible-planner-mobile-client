@@ -9,17 +9,17 @@ import bibleplanner.feature.books.generated.resources.unread
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
-import com.quare.bibleplanner.core.books.presentation.mapper.BookCategorizationMapper
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
-import com.quare.bibleplanner.core.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
+import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
+import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
@@ -51,12 +51,10 @@ class BooksViewModel(
 
     private var allBooks: List<BookDataModel> = emptyList()
     private var bookNames: Map<BookId, String> = emptyMap()
-    private var isInformationBoxVisible: Boolean = true
 
     init {
         observe(getBooksWithInformationBoxVisibility()) { result ->
             allBooks = result.books
-            isInformationBoxVisible = result.isInformationBoxVisible
 
             result.layoutFormat?.let { persistedFormat ->
                 runCatching { BookLayoutFormat.valueOf(persistedFormat) }.getOrNull()?.let {
@@ -150,12 +148,6 @@ class BooksViewModel(
             is BooksUiEvent.OnDismissFilterMenu -> {
                 isFilterMenuVisible = false
                 updateState()
-            }
-
-            is BooksUiEvent.OnDismissInformationBox -> {
-                viewModelScope.launch {
-                    booksRepository.setInformationBoxDismissed()
-                }
             }
 
             is BooksUiEvent.OnClearSearch -> {
@@ -333,7 +325,6 @@ class BooksViewModel(
                 isFilterMenuVisible = isFilterMenuVisible,
                 isSortMenuVisible = isSortMenuVisible,
                 sortOrder = sortOrder,
-                isInformationBoxVisible = isInformationBoxVisible,
                 groupsInTestament = categorizedBooks[currentSelectedTestament].orEmpty(),
                 layoutFormat = layoutFormat,
             )

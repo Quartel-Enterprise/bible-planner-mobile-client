@@ -16,7 +16,16 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.provider.room)
+            implementation(projects.core.utils)
             implementation(projects.core.remoteConfig)
+            implementation(projects.core.provider.supabase)
+
+            // Room
+            implementation(libs.androidx.room.runtime)
+
+            // Supabase
+            implementation(project.dependencies.platform(libs.supabase.bom))
+            implementation(libs.supabase.storage)
 
             // Compose
             implementation(libs.runtime)

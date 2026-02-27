@@ -1,35 +1,28 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
-import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 
 internal class ToggleChapterReadStatusUseCase(
-    private val calculateChapterReadStatus: CalculateChapterReadStatusUseCase,
+    private val calculateChapterReadStatus: IsChapterReadStatusUseCase,
     private val updateChapterReadStatus: UpdateChapterReadStatusUseCase,
 ) {
     suspend operator fun invoke(
         weekNumber: Int,
         dayNumber: Int,
-        passageIndex: Int,
-        chapterIndex: Int,
-        passage: PassagePlanModel,
-        books: List<BookDataModel>,
+        strategy: UpdateReadStatusOfPassageStrategy,
+        passage: PassageModel,
         readingPlanType: ReadingPlanType,
-    ) {
-        // Calculate the new read status
-        val newReadStatus = calculateChapterReadStatus(
-            passage = passage,
-            chapterIndex = chapterIndex,
-            books = books,
-        ) ?: return
-
+    ): Result<Unit> = calculateChapterReadStatus(
+        passage = passage,
+        strategy = strategy,
+    ).map { newReadStatus ->
         // Update the chapter read status
         updateChapterReadStatus(
             weekNumber = weekNumber,
             dayNumber = dayNumber,
-            passageIndex = passageIndex,
-            chapterIndex = chapterIndex,
+            strategy = strategy,
             isRead = newReadStatus,
             readingPlanType = readingPlanType,
         )

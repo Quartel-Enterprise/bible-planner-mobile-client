@@ -21,4 +21,5 @@
     <string name="notes_placeholder">Escribe tus notas personales sobre los pasajes del día…</string>
     <string name="clear_notes">Limpiar notas</string>
     <string name="nothing_to_delete_message">No hay nada que eliminar todavía</string>
+    <string name="failed_to_toggle_chapter_message">No se pudo alternar el estado de lectura del capítulo</string>
 </resources>

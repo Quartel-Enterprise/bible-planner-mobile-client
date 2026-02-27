@@ -1,13 +1,8 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -19,7 +14,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
@@ -46,22 +40,6 @@ fun BooksItemsComponent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxSize(),
             portraitContent = {
-                responsiveItem(
-                    span = { GridItemSpan(totalColumns) },
-                    key = "info_box_item",
-                ) {
-                    AnimatedVisibility(
-                        visible = state.isInformationBoxVisible,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically(),
-                    ) {
-                        BooksInformationBox(
-                            onDismiss = { onEvent(BooksUiEvent.OnDismissInformationBox) },
-                            onEvent = onEvent,
-                        )
-                    }
-                }
-
                 if (state.shouldShowTestamentToggle) {
                     responsiveItem(
                         span = { GridItemSpan(totalColumns) },

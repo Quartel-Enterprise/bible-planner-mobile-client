@@ -6,7 +6,7 @@ import bibleplanner.feature.donation.pix_qr.generated.resources.Res
 import bibleplanner.feature.donation.pix_qr.generated.resources.pix_qr_share_message
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.getPlatform
-import com.quare.bibleplanner.core.utils.locale.AppLanguage
+import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.core.utils.locale.getCurrentLanguage
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -43,8 +43,8 @@ class PixQrViewModel : ViewModel() {
         return when (platform) {
             Platform.IOS -> {
                 val locale = when (language) {
-                    AppLanguage.PORTUGUESE_BRAZIL -> "br"
-                    AppLanguage.SPANISH -> "es"
+                    Language.PORTUGUESE_BRAZIL -> "br"
+                    Language.SPANISH -> "es"
                     else -> "us"
                 }
                 "https://apps.apple.com/$locale/app/bible-planner-reading-plans/id6756151777"
@@ -52,8 +52,8 @@ class PixQrViewModel : ViewModel() {
 
             Platform.ANDROID -> {
                 val locale = when (language) {
-                    AppLanguage.PORTUGUESE_BRAZIL -> "pt-BR"
-                    AppLanguage.SPANISH -> "es"
+                    Language.PORTUGUESE_BRAZIL -> "pt-BR"
+                    Language.SPANISH -> "es"
                     else -> "en"
                 }
                 "https://play.google.com/store/apps/details?id=com.quare.bibleplanner&hl=$locale"

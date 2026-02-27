@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.day.presentation.component
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,19 +13,27 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.orFalse
+import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
+import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
+import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 
 internal fun ResponsiveContentScope.portraitPassageList(
-    passages: List<PassagePlanModel>,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+    passages: List<PassageModel>,
     chapterReadStatus: Map<Pair<Int, Int>, Boolean>,
-    onChapterToggle: (passageIndex: Int, chapterIndex: Int) -> Unit,
+    onEvent: (DayUiEvent) -> Unit,
 ) {
     val commonModifier = Modifier
         .fillMaxWidth()
         .padding(start = 16.dp)
         .padding(vertical = 8.dp)
+    val onChapterToggle: (UpdateReadStatusOfPassageStrategy) -> Unit = { strategy ->
+        onEvent(DayUiEvent.OnChapterCheckboxClick(strategy))
+    }
     responsiveItem(key = "passage_list_card") {
         ElevatedCard(
             modifier = Modifier
@@ -33,19 +43,33 @@ internal fun ResponsiveContentScope.portraitPassageList(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 passages.forEachIndexed { passageIndex, passage ->
-                    val onToggle = { onChapterToggle(passageIndex, -1) }
                     if (passage.chapters.isEmpty()) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onToggle() },
+                                .clickable {
+                                    onEvent(
+                                        DayUiEvent.OnChapterClick(
+                                            ChapterClickStrategy.NavigateToFirstChapterOfTheBook(
+                                                bookId = passage.bookId,
+                                                isChapterRead = passage.isRead,
+                                            ),
+                                        ),
+                                    )
+                                },
                         ) {
                             ChapterItemComponent(
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedContentScope = animatedContentScope,
                                 modifier = commonModifier,
                                 bookName = passage.bookId.getBookName(),
                                 chapterPlanModel = null,
                                 isRead = passage.isRead,
-                                onToggle = onToggle,
+                                onToggle = {
+                                    onChapterToggle(
+                                        UpdateReadStatusOfPassageStrategy.EntireBook(passageIndex),
+                                    )
+                                },
                             )
                         }
                         if (passageIndex < passages.size - 1) {
@@ -54,18 +78,36 @@ internal fun ResponsiveContentScope.portraitPassageList(
                     } else {
                         // Show each chapter as a separate item
                         passage.chapters.forEachIndexed { chapterIndex, chapter ->
-                            val chapterToggle = { onChapterToggle(passageIndex, chapterIndex) }
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { chapterToggle() },
+                                    .clickable {
+                                        onEvent(
+                                            DayUiEvent.OnChapterClick(
+                                                ChapterClickStrategy.NavigateToChapter(
+                                                    bookId = passage.bookId,
+                                                    isChapterRead = passage.isRead,
+                                                    chapterNumber = passage.chapters[chapterIndex].number,
+                                                ),
+                                            ),
+                                        )
+                                    },
                             ) {
                                 ChapterItemComponent(
+                                    sharedTransitionScope = sharedTransitionScope,
+                                    animatedContentScope = animatedContentScope,
                                     modifier = commonModifier,
                                     bookName = passage.bookId.getBookName(),
                                     chapterPlanModel = chapter,
                                     isRead = chapterReadStatus[passageIndex to chapterIndex].orFalse(),
-                                    onToggle = chapterToggle,
+                                    onToggle = {
+                                        onChapterToggle(
+                                            UpdateReadStatusOfPassageStrategy.Chapter(
+                                                passageIndex = passageIndex,
+                                                chapterIndex = chapterIndex,
+                                            ),
+                                        )
+                                    },
                                 )
                             }
 

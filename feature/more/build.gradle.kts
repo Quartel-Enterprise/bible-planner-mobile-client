@@ -23,6 +23,9 @@ kotlin {
             implementation(projects.core.remoteConfig)
             implementation(projects.core.plan)
             implementation(projects.core.user)
+            implementation(projects.core.provider.supabase)
+            implementation(projects.core.provider.room)
+            implementation(libs.androidx.room.runtime)
 
             // Features
             implementation(projects.feature.themeSelection)
@@ -59,6 +62,9 @@ kotlin {
             implementation(libs.supabase.auth)
             implementation(libs.supabase.compose.auth)
             implementation(libs.supabase.compose.auth.ui)
+
+            // Logging
+            implementation(libs.kermit)
         }
     }
 }

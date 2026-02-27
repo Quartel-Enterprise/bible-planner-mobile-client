@@ -28,12 +28,18 @@ class BooksRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
 ) : BooksRepository {
     override fun getBooksFlow(): Flow<List<BookDataModel>> = bookDao
-        .getAllBooksWithChaptersDataFlow()
-        .map(booksWithChapterMapper::map)
+        .getAllBooksWithChaptersFlow()
+        .map(booksWithChapterMapper::mapList)
+
+    override fun getBookByIdFlow(bookId: BookId): Flow<BookDataModel?> = bookDao
+        .getBookWithChaptersByIdFlow(bookId.name)
+        .map { entity ->
+            entity?.let(booksWithChapterMapper::mapModel)
+        }
 
     override suspend fun getBooks(): List<BookDataModel> = bookDao
-        .getAllBooksWithChaptersData()
-        .let(booksWithChapterMapper::map)
+        .getAllBooksWithChapters()
+        .let(booksWithChapterMapper::mapList)
 
     override suspend fun initializeDatabase() {
         val books = booksLocalDataSource.getBooks()
@@ -61,23 +67,14 @@ class BooksRepositoryImpl(
                 val chapterId = chapterIds[index]
                 val verseEntities = chapter.verses.map { verse ->
                     VerseEntity(
+                        id = 0,
                         number = verse.number,
                         chapterId = chapterId,
                         isRead = verse.isRead,
                     )
                 }
-                verseDao.insertVerses(verseEntities)
+                verseDao.upsertVerses(verseEntities)
             }
-        }
-    }
-
-    override fun getShowInformationBoxFlow(): Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] ?: true
-    }
-
-    override suspend fun setInformationBoxDismissed() {
-        dataStore.edit { preferences ->
-            preferences[booleanPreferencesKey(SHOW_INFORMATION_BOX)] = false
         }
     }
 
@@ -109,7 +106,6 @@ class BooksRepositoryImpl(
     }
 
     companion object {
-        private const val SHOW_INFORMATION_BOX = "show_information_box"
         private const val BOOK_LAYOUT_FORMAT = "book_layout_format"
         private const val SELECTED_TESTAMENT = "selected_testament"
     }

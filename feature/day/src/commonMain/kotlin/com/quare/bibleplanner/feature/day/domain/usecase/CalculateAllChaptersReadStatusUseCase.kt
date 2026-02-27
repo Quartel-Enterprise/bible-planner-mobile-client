@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
 import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.ChapterPlanModel
-import com.quare.bibleplanner.core.model.plan.PassagePlanModel
+import com.quare.bibleplanner.core.model.plan.ChapterModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 
 class CalculateAllChaptersReadStatusUseCase {
     /**
@@ -10,7 +10,7 @@ class CalculateAllChaptersReadStatusUseCase {
      * Returns a map where the key is (passageIndex, chapterIndex) and the value is whether the chapter is read.
      */
     operator fun invoke(
-        passages: List<PassagePlanModel>,
+        passages: List<PassageModel>,
         books: List<BookDataModel>,
     ): Map<Pair<Int, Int>, Boolean> {
         val statusMap = mutableMapOf<Pair<Int, Int>, Boolean>()
@@ -29,8 +29,8 @@ class CalculateAllChaptersReadStatusUseCase {
      * Check if a specific chapter within a passage is read by checking the book data.
      */
     private fun isChapterRead(
-        passage: PassagePlanModel,
-        chapter: ChapterPlanModel,
+        passage: PassageModel,
+        chapter: ChapterModel,
         books: List<BookDataModel>,
     ): Boolean {
         val book = books.find { it.id == passage.bookId } ?: return false
