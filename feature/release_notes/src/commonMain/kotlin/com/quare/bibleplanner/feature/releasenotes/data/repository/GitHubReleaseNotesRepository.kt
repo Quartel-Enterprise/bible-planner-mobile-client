@@ -36,17 +36,14 @@ class GitHubReleaseNotesRepository(
                 Res.readBytes(it)
             }
         }
-
-        try {
+        runCatching {
             val map = jsonDeferred.await()
             val datesResult = datesDeferred.await()
             val dates = datesResult.getOrDefault(emptyMap())
-
-            val notes = releaseDateMapper.mapToReleaseNoteModels(map, dates)
-
-            Result.success(notes)
-        } catch (e: Exception) {
-            Result.failure(e)
+            releaseDateMapper.mapToReleaseNoteModels(
+                releaseNotesMap = map,
+                dates = dates,
+            )
         }
     }
 
