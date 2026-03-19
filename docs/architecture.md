@@ -401,3 +401,9 @@ Expose `Flow<T>` from `dataStore.data.map { preferences -> ... }`. See `ReadingP
 - [ ] Register the route in `AppNavHost`
 - [ ] Create a Koin module in `di/` and register it in `CommonKoinUtils`
 - [ ] Add the new Gradle module to `settings.gradle.kts`
+
+---
+
+## Pull Request Guidelines
+
+- PR titles and descriptions must be written in **English**
