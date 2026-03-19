@@ -1,1 +1,1 @@
-@docs/index.md
+@docs/ai_agents.md
