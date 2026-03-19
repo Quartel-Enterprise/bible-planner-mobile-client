@@ -35,6 +35,9 @@ setup-java.sh
 /.vscode
 /build-logic/convention/bin/
 
+# Claude Code
+.claude/worktrees/
+
 # Firebase
 androidApp/google-services.json
 iosApp/iosApp/GoogleService-Info.plist
