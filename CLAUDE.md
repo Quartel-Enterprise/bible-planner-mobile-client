@@ -1,1 +1,1 @@
-@docs/architecture.md
+@docs/index.md
