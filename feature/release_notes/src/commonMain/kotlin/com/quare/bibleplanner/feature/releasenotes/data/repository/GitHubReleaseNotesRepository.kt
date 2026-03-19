@@ -42,7 +42,7 @@ class GitHubReleaseNotesRepository(
             val dates = datesResult.getOrDefault(emptyMap())
             releaseDateMapper.mapToReleaseNoteModels(
                 releaseNotesMap = map,
-                dates = dates
+                dates = dates,
             )
         }
     }
