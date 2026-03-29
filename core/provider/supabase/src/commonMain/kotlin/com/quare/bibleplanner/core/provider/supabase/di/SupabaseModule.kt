@@ -1,5 +1,7 @@
-package com.quare.bibleplanner.core.provider.supabase
+package com.quare.bibleplanner.core.provider.supabase.di
 
+import com.quare.bibleplanner.core.provider.supabase.data.repository.SupabaseBucketRepositoryImpl
+import com.quare.bibleplanner.core.provider.supabase.domain.repository.SupabaseBucketRepository
 import com.quare.bibleplanner.core.provider.supabase.generated.SupabaseBuildKonfig
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
@@ -9,6 +11,8 @@ import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.storage.BucketApi
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 private const val SUPABASE_BUCKET_NAME = "content"
@@ -29,4 +33,5 @@ val supabaseModule = module {
     single<BucketApi> {
         get<SupabaseClient>().storage.from(SUPABASE_BUCKET_NAME)
     }
+    singleOf(::SupabaseBucketRepositoryImpl).bind<SupabaseBucketRepository>()
 }
