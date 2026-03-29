@@ -19,7 +19,6 @@ internal class InitializeBibleVersionsUseCaseImpl(
                     bibleVersionDao.insertVersion(
                         BibleVersionEntity(
                             id = versionModel.id,
-                            downloadProgress = 0f,
                             status = DownloadStatus.NOT_STARTED,
                         ),
                     )

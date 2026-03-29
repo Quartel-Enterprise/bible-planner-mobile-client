@@ -8,6 +8,7 @@ import androidx.room.Upsert
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.core.provider.room.relation.VerseWithTexts
+import com.quare.bibleplanner.core.provider.room.result.VersionChapterCount
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -201,6 +202,14 @@ interface VerseDao {
         chapterId: Long,
         versionId: String,
     ): Int
+
+    /**
+     * Reactively emits the number of distinct downloaded chapters per Bible version.
+     */
+    @Query(
+        "SELECT verse_texts.bibleVersionId, COUNT(DISTINCT verses.chapterId) as chapterCount FROM verses INNER JOIN verse_texts ON verses.id = verse_texts.verseId GROUP BY verse_texts.bibleVersionId",
+    )
+    fun getDownloadedChaptersPerVersionFlow(): Flow<List<VersionChapterCount>>
 
     /**
      * Counts how many distinct chapters have at least one verse downloaded for a specific version.

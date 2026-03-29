@@ -3,8 +3,10 @@ package com.quare.bibleplanner.core.provider.room.db
 import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
+import androidx.room.DeleteColumn
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.AutoMigrationSpec
 import com.quare.bibleplanner.core.provider.room.converter.BibleVersionDownloadStatusConverter
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
@@ -27,10 +29,11 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         DayEntity::class,
         BibleVersionEntity::class,
     ],
-    version = 7,
+    version = 8,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, to = 8, spec = AppDatabase.Migration7To8::class),
     ],
     exportSchema = true,
 )
@@ -46,4 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dayDao(): DayDao
 
     abstract fun bibleVersionDao(): BibleVersionDao
+
+    @DeleteColumn(tableName = "bible_versions", columnName = "downloadProgress")
+    class Migration7To8 : AutoMigrationSpec
 }

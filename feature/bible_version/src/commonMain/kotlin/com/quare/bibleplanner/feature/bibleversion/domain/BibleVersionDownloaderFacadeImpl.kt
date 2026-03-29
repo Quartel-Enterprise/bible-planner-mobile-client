@@ -38,10 +38,6 @@ internal class BibleVersionDownloaderFacadeImpl(
     override suspend fun deleteDownload(versionId: String) {
         pauseDownload(versionId)
         verseDao.deleteVerseTextsByVersion(versionId)
-        bibleVersionDao.updateDownloadProgress(
-            id = versionId,
-            progress = 0f,
-        )
         bibleVersionDao.updateStatus(
             id = versionId,
             status = DownloadStatus.NOT_STARTED,

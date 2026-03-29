@@ -6,11 +6,11 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
-import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.domain.usecase.getDefaultVersion
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
@@ -22,6 +22,7 @@ internal class BibleRepositoryImpl(
     private val bibleVersionRepository: BibleVersionRepository,
     private val bibleMapper: BibleMapper,
     private val dataStore: DataStore<Preferences>,
+    private val verseDao: VerseDao,
 ) : BibleRepository {
     private val bibleVersionKey = stringPreferencesKey(BIBLE_VERSION_KEY)
 
@@ -30,14 +31,14 @@ internal class BibleRepositoryImpl(
         emitAll(
             combine(
                 getSelectedVersionIdFlow(),
-                bibleVersionDao.getAllVersionsFlow().map {
-                    bibleMapper.map(
-                        dataBaseVersions = it,
-                        supportedVersions = supportedVersions,
-                    )
-                },
-            ) { selectedVersionId, bibles ->
-                bibles.map { bible ->
+                bibleVersionDao.getAllVersionsFlow(),
+                verseDao.getDownloadedChaptersPerVersionFlow(),
+            ) { selectedVersionId, dbVersions, chapterCounts ->
+                bibleMapper.map(
+                    dataBaseVersions = dbVersions,
+                    supportedVersions = supportedVersions,
+                    downloadedChaptersPerVersion = chapterCounts.associate { it.bibleVersionId to it.chapterCount },
+                ).map { bible ->
                     bible.copy(
                         isSelected = bible.version.id.equals(
                             other = selectedVersionId,
