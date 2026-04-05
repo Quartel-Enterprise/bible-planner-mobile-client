@@ -5,23 +5,49 @@ import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.quare.bibleplanner.R
+import bibleplanner.composeapp.generated.resources.Res
+import bibleplanner.composeapp.generated.resources.notification_channel_description
+import bibleplanner.composeapp.generated.resources.notification_channel_name
+import bibleplanner.composeapp.generated.resources.notification_complete_message
+import bibleplanner.composeapp.generated.resources.notification_complete_title
+import bibleplanner.composeapp.generated.resources.notification_error_message
+import bibleplanner.composeapp.generated.resources.notification_error_title
+import bibleplanner.composeapp.generated.resources.notification_preparing_progress
+import bibleplanner.composeapp.generated.resources.notification_preparing_starting
+import bibleplanner.composeapp.generated.resources.notification_preparing_title
+import org.jetbrains.compose.resources.getString
 
 internal class BibleInitializationNotifier(private val context: Context) {
 
     private val notificationManager = NotificationManagerCompat.from(context)
 
-    init {
-        createChannel()
-    }
+    private lateinit var channelName: String
+    private lateinit var channelDescription: String
+    private lateinit var preparingTitle: String
+    private lateinit var preparingProgress: String
+    private lateinit var preparingStarting: String
+    private lateinit var completeTitle: String
+    private lateinit var completeMessage: String
+    private lateinit var errorTitle: String
+    private lateinit var errorMessage: String
 
-    private fun createChannel() {
+    suspend fun initialize() {
+        channelName = getString(Res.string.notification_channel_name)
+        channelDescription = getString(Res.string.notification_channel_description)
+        preparingTitle = getString(Res.string.notification_preparing_title)
+        preparingProgress = getString(Res.string.notification_preparing_progress)
+        preparingStarting = getString(Res.string.notification_preparing_starting)
+        completeTitle = getString(Res.string.notification_complete_title)
+        completeMessage = getString(Res.string.notification_complete_message)
+        errorTitle = getString(Res.string.notification_error_title)
+        errorMessage = getString(Res.string.notification_error_message)
+
         val channel = NotificationChannel(
             CHANNEL_ID,
-            context.getString(R.string.notification_channel_name),
+            channelName,
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
-            description = context.getString(R.string.notification_channel_description)
+            description = channelDescription
             setShowBadge(false)
         }
         notificationManager.createNotificationChannel(channel)
@@ -29,13 +55,10 @@ internal class BibleInitializationNotifier(private val context: Context) {
 
     fun buildProgressNotification(current: Int, total: Int) =
         NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle(context.getString(R.string.notification_preparing_title))
+            .setContentTitle(preparingTitle)
             .setContentText(
-                if (total > 0) {
-                    context.getString(R.string.notification_preparing_progress, current, total)
-                } else {
-                    context.getString(R.string.notification_preparing_starting)
-                },
+                if (total > 0) String.format(preparingProgress, current, total)
+                else preparingStarting,
             )
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setProgress(total, current, total == 0)
@@ -47,8 +70,8 @@ internal class BibleInitializationNotifier(private val context: Context) {
     fun showComplete() {
         if (!notificationManager.areNotificationsEnabled()) return
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle(context.getString(R.string.notification_complete_title))
-            .setContentText(context.getString(R.string.notification_complete_message))
+            .setContentTitle(completeTitle)
+            .setContentText(completeMessage)
             .setSmallIcon(android.R.drawable.stat_sys_download_done)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -59,8 +82,8 @@ internal class BibleInitializationNotifier(private val context: Context) {
     fun showError() {
         if (!notificationManager.areNotificationsEnabled()) return
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle(context.getString(R.string.notification_error_title))
-            .setContentText(context.getString(R.string.notification_error_message))
+            .setContentTitle(errorTitle)
+            .setContentText(errorMessage)
             .setSmallIcon(android.R.drawable.stat_notify_error)
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

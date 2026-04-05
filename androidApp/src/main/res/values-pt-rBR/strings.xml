@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Planner Bíblico</string>
-    <string name="notification_channel_name">Preparação da Bíblia</string>
-    <string name="notification_channel_description">Exibe o progresso enquanto os dados da Bíblia são preparados</string>
-    <string name="notification_preparing_title">Preparando a Bíblia</string>
-    <string name="notification_preparing_progress">Carregando livros… %1$d de %2$d</string>
-    <string name="notification_preparing_starting">Iniciando…</string>
-    <string name="notification_complete_title">Bíblia pronta!</string>
-    <string name="notification_complete_message">Os dados da Bíblia foram carregados com sucesso.</string>
-    <string name="notification_error_title">Erro ao preparar a Bíblia</string>
-    <string name="notification_error_message">Ocorreu um erro. Abra o app para tentar novamente.</string>
 </resources>

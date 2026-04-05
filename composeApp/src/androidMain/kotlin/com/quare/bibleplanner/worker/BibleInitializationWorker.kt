@@ -15,13 +15,14 @@ class BibleInitializationWorker(
 ) : CoroutineWorker(context, workerParams), KoinComponent {
 
     private val booksRepository: BooksRepository by inject()
-    private val notifier = BibleInitializationNotifier(context)
+    private val notifier = BibleInitializationNotifier(applicationContext)
 
     override suspend fun doWork(): Result {
         if (booksRepository.getBooks().isNotEmpty()) {
             return Result.success()
         }
 
+        notifier.initialize()
         setForeground(buildForegroundInfo(0, 0))
 
         return try {
@@ -31,7 +32,7 @@ class BibleInitializationWorker(
             notifier.dismiss()
             notifier.showComplete()
             Result.success()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             notifier.dismiss()
             notifier.showError()
             if (runAttemptCount < MAX_RETRIES) Result.retry() else Result.failure()

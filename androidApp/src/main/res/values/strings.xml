@@ -1,13 +1,4 @@
 <resources>
     <string name="app_name">Bible Planner</string>
     <string name="facebook_app_id" translatable="false">1353222729433375</string>
-    <string name="notification_channel_name">Bible Preparation</string>
-    <string name="notification_channel_description">Shows progress while Bible data is being prepared</string>
-    <string name="notification_preparing_title">Preparing the Bible</string>
-    <string name="notification_preparing_progress">Loading books… %1$d of %2$d</string>
-    <string name="notification_preparing_starting">Starting…</string>
-    <string name="notification_complete_title">Bible ready!</string>
-    <string name="notification_complete_message">Bible data loaded successfully.</string>
-    <string name="notification_error_title">Error preparing the Bible</string>
-    <string name="notification_error_message">An error occurred. Open the app to try again.</string>
 </resources>
