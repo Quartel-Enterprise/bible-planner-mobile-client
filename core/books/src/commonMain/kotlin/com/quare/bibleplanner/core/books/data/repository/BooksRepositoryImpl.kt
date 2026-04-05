@@ -2,7 +2,6 @@ package com.quare.bibleplanner.core.books.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
@@ -18,6 +17,8 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class BooksRepositoryImpl(
     private val booksLocalDataSource: BooksLocalDataSource,
@@ -27,6 +28,9 @@ class BooksRepositoryImpl(
     private val booksWithChapterMapper: BooksWithChapterMapper,
     private val dataStore: DataStore<Preferences>,
 ) : BooksRepository {
+
+    private val initMutex = Mutex()
+
     override fun getBooksFlow(): Flow<List<BookDataModel>> = bookDao
         .getAllBooksWithChaptersFlow()
         .map(booksWithChapterMapper::mapList)
@@ -41,39 +45,47 @@ class BooksRepositoryImpl(
         .getAllBooksWithChapters()
         .let(booksWithChapterMapper::mapList)
 
-    override suspend fun initializeDatabase() {
-        val books = booksLocalDataSource.getBooks()
+    override suspend fun initializeDatabase(onProgress: (current: Int, total: Int) -> Unit) {
+        initMutex.withLock {
+            // Double-check inside lock to prevent duplicate initialization
+            if (bookDao.getAllBooksWithChapters().isNotEmpty()) return
 
-        val bookEntities = books.map { book ->
-            BookEntity(
-                id = book.id.name,
-                isRead = book.isRead,
-                isFavorite = book.isFavorite,
-            )
-        }
-        bookDao.insertBooks(bookEntities)
+            val books = booksLocalDataSource.getBooks()
+            val total = books.size
 
-        books.forEach { book ->
-            val chapterEntities = book.chapters.map { chapter ->
-                ChapterEntity(
-                    number = chapter.number,
-                    bookId = book.id.name,
-                    isRead = chapter.isRead,
+            val bookEntities = books.map { book ->
+                BookEntity(
+                    id = book.id.name,
+                    isRead = book.isRead,
+                    isFavorite = book.isFavorite,
                 )
             }
-            val chapterIds = chapterDao.insertChapters(chapterEntities)
+            bookDao.insertBooks(bookEntities)
 
-            book.chapters.forEachIndexed { index, chapter ->
-                val chapterId = chapterIds[index]
-                val verseEntities = chapter.verses.map { verse ->
-                    VerseEntity(
-                        id = 0,
-                        number = verse.number,
-                        chapterId = chapterId,
-                        isRead = verse.isRead,
+            books.forEachIndexed { index, book ->
+                val chapterEntities = book.chapters.map { chapter ->
+                    ChapterEntity(
+                        number = chapter.number,
+                        bookId = book.id.name,
+                        isRead = chapter.isRead,
                     )
                 }
-                verseDao.upsertVerses(verseEntities)
+                val chapterIds = chapterDao.insertChapters(chapterEntities)
+
+                book.chapters.forEachIndexed { chapterIndex, chapter ->
+                    val chapterId = chapterIds[chapterIndex]
+                    val verseEntities = chapter.verses.map { verse ->
+                        VerseEntity(
+                            id = 0,
+                            number = verse.number,
+                            chapterId = chapterId,
+                            isRead = verse.isRead,
+                        )
+                    }
+                    verseDao.upsertVerses(verseEntities)
+                }
+
+                onProgress(index + 1, total)
             }
         }
     }

@@ -47,6 +47,9 @@ kotlin {
 
             // Facebook SDK
             implementation(libs.facebook.sdk.android)
+
+            // WorkManager
+            implementation(libs.androidx.work.runtime.ktx)
         }
         commonMain.dependencies {
             // Feature

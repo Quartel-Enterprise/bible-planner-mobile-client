@@ -74,6 +74,9 @@ dependencies {
     // Facebook SDK
     implementation(libs.facebook.sdk.android)
 
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
     // Compose
     implementation(libs.material3)
     implementation(libs.ui)
