@@ -32,6 +32,7 @@ kotlin {
             implementation(projects.feature.login)
             implementation(projects.feature.bibleVersion)
             implementation(projects.feature.read)
+            implementation(projects.feature.notificationPermission)
 
             // Core
             implementation(projects.core.model)

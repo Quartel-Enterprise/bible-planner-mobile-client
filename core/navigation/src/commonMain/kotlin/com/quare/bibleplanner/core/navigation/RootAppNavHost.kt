@@ -19,6 +19,7 @@ import com.quare.bibleplanner.feature.donation.pixqr.presentation.pixQr
 import com.quare.bibleplanner.feature.donation.presentation.donation
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
 import com.quare.bibleplanner.feature.login.presentation.loginRoot
+import com.quare.bibleplanner.feature.notificationpermission.presentation.notificationPermission
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
@@ -59,6 +60,7 @@ fun RootAppNavHost() {
                 navController = navController,
                 sharedTransitionScope = sharedTransitionScope,
             )
+            notificationPermission(navController)
         }
     }
 }

@@ -11,6 +11,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
+import com.quare.bibleplanner.feature.notificationpermission.presentation.NotificationPermissionStartEffect
 import com.quare.bibleplanner.feature.main.presentation.navhost.BottomNavHost
 import com.quare.bibleplanner.feature.main.presentation.screen.MainScreen
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
@@ -28,6 +29,7 @@ fun NavGraphBuilder.mainScreen(
         val bottomNavController: NavHostController = rememberNavController()
         val bottomNavBackStackEntry by bottomNavController.currentBackStackEntryAsState()
         val mainViewModel: MainScreenViewModel = koinViewModel()
+        NotificationPermissionStartEffect(navController = rootNavController)
         ActionCollector(mainViewModel.uiAction) { uiAction ->
             when (uiAction) {
                 is MainScreenUiAction.NavigateToBottomRoute -> bottomNavController.goToBottomNavRoute(uiAction.route)

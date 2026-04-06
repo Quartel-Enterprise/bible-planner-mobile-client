@@ -50,6 +50,7 @@ kotlin {
             implementation(projects.feature.donation.pixQr)
             implementation(projects.feature.bibleVersion)
             implementation(projects.feature.read)
+            implementation(projects.feature.notificationPermission)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

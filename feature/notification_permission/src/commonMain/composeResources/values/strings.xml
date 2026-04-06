@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_permission_title">Enable notifications</string>
+    <string name="notification_permission_explanation">Allow notifications to receive updates on Bible download progress, even when the app is closed.</string>
+    <string name="notification_permission_accept">Accept</string>
+    <string name="notification_permission_decline">Not now</string>
+    <string name="notification_permission_settings_message">Notifications are disabled. Please enable them in your device settings to receive Bible download updates.</string>
+    <string name="notification_permission_open_settings">Open settings</string>
+</resources>

@@ -54,6 +54,7 @@ kotlin {
         commonMain.dependencies {
             // Feature
             api(projects.feature.materialYou)
+            api(projects.feature.notificationPermission)
             api(projects.feature.themeSelection)
             api(projects.feature.readingPlan)
             api(projects.feature.day)
