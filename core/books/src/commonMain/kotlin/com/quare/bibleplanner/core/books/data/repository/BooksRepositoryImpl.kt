@@ -28,7 +28,6 @@ class BooksRepositoryImpl(
     private val booksWithChapterMapper: BooksWithChapterMapper,
     private val dataStore: DataStore<Preferences>,
 ) : BooksRepository {
-
     private val initMutex = Mutex()
 
     override fun getBooksFlow(): Flow<List<BookDataModel>> = bookDao

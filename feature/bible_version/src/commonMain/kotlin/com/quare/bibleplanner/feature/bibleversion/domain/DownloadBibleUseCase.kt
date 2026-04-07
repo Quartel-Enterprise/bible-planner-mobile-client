@@ -22,7 +22,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 
-internal class DownloadBibleUseCase(
+class DownloadBibleUseCase(
     private val bibleVersionDao: BibleVersionDao,
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,

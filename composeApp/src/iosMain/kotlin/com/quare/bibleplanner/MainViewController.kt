@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
 import com.quare.bibleplanner.di.initializeKoin
+import com.quare.bibleplanner.feature.bibleversion.di.bindDefaultBibleVersionDownloaderFacade
 import com.quare.bibleplanner.notification.IosBibleVersionDownloadNotifier
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -24,7 +25,8 @@ fun MainViewController(remoteConfigService: RemoteConfigService) = ComposeUIView
                         module {
                             single { getDatabaseBuilder() }
                             single { remoteConfigService }
-                            single { IosBibleVersionDownloadNotifier() }.bind<BibleVersionDownloadNotifier>()
+                            single { IosBibleVersionDownloadNotifier(get()) }.bind<BibleVersionDownloadNotifier>()
+                            bindDefaultBibleVersionDownloaderFacade()
                         },
                     ),
                 )

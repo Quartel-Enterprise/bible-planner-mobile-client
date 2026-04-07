@@ -11,11 +11,16 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVer
 import com.quare.bibleplanner.feature.bibleversion.presentation.BibleVersionViewModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
 import kotlinx.serialization.json.Json
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+
+fun Module.bindDefaultBibleVersionDownloaderFacade() {
+    singleOf(::BibleVersionDownloaderFacadeImpl).bind<BibleVersionDownloaderFacade>()
+}
 
 val bibleVersionModule = module {
     // Data
@@ -26,7 +31,6 @@ val bibleVersionModule = module {
     }
 
     // Domain
-    singleOf(::BibleVersionDownloaderFacadeImpl).bind<BibleVersionDownloaderFacade>()
     factoryOf(::GetBibleVersionsByLanguageUseCase)
     factoryOf(::SupabaseBookAbbreviationMapper)
     singleOf(::DownloadBibleUseCase)

@@ -45,7 +45,11 @@ private fun NotificationPermissionUiActionCollector(
                 // iOS handles notification permissions through system settings
                 navController.navigateUp()
             }
-            NotificationPermissionUiAction.NavigateBack -> navController.navigateUp()
+
+            NotificationPermissionUiAction.NavigateBack -> {
+                navController.navigateUp()
+            }
+
             NotificationPermissionUiAction.OpenNotificationSettings -> {
                 // iOS handles notification permissions through system settings
                 navController.navigateUp()

@@ -11,10 +11,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
-import com.quare.bibleplanner.feature.notificationpermission.presentation.NotificationPermissionStartEffect
 import com.quare.bibleplanner.feature.main.presentation.navhost.BottomNavHost
 import com.quare.bibleplanner.feature.main.presentation.screen.MainScreen
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
+import com.quare.bibleplanner.feature.notificationpermission.presentation.NotificationPermissionStartEffect
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
 import org.koin.compose.viewmodel.koinViewModel

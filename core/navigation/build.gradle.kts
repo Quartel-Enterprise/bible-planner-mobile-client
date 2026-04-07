@@ -39,6 +39,10 @@ kotlin {
             implementation(projects.core.provider.koin)
             implementation(projects.core.provider.room)
 
+            // Koin
+            implementation(project.dependencies.platform(libs.koinBom))
+            implementation(libs.koinCompose)
+
             // Compose
             implementation(libs.runtime)
             implementation(libs.material3)

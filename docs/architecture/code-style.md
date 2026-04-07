@@ -29,3 +29,29 @@ This applies to:
 - Class methods
 - Extension functions
 - Composable functions (return `Unit` — use block body, omit return type)
+
+## Imports
+
+Never use fully-qualified (inline) type or function references in the body of a function or expression. Always add the import at the top of the file and use the simple name.
+
+```kotlin
+// Correct — import declared, simple name used in body
+import org.koin.core.module.Module
+
+fun KoinApplication.registerModules() {
+    Module.bindDefaultBibleVersionDownloaderFacade()
+    Module.bindSomethingElse()
+}
+
+// Wrong — fully-qualified inline reference
+fun KoinApplication.registerModules() {
+    org.koin.core.module.Module.bindDefaultBibleVersionDownloaderFacade()
+    org.koin.core.module.Module.bindSomethingElse()
+}
+```
+
+This applies to:
+- Class references
+- Extension function receivers
+- Companion object and static-style calls
+- Type aliases and generic bounds

@@ -5,8 +5,8 @@ import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 
 fun commonKoinInitializer(
+    platformModules: List<Module>,
     config: (KoinApplication.() -> Unit)? = null,
-    platformModules: List<Module> = emptyList(),
 ) {
     startKoin {
         config?.invoke(this)

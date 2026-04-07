@@ -30,10 +30,12 @@ internal class BibleVersionDownloaderFacadeImpl(
         if (activeDownloads.containsKey(versionId)) return
 
         val job = scope.launch {
-            val versionName = bibleRepository.getBiblesFlow()
+            val versionName = bibleRepository
+                .getBiblesFlow()
                 .first()
                 .find { it.version.id == versionId }
-                ?.version?.name
+                ?.version
+                ?.name
                 ?: versionId
 
             bibleVersionDao.updateStatus(
@@ -43,7 +45,8 @@ internal class BibleVersionDownloaderFacadeImpl(
             notifier.showProgress(versionId, versionName, 0f)
 
             val progressObserver = launch {
-                bibleVersionDao.getAllVersionsFlow()
+                bibleVersionDao
+                    .getAllVersionsFlow()
                     .mapNotNull { list -> list.find { it.id == versionId } }
                     .distinctUntilChangedBy { it.downloadProgress }
                     .collect { entity -> notifier.showProgress(versionId, versionName, entity.downloadProgress) }
@@ -52,12 +55,13 @@ internal class BibleVersionDownloaderFacadeImpl(
             val result = downloadBible(versionId)
             progressObserver.cancel()
 
-            result.onSuccess {
-                notifier.showComplete(versionId, versionName)
-            }.onFailure {
-                notifier.showError(versionId, versionName)
-                updateStatusToPause(versionId)
-            }
+            result
+                .onSuccess {
+                    notifier.showComplete(versionId, versionName)
+                }.onFailure {
+                    notifier.showError(versionId, versionName)
+                    updateStatusToPause(versionId)
+                }
             activeDownloads.remove(versionId)
         }
         activeDownloads[versionId] = job

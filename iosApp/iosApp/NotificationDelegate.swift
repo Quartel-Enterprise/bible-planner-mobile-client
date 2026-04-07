@@ -1,4 +1,5 @@
 import UserNotifications
+import ComposeApp
 
 class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationDelegate()
@@ -10,5 +11,14 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
             @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([.banner, .sound])
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        NotificationTapRouter.shared.routeToBibleVersions()
+        completionHandler()
     }
 }
