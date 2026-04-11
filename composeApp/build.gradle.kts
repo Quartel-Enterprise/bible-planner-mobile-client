@@ -39,6 +39,7 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            implementation(projects.core.notification)
             implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
 

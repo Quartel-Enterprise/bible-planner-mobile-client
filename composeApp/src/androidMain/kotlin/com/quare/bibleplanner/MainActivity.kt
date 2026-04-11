@@ -43,10 +43,8 @@ class MainActivity : ComponentActivity() {
         handleNotificationIntent(intent)
     }
 
-    private fun handleNotificationIntent(intent: Intent?) {
-        if (intent?.getBooleanExtra(AndroidBibleVersionDownloadNotifier.EXTRA_NAVIGATE_TO_BIBLE_VERSIONS, false) ==
-            true
-        ) {
+    private fun handleNotificationIntent(intent: Intent) {
+        if (intent.getBooleanExtra(AndroidBibleVersionDownloadNotifier.EXTRA_NAVIGATE_TO_BIBLE_VERSIONS, false)) {
             get<NavigationEventBus>().send(BibleVersionSelectorRoute)
         }
     }

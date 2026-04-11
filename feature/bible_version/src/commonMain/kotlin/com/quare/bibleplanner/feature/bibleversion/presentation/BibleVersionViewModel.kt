@@ -10,14 +10,11 @@ import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVer
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionsUiState
-import com.quare.bibleplanner.ui.utils.observe
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class BibleVersionViewModel(
@@ -29,8 +26,6 @@ class BibleVersionViewModel(
     private val _uiAction: MutableSharedFlow<BibleVersionUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<BibleVersionUiAction> = _uiAction
 
-    private val _uiState: MutableStateFlow<BibleVersionsUiState> = MutableStateFlow(BibleVersionsUiState.Loading)
-
     val uiState: StateFlow<BibleVersionsUiState> = uiStateFactory
         .create()
         .stateIn(
@@ -38,12 +33,6 @@ class BibleVersionViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = BibleVersionsUiState.Loading,
         )
-
-    init {
-        observe(uiStateFactory.create()) { newState ->
-            _uiState.update { newState }
-        }
-    }
 
     fun onEvent(event: BibleVersionUiEvent) {
         when (event) {
@@ -72,7 +61,6 @@ class BibleVersionViewModel(
             }
 
             BibleVersionUiEvent.TryToDownloadBibleVersionsAgain -> {
-                _uiState.update { BibleVersionsUiState.Loading }
                 viewModelScope.launch {
                     initializeBibleVersions()
                 }

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Planner Bíblico</string>
+    <string name="notification_preparing_title">Descargando %1$s</string>
+    <string name="notification_preparing_progress">Descargando\u2026 %1$d%%</string>
+    <string name="notification_preparing_starting">Iniciando descarga\u2026</string>
+    <string name="notification_complete_title">¡%1$s lista!</string>
+    <string name="notification_complete_message">Biblia descargada correctamente.</string>
+    <string name="notification_error_title">Error de descarga \u2014 %1$s</string>
+    <string name="notification_error_message">Ocurrió un error. Abre la app para intentarlo de nuevo.</string>
+    <string name="notification_paused_title">Descarga pausada \u2014 %1$s</string>
+    <string name="notification_paused_message">Pausado en %1$d%%. Abre la app para continuar.</string>
 </resources>
