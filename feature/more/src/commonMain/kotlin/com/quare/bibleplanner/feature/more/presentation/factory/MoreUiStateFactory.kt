@@ -26,6 +26,7 @@ import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
+import com.quare.bibleplanner.feature.more.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.generated.MoreBuildKonfig
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
@@ -62,6 +63,7 @@ internal class MoreUiStateFactory(
     private val sessionUserMapper: SessionUserMapper,
     private val isLoginVisible: IsLoginVisible,
     private val bibleVersionDao: BibleVersionDao,
+    private val getSelectedVersionDownloadedChapters: GetSelectedVersionDownloadedChaptersFlowUseCase,
     private val getSelectedBible: GetSelectedBibleFlowUseCase,
 ) {
     fun create(): Flow<MoreUiState> {
@@ -85,7 +87,8 @@ internal class MoreUiStateFactory(
             getSubscriptionStatusFlow?.invoke() ?: flowOf(null),
             getPlanStartDate(),
             moreScreenFlows,
-        ) { subscriptionStatus, startDate, moreScreenConfiguration ->
+            getSelectedVersionDownloadedChapters(),
+        ) { subscriptionStatus, startDate, moreScreenConfiguration, downloadedChaptersCount ->
             val remoteConfigs = moreScreenConfiguration.remoteConfigs
             val themeConfiguration = moreScreenConfiguration.themeConfiguration
             val shouldShowDonate = remoteConfigs.shouldShowDonate
@@ -102,7 +105,7 @@ internal class MoreUiStateFactory(
             val downloadProgress = if (bibleVersionEntity?.isDownloaded() == true) {
                 null
             } else {
-                bibleVersionEntity?.downloadProgress ?: 0f
+                bibleVersionEntity?.let { downloadedChaptersCount.toFloat() / it.totalChapters } ?: 0f
             }
 
             MoreUiState.Loaded(

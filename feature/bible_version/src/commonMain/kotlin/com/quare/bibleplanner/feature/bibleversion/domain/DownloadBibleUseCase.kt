@@ -12,14 +12,13 @@ import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbre
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamentIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import io.github.jan.supabase.storage.BucketApi
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 
 class DownloadBibleUseCase(
@@ -48,15 +47,15 @@ class DownloadBibleUseCase(
             val rest = BookId.entries.filter { it !in pentateuch && it !in newTestament }
             val prioritizedBookIds = pentateuch + newTestament + rest
 
-            val progressMutex = Mutex()
-
             prioritizedBookIds.forEach { bookId ->
-                downloadChapters(versionId, progressMutex, bookId)
+                downloadChapters(versionId, bookId)
             }
 
             // Mark as DONE after all chapters are downloaded
             bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
             return successResult
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Logger.e { "Global sync error: ${e.message}" }
             return Result.failure(e)
@@ -65,7 +64,6 @@ class DownloadBibleUseCase(
 
     private suspend fun downloadChapters(
         versionId: String,
-        progressMutex: Mutex,
         bookId: BookId,
     ) {
         val supabaseBookDir = supabaseBookAbbreviationMapper.map(bookId)
@@ -84,15 +82,6 @@ class DownloadBibleUseCase(
                                     chapterId = chapter.id,
                                     versionId = versionId,
                                     chapterDto = json.decodeFromString<SyncChapterDto>(bytes.decodeToString()),
-                                )
-                            }
-
-                            progressMutex.withLock {
-                                // Re-calculate progress to be safe
-                                val currentCount = verseDao.countChaptersWithVersesByVersion(versionId)
-                                bibleVersionDao.updateDownloadProgress(
-                                    id = versionId,
-                                    progress = currentCount.toFloat() / TOTAL_CHAPTERS,
                                 )
                             }
                         } catch (e: Exception) {
@@ -130,7 +119,6 @@ class DownloadBibleUseCase(
     }
 
     companion object {
-        private const val TOTAL_CHAPTERS = 1189
         private const val DOWNLOAD_CHAPTERS_CHUNK_SIZE = 10
     }
 }

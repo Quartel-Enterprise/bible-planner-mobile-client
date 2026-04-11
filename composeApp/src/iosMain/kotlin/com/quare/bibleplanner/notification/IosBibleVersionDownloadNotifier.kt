@@ -21,45 +21,13 @@ internal class IosBibleVersionDownloadNotifier(
         versionId: String,
         versionName: String,
         progress: Float,
-    ) {
-        if (progress > 0f) return
-        val content = UNMutableNotificationContent().apply {
-            setTitle(
-                str(en = "Downloading $versionName", pt = "Baixando $versionName", es = "Descargando $versionName"),
-            )
-            setBody(str(en = "Starting…", pt = "Iniciando…", es = "Iniciando…"))
-        }
-        val request = UNNotificationRequest.requestWithIdentifier(progressId(versionId), content, trigger = null)
-        center.addNotificationRequest(request, withCompletionHandler = null)
-    }
+    ) = Unit
 
     override suspend fun showPaused(
         versionId: String,
         versionName: String,
         progress: Float,
-    ) {
-        val percent = progress * 100
-        val percentFormatted = "%.1f".format(percent)
-        removeNotifications(listOf(progressId(versionId)))
-        val content = UNMutableNotificationContent().apply {
-            setTitle(
-                str(
-                    en = "Download paused — $versionName",
-                    pt = "Download pausado — $versionName",
-                    es = "Descarga pausada — $versionName",
-                ),
-            )
-            setBody(
-                str(
-                    en = "Paused at $percentFormatted%. Open the app to resume.",
-                    pt = "Pausado em $percentFormatted%. Abra o app para continuar.",
-                    es = "Pausado en $percentFormatted%. Abre la app para continuar.",
-                ),
-            )
-        }
-        val request = UNNotificationRequest.requestWithIdentifier(progressId(versionId), content, trigger = null)
-        center.addNotificationRequest(request, withCompletionHandler = null)
-    }
+    ) = Unit
 
     override suspend fun showComplete(
         versionId: String,

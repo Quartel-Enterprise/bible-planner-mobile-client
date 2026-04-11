@@ -6,4 +6,5 @@ data class VersionModel(
     val id: String,
     val name: String,
     val language: Language,
+    val chapters: Int,
 )

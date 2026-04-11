@@ -36,7 +36,6 @@ internal class AndroidBibleVersionDownloaderFacade(
         workManager.cancelUniqueWork(BibleVersionDownloadWorker.workName(versionId))
         notifier.dismiss(versionId)
         verseDao.deleteVerseTextsByVersion(versionId)
-        bibleVersionDao.updateDownloadProgress(id = versionId, progress = 0f)
         bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.NOT_STARTED)
     }
 }

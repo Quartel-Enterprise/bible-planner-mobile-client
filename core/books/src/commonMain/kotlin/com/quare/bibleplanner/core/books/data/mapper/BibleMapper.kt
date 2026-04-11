@@ -12,17 +12,25 @@ internal class BibleMapper(
     fun map(
         dataBaseVersions: List<BibleVersionEntity>,
         supportedVersions: List<VersionModel>,
+        downloadedChaptersMap: Map<String, Int>,
     ): List<BibleModel> = supportedVersions.mapNotNull { versionModel: VersionModel ->
-        dataBaseVersions.find { it.id == versionModel.id }?.toDomain(versionModel)
+        dataBaseVersions.find { it.id == versionModel.id }?.toDomain(versionModel, downloadedChaptersMap)
     }
 
-    private fun BibleVersionEntity.toDomain(versionModel: VersionModel): BibleModel = run {
-        BibleModel(
-            version = versionModel,
-            downloadStatus = toStatus(),
-            isSelected = false,
+    private fun BibleVersionEntity.toDomain(
+        versionModel: VersionModel,
+        downloadedChaptersMap: Map<String, Int>,
+    ): BibleModel = BibleModel(
+        version = versionModel,
+        downloadStatus = toStatus(downloadedChaptersMap[id] ?: 0),
+        isSelected = false,
+    )
+
+    private fun BibleVersionEntity.toStatus(downloadedChapters: Int): DownloadStatusModel {
+        val progress = downloadedChapters.toFloat() / totalChapters
+        return downloadStatusMapper.map(
+            status = status,
+            progress = progress,
         )
     }
-
-    private fun BibleVersionEntity.toStatus(): DownloadStatusModel = downloadStatusMapper.map(status, downloadProgress)
 }

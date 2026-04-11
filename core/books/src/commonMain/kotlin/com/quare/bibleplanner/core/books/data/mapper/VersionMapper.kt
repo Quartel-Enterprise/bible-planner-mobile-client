@@ -13,5 +13,6 @@ internal class VersionMapper {
             "es" -> Language.SPANISH
             else -> Language.ENGLISH
         },
+        chapters = dto.chapters,
     )
 }

@@ -6,12 +6,14 @@ import androidx.work.WorkerParameters
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -27,6 +29,7 @@ internal class BibleVersionDownloadWorker(
     private val downloadBible: DownloadBibleUseCase by inject()
     private val notifier: AndroidBibleVersionDownloadNotifier by inject()
     private val bibleVersionDao: BibleVersionDao by inject()
+    private val verseDao: VerseDao by inject()
     private val bibleRepository: BibleRepository by inject()
 
     override suspend fun doWork(): Result {
@@ -46,13 +49,14 @@ internal class BibleVersionDownloadWorker(
         return try {
             val result = coroutineScope {
                 val progressObserver = launch {
-                    bibleVersionDao
-                        .getAllVersionsFlow()
-                        .mapNotNull { list -> list.find { it.id == versionId } }
-                        .distinctUntilChangedBy { it.downloadProgress }
-                        .collect { entity ->
-                            lastProgress = entity.downloadProgress
-                            notifier.showProgress(versionId, versionName, entity.downloadProgress)
+                    combine(
+                        bibleVersionDao.getAllVersionsFlow().mapNotNull { list -> list.find { it.id == versionId } },
+                        verseDao.countChaptersWithVersesByVersionFlow(versionId),
+                    ) { entity, count -> count.toFloat() / entity.totalChapters }
+                        .distinctUntilChanged()
+                        .collect { progress ->
+                            lastProgress = progress
+                            notifier.showProgress(versionId, versionName, progress)
                         }
                 }
                 val downloadResult = downloadBible(versionId)

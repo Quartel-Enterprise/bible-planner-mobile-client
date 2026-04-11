@@ -11,7 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -45,11 +46,12 @@ internal class BibleVersionDownloaderFacadeImpl(
             notifier.showProgress(versionId, versionName, 0f)
 
             val progressObserver = launch {
-                bibleVersionDao
-                    .getAllVersionsFlow()
-                    .mapNotNull { list -> list.find { it.id == versionId } }
-                    .distinctUntilChangedBy { it.downloadProgress }
-                    .collect { entity -> notifier.showProgress(versionId, versionName, entity.downloadProgress) }
+                combine(
+                    bibleVersionDao.getAllVersionsFlow().mapNotNull { list -> list.find { it.id == versionId } },
+                    verseDao.countChaptersWithVersesByVersionFlow(versionId),
+                ) { entity, count -> count.toFloat() / entity.totalChapters }
+                    .distinctUntilChanged()
+                    .collect { progress -> notifier.showProgress(versionId, versionName, progress) }
             }
 
             val result = downloadBible(versionId)
@@ -70,10 +72,6 @@ internal class BibleVersionDownloaderFacadeImpl(
     override suspend fun deleteDownload(versionId: String) {
         pauseDownload(versionId)
         verseDao.deleteVerseTextsByVersion(versionId)
-        bibleVersionDao.updateDownloadProgress(
-            id = versionId,
-            progress = 0f,
-        )
         bibleVersionDao.updateStatus(
             id = versionId,
             status = DownloadStatus.NOT_STARTED,
