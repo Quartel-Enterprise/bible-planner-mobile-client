@@ -2,11 +2,13 @@
     <string name="app_title">Planner Bíblico</string>
     <string name="notification_channel_name">Download da Bíblia</string>
     <string name="notification_channel_description">Exibe o progresso do download das versões da Bíblia</string>
-    <string name="notification_preparing_title">Baixando Bíblia</string>
+    <string name="notification_preparing_title">Baixando %1$s</string>
     <string name="notification_preparing_progress">Baixando… %1$d%%</string>
     <string name="notification_preparing_starting">Iniciando download…</string>
-    <string name="notification_complete_title">Bíblia pronta!</string>
+    <string name="notification_complete_title">%1$s pronta!</string>
     <string name="notification_complete_message">Bíblia baixada com sucesso.</string>
-    <string name="notification_error_title">Erro no download</string>
+    <string name="notification_error_title">Erro no download — %1$s</string>
     <string name="notification_error_message">Ocorreu um erro. Abra o app para tentar novamente.</string>
+    <string name="notification_paused_title">Download pausado — %1$s</string>
+    <string name="notification_paused_message">Pausado em %1$d%%. Abra o app para continuar.</string>
 </resources>

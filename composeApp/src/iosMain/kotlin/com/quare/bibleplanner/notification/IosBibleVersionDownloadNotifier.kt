@@ -1,9 +1,13 @@
 package com.quare.bibleplanner.notification
 
+import bibleplanner.composeapp.generated.resources.Res
+import bibleplanner.composeapp.generated.resources.notification_complete_message
+import bibleplanner.composeapp.generated.resources.notification_complete_title
+import bibleplanner.composeapp.generated.resources.notification_error_message
+import bibleplanner.composeapp.generated.resources.notification_error_title
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.model.NavigationEventBus
-import platform.Foundation.NSLocale
-import platform.Foundation.preferredLanguages
+import org.jetbrains.compose.resources.getString
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNUserNotificationCenter
@@ -33,16 +37,9 @@ internal class IosBibleVersionDownloadNotifier(
         versionId: String,
         versionName: String,
     ) {
-        removeNotifications(listOf(progressId(versionId)))
         val content = UNMutableNotificationContent().apply {
-            setTitle(str(en = "$versionName ready!", pt = "$versionName pronta!", es = "¡$versionName lista!"))
-            setBody(
-                str(
-                    en = "Bible data loaded successfully.",
-                    pt = "Os dados da Bíblia foram carregados com sucesso.",
-                    es = "Los datos de la Biblia se cargaron correctamente.",
-                ),
-            )
+            setTitle(getString(Res.string.notification_complete_title, versionName))
+            setBody(getString(Res.string.notification_complete_message))
         }
         val request = UNNotificationRequest.requestWithIdentifier(completeId(versionId), content, trigger = null)
         center.addNotificationRequest(request, withCompletionHandler = null)
@@ -52,22 +49,9 @@ internal class IosBibleVersionDownloadNotifier(
         versionId: String,
         versionName: String,
     ) {
-        removeNotifications(listOf(progressId(versionId)))
         val content = UNMutableNotificationContent().apply {
-            setTitle(
-                str(
-                    en = "Error downloading $versionName",
-                    pt = "Erro ao baixar $versionName",
-                    es = "Error al descargar $versionName",
-                ),
-            )
-            setBody(
-                str(
-                    en = "An error occurred. Open the app to try again.",
-                    pt = "Ocorreu um erro. Abra o app para tentar novamente.",
-                    es = "Ocurrió un error. Abre la app para intentarlo de nuevo.",
-                ),
-            )
+            setTitle(getString(Res.string.notification_error_title, versionName))
+            setBody(getString(Res.string.notification_error_message))
         }
         val request = UNNotificationRequest.requestWithIdentifier(errorId(versionId), content, trigger = null)
         center.addNotificationRequest(request, withCompletionHandler = null)
@@ -88,16 +72,4 @@ internal class IosBibleVersionDownloadNotifier(
         center.removeDeliveredNotificationsWithIdentifiers(identifiers)
     }
 
-    private fun str(
-        en: String,
-        pt: String,
-        es: String,
-    ): String {
-        val lang = NSLocale.preferredLanguages.firstOrNull()?.toString() ?: return en
-        return when {
-            lang.startsWith("pt") -> pt
-            lang.startsWith("es") -> es
-            else -> en
-        }
-    }
 }

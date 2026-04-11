@@ -80,7 +80,7 @@ internal class AndroidBibleVersionDownloadNotifier(
         notificationManager.cancel(getPausedNotificationId(versionId))
     }
 
-    internal fun buildForegroundInfo(
+    internal suspend fun buildForegroundInfo(
         versionId: String,
         versionName: String,
     ): ForegroundInfo {

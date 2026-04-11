@@ -19,6 +19,8 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
 
 class DownloadBibleUseCase(
@@ -32,6 +34,7 @@ class DownloadBibleUseCase(
 ) {
     private val json = Json { ignoreUnknownKeys = true }
     private val syncScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val downloadSemaphore = Semaphore(permits = MAX_CONCURRENT_DOWNLOADS)
 
     private val successResult = Result.success(Unit)
 
@@ -47,9 +50,9 @@ class DownloadBibleUseCase(
             val rest = BookId.entries.filter { it !in pentateuch && it !in newTestament }
             val prioritizedBookIds = pentateuch + newTestament + rest
 
-            prioritizedBookIds.forEach { bookId ->
-                downloadChapters(versionId, bookId)
-            }
+            prioritizedBookIds
+                .map { bookId -> syncScope.launch { downloadChapters(versionId, bookId) } }
+                .joinAll()
 
             // Mark as DONE after all chapters are downloaded
             bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
@@ -77,7 +80,9 @@ class DownloadBibleUseCase(
 
                             if (!exists) {
                                 val fileName = "bible/${versionId.uppercase()}/$supabaseBookDir/${chapter.number}.json"
-                                val bytes = bucketApi.downloadPublic(fileName)
+                                val bytes = downloadSemaphore.withPermit {
+                                    bucketApi.downloadPublic(fileName)
+                                }
                                 saveChapterToDatabase(
                                     chapterId = chapter.id,
                                     versionId = versionId,
@@ -120,5 +125,6 @@ class DownloadBibleUseCase(
 
     companion object {
         private const val DOWNLOAD_CHAPTERS_CHUNK_SIZE = 10
+        private const val MAX_CONCURRENT_DOWNLOADS = 10
     }
 }

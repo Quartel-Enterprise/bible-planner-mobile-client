@@ -1,5 +1,12 @@
 package com.quare.bibleplanner.notification
 
+import bibleplanner.composeapp.generated.resources.Res
+import bibleplanner.composeapp.generated.resources.notification_complete_message
+import bibleplanner.composeapp.generated.resources.notification_complete_title
+import bibleplanner.composeapp.generated.resources.notification_error_message
+import bibleplanner.composeapp.generated.resources.notification_error_title
+import bibleplanner.composeapp.generated.resources.notification_preparing_starting
+import bibleplanner.composeapp.generated.resources.notification_preparing_title
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
@@ -7,7 +14,7 @@ import java.awt.SystemTray
 import java.awt.TrayIcon
 import java.awt.TrayIcon.MessageType
 import java.awt.image.BufferedImage
-import java.util.Locale
+import org.jetbrains.compose.resources.getString
 
 internal class DesktopBibleVersionDownloadNotifier(
     private val navigationEventBus: NavigationEventBus,
@@ -22,8 +29,8 @@ internal class DesktopBibleVersionDownloadNotifier(
         val percent = (progress * 100).toInt()
         if (percent == 0) {
             trayIcon?.displayMessage(
-                str(en = "Downloading $versionName", pt = "Baixando $versionName", es = "Descargando $versionName"),
-                str(en = "Starting download…", pt = "Iniciando download…", es = "Iniciando descarga…"),
+                getString(Res.string.notification_preparing_title, versionName),
+                getString(Res.string.notification_preparing_starting),
                 MessageType.INFO,
             )
         }
@@ -34,12 +41,8 @@ internal class DesktopBibleVersionDownloadNotifier(
         versionName: String,
     ) {
         trayIcon?.displayMessage(
-            str(en = "$versionName ready!", pt = "$versionName pronta!", es = "¡$versionName lista!"),
-            str(
-                en = "Bible downloaded successfully.",
-                pt = "Bíblia baixada com sucesso.",
-                es = "Biblia descargada correctamente.",
-            ),
+            getString(Res.string.notification_complete_title, versionName),
+            getString(Res.string.notification_complete_message),
             MessageType.INFO,
         )
     }
@@ -55,16 +58,8 @@ internal class DesktopBibleVersionDownloadNotifier(
         versionName: String,
     ) {
         trayIcon?.displayMessage(
-            str(
-                en = "Download error — $versionName",
-                pt = "Erro no download — $versionName",
-                es = "Error de descarga — $versionName",
-            ),
-            str(
-                en = "An error occurred. Try again.",
-                pt = "Ocorreu um erro. Tente novamente.",
-                es = "Ocurrió un error. Inténtalo de nuevo.",
-            ),
+            getString(Res.string.notification_error_title, versionName),
+            getString(Res.string.notification_error_message),
             MessageType.ERROR,
         )
     }
@@ -82,15 +77,5 @@ internal class DesktopBibleVersionDownloadNotifier(
         }
         runCatching { tray.add(icon) }
         return icon
-    }
-
-    private fun str(
-        en: String,
-        pt: String,
-        es: String,
-    ): String = when (Locale.getDefault().language) {
-        "pt" -> pt
-        "es" -> es
-        else -> en
     }
 }
