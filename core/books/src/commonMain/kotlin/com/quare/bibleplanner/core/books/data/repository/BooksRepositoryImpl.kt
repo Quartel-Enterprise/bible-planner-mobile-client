@@ -44,13 +44,12 @@ class BooksRepositoryImpl(
         .getAllBooksWithChapters()
         .let(booksWithChapterMapper::mapList)
 
-    override suspend fun initializeDatabase(onProgress: (current: Int, total: Int) -> Unit) {
+    override suspend fun initializeDatabase() {
         initMutex.withLock {
             // Double-check inside lock to prevent duplicate initialization
             if (bookDao.getAllBooksWithChapters().isNotEmpty()) return
 
             val books = booksLocalDataSource.getBooks()
-            val total = books.size
 
             val bookEntities = books.map { book ->
                 BookEntity(
@@ -61,7 +60,7 @@ class BooksRepositoryImpl(
             }
             bookDao.insertBooks(bookEntities)
 
-            books.forEachIndexed { index, book ->
+            books.forEach { book ->
                 val chapterEntities = book.chapters.map { chapter ->
                     ChapterEntity(
                         number = chapter.number,
@@ -83,8 +82,6 @@ class BooksRepositoryImpl(
                     }
                     verseDao.upsertVerses(verseEntities)
                 }
-
-                onProgress(index + 1, total)
             }
         }
     }
