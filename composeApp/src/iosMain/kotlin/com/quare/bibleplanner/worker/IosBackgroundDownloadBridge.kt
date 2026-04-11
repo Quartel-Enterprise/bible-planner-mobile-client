@@ -17,6 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 
 class IosBackgroundDownloadBridge(
@@ -29,6 +31,7 @@ class IosBackgroundDownloadBridge(
     private val json: Json,
 ) {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val finalizationMutex = Mutex()
 
     val supabaseStorageBaseUrl: String =
         "${SupabaseBuildKonfig.SUPABASE_URL}/storage/v1/object/public/content"
@@ -77,13 +80,15 @@ class IosBackgroundDownloadBridge(
     }
 
     private suspend fun checkAndFinalizeVersion(versionId: String) {
-        val entity = bibleVersionDao.getVersionById(versionId) ?: return
-        if (entity.status == DownloadStatus.DONE) return
-        val downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
-        if (downloaded >= entity.totalChapters) {
-            val name = resolveVersionName(versionId)
-            bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
-            notifier.showComplete(versionId, name)
+        finalizationMutex.withLock {
+            val entity = bibleVersionDao.getVersionById(versionId) ?: return
+            if (entity.status == DownloadStatus.DONE) return
+            val downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
+            if (downloaded >= entity.totalChapters) {
+                val name = resolveVersionName(versionId)
+                bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
+                notifier.showComplete(versionId, name)
+            }
         }
     }
 

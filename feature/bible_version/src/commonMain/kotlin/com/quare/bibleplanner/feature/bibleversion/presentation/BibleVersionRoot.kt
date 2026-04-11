@@ -1,10 +1,15 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
@@ -22,16 +27,24 @@ fun NavGraphBuilder.bibleVersionSelectionRoot(navController: NavHostController) 
         val viewModel: BibleVersionViewModel = koinViewModel()
         val onEvent = viewModel::onEvent
         val uiState by viewModel.uiState.collectAsState()
+        val snackbarHostState = remember { SnackbarHostState() }
         BibleVersionsActionCollector(
             navController = navController,
             uiActionFlow = viewModel.uiAction,
+            snackbarHostState = snackbarHostState,
         )
         ModalBottomSheet(onDismissRequest = { onEvent(BibleVersionUiEvent.OnDismiss) }) {
-            BibleVersionsContent(
-                modifier = Modifier.padding(bottom = 32.dp).padding(horizontal = 16.dp),
-                uiState = uiState,
-                onEvent = onEvent,
-            )
+            Box {
+                BibleVersionsContent(
+                    modifier = Modifier.padding(bottom = 32.dp).padding(horizontal = 16.dp),
+                    uiState = uiState,
+                    onEvent = onEvent,
+                )
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                )
+            }
         }
     }
 }

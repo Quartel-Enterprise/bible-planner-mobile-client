@@ -25,6 +25,8 @@ internal class IosBibleVersionDownloaderFacade(
 
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
+    override val shouldShowDownloadTip: Boolean = true
+
     init {
         downloadSession.setBridge(bridge)
     }

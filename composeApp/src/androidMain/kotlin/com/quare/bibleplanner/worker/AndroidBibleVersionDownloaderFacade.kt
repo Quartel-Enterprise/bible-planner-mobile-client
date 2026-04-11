@@ -16,6 +16,8 @@ internal class AndroidBibleVersionDownloaderFacade(
 
     private val workManager = WorkManager.getInstance(context)
 
+    override val shouldShowDownloadTip: Boolean = false
+
     override fun downloadVersion(versionId: String) {
         workManager.enqueueUniqueWork(
             uniqueWorkName = BibleVersionDownloadWorker.workName(versionId),

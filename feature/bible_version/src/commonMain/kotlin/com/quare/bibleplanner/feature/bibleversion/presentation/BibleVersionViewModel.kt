@@ -70,6 +70,9 @@ class BibleVersionViewModel(
 
     private fun downloadVersion(id: String) {
         downloaderFacade.downloadVersion(id)
+        if (downloaderFacade.shouldShowDownloadTip) {
+            emitUiAction(BibleVersionUiAction.ShowDownloadTip)
+        }
     }
 
     private fun pauseDownload(id: String) {
