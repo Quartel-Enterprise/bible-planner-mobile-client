@@ -47,7 +47,12 @@ class IosBackgroundDownloadBridge(
                 }
         }
 
-    fun processDownloadedChapter(chapterId: Long, versionId: String, jsonString: String) {
+    fun processDownloadedChapter(
+        chapterId: Long,
+        versionId: String,
+        jsonString: String,
+        onComplete: () -> Unit,
+    ) {
         scope.launch {
             try {
                 val chapterDto = json.decodeFromString<SyncChapterDto>(jsonString)
@@ -65,6 +70,8 @@ class IosBackgroundDownloadBridge(
                 checkAndFinalizeVersion(versionId)
             } catch (e: Exception) {
                 Logger.e(e) { "Error processing downloaded chapter $chapterId for $versionId" }
+            } finally {
+                onComplete()
             }
         }
     }

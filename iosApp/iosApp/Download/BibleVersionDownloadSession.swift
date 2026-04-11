@@ -8,6 +8,12 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
     private var bridge: IosBackgroundDownloadBridge?
     var backgroundCompletionHandler: (() -> Void)?
 
+    // Tracks in-flight processDownloadedChapter coroutines so we don't tell iOS
+    // "we're done" before the DB writes actually complete.
+    private let lock = NSLock()
+    private var pendingProcessingCount: Int = 0
+    private var sessionEventsFinished: Bool = false
+
     private lazy var session: URLSession = {
         let config = URLSessionConfiguration.background(withIdentifier: Self.sessionIdentifier)
         config.sessionSendsLaunchEvents = true
@@ -60,11 +66,22 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
             let jsonString = try? String(contentsOf: location, encoding: .utf8)
         else { return }
 
+        lock.lock()
+        pendingProcessingCount += 1
+        lock.unlock()
+
         bridge?.processDownloadedChapter(
             chapterId: chapterId,
             versionId: versionId,
             jsonString: jsonString
-        )
+        ) { [weak self] in
+            guard let self else { return }
+            self.lock.lock()
+            self.pendingProcessingCount -= 1
+            let shouldFlush = self.pendingProcessingCount == 0 && self.sessionEventsFinished
+            self.lock.unlock()
+            if shouldFlush { self.flushBackgroundCompletionHandler() }
+        }
     }
 
     func urlSession(
@@ -75,17 +92,26 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
         guard let error = error as NSError?,
               error.code != NSURLErrorCancelled else { return }
         // Individual task errors are handled gracefully; the version stays IN_PROGRESS
-        // and will resume on next launch or BGTask.
+        // and will resume on the next launch.
     }
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
-        DispatchQueue.main.async {
-            self.backgroundCompletionHandler?()
-            self.backgroundCompletionHandler = nil
-        }
+        lock.lock()
+        sessionEventsFinished = true
+        let shouldFlush = pendingProcessingCount == 0
+        lock.unlock()
+        if shouldFlush { flushBackgroundCompletionHandler() }
     }
 
     // MARK: - Helpers
+
+    private func flushBackgroundCompletionHandler() {
+        DispatchQueue.main.async {
+            self.backgroundCompletionHandler?()
+            self.backgroundCompletionHandler = nil
+            self.sessionEventsFinished = false
+        }
+    }
 
     private func parseTaskDescription(_ description: String) -> (versionId: String, chapterId: Int64)? {
         guard let pipeIndex = description.firstIndex(of: "|") else { return nil }

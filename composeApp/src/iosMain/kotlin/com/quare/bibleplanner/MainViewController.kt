@@ -3,6 +3,7 @@ package com.quare.bibleplanner
 import androidx.compose.ui.window.ComposeUIViewController
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
+import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
@@ -14,6 +15,7 @@ import com.quare.bibleplanner.worker.IosDownloadSession
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatform
 import kotlin.experimental.ExperimentalNativeApi
 
 private var isInitialized = false
@@ -38,10 +40,14 @@ fun initializeKoinForIos(
                     single { downloadSession }.bind<IosDownloadSession>()
                     single { IosBibleVersionDownloadNotifier(get()) }.bind<BibleVersionDownloadNotifier>()
                     singleOf(::IosBackgroundDownloadBridge)
-                    singleOf(::IosBibleVersionDownloaderFacade).bind<com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade>()
+                    singleOf(::IosBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
                 },
             ),
         )
+        // Force-create the facade so setBridge is called immediately.
+        // Required when the app relaunches solely for background URLSession events
+        // (no UI = no one else requests the facade from Koin).
+        KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
         configureRevenueCat(isDebug = Platform.isDebugBinary)
         isInitialized = true
     } catch (e: Exception) {
