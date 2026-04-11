@@ -4,12 +4,12 @@ import ComposeApp
 
 struct ComposeView: UIViewControllerRepresentable {
     let remoteConfigService: RemoteConfigService
-    let backgroundTaskScheduler: IosBackgroundTaskSchedulerImpl
+    let downloadSession: BibleVersionDownloadSession
 
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewControllerKt.MainViewController(
             remoteConfigService: remoteConfigService,
-            bgTaskScheduler: backgroundTaskScheduler
+            downloadSession: downloadSession
         )
     }
 
@@ -18,12 +18,12 @@ struct ComposeView: UIViewControllerRepresentable {
 
 struct ContentView: View {
     let remoteConfigService: RemoteConfigService
-    let backgroundTaskScheduler: IosBackgroundTaskSchedulerImpl
+    let downloadSession: BibleVersionDownloadSession
 
     var body: some View {
         ComposeView(
             remoteConfigService: remoteConfigService,
-            backgroundTaskScheduler: backgroundTaskScheduler
+            downloadSession: downloadSession
         )
         .ignoresSafeArea()
     }

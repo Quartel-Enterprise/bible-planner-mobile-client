@@ -1,5 +1,4 @@
 import SwiftUI
-import BackgroundTasks
 import FirebaseCore
 import FirebaseRemoteConfig
 import UserNotifications
@@ -7,23 +6,23 @@ import ComposeApp
 
 @main
 struct iOSApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     let remoteConfigService: RemoteConfigService
-    let backgroundTaskScheduler: IosBackgroundTaskSchedulerImpl
+    let downloadSession: BibleVersionDownloadSession
 
     init() {
-        backgroundTaskScheduler = IosBackgroundTaskSchedulerImpl()
-
-        // Register BGTask handler before the app finishes launching (Apple requirement)
-        BibleVersionDownloadTaskHandler.register(scheduler: backgroundTaskScheduler)
+        let downloadSession = BibleVersionDownloadSession()
+        self.downloadSession = downloadSession
 
         FirebaseApp.configure()
         remoteConfigService = IosRemoteConfigService(remoteConfig: RemoteConfig.remoteConfig())
 
-        // Initialize Koin early so the BGTask handler can access the Koin graph
-        // even when the app is launched solely to execute a background task.
+        // Initialize Koin early so background URLSession events can access the Koin graph
+        // even when the app is launched solely to process background download events.
         MainViewControllerKt.initializeKoinForIos(
             remoteConfigService: remoteConfigService,
-            bgTaskScheduler: backgroundTaskScheduler
+            downloadSession: downloadSession
         )
 
         // Request notification permission
@@ -39,7 +38,7 @@ struct iOSApp: App {
         WindowGroup {
             ContentView(
                 remoteConfigService: remoteConfigService,
-                backgroundTaskScheduler: backgroundTaskScheduler
+                downloadSession: downloadSession
             )
         }
     }
