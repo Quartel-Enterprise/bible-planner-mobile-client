@@ -13,6 +13,7 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>com.quare.bibleplanner.bible_initialization</string>
+		<string>com.quare.bibleplanner.bible_download</string>
 	</array>
 </dict>
 </plist>

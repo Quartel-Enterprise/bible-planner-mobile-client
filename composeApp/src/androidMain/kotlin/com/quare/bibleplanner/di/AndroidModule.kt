@@ -31,10 +31,9 @@ val androidModule = module {
     single {
         AndroidBibleVersionDownloaderFacade(
             context = androidContext(),
-            bibleVersionDao = get(),
-            verseDao = get(),
-            notifier = get(),
             requestFactory = AndroidBibleVersionDownloadRequestFactory(),
+            pauseBibleVersion = get(),
+            deleteBibleVersion = get(),
         )
     }.bind<BibleVersionDownloaderFacade>()
 }

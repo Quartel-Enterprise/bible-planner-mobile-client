@@ -1,4 +1,5 @@
 import SwiftUI
+import BackgroundTasks
 import FirebaseCore
 import FirebaseRemoteConfig
 import UserNotifications
@@ -7,10 +8,23 @@ import ComposeApp
 @main
 struct iOSApp: App {
     let remoteConfigService: RemoteConfigService
+    let backgroundTaskScheduler: IosBackgroundTaskSchedulerImpl
 
     init() {
+        backgroundTaskScheduler = IosBackgroundTaskSchedulerImpl()
+
+        // Register BGTask handler before the app finishes launching (Apple requirement)
+        BibleVersionDownloadTaskHandler.register(scheduler: backgroundTaskScheduler)
+
         FirebaseApp.configure()
         remoteConfigService = IosRemoteConfigService(remoteConfig: RemoteConfig.remoteConfig())
+
+        // Initialize Koin early so the BGTask handler can access the Koin graph
+        // even when the app is launched solely to execute a background task.
+        MainViewControllerKt.initializeKoinForIos(
+            remoteConfigService: remoteConfigService,
+            bgTaskScheduler: backgroundTaskScheduler
+        )
 
         // Request notification permission
         UNUserNotificationCenter.current().requestAuthorization(
@@ -23,7 +37,10 @@ struct iOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(remoteConfigService: remoteConfigService)
+            ContentView(
+                remoteConfigService: remoteConfigService,
+                backgroundTaskScheduler: backgroundTaskScheduler
+            )
         }
     }
 }
