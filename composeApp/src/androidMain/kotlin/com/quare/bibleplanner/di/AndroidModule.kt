@@ -4,9 +4,9 @@ import com.quare.bibleplanner.MainActivity
 import com.quare.bibleplanner.MainActivityViewModel
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
-import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.notification.AndroidNotificationBuilderProvider
 import com.quare.bibleplanner.core.notification.NotificationBuilderProvider
+import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
 import com.quare.bibleplanner.notification.BibleVersionNotificationFactory
 import com.quare.bibleplanner.worker.AndroidBibleVersionDownloadRequestFactory

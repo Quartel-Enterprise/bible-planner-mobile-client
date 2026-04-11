@@ -51,14 +51,17 @@ internal class BibleVersionNotificationFactory(
         icon = android.R.drawable.stat_notify_error,
     )
 
-    private fun buildResultNotification(title: String, message: String, icon: Int): Notification =
-        getBaseBuilder()
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSmallIcon(icon)
-            .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .build()
+    private fun buildResultNotification(
+        title: String,
+        message: String,
+        icon: Int,
+    ): Notification = getBaseBuilder()
+        .setContentTitle(title)
+        .setContentText(message)
+        .setSmallIcon(icon)
+        .setAutoCancel(true)
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .build()
 
     private fun getDownloadingBuilder(versionName: String): NotificationCompat.Builder = getBaseBuilder()
         .setContentTitle(stringProvider.getPreparingTitle(versionName))

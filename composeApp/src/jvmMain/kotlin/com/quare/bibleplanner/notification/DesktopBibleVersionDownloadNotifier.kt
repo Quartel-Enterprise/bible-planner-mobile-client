@@ -10,11 +10,11 @@ import bibleplanner.composeapp.generated.resources.notification_preparing_title
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import org.jetbrains.compose.resources.getString
 import java.awt.SystemTray
 import java.awt.TrayIcon
 import java.awt.TrayIcon.MessageType
 import java.awt.image.BufferedImage
-import org.jetbrains.compose.resources.getString
 
 internal class DesktopBibleVersionDownloadNotifier(
     private val navigationEventBus: NavigationEventBus,

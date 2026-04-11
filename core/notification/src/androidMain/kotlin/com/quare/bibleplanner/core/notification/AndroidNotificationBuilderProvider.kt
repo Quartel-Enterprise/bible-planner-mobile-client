@@ -9,8 +9,10 @@ class AndroidNotificationBuilderProvider(
     private val context: Context,
     private val activityClass: Class<*>,
 ) : NotificationBuilderProvider {
-
-    override fun getBaseBuilder(channelId: String, navigationExtraKey: String): NotificationCompat.Builder = NotificationCompat
+    override fun getBaseBuilder(
+        channelId: String,
+        navigationExtraKey: String,
+    ): NotificationCompat.Builder = NotificationCompat
         .Builder(context, channelId)
         .setContentIntent(tapPendingIntent(navigationExtraKey))
 

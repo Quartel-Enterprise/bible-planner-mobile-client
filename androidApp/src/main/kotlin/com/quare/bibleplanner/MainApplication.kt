@@ -13,7 +13,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 class MainApplication : Application() {
-
     private val mainApplicationModule = module {
         singleOf(::AndroidNotificationStringProvider).bind<NotificationStringProvider>()
     }

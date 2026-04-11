@@ -71,5 +71,4 @@ internal class IosBibleVersionDownloadNotifier(
         center.removePendingNotificationRequestsWithIdentifiers(identifiers)
         center.removeDeliveredNotificationsWithIdentifiers(identifiers)
     }
-
 }

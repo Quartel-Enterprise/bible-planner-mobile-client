@@ -4,9 +4,12 @@ import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleVersionDownloaderFacadeImpl
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadBooksInParallelUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadChaptersUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamentIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPrioritizedBookIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.BibleVersionViewModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
@@ -37,6 +40,9 @@ val bibleVersionModule = module {
     factoryOf(::SetSelectedVersionUseCase)
     factoryOf(::GetNewTestamentIdsUseCase)
     factoryOf(::GetPentateuchIdsUseCase)
+    factoryOf(::GetPrioritizedBookIdsUseCase)
+    factoryOf(::DownloadChaptersUseCase)
+    factoryOf(::DownloadBooksInParallelUseCase)
     factoryOf(::BibleVersionsUiStateFactory)
 
     // Presentation

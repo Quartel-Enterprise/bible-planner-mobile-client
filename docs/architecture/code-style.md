@@ -30,6 +30,47 @@ This applies to:
 - Extension functions
 - Composable functions (return `Unit` — use block body, omit return type)
 
+## Expression Body
+
+Non-Unit functions **must** use expression body (`=`) whenever the entire body is a single expression. Reserve block body (`{ return ... }`) for functions that require multiple statements.
+
+```kotlin
+// Correct — single expression, use =
+fun getUser(id: String): User = userRepository.find(id)
+
+fun buildGreeting(name: String): String = "Hello, $name"
+
+operator fun invoke(versionId: String): Result<Unit> = try {
+    Result.success(repository.fetch(versionId))
+} catch (e: CancellationException) {
+    throw e
+} catch (e: Exception) {
+    Result.failure(e)
+}
+
+// Correct — multiple statements require block body
+fun loadAndLog(id: String): User {
+    val user = userRepository.find(id)
+    Logger.d { "Loaded $user" }
+    return user
+}
+
+// Wrong — block body with a single return
+fun getUser(id: String): User {
+    return userRepository.find(id)
+}
+
+fun buildGreeting(name: String): String {
+    return "Hello, $name"
+}
+```
+
+This applies to:
+- Top-level functions
+- Class methods
+- Extension functions
+- `operator fun invoke`
+
 ## Imports
 
 Never use fully-qualified (inline) type or function references in the body of a function or expression. Always add the import at the top of the file and use the simple name.
