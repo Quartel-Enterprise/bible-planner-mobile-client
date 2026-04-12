@@ -147,6 +147,23 @@ class LiveActivityManager {
         }
     }
 
+    /// Re-adopts any Live Activities that were started in a previous app session.
+    /// Must be called on launch so that `endLiveActivity` can find and end stale activities.
+    func adoptOrphanedActivities() {
+        let all = Activity<BibleDownloadAttributes>.activities
+        dlog("adoptOrphanedActivities — found \(all.count) system activities", tag: "LIVE_ACTIVITY")
+        lock.lock()
+        for activity in all {
+            let versionId = activity.attributes.versionId
+            if activities[versionId] == nil {
+                activities[versionId] = activity
+                lastReportedProgress[versionId] = activity.contentState.progress
+                dlog("adoptOrphanedActivities — adopted versionId: \(versionId) progress: \(activity.contentState.progress)", tag: "LIVE_ACTIVITY")
+            }
+        }
+        lock.unlock()
+    }
+
     // MARK: - Diagnostics
 
     func logAllActivities() {

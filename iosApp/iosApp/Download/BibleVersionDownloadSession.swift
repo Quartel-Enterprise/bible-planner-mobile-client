@@ -40,6 +40,9 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
         super.init()
         Self.shared = self
         _ = session // Force lazy init so iOS reconnects pending background tasks
+        if #available(iOS 16.2, *) {
+            LiveActivityManager.shared.adoptOrphanedActivities()
+        }
     }
 
     // MARK: - IosDownloadSession

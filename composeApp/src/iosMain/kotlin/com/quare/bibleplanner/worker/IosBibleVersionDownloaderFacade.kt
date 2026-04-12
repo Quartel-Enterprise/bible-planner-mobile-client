@@ -41,6 +41,7 @@ internal class IosBibleVersionDownloaderFacade(
             if (tasks.isEmpty()) {
                 bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.DONE)
                 notifier.showComplete(versionId = versionId, versionName = versionName)
+                downloadSession.endLiveActivity(versionId)
                 return@launch
             }
             if (previousStatus == DownloadStatus.PAUSED) {
