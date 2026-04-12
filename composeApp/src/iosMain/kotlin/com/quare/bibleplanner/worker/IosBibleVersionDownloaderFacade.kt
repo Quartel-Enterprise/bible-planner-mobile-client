@@ -48,6 +48,7 @@ internal class IosBibleVersionDownloaderFacade(
             } else {
                 downloadSession.startLiveActivity(versionId, versionName)
             }
+            downloadSession.notifyAllTasksRegistered(versionId, tasks.size)
             tasks.forEach { task ->
                 downloadSession.addDownloadTask(
                     url = task.url,
@@ -55,7 +56,6 @@ internal class IosBibleVersionDownloaderFacade(
                     chapterId = task.chapterId,
                 )
             }
-            downloadSession.notifyAllTasksRegistered(versionId, tasks.size)
         }
     }
 
