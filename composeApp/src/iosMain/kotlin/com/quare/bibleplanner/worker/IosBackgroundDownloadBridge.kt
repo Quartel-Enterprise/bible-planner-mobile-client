@@ -84,7 +84,15 @@ class IosBackgroundDownloadBridge(
             try {
                 val entity = bibleVersionDao.getVersionById(versionId) ?: return@launch
                 if (entity.status == DownloadStatus.DONE) return@launch
-                val downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
+                var downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
+                // Guard against a SQLite WAL read-after-write race: all Swift onComplete()
+                // callbacks have fired (meaning all DB writes completed), but the count query
+                // may briefly observe a stale snapshot. If we're within 1 chapter of the total,
+                // retry once after a short delay before deciding the version isn't fully done.
+                if (downloaded == entity.totalChapters - 1) {
+                    kotlinx.coroutines.delay(300)
+                    downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
+                }
                 if (downloaded >= entity.totalChapters) {
                     val name = resolveVersionName(versionId)
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
