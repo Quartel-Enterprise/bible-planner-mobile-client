@@ -25,6 +25,11 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
     // Value is the authoritative total task count from Kotlin.
     private var expectedTaskCounts: [String: Int] = [:]
 
+    // Darwin notification observer pointers for Live Activity button actions.
+    // Registered per-version when a Live Activity starts; removed when it ends.
+    // Each entry holds the opaque pointers passed to CFNotificationCenterAddObserver.
+    private var darwinTokens: [String: [UnsafeMutableRawPointer]] = [:]
+
     // Per-version progress tracking for Live Activity updates
     private var versionTaskCounts: [String: (total: Int, completed: Int)] = [:]
     private var versionStartTimes: [String: Date] = [:]
@@ -64,6 +69,7 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
     }
 
     func cancelDownloads(versionId: String) {
+        unregisterActionObservers(versionId: versionId)
         lock.lock()
         versionTaskCounts.removeValue(forKey: versionId)
         versionStartTimes.removeValue(forKey: versionId)
@@ -95,6 +101,7 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
         versionStartTimes[versionId] = Date()
         lock.unlock()
 
+        registerActionObservers(versionId: versionId)
         dlog("startLiveActivity — \(versionId) (\(versionName))", tag: "SESSION")
         if #available(iOS 16.2, *) {
             LiveActivityManager.shared.start(versionId: versionId, versionName: versionName)
@@ -111,6 +118,7 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
     }
 
     func resumeLiveActivity(versionId: String) {
+        registerActionObservers(versionId: versionId)
         dlog("resumeLiveActivity — \(versionId)", tag: "SESSION")
         if #available(iOS 16.2, *) {
             LiveActivityManager.shared.resume(versionId: versionId)
@@ -140,7 +148,58 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
         }
     }
 
+    // MARK: - Darwin Notification Observers (Live Activity button IPC)
+
+    /// Registers Darwin notification observers for pause/resume/cancel actions
+    /// for the given version. Called when a Live Activity starts or resumes.
+    private func registerActionObservers(versionId: String) {
+        var opaques: [UnsafeMutableRawPointer] = []
+        for action in ["pause", "resume", "cancel"] {
+            let name = "com.quare.bibleplanner.dl.\(action).\(versionId)" as CFString
+            let capturedAction = action
+            let capturedVersionId = versionId
+            let wrapper = DarwinObserverWrapper {
+                dlog("Darwin → handleDownloadAction(\(capturedAction), \(capturedVersionId))", tag: "SESSION")
+                MainViewControllerKt.handleDownloadAction(action: capturedAction, versionId: capturedVersionId)
+            }
+            // passRetained keeps the wrapper alive; we store the pointer so we can
+            // release it and remove the observer later.
+            let opaque = Unmanaged.passRetained(wrapper).toOpaque()
+            CFNotificationCenterAddObserver(
+                CFNotificationCenterGetDarwinNotifyCenter(),
+                opaque,
+                { _, observer, _, _, _ in
+                    guard let observer else { return }
+                    Unmanaged<DarwinObserverWrapper>.fromOpaque(observer).takeUnretainedValue().fire()
+                },
+                CFNotificationName(name),
+                nil,
+                .deliverImmediately
+            )
+            opaques.append(opaque)
+        }
+        lock.lock()
+        darwinTokens[versionId] = opaques
+        lock.unlock()
+    }
+
+    private func unregisterActionObservers(versionId: String) {
+        lock.lock()
+        let opaques = darwinTokens.removeValue(forKey: versionId) ?? []
+        lock.unlock()
+        for opaque in opaques {
+            CFNotificationCenterRemoveObserver(
+                CFNotificationCenterGetDarwinNotifyCenter(),
+                opaque,
+                nil,
+                nil
+            )
+            Unmanaged<DarwinObserverWrapper>.fromOpaque(opaque).release()
+        }
+    }
+
     func endLiveActivity(versionId: String) {
+        unregisterActionObservers(versionId: versionId)
         lock.lock()
         versionTaskCounts.removeValue(forKey: versionId)
         versionStartTimes.removeValue(forKey: versionId)
@@ -317,4 +376,14 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
             return "Est. \(Int(remaining / 60))m left"
         }
     }
+}
+
+// MARK: - Darwin observer wrapper
+
+/// Heap-allocated closure wrapper used as the observer context for
+/// CFNotificationCenterAddObserver. Allows Swift closures to be used as C callbacks.
+final class DarwinObserverWrapper {
+    private let handler: () -> Void
+    init(_ handler: @escaping () -> Void) { self.handler = handler }
+    func fire() { handler() }
 }

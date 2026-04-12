@@ -1,4 +1,5 @@
 import ActivityKit
+import AppIntents
 import SwiftUI
 import WidgetKit
 
@@ -78,6 +79,7 @@ struct LockScreenLiveActivityView: View {
         }
         .padding(20)
         .background(Color(hex: "1E1F25"))
+        .widgetURL(URL(string: "bibleplanner://navigate/bible-versions"))
     }
 
     private var statusText: String {
@@ -95,21 +97,39 @@ struct LockScreenLiveActivityView: View {
                 LiveActivityButton(
                     systemImage: "pause.fill",
                     tint: Color(hex: "B6C4FF"),
-                    url: deepLinkURL("pause", context.attributes.versionId)
+                    intent: pauseIntent
                 )
             } else if context.state.downloadState == .paused {
                 LiveActivityButton(
                     systemImage: "play.fill",
                     tint: Color(hex: "B6C4FF"),
-                    url: deepLinkURL("resume", context.attributes.versionId)
+                    intent: resumeIntent
                 )
             }
             LiveActivityButton(
                 systemImage: "xmark",
                 tint: Color(hex: "FFB4AB"),
-                url: deepLinkURL("cancel", context.attributes.versionId)
+                intent: cancelIntent
             )
         }
+    }
+
+    private var pauseIntent: PauseDownloadIntent {
+        var i = PauseDownloadIntent()
+        i.versionId = context.attributes.versionId
+        return i
+    }
+
+    private var resumeIntent: ResumeDownloadIntent {
+        var i = ResumeDownloadIntent()
+        i.versionId = context.attributes.versionId
+        return i
+    }
+
+    private var cancelIntent: CancelDownloadIntent {
+        var i = CancelDownloadIntent()
+        i.versionId = context.attributes.versionId
+        return i
     }
 }
 
@@ -182,26 +202,44 @@ struct DynamicIslandTrailingButtons: View {
                     LiveActivityButton(
                         systemImage: "pause.fill",
                         tint: Color(hex: "B6C4FF"),
-                        url: deepLinkURL("pause", context.attributes.versionId),
-                        size: 13
+                        size: 13,
+                        intent: pauseIntent
                     )
                 } else if context.state.downloadState == .paused {
                     LiveActivityButton(
                         systemImage: "play.fill",
                         tint: Color(hex: "B6C4FF"),
-                        url: deepLinkURL("resume", context.attributes.versionId),
-                        size: 13
+                        size: 13,
+                        intent: resumeIntent
                     )
                 }
                 LiveActivityButton(
                     systemImage: "xmark",
                     tint: Color(hex: "FFB4AB"),
-                    url: deepLinkURL("cancel", context.attributes.versionId),
-                    size: 13
+                    size: 13,
+                    intent: cancelIntent
                 )
             }
             .padding(.trailing, 4)
         }
+    }
+
+    private var pauseIntent: PauseDownloadIntent {
+        var i = PauseDownloadIntent()
+        i.versionId = context.attributes.versionId
+        return i
+    }
+
+    private var resumeIntent: ResumeDownloadIntent {
+        var i = ResumeDownloadIntent()
+        i.versionId = context.attributes.versionId
+        return i
+    }
+
+    private var cancelIntent: CancelDownloadIntent {
+        var i = CancelDownloadIntent()
+        i.versionId = context.attributes.versionId
+        return i
     }
 }
 
@@ -232,6 +270,7 @@ struct CompactLeadingView: View {
                 .lineLimit(1)
         }
         .padding(.leading, 4)
+        .widgetURL(URL(string: "bibleplanner://navigate/bible-versions"))
     }
 }
 
@@ -246,6 +285,7 @@ struct CompactTrailingView: View {
             .font(.system(size: 11, weight: .bold))
             .foregroundColor(Color(hex: "B6C4FF"))
             .padding(.trailing, 4)
+            .widgetURL(URL(string: "bibleplanner://navigate/bible-versions"))
     }
 }
 
@@ -268,6 +308,7 @@ struct MinimalView: View {
                 .rotationEffect(.degrees(-90))
         }
         .padding(3)
+        .widgetURL(URL(string: "bibleplanner://navigate/bible-versions"))
     }
 }
 
@@ -292,14 +333,14 @@ struct ProgressBarView: View {
     }
 }
 
-struct LiveActivityButton: View {
+struct LiveActivityButton<I: AppIntent>: View {
     let systemImage: String
     let tint: Color
-    let url: URL?
     var size: CGFloat = 16
+    let intent: I
 
     var body: some View {
-        Link(destination: url ?? URL(string: "bibleplanner://")!) {
+        Button(intent: intent) {
             Image(systemName: systemImage)
                 .font(.system(size: size, weight: .semibold))
                 .foregroundColor(tint)
@@ -307,14 +348,11 @@ struct LiveActivityButton: View {
                 .background(tint.opacity(0.12))
                 .clipShape(Circle())
         }
+        .buttonStyle(.plain)
     }
 }
 
 // MARK: - Helpers
-
-private func deepLinkURL(_ action: String, _ versionId: String) -> URL? {
-    URL(string: "bibleplanner://download/\(action)/\(versionId)")
-}
 
 extension Color {
     init(hex: String) {
