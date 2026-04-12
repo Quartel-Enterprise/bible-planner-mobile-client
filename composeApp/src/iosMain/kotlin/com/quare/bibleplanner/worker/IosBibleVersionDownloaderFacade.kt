@@ -33,41 +33,41 @@ internal class IosBibleVersionDownloaderFacade(
 
     override fun downloadVersion(versionId: String) {
         scope.launch {
-            bibleVersionDao.updateStatus(
-                id = versionId,
-                status = DownloadStatus.IN_PROGRESS
-            )
+            val previousStatus = bibleVersionDao.getVersionById(versionId)?.status
+            bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.IN_PROGRESS)
             val versionName = resolveVersionName(versionId)
             notifier.showProgress(versionId, versionName, 0f)
             val tasks = bridge.getPendingDownloads(versionId)
             if (tasks.isEmpty()) {
-                bibleVersionDao.updateStatus(
-                    id = versionId,
-                    status = DownloadStatus.DONE
-                )
-                notifier.showComplete(
-                    versionId = versionId,
-                    versionName = versionName
-                )
+                bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.DONE)
+                notifier.showComplete(versionId = versionId, versionName = versionName)
                 return@launch
+            }
+            if (previousStatus == DownloadStatus.PAUSED) {
+                downloadSession.resumeLiveActivity(versionId)
+            } else {
+                downloadSession.startLiveActivity(versionId, versionName)
             }
             tasks.forEach { task ->
                 downloadSession.addDownloadTask(
                     url = task.url,
                     versionId = task.versionId,
-                    chapterId = task.chapterId
+                    chapterId = task.chapterId,
                 )
             }
+            downloadSession.notifyAllTasksRegistered(versionId, tasks.size)
         }
     }
 
     override suspend fun pauseDownload(versionId: String) {
         downloadSession.cancelDownloads(versionId)
+        downloadSession.pauseLiveActivity(versionId)
         pauseBibleVersion(versionId)
     }
 
     override suspend fun deleteDownload(versionId: String) {
-        pauseDownload(versionId)
+        downloadSession.cancelDownloads(versionId)
+        downloadSession.endLiveActivity(versionId)
         deleteBibleVersion(versionId)
     }
 

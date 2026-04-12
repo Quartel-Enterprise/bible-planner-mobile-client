@@ -67,6 +67,10 @@ class IosBackgroundDownloadBridge(
                     }
                 }
                 verseDao.upsertVerseTexts(verseTextEntities)
+                val dbDownloaded = verseDao.countChaptersWithVersesByVersion(versionId)
+                val totalChapters = bibleVersionDao.getVersionById(versionId)?.totalChapters ?: 0
+                val dbProgress = if (totalChapters > 0) dbDownloaded.toFloat() / totalChapters else 0f
+                Logger.d("PROGRESS") { "DB progress for $versionId: $dbDownloaded/$totalChapters = $dbProgress" }
             } catch (e: Exception) {
                 Logger.e(e) { "Error processing downloaded chapter $chapterId for $versionId" }
             } finally {

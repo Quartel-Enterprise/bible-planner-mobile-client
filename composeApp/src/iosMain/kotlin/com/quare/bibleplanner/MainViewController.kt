@@ -12,6 +12,10 @@ import com.quare.bibleplanner.notification.IosBibleVersionDownloadNotifier
 import com.quare.bibleplanner.worker.IosBackgroundDownloadBridge
 import com.quare.bibleplanner.worker.IosBibleVersionDownloaderFacade
 import com.quare.bibleplanner.worker.IosDownloadSession
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -63,3 +67,21 @@ fun MainViewController(
         initializeKoinForIos(remoteConfigService, downloadSession)
     },
 ) { App() }
+
+/**
+ * Routes a deep link action from the Live Activity buttons to the download facade.
+ * Called by Swift via onOpenURL when the user taps Pause / Resume / Cancel.
+ *
+ * @param action One of: "pause", "resume", "cancel"
+ * @param versionId The Bible version ID (e.g. "nvi")
+ */
+fun handleDownloadAction(action: String, versionId: String) {
+    val facade = KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
+    CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
+        when (action) {
+            "pause" -> facade.pauseDownload(versionId)
+            "resume" -> facade.downloadVersion(versionId)
+            "cancel" -> facade.deleteDownload(versionId)
+        }
+    }
+}

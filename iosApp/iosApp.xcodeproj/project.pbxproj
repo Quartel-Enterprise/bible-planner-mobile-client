@@ -18,10 +18,40 @@
 		CBAC93D52F09F72D005AB4B5 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93D42F09F72D005AB4B5 /* FirebaseCrashlytics */; };
 		CBAC93D72F09F72D005AB4B5 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93D62F09F72D005AB4B5 /* FirebasePerformance */; };
 		CBAC93D92F09F72D005AB4B5 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93D82F09F72D005AB4B5 /* FirebaseRemoteConfig */; };
+		CBF3A71C2F8B2E75008E92ED /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBF3A71B2F8B2E75008E92ED /* WidgetKit.framework */; };
+		CBF3A71E2F8B2E75008E92ED /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBF3A71D2F8B2E75008E92ED /* SwiftUI.framework */; };
+		CBF3A72F2F8B2E76008E92ED /* BibleDownloadWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CBF3A7192F8B2E75008E92ED /* BibleDownloadWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CBF3A72D2F8B2E76008E92ED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B42730B58F3367CF457C9F9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CBF3A7182F8B2E75008E92ED;
+			remoteInfo = BibleDownloadWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CBF3A7342F8B2E76008E92ED /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CBF3A72F2F8B2E76008E92ED /* BibleDownloadWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7EDE84642348A1E60E5BAA36 /* BiblePlanner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BiblePlanner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBF3A7192F8B2E75008E92ED /* BibleDownloadWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BibleDownloadWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBF3A71B2F8B2E75008E92ED /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		CBF3A71D2F8B2E75008E92ED /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -31,6 +61,20 @@
 				Info.plist,
 			);
 			target = 56840B38DE147884B99A2817 /* iosApp */;
+		};
+		CBF3A7332F8B2E76008E92ED /* Exceptions for "BibleDownloadWidget" folder in "BibleDownloadWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CBF3A7182F8B2E75008E92ED /* BibleDownloadWidgetExtension */;
+		};
+		CBF3A7382F8B2EBB008E92ED /* Exceptions for "iosApp" folder in "BibleDownloadWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Download/BibleDownloadAttributes.swift,
+			);
+			target = CBF3A7182F8B2E75008E92ED /* BibleDownloadWidgetExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -44,13 +88,31 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				97E480D12186BEE098B27E6D /* Exceptions for "iosApp" folder in "iosApp" target */,
+				CBF3A7382F8B2EBB008E92ED /* Exceptions for "iosApp" folder in "BibleDownloadWidgetExtension" target */,
 			);
 			path = iosApp;
+			sourceTree = "<group>";
+		};
+		CBF3A71F2F8B2E75008E92ED /* BibleDownloadWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CBF3A7332F8B2E76008E92ED /* Exceptions for "BibleDownloadWidget" folder in "BibleDownloadWidgetExtension" target */,
+			);
+			path = BibleDownloadWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		CBF3A7162F8B2E75008E92ED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CBF3A71E2F8B2E75008E92ED /* SwiftUI.framework in Frameworks */,
+				CBF3A71C2F8B2E75008E92ED /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE11CC1C73696E55F7B5242E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -77,6 +139,8 @@
 			children = (
 				5ADBA85AB86E0293A3FB601F /* Configuration */,
 				81EF5F9566A19BB28725937C /* iosApp */,
+				CBF3A71F2F8B2E75008E92ED /* BibleDownloadWidget */,
+				CBF3A71A2F8B2E75008E92ED /* Frameworks */,
 				60DAEEE332E57B6736AFBE21 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,8 +149,18 @@
 			isa = PBXGroup;
 			children = (
 				7EDE84642348A1E60E5BAA36 /* BiblePlanner.app */,
+				CBF3A7192F8B2E75008E92ED /* BibleDownloadWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CBF3A71A2F8B2E75008E92ED /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CBF3A71B2F8B2E75008E92ED /* WidgetKit.framework */,
+				CBF3A71D2F8B2E75008E92ED /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -100,10 +174,12 @@
 				5EB1D6F33B3309E6BA8C6391 /* Sources */,
 				CE11CC1C73696E55F7B5242E /* Frameworks */,
 				BAAB7040C3404B8E1A7CC3DB /* Resources */,
+				CBF3A7342F8B2E76008E92ED /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				CBF3A72E2F8B2E76008E92ED /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				81EF5F9566A19BB28725937C /* iosApp */,
@@ -126,6 +202,28 @@
 			productReference = 7EDE84642348A1E60E5BAA36 /* BiblePlanner.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CBF3A7182F8B2E75008E92ED /* BibleDownloadWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CBF3A7302F8B2E76008E92ED /* Build configuration list for PBXNativeTarget "BibleDownloadWidgetExtension" */;
+			buildPhases = (
+				CBF3A7152F8B2E75008E92ED /* Sources */,
+				CBF3A7162F8B2E75008E92ED /* Frameworks */,
+				CBF3A7172F8B2E75008E92ED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CBF3A71F2F8B2E75008E92ED /* BibleDownloadWidget */,
+			);
+			name = BibleDownloadWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = BibleDownloadWidgetExtension;
+			productReference = CBF3A7192F8B2E75008E92ED /* BibleDownloadWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -133,11 +231,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1620;
+				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					56840B38DE147884B99A2817 = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					CBF3A7182F8B2E75008E92ED = {
+						CreatedOnToolsVersion = 26.4;
 					};
 				};
 			};
@@ -162,12 +263,20 @@
 			projectRoot = "";
 			targets = (
 				56840B38DE147884B99A2817 /* iosApp */,
+				CBF3A7182F8B2E75008E92ED /* BibleDownloadWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BAAB7040C3404B8E1A7CC3DB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CBF3A7172F8B2E75008E92ED /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -206,7 +315,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CBF3A7152F8B2E75008E92ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CBF3A72E2F8B2E76008E92ED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CBF3A7182F8B2E75008E92ED /* BibleDownloadWidgetExtension */;
+			targetProxy = CBF3A72D2F8B2E76008E92ED /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1409791D981BD2517BEC78BF /* Release */ = {
@@ -388,6 +512,72 @@
 			};
 			name = Debug;
 		};
+		CBF3A7312F8B2E76008E92ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TTV2A365LG;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BibleDownloadWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BibleDownloadWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.quare.bibleplanner.BiblePlanner.BibleDownloadWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CBF3A7322F8B2E76008E92ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TTV2A365LG;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = BibleDownloadWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BibleDownloadWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.quare.bibleplanner.BiblePlanner.BibleDownloadWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -405,6 +595,15 @@
 			buildConfigurations = (
 				75A73ADF2111595D5057A2A9 /* Debug */,
 				1409791D981BD2517BEC78BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CBF3A7302F8B2E76008E92ED /* Build configuration list for PBXNativeTarget "BibleDownloadWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CBF3A7312F8B2E76008E92ED /* Debug */,
+				CBF3A7322F8B2E76008E92ED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

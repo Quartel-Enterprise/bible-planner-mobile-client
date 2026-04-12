@@ -1,7 +1,5 @@
 package com.quare.bibleplanner.core.model.downloadstatus
 
-import kotlin.math.roundToInt
-
 /**
  * Represents the current download status of a Bible version.
  */
@@ -24,12 +22,7 @@ sealed interface DownloadStatusModel {
          * The formatted progress string for display (e.g. "90", "90.25").
          */
         val progressStr: String
-            get() {
-                val rounded = (progress * 10000).roundToInt()
-                val intPart = rounded / 100
-                val fracPart = rounded % 100
-                return if (fracPart == 0) "$intPart" else "$intPart.${fracPart.toString().padStart(2, '0')}"
-            }
+            get() = formatDownloadProgress(progress)
 
         /**
          * The download is actively receiving data.

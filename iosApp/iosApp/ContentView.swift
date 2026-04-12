@@ -26,5 +26,12 @@ struct ContentView: View {
             downloadSession: downloadSession
         )
         .ignoresSafeArea()
+        .onOpenURL { url in
+            guard url.scheme == "bibleplanner",
+                  url.host == "download" else { return }
+            let parts = url.pathComponents.filter { $0 != "/" }
+            guard parts.count == 2 else { return }
+            MainViewControllerKt.handleDownloadAction(action: parts[0], versionId: parts[1])
+        }
     }
 }
