@@ -13,10 +13,14 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
     private let lock = NSLock()
     private var pendingProcessingCount: Int = 0
     private var sessionEventsFinished: Bool = false
+    // Collects the unique version IDs seen during this background session so we
+    // can run a single finalization check per version instead of one per chapter.
+    private var processedVersionIds = Set<String>()
 
     private lazy var session: URLSession = {
         let config = URLSessionConfiguration.background(withIdentifier: Self.sessionIdentifier)
         config.sessionSendsLaunchEvents = true
+        config.isDiscretionary = false
         return URLSession(configuration: config, delegate: self, delegateQueue: nil)
     }()
 
@@ -68,6 +72,7 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
 
         lock.lock()
         pendingProcessingCount += 1
+        processedVersionIds.insert(versionId)
         lock.unlock()
 
         bridge?.processDownloadedChapter(
@@ -80,7 +85,7 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
             self.pendingProcessingCount -= 1
             let shouldFlush = self.pendingProcessingCount == 0 && self.sessionEventsFinished
             self.lock.unlock()
-            if shouldFlush { self.flushBackgroundCompletionHandler() }
+            if shouldFlush { self.finalizeAndFlush() }
         }
     }
 
@@ -100,12 +105,37 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
         sessionEventsFinished = true
         let shouldFlush = pendingProcessingCount == 0
         lock.unlock()
-        if shouldFlush { flushBackgroundCompletionHandler() }
+        if shouldFlush { finalizeAndFlush() }
     }
 
     // MARK: - Helpers
 
-    private func flushBackgroundCompletionHandler() {
+    /// Runs one finalization check per unique version (instead of per chapter),
+    /// then calls the system backgroundCompletionHandler once all are done.
+    private func finalizeAndFlush() {
+        lock.lock()
+        let versionIds = processedVersionIds
+        processedVersionIds.removeAll()
+        lock.unlock()
+
+        guard !versionIds.isEmpty else {
+            callBackgroundCompletionHandler()
+            return
+        }
+
+        let group = DispatchGroup()
+        for versionId in versionIds {
+            group.enter()
+            bridge?.finalizeVersionIfComplete(versionId: versionId) {
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) { [weak self] in
+            self?.callBackgroundCompletionHandler()
+        }
+    }
+
+    private func callBackgroundCompletionHandler() {
         DispatchQueue.main.async {
             self.backgroundCompletionHandler?()
             self.backgroundCompletionHandler = nil
