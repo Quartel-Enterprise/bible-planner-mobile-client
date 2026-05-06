@@ -11,3 +11,6 @@ This document describes the architecture conventions of this project. Follow the
 - [@docs/architecture/data-sources.md](architecture/data-sources.md)
 - [@docs/architecture/new-feature-checklist.md](architecture/new-feature-checklist.md)
 - [@docs/architecture/pr-guidelines.md](architecture/pr-guidelines.md)
+- [@docs/architecture/code-style.md](architecture/code-style.md)
+- [@docs/architecture/dry.md](architecture/dry.md)
+- [@docs/architecture/coroutine-error-handling.md](architecture/coroutine-error-handling.md)

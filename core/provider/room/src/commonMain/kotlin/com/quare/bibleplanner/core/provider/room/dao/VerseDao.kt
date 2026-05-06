@@ -8,6 +8,7 @@ import androidx.room.Upsert
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.core.provider.room.relation.VerseWithTexts
+import com.quare.bibleplanner.core.provider.room.relation.VersionChapterCount
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -212,6 +213,27 @@ interface VerseDao {
         "SELECT COUNT(DISTINCT chapterId) FROM verses INNER JOIN verse_texts ON verses.id = verse_texts.verseId WHERE verse_texts.bibleVersionId = :versionId",
     )
     suspend fun countChaptersWithVersesByVersion(versionId: String): Int
+
+    /**
+     * Observes how many distinct chapters have at least one verse downloaded for a specific version.
+     *
+     * @param versionId The abbreviation of the Bible version.
+     * @return A [Flow] emitting the count of distinct chapters with at least one verse for the version.
+     */
+    @Query(
+        "SELECT COUNT(DISTINCT chapterId) FROM verses INNER JOIN verse_texts ON verses.id = verse_texts.verseId WHERE verse_texts.bibleVersionId = :versionId",
+    )
+    fun countChaptersWithVersesByVersionFlow(versionId: String): Flow<Int>
+
+    /**
+     * Observes the downloaded chapter count for every Bible version that has at least one verse.
+     *
+     * @return A [Flow] emitting a list of [VersionChapterCount], one entry per version.
+     */
+    @Query(
+        "SELECT verse_texts.bibleVersionId, COUNT(DISTINCT verses.chapterId) AS downloadedChapters FROM verse_texts INNER JOIN verses ON verses.id = verse_texts.verseId GROUP BY verse_texts.bibleVersionId",
+    )
+    fun getDownloadedChaptersPerVersionFlow(): Flow<List<VersionChapterCount>>
 
     /**
      * Deletes all verse texts for a specific Bible version.

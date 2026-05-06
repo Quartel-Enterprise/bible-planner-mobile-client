@@ -21,8 +21,8 @@ private val appModule = module {
 }
 
 fun initializeKoin(
+    platformModules: List<Module>,
     config: (KoinApplication.() -> Unit)? = null,
-    platformModules: List<Module> = emptyList(),
 ) {
     commonKoinInitializer(
         platformModules = listOf(appModule) + platformModules,

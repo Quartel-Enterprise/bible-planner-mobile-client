@@ -39,6 +39,7 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            implementation(projects.core.notification)
             implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
 
@@ -47,10 +48,14 @@ kotlin {
 
             // Facebook SDK
             implementation(libs.facebook.sdk.android)
+
+            // WorkManager
+            implementation(libs.androidx.work.runtime.ktx)
         }
         commonMain.dependencies {
             // Feature
             api(projects.feature.materialYou)
+            api(projects.feature.notificationPermission)
             api(projects.feature.themeSelection)
             api(projects.feature.readingPlan)
             api(projects.feature.day)

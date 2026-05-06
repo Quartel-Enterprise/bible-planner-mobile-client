@@ -6,4 +6,6 @@ sealed interface BibleVersionUiAction {
     data class NavigateToRoute(
         val route: Any,
     ) : BibleVersionUiAction
+
+    data object ShowDownloadTip : BibleVersionUiAction
 }

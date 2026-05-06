@@ -14,4 +14,5 @@
     <string name="paused_progress">Descarga pausada al %1$s%</string>
     <string name="download_bible_versions_error">No pudimos descargar las versiones de la Biblia a su dispositivo. Verifique su conexión a Internet e intente nuevamente.</string>
     <string name="try_again">Intentar Nuevamente</string>
+    <string name="download_tip_keep_app_open">Mantén la app abierta para optimizar la descarga.</string>
 </resources>

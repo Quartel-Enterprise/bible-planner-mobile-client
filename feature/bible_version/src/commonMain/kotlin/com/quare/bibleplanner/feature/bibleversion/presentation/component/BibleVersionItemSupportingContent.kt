@@ -9,7 +9,6 @@ import bibleplanner.feature.bible_version.generated.resources.downloading_progre
 import bibleplanner.feature.bible_version.generated.resources.paused_progress
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.roundToInt
 
 @Composable
 internal fun BibleVersionItemSupportingContent(downloadStatus: DownloadStatusModel) {
@@ -19,18 +18,16 @@ internal fun BibleVersionItemSupportingContent(downloadStatus: DownloadStatusMod
         }
 
         is DownloadStatusModel.InProgress -> {
-            val roundedPercentage = (downloadStatus.progress * 10000).roundToInt()
-            val integerPart = roundedPercentage / 100
-            val fractionalPart = roundedPercentage % 100
-            val progressStr = "$integerPart.${fractionalPart.toString().padStart(2, '0')}"
-
             when (downloadStatus) {
                 is DownloadStatusModel.InProgress.Downloading -> stringResource(
                     Res.string.downloading_progress,
-                    progressStr,
+                    downloadStatus.progressStr,
                 )
 
-                is DownloadStatusModel.InProgress.Paused -> stringResource(Res.string.paused_progress, progressStr)
+                is DownloadStatusModel.InProgress.Paused -> stringResource(
+                    Res.string.paused_progress,
+                    downloadStatus.progressStr,
+                )
             }
         }
 

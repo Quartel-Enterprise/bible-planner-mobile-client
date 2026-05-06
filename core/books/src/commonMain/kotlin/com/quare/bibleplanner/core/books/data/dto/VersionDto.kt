@@ -9,4 +9,5 @@ internal data class VersionDto(
     @SerialName("name") val name: String,
     @SerialName("language") val language: String,
     @SerialName("country") val country: String,
+    @SerialName("chapters") val chapters: Int,
 )

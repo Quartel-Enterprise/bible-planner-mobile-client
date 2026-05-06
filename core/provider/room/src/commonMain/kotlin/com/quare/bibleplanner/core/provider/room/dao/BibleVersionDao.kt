@@ -26,12 +26,6 @@ interface BibleVersionDao {
     @Update
     suspend fun updateVersion(version: BibleVersionEntity)
 
-    @Query("UPDATE bible_versions SET downloadProgress = :progress WHERE id = :id")
-    suspend fun updateDownloadProgress(
-        id: String,
-        progress: Float,
-    )
-
     @Query("UPDATE bible_versions SET status = :status WHERE id = :id")
     suspend fun updateStatus(
         id: String,

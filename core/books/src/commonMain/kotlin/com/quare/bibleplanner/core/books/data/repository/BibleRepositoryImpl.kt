@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.domain.usecase.getDefaultVersion
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.map
 
 internal class BibleRepositoryImpl(
     private val bibleVersionDao: BibleVersionDao,
+    private val verseDao: VerseDao,
     private val bibleVersionRepository: BibleVersionRepository,
     private val bibleMapper: BibleMapper,
     private val dataStore: DataStore<Preferences>,
@@ -30,21 +32,23 @@ internal class BibleRepositoryImpl(
         emitAll(
             combine(
                 getSelectedVersionIdFlow(),
-                bibleVersionDao.getAllVersionsFlow().map {
-                    bibleMapper.map(
-                        dataBaseVersions = it,
+                bibleVersionDao.getAllVersionsFlow(),
+                verseDao.getDownloadedChaptersPerVersionFlow(),
+            ) { selectedVersionId, dbVersions, chapterCounts ->
+                val downloadedChaptersMap = chapterCounts.associate { it.bibleVersionId to it.downloadedChapters }
+                bibleMapper
+                    .map(
+                        dataBaseVersions = dbVersions,
                         supportedVersions = supportedVersions,
-                    )
-                },
-            ) { selectedVersionId, bibles ->
-                bibles.map { bible ->
-                    bible.copy(
-                        isSelected = bible.version.id.equals(
-                            other = selectedVersionId,
-                            ignoreCase = true,
-                        ),
-                    )
-                }
+                        downloadedChaptersMap = downloadedChaptersMap,
+                    ).map { bible ->
+                        bible.copy(
+                            isSelected = bible.version.id.equals(
+                                other = selectedVersionId,
+                                ignoreCase = true,
+                            ),
+                        )
+                    }
             },
         )
     }

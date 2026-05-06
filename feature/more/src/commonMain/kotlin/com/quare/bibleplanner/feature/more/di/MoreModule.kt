@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.more.di
 
+import com.quare.bibleplanner.feature.more.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
 import com.quare.bibleplanner.feature.more.presentation.viewmodel.MoreViewModel
@@ -10,6 +11,7 @@ import org.koin.dsl.module
 val moreModule = module {
     // Domain
     factoryOf(::ShouldShowDonateOptionUseCase)
+    factoryOf(::GetSelectedVersionDownloadedChaptersFlowUseCase)
 
     // Presentation
     factoryOf(::MoreUiStateFactory)

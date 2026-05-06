@@ -19,6 +19,12 @@ sealed interface DownloadStatusModel {
         val progress: Float
 
         /**
+         * The formatted progress string for display (e.g. "90", "90.25").
+         */
+        val progressStr: String
+            get() = formatDownloadProgress(progress)
+
+        /**
          * The download is actively receiving data.
          */
         data class Downloading(

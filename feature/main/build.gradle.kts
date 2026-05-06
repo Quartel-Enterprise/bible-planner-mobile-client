@@ -20,6 +20,7 @@ kotlin {
             implementation(projects.feature.readingPlan)
             implementation(projects.feature.more)
             implementation(projects.feature.books)
+            implementation(projects.feature.notificationPermission)
 
             // UI
             implementation(projects.ui.component)

@@ -32,11 +32,16 @@ kotlin {
             implementation(projects.feature.login)
             implementation(projects.feature.bibleVersion)
             implementation(projects.feature.read)
+            implementation(projects.feature.notificationPermission)
 
             // Core
             implementation(projects.core.model)
             implementation(projects.core.provider.koin)
             implementation(projects.core.provider.room)
+
+            // Koin
+            implementation(project.dependencies.platform(libs.koinBom))
+            implementation(libs.koinCompose)
 
             // Compose
             implementation(libs.runtime)

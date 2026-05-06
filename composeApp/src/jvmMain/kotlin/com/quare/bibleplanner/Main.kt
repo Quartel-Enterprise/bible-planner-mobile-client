@@ -4,9 +4,16 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import bibleplanner.composeapp.generated.resources.Res
 import bibleplanner.composeapp.generated.resources.app_title
+import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
+import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.di.initializeKoin
+import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
+import com.quare.bibleplanner.notification.DesktopBibleVersionDownloadNotifier
+import com.quare.bibleplanner.worker.DesktopBibleVersionDownloaderFacade
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 fun main() = application {
@@ -14,6 +21,9 @@ fun main() = application {
         platformModules = listOf(
             module {
                 single { getDatabaseBuilder() }
+                singleOf(::DesktopBibleVersionDownloadNotifier).bind<BibleVersionDownloadNotifier>()
+                singleOf(::InProcessBibleVersionDownloader)
+                singleOf(::DesktopBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
             },
         ),
     )

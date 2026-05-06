@@ -14,6 +14,7 @@ import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.navhost.BottomNavHost
 import com.quare.bibleplanner.feature.main.presentation.screen.MainScreen
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
+import com.quare.bibleplanner.feature.notificationpermission.presentation.NotificationPermissionStartEffect
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
 import org.koin.compose.viewmodel.koinViewModel
@@ -28,6 +29,7 @@ fun NavGraphBuilder.mainScreen(
         val bottomNavController: NavHostController = rememberNavController()
         val bottomNavBackStackEntry by bottomNavController.currentBackStackEntryAsState()
         val mainViewModel: MainScreenViewModel = koinViewModel()
+        NotificationPermissionStartEffect(navController = rootNavController)
         ActionCollector(mainViewModel.uiAction) { uiAction ->
             when (uiAction) {
                 is MainScreenUiAction.NavigateToBottomRoute -> bottomNavController.goToBottomNavRoute(uiAction.route)

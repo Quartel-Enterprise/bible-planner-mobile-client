@@ -4,8 +4,10 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
 import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelectionRoot
@@ -21,17 +23,21 @@ import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanSta
 import com.quare.bibleplanner.feature.login.presentation.loginRoot
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
+import com.quare.bibleplanner.feature.notificationpermission.presentation.notificationPermission
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
 import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
+import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun RootAppNavHost() {
     val navController = rememberNavController()
     val mainScaffoldState: MainScaffoldState = remember { MainScaffoldState() }
+    EventBusNavigationListener(navController)
     SharedTransitionLayout {
         NavHost(
             navController = navController,
@@ -59,6 +65,16 @@ fun RootAppNavHost() {
                 navController = navController,
                 sharedTransitionScope = sharedTransitionScope,
             )
+            notificationPermission(navController)
         }
+    }
+}
+
+@Composable
+private fun EventBusNavigationListener(navController: NavHostController) {
+    val navigationEventBus: NavigationEventBus = koinInject()
+    ActionCollector(navigationEventBus.events) { route ->
+        navController.navigate(route) { launchSingleTop = true }
+        navigationEventBus.reset()
     }
 }

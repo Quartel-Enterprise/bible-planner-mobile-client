@@ -30,6 +30,7 @@ import com.quare.bibleplanner.feature.login.di.loginModule
 import com.quare.bibleplanner.feature.main.di.mainModule
 import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
 import com.quare.bibleplanner.feature.more.di.moreModule
+import com.quare.bibleplanner.feature.notificationpermission.di.notificationPermissionModule
 import com.quare.bibleplanner.feature.paywall.di.paywallModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.releasenotes.di.releaseNotesModule
@@ -74,5 +75,6 @@ object CommonKoinUtils {
         bibleVersionModule,
         modelModule,
         com.quare.bibleplanner.feature.read.di.featureReadModule,
+        notificationPermissionModule,
     )
 }

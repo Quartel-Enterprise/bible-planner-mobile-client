@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#e8c400",
+                        "on-secondary-fixed": "#1a1b22",
+                        "surface-container-low": "#1a1b20",
+                        "inverse-on-surface": "#2f3036",
+                        "on-background": "#e3e1e9",
+                        "surface-bright": "#38393e",
+                        "surface-tint": "#b6c4ff",
+                        "on-primary": "#1e2d5e",
+                        "on-surface-variant": "#c6c5d0",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "on-primary-fixed-variant": "#364476",
+                        "tertiary-fixed": "#ffe16d",
+                        "background": "#121318",
+                        "primary-fixed": "#dce1ff",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed": "#051749",
+                        "tertiary": "#ffe16c",
+                        "surface-container-high": "#292a2f",
+                        "on-tertiary-container": "#625100",
+                        "on-primary-container": "#425083",
+                        "outline": "#8f909a",
+                        "surface-variant": "#34343a",
+                        "on-error": "#690005",
+                        "surface-container": "#1e1f25",
+                        "surface-container-lowest": "#0d0e13",
+                        "secondary-fixed": "#e2e1ec",
+                        "on-tertiary": "#3a3000",
+                        "secondary-fixed-dim": "#c6c6d0",
+                        "inverse-surface": "#e3e1e9",
+                        "secondary": "#c6c6d0",
+                        "surface-container-highest": "#34343a",
+                        "on-tertiary-fixed-variant": "#544600",
+                        "on-tertiary-fixed": "#221b00",
+                        "on-secondary-fixed-variant": "#45464e",
+                        "on-secondary-container": "#b7b8c1",
+                        "surface": "#121318",
+                        "inverse-primary": "#4e5c90",
+                        "on-secondary": "#2e3038",
+                        "on-error-container": "#ffdad6",
+                        "on-surface": "#e3e1e9",
+                        "secondary-container": "#474951",
+                        "outline-variant": "#45464f",
+                        "tertiary-fixed-dim": "#e9c400",
+                        "primary-container": "#b6c4ff",
+                        "primary": "#dce1ff",
+                        "surface-dim": "#121318"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .progress-arc {
+            transform: rotate(-90deg);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#0d0e13] text-on-surface font-body min-h-screen flex flex-col items-center justify-start p-8 space-y-16">
+<!-- Top Navigation Anchor -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-slate-950/80 backdrop-blur-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#B6C4FF]" data-icon="menu_book">menu_book</span>
+<span class="text-lg font-black text-[#B6C4FF] tracking-[0.2em]">SACRED CHRONOMETER</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-[#B6C4FF] hover:bg-slate-800/50 p-2 rounded-full transition-transform scale-95" data-icon="auto_stories">auto_stories</span>
+<span class="material-symbols-outlined text-[#C6C6D0] hover:bg-slate-800/50 p-2 rounded-full transition-transform scale-95" data-icon="history_edu">history_edu</span>
+<span class="material-symbols-outlined text-[#B6C4FF] bg-[#B6C4FF]/10 p-2 rounded-full transition-transform scale-95" data-icon="download_for_offline">download_for_offline</span>
+</div>
+</nav>
+<main class="w-full max-w-md pt-24 space-y-12">
+<!-- SECTION: LOCK SCREEN LIVE ACTIVITY -->
+<div class="space-y-4">
+<h2 class="text-[#C6C6D0] label-sm tracking-widest uppercase px-2">Lock Screen State</h2>
+<div class="bg-[#1E1F25] rounded-[2.5rem] p-6 shadow-2xl ring-1 ring-[#45464F] flex flex-col gap-6 relative overflow-hidden">
+<!-- Background texture layer -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" data-alt="Subtle dark geometric abstract pattern with deep charcoal and slate tones, low contrast grainy texture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBH2g9EbH7hF1qtDc3vWlyViD9rC4qx6BuspnAJPLknaThmMvIk3i9PWTnhZPC91PNUdM8tHgxeY0RcERmuzEp1vr82ntXPDF2z-v75tYFZgO8wjPc2tX7i6xDWkZRQl_FzgHi-Zvzie09tBKxH_3JrrBFj4ZqYsBF3Fz9T2C-R07yCsaF3_T6iUx3Li9bHzBHkUQXR-d7u-3FyskAOxtM_4Gu2SWQJTIDnlgEd5rPy0KreiuNx-acM_dHSCKeyAET6hywFzvEzOXGU'); background-size: cover;"></div>
+<div class="flex justify-between items-start relative z-10">
+<div class="space-y-1">
+<span class="text-[#FFD700] text-4xl font-black tracking-tighter headline-sm">NVI</span>
+<p class="text-[#C6C6D0] text-sm font-medium tracking-wide">Downloading...</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-[#B6C4FF]/10 p-3 rounded-full active:scale-90 transition-all">
+<span class="material-symbols-outlined text-[#B6C4FF] block" data-icon="pause" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<button class="bg-error-container/20 p-3 rounded-full active:scale-90 transition-all">
+<span class="material-symbols-outlined text-[#FFB4AB] block" data-icon="close">close</span>
+</button>
+</div>
+</div>
+<div class="space-y-3 relative z-10">
+<div class="flex justify-between items-end">
+<span class="text-3xl font-bold text-primary-fixed-dim">67%</span>
+<span class="text-[#C6C6D0] text-xs tracking-widest font-semibold uppercase">Est. 45s Left</span>
+</div>
+<div class="h-3 w-full bg-[#45464F] rounded-full overflow-hidden">
+<div class="h-full bg-[#B6C4FF] rounded-full w-[67%] transition-all duration-1000 ease-in-out"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION: DYNAMIC ISLAND EXPANDED -->
+<div class="space-y-4">
+<h2 class="text-[#C6C6D0] label-sm tracking-widest uppercase px-2">Dynamic Island Expanded</h2>
+<div class="bg-black rounded-[3rem] p-5 flex items-center justify-between gap-4 w-full shadow-xl">
+<div class="flex items-center gap-4">
+<div class="relative flex items-center justify-center w-12 h-12">
+<svg class="progress-arc w-12 h-12">
+<circle class="text-[#34343A]" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-[#B6C4FF]" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-dasharray="125.6" stroke-dashoffset="41.4" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+<span class="absolute text-[10px] font-black text-[#FFD700]">NVI</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[#B6C4FF] font-bold text-sm tracking-tight">67% Complete</span>
+<span class="text-[#C6C6D0] text-[11px] font-medium opacity-80 uppercase tracking-widest">Downloading...</span>
+</div>
+</div>
+<div class="flex gap-2">
+<div class="bg-surface-variant p-2.5 rounded-full">
+<span class="material-symbols-outlined text-xs text-[#B6C4FF] block leading-none" data-icon="pause" style="font-variation-settings: 'FILL' 1;">pause</span>
+</div>
+<div class="bg-surface-variant p-2.5 rounded-full">
+<span class="material-symbols-outlined text-xs text-[#FFB4AB] block leading-none" data-icon="close">close</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION: DYNAMIC ISLAND COMPACT -->
+<div class="space-y-4">
+<h2 class="text-[#C6C6D0] label-sm tracking-widest uppercase px-2">Dynamic Island Compact</h2>
+<div class="flex justify-center items-center gap-12 bg-surface-container-lowest/50 p-8 rounded-xl">
+<!-- Left Pill -->
+<div class="bg-black h-9 w-24 rounded-full flex items-center px-3 justify-between">
+<svg class="progress-arc w-6 h-6">
+<circle class="text-[#34343A]" cx="12" cy="12" fill="transparent" r="9" stroke="currentColor" stroke-width="3"></circle>
+<circle class="text-[#B6C4FF]" cx="12" cy="12" fill="transparent" r="9" stroke="currentColor" stroke-dasharray="56.5" stroke-dashoffset="18.6" stroke-linecap="round" stroke-width="3"></circle>
+</svg>
+<span class="text-[#FFD700] text-[11px] font-black pr-1">NVI</span>
+</div>
+<!-- Right Pill (Compact Variant) -->
+<div class="bg-black h-9 w-12 rounded-full flex items-center justify-center">
+<span class="text-primary text-[11px] font-bold">67%</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<footer class="fixed bottom-0 w-full z-50 flex justify-around items-center px-8 pb-8 pt-4 bg-slate-950/90 backdrop-blur-2xl rounded-t-[32px]">
+<div class="flex flex-col items-center justify-center text-[#C6C6D0] p-3 hover:text-white transition-colors active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#C6C6D0] p-3 hover:text-white transition-colors active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#B6C4FF]/10 text-[#B6C4FF] rounded-full p-3 active:scale-90 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="download_for_offline" style="font-variation-settings: 'FILL' 1;">download_for_offline</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#C6C6D0] p-3 hover:text-white transition-colors active:scale-90 duration-300">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</div>
+</footer>
+</body></html>

@@ -18,6 +18,7 @@ kotzilla.json
 .kotlin
 **/build/
 xcuserdata
+*.xcappdata
 !src/**/build/
 .idea
 captures

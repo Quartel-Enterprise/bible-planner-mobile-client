@@ -19,6 +19,7 @@ internal fun ReadUiActionCollector(
 
             is ReadUiAction.NavigateToRoute -> {
                 navController.navigate(uiAction.route) {
+                    launchSingleTop = true
                     if (uiAction.replace) {
                         navController.currentDestination?.route?.let { currentRoute ->
                             popUpTo(currentRoute) {

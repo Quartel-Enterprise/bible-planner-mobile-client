@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_permission_title">Ativar notificações</string>
+    <string name="notification_permission_explanation">Permita notificações para receber atualizações sobre o progresso do download da Bíblia, mesmo quando o app estiver fechado.</string>
+    <string name="notification_permission_accept">Aceitar</string>
+    <string name="notification_permission_decline">Agora não</string>
+    <string name="notification_permission_settings_message">As notificações estão desativadas. Por favor, ative-as nas configurações do seu dispositivo para receber atualizações do download da Bíblia.</string>
+    <string name="notification_permission_open_settings">Abrir configurações</string>
+</resources>
