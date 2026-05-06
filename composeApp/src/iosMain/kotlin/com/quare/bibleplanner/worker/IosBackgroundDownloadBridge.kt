@@ -93,10 +93,16 @@ class IosBackgroundDownloadBridge(
                     kotlinx.coroutines.delay(300)
                     downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
                 }
+                val name = resolveVersionName(versionId)
                 if (downloaded >= entity.totalChapters) {
-                    val name = resolveVersionName(versionId)
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
                     notifier.showComplete(versionId, name)
+                } else {
+                    // Some tasks failed permanently after exhausting retries on the iOS side.
+                    // Move to PAUSED so the user can retry — getPendingDownloads will only
+                    // re-fetch the missing chapters on the next attempt.
+                    bibleVersionDao.updateStatus(versionId, DownloadStatus.PAUSED)
+                    notifier.showError(versionId, name)
                 }
             } catch (e: Exception) {
                 Logger.e(e) { "Error finalizing version $versionId" }

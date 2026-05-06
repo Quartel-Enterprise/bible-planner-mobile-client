@@ -5,6 +5,10 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
     static let sessionIdentifier = "com.quare.bibleplanner.bible.download"
     static var shared: BibleVersionDownloadSession?
 
+    // Bound the per-task retry count so a permanently broken URL (e.g. 404)
+    // can't keep us in an infinite retry loop.
+    private static let maxRetries = 2
+
     private var bridge: IosBackgroundDownloadBridge?
     var backgroundCompletionHandler: (() -> Void)?
 
@@ -172,7 +176,7 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
                     guard let observer else { return }
                     Unmanaged<DarwinObserverWrapper>.fromOpaque(observer).takeUnretainedValue().fire()
                 },
-                CFNotificationName(name),
+                name,
                 nil,
                 .deliverImmediately
             )
@@ -220,7 +224,7 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
     ) {
         guard
             let description = downloadTask.taskDescription,
-            let (versionId, chapterId) = parseTaskDescription(description),
+            let (versionId, chapterId, _) = parseTaskDescription(description),
             let jsonString = try? String(contentsOf: location, encoding: .utf8)
         else { return }
 
@@ -286,9 +290,61 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
         didCompleteWithError error: Error?
     ) {
         guard let error = error as NSError?,
-              error.code != NSURLErrorCancelled else { return }
-        // Individual task errors are handled gracefully; the version stays IN_PROGRESS
-        // and will resume on the next launch.
+              error.code != NSURLErrorCancelled,
+              let description = task.taskDescription,
+              let parsed = parseTaskDescription(description) else { return }
+
+        let (versionId, chapterId, retryCount) = parsed
+
+        if retryCount < Self.maxRetries, let url = task.originalRequest?.url {
+            dlog("retrying chapter \(chapterId) of \(versionId) (attempt \(retryCount + 1)/\(Self.maxRetries)) — error code: \(error.code)", tag: "SESSION")
+            let retry = self.session.downloadTask(with: url)
+            retry.taskDescription = "\(versionId)|\(chapterId)|\(retryCount + 1)"
+            retry.resume()
+            return
+        }
+
+        dlog("permanent failure for chapter \(chapterId) of \(versionId) after \(retryCount) retries — error code: \(error.code)", tag: "SESSION")
+        handlePermanentTaskFailure(versionId: versionId)
+    }
+
+    /// Counts a failed task toward the version's completion so the Live Activity
+    /// can finalize instead of hanging at <100%. The Kotlin side decides whether
+    /// the version is actually DONE based on DB state, not this counter.
+    private func handlePermanentTaskFailure(versionId: String) {
+        lock.lock()
+        var counts = versionTaskCounts[versionId] ?? (total: 1, completed: 0)
+        counts.completed += 1
+        versionTaskCounts[versionId] = counts
+        let knownTotal = expectedTaskCounts[versionId]
+        let expectedTotal = knownTotal ?? 0
+        let progress = knownTotal != nil && expectedTotal > 0
+            ? min(1.0, Double(counts.completed) / Double(expectedTotal))
+            : 0
+        let startTime = versionStartTimes[versionId] ?? Date()
+        let versionDone = knownTotal != nil && expectedTotal > 0
+            && counts.completed >= expectedTotal
+            && !finalizedVersionIds.contains(versionId)
+        if versionDone { finalizedVersionIds.insert(versionId) }
+        lock.unlock()
+
+        if #available(iOS 16.2, *) {
+            let progressStr = formatProgress(progress)
+            let etaLabel = estimatedTimeLabel(progress: progress, startTime: startTime)
+            LiveActivityManager.shared.updateIfChanged(
+                versionId: versionId,
+                progress: progress,
+                progressStr: progressStr,
+                estimatedTimeLabel: etaLabel
+            )
+        }
+
+        if versionDone {
+            dlog("finalizeVersionIfComplete — last task failed permanently, finalizing \(versionId)", tag: "SESSION")
+            bridge?.finalizeVersionIfComplete(versionId: versionId) { [weak self] in
+                self?.endLiveActivity(versionId: versionId)
+            }
+        }
     }
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
@@ -349,12 +405,13 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
 
     // MARK: - Helpers
 
-    private func parseTaskDescription(_ description: String) -> (versionId: String, chapterId: Int64)? {
-        guard let pipeIndex = description.firstIndex(of: "|") else { return nil }
-        let versionId = String(description[..<pipeIndex])
-        let chapterIdStr = String(description[description.index(after: pipeIndex)...])
-        guard let chapterId = Int64(chapterIdStr) else { return nil }
-        return (versionId, chapterId)
+    private func parseTaskDescription(_ description: String) -> (versionId: String, chapterId: Int64, retryCount: Int)? {
+        let parts = description.split(separator: "|", maxSplits: 2, omittingEmptySubsequences: false)
+        guard parts.count >= 2 else { return nil }
+        let versionId = String(parts[0])
+        guard let chapterId = Int64(parts[1]) else { return nil }
+        let retryCount = parts.count > 2 ? (Int(parts[2]) ?? 0) : 0
+        return (versionId, chapterId, retryCount)
     }
 
     private func formatProgress(_ progress: Double) -> String {
