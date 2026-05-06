@@ -70,7 +70,8 @@ class InProcessBibleVersionDownloader(
 
     fun resumePendingDownloads(onComplete: (Boolean) -> Unit) {
         scope.launch {
-            val pending = bibleVersionDao.getAllVersions()
+            val pending = bibleVersionDao
+                .getAllVersions()
                 .filter { it.status == DownloadStatus.IN_PROGRESS }
 
             if (pending.isEmpty()) {
@@ -88,10 +89,10 @@ class InProcessBibleVersionDownloader(
         }
     }
 
-    private suspend fun resolveVersionName(versionId: String): String =
-        bibleRepository.getBiblesFlow()
-            .first()
-            .find { it.version.id == versionId }
-            ?.version
-            ?.name ?: versionId
+    private suspend fun resolveVersionName(versionId: String): String = bibleRepository
+        .getBiblesFlow()
+        .first()
+        .find { it.version.id == versionId }
+        ?.version
+        ?.name ?: versionId
 }

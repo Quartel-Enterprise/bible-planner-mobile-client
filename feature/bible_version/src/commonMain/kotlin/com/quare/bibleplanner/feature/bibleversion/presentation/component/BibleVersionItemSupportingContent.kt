@@ -24,7 +24,10 @@ internal fun BibleVersionItemSupportingContent(downloadStatus: DownloadStatusMod
                     downloadStatus.progressStr,
                 )
 
-                is DownloadStatusModel.InProgress.Paused -> stringResource(Res.string.paused_progress, downloadStatus.progressStr)
+                is DownloadStatusModel.InProgress.Paused -> stringResource(
+                    Res.string.paused_progress,
+                    downloadStatus.progressStr,
+                )
             }
         }
 

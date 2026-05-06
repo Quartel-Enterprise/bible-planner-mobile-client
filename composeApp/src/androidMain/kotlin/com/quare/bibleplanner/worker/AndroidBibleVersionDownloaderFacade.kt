@@ -13,7 +13,6 @@ internal class AndroidBibleVersionDownloaderFacade(
     private val pauseBibleVersion: PauseBibleVersionDownloadUseCase,
     private val deleteBibleVersion: DeleteBibleVersionDownloadUseCase,
 ) : BibleVersionDownloaderFacade {
-
     private val workManager = WorkManager.getInstance(context)
 
     override val shouldShowDownloadTip: Boolean = false

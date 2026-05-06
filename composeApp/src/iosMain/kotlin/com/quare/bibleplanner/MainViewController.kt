@@ -75,7 +75,10 @@ fun MainViewController(
  * @param action One of: "pause", "resume", "cancel"
  * @param versionId The Bible version ID (e.g. "nvi")
  */
-fun handleDownloadAction(action: String, versionId: String) {
+fun handleDownloadAction(
+    action: String,
+    versionId: String,
+) {
     val facade = KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
     CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
         when (action) {

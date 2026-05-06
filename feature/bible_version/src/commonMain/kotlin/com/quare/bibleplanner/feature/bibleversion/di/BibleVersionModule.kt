@@ -4,12 +4,12 @@ import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbre
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVersionDownloadUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadBooksInParallelUseCase
-import com.quare.bibleplanner.feature.bibleversion.domain.usecase.PauseBibleVersionDownloadUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadChaptersUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamentIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPrioritizedBookIdsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.PauseBibleVersionDownloadUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.BibleVersionViewModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory

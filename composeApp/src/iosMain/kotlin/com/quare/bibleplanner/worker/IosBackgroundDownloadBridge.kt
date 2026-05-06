@@ -36,7 +36,8 @@ class IosBackgroundDownloadBridge(
     internal suspend fun getPendingDownloads(versionId: String): List<ChapterDownloadTask> =
         BookId.entries.flatMap { bookId ->
             val bookAbb = supabaseBookAbbreviationMapper.map(bookId)
-            chapterDao.getChaptersByBookId(bookId.name)
+            chapterDao
+                .getChaptersByBookId(bookId.name)
                 .filter { chapter -> verseDao.countVersesByChapterAndVersion(chapter.id, versionId) == 0 }
                 .map { chapter ->
                     ChapterDownloadTask(
@@ -79,7 +80,10 @@ class IosBackgroundDownloadBridge(
         }
     }
 
-    fun finalizeVersionIfComplete(versionId: String, onComplete: () -> Unit) {
+    fun finalizeVersionIfComplete(
+        versionId: String,
+        onComplete: () -> Unit,
+    ) {
         scope.launch {
             try {
                 val entity = bibleVersionDao.getVersionById(versionId) ?: return@launch
@@ -112,10 +116,10 @@ class IosBackgroundDownloadBridge(
         }
     }
 
-    private suspend fun resolveVersionName(versionId: String): String =
-        bibleRepository.getBiblesFlow()
-            .first()
-            .find { it.version.id == versionId }
-            ?.version
-            ?.name ?: versionId
+    private suspend fun resolveVersionName(versionId: String): String = bibleRepository
+        .getBiblesFlow()
+        .first()
+        .find { it.version.id == versionId }
+        ?.version
+        ?.name ?: versionId
 }

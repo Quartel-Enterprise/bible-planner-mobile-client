@@ -19,8 +19,12 @@ internal fun BibleVersionsActionCollector(
     ActionCollector(uiActionFlow) { action ->
         when (action) {
             BibleVersionUiAction.BackToPreviousRoute -> navController.navigateUp()
+
             is BibleVersionUiAction.NavigateToRoute -> navController.navigate(action.route)
-            BibleVersionUiAction.ShowDownloadTip -> snackbarHostState.showSnackbar(getString(Res.string.download_tip_keep_app_open))
+
+            BibleVersionUiAction.ShowDownloadTip -> snackbarHostState.showSnackbar(
+                getString(Res.string.download_tip_keep_app_open),
+            )
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.worker
 
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
-import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
+import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVersionDownloadUseCase
@@ -22,7 +22,6 @@ internal class IosBibleVersionDownloaderFacade(
     private val pauseBibleVersion: PauseBibleVersionDownloadUseCase,
     private val deleteBibleVersion: DeleteBibleVersionDownloadUseCase,
 ) : BibleVersionDownloaderFacade {
-
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     override val shouldShowDownloadTip: Boolean = true
@@ -72,10 +71,10 @@ internal class IosBibleVersionDownloaderFacade(
         deleteBibleVersion(versionId)
     }
 
-    private suspend fun resolveVersionName(versionId: String): String =
-        bibleRepository.getBiblesFlow()
-            .first()
-            .find { it.version.id == versionId }
-            ?.version
-            ?.name ?: versionId
+    private suspend fun resolveVersionName(versionId: String): String = bibleRepository
+        .getBiblesFlow()
+        .first()
+        .find { it.version.id == versionId }
+        ?.version
+        ?.name ?: versionId
 }

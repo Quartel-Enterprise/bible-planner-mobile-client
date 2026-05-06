@@ -10,7 +10,6 @@ internal class DesktopBibleVersionDownloaderFacade(
     private val pauseBibleVersion: PauseBibleVersionDownloadUseCase,
     private val deleteBibleVersion: DeleteBibleVersionDownloadUseCase,
 ) : BibleVersionDownloaderFacade {
-
     override val shouldShowDownloadTip: Boolean = false
 
     override fun downloadVersion(versionId: String) {
