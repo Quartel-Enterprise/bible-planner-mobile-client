@@ -209,5 +209,4 @@ internal class MoreUiStateFactory(
         ContrastType.Medium -> Res.string.contrast_medium
         ContrastType.High -> Res.string.contrast_high
     }
-
 }
