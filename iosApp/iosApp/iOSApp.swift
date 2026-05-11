@@ -44,6 +44,19 @@ struct iOSApp: App {
                 remoteConfigService: remoteConfigService,
                 downloadSession: downloadSession
             )
+            .onOpenURL { url in
+                guard url.scheme == "bibleplanner" else { return }
+                if url.host == "download" {
+                    let parts = url.pathComponents.filter { $0 != "/" }
+                    guard parts.count == 2 else { return }
+                    MainViewControllerKt.handleDownloadAction(action: parts[0], versionId: parts[1])
+                } else if url.host == "navigate" {
+                    let path = url.pathComponents.filter { $0 != "/" }.first
+                    if path == "bible-versions" {
+                        NotificationTapRouter.shared.routeToBibleVersions()
+                    }
+                }
+            }
         }
     }
 }

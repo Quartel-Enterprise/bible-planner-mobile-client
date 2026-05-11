@@ -102,10 +102,9 @@ internal class MoreUiStateFactory(
 
             val selectedBible = moreScreenConfiguration.selectedBible
             val bibleVersionEntity = moreScreenConfiguration.allVersions.find { it.id == selectedBible?.version?.id }
-            val downloadProgress = if (bibleVersionEntity?.isDownloaded() == true) {
-                null
-            } else {
-                bibleVersionEntity?.let { downloadedChaptersCount.toFloat() / it.totalChapters } ?: 0f
+            val downloadProgress = when (bibleVersionEntity?.status) {
+                DownloadStatus.DONE, DownloadStatus.NOT_STARTED, null -> null
+                else -> downloadedChaptersCount.toFloat() / bibleVersionEntity.totalChapters
             }
 
             MoreUiState.Loaded(
@@ -210,6 +209,4 @@ internal class MoreUiStateFactory(
         ContrastType.Medium -> Res.string.contrast_medium
         ContrastType.High -> Res.string.contrast_high
     }
-
-    private fun BibleVersionEntity.isDownloaded(): Boolean = status == DownloadStatus.DONE
 }
