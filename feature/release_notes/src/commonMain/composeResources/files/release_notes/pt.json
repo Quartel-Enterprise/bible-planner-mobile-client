@@ -1,4 +1,7 @@
 {
+  "1.12.0": [
+    "Notificações sobre progresso de download de versões da biblia."
+  ],
   "1.11.0": [
     "Bíblia disponível para download e leitura offline.",
     "Usuário agora pode selecionar o texto da sinopse do livro."
