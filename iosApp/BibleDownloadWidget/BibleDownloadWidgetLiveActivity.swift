@@ -12,10 +12,14 @@ struct BibleDownloadWidgetLiveActivity: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    DynamicIslandLeadingView(context: context)
+                    Link(destination: bibleVersionsURL) {
+                        DynamicIslandLeadingView(context: context)
+                    }
                 }
                 DynamicIslandExpandedRegion(.center) {
-                    DynamicIslandCenterView(context: context)
+                    Link(destination: bibleVersionsURL) {
+                        DynamicIslandCenterView(context: context)
+                    }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
                     DynamicIslandTrailingButtons(context: context)
@@ -34,6 +38,80 @@ struct BibleDownloadWidgetLiveActivity: Widget {
     }
 }
 
+// MARK: - Shared Constants
+
+private let bibleVersionsURL = URL(string: "bibleplanner://navigate/bible-versions")!
+
+// MARK: - Extensions
+
+@available(iOS 16.2, *)
+private extension BibleDownloadState {
+    var label: String {
+        switch self {
+        case .downloading: return "Downloading..."
+        case .paused:      return "Paused"
+        case .complete:    return "Ready!"
+        }
+    }
+}
+
+@available(iOS 16.2, *)
+private extension BibleDownloadAttributes {
+    func pauseIntent() -> PauseDownloadIntent {
+        var i = PauseDownloadIntent()
+        i.versionId = versionId
+        return i
+    }
+
+    func resumeIntent() -> ResumeDownloadIntent {
+        var i = ResumeDownloadIntent()
+        i.versionId = versionId
+        return i
+    }
+
+    func cancelIntent() -> CancelDownloadIntent {
+        var i = CancelDownloadIntent()
+        i.versionId = versionId
+        return i
+    }
+}
+
+// MARK: - Shared Action Buttons
+
+@available(iOS 16.2, *)
+private struct DownloadActionButtons: View {
+    let context: ActivityViewContext<BibleDownloadAttributes>
+    var buttonSize: CGFloat = 16
+
+    private var spacing: CGFloat { buttonSize < 16 ? 6 : 10 }
+
+    var body: some View {
+        HStack(spacing: spacing) {
+            if context.state.downloadState == .downloading {
+                LiveActivityButton(
+                    systemImage: "pause.fill",
+                    tint: Color(hex: "B6C4FF"),
+                    size: buttonSize,
+                    intent: context.attributes.pauseIntent()
+                )
+            } else if context.state.downloadState == .paused {
+                LiveActivityButton(
+                    systemImage: "play.fill",
+                    tint: Color(hex: "B6C4FF"),
+                    size: buttonSize,
+                    intent: context.attributes.resumeIntent()
+                )
+            }
+            LiveActivityButton(
+                systemImage: "xmark",
+                tint: Color(hex: "FFB4AB"),
+                size: buttonSize,
+                intent: context.attributes.cancelIntent()
+            )
+        }
+    }
+}
+
 // MARK: - Lock Screen View
 
 @available(iOS 16.2, *)
@@ -48,14 +126,14 @@ struct LockScreenLiveActivityView: View {
                         .font(.system(size: 34, weight: .black))
                         .foregroundColor(Color(hex: "FFD700"))
                         .lineLimit(1)
-                    Text(statusText)
+                    Text(context.state.downloadState.label)
                         .font(.system(size: 13, weight: .medium))
                         .foregroundColor(Color(hex: "C6C6D0"))
                         .kerning(0.3)
                 }
                 Spacer()
                 if context.state.downloadState != .complete {
-                    actionButtons
+                    DownloadActionButtons(context: context)
                 }
             }
 
@@ -79,57 +157,7 @@ struct LockScreenLiveActivityView: View {
         }
         .padding(20)
         .background(Color(hex: "1E1F25"))
-        .widgetURL(URL(string: "bibleplanner://navigate/bible-versions"))
-    }
-
-    private var statusText: String {
-        switch context.state.downloadState {
-        case .downloading: return "Downloading..."
-        case .paused:      return "Paused"
-        case .complete:    return "Ready!"
-        }
-    }
-
-    @ViewBuilder
-    private var actionButtons: some View {
-        HStack(spacing: 10) {
-            if context.state.downloadState == .downloading {
-                LiveActivityButton(
-                    systemImage: "pause.fill",
-                    tint: Color(hex: "B6C4FF"),
-                    intent: pauseIntent
-                )
-            } else if context.state.downloadState == .paused {
-                LiveActivityButton(
-                    systemImage: "play.fill",
-                    tint: Color(hex: "B6C4FF"),
-                    intent: resumeIntent
-                )
-            }
-            LiveActivityButton(
-                systemImage: "xmark",
-                tint: Color(hex: "FFB4AB"),
-                intent: cancelIntent
-            )
-        }
-    }
-
-    private var pauseIntent: PauseDownloadIntent {
-        var i = PauseDownloadIntent()
-        i.versionId = context.attributes.versionId
-        return i
-    }
-
-    private var resumeIntent: ResumeDownloadIntent {
-        var i = ResumeDownloadIntent()
-        i.versionId = context.attributes.versionId
-        return i
-    }
-
-    private var cancelIntent: CancelDownloadIntent {
-        var i = CancelDownloadIntent()
-        i.versionId = context.attributes.versionId
-        return i
+        .widgetURL(bibleVersionsURL)
     }
 }
 
@@ -172,19 +200,11 @@ struct DynamicIslandCenterView: View {
             Text("\(context.state.progressStr)% Complete")
                 .font(.system(size: 13, weight: .bold))
                 .foregroundColor(Color(hex: "B6C4FF"))
-            Text(statusLabel.uppercased())
+            Text(context.state.downloadState.label.uppercased())
                 .font(.system(size: 10, weight: .medium))
                 .foregroundColor(Color(hex: "C6C6D0"))
                 .kerning(1.2)
                 .opacity(0.85)
-        }
-    }
-
-    private var statusLabel: String {
-        switch context.state.downloadState {
-        case .downloading: return "Downloading..."
-        case .paused:      return "Paused"
-        case .complete:    return "Ready!"
         }
     }
 }
@@ -197,49 +217,9 @@ struct DynamicIslandTrailingButtons: View {
 
     var body: some View {
         if context.state.downloadState != .complete {
-            HStack(spacing: 6) {
-                if context.state.downloadState == .downloading {
-                    LiveActivityButton(
-                        systemImage: "pause.fill",
-                        tint: Color(hex: "B6C4FF"),
-                        size: 13,
-                        intent: pauseIntent
-                    )
-                } else if context.state.downloadState == .paused {
-                    LiveActivityButton(
-                        systemImage: "play.fill",
-                        tint: Color(hex: "B6C4FF"),
-                        size: 13,
-                        intent: resumeIntent
-                    )
-                }
-                LiveActivityButton(
-                    systemImage: "xmark",
-                    tint: Color(hex: "FFB4AB"),
-                    size: 13,
-                    intent: cancelIntent
-                )
-            }
-            .padding(.trailing, 4)
+            DownloadActionButtons(context: context, buttonSize: 13)
+                .padding(.trailing, 4)
         }
-    }
-
-    private var pauseIntent: PauseDownloadIntent {
-        var i = PauseDownloadIntent()
-        i.versionId = context.attributes.versionId
-        return i
-    }
-
-    private var resumeIntent: ResumeDownloadIntent {
-        var i = ResumeDownloadIntent()
-        i.versionId = context.attributes.versionId
-        return i
-    }
-
-    private var cancelIntent: CancelDownloadIntent {
-        var i = CancelDownloadIntent()
-        i.versionId = context.attributes.versionId
-        return i
     }
 }
 
@@ -270,7 +250,7 @@ struct CompactLeadingView: View {
                 .lineLimit(1)
         }
         .padding(.leading, 4)
-        .widgetURL(URL(string: "bibleplanner://navigate/bible-versions"))
+        .widgetURL(bibleVersionsURL)
     }
 }
 
@@ -285,7 +265,7 @@ struct CompactTrailingView: View {
             .font(.system(size: 11, weight: .bold))
             .foregroundColor(Color(hex: "B6C4FF"))
             .padding(.trailing, 4)
-            .widgetURL(URL(string: "bibleplanner://navigate/bible-versions"))
+            .widgetURL(bibleVersionsURL)
     }
 }
 
@@ -308,7 +288,7 @@ struct MinimalView: View {
                 .rotationEffect(.degrees(-90))
         }
         .padding(3)
-        .widgetURL(URL(string: "bibleplanner://navigate/bible-versions"))
+        .widgetURL(bibleVersionsURL)
     }
 }
 

@@ -52,10 +52,13 @@ class IosBackgroundDownloadBridge(
         chapterId: Long,
         versionId: String,
         jsonString: String,
-        onComplete: () -> Unit,
+        onComplete: (Float) -> Unit,
     ) {
         scope.launch {
+            var dbProgress = 0f
             try {
+                val status = bibleVersionDao.getVersionById(versionId)?.status
+                if (status != DownloadStatus.IN_PROGRESS) return@launch
                 val chapterDto = json.decodeFromString<SyncChapterDto>(jsonString)
                 val existingVerses = verseDao.getVersesByChapterId(chapterId).associateBy { it.number }
                 val verseTextEntities = chapterDto.verses.mapNotNull { verseDto ->
@@ -70,12 +73,12 @@ class IosBackgroundDownloadBridge(
                 verseDao.upsertVerseTexts(verseTextEntities)
                 val dbDownloaded = verseDao.countChaptersWithVersesByVersion(versionId)
                 val totalChapters = bibleVersionDao.getVersionById(versionId)?.totalChapters ?: 0
-                val dbProgress = if (totalChapters > 0) dbDownloaded.toFloat() / totalChapters else 0f
+                dbProgress = if (totalChapters > 0) dbDownloaded.toFloat() / totalChapters else 0f
                 Logger.d("PROGRESS") { "DB progress for $versionId: $dbDownloaded/$totalChapters = $dbProgress" }
             } catch (e: Exception) {
                 Logger.e(e) { "Error processing downloaded chapter $chapterId for $versionId" }
             } finally {
-                onComplete()
+                onComplete(dbProgress)
             }
         }
     }

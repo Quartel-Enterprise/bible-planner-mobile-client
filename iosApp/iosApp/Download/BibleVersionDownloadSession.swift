@@ -237,20 +237,14 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
             chapterId: chapterId,
             versionId: versionId,
             jsonString: jsonString
-        ) { [weak self] in
+        ) { [weak self] dbProgress in
             guard let self else { return }
             self.lock.lock()
             var counts = self.versionTaskCounts[versionId] ?? (total: 1, completed: 0)
             counts.completed += 1
             self.versionTaskCounts[versionId] = counts
-            // Only compute progress once Kotlin has provided the authoritative total.
-            // Before notifyAllTasksRegistered, the denominator is unstable (grows as
-            // addDownloadTask is called concurrently) and would cause progress to drop.
             let knownTotal = self.expectedTaskCounts[versionId]
             let expectedTotal = knownTotal ?? 0
-            let progress = knownTotal != nil && expectedTotal > 0
-                ? min(1.0, Double(counts.completed) / Double(expectedTotal))
-                : 0
             let startTime = self.versionStartTimes[versionId] ?? Date()
             self.pendingProcessingCount -= 1
             let shouldFlush = self.pendingProcessingCount == 0 && self.sessionEventsFinished
@@ -260,7 +254,12 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
             if versionDone { self.finalizedVersionIds.insert(versionId) }
             self.lock.unlock()
 
-            dlog("PROGRESS task-based for \(versionId): \(counts.completed)/\(expectedTotal) = \(String(format: "%.4f", progress)) (knownTotal: \(knownTotal != nil))", tag: "PROGRESS")
+            // Use DB-derived progress so the Live Activity matches the in-app display.
+            // Task-count progress was relative to the current session (chapters missing
+            // at download start), causing the notification to lag far behind the app UI
+            // when resuming a previously paused download.
+            let progress = Double(dbProgress)
+            dlog("PROGRESS db-based for \(versionId): \(counts.completed)/\(expectedTotal) tasks, db=\(String(format: "%.4f", progress))", tag: "PROGRESS")
 
             if #available(iOS 16.2, *) {
                 let progressStr = self.formatProgress(progress)

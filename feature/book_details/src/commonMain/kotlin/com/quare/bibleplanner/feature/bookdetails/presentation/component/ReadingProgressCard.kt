@@ -113,7 +113,7 @@ fun ReadingProgressCard(
                 Row(verticalAlignment = Alignment.Bottom) {
                     with(sharedTransitionScope) {
                         AnimatedIntText(
-                            value = (readChaptersCount * 100 / totalChaptersCount),
+                            value = if (totalChaptersCount > 0) (readChaptersCount * 100 / totalChaptersCount) else 0,
                             label = "reading_progress_percentage_$bookIdName",
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 fontWeight = FontWeight.Bold,
