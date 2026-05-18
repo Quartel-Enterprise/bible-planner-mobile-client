@@ -204,8 +204,12 @@ Given uncommitted changes that remove a `navigationBarsPadding()` modifier from 
 
 ### 10. Squash and switch to main (optional)
 
-After the PR is created, ask the user:
-> "Do you want to squash merge this branch into origin/main now?"
+After the PR is created, use the `AskUserQuestion` tool to ask the user with a menu:
+
+- **Question:** "Do you want to squash merge this branch into origin/main now?"
+- **Options:**
+  - Yes — squash merge, update remote refs, and switch to origin/main
+  - No — end the workflow here
 
 If the user agrees, proceed with the following steps in order:
 
