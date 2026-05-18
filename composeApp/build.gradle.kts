@@ -73,6 +73,7 @@ kotlin {
             api(projects.core.provider.room)
             api(projects.core.provider.supabase)
             api(projects.core.provider.billing)
+            api(projects.core.utils)
 
             // UI
             api(projects.ui.theme)
