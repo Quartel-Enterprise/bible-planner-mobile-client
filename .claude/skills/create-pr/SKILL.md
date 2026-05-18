@@ -202,6 +202,33 @@ Given uncommitted changes that remove a `navigationBarsPadding()` modifier from 
 - **PR description:**
   > The books screen had extra whitespace appearing below the search bar due to `navigationBarsPadding()` being applied to the top bar instead of the screen content. This modifier adds padding matching the system navigation bar height, which caused the top bar surface to grow downward unnecessarily. Removed the modifier from the top bar to fix the layout.
 
+### 10. Squash and switch to main (optional)
+
+After the PR is created, ask the user:
+> "Do you want to squash merge this branch into origin/main now?"
+
+If the user agrees, proceed with the following steps in order:
+
+**Squash merge via GitHub CLI:**
+```bash
+gh pr merge --squash --auto
+```
+
+If the merge fails (e.g. pending reviews, CI checks not passed), notify the user and stop:
+> "Could not squash merge right now. Make sure the PR has passed all required checks and try again."
+
+**Update remote refs:**
+```bash
+git remote update
+```
+
+**Switch to origin/main:**
+```bash
+git checkout origin/main
+```
+
+If the user declines, skip this step entirely and end the workflow.
+
 ## Edge cases
 
 - If ktlint fails, stop immediately — do not commit or push
