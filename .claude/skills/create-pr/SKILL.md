@@ -17,8 +17,8 @@ Run these in parallel:
 - `git diff --stat` to see unstaged changes
 - `git log --oneline -1` to get the latest commit
 - `git rev-parse --abbrev-ref HEAD` to get the current branch name
-- `git log --oneline develop..HEAD` to see all commits on this branch
-- `git diff develop...HEAD --stat` to see total changes vs develop
+- `git log --oneline main..HEAD` to see all commits on this branch
+- `git diff main...HEAD --stat` to see total changes vs main
 
 ### 2. Run ktlint formatter (if needed)
 
@@ -47,8 +47,8 @@ Also check the upstream tracking branch:
 git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null
 ```
 
-**If the current branch is `develop`**, or the upstream tracking branch is `origin/develop`, the
-user is working directly on develop — a new branch must be created before committing. Continue to
+**If the current branch is `main`**, or the upstream tracking branch is `origin/main`, the
+user is working directly on main — a new branch must be created before committing. Continue to
 step 4 to determine the prefix, then create the branch in step 5.
 
 **If the current branch is already a feature/fix/enhancement/refactor branch**, skip branch
@@ -56,13 +56,13 @@ creation and go directly to step 5.
 
 ### 4. Infer the change type
 
-Inspect the uncommitted changes and any commits ahead of origin/develop to understand what kind of
+Inspect the uncommitted changes and any commits ahead of origin/main to understand what kind of
 change this is:
 
 ```bash
 git remote update
 git diff HEAD
-git log origin/develop..HEAD --oneline
+git log origin/main..HEAD --oneline
 ```
 
 Based on the changes, choose the most appropriate type:
@@ -84,7 +84,7 @@ If it's genuinely ambiguous, ask the user:
 
 ### 5. Create a new branch (if needed)
 
-If the user is on `develop` (determined in step 3), create and switch to a new branch. Derive the
+If the user is on `main` (determined in step 3), create and switch to a new branch. Derive the
 branch name from the changes — keep it short, lowercase, hyphen-separated:
 
 ```bash
@@ -166,7 +166,7 @@ Once `gh` is available, create the PR:
 
 ```bash
 gh pr create \
-  --base develop \
+  --base main \
   --title "<type>: <short description>" \
   --body "<description>" \
   --assignee @me \
@@ -208,5 +208,5 @@ Given uncommitted changes that remove a `navigationBarsPadding()` modifier from 
 - If the user is already on a correctly prefixed branch, skip branch creation
 - If there is nothing to commit and the branch is already pushed, go directly to PR creation
 - If the branch already has an open PR, notify the user instead of creating a duplicate
-- Always target `develop` as the base branch for the PR
+- Always target `main` as the base branch for the PR
 - Release notes updates (step 6) are included in the same commit as the rest of the changes — do not create a separate commit for them

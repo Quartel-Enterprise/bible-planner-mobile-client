@@ -7,7 +7,7 @@ description: "Update the pt.json, en.json, and es.json release notes files with 
 
 This skill updates the three release notes JSON files (`pt.json`, `en.json`, `es.json`) that are
 displayed directly to users inside the app. The notes need to be clear and friendly — avoid jargon
-and write as if explaining to someone who uses the app but knows nothing about software development.
+and write as if explaining to someone who uses the app but knows nothing about software mainment.
 
 ## JSON file locations
 
@@ -83,8 +83,8 @@ First, try to infer the changes automatically by running these commands in the p
 # Sync remote refs
 git remote update
 
-# Committed changes not yet in origin/develop
-git log origin/develop..HEAD --oneline
+# Committed changes not yet in origin/main
+git log origin/main..HEAD --oneline
 
 # Uncommitted changes (staged and unstaged)
 git diff HEAD
@@ -94,7 +94,7 @@ Use the commit messages and diff output to figure out what changed from a user's
 If you can extract meaningful changes from this output, proceed directly to step 5 — do not ask the user.
 
 Only ask the user if:
-- Both commands return nothing (no commits ahead of origin/develop and no uncommitted changes), or
+- Both commands return nothing (no commits ahead of origin/main and no uncommitted changes), or
 - The output is too ambiguous to determine what actually changed for the user
 
 In that case, ask:
