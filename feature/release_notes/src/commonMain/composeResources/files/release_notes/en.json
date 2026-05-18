@@ -1,4 +1,7 @@
 {
+  "1.13.0": [
+    "Fix extra whitespace below the search bar on the books screen."
+  ],
   "1.12.0": [
     "Notifications about the download progress of Bible versions."
   ],

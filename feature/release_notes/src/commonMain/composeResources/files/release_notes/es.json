@@ -1,4 +1,7 @@
 {
+  "1.13.0": [
+    "Corrección del espacio en blanco extra debajo de la barra de búsqueda en la pantalla de libros."
+  ],
   "1.12.0": [
     "Notificaciones sobre el progreso de la descarga de las versiones de la Biblia."
   ],
