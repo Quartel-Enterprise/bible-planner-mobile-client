@@ -41,11 +41,11 @@ dependencies {
 
     // Features
     implementation(projects.feature.materialYou)
-    implementation(projects.feature.themeSelection)
+    implementation(projects.feature.preferences.themeSelection)
     implementation(projects.feature.readingPlan)
     implementation(projects.feature.day)
     implementation(projects.feature.deleteProgress)
-    implementation(projects.feature.editPlanStartDate)
+    implementation(projects.feature.preferences.editPlanStartDate)
 
     // Core
     implementation(projects.core.books)

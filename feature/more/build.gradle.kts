@@ -28,7 +28,7 @@ kotlin {
             implementation(libs.androidx.room.runtime)
 
             // Features
-            implementation(projects.feature.themeSelection)
+            implementation(projects.feature.preferences.themeSelection)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.subscriptionDetails)
 
