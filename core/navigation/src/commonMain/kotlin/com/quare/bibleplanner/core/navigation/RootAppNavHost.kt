@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
+import com.quare.bibleplanner.feature.applanguage.presentation.appLanguage
 import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelectionRoot
 import com.quare.bibleplanner.feature.bookdetails.presentation.bookDetails
 import com.quare.bibleplanner.feature.congrats.presentation.congrats
@@ -59,6 +60,7 @@ fun RootAppNavHost() {
             donation(navController)
             pixQr(navController)
             bookDetails(navController, sharedTransitionScope)
+            appLanguage(navController)
             bibleVersionSelectionRoot(navController)
             deleteVersion(navController)
             read(

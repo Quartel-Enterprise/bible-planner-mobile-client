@@ -10,12 +10,18 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.preferences
 import bibleplanner.feature.more.generated.resources.today
+import bibleplanner.feature.preferences.app_language.generated.resources.language_english
+import bibleplanner.feature.preferences.app_language.generated.resources.language_portuguese_brazil
+import bibleplanner.feature.preferences.app_language.generated.resources.language_spanish
+import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreMenuOptionsFactory
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.utils.toStringResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import bibleplanner.feature.preferences.app_language.generated.resources.Res as AppLanguageRes
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -39,6 +45,12 @@ internal fun PreferencesSection(
             )
             HorizontalDivider()
             MoreMenuItem(
+                itemModel = MoreMenuOptionsFactory.appLanguage,
+                subtitle = stringResource(state.selectedLanguage.toStringResource()),
+                onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.APP_LANGUAGE)) },
+            )
+            HorizontalDivider()
+            MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.bibleVersion,
                 subtitle = state.bibleVersionName?.let { safeBibleVersionName ->
                     if (state.bibleDownloadProgress != null) {
@@ -57,6 +69,12 @@ internal fun PreferencesSection(
             )
         }
     }
+}
+
+private fun Language.toStringResource(): StringResource = when (this) {
+    Language.ENGLISH -> AppLanguageRes.string.language_english
+    Language.PORTUGUESE_BRAZIL -> AppLanguageRes.string.language_portuguese_brazil
+    Language.SPANISH -> AppLanguageRes.string.language_spanish
 }
 
 @Composable

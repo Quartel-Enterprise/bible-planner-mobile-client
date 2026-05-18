@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
 import com.quare.bibleplanner.di.initializeKoin
+import com.quare.bibleplanner.feature.applanguage.di.iosAppLanguageModule
 import com.quare.bibleplanner.notification.IosBibleVersionDownloadNotifier
 import com.quare.bibleplanner.worker.IosBackgroundDownloadBridge
 import com.quare.bibleplanner.worker.IosBibleVersionDownloaderFacade
@@ -38,6 +39,7 @@ fun initializeKoinForIos(
     try {
         initializeKoin(
             platformModules = listOf(
+                iosAppLanguageModule,
                 module {
                     single { getDatabaseBuilder() }
                     single { remoteConfigService }

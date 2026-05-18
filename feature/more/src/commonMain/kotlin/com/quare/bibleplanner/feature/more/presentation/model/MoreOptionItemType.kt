@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.more.presentation.model
 enum class MoreOptionItemType {
     BECOME_PRO,
     THEME,
+    APP_LANGUAGE,
     INSTAGRAM,
     PRIVACY_POLICY,
     TERMS,

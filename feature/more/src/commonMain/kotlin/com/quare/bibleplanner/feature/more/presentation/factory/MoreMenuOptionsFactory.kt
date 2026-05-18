@@ -8,7 +8,9 @@ import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Translate
 import bibleplanner.feature.more.generated.resources.Res
+import bibleplanner.feature.more.generated.resources.app_language_option
 import bibleplanner.feature.more.generated.resources.become_pro
 import bibleplanner.feature.more.generated.resources.bible_version_option
 import bibleplanner.feature.more.generated.resources.delete_progress_option
@@ -34,6 +36,11 @@ internal object MoreMenuOptionsFactory {
         name = Res.string.theme_option,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.Palette),
         type = MoreOptionItemType.THEME,
+    )
+    val appLanguage = MoreMenuItemPresentationModel(
+        name = Res.string.app_language_option,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Translate),
+        type = MoreOptionItemType.APP_LANGUAGE,
     )
     val instagram = MoreMenuItemPresentationModel(
         name = Res.string.instagram,

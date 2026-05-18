@@ -23,6 +23,7 @@ import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.login.IsLoginVisible
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
+import com.quare.bibleplanner.feature.applanguage.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
@@ -65,6 +66,7 @@ internal class MoreUiStateFactory(
     private val bibleVersionDao: BibleVersionDao,
     private val getSelectedVersionDownloadedChapters: GetSelectedVersionDownloadedChaptersFlowUseCase,
     private val getSelectedBible: GetSelectedBibleFlowUseCase,
+    private val getAppLanguageFlow: GetAppLanguageFlow,
 ) {
     fun create(): Flow<MoreUiState> {
         val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(
@@ -88,7 +90,8 @@ internal class MoreUiStateFactory(
             getPlanStartDate(),
             moreScreenFlows,
             getSelectedVersionDownloadedChapters(),
-        ) { subscriptionStatus, startDate, moreScreenConfiguration, downloadedChaptersCount ->
+            getAppLanguageFlow(),
+        ) { subscriptionStatus, startDate, moreScreenConfiguration, downloadedChaptersCount, selectedLanguage ->
             val remoteConfigs = moreScreenConfiguration.remoteConfigs
             val themeConfiguration = moreScreenConfiguration.themeConfiguration
             val shouldShowDonate = remoteConfigs.shouldShowDonate
@@ -147,6 +150,7 @@ internal class MoreUiStateFactory(
                 isLoginVisible = remoteConfigs.isLoginVisible,
                 bibleVersionName = selectedBible?.version?.name,
                 bibleDownloadProgress = downloadProgress,
+                selectedLanguage = selectedLanguage,
             )
         }
     }

@@ -62,6 +62,7 @@ kotlin {
             api(projects.feature.deleteProgress)
             api(projects.feature.preferences.editPlanStartDate)
             api(projects.feature.preferences.bibleVersion)
+            api(projects.feature.preferences.appLanguage)
 
             // Core
             api(projects.core.books)

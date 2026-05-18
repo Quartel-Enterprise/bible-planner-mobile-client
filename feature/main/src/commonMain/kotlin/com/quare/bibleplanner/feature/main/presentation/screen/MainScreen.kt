@@ -4,6 +4,8 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavBackStackEntry
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
@@ -17,10 +19,12 @@ fun MainScreen(
     mainScaffoldState: MainScaffoldState,
     bottomNavHost: @Composable () -> Unit,
 ) {
+    val language by mainViewModel.languageState.collectAsState()
     val onEvent = mainViewModel::dispatchUiEvent
     MainScreenContent(
         currentDestination = navBackStackEntry?.destination,
         bottomNavigationModels = mainViewModel.bottomNavigationItemModels,
+        language = language,
         onEvent = onEvent,
         mainScaffoldState = mainScaffoldState,
         content = { paddingValues ->

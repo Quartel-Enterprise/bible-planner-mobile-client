@@ -1,6 +1,7 @@
 {
   "1.13.0": [
-    "Fix extra whitespace below the search bar on the books screen."
+    "Fix extra whitespace below the search bar on the books screen.",
+    "You can now change the app language from the 'More' screen. English, Portuguese (Brazil), and Spanish are available."
   ],
   "1.12.0": [
     "Notifications about the download progress of Bible versions."

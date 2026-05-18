@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_language_title">Idioma do Aplicativo</string>
+    <string name="language_english">English</string>
+    <string name="language_portuguese_brazil">Português (Brasil)</string>
+    <string name="language_spanish">Espanhol</string>
+</resources>

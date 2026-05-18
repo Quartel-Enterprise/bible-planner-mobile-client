@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -26,6 +27,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
+import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
 import com.quare.bibleplanner.ui.utils.MainScaffoldState
@@ -36,6 +38,7 @@ import org.jetbrains.compose.resources.stringResource
 fun MainScreenContent(
     currentDestination: NavDestination?,
     bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
+    language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
     mainScaffoldState: MainScaffoldState,
     content: @Composable (PaddingValues) -> Unit,
@@ -45,6 +48,7 @@ fun MainScreenContent(
             WideMainScreenContent(
                 currentDestination = currentDestination,
                 bottomNavigationModels = bottomNavigationModels,
+                language = language,
                 onEvent = onEvent,
                 mainScaffoldState = mainScaffoldState,
                 content = content,
@@ -53,6 +57,7 @@ fun MainScreenContent(
             NarrowMainScreenContent(
                 currentDestination = currentDestination,
                 bottomNavigationModels = bottomNavigationModels,
+                language = language,
                 onEvent = onEvent,
                 mainScaffoldState = mainScaffoldState,
                 content = content,
@@ -65,23 +70,26 @@ fun MainScreenContent(
 private fun WideMainScreenContent(
     currentDestination: NavDestination?,
     bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
+    language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
     mainScaffoldState: MainScaffoldState,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         NavigationRail {
-            MainNavigationItems(
-                bottomNavigationModels = bottomNavigationModels,
-                currentDestination = currentDestination,
-                onEvent = onEvent,
-            ) { selected, onClick, icon, label ->
-                NavigationRailItem(
-                    selected = selected,
-                    onClick = onClick,
-                    icon = icon,
-                    label = label,
-                )
+            key(language) {
+                MainNavigationItems(
+                    bottomNavigationModels = bottomNavigationModels,
+                    currentDestination = currentDestination,
+                    onEvent = onEvent,
+                ) { selected, onClick, icon, label ->
+                    NavigationRailItem(
+                        selected = selected,
+                        onClick = onClick,
+                        icon = icon,
+                        label = label,
+                    )
+                }
             }
         }
         Scaffold(
@@ -98,6 +106,7 @@ private fun WideMainScreenContent(
 private fun NarrowMainScreenContent(
     currentDestination: NavDestination?,
     bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
+    language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
     mainScaffoldState: MainScaffoldState,
     content: @Composable (PaddingValues) -> Unit,
@@ -128,17 +137,19 @@ private fun NarrowMainScreenContent(
                         scrollBehavior.state.heightOffsetLimit = -coordinates.size.height.toFloat()
                     },
             ) {
-                MainNavigationItems(
-                    bottomNavigationModels = bottomNavigationModels,
-                    currentDestination = currentDestination,
-                    onEvent = onEvent,
-                ) { selected, onClick, icon, label ->
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = onClick,
-                        icon = icon,
-                        label = label,
-                    )
+                key(language) {
+                    MainNavigationItems(
+                        bottomNavigationModels = bottomNavigationModels,
+                        currentDestination = currentDestination,
+                        onEvent = onEvent,
+                    ) { selected, onClick, icon, label ->
+                        NavigationBarItem(
+                            selected = selected,
+                            onClick = onClick,
+                            icon = icon,
+                            label = label,
+                        )
+                    }
                 }
             }
         },

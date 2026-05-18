@@ -11,19 +11,32 @@ import bibleplanner.feature.main.generated.resources.books
 import bibleplanner.feature.main.generated.resources.more
 import bibleplanner.feature.main.generated.resources.plans
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
+import com.quare.bibleplanner.core.utils.locale.Language
+import com.quare.bibleplanner.feature.applanguage.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemPresentationModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class MainScreenViewModel : ViewModel() {
+class MainScreenViewModel(
+    getAppLanguageFlow: GetAppLanguageFlow,
+) : ViewModel() {
     private val routes: List<BottomNavRoute> = listOf(
         BottomNavRoute.Plans,
         BottomNavRoute.Books,
         BottomNavRoute.More,
+    )
+
+    val languageState: StateFlow<Language> = getAppLanguageFlow().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = Language.ENGLISH,
     )
 
     private val _uiAction: MutableSharedFlow<MainScreenUiAction> = MutableSharedFlow()

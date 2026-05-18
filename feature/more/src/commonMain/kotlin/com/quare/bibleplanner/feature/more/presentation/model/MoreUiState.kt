@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.more.presentation.model
 
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
+import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
@@ -25,5 +26,6 @@ internal sealed interface MoreUiState {
         val accountStatusModel: AccountStatusModel,
         val bibleVersionName: String?,
         val bibleDownloadProgress: Float?,
+        val selectedLanguage: Language,
     ) : MoreUiState
 }
