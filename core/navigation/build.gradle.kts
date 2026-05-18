@@ -31,6 +31,7 @@ kotlin {
             implementation(projects.feature.donation.pixQr)
             implementation(projects.feature.login)
             implementation(projects.feature.preferences.bibleVersion)
+            implementation(projects.feature.preferences.appLanguage)
             implementation(projects.feature.read)
             implementation(projects.feature.notificationPermission)
 

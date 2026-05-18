@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.user.di.userModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
 import com.quare.bibleplanner.core.utils.jsonreader.di.jsonReaderModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
+import com.quare.bibleplanner.feature.applanguage.di.appLanguageModule
 import com.quare.bibleplanner.feature.bibleversion.di.bibleVersionModule
 import com.quare.bibleplanner.feature.bookdetails.di.bookDetailsModule
 import com.quare.bibleplanner.feature.books.di.featureBooksModule
@@ -73,6 +74,7 @@ object CommonKoinUtils {
         supabaseModule,
         userModule,
         bibleVersionModule,
+        appLanguageModule,
         modelModule,
         com.quare.bibleplanner.feature.read.di.featureReadModule,
         notificationPermissionModule,

@@ -61,6 +61,7 @@ include(":feature:add_notes_free_warning")
 include(":feature:preferences:edit_plan_start_date")
 include(":feature:login")
 include(":feature:preferences:bible_version")
+include(":feature:preferences:app_language")
 include(":feature:read")
 
 include(":feature:paywall")

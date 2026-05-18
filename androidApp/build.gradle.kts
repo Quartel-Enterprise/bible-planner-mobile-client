@@ -42,6 +42,7 @@ dependencies {
     // Features
     implementation(projects.feature.materialYou)
     implementation(projects.feature.preferences.themeSelection)
+    implementation(projects.feature.preferences.appLanguage)
     implementation(projects.feature.readingPlan)
     implementation(projects.feature.day)
     implementation(projects.feature.deleteProgress)

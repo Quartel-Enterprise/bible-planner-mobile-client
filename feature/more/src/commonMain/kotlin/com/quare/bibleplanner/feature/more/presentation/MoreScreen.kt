@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -38,33 +39,35 @@ internal fun MoreScreen(
         }
 
         is MoreUiState.Loaded -> {
-            if (state.showSubscriptionDetailsDialog) {
-                SubscriptionDetailsDialog(
-                    onDismiss = { onEvent(MoreUiEvent.OnDismissSubscriptionDetailsDialog) },
+            key(state.selectedLanguage) {
+                if (state.showSubscriptionDetailsDialog) {
+                    SubscriptionDetailsDialog(
+                        onDismiss = { onEvent(MoreUiEvent.OnDismissSubscriptionDetailsDialog) },
+                    )
+                }
+                ResponsiveColumn(
+                    modifier = Modifier.padding(16.dp),
+                    contentPadding = mainPadding,
+                    portraitContent = {
+                        moreScreenPortraitLayout(
+                            state = state,
+                            onEvent = onEvent,
+                            becomeProTitleContent = becomeProTitleContent,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedContentScope = animatedContentScope,
+                        )
+                    },
+                    landscapeContent = {
+                        moreScreenLandscapeLayout(
+                            state = state,
+                            onEvent = onEvent,
+                            becomeProTitleContent = becomeProTitleContent,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedContentScope = animatedContentScope,
+                        )
+                    },
                 )
             }
-            ResponsiveColumn(
-                modifier = Modifier.padding(16.dp),
-                contentPadding = mainPadding,
-                portraitContent = {
-                    moreScreenPortraitLayout(
-                        state = state,
-                        onEvent = onEvent,
-                        becomeProTitleContent = becomeProTitleContent,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedContentScope = animatedContentScope,
-                    )
-                },
-                landscapeContent = {
-                    moreScreenLandscapeLayout(
-                        state = state,
-                        onEvent = onEvent,
-                        becomeProTitleContent = becomeProTitleContent,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedContentScope = animatedContentScope,
-                    )
-                },
-            )
         }
     }
 }

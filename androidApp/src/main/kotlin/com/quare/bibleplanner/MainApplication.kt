@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.di.androidModule
 import com.quare.bibleplanner.di.initializeKoin
+import com.quare.bibleplanner.feature.applanguage.di.androidAppLanguageModule
 import com.quare.bibleplanner.notification.AndroidNotificationStringProvider
 import com.quare.bibleplanner.notification.NotificationStringProvider
 import org.koin.android.ext.koin.androidContext
@@ -27,7 +28,7 @@ class MainApplication : Application() {
             config = {
                 androidContext(context)
             },
-            platformModules = listOf(androidModule, mainApplicationModule),
+            platformModules = listOf(androidModule, mainApplicationModule, androidAppLanguageModule),
         )
     }
 }

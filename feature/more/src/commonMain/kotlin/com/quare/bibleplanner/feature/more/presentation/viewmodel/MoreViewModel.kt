@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.more.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
@@ -50,6 +51,10 @@ internal class MoreViewModel(
                 when (event.type) {
                     MoreOptionItemType.THEME -> {
                         goToRoute(ThemeNavRoute)
+                    }
+
+                    MoreOptionItemType.APP_LANGUAGE -> {
+                        goToRoute(AppLanguageNavRoute)
                     }
 
                     MoreOptionItemType.PRIVACY_POLICY -> {
