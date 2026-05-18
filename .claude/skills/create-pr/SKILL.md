@@ -20,9 +20,11 @@ Run these in parallel:
 - `git log --oneline develop..HEAD` to see all commits on this branch
 - `git diff develop...HEAD --stat` to see total changes vs develop
 
-### 2. Run ktlint formatter
+### 2. Run ktlint formatter (if needed)
 
-Run from the project root:
+Check whether any `.kt` or `.kts` files are among the changed files gathered in step 1. If none are present, skip this step entirely.
+
+If there are Kotlin files changed, run from the project root:
 
 ```bash
 ./gradlew ktlintFormat
