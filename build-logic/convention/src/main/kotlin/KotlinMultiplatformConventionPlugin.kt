@@ -37,5 +37,11 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             //remove expect actual warning
             compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
+
+        pluginManager.withPlugin("com.codingfeline.buildkonfig") {
+            tasks.matching { it.name.contains("ArtProfile") }.configureEach {
+                dependsOn("generateBuildKonfig")
+            }
+        }
     }
 }

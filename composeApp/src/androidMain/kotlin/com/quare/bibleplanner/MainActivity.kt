@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -43,11 +44,14 @@ class MainActivity : ComponentActivity() {
         handleNotificationIntent(intent)
     }
 
-    private fun handleNotificationIntent(intent: Intent) {
-        if (intent.getBooleanExtra(AndroidBibleVersionDownloadNotifier.EXTRA_NAVIGATE_TO_BIBLE_VERSIONS, false)) {
-            get<NavigationEventBus>().send(BibleVersionSelectorRoute)
+    private fun handleNotificationIntent(intent: Intent?) {
+        if (intent?.shouldOpenBibleVersionManager().orFalse()) {
+            viewModel.navigationEventBus.send(BibleVersionSelectorRoute)
         }
     }
+
+    private fun Intent.shouldOpenBibleVersionManager(): Boolean =
+        getBooleanExtra(AndroidBibleVersionDownloadNotifier.EXTRA_NAVIGATE_TO_BIBLE_VERSIONS, false)
 
     @Composable
     private fun getStatusBarStyle(isAppInDarkTheme: Boolean): SystemBarStyle = SystemBarStyle.run {
