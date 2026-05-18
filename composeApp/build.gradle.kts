@@ -56,12 +56,12 @@ kotlin {
             // Feature
             api(projects.feature.materialYou)
             api(projects.feature.notificationPermission)
-            api(projects.feature.themeSelection)
+            api(projects.feature.preferences.themeSelection)
             api(projects.feature.readingPlan)
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
-            api(projects.feature.editPlanStartDate)
-            api(projects.feature.bibleVersion)
+            api(projects.feature.preferences.editPlanStartDate)
+            api(projects.feature.preferences.bibleVersion)
 
             // Core
             api(projects.core.books)
