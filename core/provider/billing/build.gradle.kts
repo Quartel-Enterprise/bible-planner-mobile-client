@@ -69,8 +69,8 @@ kotlin {
         val mobileMain by creating {
             dependsOn(commonMain)
             dependencies {
-                api(libs.purchases.core)
-                api(libs.purchases.result)
+                api(libs.revenuecat.core)
+                api(libs.revenuecat.result)
             }
         }
 
@@ -78,17 +78,11 @@ kotlin {
             dependsOn(mobileMain)
             dependencies {
                 implementation(project.dependencies.platform(libs.firebase.bom))
-                api(libs.purchases.core)
-                api(libs.purchases.result)
             }
         }
 
         val iosMain by creating {
             dependsOn(mobileMain)
-            dependencies {
-                implementation(libs.purchases.core)
-                implementation(libs.purchases.result)
-            }
         }
 
         val iosArm64Main by getting {
