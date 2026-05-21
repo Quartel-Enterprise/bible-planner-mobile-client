@@ -6,7 +6,7 @@ name: release
 #   - Manually from the Actions tab (workflow_dispatch), choosing platform/track.
 #   - Pushing a version tag (e.g. v1.14.0).
 #
-# Secrets are exposed only to the `production` environment. Configure
+# Secrets are exposed only to the `Production` environment. Configure
 # required reviewers on that environment (Settings > Environments) so each
 # release needs manual approval — this keeps the public repo safe.
 #
@@ -46,7 +46,7 @@ jobs:
     name: Android — Google Play
     if: ${{ github.event_name == 'push' || github.event.inputs.platforms == 'both' || github.event.inputs.platforms == 'android' }}
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -87,7 +87,7 @@ jobs:
     name: iOS — App Store Connect
     if: ${{ github.event_name == 'push' || github.event.inputs.platforms == 'both' || github.event.inputs.platforms == 'ios' }}
     runs-on: macos-latest
-    environment: production
+    environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
