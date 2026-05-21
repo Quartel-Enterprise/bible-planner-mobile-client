@@ -108,14 +108,16 @@ platform :ios do
       },
     )
 
-    # Uploads the build to App Store Connect. It does NOT auto-submit for
-    # Apple review — submit the build from App Store Connect once it finishes
-    # processing. Flip submit_for_review to true if you want CI to submit.
+    # Uploads the build, submits it for Apple review and releases it
+    # automatically once approved. Apple review is still a human gate and may
+    # reject the build — ship a fix as the next version if that happens.
     upload_to_app_store(
       api_key: api_key,
       skip_metadata: true,
       skip_screenshots: true,
-      submit_for_review: false,
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
       precheck_include_in_app_purchases: false,
     )
   end

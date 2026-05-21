@@ -1,21 +1,27 @@
 name: release
 
-# Release pipeline — builds and ships Bible Planner to the stores.
+# Release pipeline — versions, builds and ships Bible Planner to the stores.
 #
-# Triggers:
-#   - Manually from the Actions tab (workflow_dispatch), choosing platform/track.
-#   - Pushing a version tag (e.g. v1.14.0).
+# Run it manually from the Actions tab:
+#   1. `plan` resolves the version — auto-inferred from the commits since the
+#      last release, or taken from the optional `version` input — and shows it
+#      in the run summary.
+#   2. The run pauses on the `Production` environment. Review the planned
+#      version in the summary, then approve to continue (or reject and start a
+#      new run with the `version` input to override).
+#   3. Android and iOS are built and uploaded to the stores.
+#   4. `finalize` bumps the version on a release branch, opens and squash-merges
+#      the merge-back PR into main, and publishes the GitHub release.
 #
-# Secrets are exposed only to the `Production` environment. Configure
-# required reviewers on that environment (Settings > Environments) so each
-# release needs manual approval — this keeps the public repo safe.
-#
-# Reminder: bump versionCode/versionName (gradle.properties) and
-# CURRENT_PROJECT_VERSION/MARKETING_VERSION (Config.xcconfig) before releasing.
+# Secrets live exclusively in the `Production` environment.
 
 on:
   workflow_dispatch:
     inputs:
+      version:
+        description: "Version X.Y.Z — leave blank to auto-infer from commits"
+        type: string
+        required: false
       platforms:
         description: "Platforms to release"
         type: choice
@@ -33,25 +39,49 @@ on:
           - alpha
           - internal
         default: production
-  push:
-    tags:
-      - 'v*'
+
+permissions:
+  contents: write
+  pull-requests: write
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release
   cancel-in-progress: false
 
 jobs:
+  plan:
+    name: Plan release version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      version_code: ${{ steps.resolve.outputs.version_code }}
+      branch: ${{ steps.resolve.outputs.branch }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: resolve
+        run: ./scripts/suggest-version.sh "${{ inputs.version }}"
+
   android:
     name: Android — Google Play
-    if: ${{ github.event_name == 'push' || github.event.inputs.platforms == 'both' || github.event.inputs.platforms == 'android' }}
+    needs: plan
+    if: ${{ inputs.platforms == 'both' || inputs.platforms == 'android' }}
     runs-on: ubuntu-latest
     environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 1
+
+      - name: Bump version
+        run: ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
 
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
@@ -75,7 +105,7 @@ jobs:
           printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
 
       - name: Build and upload to Google Play
-        run: fastlane android release track:"${{ github.event.inputs.track || 'production' }}"
+        run: fastlane android release track:"${{ inputs.track }}"
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -85,14 +115,19 @@ jobs:
 
   ios:
     name: iOS — App Store Connect
-    if: ${{ github.event_name == 'push' || github.event.inputs.platforms == 'both' || github.event.inputs.platforms == 'ios' }}
+    needs: plan
+    if: ${{ inputs.platforms == 'both' || inputs.platforms == 'ios' }}
     runs-on: macos-latest
     environment: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 1
+
+      - name: Bump version
+        run: ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
 
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
@@ -127,3 +162,46 @@ jobs:
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ci_ssh -o IdentitiesOnly=yes
+
+  finalize:
+    name: Tag, release notes and merge-back
+    needs: [plan, android, ios]
+    if: ${{ inputs.platforms == 'both' && inputs.track == 'production' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Create release branch with version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${{ needs.plan.outputs.branch }}"
+          ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
+          git commit -am "chore: bump version to ${{ needs.plan.outputs.version }}"
+          git push -u origin "${{ needs.plan.outputs.branch }}"
+
+      - name: Open merge-back PR and squash into main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "${{ needs.plan.outputs.branch }}" \
+            --title "chore: merge back ${{ needs.plan.outputs.version }} into main" \
+            --body "Merges the ${{ needs.plan.outputs.version }} release (build ${{ needs.plan.outputs.version_code }}) back into main." \
+            --label enhancement \
+            --assignee "${{ github.actor }}"
+          gh pr merge "${{ needs.plan.outputs.branch }}" --squash --delete-branch
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v${{ needs.plan.outputs.version }}" \
+            --target main \
+            --title "v${{ needs.plan.outputs.version }}" \
+            --generate-notes
