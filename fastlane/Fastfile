@@ -1,0 +1,122 @@
+# Fastfile — CI/CD lanes for Bible Planner
+# https://docs.fastlane.tools/
+#
+# These lanes are designed to run on GitHub Actions (see .github/workflows/release.yml).
+# All credentials are provided through environment variables / GitHub secrets.
+#
+# NOTE: bump `versionCode` / `versionName` in gradle.properties and
+# `CURRENT_PROJECT_VERSION` / `MARKETING_VERSION` in iosApp/Configuration/Config.xcconfig
+# before triggering a release — stores reject an already-published version.
+
+opt_out_usage
+skip_docs
+
+APP_BUNDLE_ID    = "com.quare.bibleplanner.BiblePlanner".freeze
+WIDGET_BUNDLE_ID = "com.quare.bibleplanner.BiblePlanner.BibleDownloadWidget".freeze
+ANDROID_PACKAGE  = "com.quare.bibleplanner".freeze
+APPLE_TEAM_ID    = "TTV2A365LG".freeze
+XCODE_PROJECT    = "iosApp/iosApp.xcodeproj".freeze
+
+# ---------------------------------------------------------------------------
+# Android
+# ---------------------------------------------------------------------------
+platform :android do
+  desc "Build a signed release AAB and upload it to Google Play"
+  desc "Options: track (production|beta|alpha|internal) — defaults to production"
+  lane :release do |options|
+    track = options[:track] || "production"
+
+    # Release signing is wired in androidApp/build.gradle.kts and reads the
+    # ANDROID_KEYSTORE_* environment variables exported by the workflow.
+    gradle(
+      task: ":androidApp:bundleRelease",
+    )
+
+    upload_to_play_store(
+      package_name: ANDROID_PACKAGE,
+      track: track,
+      release_status: "completed",
+      aab: "androidApp/build/outputs/bundle/release/androidApp-release.aab",
+      json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+end
+
+# ---------------------------------------------------------------------------
+# iOS
+# ---------------------------------------------------------------------------
+platform :ios do
+  desc "Build a signed release IPA and upload it to App Store Connect"
+  lane :release do
+    # Creates an isolated temporary keychain on CI so signing never touches
+    # the machine's login keychain. No-op when running outside CI.
+    setup_ci
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_P8"),
+      is_key_content_base64: true,
+    )
+
+    # Fetch the distribution certificate + provisioning profiles from the
+    # private certs repo (configured in fastlane/Matchfile). readonly: the CI
+    # never creates or revokes anything — that is done locally by an admin.
+    match(
+      type: "appstore",
+      readonly: true,
+      api_key: api_key,
+    )
+
+    # Switch the Release configuration to manual signing at build time only.
+    # The committed project keeps automatic signing, so local development is
+    # unaffected (option B agreed for this pipeline).
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: XCODE_PROJECT,
+      team_id: APPLE_TEAM_ID,
+      targets: ["iosApp"],
+      code_sign_identity: "Apple Distribution",
+      profile_name: "match AppStore #{APP_BUNDLE_ID}",
+      build_configurations: ["Release"],
+    )
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: XCODE_PROJECT,
+      team_id: APPLE_TEAM_ID,
+      targets: ["BibleDownloadWidgetExtension"],
+      code_sign_identity: "Apple Distribution",
+      profile_name: "match AppStore #{WIDGET_BUNDLE_ID}",
+      build_configurations: ["Release"],
+    )
+
+    build_app(
+      project: XCODE_PROJECT,
+      scheme: "iosApp",
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        signingStyle: "manual",
+        provisioningProfiles: {
+          APP_BUNDLE_ID    => "match AppStore #{APP_BUNDLE_ID}",
+          WIDGET_BUNDLE_ID => "match AppStore #{WIDGET_BUNDLE_ID}",
+        },
+      },
+    )
+
+    # Uploads the build to App Store Connect. It does NOT auto-submit for
+    # Apple review — submit the build from App Store Connect once it finishes
+    # processing. Flip submit_for_review to true if you want CI to submit.
+    upload_to_app_store(
+      api_key: api_key,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      precheck_include_in_app_purchases: false,
+    )
+  end
+end

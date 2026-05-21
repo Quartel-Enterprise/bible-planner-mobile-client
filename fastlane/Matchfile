@@ -1,0 +1,14 @@
+# fastlane match configuration
+# Docs: https://docs.fastlane.tools/actions/match/
+
+git_url("git@github.com:Quartel-Enterprise/bible-planner-certs.git")
+storage_mode("git")
+
+type("appstore")
+
+app_identifier([
+  "com.quare.bibleplanner.BiblePlanner",
+  "com.quare.bibleplanner.BiblePlanner.BibleDownloadWidget"
+])
+
+team_id("TTV2A365LG")

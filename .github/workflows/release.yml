@@ -1,0 +1,129 @@
+name: release
+
+# Release pipeline — builds and ships Bible Planner to the stores.
+#
+# Triggers:
+#   - Manually from the Actions tab (workflow_dispatch), choosing platform/track.
+#   - Pushing a version tag (e.g. v1.14.0).
+#
+# Secrets are exposed only to the `production` environment. Configure
+# required reviewers on that environment (Settings > Environments) so each
+# release needs manual approval — this keeps the public repo safe.
+#
+# Reminder: bump versionCode/versionName (gradle.properties) and
+# CURRENT_PROJECT_VERSION/MARKETING_VERSION (Config.xcconfig) before releasing.
+
+on:
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "Platforms to release"
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+        default: both
+      track:
+        description: "Android Play Store track"
+        type: choice
+        options:
+          - production
+          - beta
+          - alpha
+          - internal
+        default: production
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  android:
+    name: Android — Google Play
+    if: ${{ github.event_name == 'push' || github.event.inputs.platforms == 'both' || github.event.inputs.platforms == 'android' }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      - name: Decode signing and config secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+          printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
+
+      - name: Build and upload to Google Play
+        run: fastlane android release track:"${{ github.event.inputs.track || 'production' }}"
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
+
+  ios:
+    name: iOS — App Store Connect
+    if: ${{ github.event_name == 'push' || github.event.inputs.platforms == 'both' || github.event.inputs.platforms == 'ios' }}
+    runs-on: macos-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      - name: Prepare SSH access to the certificates repo
+        env:
+          MATCH_SSH_PRIVATE_KEY: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$MATCH_SSH_PRIVATE_KEY" > "$RUNNER_TEMP/match_ci_ssh"
+          chmod 600 "$RUNNER_TEMP/match_ci_ssh"
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+
+      - name: Decode Firebase config
+        env:
+          GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+        run: echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist
+
+      - name: Build and upload to App Store Connect
+        run: fastlane ios release
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ci_ssh -o IdentitiesOnly=yes

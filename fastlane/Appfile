@@ -1,0 +1,5 @@
+# Appfile — shared identifiers for fastlane
+# https://docs.fastlane.tools/advanced/#appfile
+
+app_identifier("com.quare.bibleplanner.BiblePlanner") # iOS bundle identifier
+package_name("com.quare.bibleplanner")                # Android applicationId

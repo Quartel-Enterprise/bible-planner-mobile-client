@@ -42,3 +42,11 @@ setup-java.sh
 # Firebase
 androidApp/google-services.json
 iosApp/iosApp/GoogleService-Info.plist
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+fastlane/README.md
+**/*.mobileprovision
