@@ -45,6 +45,8 @@ flowchart TD
    - **version** — leave blank to auto-resolve, or type an explicit `X.Y.Z`.
    - **platforms** — `both` (default), `android`, or `ios`.
    - **track** — Android Play Store track: `production` (default), `beta`, `alpha`, `internal`.
+   - **complete_android_release** — `true` (default) rolls the Android release out; `false`
+     uploads it to the track as a draft you release manually from the Play Console.
    - **submit_ios_for_review** — `true` (default) submits the iOS build for App Store review;
      `false` only uploads it to App Store Connect / TestFlight (use it for test runs).
 4. Click **Run workflow**.
@@ -56,24 +58,27 @@ flowchart TD
 ### Example — full production release of 1.14.0
 
 ```text
-version:               (blank — auto-resolved to 1.14.0 from the release notes JSON)
-platforms:             both
-track:                 production
-submit_ios_for_review: true
+version:                  (blank — auto-resolved to 1.14.0 from the release notes JSON)
+platforms:                both
+track:                    production
+complete_android_release: true
+submit_ios_for_review:    true
 ```
 
 ### Example — safe test run (no production impact)
 
 ```text
-version:               (blank)
-platforms:             both
-track:                 internal
-submit_ios_for_review: false
+version:                  (blank)
+platforms:                both
+track:                    internal
+complete_android_release: false
+submit_ios_for_review:    false
 ```
 
-Android uploads to the internal testing track and iOS lands in App Store Connect / TestFlight
-without being submitted for review. The `finalize` job only runs for `platforms = both` **and**
-`track = production`, so a test run creates no tag, GitHub Release or merge-back PR.
+Android uploads to the internal testing track as a draft and iOS lands in App Store Connect /
+TestFlight without being submitted for review. The `finalize` job only runs for
+`platforms = both` **and** `track = production`, so a test run creates no tag, GitHub Release or
+merge-back PR.
 
 ## How the version is resolved
 

@@ -122,10 +122,14 @@ platform :android do
       UI.error("Could not prepare Play changelogs, continuing without them: #{e.message}")
     end
 
+    # "completed" rolls the release out to the track; "draft" uploads the
+    # build without releasing it, to be released manually from the Play Console.
+    release_status = ENV.fetch("COMPLETE_RELEASE", "true").strip.downcase == "true" ? "completed" : "draft"
+
     upload_to_play_store(
       package_name: ANDROID_PACKAGE,
       track: track,
-      release_status: "completed",
+      release_status: release_status,
       aab: "androidApp/build/outputs/bundle/release/androidApp-release.aab",
       json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
       skip_upload_metadata: true,

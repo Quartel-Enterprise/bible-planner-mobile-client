@@ -39,6 +39,10 @@ on:
           - alpha
           - internal
         default: production
+      complete_android_release:
+        description: "Roll out the Android release (uncheck to upload it as a draft)"
+        type: boolean
+        default: true
       submit_ios_for_review:
         description: "Submit the iOS build for App Store review (uncheck for a test run)"
         type: boolean
@@ -116,6 +120,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
+          COMPLETE_RELEASE: ${{ inputs.complete_android_release }}
 
   ios:
     name: iOS — App Store Connect
