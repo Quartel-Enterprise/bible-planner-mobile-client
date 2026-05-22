@@ -9,7 +9,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.quare.bibleplanner.core.provider.supabase"
     }
     jvm()
