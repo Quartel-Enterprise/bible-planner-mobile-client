@@ -6,4 +6,4 @@ enum class Language {
     SPANISH,
 }
 
-expect fun getCurrentLanguage(): Language
+val Language.isPortugueseBrazil: Boolean get() = this == Language.PORTUGUESE_BRAZIL

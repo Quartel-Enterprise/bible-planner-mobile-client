@@ -14,6 +14,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.provider.language)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)

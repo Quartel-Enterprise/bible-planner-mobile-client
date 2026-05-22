@@ -2,9 +2,9 @@ package com.quare.bibleplanner.feature.releasenotes.data.repository
 
 import bibleplanner.feature.release_notes.generated.resources.Res
 import com.quare.bibleplanner.core.network.data.handler.RequestHandler
+import com.quare.bibleplanner.core.provider.language.domain.provider.LanguageProvider
 import com.quare.bibleplanner.core.utils.jsonreader.JsonResourceReader
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.core.utils.locale.getCurrentLanguage
 import com.quare.bibleplanner.feature.releasenotes.data.mapper.GitHubReleaseDateMapper
 import com.quare.bibleplanner.feature.releasenotes.data.model.GitHubReleaseDto
 import com.quare.bibleplanner.feature.releasenotes.domain.model.ReleaseNoteModel
@@ -21,10 +21,11 @@ class GitHubReleaseNotesRepository(
     private val requestHandler: RequestHandler,
     private val jsonResourceReader: JsonResourceReader,
     private val releaseDateMapper: GitHubReleaseDateMapper,
+    private val languageProvider: LanguageProvider,
 ) : ReleaseNotesRepository {
     override suspend fun getReleaseNotes(): Result<List<ReleaseNoteModel>> = coroutineScope {
         val datesDeferred = async { getReleaseDates() }
-        val fileName = when (getCurrentLanguage()) {
+        val fileName = when (languageProvider.getAppLanguage()) {
             Language.PORTUGUESE_BRAZIL -> "pt.json"
             Language.SPANISH -> "es.json"
             Language.ENGLISH -> "en.json"

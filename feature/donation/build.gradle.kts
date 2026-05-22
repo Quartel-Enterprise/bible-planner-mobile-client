@@ -18,6 +18,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.provider.language)
             implementation(projects.core.utils)
 
             // UI

@@ -15,6 +15,7 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.utils)
+            implementation(projects.core.provider.language)
 
             // Features
             implementation(projects.feature.readingPlan)

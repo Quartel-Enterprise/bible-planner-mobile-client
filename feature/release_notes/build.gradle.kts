@@ -19,6 +19,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.provider.language)
             implementation(projects.core.utils)
             implementation(projects.core.utils.jsonReader)
             implementation(projects.core.network)

@@ -5,6 +5,8 @@ import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
+import com.quare.bibleplanner.core.provider.language.di.iosLanguageProviderModule
+import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
 import com.quare.bibleplanner.di.initializeKoin
@@ -40,6 +42,8 @@ fun initializeKoinForIos(
         initializeKoin(
             platformModules = listOf(
                 iosAppLanguageModule,
+                iosLanguageProviderModule,
+                languageProviderModule,
                 module {
                     single { getDatabaseBuilder() }
                     single { remoteConfigService }

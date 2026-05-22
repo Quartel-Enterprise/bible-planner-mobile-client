@@ -11,8 +11,8 @@ import bibleplanner.feature.main.generated.resources.books
 import bibleplanner.feature.main.generated.resources.more
 import bibleplanner.feature.main.generated.resources.plans
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
+import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.applanguage.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemPresentationModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction

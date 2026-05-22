@@ -25,7 +25,7 @@ internal class AppLanguageViewModel(
     val uiState: StateFlow<AppLanguageUiState> = factory.create().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = AppLanguageUiState(Language.ENGLISH),
+        initialValue = factory.createInitial(),
     )
 
     fun onEvent(event: AppLanguageUiEvent) {

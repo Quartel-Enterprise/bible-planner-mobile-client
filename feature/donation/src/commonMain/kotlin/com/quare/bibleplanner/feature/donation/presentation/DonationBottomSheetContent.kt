@@ -46,8 +46,6 @@ import bibleplanner.feature.donation.generated.resources.donation_usdt
 import bibleplanner.feature.donation.generated.resources.donation_usdt_description
 import bibleplanner.feature.donation.generated.resources.ic_bitcoin
 import bibleplanner.feature.donation.generated.resources.ic_pix
-import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.core.utils.locale.getCurrentLanguage
 import com.quare.bibleplanner.feature.donation.generated.DonationBuildKonfig
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.painterResource
@@ -203,22 +201,15 @@ fun DonationBottomSheetContent(
             )
         }
 
-        if (getCurrentLanguage() == Language.PORTUGUESE_BRAZIL) {
-            pixSection()
-            VerticalSpacer(12.dp)
-            bitcoinSection()
-            VerticalSpacer(12.dp)
-            usdtSection()
-        } else {
-            bitcoinSection()
-            VerticalSpacer(12.dp)
-            usdtSection()
-            VerticalSpacer(12.dp)
-            pixSection()
+        state.sections.forEachIndexed { index, section ->
+            if (index > 0) VerticalSpacer(12.dp)
+            when (section) {
+                DonationSection.BITCOIN -> bitcoinSection()
+                DonationSection.USDT -> usdtSection()
+                DonationSection.PIX -> pixSection()
+                DonationSection.GITHUB -> githubSection()
+            }
         }
-
-        VerticalSpacer(12.dp)
-        githubSection()
 
         VerticalSpacer(32.dp)
 

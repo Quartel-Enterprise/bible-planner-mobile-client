@@ -4,4 +4,5 @@ import com.quare.bibleplanner.core.utils.locale.Language
 
 internal data class AppLanguageUiState(
     val selectedLanguage: Language,
+    val languages: List<Language>,
 )

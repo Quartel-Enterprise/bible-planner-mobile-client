@@ -16,6 +16,7 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.provider.room)
+            implementation(projects.core.provider.language)
             implementation(projects.core.utils)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.provider.supabase)

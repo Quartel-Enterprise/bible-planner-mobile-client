@@ -3,6 +3,8 @@ package com.quare.bibleplanner
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
+import com.quare.bibleplanner.core.provider.language.di.androidLanguageProviderModule
+import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
 import com.quare.bibleplanner.di.androidModule
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.androidAppLanguageModule
@@ -28,7 +30,13 @@ class MainApplication : Application() {
             config = {
                 androidContext(context)
             },
-            platformModules = listOf(androidModule, mainApplicationModule, androidAppLanguageModule),
+            platformModules = listOf(
+                androidModule,
+                mainApplicationModule,
+                androidAppLanguageModule,
+                androidLanguageProviderModule,
+                languageProviderModule,
+            ),
         )
     }
 }

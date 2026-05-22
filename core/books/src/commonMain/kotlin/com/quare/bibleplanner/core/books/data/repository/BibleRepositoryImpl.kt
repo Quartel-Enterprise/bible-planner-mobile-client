@@ -9,9 +9,10 @@ import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
-import com.quare.bibleplanner.core.books.domain.usecase.getDefaultVersion
+import com.quare.bibleplanner.core.provider.language.domain.provider.LanguageProvider
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
+import com.quare.bibleplanner.core.utils.locale.isPortugueseBrazil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
@@ -24,6 +25,7 @@ internal class BibleRepositoryImpl(
     private val bibleVersionRepository: BibleVersionRepository,
     private val bibleMapper: BibleMapper,
     private val dataStore: DataStore<Preferences>,
+    private val languageProvider: LanguageProvider,
 ) : BibleRepository {
     private val bibleVersionKey = stringPreferencesKey(BIBLE_VERSION_KEY)
 
@@ -62,6 +64,8 @@ internal class BibleRepositoryImpl(
             preferences[bibleVersionKey] = id
         }
     }
+
+    private fun getDefaultVersion(): String = if (languageProvider.getAppLanguage().isPortugueseBrazil) "ACF" else "WEB"
 
     companion object {
         private const val BIBLE_VERSION_KEY = "selected_bible_version"

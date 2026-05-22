@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.donation.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.feature.donation.generated.DonationBuildKonfig
+import com.quare.bibleplanner.feature.donation.presentation.factory.DonationUiStateFactory
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -10,8 +11,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class DonationViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(DonationUiState())
+class DonationViewModel(
+    factory: DonationUiStateFactory,
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(factory.create())
     val uiState = _uiState.asStateFlow()
 
     private val _uiAction = MutableSharedFlow<DonationUiAction>()
@@ -27,7 +30,6 @@ class DonationViewModel : ViewModel() {
 
             is DonationUiEvent.Copy -> {
                 viewModelScope.launch {
-                    // Toggle: if already copied, clear it; otherwise, copy it
                     if (_uiState.value.copiedType == event.type) {
                         _uiState.update { it.copy(copiedType = null) }
                     } else {
