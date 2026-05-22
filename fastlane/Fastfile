@@ -78,15 +78,19 @@ def stage_play_changelogs(version, version_code)
   return false if notes.empty?
 
   written = false
-  { "en" => "en-US", "pt" => "pt-BR", "es" => "es-419" }.each do |lang, locale|
+  # Play Store listing locales. Spanish notes are reused across every Spanish
+  # variant the listing supports.
+  { "en" => ["en-US"], "pt" => ["pt-BR"], "es" => ["es-419", "es-ES", "es-US"] }.each do |lang, locales|
     text = notes[lang]
     next unless text
 
-    dir = File.join("fastlane", "metadata", "android", locale, "changelogs")
-    FileUtils.mkdir_p(dir)
-    File.write(File.join(dir, "#{version_code}.txt"), text)
-    UI.message("Staged Play changelog for #{locale}")
-    written = true
+    locales.each do |locale|
+      dir = File.join("fastlane", "metadata", "android", locale, "changelogs")
+      FileUtils.mkdir_p(dir)
+      File.write(File.join(dir, "#{version_code}.txt"), text)
+      UI.message("Staged Play changelog for #{locale}")
+      written = true
+    end
   end
   written
 end
