@@ -81,6 +81,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.navigation)
     implementation(projects.core.provider.koin)
+    implementation(projects.core.provider.language)
     implementation(projects.core.provider.room)
     implementation(projects.core.utils)
     implementation(projects.core.date)

@@ -71,6 +71,7 @@ kotlin {
             api(projects.core.plan)
             api(projects.core.remoteConfig)
             api(projects.core.provider.koin)
+            api(projects.core.provider.language)
             api(projects.core.provider.room)
             api(projects.core.provider.supabase)
             api(projects.core.provider.billing)

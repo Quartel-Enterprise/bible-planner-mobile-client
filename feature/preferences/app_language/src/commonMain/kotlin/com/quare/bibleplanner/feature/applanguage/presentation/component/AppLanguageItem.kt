@@ -6,6 +6,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 internal fun AppLanguageItem(
@@ -15,7 +16,7 @@ internal fun AppLanguageItem(
     modifier: Modifier = Modifier,
 ) {
     ListItem(
-        headlineContent = { Text(name) },
+        headlineContent = { Text(name, fontWeight = if (isSelected) FontWeight.SemiBold else null) },
         trailingContent = {
             RadioButton(
                 selected = isSelected,

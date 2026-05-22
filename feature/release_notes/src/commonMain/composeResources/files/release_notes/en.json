@@ -1,4 +1,7 @@
 {
+  "1.14.0": [
+    "When changing the app language, the current language now appears highlighted at the top of the list, with the rest sorted alphabetically."
+  ],
   "1.13.0": [
     "Fix extra whitespace below the search bar on the books screen.",
     "You can now change the app language from the 'More' screen. English, Portuguese (Brazil), and Spanish are available."

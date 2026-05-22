@@ -1,4 +1,7 @@
 {
+  "1.14.0": [
+    "Al cambiar el idioma de la aplicación, el idioma actual ahora aparece destacado en la parte superior de la lista, con los demás en orden alfabético."
+  ],
   "1.13.0": [
     "Corrección del espacio en blanco extra debajo de la barra de búsqueda en la pantalla de libros.",
     "Ahora puedes cambiar el idioma de la aplicación desde la pantalla 'Más'. Están disponibles inglés, portugués (Brasil) y español."

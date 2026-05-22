@@ -13,7 +13,7 @@ import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
-import com.quare.bibleplanner.core.utils.social.SocialUtils
+import com.quare.bibleplanner.feature.more.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction
@@ -33,6 +33,7 @@ internal class MoreViewModel(
     uiStateFactory: MoreUiStateFactory,
     private val calculateBibleProgress: CalculateBibleProgressUseCase,
     private val getWebAppUrl: GetWebAppUrl,
+    private val getInstagramUrl: GetInstagramUrlUseCase,
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
@@ -70,7 +71,7 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.INSTAGRAM -> {
-                        emitAction(OpenLink(SocialUtils.getInstagramUrl()))
+                        emitAction(OpenLink(getInstagramUrl()))
                     }
 
                     MoreOptionItemType.EDIT_PLAN_START_DAY -> {
