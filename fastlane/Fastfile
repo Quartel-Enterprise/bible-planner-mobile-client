@@ -102,6 +102,9 @@ platform :android do
   desc "Build a signed release AAB and upload it to Google Play"
   desc "Options: track (production|beta|alpha|internal) — defaults to production"
   lane :release do |options|
+    # fastlane runs lanes from the fastlane/ directory — operate from the repo root.
+    Dir.chdir("..")
+
     track = options[:track] || "production"
 
     # Release signing is wired in androidApp/build.gradle.kts and reads the
@@ -146,6 +149,9 @@ end
 platform :ios do
   desc "Build a signed release IPA and upload it to App Store Connect"
   lane :release do
+    # fastlane runs lanes from the fastlane/ directory — operate from the repo root.
+    Dir.chdir("..")
+
     # Creates an isolated temporary keychain on CI so signing never touches
     # the machine's login keychain. No-op when running outside CI.
     setup_ci
