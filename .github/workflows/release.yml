@@ -107,10 +107,12 @@ jobs:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
           PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
           echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
           printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
+          printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
 
       - name: Build and upload to Google Play
         run: fastlane android release track:"${{ inputs.track }}"
@@ -158,10 +160,13 @@ jobs:
           chmod 600 "$RUNNER_TEMP/match_ci_ssh"
           ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
 
-      - name: Decode Firebase config
+      - name: Decode Firebase config and local properties
         env:
           GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
-        run: echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        run: |
+          echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist
+          printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
 
       - name: Build and upload to App Store Connect
         run: fastlane ios release
