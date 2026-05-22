@@ -32,13 +32,14 @@ flowchart TD
 | Job | Runner | Gated | What it does |
 |-----|--------|-------|--------------|
 | `plan` | ubuntu | no | Resolves the version and shows it in the run summary |
-| `android` | ubuntu | yes | Builds the signed AAB and uploads it to Google Play |
+| `android-build` | ubuntu | yes | Builds the signed AAB and saves it as a build artifact |
+| `android-upload` | ubuntu | yes | Uploads the AAB to Google Play |
 | `ios-build` | macOS | yes | Builds the signed IPA and saves it as a build artifact |
 | `ios-upload` | macOS | yes | Uploads the IPA to App Store Connect and submits it for review |
 | `finalize` | ubuntu | no | Branch + version bump, merge-back PR, GitHub Release |
 
-Splitting iOS into `ios-build` and `ios-upload` means a failed upload can be retried (re-run
-just `ios-upload`) without paying for another iOS build.
+Both platforms split build and upload into separate jobs, so a failed upload can be retried
+(re-run just the `*-upload` job) without paying for another build.
 
 ## Triggering a release
 

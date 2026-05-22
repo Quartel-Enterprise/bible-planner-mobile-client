@@ -75,8 +75,8 @@ jobs:
         id: resolve
         run: ./scripts/suggest-version.sh "${{ inputs.version }}"
 
-  android:
-    name: Android — Google Play
+  android-build:
+    name: Android — build the AAB
     needs: plan
     if: ${{ inputs.platforms == 'both' || inputs.platforms == 'android' }}
     runs-on: ubuntu-latest
@@ -102,25 +102,70 @@ jobs:
       - name: Install fastlane
         run: gem install fastlane --no-document
 
-      - name: Decode signing and config secrets
+      - name: Decode signing and build secrets
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
           echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
-          printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
           printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
 
-      - name: Build and upload to Google Play
-        run: fastlane android release track:"${{ inputs.track }}"
+      - name: Build the signed AAB
+        run: fastlane android build
         env:
           ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Upload the AAB as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: androidApp/build/outputs/bundle/release/
+          retention-days: 5
+          if-no-files-found: error
+
+  android-upload:
+    name: Android — upload to Google Play
+    needs: [plan, android-build]
+    if: ${{ inputs.platforms == 'both' || inputs.platforms == 'android' }}
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Bump version
+        run: ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      - name: Decode the Play Store service account
+        env:
+          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+        run: printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
+
+      - name: Download the AAB build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-aab
+          path: androidApp/build/outputs/bundle/release/
+
+      - name: Upload to Google Play
+        run: fastlane android upload track:"${{ inputs.track }}"
+        env:
           PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
           COMPLETE_RELEASE: ${{ inputs.complete_android_release }}
 
@@ -230,7 +275,7 @@ jobs:
 
   finalize:
     name: Tag, release notes and merge-back
-    needs: [plan, android, ios-upload]
+    needs: [plan, android-upload, ios-upload]
     if: ${{ inputs.platforms == 'both' && inputs.track == 'production' }}
     runs-on: ubuntu-latest
     steps:
@@ -266,7 +311,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v${{ needs.plan.outputs.version }}" \
+          gh release create "${{ needs.plan.outputs.version }}" \
             --target main \
-            --title "v${{ needs.plan.outputs.version }}" \
+            --title "${{ needs.plan.outputs.version }}" \
             --generate-notes

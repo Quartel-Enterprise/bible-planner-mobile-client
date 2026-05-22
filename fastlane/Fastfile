@@ -98,18 +98,23 @@ end
 # Android
 # ---------------------------------------------------------------------------
 platform :android do
-  desc "Build a signed release AAB and upload it to Google Play"
-  desc "Options: track (production|beta|alpha|internal) — defaults to production"
-  lane :release do |options|
-    # fastlane runs the lane from fastlane/; the repo root is its parent.
-    repo_root = File.expand_path("..")
-    track = options[:track] || "production"
-
+  desc "Build the signed release AAB (no upload) — see the `upload` lane"
+  lane :build do
     # Release signing is wired in androidApp/build.gradle.kts and reads the
     # ANDROID_KEYSTORE_* environment variables exported by the workflow.
+    # The AAB is written to androidApp/build/outputs/bundle/release/ and the
+    # workflow hands it to the `upload` lane (a separate job).
     gradle(
       task: ":androidApp:bundleRelease",
     )
+  end
+
+  desc "Upload an already-built AAB (from the `build` lane) to Google Play"
+  desc "Options: track (production|beta|alpha|internal) — defaults to production"
+  lane :upload do |options|
+    # fastlane runs the lane from fastlane/; the repo root is its parent.
+    repo_root = File.expand_path("..")
+    track = options[:track] || "production"
 
     # Build the Play "What's new" from the in-app release notes JSON, keyed by
     # the version currently set in gradle.properties. Non-fatal on failure.
