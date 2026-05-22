@@ -12,7 +12,7 @@ plugins {
 
 kotlin {
     val androidSdkVersions = getAndroidSdkVersions()
-    androidLibrary {
+    android {
         compileSdk = androidSdkVersions.compileSdk
         minSdk = androidSdkVersions.minSdk
         namespace = "com.quare.bibleplanner.shared"
