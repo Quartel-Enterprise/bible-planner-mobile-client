@@ -29,9 +29,11 @@ android {
     }
     signingConfigs {
         create("release") {
-            // Populated only on CI, where the release workflow exports these
-            // variables after decoding the keystore from GitHub secrets.
-            // Local builds leave them unset and fall back to debug signing.
+            /*
+             * Populated only on CI, where the release workflow exports these
+             * variables after decoding the keystore from GitHub secrets.
+             * Local builds leave them unset and fall back to debug signing.
+             */
             val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
             if (keystorePath != null) {
                 storeFile = file(keystorePath)
@@ -50,9 +52,11 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-            // Bundle native debug symbols into the AAB so Google Play can
-            // symbolicate native crash stack traces. Stripped from the user
-            // download, so it has no impact on the delivered app size.
+            /*
+             * Bundle native debug symbols into the AAB so Google Play can
+             * symbolicate native crash stack traces. Stripped from the user
+             * download, so it has no impact on the delivered app size.
+             */
             ndk {
                 debugSymbolLevel = "FULL"
             }
