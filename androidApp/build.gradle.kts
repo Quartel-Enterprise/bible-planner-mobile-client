@@ -27,11 +27,39 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        create("release") {
+            /*
+             * Populated only on CI, where the release workflow exports these
+             * variables after decoding the keystore from GitHub secrets.
+             * Local builds leave them unset and fall back to debug signing.
+             */
+            val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (System.getenv("ANDROID_KEYSTORE_PATH") != null) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
+            /*
+             * Bundle native debug symbols into the AAB so Google Play can
+             * symbolicate native crash stack traces. Stripped from the user
+             * download, so it has no impact on the delivered app size.
+             */
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
 }
