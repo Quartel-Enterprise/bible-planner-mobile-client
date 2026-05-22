@@ -47,8 +47,8 @@ elif [[ -n "$json_version" ]] && is_higher "$json_version" "$current_version"; t
   version="$json_version"
   source_desc="taken from the release notes JSON (the team's declared next version)"
 else
-  # Anchor = last v* tag, falling back to the last "merge back" commit.
-  anchor="$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)"
+  # Anchor = last X.Y.Z tag, falling back to the last "merge back" commit.
+  anchor="$(git describe --tags --abbrev=0 --match '[0-9]*' 2>/dev/null || true)"
   if [[ -z "$anchor" ]]; then
     anchor="$(git log --grep='merge back' --format='%H' -n 1 2>/dev/null || true)"
   fi
