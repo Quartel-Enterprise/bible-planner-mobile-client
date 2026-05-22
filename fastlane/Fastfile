@@ -70,6 +70,27 @@ def stage_release_notes(api_key)
   written
 end
 
+# Writes fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt from
+# the in-app release notes JSON, so Google Play shows the same "What's new".
+# Returns true if any file was written.
+def stage_play_changelogs(version, version_code)
+  notes = release_notes_for_version(version)
+  return false if notes.empty?
+
+  written = false
+  { "en" => "en-US", "pt" => "pt-BR", "es" => "es-419" }.each do |lang, locale|
+    text = notes[lang]
+    next unless text
+
+    dir = File.join("fastlane", "metadata", "android", locale, "changelogs")
+    FileUtils.mkdir_p(dir)
+    File.write(File.join(dir, "#{version_code}.txt"), text)
+    UI.message("Staged Play changelog for #{locale}")
+    written = true
+  end
+  written
+end
+
 # ---------------------------------------------------------------------------
 # Android
 # ---------------------------------------------------------------------------
@@ -85,6 +106,18 @@ platform :android do
       task: ":androidApp:bundleRelease",
     )
 
+    # Build the Play "What's new" from the in-app release notes JSON, keyed by
+    # the version currently set in gradle.properties. Non-fatal on failure.
+    props = File.read("gradle.properties")
+    version = props[/^versionName=(.+)$/, 1]&.strip
+    version_code = props[/^versionCode=(.+)$/, 1]&.strip
+    has_changelogs = false
+    begin
+      has_changelogs = stage_play_changelogs(version, version_code)
+    rescue => e
+      UI.error("Could not prepare Play changelogs, continuing without them: #{e.message}")
+    end
+
     upload_to_play_store(
       package_name: ANDROID_PACKAGE,
       track: track,
@@ -92,7 +125,7 @@ platform :android do
       aab: "androidApp/build/outputs/bundle/release/androidApp-release.aab",
       json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
       skip_upload_metadata: true,
-      skip_upload_changelogs: true,
+      skip_upload_changelogs: !has_changelogs,
       skip_upload_images: true,
       skip_upload_screenshots: true,
     )

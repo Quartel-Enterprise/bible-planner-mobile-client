@@ -50,6 +50,12 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // Bundle native debug symbols into the AAB so Google Play can
+            // symbolicate native crash stack traces. Stripped from the user
+            // download, so it has no impact on the delivered app size.
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
 }
