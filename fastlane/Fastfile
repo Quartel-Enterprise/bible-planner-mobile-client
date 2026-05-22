@@ -35,13 +35,10 @@ def release_notes_for_version(version, repo_root)
 end
 
 # Lists the locales of the app's App Store listing (e.g. ["en-US", "pt-BR", "es-MX"]).
-def app_store_listing_locales(api_key)
+# Uses the global Spaceship session configured by app_store_connect_api_key
+# (set_spaceship_token: true) — avoids re-parsing the .p8 key by hand.
+def app_store_listing_locales
   require "spaceship"
-  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.create(
-    key_id: api_key[:key_id],
-    issuer_id: api_key[:issuer_id],
-    key: api_key[:key],
-  )
   app = Spaceship::ConnectAPI::App.find(APP_BUNDLE_ID)
   version = app.get_live_app_store_version || app.get_edit_app_store_version
   version.get_app_store_version_localizations.map(&:locale)
@@ -51,7 +48,7 @@ end
 # locale that has matching in-app release notes. Returns true if any file was
 # written. "What's New" comes from the in-app release notes JSON, keyed by the
 # version currently set in Config.xcconfig.
-def stage_release_notes(api_key, repo_root)
+def stage_release_notes(repo_root)
   version = File.read(File.join(repo_root, XCCONFIG))[/^MARKETING_VERSION=(.+)$/, 1]&.strip
   notes = release_notes_for_version(version, repo_root)
   if notes.empty?
@@ -60,7 +57,7 @@ def stage_release_notes(api_key, repo_root)
   end
 
   written = false
-  app_store_listing_locales(api_key).each do |locale|
+  app_store_listing_locales.each do |locale|
     text = notes[locale.split("-").first.downcase]
     next unless text
 
@@ -163,6 +160,7 @@ platform :ios do
       issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
       key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_P8"),
       is_key_content_base64: true,
+      set_spaceship_token: true,
     )
 
     # Fetch the distribution certificate + provisioning profiles from the
@@ -214,7 +212,7 @@ platform :ios do
     # Non-fatal: a failure here must not block shipping the build.
     has_release_notes = false
     begin
-      has_release_notes = stage_release_notes(api_key, repo_root)
+      has_release_notes = stage_release_notes(repo_root)
     rescue => e
       UI.error("Could not prepare release notes, continuing without them: #{e.message}")
     end
@@ -223,7 +221,14 @@ platform :ios do
     # build is also submitted for Apple review and auto-released once approved;
     # when false it only lands in App Store Connect / TestFlight (safe for test
     # runs). Apple review can still reject — ship a fix as a new version.
-    submit = ENV.fetch("SUBMIT_FOR_REVIEW", "true").strip.downcase == "true"
+    # Submitting for review needs a valid "What's New". If the release notes
+    # could not be staged, upload the build without submitting so the run does
+    # not hard-fail — finish the submission from App Store Connect.
+    submit_requested = ENV.fetch("SUBMIT_FOR_REVIEW", "true").strip.downcase == "true"
+    submit = submit_requested && has_release_notes
+    if submit_requested && !has_release_notes
+      UI.important("No release notes staged — uploading the build without submitting it for review.")
+    end
 
     upload_to_app_store(
       api_key: api_key,
