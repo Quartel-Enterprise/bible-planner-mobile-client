@@ -146,8 +146,8 @@ end
 # iOS
 # ---------------------------------------------------------------------------
 platform :ios do
-  desc "Build a signed release IPA and upload it to App Store Connect"
-  lane :release do
+  desc "Build the signed release IPA (no upload) — see the `upload` lane"
+  lane :build do
     # fastlane runs the lane from fastlane/; the repo root is its parent.
     repo_root = File.expand_path("..")
 
@@ -194,11 +194,15 @@ platform :ios do
       build_configurations: ["Release"],
     )
 
+    # The IPA is written to build/ios/ so the workflow can hand it to the
+    # `upload` lane (a separate job), so a failed upload never costs a rebuild.
     build_app(
       project: File.join(repo_root, XCODE_PROJECT),
       scheme: "iosApp",
       configuration: "Release",
       export_method: "app-store",
+      output_directory: File.join(repo_root, "build/ios"),
+      output_name: "BiblePlanner",
       export_options: {
         signingStyle: "manual",
         provisioningProfiles: {
@@ -206,6 +210,20 @@ platform :ios do
           WIDGET_BUNDLE_ID => "match AppStore #{WIDGET_BUNDLE_ID}",
         },
       },
+    )
+  end
+
+  desc "Upload an already-built IPA (from the `build` lane) to App Store Connect"
+  lane :upload do
+    # fastlane runs the lane from fastlane/; the repo root is its parent.
+    repo_root = File.expand_path("..")
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_P8"),
+      is_key_content_base64: true,
+      set_spaceship_token: true,
     )
 
     # Build the App Store "What's New" from the in-app release notes JSON.
@@ -217,10 +235,6 @@ platform :ios do
       UI.error("Could not prepare release notes, continuing without them: #{e.message}")
     end
 
-    # Uploads the build to App Store Connect. When SUBMIT_FOR_REVIEW is true the
-    # build is also submitted for Apple review and auto-released once approved;
-    # when false it only lands in App Store Connect / TestFlight (safe for test
-    # runs). Apple review can still reject — ship a fix as a new version.
     # Submitting for review needs a valid "What's New". If the release notes
     # could not be staged, upload the build without submitting so the run does
     # not hard-fail — finish the submission from App Store Connect.
@@ -230,8 +244,13 @@ platform :ios do
       UI.important("No release notes staged — uploading the build without submitting it for review.")
     end
 
+    # The IPA was produced by the `build` lane and restored from the build
+    # artifact into build/ios/. When SUBMIT_FOR_REVIEW is true and notes are
+    # present, the build is submitted for Apple review and auto-released once
+    # approved; otherwise it only lands in App Store Connect / TestFlight.
     upload_to_app_store(
       api_key: api_key,
+      ipa: File.join(repo_root, "build/ios/BiblePlanner.ipa"),
       metadata_path: File.join(repo_root, "fastlane/metadata"),
       skip_metadata: !has_release_notes,
       skip_screenshots: true,

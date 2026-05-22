@@ -124,8 +124,8 @@ jobs:
           PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
           COMPLETE_RELEASE: ${{ inputs.complete_android_release }}
 
-  ios:
-    name: iOS — App Store Connect
+  ios-build:
+    name: iOS — build the IPA
     needs: plan
     if: ${{ inputs.platforms == 'both' || inputs.platforms == 'ios' }}
     runs-on: macos-latest
@@ -173,19 +173,64 @@ jobs:
           echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist
           printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
 
-      - name: Build and upload to App Store Connect
-        run: fastlane ios release
+      - name: Build the signed IPA
+        run: fastlane ios build
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ci_ssh -o IdentitiesOnly=yes
+
+      - name: Upload the IPA as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/
+          retention-days: 5
+          if-no-files-found: error
+
+  ios-upload:
+    name: iOS — upload to App Store Connect
+    needs: [plan, ios-build]
+    if: ${{ inputs.platforms == 'both' || inputs.platforms == 'ios' }}
+    runs-on: macos-latest
+    environment: Production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Bump version
+        run: ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      - name: Download the IPA build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/
+
+      - name: Upload to App Store Connect
+        run: fastlane ios upload
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           SUBMIT_FOR_REVIEW: ${{ inputs.submit_ios_for_review }}
 
   finalize:
     name: Tag, release notes and merge-back
-    needs: [plan, android, ios]
+    needs: [plan, android, ios-upload]
     if: ${{ inputs.platforms == 'both' && inputs.track == 'production' }}
     runs-on: ubuntu-latest
     steps:

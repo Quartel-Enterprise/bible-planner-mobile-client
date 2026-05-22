@@ -33,8 +33,12 @@ flowchart TD
 |-----|--------|-------|--------------|
 | `plan` | ubuntu | no | Resolves the version and shows it in the run summary |
 | `android` | ubuntu | yes | Builds the signed AAB and uploads it to Google Play |
-| `ios` | macOS | yes | Builds the signed IPA, uploads it and submits it for App Store review |
+| `ios-build` | macOS | yes | Builds the signed IPA and saves it as a build artifact |
+| `ios-upload` | macOS | yes | Uploads the IPA to App Store Connect and submits it for review |
 | `finalize` | ubuntu | no | Branch + version bump, merge-back PR, GitHub Release |
+
+Splitting iOS into `ios-build` and `ios-upload` means a failed upload can be retried (re-run
+just `ios-upload`) without paying for another iOS build.
 
 ## Triggering a release
 
