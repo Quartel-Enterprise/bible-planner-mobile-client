@@ -49,6 +49,9 @@ flowchart TD
      uploads it to the track as a draft you release manually from the Play Console.
    - **submit_ios_for_review** — `true` (default) submits the iOS build for App Store review;
      `false` only uploads it to App Store Connect / TestFlight (use it for test runs).
+
+Alternatively, run `./scripts/release.sh` from the terminal — it asks for the same inputs as a
+menu (with the same defaults) and prints the link to the dispatched run.
 4. Click **Run workflow**.
 5. The `plan` job runs and prints the resolved version in the run summary. The run then pauses
    on the **Production** environment.
