@@ -3,6 +3,9 @@
 #
 # These lanes are designed to run on GitHub Actions (see .github/workflows/release.yml).
 # All credentials are provided through environment variables / GitHub secrets.
+#
+# fastlane runs lanes from the `fastlane/` directory, so every path below is
+# resolved against the repository root, captured once per lane as `repo_root`.
 
 opt_out_usage
 skip_docs
@@ -19,10 +22,10 @@ RELEASE_NOTES_DIR = "feature/release_notes/src/commonMain/composeResources/files
 
 # Reads the in-app release notes JSON files and returns the notes for the given
 # version as { "en" => "text", "pt" => "text", "es" => "text" } (one line per item).
-def release_notes_for_version(version)
+def release_notes_for_version(version, repo_root)
   notes = {}
   { "en" => "en.json", "pt" => "pt.json", "es" => "es.json" }.each do |lang, file|
-    path = File.join(RELEASE_NOTES_DIR, file)
+    path = File.join(repo_root, RELEASE_NOTES_DIR, file)
     next unless File.exist?(path)
 
     items = JSON.parse(File.read(path))[version]
@@ -44,13 +47,13 @@ def app_store_listing_locales(api_key)
   version.get_app_store_version_localizations.map(&:locale)
 end
 
-# Writes fastlane/metadata/<locale>/release_notes.txt for every App Store locale
-# that has matching in-app release notes. Returns true if any file was written.
-# The "What's New" text is sourced from the in-app release notes JSON, keyed by
-# the version currently set in Config.xcconfig.
-def stage_release_notes(api_key)
-  version = File.read(XCCONFIG)[/^MARKETING_VERSION=(.+)$/, 1]&.strip
-  notes = release_notes_for_version(version)
+# Writes <repo>/fastlane/metadata/<locale>/release_notes.txt for every App Store
+# locale that has matching in-app release notes. Returns true if any file was
+# written. "What's New" comes from the in-app release notes JSON, keyed by the
+# version currently set in Config.xcconfig.
+def stage_release_notes(api_key, repo_root)
+  version = File.read(File.join(repo_root, XCCONFIG))[/^MARKETING_VERSION=(.+)$/, 1]&.strip
+  notes = release_notes_for_version(version, repo_root)
   if notes.empty?
     UI.important("No in-app release notes found for #{version} — App Store 'What's New' will be left unchanged.")
     return false
@@ -61,7 +64,7 @@ def stage_release_notes(api_key)
     text = notes[locale.split("-").first.downcase]
     next unless text
 
-    dir = File.join("fastlane", "metadata", locale)
+    dir = File.join(repo_root, "fastlane", "metadata", locale)
     FileUtils.mkdir_p(dir)
     File.write(File.join(dir, "release_notes.txt"), text)
     UI.message("Staged 'What's New' for #{locale}")
@@ -70,11 +73,10 @@ def stage_release_notes(api_key)
   written
 end
 
-# Writes fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt from
-# the in-app release notes JSON, so Google Play shows the same "What's new".
-# Returns true if any file was written.
-def stage_play_changelogs(version, version_code)
-  notes = release_notes_for_version(version)
+# Writes <repo>/fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt
+# from the in-app release notes JSON. Returns true if any file was written.
+def stage_play_changelogs(version, version_code, repo_root)
+  notes = release_notes_for_version(version, repo_root)
   return false if notes.empty?
 
   written = false
@@ -85,7 +87,7 @@ def stage_play_changelogs(version, version_code)
     next unless text
 
     locales.each do |locale|
-      dir = File.join("fastlane", "metadata", "android", locale, "changelogs")
+      dir = File.join(repo_root, "fastlane", "metadata", "android", locale, "changelogs")
       FileUtils.mkdir_p(dir)
       File.write(File.join(dir, "#{version_code}.txt"), text)
       UI.message("Staged Play changelog for #{locale}")
@@ -102,10 +104,8 @@ platform :android do
   desc "Build a signed release AAB and upload it to Google Play"
   desc "Options: track (production|beta|alpha|internal) — defaults to production"
   lane :release do |options|
-    # fastlane runs the lane from the repo root, but some actions (e.g. gradle)
-    # leave the working directory changed. The repo root is captured here and
-    # restored before each step that depends on relative paths.
-    project_root = Dir.pwd
+    # fastlane runs the lane from fastlane/; the repo root is its parent.
+    repo_root = File.expand_path("..")
     track = options[:track] || "production"
 
     # Release signing is wired in androidApp/build.gradle.kts and reads the
@@ -116,13 +116,12 @@ platform :android do
 
     # Build the Play "What's new" from the in-app release notes JSON, keyed by
     # the version currently set in gradle.properties. Non-fatal on failure.
-    Dir.chdir(project_root)
-    props = File.read("gradle.properties")
+    props = File.read(File.join(repo_root, "gradle.properties"))
     version = props[/^versionName=(.+)$/, 1]&.strip
     version_code = props[/^versionCode=(.+)$/, 1]&.strip
     has_changelogs = false
     begin
-      has_changelogs = stage_play_changelogs(version, version_code)
+      has_changelogs = stage_play_changelogs(version, version_code, repo_root)
     rescue => e
       UI.error("Could not prepare Play changelogs, continuing without them: #{e.message}")
     end
@@ -131,12 +130,12 @@ platform :android do
     # build without releasing it, to be released manually from the Play Console.
     release_status = ENV.fetch("COMPLETE_RELEASE", "true").strip.downcase == "true" ? "completed" : "draft"
 
-    Dir.chdir(project_root)
     upload_to_play_store(
       package_name: ANDROID_PACKAGE,
       track: track,
       release_status: release_status,
-      aab: "androidApp/build/outputs/bundle/release/androidApp-release.aab",
+      aab: File.join(repo_root, "androidApp/build/outputs/bundle/release/androidApp-release.aab"),
+      metadata_path: File.join(repo_root, "fastlane/metadata/android"),
       json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
       skip_upload_metadata: true,
       skip_upload_changelogs: !has_changelogs,
@@ -152,10 +151,8 @@ end
 platform :ios do
   desc "Build a signed release IPA and upload it to App Store Connect"
   lane :release do
-    # fastlane runs the lane from the repo root, but some actions leave the
-    # working directory changed. The repo root is captured here and restored
-    # before each step that depends on relative paths.
-    project_root = Dir.pwd
+    # fastlane runs the lane from fastlane/; the repo root is its parent.
+    repo_root = File.expand_path("..")
 
     # Creates an isolated temporary keychain on CI so signing never touches
     # the machine's login keychain. No-op when running outside CI.
@@ -180,20 +177,18 @@ platform :ios do
     # Switch the Release configuration to manual signing at build time only.
     # The committed project keeps automatic signing, so local development is
     # unaffected.
-    Dir.chdir(project_root)
     update_code_signing_settings(
       use_automatic_signing: false,
-      path: XCODE_PROJECT,
+      path: File.join(repo_root, XCODE_PROJECT),
       team_id: APPLE_TEAM_ID,
       targets: ["iosApp"],
       code_sign_identity: "Apple Distribution",
       profile_name: "match AppStore #{APP_BUNDLE_ID}",
       build_configurations: ["Release"],
     )
-    Dir.chdir(project_root)
     update_code_signing_settings(
       use_automatic_signing: false,
-      path: XCODE_PROJECT,
+      path: File.join(repo_root, XCODE_PROJECT),
       team_id: APPLE_TEAM_ID,
       targets: ["BibleDownloadWidgetExtension"],
       code_sign_identity: "Apple Distribution",
@@ -201,9 +196,8 @@ platform :ios do
       build_configurations: ["Release"],
     )
 
-    Dir.chdir(project_root)
     build_app(
-      project: XCODE_PROJECT,
+      project: File.join(repo_root, XCODE_PROJECT),
       scheme: "iosApp",
       configuration: "Release",
       export_method: "app-store",
@@ -218,10 +212,9 @@ platform :ios do
 
     # Build the App Store "What's New" from the in-app release notes JSON.
     # Non-fatal: a failure here must not block shipping the build.
-    Dir.chdir(project_root)
     has_release_notes = false
     begin
-      has_release_notes = stage_release_notes(api_key)
+      has_release_notes = stage_release_notes(api_key, repo_root)
     rescue => e
       UI.error("Could not prepare release notes, continuing without them: #{e.message}")
     end
@@ -232,9 +225,9 @@ platform :ios do
     # runs). Apple review can still reject — ship a fix as a new version.
     submit = ENV.fetch("SUBMIT_FOR_REVIEW", "true").strip.downcase == "true"
 
-    Dir.chdir(project_root)
     upload_to_app_store(
       api_key: api_key,
+      metadata_path: File.join(repo_root, "fastlane/metadata"),
       skip_metadata: !has_release_notes,
       skip_screenshots: true,
       submit_for_review: submit,
