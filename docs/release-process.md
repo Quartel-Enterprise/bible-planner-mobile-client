@@ -178,4 +178,9 @@ All secrets are stored in the `Production` environment, never committed:
 `ANDROID_KEY_PASSWORD`, `PLAY_STORE_SERVICE_ACCOUNT_JSON`, `GOOGLE_SERVICES_JSON`,
 `GOOGLE_SERVICE_INFO_PLIST`, `APP_STORE_CONNECT_API_KEY_ID`,
 `APP_STORE_CONNECT_API_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY_P8`, `MATCH_PASSWORD`,
-`MATCH_SSH_PRIVATE_KEY`.
+`MATCH_SSH_PRIVATE_KEY`, `LOCAL_PROPERTIES`.
+
+`LOCAL_PROPERTIES` holds the contents of `local.properties` (minus `sdk.dir`) — the
+build-time values consumed by BuildKonfig (Supabase, RevenueCat, donation addresses and the
+GitHub token). The workflow writes it to `local.properties` before building, since that file
+is git-ignored and would otherwise be missing on the runner.
