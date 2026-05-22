@@ -39,6 +39,10 @@ on:
           - alpha
           - internal
         default: production
+      submit_ios_for_review:
+        description: "Submit the iOS build for App Store review (uncheck for a test run)"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -162,6 +166,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ci_ssh -o IdentitiesOnly=yes
+          SUBMIT_FOR_REVIEW: ${{ inputs.submit_ios_for_review }}
 
   finalize:
     name: Tag, release notes and merge-back

@@ -207,15 +207,18 @@ platform :ios do
       UI.error("Could not prepare release notes, continuing without them: #{e.message}")
     end
 
-    # Uploads the build, submits it for Apple review and releases it
-    # automatically once approved. Apple review is still a human gate and may
-    # reject the build — ship a fix as the next version if that happens.
+    # Uploads the build to App Store Connect. When SUBMIT_FOR_REVIEW is true the
+    # build is also submitted for Apple review and auto-released once approved;
+    # when false it only lands in App Store Connect / TestFlight (safe for test
+    # runs). Apple review can still reject — ship a fix as a new version.
+    submit = ENV.fetch("SUBMIT_FOR_REVIEW", "true").strip.downcase == "true"
+
     upload_to_app_store(
       api_key: api_key,
       skip_metadata: !has_release_notes,
       skip_screenshots: true,
-      submit_for_review: true,
-      automatic_release: true,
+      submit_for_review: submit,
+      automatic_release: submit,
       force: true,
       precheck_include_in_app_purchases: false,
     )
