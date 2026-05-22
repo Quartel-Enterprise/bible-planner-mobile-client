@@ -3,19 +3,72 @@
 #
 # These lanes are designed to run on GitHub Actions (see .github/workflows/release.yml).
 # All credentials are provided through environment variables / GitHub secrets.
-#
-# NOTE: bump `versionCode` / `versionName` in gradle.properties and
-# `CURRENT_PROJECT_VERSION` / `MARKETING_VERSION` in iosApp/Configuration/Config.xcconfig
-# before triggering a release — stores reject an already-published version.
 
 opt_out_usage
 skip_docs
+
+require "json"
 
 APP_BUNDLE_ID    = "com.quare.bibleplanner.BiblePlanner".freeze
 WIDGET_BUNDLE_ID = "com.quare.bibleplanner.BiblePlanner.BibleDownloadWidget".freeze
 ANDROID_PACKAGE  = "com.quare.bibleplanner".freeze
 APPLE_TEAM_ID    = "TTV2A365LG".freeze
 XCODE_PROJECT    = "iosApp/iosApp.xcodeproj".freeze
+XCCONFIG         = "iosApp/Configuration/Config.xcconfig".freeze
+RELEASE_NOTES_DIR = "feature/release_notes/src/commonMain/composeResources/files/release_notes".freeze
+
+# Reads the in-app release notes JSON files and returns the notes for the given
+# version as { "en" => "text", "pt" => "text", "es" => "text" } (one line per item).
+def release_notes_for_version(version)
+  notes = {}
+  { "en" => "en.json", "pt" => "pt.json", "es" => "es.json" }.each do |lang, file|
+    path = File.join(RELEASE_NOTES_DIR, file)
+    next unless File.exist?(path)
+
+    items = JSON.parse(File.read(path))[version]
+    notes[lang] = items.join("\n") if items.is_a?(Array) && !items.empty?
+  end
+  notes
+end
+
+# Lists the locales of the app's App Store listing (e.g. ["en-US", "pt-BR", "es-MX"]).
+def app_store_listing_locales(api_key)
+  require "spaceship"
+  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.create(
+    key_id: api_key[:key_id],
+    issuer_id: api_key[:issuer_id],
+    key: api_key[:key],
+  )
+  app = Spaceship::ConnectAPI::App.find(APP_BUNDLE_ID)
+  version = app.get_live_app_store_version || app.get_edit_app_store_version
+  version.get_app_store_version_localizations.map(&:locale)
+end
+
+# Writes fastlane/metadata/<locale>/release_notes.txt for every App Store locale
+# that has matching in-app release notes. Returns true if any file was written.
+# The "What's New" text is sourced from the in-app release notes JSON, keyed by
+# the version currently set in Config.xcconfig.
+def stage_release_notes(api_key)
+  version = File.read(XCCONFIG)[/^MARKETING_VERSION=(.+)$/, 1]&.strip
+  notes = release_notes_for_version(version)
+  if notes.empty?
+    UI.important("No in-app release notes found for #{version} — App Store 'What's New' will be left unchanged.")
+    return false
+  end
+
+  written = false
+  app_store_listing_locales(api_key).each do |locale|
+    text = notes[locale.split("-").first.downcase]
+    next unless text
+
+    dir = File.join("fastlane", "metadata", locale)
+    FileUtils.mkdir_p(dir)
+    File.write(File.join(dir, "release_notes.txt"), text)
+    UI.message("Staged 'What's New' for #{locale}")
+    written = true
+  end
+  written
+end
 
 # ---------------------------------------------------------------------------
 # Android
@@ -74,7 +127,7 @@ platform :ios do
 
     # Switch the Release configuration to manual signing at build time only.
     # The committed project keeps automatic signing, so local development is
-    # unaffected (option B agreed for this pipeline).
+    # unaffected.
     update_code_signing_settings(
       use_automatic_signing: false,
       path: XCODE_PROJECT,
@@ -108,12 +161,21 @@ platform :ios do
       },
     )
 
+    # Build the App Store "What's New" from the in-app release notes JSON.
+    # Non-fatal: a failure here must not block shipping the build.
+    has_release_notes = false
+    begin
+      has_release_notes = stage_release_notes(api_key)
+    rescue => e
+      UI.error("Could not prepare release notes, continuing without them: #{e.message}")
+    end
+
     # Uploads the build, submits it for Apple review and releases it
     # automatically once approved. Apple review is still a human gate and may
     # reject the build — ship a fix as the next version if that happens.
     upload_to_app_store(
       api_key: api_key,
-      skip_metadata: true,
+      skip_metadata: !has_release_notes,
       skip_screenshots: true,
       submit_for_review: true,
       automatic_release: true,
