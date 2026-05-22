@@ -208,7 +208,7 @@ jobs:
             --head "${{ needs.plan.outputs.branch }}" \
             --title "chore: merge back ${{ needs.plan.outputs.version }} into main" \
             --body "Merges the ${{ needs.plan.outputs.version }} release (build ${{ needs.plan.outputs.version_code }}) back into main." \
-            --label enhancement \
+            --label bump \
             --assignee "${{ github.actor }}"
           gh pr merge "${{ needs.plan.outputs.branch }}" --squash --delete-branch
 
