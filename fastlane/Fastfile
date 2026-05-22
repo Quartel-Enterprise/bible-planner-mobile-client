@@ -102,9 +102,10 @@ platform :android do
   desc "Build a signed release AAB and upload it to Google Play"
   desc "Options: track (production|beta|alpha|internal) — defaults to production"
   lane :release do |options|
-    # fastlane runs lanes from the fastlane/ directory — operate from the repo root.
-    Dir.chdir("..")
-
+    # fastlane runs the lane from the repo root, but some actions (e.g. gradle)
+    # leave the working directory changed. The repo root is captured here and
+    # restored before each step that depends on relative paths.
+    project_root = Dir.pwd
     track = options[:track] || "production"
 
     # Release signing is wired in androidApp/build.gradle.kts and reads the
@@ -115,6 +116,7 @@ platform :android do
 
     # Build the Play "What's new" from the in-app release notes JSON, keyed by
     # the version currently set in gradle.properties. Non-fatal on failure.
+    Dir.chdir(project_root)
     props = File.read("gradle.properties")
     version = props[/^versionName=(.+)$/, 1]&.strip
     version_code = props[/^versionCode=(.+)$/, 1]&.strip
@@ -129,6 +131,7 @@ platform :android do
     # build without releasing it, to be released manually from the Play Console.
     release_status = ENV.fetch("COMPLETE_RELEASE", "true").strip.downcase == "true" ? "completed" : "draft"
 
+    Dir.chdir(project_root)
     upload_to_play_store(
       package_name: ANDROID_PACKAGE,
       track: track,
@@ -149,8 +152,10 @@ end
 platform :ios do
   desc "Build a signed release IPA and upload it to App Store Connect"
   lane :release do
-    # fastlane runs lanes from the fastlane/ directory — operate from the repo root.
-    Dir.chdir("..")
+    # fastlane runs the lane from the repo root, but some actions leave the
+    # working directory changed. The repo root is captured here and restored
+    # before each step that depends on relative paths.
+    project_root = Dir.pwd
 
     # Creates an isolated temporary keychain on CI so signing never touches
     # the machine's login keychain. No-op when running outside CI.
@@ -175,6 +180,7 @@ platform :ios do
     # Switch the Release configuration to manual signing at build time only.
     # The committed project keeps automatic signing, so local development is
     # unaffected.
+    Dir.chdir(project_root)
     update_code_signing_settings(
       use_automatic_signing: false,
       path: XCODE_PROJECT,
@@ -184,6 +190,7 @@ platform :ios do
       profile_name: "match AppStore #{APP_BUNDLE_ID}",
       build_configurations: ["Release"],
     )
+    Dir.chdir(project_root)
     update_code_signing_settings(
       use_automatic_signing: false,
       path: XCODE_PROJECT,
@@ -194,6 +201,7 @@ platform :ios do
       build_configurations: ["Release"],
     )
 
+    Dir.chdir(project_root)
     build_app(
       project: XCODE_PROJECT,
       scheme: "iosApp",
@@ -210,6 +218,7 @@ platform :ios do
 
     # Build the App Store "What's New" from the in-app release notes JSON.
     # Non-fatal: a failure here must not block shipping the build.
+    Dir.chdir(project_root)
     has_release_notes = false
     begin
       has_release_notes = stage_release_notes(api_key)
@@ -223,6 +232,7 @@ platform :ios do
     # runs). Apple review can still reject — ship a fix as a new version.
     submit = ENV.fetch("SUBMIT_FOR_REVIEW", "true").strip.downcase == "true"
 
+    Dir.chdir(project_root)
     upload_to_app_store(
       api_key: api_key,
       skip_metadata: !has_release_notes,
