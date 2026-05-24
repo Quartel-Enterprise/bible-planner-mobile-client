@@ -28,19 +28,20 @@ import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.loading
 import bibleplanner.feature.reading_plan.generated.resources.plan_progress_days_completed
 import bibleplanner.feature.reading_plan.generated.resources.plan_progress_days_remaining
-import bibleplanner.feature.reading_plan.generated.resources.plan_progress_motivation_default
 import bibleplanner.feature.reading_plan.generated.resources.plan_progress_title
+import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage
 import com.quare.bibleplanner.ui.component.progress.AppLinearProgressBar
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 import kotlin.math.round
 
 @Composable
-fun PlanProgress(
+internal fun PlanProgress(
     isLoading: Boolean,
     progress: Float,
     readDaysCount: Int,
     totalDaysCount: Int,
+    motivationMessage: PlanMotivationMessage?,
     modifier: Modifier = Modifier,
 ) {
     val animatedProgress by animateFloatAsState(
@@ -78,7 +79,7 @@ fun PlanProgress(
             )
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.plan_progress_motivation_default),
+                text = motivationMessage?.resolveText().orEmpty(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Start,

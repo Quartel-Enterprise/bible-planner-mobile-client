@@ -5,8 +5,38 @@
     <string name="plan_progress_title">Plan progress</string>
     <string name="plan_progress_days_completed">%1$d of %2$d days</string>
     <string name="plan_progress_days_remaining">%1$d days remaining</string>
-    <string name="plan_progress_motivation_default">Keep going, you&apos;re doing great!</string>
     <string name="loading">Loading...</string>
+
+    <string name="plan_motivation_overall_zero">Every journey starts with one page.</string>
+    <string name="plan_motivation_overall_early_start">Great start! The habit is forming.</string>
+    <string name="plan_motivation_overall_building_solid">You&apos;re building something solid.</string>
+    <string name="plan_motivation_overall_approaching_third">Almost a third done. Keep going!</string>
+    <string name="plan_motivation_overall_past_thirty">Over 30%% — impressive.</string>
+    <string name="plan_motivation_overall_halfway">Halfway there!</string>
+    <string name="plan_motivation_overall_more_than_half">Past the halfway mark. Consistency wins.</string>
+    <string name="plan_motivation_overall_three_quarters">Three quarters done. Don&apos;t stop now.</string>
+    <string name="plan_motivation_overall_final_stretch">The final stretch is near.</string>
+    <string name="plan_motivation_overall_almost_there">Almost there. One last push!</string>
+    <string name="plan_motivation_overall_completed">Plan complete! What an achievement.</string>
+
+    <string name="plan_motivation_streak_1">First day — the hardest part is over.</string>
+    <string name="plan_motivation_streak_3">3 days in a row. The habit is forming.</string>
+    <string name="plan_motivation_streak_7">A whole week. You&apos;re consistent!</string>
+    <string name="plan_motivation_streak_14">Two weeks straight. What discipline!</string>
+    <string name="plan_motivation_streak_30">A month of faithfulness. Extraordinary.</string>
+    <string name="plan_motivation_streak_100">100 days. This is life-changing.</string>
+
+    <string name="plan_motivation_day_not_started">Today hasn&apos;t happened yet — there&apos;s still time.</string>
+    <string name="plan_motivation_day_started">You started your day in the Word.</string>
+    <string name="plan_motivation_day_completed">Today&apos;s mission done!</string>
+    <string name="plan_motivation_day_one_overdue">Starting over takes courage too.</string>
+    <string name="plan_motivation_day_multiple_overdue">No guilt — get back to your rhythm.</string>
+
+    <string name="plan_motivation_milestone_entered_new_testament">You&apos;ve reached the New Testament!</string>
+    <string name="plan_motivation_milestone_only_one_left">Only %1$s left to go.</string>
+    <string name="plan_motivation_milestone_first_book_completed">First book completed in the plan!</string>
+    <string name="plan_motivation_milestone_book_completed">You finished %1$s. Next chapter!</string>
+
     <string name="week_number">Week %1$d</string>
     <string name="week_progress_complete">complete</string>
     <string name="week_progress_summary">%1$d of %2$d days</string>

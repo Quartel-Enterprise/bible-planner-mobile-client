@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetPlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
@@ -35,6 +36,7 @@ internal class ReadingPlanViewModel(
     calculateBibleProgress: CalculateBibleProgressUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
+    private val getPlanMotivationMessage: GetPlanMotivationMessage,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
     private val calculateIsFirstUnreadWeekVisible: CalculateIsFirstUnreadWeekVisible,
     private val deleteProgressMapper: DeleteProgressMapper,
@@ -57,7 +59,11 @@ internal class ReadingPlanViewModel(
             _uiState.update { currentState ->
                 when (currentState) {
                     is ReadingPlanUiState.Loaded -> {
-                        currentState.copy(progress = progress)
+                        val rawWeeks = currentState.weekPlans.map { it.weekPlan }
+                        currentState.copy(
+                            progress = progress,
+                            motivationMessage = getPlanMotivationMessage(rawWeeks, progress),
+                        )
                     }
 
                     is ReadingPlanUiState.Loading -> {
@@ -78,6 +84,7 @@ internal class ReadingPlanViewModel(
                     ReadingPlanUiState.Loaded(
                         weekPlans = weekPresentationModels,
                         progress = currentBibleProgress,
+                        motivationMessage = getPlanMotivationMessage(selectedWeeks, currentBibleProgress),
                         selectedReadingPlan = selectedPlan,
                         isShowingMenu = currentState.isShowingMenu,
                         scrollToWeekNumber = currentState.scrollToWeekNumber,
@@ -130,6 +137,7 @@ internal class ReadingPlanViewModel(
                 ReadingPlanUiState.Loaded(
                     weekPlans = weekPresentationModels,
                     progress = currentBibleProgress,
+                    motivationMessage = getPlanMotivationMessage(selectedWeeks, currentBibleProgress),
                     selectedReadingPlan = selectedPlan,
                     isShowingMenu = uiState.value.isShowingMenu,
                     scrollToWeekNumber = scrollToWeekNumber,

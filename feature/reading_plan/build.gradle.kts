@@ -49,5 +49,8 @@ kotlin {
             // Dates
             implementation(libs.kotlinx.datetime)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }

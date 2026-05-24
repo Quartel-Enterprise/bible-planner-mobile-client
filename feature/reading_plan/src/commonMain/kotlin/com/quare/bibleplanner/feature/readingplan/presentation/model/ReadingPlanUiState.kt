@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.model
 
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage
 
 internal sealed interface ReadingPlanUiState {
     val selectedReadingPlan: ReadingPlanType
@@ -13,6 +14,7 @@ internal sealed interface ReadingPlanUiState {
     data class Loaded(
         val weekPlans: List<WeekPlanPresentationModel>,
         val progress: Float,
+        val motivationMessage: PlanMotivationMessage,
         override val selectedReadingPlan: ReadingPlanType,
         override val isShowingMenu: Boolean,
         override val scrollToWeekNumber: Int = 0,
