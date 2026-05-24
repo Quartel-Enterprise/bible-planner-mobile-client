@@ -1,4 +1,8 @@
 {
+  "1.15.0": [
+    "The reading plan screen now uses a two-column layout on tablets and larger displays, with the progress panel on the left and the weeks list on the right, both scrollable independently across the full screen.",
+    "Today's reading is now highlighted in the day list, making it easier to find where you should be."
+  ],
   "1.14.0": [
     "When changing the app language, the current language now appears highlighted at the top of the list, with the rest sorted alphabetically."
   ],

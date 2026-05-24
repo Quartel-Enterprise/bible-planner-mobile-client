@@ -35,6 +35,7 @@ class WeekPlanDtoToModelMapper(
         readTimestamp = null,
         plannedReadDate = null,
         notes = null,
+        isToday = false,
     )
 
     private fun mapBook(bookDto: BookPlanDto): PassageModel? {

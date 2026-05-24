@@ -19,7 +19,10 @@ internal sealed interface ReadingPlanUiState {
         override val scrollToTop: Boolean = false,
         override val isScrolledDown: Boolean = false,
         override val isFirstUnreadWeekVisible: Boolean = false,
-    ) : ReadingPlanUiState
+    ) : ReadingPlanUiState {
+        val readDaysCount: Int = weekPlans.sumOf { it.readDaysCount }
+        val totalDaysCount: Int = weekPlans.sumOf { it.totalDays }
+    }
 
     data class Loading(
         override val selectedReadingPlan: ReadingPlanType,
