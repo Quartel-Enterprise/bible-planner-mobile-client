@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.core.plan.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
+import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.DayModel
@@ -9,42 +11,47 @@ import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
 class GetPlansByWeekUseCase(
     private val planRepository: PlanRepository,
     private val booksRepository: BooksRepository,
     private val getPlannedReadDateForDayUseCase: GetPlannedReadDateForDayUseCase,
+    private val currentTimestampProvider: CurrentTimestampProvider,
+    private val localDateTimeProvider: LocalDateTimeProvider,
 ) {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<PlansModel> = combine(
-        booksRepository.getBooksFlow(),
-        planRepository.getStartPlanTimestamp(),
-    ) { books, startDate ->
-        books to startDate
-    }.flatMapLatest { (books: List<BookDataModel>, startDate: LocalDate?) ->
-        flow {
-            emit(
-                PlansModel(
-                    chronologicalOrder = planRepository
-                        .getPlans(ReadingPlanType.CHRONOLOGICAL)
-                        .toUpdatedDayStatus(books, startDate),
-                    booksOrder = planRepository
-                        .getPlans(ReadingPlanType.BOOKS)
-                        .toUpdatedDayStatus(books, startDate),
-                ),
+    operator fun invoke(): Flow<PlansModel> {
+        val today = getTodayLocalDate()
+        return combine(
+            booksRepository.getBooksFlow(),
+            planRepository.getStartPlanTimestamp(),
+        ) { books, startDate ->
+            books to startDate
+        }.map { (books, startDate) ->
+            PlansModel(
+                chronologicalOrder = planRepository
+                    .getPlans(ReadingPlanType.CHRONOLOGICAL)
+                    .toUpdatedDayStatus(books, startDate, today),
+                booksOrder = planRepository
+                    .getPlans(ReadingPlanType.BOOKS)
+                    .toUpdatedDayStatus(books, startDate, today),
             )
-        }
+        }.flowOn(Dispatchers.Default)
     }
+
+    private fun getTodayLocalDate(): LocalDate = localDateTimeProvider
+        .getLocalDateTime(currentTimestampProvider.getCurrentTimestamp())
+        .date
 
     private fun List<WeekPlanModel>.toUpdatedDayStatus(
         books: List<BookDataModel>,
         startDate: LocalDate?,
+        today: LocalDate,
     ): List<WeekPlanModel> = map { weekPlan ->
         weekPlan.copy(
             days = weekPlan.days.map { day ->
@@ -53,6 +60,7 @@ class GetPlansByWeekUseCase(
                     books = books,
                     weekNumber = weekPlan.number,
                     startDate = startDate,
+                    today = today,
                 )
             },
         )
@@ -63,9 +71,17 @@ class GetPlansByWeekUseCase(
         books: List<BookDataModel>,
         weekNumber: Int,
         startDate: LocalDate?,
+        today: LocalDate,
     ): DayModel {
         val updatedBooks = day.passages.map { passage ->
             calculatePassageReadStatus(passage, books)
+        }
+        val plannedReadDate = startDate?.let {
+            getPlannedReadDateForDayUseCase(
+                weekNumber = weekNumber,
+                dayNumber = day.number,
+                startDate = it,
+            )
         }
         return day.copy(
             passages = updatedBooks,
@@ -73,13 +89,8 @@ class GetPlansByWeekUseCase(
             totalVerses = calculateTotalVerses(day.passages, books),
             readVerses = calculateReadVerses(day.passages, books),
             readTimestamp = day.readTimestamp,
-            plannedReadDate = startDate?.let {
-                getPlannedReadDateForDayUseCase(
-                    weekNumber = weekNumber,
-                    dayNumber = day.number,
-                    startDate = it,
-                )
-            },
+            plannedReadDate = plannedReadDate,
+            isToday = plannedReadDate == today,
         )
     }
 
