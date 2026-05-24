@@ -5,8 +5,38 @@
     <string name="plan_progress_title">Progresso do plano</string>
     <string name="plan_progress_days_completed">%1$d de %2$d dias</string>
     <string name="plan_progress_days_remaining">%1$d dias restantes</string>
-    <string name="plan_progress_motivation_default">Continue assim, você está indo bem!</string>
     <string name="loading">Carregando...</string>
+
+    <string name="plan_motivation_overall_zero">Tudo começa com uma página.</string>
+    <string name="plan_motivation_overall_early_start">Ótimo começo! O hábito está nascendo.</string>
+    <string name="plan_motivation_overall_building_solid">Você está construindo algo sólido.</string>
+    <string name="plan_motivation_overall_approaching_third">Quase um terço concluído. Continue!</string>
+    <string name="plan_motivation_overall_past_thirty">Você já passou de 30%%! Impressionante.</string>
+    <string name="plan_motivation_overall_halfway">Metade do caminho percorrido!</string>
+    <string name="plan_motivation_overall_more_than_half">Mais da metade. A consistência é sua.</string>
+    <string name="plan_motivation_overall_three_quarters">Três quartos concluídos. Não pare agora.</string>
+    <string name="plan_motivation_overall_final_stretch">A reta final está chegando.</string>
+    <string name="plan_motivation_overall_almost_there">Quase lá. Um último esforço!</string>
+    <string name="plan_motivation_overall_completed">Plano concluído! Que conquista.</string>
+
+    <string name="plan_motivation_streak_1">Primeiro dia — o mais difícil já passou.</string>
+    <string name="plan_motivation_streak_3">3 dias seguidos. O hábito está começando.</string>
+    <string name="plan_motivation_streak_7">Uma semana inteira. Você é constante!</string>
+    <string name="plan_motivation_streak_14">Duas semanas sem parar. Que disciplina!</string>
+    <string name="plan_motivation_streak_30">Um mês de fidelidade. Extraordinário.</string>
+    <string name="plan_motivation_streak_100">100 dias. Isso é transformação de vida.</string>
+
+    <string name="plan_motivation_day_not_started">Hoje ainda não foi — tem tempo.</string>
+    <string name="plan_motivation_day_started">Você começou o dia na Palavra.</string>
+    <string name="plan_motivation_day_completed">Missão do dia cumprida!</string>
+    <string name="plan_motivation_day_one_overdue">Recomeçar também é coragem.</string>
+    <string name="plan_motivation_day_multiple_overdue">Sem culpa — volte ao seu ritmo.</string>
+
+    <string name="plan_motivation_milestone_entered_new_testament">Você chegou ao Novo Testamento!</string>
+    <string name="plan_motivation_milestone_only_one_left">Apenas %1$s pela frente.</string>
+    <string name="plan_motivation_milestone_first_book_completed">Primeiro livro concluído no plano!</string>
+    <string name="plan_motivation_milestone_book_completed">Você terminou %1$s. Próximo capítulo!</string>
+
     <string name="week_number">Semana %1$d</string>
     <string name="week_progress_complete">completo</string>
     <string name="week_progress_summary">%1$d de %2$d dias</string>

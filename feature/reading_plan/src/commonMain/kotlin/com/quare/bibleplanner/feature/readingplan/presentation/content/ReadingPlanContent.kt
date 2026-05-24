@@ -100,6 +100,7 @@ private fun ResponsiveContentScope.sidePanelItems(
             progress = loadedUiState?.progress ?: 0f,
             readDaysCount = readDaysCount,
             totalDaysCount = totalDaysCount,
+            motivationMessage = loadedUiState?.motivationMessage,
             isLoading = uiState is ReadingPlanUiState.Loading,
         )
     }

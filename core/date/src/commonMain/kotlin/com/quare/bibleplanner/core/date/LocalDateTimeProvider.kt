@@ -5,10 +5,14 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
-class LocalDateTimeProvider {
+fun interface LocalDateTimeProvider {
+    fun getLocalDateTime(timestamp: Long): LocalDateTime
+}
+
+internal class LocalDateTimeProviderImpl : LocalDateTimeProvider {
     private val timeZone: TimeZone = TimeZone.currentSystemDefault()
 
-    fun getLocalDateTime(timestamp: Long): LocalDateTime = Instant
+    override fun getLocalDateTime(timestamp: Long): LocalDateTime = Instant
         .fromEpochMilliseconds(timestamp)
         .toLocalDateTime(timeZone)
 }

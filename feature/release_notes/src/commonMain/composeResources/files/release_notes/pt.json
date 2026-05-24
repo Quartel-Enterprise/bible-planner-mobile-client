@@ -3,7 +3,8 @@
     "A tela do plano de leitura agora usa um layout em duas colunas em tablets e telas maiores, com o painel de progresso à esquerda e a lista de semanas à direita, ambos com rolagem independente em toda a largura da tela.",
     "A leitura de hoje agora aparece destacada na lista de dias, facilitando encontrar onde você deve estar.",
     "Resposta mais fluida ao marcar dias como lidos no plano de leitura, principalmente em aparelhos mais antigos.",
-    "Melhor alinhamento vertical entre o painel de progresso e a lista de semanas no novo layout de duas colunas do plano de leitura."
+    "Melhor alinhamento vertical entre o painel de progresso e a lista de semanas no novo layout de duas colunas do plano de leitura.",
+    "A mensagem do card de progresso do plano agora muda conforme seu ritmo, destacando marcos de livro, sequências de dias lidos, sua leitura de hoje ou seu progresso geral na Bíblia."
   ],
   "1.14.0": [
     "Ao trocar o idioma do aplicativo, o idioma atual aparece em destaque no topo da lista, com os demais em ordem alfabética."
