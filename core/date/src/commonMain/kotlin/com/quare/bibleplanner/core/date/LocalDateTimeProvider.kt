@@ -6,7 +6,9 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
 class LocalDateTimeProvider {
+    private val timeZone: TimeZone = TimeZone.currentSystemDefault()
+
     fun getLocalDateTime(timestamp: Long): LocalDateTime = Instant
         .fromEpochMilliseconds(timestamp)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .toLocalDateTime(timeZone)
 }
