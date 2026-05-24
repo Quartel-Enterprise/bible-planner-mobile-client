@@ -11,4 +11,5 @@ data class DayModel(
     val readTimestamp: Long?,
     val plannedReadDate: LocalDate?,
     val notes: String?,
+    val isToday: Boolean = false,
 )

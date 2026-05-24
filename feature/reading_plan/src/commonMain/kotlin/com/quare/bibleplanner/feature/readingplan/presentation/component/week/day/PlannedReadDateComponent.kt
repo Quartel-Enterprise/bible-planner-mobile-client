@@ -5,12 +5,14 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
@@ -29,56 +31,64 @@ internal fun SharedTransitionScope.PlannedReadDateComponent(
     weekNumber: Int,
     dayNumber: Int,
 ) {
+    val textDecoration = if (isRead) TextDecoration.LineThrough else TextDecoration.None
+    val accentColor = MaterialTheme.colorScheme.onSurface
+    val mutedColor = if (isRead) {
+        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
-        val textDecoration = if (isRead) {
-            TextDecoration.LineThrough
-        } else {
-            TextDecoration.None
-        }
-        val textStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                modifier = Modifier.sharedElement(
-                    sharedContentState = rememberSharedContentState(
-                        key = SharedTransitionAnimationUtils.buildPlannedDay(weekNumber, dayNumber),
-                    ),
-                    animatedVisibilityScope = animatedContentScope,
+        Text(
+            modifier = Modifier.sharedElement(
+                sharedContentState = rememberSharedContentState(
+                    key = SharedTransitionAnimationUtils.buildPlannedDay(weekNumber, dayNumber),
                 ),
-                text = plannedReadDate.day.toString().padStart(2, '0'),
-                style = textStyle,
-                textDecoration = textDecoration,
-            )
-            Text(
-                modifier = Modifier.sharedElement(
-                    sharedContentState = rememberSharedContentState(
-                        key = SharedTransitionAnimationUtils.buildPlannedMonth(weekNumber, dayNumber),
-                    ),
-                    animatedVisibilityScope = animatedContentScope,
+                animatedVisibilityScope = animatedContentScope,
+            ),
+            text = plannedReadDate.day.toString().padStart(2, '0'),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = if (isRead) {
+                accentColor.copy(alpha = 0.38f)
+            } else {
+                accentColor
+            },
+            textDecoration = textDecoration,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            modifier = Modifier.sharedElement(
+                sharedContentState = rememberSharedContentState(
+                    key = SharedTransitionAnimationUtils.buildPlannedMonth(weekNumber, dayNumber),
                 ),
-                text = stringResource(plannedReadDate.month.toStringResource()).take(3),
-                style = textStyle,
-                textDecoration = textDecoration,
-            )
-        }
-
+                animatedVisibilityScope = animatedContentScope,
+            ),
+            text = stringResource(plannedReadDate.month.toStringResource()).take(3),
+            style = MaterialTheme.typography.labelSmall,
+            color = mutedColor,
+            textDecoration = textDecoration,
+            textAlign = TextAlign.Center,
+        )
         if (shouldShowYear) {
             Text(
-                modifier = Modifier.sharedElement(
-                    sharedContentState = rememberSharedContentState(
-                        key = SharedTransitionAnimationUtils.buildPlannedYear(weekNumber, dayNumber),
+                modifier = Modifier
+                    .padding(top = 2.dp)
+                    .sharedElement(
+                        sharedContentState = rememberSharedContentState(
+                            key = SharedTransitionAnimationUtils.buildPlannedYear(weekNumber, dayNumber),
+                        ),
+                        animatedVisibilityScope = animatedContentScope,
                     ),
-                    animatedVisibilityScope = animatedContentScope,
-                ),
                 text = plannedReadDate.year.toString(),
-                style = textStyle,
+                style = MaterialTheme.typography.labelSmall,
+                color = mutedColor,
                 textDecoration = textDecoration,
+                textAlign = TextAlign.Center,
             )
         }
     }

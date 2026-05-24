@@ -9,10 +9,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 
@@ -29,7 +28,12 @@ internal fun SharedTransitionScope.AnimatedDaysList(
         exit = fadeOut() + shrinkVertically(),
     ) {
         Column {
-            weekPresentation.dayPlans.forEach { dayPlan ->
+            weekPresentation.dayPlans.forEachIndexed { index, dayPlan ->
+                if (index > 0) {
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                    )
+                }
                 DayItem(
                     weekNumber = weekPresentation.weekPlan.number,
                     dayPlan = dayPlan,

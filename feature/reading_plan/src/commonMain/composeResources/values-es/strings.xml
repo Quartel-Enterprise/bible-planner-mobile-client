@@ -2,10 +2,16 @@
     <string name="book_order">Orden de los Libros</string>
     <string name="chronological_order">Orden Cronológico</string>
     <string name="progress_label">Progreso: %1$d %</string>
+    <string name="plan_progress_title">Progreso del plan</string>
+    <string name="plan_progress_days_completed">%1$d de %2$d días</string>
+    <string name="plan_progress_days_remaining">%1$d días restantes</string>
+    <string name="plan_progress_motivation_default">¡Sigue así, lo estás haciendo bien!</string>
     <string name="loading">Cargando...</string>
     <string name="week_number">Semana %1$d</string>
     <string name="week_progress_complete">completo</string>
+    <string name="week_progress_summary">%1$d de %2$d días</string>
     <string name="day_number">Día %1$d</string>
+    <string name="today_badge">Hoy</string>
     <string name="more_options">Más opciones</string>
 
     <string name="delete_progress_option">Eliminar progreso</string>

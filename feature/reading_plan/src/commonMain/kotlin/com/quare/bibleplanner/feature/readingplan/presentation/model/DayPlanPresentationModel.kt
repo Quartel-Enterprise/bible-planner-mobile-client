@@ -5,4 +5,5 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 internal data class DayPlanPresentationModel(
     val day: DayModel,
     val shouldShowYear: Boolean,
+    val isNextToRead: Boolean,
 )
