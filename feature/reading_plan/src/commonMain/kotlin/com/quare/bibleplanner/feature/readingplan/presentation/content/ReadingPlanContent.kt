@@ -67,6 +67,7 @@ internal fun ReadingPlanScreen(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
                 onEvent = onEvent,
+                modifier = Modifier.padding(top = 16.dp),
             )
         },
     )

@@ -2,7 +2,8 @@
   "1.15.0": [
     "La pantalla del plan de lectura ahora usa un diseño de dos columnas en tabletas y pantallas más grandes, con el panel de progreso a la izquierda y la lista de semanas a la derecha, ambos con desplazamiento independiente en todo el ancho de la pantalla.",
     "La lectura de hoy ahora aparece destacada en la lista de días, facilitando encontrar dónde debes estar.",
-    "Respuesta más fluida al marcar días como leídos en el plan de lectura, especialmente en dispositivos más antiguos."
+    "Respuesta más fluida al marcar días como leídos en el plan de lectura, especialmente en dispositivos más antiguos.",
+    "Mejor alineación vertical entre el panel de progreso y la lista de semanas en el nuevo diseño de dos columnas del plan de lectura."
   ],
   "1.14.0": [
     "Al cambiar el idioma de la aplicación, el idioma actual ahora aparece destacado en la parte superior de la lista, con los demás en orden alfabético."
