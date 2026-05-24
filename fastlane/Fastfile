@@ -20,8 +20,20 @@ XCODE_PROJECT    = "iosApp/iosApp.xcodeproj".freeze
 XCCONFIG         = "iosApp/Configuration/Config.xcconfig".freeze
 RELEASE_NOTES_DIR = "feature/release_notes/src/commonMain/composeResources/files/release_notes".freeze
 
+# Per-store character limits for release notes. Google Play hard-fails the
+# upload when exceeded; App Store rejects the metadata at submit time.
+PLAY_CHANGELOG_MAX_CHARS = 500
+APP_STORE_RELEASE_NOTES_MAX_CHARS = 4000
+
+# Appended on its own line when items had to be dropped to fit the limit.
+TRUNCATION_SUFFIX = {
+  "en" => "…and more",
+  "pt" => "…e mais",
+  "es" => "…y más",
+}.freeze
+
 # Reads the in-app release notes JSON files and returns the notes for the given
-# version as { "en" => "text", "pt" => "text", "es" => "text" } (one line per item).
+# version as { "en" => [items], "pt" => [items], "es" => [items] }.
 def release_notes_for_version(version, repo_root)
   notes = {}
   { "en" => "en.json", "pt" => "pt.json", "es" => "es.json" }.each do |lang, file|
@@ -29,9 +41,33 @@ def release_notes_for_version(version, repo_root)
     next unless File.exist?(path)
 
     items = JSON.parse(File.read(path))[version]
-    notes[lang] = items.join("\n") if items.is_a?(Array) && !items.empty?
+    notes[lang] = items if items.is_a?(Array) && !items.empty?
   end
   notes
+end
+
+# Joins release-note items with newlines so the result fits within `max`
+# characters. Drops trailing items when necessary and appends a localized
+# "…and more" line. Falls back to hard-truncating the first item when even
+# it plus the suffix overruns the limit.
+def fit_release_notes(items, lang, max)
+  text = items.join("\n")
+  return text if text.length <= max
+
+  suffix = TRUNCATION_SUFFIX[lang] || TRUNCATION_SUFFIX["en"]
+  kept = []
+  items.each do |item|
+    candidate = (kept + [item, suffix]).join("\n")
+    break if candidate.length > max
+    kept << item
+  end
+
+  if kept.empty?
+    available = [max - suffix.length - 1, 0].max
+    return [items.first.to_s[0, available].rstrip, suffix].join("\n")
+  end
+
+  (kept + [suffix]).join("\n")
 end
 
 # Lists the locales of the app's App Store listing (e.g. ["en-US", "pt-BR", "es-MX"]).
@@ -58,9 +94,11 @@ def stage_release_notes(repo_root)
 
   written = false
   app_store_listing_locales.each do |locale|
-    text = notes[locale.split("-").first.downcase]
-    next unless text
+    lang = locale.split("-").first.downcase
+    items = notes[lang]
+    next unless items
 
+    text = fit_release_notes(items, lang, APP_STORE_RELEASE_NOTES_MAX_CHARS)
     dir = File.join(repo_root, "fastlane", "metadata", locale)
     FileUtils.mkdir_p(dir)
     File.write(File.join(dir, "release_notes.txt"), text)
@@ -80,9 +118,10 @@ def stage_play_changelogs(version, version_code, repo_root)
   # Play Store listing locales. Spanish notes are reused across every Spanish
   # variant the listing supports.
   { "en" => ["en-US"], "pt" => ["pt-BR"], "es" => ["es-419", "es-ES", "es-US"] }.each do |lang, locales|
-    text = notes[lang]
-    next unless text
+    items = notes[lang]
+    next unless items
 
+    text = fit_release_notes(items, lang, PLAY_CHANGELOG_MAX_CHARS)
     locales.each do |locale|
       dir = File.join(repo_root, "fastlane", "metadata", "android", locale, "changelogs")
       FileUtils.mkdir_p(dir)
