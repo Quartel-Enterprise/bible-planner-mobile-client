@@ -8,11 +8,12 @@
 # Requires the GitHub CLI (gh), installed and authenticated:
 #   https://cli.github.com
 #
-# Usage: ./scripts/release.sh
+# Usage: ./scripts/release/release.sh
 set -euo pipefail
 
-REPO="Quartel-Enterprise/bible-planner-mobile-client"
-WORKFLOW="release.yml"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./_common.sh
+source "$SCRIPT_DIR/_common.sh"
 
 # Prints a prompt to stderr and echoes the typed answer on stdout.
 # Works in both bash and zsh (avoids the shell-specific `read -p`).
@@ -95,33 +96,4 @@ case "$(ask 'Trigger this release? [y/N]: ')" in
   *) echo "Cancelled."; exit 0 ;;
 esac
 
-# --- dispatch -------------------------------------------------------------
-before="$(gh run list --workflow="$WORKFLOW" --repo "$REPO" --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
-
-gh workflow run "$WORKFLOW" --repo "$REPO" \
-  -f version="$version" \
-  -f platforms="$platforms" \
-  -f track="$track" \
-  -f complete_android_release="$complete_android" \
-  -f submit_ios_for_review="$submit_ios"
-
-echo
-echo "Workflow dispatched. Locating the run..."
-
-# --- find the new run and print its link ----------------------------------
-url=""
-for _ in $(seq 1 20); do
-  sleep 3
-  id="$(gh run list --workflow="$WORKFLOW" --repo "$REPO" --limit 1 --json databaseId --jq '.[0].databaseId // empty')"
-  if [ -n "$id" ] && [ "$id" != "$before" ]; then
-    url="$(gh run list --workflow="$WORKFLOW" --repo "$REPO" --limit 1 --json url --jq '.[0].url')"
-    break
-  fi
-done
-
-echo
-if [ -n "$url" ]; then
-  echo "Run: $url"
-else
-  echo "Dispatched. See: https://github.com/$REPO/actions/workflows/$WORKFLOW"
-fi
+dispatch_release "$version" "$platforms" "$track" "$complete_android" "$submit_ios"
