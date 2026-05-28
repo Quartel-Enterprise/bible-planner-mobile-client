@@ -10,4 +10,6 @@ internal sealed interface MoreUiEvent {
     data object OnDismissSubscriptionDetailsDialog : MoreUiEvent
 
     data object OnLoginClick : MoreUiEvent
+
+    data object OnLogoutClick : MoreUiEvent
 }

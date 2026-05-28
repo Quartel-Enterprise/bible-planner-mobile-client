@@ -43,6 +43,11 @@ setup-java.sh
 androidApp/google-services.json
 iosApp/iosApp/GoogleService-Info.plist
 
+# SwiftPM (local package build artifacts)
+iosApp/exportedNativeBridge/.build/
+iosApp/exportedNativeBridge/.swiftpm/
+iosApp/exportedNativeBridge/Package.resolved
+
 # fastlane
 fastlane/report.xml
 fastlane/Preview.html

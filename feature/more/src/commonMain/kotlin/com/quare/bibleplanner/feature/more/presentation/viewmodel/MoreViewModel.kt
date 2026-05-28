@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
+import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
@@ -124,6 +125,10 @@ internal class MoreViewModel(
 
             MoreUiEvent.OnLoginClick -> {
                 goToRoute(LoginNavRoute)
+            }
+
+            MoreUiEvent.OnLogoutClick -> {
+                goToRoute(LogoutNavRoute)
             }
         }
     }

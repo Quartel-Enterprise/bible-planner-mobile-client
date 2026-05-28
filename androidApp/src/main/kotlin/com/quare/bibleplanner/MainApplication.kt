@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
 import com.quare.bibleplanner.di.androidModule
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.androidAppLanguageModule
+import com.quare.bibleplanner.feature.login.di.androidLoginModule
 import com.quare.bibleplanner.notification.AndroidNotificationStringProvider
 import com.quare.bibleplanner.notification.NotificationStringProvider
 import org.koin.android.ext.koin.androidContext
@@ -35,6 +36,7 @@ class MainApplication : Application() {
                 mainApplicationModule,
                 androidAppLanguageModule,
                 androidLanguageProviderModule,
+                androidLoginModule,
                 languageProviderModule,
             ),
         )

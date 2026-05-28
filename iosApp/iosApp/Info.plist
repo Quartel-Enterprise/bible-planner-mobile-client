@@ -20,6 +20,8 @@
 	<true/>
 	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
 	<true/>
+	<key>GIDClientID</key>
+	<string>121746231158-n0q7igb1r22q8vie06dnlo09h70d3mbq.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -28,6 +30,12 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>bibleplanner</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.121746231158-n0q7igb1r22q8vie06dnlo09h70d3mbq</string>
 			</array>
 		</dict>
 	</array>

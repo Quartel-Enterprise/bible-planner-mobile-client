@@ -11,6 +11,13 @@ kotlin {
     jvm()
 
     sourceSets {
+        jvmMain.dependencies {
+            // Desktop-only: needed by JvmGoogleSignInStarter to render the OAuth success
+            // page using the user's selected theme and language instead of the browser's.
+            implementation(projects.core.provider.language)
+            implementation(projects.feature.preferences.themeSelection)
+            implementation(projects.ui.theme)
+        }
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)

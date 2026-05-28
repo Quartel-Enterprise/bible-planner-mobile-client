@@ -4,4 +4,6 @@ import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 
 data class LoginUiState(
     val enabledProviders: List<LoginProvider>,
+    val isGoogleLoading: Boolean,
+    val isErrorVisible: Boolean,
 )

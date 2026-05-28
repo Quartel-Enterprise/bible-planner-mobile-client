@@ -45,4 +45,5 @@
     <string name="login_card_title">Você não está logado</string>
     <string name="login_card_subtitle">Faça login para ter uma melhor experiência.</string>
     <string name="login_card_button">Entrar</string>
+    <string name="login_card_logout_button">Sair</string>
 </resources>

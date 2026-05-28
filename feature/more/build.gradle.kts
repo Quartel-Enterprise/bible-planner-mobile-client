@@ -65,6 +65,10 @@ kotlin {
             implementation(libs.supabase.compose.auth)
             implementation(libs.supabase.compose.auth.ui)
 
+            // Coil (image loading)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
+
             // Logging
             implementation(libs.kermit)
         }
