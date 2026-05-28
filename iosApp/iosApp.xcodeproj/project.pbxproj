@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AAA1B0C00000000000000003 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = AAA1B0C00000000000000001 /* GoogleSignIn */; };
+		AAA1B0C00000000000000004 /* exportedNativeBridge in Frameworks */ = {isa = PBXBuildFile; productRef = AAA1B0C00000000000000002 /* exportedNativeBridge */; };
 		CBAC93C92F09F72D005AB4B5 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93C82F09F72D005AB4B5 /* FirebaseAnalytics */; };
 		CBAC93CB2F09F72D005AB4B5 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93CA2F09F72D005AB4B5 /* FirebaseAnalyticsCore */; };
 		CBAC93CD2F09F72D005AB4B5 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93CC2F09F72D005AB4B5 /* FirebaseAnalyticsIdentitySupport */; };
@@ -115,6 +117,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAA1B0C00000000000000003 /* GoogleSignIn in Frameworks */,
+				AAA1B0C00000000000000004 /* exportedNativeBridge in Frameworks */,
 				CBAC93D92F09F72D005AB4B5 /* FirebaseRemoteConfig in Frameworks */,
 				CBAC93D12F09F72D005AB4B5 /* FirebaseAppDistribution-Beta in Frameworks */,
 				CBAC93D72F09F72D005AB4B5 /* FirebasePerformance in Frameworks */,
@@ -182,6 +186,8 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				AAA1B0C00000000000000001 /* GoogleSignIn */,
+				AAA1B0C00000000000000002 /* exportedNativeBridge */,
 				CBAC93C82F09F72D005AB4B5 /* FirebaseAnalytics */,
 				CBAC93CA2F09F72D005AB4B5 /* FirebaseAnalyticsCore */,
 				CBAC93CC2F09F72D005AB4B5 /* FirebaseAnalyticsIdentitySupport */,
@@ -249,6 +255,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CBAC93C72F09F72D005AB4B5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				AAA1B0C00000000000000005 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				AAA1B0C00000000000000006 /* XCLocalSwiftPackageReference "exportedNativeBridge" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 60DAEEE332E57B6736AFBE21 /* Products */;
@@ -603,7 +611,22 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		AAA1B0C00000000000000006 /* XCLocalSwiftPackageReference "exportedNativeBridge" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = exportedNativeBridge;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
+		AAA1B0C00000000000000005 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
+			requirement = {
+				kind = exactVersion;
+				version = 9.0.0;
+			};
+		};
 		CBAC93C72F09F72D005AB4B5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -615,6 +638,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AAA1B0C00000000000000001 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAA1B0C00000000000000005 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		AAA1B0C00000000000000002 /* exportedNativeBridge */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAA1B0C00000000000000006 /* XCLocalSwiftPackageReference "exportedNativeBridge" */;
+			productName = exportedNativeBridge;
+		};
 		CBAC93C82F09F72D005AB4B5 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CBAC93C72F09F72D005AB4B5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

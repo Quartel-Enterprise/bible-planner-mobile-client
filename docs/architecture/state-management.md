@@ -30,6 +30,22 @@ data class DayUiState(
 typealias DayUiState = Boolean
 ```
 
+**UiState fields never have default values.** Every property must be explicitly set at construction. This forces the ViewModel to declare its initial state in full and prevents a new field from silently defaulting (and hiding a missing initial-value decision) when added later.
+
+```kotlin
+// Wrong — defaults hide what the initial state actually is
+data class LoginUiState(
+    val enabledProviders: List<LoginProvider>,
+    val isGoogleLoading: Boolean = false,
+)
+
+// Correct — caller must pass every field
+data class LoginUiState(
+    val enabledProviders: List<LoginProvider>,
+    val isGoogleLoading: Boolean,
+)
+```
+
 ### UiEvent — user interactions sent to the ViewModel
 
 ```kotlin

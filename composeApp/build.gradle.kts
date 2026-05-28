@@ -60,6 +60,8 @@ kotlin {
             api(projects.feature.readingPlan)
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
+            api(projects.feature.login)
+            api(projects.feature.logout)
             api(projects.feature.preferences.editPlanStartDate)
             api(projects.feature.preferences.bibleVersion)
             api(projects.feature.preferences.appLanguage)

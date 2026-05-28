@@ -22,6 +22,7 @@ import com.quare.bibleplanner.feature.donation.pixqr.presentation.pixQr
 import com.quare.bibleplanner.feature.donation.presentation.donation
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
 import com.quare.bibleplanner.feature.login.presentation.loginRoot
+import com.quare.bibleplanner.feature.logout.presentation.logout
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.notificationpermission.presentation.notificationPermission
@@ -46,6 +47,7 @@ fun RootAppNavHost() {
         ) {
             val sharedTransitionScope = this@SharedTransitionLayout
             loginRoot(navController)
+            logout(navController)
             mainScreen(mainScaffoldState, navController, sharedTransitionScope)
             day(navController, sharedTransitionScope)
             themeSettings(navController)

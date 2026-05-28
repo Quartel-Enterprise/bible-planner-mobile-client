@@ -1,0 +1,6 @@
+<resources>
+    <string name="logout_title">Sign out</string>
+    <string name="logout_message">Are you sure you want to sign out of your account?</string>
+    <string name="logout_confirm">Sign out</string>
+    <string name="logout_cancel">Cancel</string>
+</resources>

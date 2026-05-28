@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.login.presentation.model
 
+import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
 import io.github.jan.supabase.compose.auth.composable.NativeSignInState
 
 sealed interface LoginUiEvent {
@@ -18,4 +19,8 @@ sealed interface LoginUiEvent {
             override val nativeSignInState: NativeSignInState,
         ) : SocialLoginClick
     }
+
+    data class GoogleAuthResult(
+        val result: NativeSignInResult,
+    ) : LoginUiEvent
 }

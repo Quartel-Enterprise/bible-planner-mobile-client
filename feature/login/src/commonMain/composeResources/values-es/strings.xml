@@ -8,4 +8,5 @@
     <string name="privacy_policy">Política de Privacidad</string>
     <string name="terms_agreement_part_3">.</string>
     <string name="not_now">Ahora no</string>
+    <string name="login_error_try_again_later">Algo salió mal. Por favor, inténtalo de nuevo más tarde.</string>
 </resources>

@@ -75,6 +75,7 @@ dependencies {
     implementation(projects.feature.day)
     implementation(projects.feature.deleteProgress)
     implementation(projects.feature.preferences.editPlanStartDate)
+    implementation(projects.feature.login)
 
     // Core
     implementation(projects.core.books)

@@ -1,0 +1,22 @@
+/* Dark theme — color overrides only. Layout lives in desktop_auth_success_base.css.
+   Mirrors AppTheme darkScheme + success token from ThemeExt. */
+
+:root { color-scheme: dark; }
+
+html, body {
+    background: #121318;
+    color: #E3E1E9;
+}
+
+.badge {
+    background: #4ADE80;
+    box-shadow: 0 8px 24px rgba(74, 222, 128, 0.25);
+}
+
+.badge svg {
+    stroke: #0B2014;
+}
+
+p {
+    color: rgba(227, 225, 233, 0.65);
+}

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.login.generated.resources.Res
+import bibleplanner.feature.login.generated.resources.login_error_try_again_later
 import bibleplanner.feature.login.generated.resources.not_now
 import bibleplanner.feature.login.generated.resources.privacy_policy
 import bibleplanner.feature.login.generated.resources.terms_agreement_part_1
@@ -39,6 +40,8 @@ fun LoginBottomSheet(
     onEvent: (LoginUiEvent) -> Unit,
     onLoginWithGoogleClick: () -> Unit,
     onLoginWithAppleClick: () -> Unit,
+    isGoogleLoading: Boolean,
+    isErrorVisible: Boolean,
 ) {
     ModalBottomSheet(
         sheetState = sheetState,
@@ -54,7 +57,18 @@ fun LoginBottomSheet(
                 providers = enableProviders,
                 onLoginWithGoogleClick = onLoginWithGoogleClick,
                 onLoginWithAppleClick = onLoginWithAppleClick,
+                isGoogleLoading = isGoogleLoading,
             )
+
+            if (isErrorVisible) {
+                VerticalSpacer(16)
+                Text(
+                    text = stringResource(Res.string.login_error_try_again_later),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                )
+            }
 
             VerticalSpacer(32)
 

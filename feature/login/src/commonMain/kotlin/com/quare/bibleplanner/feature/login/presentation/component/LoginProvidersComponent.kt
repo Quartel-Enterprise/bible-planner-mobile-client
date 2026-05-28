@@ -12,10 +12,15 @@ fun LoginProvidersComponent(
     providers: List<LoginProvider>,
     onLoginWithGoogleClick: () -> Unit,
     onLoginWithAppleClick: () -> Unit,
+    isGoogleLoading: Boolean,
 ) {
     providers.forEachIndexed { index, provider ->
         when (provider) {
-            LoginProvider.GOOGLE -> GoogleLoginButton(onLoginWithGoogleClick)
+            LoginProvider.GOOGLE -> GoogleLoginButton(
+                onClick = onLoginWithGoogleClick,
+                isLoading = isGoogleLoading,
+            )
+
             LoginProvider.APPlE -> AppleLoginButton(onLoginWithAppleClick)
         }
         if (!providers.isLastIndex(index)) {

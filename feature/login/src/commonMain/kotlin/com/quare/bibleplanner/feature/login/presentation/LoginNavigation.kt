@@ -27,6 +27,7 @@ fun NavGraphBuilder.loginRoot(navController: NavController) {
         val onEvent = viewModel::onEvent
         val composeAuth = viewModel.composeAuth
         val googleAuthState = composeAuth.rememberSignInWithGoogle(
+            onResult = { result -> onEvent(LoginUiEvent.GoogleAuthResult(result)) },
             type = GoogleDialogType.BOTTOM_SHEET,
         )
         val appleAuthState = composeAuth.rememberSignInWithApple(onResult = {})
@@ -47,6 +48,8 @@ fun NavGraphBuilder.loginRoot(navController: NavController) {
                 onEvent(LoginUiEvent.SocialLoginClick.Apple(appleAuthState))
             },
             enableProviders = state.enabledProviders,
+            isGoogleLoading = state.isGoogleLoading,
+            isErrorVisible = state.isErrorVisible,
         )
     }
 }

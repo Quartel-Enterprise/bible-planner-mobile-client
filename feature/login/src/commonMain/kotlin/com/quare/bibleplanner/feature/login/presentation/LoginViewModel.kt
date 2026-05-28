@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.login.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
+import com.quare.bibleplanner.feature.login.presentation.factory.LoginUiStateFactory
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiAction
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiState
@@ -11,24 +11,24 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.compose.auth.ComposeAuth
+import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
 import io.github.jan.supabase.compose.auth.composeAuth
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-class LoginViewModel(
+internal class LoginViewModel(
+    private val googleSignInStarter: GoogleSignInStarter,
     supabaseClient: SupabaseClient,
+    uiStateFactory: LoginUiStateFactory,
 ) : ViewModel() {
     val composeAuth: ComposeAuth = supabaseClient.composeAuth
-    private val _state: MutableStateFlow<LoginUiState> = MutableStateFlow(
-        LoginUiState(
-            enabledProviders = listOf(LoginProvider.GOOGLE),
-        ),
-    )
+    private val _state: MutableStateFlow<LoginUiState> = MutableStateFlow(uiStateFactory.create())
     val state: StateFlow<LoginUiState> = _state
 
     private val _uiAction: MutableSharedFlow<LoginUiAction> = MutableSharedFlow()
@@ -47,14 +47,35 @@ class LoginViewModel(
 
     fun onEvent(uiEvent: LoginUiEvent) {
         when (uiEvent) {
-            LoginUiEvent.DismissClick -> viewModelScope.launch {
-                navigateBack()
+            LoginUiEvent.DismissClick -> {
+                viewModelScope.launch {
+                    navigateBack()
+                }
             }
 
-            is LoginUiEvent.SocialLoginClick -> uiEvent.nativeSignInState.startFlow()
+            is LoginUiEvent.SocialLoginClick -> {
+                if (uiEvent is LoginUiEvent.SocialLoginClick.Google) {
+                    _state.update { it.copy(isGoogleLoading = true, isErrorVisible = false) }
+                    viewModelScope.launch {
+                        googleSignInStarter(uiEvent.nativeSignInState).onFailure {
+                            _state.update { it.copy(isGoogleLoading = false, isErrorVisible = true) }
+                        }
+                    }
+                } else {
+                    uiEvent.nativeSignInState.startFlow()
+                }
+            }
 
-            LoginUiEvent.NotNowClick -> viewModelScope.launch {
-                close()
+            is LoginUiEvent.GoogleAuthResult -> {
+                if (uiEvent.result is NativeSignInResult.ClosedByUser) {
+                    _state.update { it.copy(isGoogleLoading = false) }
+                }
+            }
+
+            LoginUiEvent.NotNowClick -> {
+                viewModelScope.launch {
+                    close()
+                }
             }
         }
     }

@@ -46,4 +46,5 @@
     <string name="login_card_title">No has iniciado sesión</string>
     <string name="login_card_subtitle">Inicie sesión para disfrutar de una mejor experiencia.</string>
     <string name="login_card_button">Iniciar sesión</string>
+    <string name="login_card_logout_button">Cerrar sesión</string>
 </resources>

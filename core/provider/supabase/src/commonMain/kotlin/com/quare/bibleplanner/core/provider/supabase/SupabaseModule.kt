@@ -19,7 +19,9 @@ val supabaseModule = module {
             supabaseUrl = SupabaseBuildKonfig.SUPABASE_URL,
             supabaseKey = SupabaseBuildKonfig.SUPABASE_API_KEY,
         ) {
-            install(Auth)
+            install(Auth) {
+                platformConfig()
+            }
             install(ComposeAuth) {
                 googleNativeLogin(SupabaseBuildKonfig.SUPABASE_GOOGLE_WEB_CLIENT_ID)
             }

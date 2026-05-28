@@ -13,6 +13,7 @@ import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.jvmAppLanguageModule
 import com.quare.bibleplanner.feature.applanguage.presentation.initAppLocale
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
+import com.quare.bibleplanner.feature.login.di.jvmLoginModule
 import com.quare.bibleplanner.notification.DesktopBibleVersionDownloadNotifier
 import com.quare.bibleplanner.worker.DesktopBibleVersionDownloaderFacade
 import kotlinx.coroutines.runBlocking
@@ -27,6 +28,7 @@ fun main() = application {
         platformModules = listOf(
             jvmAppLanguageModule,
             jvmLanguageProviderModule,
+            jvmLoginModule,
             languageProviderModule,
             module {
                 single { getDatabaseBuilder() }

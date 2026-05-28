@@ -1,0 +1,22 @@
+/* Light theme — color overrides only. Layout lives in desktop_auth_success_base.css.
+   Mirrors AppTheme lightScheme + success token from ThemeExt. */
+
+:root { color-scheme: light; }
+
+html, body {
+    background: #FAF8FF;
+    color: #1A1B21;
+}
+
+.badge {
+    background: #2E7D32;
+    box-shadow: 0 8px 24px rgba(46, 125, 50, 0.25);
+}
+
+.badge svg {
+    stroke: #FFFFFF;
+}
+
+p {
+    color: rgba(26, 27, 33, 0.65);
+}

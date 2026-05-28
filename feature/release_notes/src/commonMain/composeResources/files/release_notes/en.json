@@ -1,4 +1,7 @@
 {
+  "1.16.0": [
+    "You can now sign in with Google."
+  ],
   "1.15.0": [
     "The reading plan screen now uses a two-column layout on tablets and larger displays, with the progress panel on the left and the weeks list on the right, both scrollable independently across the full screen.",
     "Today's reading is now highlighted in the day list, making it easier to find where you should be.",

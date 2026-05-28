@@ -10,7 +10,10 @@ import bibleplanner.feature.login.generated.resources.google_icon_white
 import com.quare.bibleplanner.ui.theme.isAppInDarkTheme
 
 @Composable
-fun GoogleLoginButton(onClick: () -> Unit) {
+fun GoogleLoginButton(
+    onClick: () -> Unit,
+    isLoading: Boolean = false,
+) {
     SocialLoginButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
@@ -20,5 +23,6 @@ fun GoogleLoginButton(onClick: () -> Unit) {
         } else {
             Res.drawable.google_icon_dark
         },
+        isLoading = isLoading,
     )
 }
