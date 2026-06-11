@@ -20,6 +20,9 @@ on:
       - '.editorconfig'
       - 'build.gradle.kts'
 
+permissions:
+  contents: read
+
 # Cancels in-progress runs if a new commit is pushed to the same PR or branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

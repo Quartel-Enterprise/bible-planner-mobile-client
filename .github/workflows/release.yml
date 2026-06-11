@@ -48,9 +48,9 @@ on:
         type: boolean
         default: true
 
+# Least privilege by default — only the finalize job needs write access.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: release
@@ -125,7 +125,8 @@ jobs:
         with:
           name: android-aab
           path: androidApp/build/outputs/bundle/release/
-          retention-days: 5
+          # Signed binaries are downloadable by anyone on a public repo — keep them short-lived.
+          retention-days: 1
           if-no-files-found: error
 
   android-upload:
@@ -232,7 +233,8 @@ jobs:
         with:
           name: ios-ipa
           path: build/ios/
-          retention-days: 5
+          # Signed binaries are downloadable by anyone on a public repo — keep them short-lived.
+          retention-days: 1
           if-no-files-found: error
 
   ios-upload:
@@ -278,6 +280,9 @@ jobs:
     needs: [plan, android-upload, ios-upload]
     if: ${{ inputs.platforms == 'both' && inputs.track == 'production' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
