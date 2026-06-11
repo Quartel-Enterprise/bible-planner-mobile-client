@@ -1,0 +1,75 @@
+# Apple Sign-In Setup Guide
+
+This project supports Sign in with Apple on all platforms through [Supabase Auth](https://supabase.com/docs/guides/auth/social-login/auth-apple):
+
+- **iOS**: native Sign in with Apple sheet (`appleNativeLogin()` from supabase compose-auth). Requires the
+  "Sign in with Apple" capability (`iosApp/iosApp/iosApp.entitlements`).
+- **Android**: browser OAuth flow. Supabase redirects back into the app through the
+  `bibleplanner://auth-callback` deep link (see `SupabaseDeeplinkHandler` and the intent filter in
+  `androidApp/src/main/AndroidManifest.xml`).
+- **Desktop (JVM)**: browser OAuth flow. supabase-kt starts a local callback server on an ephemeral port
+  (`JvmAppleSignInStarter`).
+
+## Apple Developer artifacts
+
+All created under the **Quare Software** team (`TTV2A365LG`) at
+[developer.apple.com](https://developer.apple.com/account/resources):
+
+| Artifact | Value | Purpose |
+|---|---|---|
+| App ID | `com.quare.bibleplanner.BiblePlanner` | Has the "Sign in with Apple" capability (primary App ID). Used as client ID by the native iOS flow. |
+| Services ID | `com.quare.bibleplanner.BiblePlanner.signin` | Client ID for the web OAuth flow (Android/desktop). Its Return URL is the Supabase callback. |
+| Key | `Bible Planner Sign in with Apple Key` (Key ID `S6T3824BDQ`) | Private key (`AuthKey_S6T3824BDQ.p8`) used to sign the client secret. **Apple only lets you download the .p8 once** — keep a backup in a safe place. |
+
+## The client secret and `generate_apple_client_secret.py`
+
+Unlike Google, Apple does not give you a static OAuth client secret. The "secret" Supabase needs is a
+**JWT signed with the .p8 private key (ES256)**, and Apple caps its validity at **6 months**. When it
+expires, Apple sign-in on Android/desktop stops working with no code change involved — the secret must
+be regenerated and pushed to Supabase again.
+
+`supabase/generate_apple_client_secret.py` automates that. It:
+
+1. Builds the JWT header/payload (`iss` = team ID, `sub` = Services ID, `aud` = `https://appleid.apple.com`,
+   `exp` = now + 180 days).
+2. Signs it with the `.p8` key using `openssl` (no third-party Python dependencies).
+3. Writes the JWT to the output file path passed as argument — the private key and the secret are never
+   printed to stdout.
+
+### Regenerating the secret
+
+```bash
+APPLE_AUTH_KEY_P8=/path/to/AuthKey_S6T3824BDQ.p8 \
+  python3 supabase/generate_apple_client_secret.py supabase/.apple_client_secret
+
+SUPABASE_AUTH_EXTERNAL_APPLE_SECRET=$(cat supabase/.apple_client_secret) \
+  supabase config push --project-ref yncazduslqvphguhwdel
+```
+
+The push reads `supabase/config.toml` (which references the secret via
+`env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)`), shows a diff, and asks for confirmation.
+`supabase/.apple_client_secret` is gitignored — never commit it.
+
+**When to run:** before the current secret expires (the script prints the new expiry date when it runs;
+set a reminder ~6 months after each rotation), or immediately if the key is ever revoked/rotated in the
+Apple Developer portal (update `KEY_ID`/`TEAM_ID`/`CLIENT_ID` constants in the script if those change).
+
+## Supabase configuration
+
+Auth provider settings live in `supabase/config.toml` and are applied with `supabase config push`
+(requires `supabase login`). Notable settings:
+
+- `[auth.external.apple]` — provider enabled, client IDs (Services ID first, then the iOS bundle ID),
+  and the secret env reference.
+- `[auth].additional_redirect_urls` — must contain `bibleplanner://auth-callback` (Android deep link)
+  and the `http://localhost:*` / `http://127.0.0.1:*` wildcards (desktop ephemeral-port callback server).
+
+## Troubleshooting
+
+- **"Unsupported provider: provider is not enabled"** — the Apple provider is disabled in Supabase;
+  check `[auth.external.apple] enabled = true` was pushed.
+- **Browser lands on `127.0.0.1:3000` with tokens in the URL** — the OAuth `redirect_to` was rejected
+  and Supabase fell back to the project Site URL; check `additional_redirect_urls`.
+- **`invalid_client` from Apple** — expired or invalid client secret; regenerate it (see above).
+- **Android logcat shows `Failed to load session ... No entry with the key sb-...-session`** — benign
+  supabase-kt noise on cold start when no session is stored yet; not an error.

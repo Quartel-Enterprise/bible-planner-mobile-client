@@ -46,6 +46,10 @@ in your IDE's toolbar or open the [/iosApp](./iosApp) directory in Xcode and run
 
 - [RevenueCat Setup](docs/setup_revenuecat.md)
 
+## Authentication
+
+- [Apple Sign-In Setup](docs/setup_apple_signin.md)
+
 ## 📝 Code Quality
 
 This project uses ktlint for code formatting and style checking. The project is configured to automatically check code style during builds.

@@ -11,7 +11,7 @@ import bibleplanner.ui.component.generated.resources.Res
 import bibleplanner.ui.component.generated.resources.back
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.getPlatform
-import com.quare.bibleplanner.core.provider.platform.isApplePlatform
+import com.quare.bibleplanner.core.provider.platform.isApple
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -34,7 +34,7 @@ fun BackIcon(
     )
 }
 
-private fun Platform.toArrowBackIcon(): ImageVector = if (isApplePlatform()) {
+private fun Platform.toArrowBackIcon(): ImageVector = if (isApple()) {
     Icons.AutoMirrored.Filled.ArrowBackIos
 } else {
     Icons.AutoMirrored.Filled.ArrowBack

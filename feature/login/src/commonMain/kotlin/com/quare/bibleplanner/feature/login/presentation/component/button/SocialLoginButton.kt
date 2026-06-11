@@ -22,7 +22,7 @@ internal fun SocialLoginButton(
     textResource: StringResource,
     drawableResource: DrawableResource,
     onClick: () -> Unit,
-    isLoading: Boolean = false,
+    isLoading: Boolean,
 ) {
     OutlinedButton(
         modifier = modifier,

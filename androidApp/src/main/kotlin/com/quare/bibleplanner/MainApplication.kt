@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.language.di.androidLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
+import com.quare.bibleplanner.core.provider.supabase.di.androidSupabaseModule
 import com.quare.bibleplanner.di.androidModule
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.androidAppLanguageModule
@@ -37,6 +38,7 @@ class MainApplication : Application() {
                 androidAppLanguageModule,
                 androidLanguageProviderModule,
                 androidLoginModule,
+                androidSupabaseModule,
                 languageProviderModule,
             ),
         )

@@ -13,13 +13,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import com.quare.bibleplanner.core.provider.supabase.SupabaseDeeplinkHandler
 import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModel()
+    private val supabaseDeeplinkHandler: SupabaseDeeplinkHandler by inject()
 
     override fun attachBaseContext(newBase: Context) {
         val localeTag = newBase
@@ -38,6 +41,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supabaseDeeplinkHandler.handle(intent)
         handleNotificationIntent(intent)
 
         setContent {
@@ -56,6 +60,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        supabaseDeeplinkHandler.handle(intent)
         handleNotificationIntent(intent)
     }
 

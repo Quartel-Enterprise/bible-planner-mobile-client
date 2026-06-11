@@ -23,4 +23,8 @@ sealed interface LoginUiEvent {
     data class GoogleAuthResult(
         val result: NativeSignInResult,
     ) : LoginUiEvent
+
+    data class AppleAuthResult(
+        val result: NativeSignInResult,
+    ) : LoginUiEvent
 }

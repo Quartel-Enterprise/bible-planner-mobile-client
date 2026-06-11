@@ -41,6 +41,7 @@ fun LoginBottomSheet(
     onLoginWithGoogleClick: () -> Unit,
     onLoginWithAppleClick: () -> Unit,
     isGoogleLoading: Boolean,
+    isAppleLoading: Boolean,
     isErrorVisible: Boolean,
 ) {
     ModalBottomSheet(
@@ -58,6 +59,7 @@ fun LoginBottomSheet(
                 onLoginWithGoogleClick = onLoginWithGoogleClick,
                 onLoginWithAppleClick = onLoginWithAppleClick,
                 isGoogleLoading = isGoogleLoading,
+                isAppleLoading = isAppleLoading,
             )
 
             if (isErrorVisible) {

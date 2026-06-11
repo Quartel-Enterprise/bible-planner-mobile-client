@@ -12,7 +12,7 @@ import com.quare.bibleplanner.ui.theme.isAppInDarkTheme
 @Composable
 fun GoogleLoginButton(
     onClick: () -> Unit,
-    isLoading: Boolean = false,
+    isLoading: Boolean,
 ) {
     SocialLoginButton(
         modifier = Modifier.fillMaxWidth(),

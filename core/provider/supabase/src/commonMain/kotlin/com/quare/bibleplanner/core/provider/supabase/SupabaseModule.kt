@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.provider.supabase.generated.SupabaseBuildKonf
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.compose.auth.ComposeAuth
+import io.github.jan.supabase.compose.auth.appleNativeLogin
 import io.github.jan.supabase.compose.auth.googleNativeLogin
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.storage.BucketApi
@@ -24,6 +25,7 @@ val supabaseModule = module {
             }
             install(ComposeAuth) {
                 googleNativeLogin(SupabaseBuildKonfig.SUPABASE_GOOGLE_WEB_CLIENT_ID)
+                appleNativeLogin()
             }
             install(Storage)
         }
