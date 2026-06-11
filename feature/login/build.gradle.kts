@@ -22,6 +22,7 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.utils)
+            implementation(projects.core.provider.platform)
 
             // UI
             implementation(projects.ui.component)

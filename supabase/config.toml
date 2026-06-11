@@ -1,0 +1,28 @@
+# Remote auth provider config for the Bible Planner Supabase project.
+# Apply with:
+#   SUPABASE_AUTH_EXTERNAL_APPLE_SECRET=$(cat supabase/.apple_client_secret) \
+#     supabase config push --project-ref yncazduslqvphguhwdel
+#
+# The secret is an ES256 JWT generated from the "Bible Planner Sign in with Apple Key"
+# (Key ID S6T3824BDQ, team TTV2A365LG). Apple limits its validity to 6 months —
+# regenerate and re-push before it expires.
+project_id = "yncazduslqvphguhwdel"
+
+[auth]
+# - bibleplanner://auth-callback: Android OAuth browser flow (Apple sign-in) deep link.
+# - http://localhost:* / http://127.0.0.1:*: desktop OAuth flows; supabase-kt starts a local
+#   callback server on an ephemeral port, so the port must be wildcarded.
+# - https://127.0.0.1:3000: project default entry.
+additional_redirect_urls = [
+  "https://127.0.0.1:3000",
+  "bibleplanner://auth-callback",
+  "http://localhost:*",
+  "http://127.0.0.1:*",
+]
+
+[auth.external.apple]
+enabled = true
+# First entry is the Services ID used by the web OAuth flow (Android/desktop);
+# the app bundle ID allows the native iOS ID-token flow.
+client_id = "com.quare.bibleplanner.BiblePlanner.signin,com.quare.bibleplanner.BiblePlanner"
+secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"

@@ -56,3 +56,7 @@ fastlane/test_output
 fastlane/README.md
 fastlane/metadata/
 **/*.mobileprovision
+
+# Supabase local secrets
+supabase/.apple_client_secret
+supabase/.temp/

@@ -10,7 +10,10 @@ import bibleplanner.feature.login.generated.resources.continue_with_apple
 import com.quare.bibleplanner.ui.theme.isAppInDarkTheme
 
 @Composable
-internal fun AppleLoginButton(onClick: () -> Unit) {
+internal fun AppleLoginButton(
+    onClick: () -> Unit,
+    isLoading: Boolean,
+) {
     SocialLoginButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
@@ -20,5 +23,6 @@ internal fun AppleLoginButton(onClick: () -> Unit) {
         } else {
             Res.drawable.apple_icon_dark
         },
+        isLoading = isLoading,
     )
 }

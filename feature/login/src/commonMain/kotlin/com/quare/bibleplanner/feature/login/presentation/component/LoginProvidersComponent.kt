@@ -13,6 +13,7 @@ fun LoginProvidersComponent(
     onLoginWithGoogleClick: () -> Unit,
     onLoginWithAppleClick: () -> Unit,
     isGoogleLoading: Boolean,
+    isAppleLoading: Boolean,
 ) {
     providers.forEachIndexed { index, provider ->
         when (provider) {
@@ -21,7 +22,10 @@ fun LoginProvidersComponent(
                 isLoading = isGoogleLoading,
             )
 
-            LoginProvider.APPlE -> AppleLoginButton(onLoginWithAppleClick)
+            LoginProvider.APPLE -> AppleLoginButton(
+                onClick = onLoginWithAppleClick,
+                isLoading = isAppleLoading,
+            )
         }
         if (!providers.isLastIndex(index)) {
             VerticalSpacer()

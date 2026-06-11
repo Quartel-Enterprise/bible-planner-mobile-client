@@ -24,6 +24,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 internal class LoginViewModel(
     private val googleSignInStarter: GoogleSignInStarter,
+    private val appleSignInStarter: AppleSignInStarter,
     supabaseClient: SupabaseClient,
     uiStateFactory: LoginUiStateFactory,
 ) : ViewModel() {
@@ -53,22 +54,33 @@ internal class LoginViewModel(
                 }
             }
 
-            is LoginUiEvent.SocialLoginClick -> {
-                if (uiEvent is LoginUiEvent.SocialLoginClick.Google) {
-                    _state.update { it.copy(isGoogleLoading = true, isErrorVisible = false) }
-                    viewModelScope.launch {
-                        googleSignInStarter(uiEvent.nativeSignInState).onFailure {
-                            _state.update { it.copy(isGoogleLoading = false, isErrorVisible = true) }
-                        }
+            is LoginUiEvent.SocialLoginClick.Google -> {
+                _state.update { it.copy(isGoogleLoading = true, isErrorVisible = false) }
+                viewModelScope.launch {
+                    googleSignInStarter(uiEvent.nativeSignInState).onFailure {
+                        _state.update { it.copy(isGoogleLoading = false, isErrorVisible = true) }
                     }
-                } else {
-                    uiEvent.nativeSignInState.startFlow()
+                }
+            }
+
+            is LoginUiEvent.SocialLoginClick.Apple -> {
+                _state.update { it.copy(isAppleLoading = true, isErrorVisible = false) }
+                viewModelScope.launch {
+                    appleSignInStarter(uiEvent.nativeSignInState).onFailure {
+                        _state.update { it.copy(isAppleLoading = false, isErrorVisible = true) }
+                    }
                 }
             }
 
             is LoginUiEvent.GoogleAuthResult -> {
                 if (uiEvent.result is NativeSignInResult.ClosedByUser) {
                     _state.update { it.copy(isGoogleLoading = false) }
+                }
+            }
+
+            is LoginUiEvent.AppleAuthResult -> {
+                if (uiEvent.result is NativeSignInResult.ClosedByUser) {
+                    _state.update { it.copy(isAppleLoading = false) }
                 }
             }
 

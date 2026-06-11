@@ -21,7 +21,6 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerifica
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.login.IsLoginVisible
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
 import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
@@ -62,7 +61,6 @@ internal class MoreUiStateFactory(
     private val isDynamicColorSupported: IsDynamicColorSupported,
     private val supabaseClient: SupabaseClient,
     private val sessionUserMapper: SessionUserMapper,
-    private val isLoginVisible: IsLoginVisible,
     private val bibleVersionDao: BibleVersionDao,
     private val getSelectedVersionDownloadedChapters: GetSelectedVersionDownloadedChaptersFlowUseCase,
     private val getSelectedBible: GetSelectedBibleFlowUseCase,
@@ -147,7 +145,6 @@ internal class MoreUiStateFactory(
                         AccountStatusModel.Error
                     }
                 },
-                isLoginVisible = remoteConfigs.isLoginVisible,
                 bibleVersionName = selectedBible?.version?.name,
                 bibleDownloadProgress = downloadProgress,
                 selectedLanguage = selectedLanguage,
@@ -167,14 +164,12 @@ internal class MoreUiStateFactory(
             val shouldShowDonateDeferred = async { shouldShowDonateOption() }
             val isProDeferred = async { isProVerificationRequired() }
             val isWebAppEnabledDeferred = async { isMoreWebAppEnabled() }
-            val isLoginVisibleDeferred = async { isLoginVisible() }
             emit(
                 RemoteConfigs(
                     isInstagramVisible = isInstagramVisibleDeferred.await(),
                     shouldShowDonate = shouldShowDonateDeferred.await(),
                     isProVerificationRequired = isProDeferred.await(),
                     isWebAppVisible = isWebAppEnabledDeferred.await(),
-                    isLoginVisible = isLoginVisibleDeferred.await(),
                 ),
             )
         }
@@ -193,7 +188,6 @@ internal class MoreUiStateFactory(
         val shouldShowDonate: Boolean,
         val isProVerificationRequired: Boolean,
         val isWebAppVisible: Boolean,
-        val isLoginVisible: Boolean,
     )
 
     private data class ThemeConfiguration(

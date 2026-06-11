@@ -30,7 +30,9 @@ fun NavGraphBuilder.loginRoot(navController: NavController) {
             onResult = { result -> onEvent(LoginUiEvent.GoogleAuthResult(result)) },
             type = GoogleDialogType.BOTTOM_SHEET,
         )
-        val appleAuthState = composeAuth.rememberSignInWithApple(onResult = {})
+        val appleAuthState = composeAuth.rememberSignInWithApple(
+            onResult = { result -> onEvent(LoginUiEvent.AppleAuthResult(result)) },
+        )
         val sheetState = rememberModalBottomSheetState()
         val state by viewModel.state.collectAsState()
         LoginUiActionCollector(
@@ -49,6 +51,7 @@ fun NavGraphBuilder.loginRoot(navController: NavController) {
             },
             enableProviders = state.enabledProviders,
             isGoogleLoading = state.isGoogleLoading,
+            isAppleLoading = state.isAppleLoading,
             isErrorVisible = state.isErrorVisible,
         )
     }

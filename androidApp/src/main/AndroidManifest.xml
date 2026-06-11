@@ -24,12 +24,24 @@
 
         <activity
             android:exported="true"
-            android:launchMode="standard"
+            android:launchMode="singleTask"
             android:name="com.quare.bibleplanner.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Supabase OAuth redirect (e.g. Apple sign-in browser flow) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="auth-callback"
+                    android:scheme="bibleplanner" />
             </intent-filter>
         </activity>
 
