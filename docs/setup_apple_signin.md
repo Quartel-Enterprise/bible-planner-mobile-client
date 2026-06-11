@@ -36,7 +36,17 @@ be regenerated and pushed to Supabase again.
 3. Writes the JWT to the output file path passed as argument — the private key and the secret are never
    printed to stdout.
 
-### Regenerating the secret
+### Automatic rotation (preferred)
+
+The [`rotate-apple-secret`](../.github/workflows/rotate-apple-secret.yml) workflow regenerates and
+pushes a fresh secret on the 1st of January, June and November (and on demand via *Run workflow*).
+Each run waits for approval on the `Production` environment — approve it from the Actions tab when
+notified. It depends on two secrets in that environment:
+
+- `APPLE_SIGNIN_KEY_P8` — contents of the `.p8` private key
+- `SUPABASE_ACCESS_TOKEN` — Supabase personal access token
+
+### Manual rotation (fallback)
 
 ```bash
 APPLE_AUTH_KEY_P8=/path/to/AuthKey_S6T3824BDQ.p8 \
@@ -50,9 +60,8 @@ The push reads `supabase/config.toml` (which references the secret via
 `env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)`), shows a diff, and asks for confirmation.
 `supabase/.apple_client_secret` is gitignored — never commit it.
 
-**When to run:** before the current secret expires (the script prints the new expiry date when it runs;
-set a reminder ~6 months after each rotation), or immediately if the key is ever revoked/rotated in the
-Apple Developer portal (update `KEY_ID`/`TEAM_ID`/`CLIENT_ID` constants in the script if those change).
+If the key is ever revoked/rotated in the Apple Developer portal, update the
+`KEY_ID`/`TEAM_ID`/`CLIENT_ID` constants in the script and the `APPLE_SIGNIN_KEY_P8` secret.
 
 ## Supabase configuration
 
