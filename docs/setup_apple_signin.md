@@ -40,11 +40,14 @@ be regenerated and pushed to Supabase again.
 
 The [`rotate-apple-secret`](../.github/workflows/rotate-apple-secret.yml) workflow regenerates and
 pushes a fresh secret on the 1st of January, June and November (and on demand via *Run workflow*).
-Each run waits for approval on the `Production` environment — approve it from the Actions tab when
-notified. It depends on two secrets in that environment:
+It runs unattended in the `apple-secret-rotation` environment (no approval; deployments restricted
+to `main`) and depends on two secrets in that environment:
 
 - `APPLE_SIGNIN_KEY_P8` — contents of the `.p8` private key
 - `SUPABASE_ACCESS_TOKEN` — Supabase personal access token
+
+> Because the environment has no required reviewer, keep repository write access restricted —
+> anyone with write can reach these secrets through a workflow on `main`.
 
 ### Manual rotation (fallback)
 
