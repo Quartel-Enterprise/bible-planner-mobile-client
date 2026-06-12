@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.day_title_part
 import bibleplanner.feature.day.generated.resources.week_title_part
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -25,6 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun DayScreenTopBarComponent(
+    platform: Platform,
     uiState: DayUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
@@ -90,7 +92,7 @@ internal fun DayScreenTopBarComponent(
             }
         },
         navigationIcon = {
-            BackIcon(onBackClick = { onEvent(DayUiEvent.OnBackClick) })
+            BackIcon(platform = platform, onBackClick = { onEvent(DayUiEvent.OnBackClick) })
         },
         scrollBehavior = scrollBehavior,
     )

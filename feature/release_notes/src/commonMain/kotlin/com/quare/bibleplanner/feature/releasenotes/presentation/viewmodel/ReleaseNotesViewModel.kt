@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.releasenotes.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.releasenotes.presentation.factory.ReleaseNotesUiStateFactory
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiAction
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 
 class ReleaseNotesViewModel(
     private val uiStateFactory: ReleaseNotesUiStateFactory,
+    val platform: Platform,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(uiStateFactory.createInitialState())
     val uiState: StateFlow<ReleaseNotesUiState> = _uiState.asStateFlow()

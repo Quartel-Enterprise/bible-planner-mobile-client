@@ -40,6 +40,7 @@ fun NavGraphBuilder.paywall(
         )
 
         PaywallScreen(
+            platform = viewModel.platform,
             snackbarHostState = snackbarHostState,
             uiState = uiState,
             onEvent = viewModel::onEvent,

@@ -20,7 +20,7 @@ class PaywallUiStateFactory(
         val storePackages: List<StorePackage> = emptyList(),
     )
 
-    suspend fun create(): PaywallInitializationResult = getOfferingsResult()
+    suspend fun create(storeName: String): PaywallInitializationResult = getOfferingsResult()
         .fold(
             onSuccess = { offerings ->
                 val monthlyPackage = offerings.find { it.type == StorePackageType.MONTHLY }
@@ -54,6 +54,7 @@ class PaywallUiStateFactory(
                         uiState = PaywallUiState.Success(
                             subscriptionPlans = initialPlans,
                             isPurchasing = false,
+                            storeName = storeName,
                         ),
                         storePackages = offerings,
                     )

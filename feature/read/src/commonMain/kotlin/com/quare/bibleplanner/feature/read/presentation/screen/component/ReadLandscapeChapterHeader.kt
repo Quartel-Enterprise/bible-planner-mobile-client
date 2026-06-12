@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
@@ -15,6 +16,7 @@ import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 
 @Composable
 internal fun ReadLandscapeChapterHeader(
+    platform: Platform,
     modifier: Modifier = Modifier,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
@@ -28,7 +30,7 @@ internal fun ReadLandscapeChapterHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            BackIcon(onBackClick = { onEvent(ReadUiEvent.OnArrowBackClick) })
+            BackIcon(platform = platform, onBackClick = { onEvent(ReadUiEvent.OnArrowBackClick) })
             HorizontalSpacer(8)
             ReadScreenTitleComponent(
                 animatedVisibilityScope = animatedVisibilityScope,

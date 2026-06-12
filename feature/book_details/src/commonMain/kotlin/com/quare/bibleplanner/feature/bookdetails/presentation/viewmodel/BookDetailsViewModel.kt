@@ -6,13 +6,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiAction
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
@@ -32,6 +32,7 @@ class BookDetailsViewModel(
     private val bookGroupMapper: BookGroupMapper,
     private val markBookRead: UpdateBookReadStatusUseCase,
     getBookByIdFlow: GetBookByIdFlowUseCase,
+    val platform: Platform,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<BookDetailsNavRoute>()
     private val bookId = BookId.valueOf(route.bookId)

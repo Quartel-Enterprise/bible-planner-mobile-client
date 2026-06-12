@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
@@ -22,6 +23,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun BookDetailsTopBar(
+    platform: Platform,
     state: BookDetailsUiState,
     isScrolled: Boolean,
     sharedTransitionScope: SharedTransitionScope,
@@ -50,6 +52,7 @@ fun BookDetailsTopBar(
             },
             navigationIcon = {
                 BackIcon(
+                    platform = platform,
                     onBackClick = { onEvent(BookDetailsUiEvent.OnBackClick) },
                 )
             },

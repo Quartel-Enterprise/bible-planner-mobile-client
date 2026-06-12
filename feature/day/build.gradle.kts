@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.utils)
             implementation(projects.core.date)
+            implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.billing)
 

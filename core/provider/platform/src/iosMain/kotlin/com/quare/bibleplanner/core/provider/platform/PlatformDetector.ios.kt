@@ -1,3 +1,3 @@
 package com.quare.bibleplanner.core.provider.platform
 
-actual fun getPlatform(): Platform = Platform.IOS
+internal actual fun getPlatform(): Platform = Platform.Ios

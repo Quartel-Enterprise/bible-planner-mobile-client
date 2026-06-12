@@ -6,12 +6,13 @@ import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetPurchaseResultUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetRestorePurchaseResultUseCase
+import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.provider.platform.isApple
 import com.quare.bibleplanner.feature.paywall.presentation.factory.PaywallUiStateFactory
 import com.quare.bibleplanner.feature.paywall.presentation.mapper.PaywallExceptionMapper
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
-import com.quare.bibleplanner.feature.paywall.presentation.utils.getStoreName
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -25,6 +26,7 @@ internal class PaywallViewModel(
     private val getPurchaseResultUseCase: GetPurchaseResultUseCase,
     private val getRestorePurchaseResultUseCase: GetRestorePurchaseResultUseCase,
     private val exceptionMapper: PaywallExceptionMapper,
+    val platform: Platform,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<PaywallUiState> = MutableStateFlow(PaywallUiState.Loading)
     val uiState: StateFlow<PaywallUiState> = _uiState.asStateFlow()
@@ -32,12 +34,14 @@ internal class PaywallViewModel(
     private val _uiAction: MutableSharedFlow<PaywallUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<PaywallUiAction> = _uiAction
 
+    private val storeName: String = if (platform.isApple()) "App Store" else "Google Play Store"
+
     private var storePackages: List<StorePackage> = emptyList()
 
     init {
         viewModelScope.launch {
             _uiState.update { PaywallUiState.Loading }
-            val initializationResult = factory.create()
+            val initializationResult = factory.create(storeName)
             storePackages = initializationResult.storePackages
             _uiState.update { initializationResult.uiState }
         }
@@ -120,7 +124,7 @@ internal class PaywallViewModel(
                             _uiAction.emit(
                                 PaywallUiAction.ShowSnackbar(
                                     message = messageRes,
-                                    args = listOf(getStoreName()),
+                                    args = listOf(storeName),
                                 ),
                             )
                         }

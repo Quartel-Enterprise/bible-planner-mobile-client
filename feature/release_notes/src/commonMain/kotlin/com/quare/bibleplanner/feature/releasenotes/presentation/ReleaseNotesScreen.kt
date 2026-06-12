@@ -31,6 +31,7 @@ import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_
 import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_upcoming
 import bibleplanner.feature.release_notes.generated.resources.release_notes_view_all_github
 import bibleplanner.ui.component.generated.resources.ic_github
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.releasenotes.presentation.component.ReleaseNoteCard
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesTab
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
@@ -46,6 +47,7 @@ import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun ReleaseNotesScreen(
+    platform: Platform,
     uiState: ReleaseNotesUiState,
     onEvent: (ReleaseNotesUiEvent) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -65,7 +67,7 @@ fun ReleaseNotesScreen(
                         )
                     },
                     navigationIcon = {
-                        BackIcon(onBackClick = { onEvent(ReleaseNotesUiEvent.OnBackClicked) })
+                        BackIcon(platform = platform, onBackClick = { onEvent(ReleaseNotesUiEvent.OnBackClicked) })
                     },
                     actions = {
                         CommonIconButton(
