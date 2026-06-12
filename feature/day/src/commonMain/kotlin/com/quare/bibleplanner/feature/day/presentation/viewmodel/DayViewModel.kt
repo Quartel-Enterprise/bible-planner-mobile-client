@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
@@ -42,6 +43,7 @@ internal class DayViewModel(
     private val useCases: DayUseCases,
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
+    val platform: Platform,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
     val uiState: StateFlow<DayUiState> = _uiState.asStateFlow()

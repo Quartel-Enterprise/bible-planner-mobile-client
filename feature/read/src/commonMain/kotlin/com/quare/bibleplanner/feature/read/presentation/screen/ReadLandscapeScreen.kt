@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChangeReadStatusButton
@@ -31,6 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ReadLandscapeScreen(
+    platform: Platform,
     state: ReadUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -51,6 +53,7 @@ fun ReadLandscapeScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 ReadLandscapeLeftContent(
+                    platform = platform,
                     modifier = Modifier.fillMaxWidth(0.4f),
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope,
@@ -70,6 +73,7 @@ fun ReadLandscapeScreen(
 
 @Composable
 internal fun ReadLandscapeLeftContent(
+    platform: Platform,
     modifier: Modifier = Modifier,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
@@ -82,6 +86,7 @@ internal fun ReadLandscapeLeftContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         ReadLandscapeChapterHeader(
+            platform = platform,
             modifier = Modifier.fillMaxWidth(),
             animatedVisibilityScope = animatedVisibilityScope,
             sharedTransitionScope = sharedTransitionScope,

@@ -29,6 +29,7 @@ fun NavGraphBuilder.bookDetails(
             }
         }
         BookDetailsScreen(
+            platform = viewModel.platform,
             state = state,
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = this,

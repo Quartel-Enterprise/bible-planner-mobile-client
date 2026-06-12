@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
@@ -21,6 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReadTopBar(
+    platform: Platform,
     modifier: Modifier = Modifier,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -43,9 +45,8 @@ fun ReadTopBar(
         },
         navigationIcon = {
             BackIcon(
-                onBackClick = {
-                    onEvent(ReadUiEvent.OnArrowBackClick)
-                },
+                platform = platform,
+                onBackClick = { onEvent(ReadUiEvent.OnArrowBackClick) },
             )
         },
         actions = {

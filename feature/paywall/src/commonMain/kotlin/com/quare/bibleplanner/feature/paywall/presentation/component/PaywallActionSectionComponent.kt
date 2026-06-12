@@ -29,6 +29,7 @@ internal fun PaywallActionSectionComponent(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
+                storeName = uiState.storeName,
                 isLoading = isPurchasing,
                 onEvent = onEvent,
             )

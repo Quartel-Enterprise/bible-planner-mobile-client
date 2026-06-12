@@ -4,6 +4,7 @@ sealed interface PaywallUiState {
     data class Success(
         val subscriptionPlans: List<SubscriptionPlanPresentationModel>,
         val isPurchasing: Boolean,
+        val storeName: String,
     ) : PaywallUiState
 
     data object Error : PaywallUiState

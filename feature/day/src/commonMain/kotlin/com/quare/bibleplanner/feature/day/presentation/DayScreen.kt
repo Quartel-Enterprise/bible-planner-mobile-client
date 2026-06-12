@@ -13,6 +13,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.component.DayScreenTopBarComponent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.DayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
@@ -21,6 +22,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun DayScreen(
+    platform: Platform,
     uiState: DayUiState,
     snackbarHostState: SnackbarHostState,
     sharedTransitionScope: SharedTransitionScope,
@@ -37,6 +39,7 @@ internal fun DayScreen(
         },
         topBar = {
             DayScreenTopBarComponent(
+                platform = platform,
                 uiState = uiState,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,

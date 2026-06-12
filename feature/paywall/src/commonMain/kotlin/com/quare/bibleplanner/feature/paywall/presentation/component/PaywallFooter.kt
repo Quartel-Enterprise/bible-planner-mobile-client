@@ -14,6 +14,7 @@ import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 
 @Composable
 internal fun PaywallFooter(
+    storeName: String,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     onEvent: (PaywallUiEvent) -> Unit,
@@ -31,6 +32,6 @@ internal fun PaywallFooter(
             onClick = { onEvent(PaywallUiEvent.OnStartProJourneyClick) },
         )
         RestorePurchaseComponent(onEvent = onEvent)
-        SecurePaymentDescription()
+        SecurePaymentDescription(storeName = storeName)
     }
 }

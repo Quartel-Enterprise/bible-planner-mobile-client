@@ -42,6 +42,7 @@ fun NavGraphBuilder.day(
             }
         }
         DayScreen(
+            platform = viewModel.platform,
             uiState = uiState,
             snackbarHostState = snackbarHostState,
             onEvent = viewModel::onEvent,

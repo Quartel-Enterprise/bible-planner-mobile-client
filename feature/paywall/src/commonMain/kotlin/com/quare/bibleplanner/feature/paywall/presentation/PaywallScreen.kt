@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallActionSectionComponent
 import com.quare.bibleplanner.feature.paywall.presentation.component.premiumfeature.PremiumFeaturesList
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.SubscriptionPlans
@@ -28,6 +29,7 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaywallScreen(
+    platform: Platform,
     snackbarHostState: SnackbarHostState,
     uiState: PaywallUiState,
     onEvent: (PaywallUiEvent) -> Unit,
@@ -40,7 +42,7 @@ fun PaywallScreen(
                     titleContent()
                 },
                 navigationIcon = {
-                    BackIcon(onBackClick = { onEvent(PaywallUiEvent.OnBackClick) })
+                    BackIcon(platform = platform, onBackClick = { onEvent(PaywallUiEvent.OnBackClick) })
                 },
             )
         },

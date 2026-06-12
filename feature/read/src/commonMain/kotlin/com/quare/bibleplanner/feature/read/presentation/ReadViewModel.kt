@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.presentation.factory.ReadDataPresentationModelFactory
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
@@ -26,6 +27,7 @@ class ReadViewModel(
     savedStateHandle: SavedStateHandle,
     private val readDataPresentationModelFactory: ReadDataPresentationModelFactory,
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatusUseCase,
+    val platform: Platform,
 ) : ViewModel() {
     private val route = savedStateHandle.toRoute<ReadNavRoute>()
     private val chapterNumber = route.chapterNumber

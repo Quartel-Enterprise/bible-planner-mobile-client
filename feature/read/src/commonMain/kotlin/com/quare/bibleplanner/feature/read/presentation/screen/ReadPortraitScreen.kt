@@ -12,6 +12,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadBottomBar
@@ -23,6 +24,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadScree
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReadPortraitScreen(
+    platform: Platform,
     state: ReadUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -38,6 +40,7 @@ fun ReadPortraitScreen(
             .nestedScroll(topBarScrollBehavior.nestedScrollConnection),
         topBar = {
             ReadTopBar(
+                platform = platform,
                 state = state,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope,

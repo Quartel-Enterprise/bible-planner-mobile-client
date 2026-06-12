@@ -6,7 +6,6 @@ import bibleplanner.feature.donation.pix_qr.generated.resources.Res
 import bibleplanner.feature.donation.pix_qr.generated.resources.pix_qr_share_message
 import com.quare.bibleplanner.core.provider.language.domain.provider.LanguageProvider
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.core.provider.platform.getPlatform
 import com.quare.bibleplanner.core.utils.locale.Language
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -15,6 +14,7 @@ import org.jetbrains.compose.resources.getString
 
 class PixQrViewModel(
     private val languageProvider: LanguageProvider,
+    private val platform: Platform,
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<PixQrUiAction>()
     val uiAction = _uiAction.asSharedFlow()
@@ -40,10 +40,9 @@ class PixQrViewModel(
 
     private fun getAppStoreLink(): String {
         val language = languageProvider.getAppLanguage()
-        val platform = getPlatform()
 
         return when (platform) {
-            Platform.IOS -> {
+            Platform.Ios -> {
                 val locale = when (language) {
                     Language.PORTUGUESE_BRAZIL -> "br"
                     Language.SPANISH -> "es"
@@ -52,7 +51,7 @@ class PixQrViewModel(
                 "https://apps.apple.com/$locale/app/bible-planner-reading-plans/id6756151777"
             }
 
-            Platform.ANDROID -> {
+            Platform.Android -> {
                 val locale = when (language) {
                     Language.PORTUGUESE_BRAZIL -> "pt-BR"
                     Language.SPANISH -> "es"
@@ -61,7 +60,7 @@ class PixQrViewModel(
                 "https://play.google.com/store/apps/details?id=com.quare.bibleplanner&hl=$locale"
             }
 
-            else -> {
+            is Platform.Desktop -> {
                 "https://bibleplanner.app"
             }
         }

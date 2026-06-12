@@ -30,6 +30,7 @@ fun ReleaseNotesRoot(
     }
 
     ReleaseNotesScreen(
+        platform = viewModel.platform,
         uiState = uiState,
         onEvent = viewModel::onEvent,
         sharedTransitionScope = sharedTransitionScope,

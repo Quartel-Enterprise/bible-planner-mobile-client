@@ -16,6 +16,7 @@ kotlin {
             // Core
             implementation(projects.core.books)
             implementation(projects.core.model)
+            implementation(projects.core.provider.platform)
 
             // UI
             implementation(projects.ui.component)

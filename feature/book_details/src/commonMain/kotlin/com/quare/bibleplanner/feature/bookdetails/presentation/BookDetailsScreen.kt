@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.BookDetailsTopBar
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.ChaptersGrid
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.ReadingProgressCard
@@ -33,6 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BookDetailsScreen(
+    platform: Platform,
     state: BookDetailsUiState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -46,6 +48,7 @@ fun BookDetailsScreen(
     Scaffold(
         topBar = {
             BookDetailsTopBar(
+                platform = platform,
                 state = state,
                 isScrolled = isScrolled,
                 sharedTransitionScope = sharedTransitionScope,

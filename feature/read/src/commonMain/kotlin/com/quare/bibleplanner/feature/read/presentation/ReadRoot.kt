@@ -25,6 +25,7 @@ fun NavGraphBuilder.read(
         val animatedVisibilityScope = this
         val onEvent = viewModel::onEvent
         ReadScreen(
+            platform = viewModel.platform,
             state = state,
             onEvent = onEvent,
             sharedTransitionScope = sharedTransitionScope,
