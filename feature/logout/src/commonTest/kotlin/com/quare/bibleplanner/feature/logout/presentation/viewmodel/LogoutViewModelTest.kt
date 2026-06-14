@@ -43,7 +43,7 @@ internal class LogoutViewModelTest {
         prepareScenario(result = Result.success(Unit))
 
         // When
-        viewModel.onEvent(LogoutUiEvent.OnConfirmLogout)
+        viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
 
         // Then
         assertEquals(listOf(LogoutUiAction.NavigateBack), actions)
@@ -55,7 +55,7 @@ internal class LogoutViewModelTest {
         prepareScenario(result = Result.success(Unit))
 
         // When
-        viewModel.onEvent(LogoutUiEvent.OnConfirmLogout)
+        viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
 
         // Then
         assertEquals(true, requestedShouldFlush)
@@ -67,7 +67,7 @@ internal class LogoutViewModelTest {
         prepareScenario(result = Result.success(Unit))
 
         // When
-        viewModel.onEvent(LogoutUiEvent.OnForceLogout)
+        viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnForceLogout)
 
         // Then
         assertEquals(false, requestedShouldFlush)
@@ -80,7 +80,7 @@ internal class LogoutViewModelTest {
             prepareScenario(result = Result.failure(LogoutFlushFailedException(IllegalStateException())))
 
             // When
-            viewModel.onEvent(LogoutUiEvent.OnConfirmLogout)
+            viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
 
             // Then
             assertIs<LogoutUiState.PendingChangesError>(viewModel.uiState.value)
@@ -94,7 +94,7 @@ internal class LogoutViewModelTest {
             prepareScenario(result = Result.failure(IllegalStateException("boom")))
 
             // When
-            viewModel.onEvent(LogoutUiEvent.OnConfirmLogout)
+            viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
 
             // Then
             assertEquals(LogoutUiState.Idle, viewModel.uiState.value)

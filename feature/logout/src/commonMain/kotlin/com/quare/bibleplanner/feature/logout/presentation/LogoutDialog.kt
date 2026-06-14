@@ -76,7 +76,7 @@ internal fun LogoutDialog(
                 LogoutUiState.Idle -> {
                     TextButton(
                         onClick = {
-                            onEvent(LogoutUiEvent.OnConfirmLogout)
+                            onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
                         },
                     ) {
                         Text(text = stringResource(Res.string.logout_confirm))
@@ -86,7 +86,7 @@ internal fun LogoutDialog(
                 is LogoutUiState.PendingChangesError -> {
                     TextButton(
                         onClick = {
-                            onEvent(LogoutUiEvent.OnForceLogout)
+                            onEvent(LogoutUiEvent.ConfirmLogoutClick.OnForceLogout)
                         },
                     ) {
                         Text(text = stringResource(Res.string.logout_sign_out_anyway))

@@ -31,8 +31,7 @@ internal class LogoutViewModel(
 
     fun onEvent(event: LogoutUiEvent) {
         when (event) {
-            LogoutUiEvent.OnConfirmLogout -> performLogout(shouldFlushPending = true)
-            LogoutUiEvent.OnForceLogout -> performLogout(shouldFlushPending = false)
+            is LogoutUiEvent.ConfirmLogoutClick -> performLogout(shouldFlushPending = event.shouldFlushPending)
             LogoutUiEvent.OnCancel -> navigateBack()
             LogoutUiEvent.OnDismiss -> if (_uiState.value != LogoutUiState.Loading) navigateBack()
         }
