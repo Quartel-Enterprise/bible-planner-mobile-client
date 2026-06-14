@@ -1,11 +1,13 @@
 package com.quare.bibleplanner.feature.day.data.datasource
 
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import kotlinx.coroutines.flow.Flow
 
 class DayLocalDataSource(
     private val dayDao: DayDao,
+    private val currentTimestampProvider: CurrentTimestampProvider,
 ) {
     fun getDayByWeekAndDayFlow(
         weekNumber: Int,
@@ -26,6 +28,7 @@ class DayLocalDataSource(
         isRead: Boolean,
         readTimestamp: Long?,
     ) {
+        val metaUpdatedAt = currentTimestampProvider.getCurrentTimestamp()
         val existingDay = dayDao.getDayByWeekAndDay(weekNumber, dayNumber, readingPlanType)
         if (existingDay != null) {
             // Use @Update annotation instead of custom query to ensure Room Flow emits
@@ -33,6 +36,8 @@ class DayLocalDataSource(
                 existingDay.copy(
                     isRead = isRead,
                     readTimestamp = readTimestamp,
+                    metaUpdatedAt = metaUpdatedAt,
+                    isMetaPendingSync = true,
                 ),
             )
         } else {
@@ -44,6 +49,8 @@ class DayLocalDataSource(
                     isRead = isRead,
                     readTimestamp = readTimestamp,
                     notes = null,
+                    metaUpdatedAt = metaUpdatedAt,
+                    isMetaPendingSync = true,
                 ),
             )
         }
@@ -55,11 +62,16 @@ class DayLocalDataSource(
         readingPlanType: String,
         notes: String?,
     ) {
+        val metaUpdatedAt = currentTimestampProvider.getCurrentTimestamp()
         dayDao.run {
             val existingDay = getDayByWeekAndDay(weekNumber, dayNumber, readingPlanType)
             if (existingDay != null) {
                 updateDay(
-                    existingDay.copy(notes = notes),
+                    existingDay.copy(
+                        notes = notes,
+                        metaUpdatedAt = metaUpdatedAt,
+                        isMetaPendingSync = true,
+                    ),
                 )
             } else {
                 insertDay(
@@ -70,6 +82,8 @@ class DayLocalDataSource(
                         isRead = false,
                         readTimestamp = null,
                         notes = notes,
+                        metaUpdatedAt = metaUpdatedAt,
+                        isMetaPendingSync = true,
                     ),
                 )
             }

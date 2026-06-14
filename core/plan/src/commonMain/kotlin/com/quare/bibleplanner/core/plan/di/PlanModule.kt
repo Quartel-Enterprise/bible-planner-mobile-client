@@ -2,11 +2,14 @@ package com.quare.bibleplanner.core.plan.di
 
 import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
 import com.quare.bibleplanner.core.plan.data.mapper.ChaptersRangeMapper
+import com.quare.bibleplanner.core.plan.data.mapper.DayMetaMapper
 import com.quare.bibleplanner.core.plan.data.mapper.ReadingPlanPreferenceMapper
 import com.quare.bibleplanner.core.plan.data.mapper.ReadingPlanPreferenceMapperImpl
 import com.quare.bibleplanner.core.plan.data.mapper.UserPreferenceMapper
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.data.repository.PlanRepositoryImpl
+import com.quare.bibleplanner.core.plan.data.sync.DayMetaLocalStore
+import com.quare.bibleplanner.core.plan.data.sync.DayMetaRemoteStore
 import com.quare.bibleplanner.core.plan.data.sync.SyncedPreferenceLocalStore
 import com.quare.bibleplanner.core.plan.data.sync.UserPreferencesRemoteStore
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
@@ -51,6 +54,18 @@ val planModule = module {
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
             logTag = "PreferencesSync",
+        )
+    }
+    factoryOf(::DayMetaMapper)
+    factoryOf(::DayMetaLocalStore)
+    factoryOf(::DayMetaRemoteStore)
+    single<Synchronizer>(named("dayMetaSync")) {
+        OfflineFirstSynchronizer(
+            localStore = get<DayMetaLocalStore>(),
+            remoteStore = get<DayMetaRemoteStore>(),
+            networkConnectivityObserver = get(),
+            getAuthenticatedUserId = get(),
+            logTag = "DayMetaSync",
         )
     }
 

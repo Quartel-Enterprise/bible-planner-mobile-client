@@ -6,14 +6,20 @@ import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.data.mapper.BookFavoriteMapper
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
+import com.quare.bibleplanner.core.books.data.mapper.ChapterReadMapper
 import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
+import com.quare.bibleplanner.core.books.data.mapper.VerseReadMapper
 import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
 import com.quare.bibleplanner.core.books.data.provider.BookMapsProvider
 import com.quare.bibleplanner.core.books.data.repository.BibleRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BibleVersionRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
+import com.quare.bibleplanner.core.books.data.sync.ChapterReadLocalStore
+import com.quare.bibleplanner.core.books.data.sync.ChapterReadRemoteStore
 import com.quare.bibleplanner.core.books.data.sync.FavoritesLocalStore
 import com.quare.bibleplanner.core.books.data.sync.FavoritesRemoteStore
+import com.quare.bibleplanner.core.books.data.sync.VerseReadLocalStore
+import com.quare.bibleplanner.core.books.data.sync.VerseReadRemoteStore
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
@@ -59,6 +65,12 @@ val booksModule = module {
     factoryOf(::BookFavoriteMapper)
     factoryOf(::FavoritesLocalStore)
     factoryOf(::FavoritesRemoteStore)
+    factoryOf(::ChapterReadMapper)
+    factoryOf(::ChapterReadLocalStore)
+    factoryOf(::ChapterReadRemoteStore)
+    factoryOf(::VerseReadMapper)
+    factoryOf(::VerseReadLocalStore)
+    factoryOf(::VerseReadRemoteStore)
     singleOf(::BibleVersionRepositoryImpl).bind<BibleVersionRepository>()
     factoryOf(::BibleMapper)
 
@@ -82,6 +94,24 @@ val booksModule = module {
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
             logTag = "FavoritesSync",
+        )
+    }
+    single<Synchronizer>(named("chapterReadSync")) {
+        OfflineFirstSynchronizer(
+            localStore = get<ChapterReadLocalStore>(),
+            remoteStore = get<ChapterReadRemoteStore>(),
+            networkConnectivityObserver = get(),
+            getAuthenticatedUserId = get(),
+            logTag = "ChapterReadSync",
+        )
+    }
+    single<Synchronizer>(named("verseReadSync")) {
+        OfflineFirstSynchronizer(
+            localStore = get<VerseReadLocalStore>(),
+            remoteStore = get<VerseReadRemoteStore>(),
+            networkConnectivityObserver = get(),
+            getAuthenticatedUserId = get(),
+            logTag = "VerseReadSync",
         )
     }
     factoryOf(::ClearLocalReadingDataUseCase)

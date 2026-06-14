@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
@@ -10,6 +11,7 @@ class UpdateWholeChapterReadStatusUseCase(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
     private val updateWholeBookReadStatusIfNeeded: UpdateWholeBookReadStatusIfNeededUseCase,
+    private val currentTimestampProvider: CurrentTimestampProvider,
 ) {
     suspend operator fun invoke(
         chapterNumber: Int,
@@ -21,11 +23,13 @@ class UpdateWholeChapterReadStatusUseCase(
             chapterNumber = chapterNumber,
         )
         val chapterId = chapterEntity?.id ?: return
+        val updatedAt = currentTimestampProvider.getCurrentTimestamp()
         coroutineScope {
             val updateChapterReadStatusDeferred = async {
                 chapterDao.updateChapterReadStatus(
                     chapterId = chapterId,
                     isRead = isRead,
+                    updatedAt = updatedAt,
                 )
             }
             val updateVersesReadStatusByChapterDeferred = async {

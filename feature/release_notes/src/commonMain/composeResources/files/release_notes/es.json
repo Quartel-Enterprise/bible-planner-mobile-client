@@ -5,6 +5,7 @@
     "Tu plan de lectura — fecha de inicio y tipo de plan — ahora se sincroniza en todos tus dispositivos cuando inicias sesión.",
     "Tu tema — claro/oscuro, contraste y colores dinámicos — ahora se sincroniza en todos tus dispositivos. Activa 'Sincronizar entre dispositivos' en los ajustes de Tema mientras tienes la sesión iniciada.",
     "El idioma de la aplicación ahora se sincroniza en todos tus dispositivos. Activa 'Sincronizar entre dispositivos' en los ajustes de idioma mientras tienes la sesión iniciada.",
+    "Tu progreso de lectura ahora se sincroniza en todos tus dispositivos en tiempo real cuando inicias sesión: al marcar un día, capítulo o versículo como leído en un dispositivo, aparece automáticamente en los demás, en la pantalla de planes, la pantalla de días y la pantalla del capítulo. Tus notas de los días también se sincronizan.",
     "Mensaje más claro al iniciar sesión cuando hay problemas de conexión a internet.",
     "Se corrigió un problema por el cual la fecha de inicio del plan de lectura desaparecía al cerrar sesión; ahora se restablece a la fecha de hoy."
   ],

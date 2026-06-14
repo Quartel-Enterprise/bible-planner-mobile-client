@@ -96,11 +96,66 @@ interface DayDao {
     @Query("DELETE FROM days")
     suspend fun deleteAllDays()
 
-    @Query("UPDATE days SET isRead = 0, readTimestamp = NULL")
-    suspend fun resetAllDaysProgress()
+    // region Day-meta sync (readTimestamp + notes; isRead derives from chapter/verse state)
 
-    @Query("UPDATE days SET notes = NULL")
-    suspend fun clearAllDayNotes()
+    @Query("SELECT * FROM days WHERE isMetaPendingSync = 1")
+    fun getPendingDayMetaSyncFlow(): Flow<List<DayEntity>>
+
+    @Query("SELECT * FROM days WHERE isMetaPendingSync = 1")
+    suspend fun getPendingDayMetaSync(): List<DayEntity>
+
+    @Query(
+        "UPDATE days SET isMetaPendingSync = 0 " +
+            "WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber AND readingPlanType = :readingPlanType " +
+            "AND metaUpdatedAt = :syncedUpdatedAt",
+    )
+    suspend fun markDayMetaSynced(
+        weekNumber: Int,
+        dayNumber: Int,
+        readingPlanType: String,
+        syncedUpdatedAt: Long,
+    )
+
+    /** Applies a remote day-meta row with Last-Write-Wins. Returns the number of rows changed. */
+    @Query(
+        "UPDATE days SET readTimestamp = :readTimestamp, notes = :notes, metaUpdatedAt = :remoteUpdatedAt " +
+            "WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber AND readingPlanType = :readingPlanType " +
+            "AND isMetaPendingSync = 0 AND (metaUpdatedAt IS NULL OR metaUpdatedAt < :remoteUpdatedAt)",
+    )
+    suspend fun applyRemoteDayMeta(
+        weekNumber: Int,
+        dayNumber: Int,
+        readingPlanType: String,
+        readTimestamp: Long?,
+        notes: String?,
+        remoteUpdatedAt: Long,
+    ): Int
+
+    /** Marks pre-sync day metadata pending on first launch so it reaches the backend. */
+    @Query(
+        "UPDATE days SET isMetaPendingSync = 1, metaUpdatedAt = :now " +
+            "WHERE metaUpdatedAt IS NULL AND (readTimestamp IS NOT NULL OR (notes IS NOT NULL AND notes != ''))",
+    )
+    suspend fun markLegacyDayMetaPending(now: Long)
+
+    /** Logout wipe: clears day progress, notes and sync metadata without scheduling a push. */
+    @Query(
+        "UPDATE days SET isRead = 0, readTimestamp = NULL, notes = NULL, metaUpdatedAt = NULL, isMetaPendingSync = 0",
+    )
+    suspend fun clearAllDayMetaSync()
+
+    /**
+     * Delete-progress wipe: clears day read state (keeps notes) and schedules a push for days that
+     * already had a remote row (metaUpdatedAt not null), so the deletion propagates to other devices.
+     */
+    @Query(
+        "UPDATE days SET isRead = 0, readTimestamp = NULL, " +
+            "isMetaPendingSync = CASE WHEN metaUpdatedAt IS NOT NULL THEN 1 ELSE isMetaPendingSync END, " +
+            "metaUpdatedAt = CASE WHEN metaUpdatedAt IS NOT NULL THEN :now ELSE metaUpdatedAt END",
+    )
+    suspend fun resetAllDayMetaForSync(now: Long)
+
+    // endregion
 
     @Query(
         """
