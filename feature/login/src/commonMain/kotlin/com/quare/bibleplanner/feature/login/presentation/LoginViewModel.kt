@@ -24,8 +24,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 internal class LoginViewModel(
-    private val googleSignInStarter: GoogleSignInStarter,
-    private val appleSignInStarter: AppleSignInStarter,
+    private val signInStarter: SignInStarter,
     supabaseClient: SupabaseClient,
     observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     uiStateFactory: LoginUiStateFactory,
@@ -54,13 +53,13 @@ internal class LoginViewModel(
                 }
             }
 
-            is LoginUiEvent.SocialLoginClick.Google -> {
-                _state.update { it.copy(isGoogleLoading = true, error = null) }
+            is LoginUiEvent.SocialLoginClick -> {
+                _state.update { it.copy(loadingProvider = uiEvent.provider, error = null) }
                 viewModelScope.launch {
-                    googleSignInStarter(uiEvent.nativeSignInState).onFailure { throwable ->
+                    signInStarter(uiEvent.provider, uiEvent.nativeSignInState).onFailure { throwable ->
                         _state.update {
                             it.copy(
-                                isGoogleLoading = false,
+                                loadingProvider = null,
                                 error = throwableToLoginErrorMapper(throwable),
                             )
                         }
@@ -68,54 +67,20 @@ internal class LoginViewModel(
                 }
             }
 
-            is LoginUiEvent.SocialLoginClick.Apple -> {
-                _state.update { it.copy(isAppleLoading = true, error = null) }
-                viewModelScope.launch {
-                    appleSignInStarter(uiEvent.nativeSignInState).onFailure { throwable ->
-                        _state.update {
-                            it.copy(
-                                isAppleLoading = false,
-                                error = throwableToLoginErrorMapper(throwable),
-                            )
-                        }
-                    }
-                }
-            }
-
-            is LoginUiEvent.GoogleAuthResult -> {
+            is LoginUiEvent.SocialAuthResult -> {
                 _state.update {
                     when (val result = uiEvent.result) {
                         is NativeSignInResult.Success -> it
 
-                        is NativeSignInResult.ClosedByUser -> it.copy(isGoogleLoading = false)
+                        is NativeSignInResult.ClosedByUser -> it.copy(loadingProvider = null)
 
                         is NativeSignInResult.NetworkError -> it.copy(
-                            isGoogleLoading = false,
+                            loadingProvider = null,
                             error = LoginError.CONNECTION,
                         )
 
                         is NativeSignInResult.Error -> it.copy(
-                            isGoogleLoading = false,
-                            error = throwableToLoginErrorMapper(result.exception),
-                        )
-                    }
-                }
-            }
-
-            is LoginUiEvent.AppleAuthResult -> {
-                _state.update {
-                    when (val result = uiEvent.result) {
-                        is NativeSignInResult.Success -> it
-
-                        is NativeSignInResult.ClosedByUser -> it.copy(isAppleLoading = false)
-
-                        is NativeSignInResult.NetworkError -> it.copy(
-                            isAppleLoading = false,
-                            error = LoginError.CONNECTION,
-                        )
-
-                        is NativeSignInResult.Error -> it.copy(
-                            isAppleLoading = false,
+                            loadingProvider = null,
                             error = throwableToLoginErrorMapper(result.exception),
                         )
                     }
