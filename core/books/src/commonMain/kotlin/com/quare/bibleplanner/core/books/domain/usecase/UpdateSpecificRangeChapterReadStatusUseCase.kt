@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
@@ -8,6 +9,7 @@ class UpdateSpecificRangeChapterReadStatusUseCase(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
     private val updateWholeBookReadStatusIfNeeded: UpdateWholeBookReadStatusIfNeededUseCase,
+    private val currentTimestampProvider: CurrentTimestampProvider,
 ) {
     suspend operator fun invoke(
         chapterNumber: Int,
@@ -20,11 +22,13 @@ class UpdateSpecificRangeChapterReadStatusUseCase(
             bookId = bookId.name,
             chapterNumber = chapterNumber,
         ) ?: return
+        val updatedAt = currentTimestampProvider.getCurrentTimestamp()
         verseDao.updateVerseReadStatusRange(
             chapterId = chapterEntity.id,
             startVerse = startVerse,
             endVerse = endVerse,
             isRead = isRead,
+            updatedAt = updatedAt,
         )
 
         // Check if Chapter status needs update after modifying verses
@@ -35,6 +39,7 @@ class UpdateSpecificRangeChapterReadStatusUseCase(
             chapterDao.updateChapterReadStatus(
                 chapterId = chapterEntity.id,
                 isRead = isChapterFullyRead,
+                updatedAt = updatedAt,
             )
         }
         updateWholeBookReadStatusIfNeeded(bookId)

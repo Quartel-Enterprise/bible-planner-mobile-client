@@ -18,4 +18,7 @@ data class DayEntity(
     @ColumnInfo(defaultValue = "0") val isRead: Boolean = false,
     val readTimestamp: Long? = null, // Epoch milliseconds, null if not read
     val notes: String? = null,
+    // Day-meta sync metadata (readTimestamp + notes; isRead itself derives from chapter/verse state).
+    @ColumnInfo(defaultValue = "NULL") val metaUpdatedAt: Long? = null,
+    @ColumnInfo(defaultValue = "0") val isMetaPendingSync: Boolean = false,
 )

@@ -5,6 +5,7 @@
     "Your reading plan — start date and plan type — now syncs across all your devices when you're signed in.",
     "Your theme — light/dark, contrast, and dynamic colors — now syncs across all your devices. Turn on 'Sync across devices' in the Theme settings while signed in.",
     "Your app language now syncs across all your devices. Turn on 'Sync across devices' in the language settings while signed in.",
+    "Your reading progress now syncs across all your devices in real time when you're signed in: marking a day, chapter, or verse as read on one device shows up automatically on the others, on the plans screen, the days screen, and the chapter screen. Your day notes sync too.",
     "Clearer message when signing in fails because of internet connection problems.",
     "Fixed an issue where the reading plan start date would disappear after signing out; it's now reset to today's date."
   ],

@@ -7,6 +7,7 @@ import androidx.room.Update
 import androidx.room.Upsert
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
+import com.quare.bibleplanner.core.provider.room.relation.PendingVerseRead
 import com.quare.bibleplanner.core.provider.room.relation.VerseWithTexts
 import com.quare.bibleplanner.core.provider.room.relation.VersionChapterCount
 import kotlinx.coroutines.flow.Flow
@@ -160,14 +161,102 @@ interface VerseDao {
      * @param isRead The new read status to be applied.
      */
     @Query(
-        "UPDATE verses SET isRead = :isRead WHERE chapterId = :chapterId AND number BETWEEN :startVerse AND :endVerse",
+        "UPDATE verses SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
+            "WHERE chapterId = :chapterId AND number BETWEEN :startVerse AND :endVerse",
     )
     suspend fun updateVerseReadStatusRange(
         chapterId: Long,
         startVerse: Int,
         endVerse: Int,
         isRead: Boolean,
+        updatedAt: Long,
     )
+
+    // region Read-state sync (verse-range reads only; whole-chapter reads sync at chapter level)
+
+    @Query(
+        "SELECT c.bookId AS bookId, c.number AS chapterNumber, v.number AS verseNumber, " +
+            "v.isRead AS isRead, v.readUpdatedAt AS readUpdatedAt " +
+            "FROM verses v INNER JOIN chapters c ON v.chapterId = c.id WHERE v.isReadPendingSync = 1",
+    )
+    fun getPendingReadSyncVersesFlow(): Flow<List<PendingVerseRead>>
+
+    @Query(
+        "SELECT c.bookId AS bookId, c.number AS chapterNumber, v.number AS verseNumber, " +
+            "v.isRead AS isRead, v.readUpdatedAt AS readUpdatedAt " +
+            "FROM verses v INNER JOIN chapters c ON v.chapterId = c.id WHERE v.isReadPendingSync = 1",
+    )
+    suspend fun getPendingReadSyncVerses(): List<PendingVerseRead>
+
+    @Query(
+        "UPDATE verses SET isReadPendingSync = 0 " +
+            "WHERE chapterId = (SELECT id FROM chapters WHERE bookId = :bookId AND number = :chapterNumber) " +
+            "AND number = :verseNumber AND readUpdatedAt = :syncedUpdatedAt",
+    )
+    suspend fun markVerseReadSynced(
+        bookId: String,
+        chapterNumber: Int,
+        verseNumber: Int,
+        syncedUpdatedAt: Long,
+    )
+
+    @Query(
+        "UPDATE verses SET isRead = :isRead, readUpdatedAt = :remoteUpdatedAt " +
+            "WHERE chapterId = (SELECT id FROM chapters WHERE bookId = :bookId AND number = :chapterNumber) " +
+            "AND number = :verseNumber AND isReadPendingSync = 0 " +
+            "AND (readUpdatedAt IS NULL OR readUpdatedAt < :remoteUpdatedAt)",
+    )
+    suspend fun applyRemoteVerseRead(
+        bookId: String,
+        chapterNumber: Int,
+        verseNumber: Int,
+        isRead: Boolean,
+        remoteUpdatedAt: Long,
+    )
+
+    /**
+     * Cascades a remote whole-chapter read down to its verses so the chapter screen (which derives the
+     * checkmark from `verses.all { isRead }`) stays consistent. Skips verses with their own pending
+     * verse-range edit so an in-flight local change is not clobbered.
+     */
+    @Query(
+        "UPDATE verses SET isRead = :isRead " +
+            "WHERE chapterId = (SELECT id FROM chapters WHERE bookId = :bookId AND number = :chapterNumber) " +
+            "AND isReadPendingSync = 0",
+    )
+    suspend fun cascadeChapterReadToVerses(
+        bookId: String,
+        chapterNumber: Int,
+        isRead: Boolean,
+    )
+
+    /**
+     * Marks pre-sync verse-range reads pending on first launch: only verses read inside a chapter that
+     * is not itself fully read, so whole-chapter legacy reads stay at chapter granularity.
+     */
+    @Query(
+        "UPDATE verses SET isReadPendingSync = 1, readUpdatedAt = :now " +
+            "WHERE isRead = 1 AND readUpdatedAt IS NULL " +
+            "AND chapterId IN (SELECT id FROM chapters WHERE isRead = 0)",
+    )
+    suspend fun markLegacyVerseReadsPending(now: Long)
+
+    /** Logout wipe: clears verse read state without scheduling a push. */
+    @Query("UPDATE verses SET isRead = 0, readUpdatedAt = NULL, isReadPendingSync = 0")
+    suspend fun clearAllVerseReadSync()
+
+    /**
+     * Delete-progress wipe: clears all verse read state locally and schedules a push for verses that
+     * already had a remote row (readUpdatedAt not null), so the deletion propagates to other devices.
+     */
+    @Query(
+        "UPDATE verses SET isRead = 0, " +
+            "isReadPendingSync = CASE WHEN readUpdatedAt IS NOT NULL THEN 1 ELSE isReadPendingSync END, " +
+            "readUpdatedAt = CASE WHEN readUpdatedAt IS NOT NULL THEN :now ELSE readUpdatedAt END",
+    )
+    suspend fun resetAllVerseReadsForSync(now: Long)
+
+    // endregion
 
     /**
      * Deletes a specific verse by its unique identifier.
@@ -184,9 +273,6 @@ interface VerseDao {
      */
     @Query("DELETE FROM verses WHERE chapterId = :chapterId")
     suspend fun deleteVersesByChapterId(chapterId: Long)
-
-    @Query("UPDATE verses SET isRead = 0")
-    suspend fun resetAllVersesProgress()
 
     /**
      * Counts the number of verses available for a specific chapter and Bible version.

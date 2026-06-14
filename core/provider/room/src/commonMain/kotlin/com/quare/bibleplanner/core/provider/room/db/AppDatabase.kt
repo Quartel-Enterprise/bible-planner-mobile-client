@@ -30,12 +30,13 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         BibleVersionEntity::class,
         SyncedPreferenceEntity::class,
     ],
-    version = 9,
+    version = 10,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8, spec = Migration7To8Spec::class),
         AutoMigration(from = 8, to = 9),
+        AutoMigration(from = 9, to = 10),
     ],
     exportSchema = true,
 )
