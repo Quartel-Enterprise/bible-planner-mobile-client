@@ -3,4 +3,6 @@
     <string name="language_english">Inglés</string>
     <string name="language_portuguese_brazil">Portugués (Brasil)</string>
     <string name="language_spanish">Español</string>
+    <string name="sync_across_devices_title">Sincronizar entre dispositivos</string>
+    <string name="sync_across_devices_description">Mantén tu idioma igual en todos tus dispositivos</string>
 </resources>

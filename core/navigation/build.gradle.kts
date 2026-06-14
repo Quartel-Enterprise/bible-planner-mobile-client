@@ -30,6 +30,7 @@ kotlin {
             implementation(projects.feature.donation)
             implementation(projects.feature.donation.pixQr)
             implementation(projects.feature.login)
+            implementation(projects.feature.loginWarning)
             implementation(projects.feature.logout)
             implementation(projects.feature.preferences.bibleVersion)
             implementation(projects.feature.preferences.appLanguage)

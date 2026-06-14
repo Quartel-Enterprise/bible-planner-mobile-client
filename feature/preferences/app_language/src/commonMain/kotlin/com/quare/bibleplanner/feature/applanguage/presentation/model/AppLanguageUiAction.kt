@@ -8,4 +8,6 @@ internal sealed interface AppLanguageUiAction {
     data class ApplyAndNavigateUp(
         val language: Language,
     ) : AppLanguageUiAction
+
+    data object NavigateToLoginWarning : AppLanguageUiAction
 }

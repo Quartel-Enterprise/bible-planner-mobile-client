@@ -13,14 +13,23 @@ import com.quare.bibleplanner.core.utils.locale.Language
 actual fun rememberApplyLanguage(): (Language) -> Unit {
     val context = LocalContext.current
     return remember(context) {
-        { language ->
-            context
-                .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .edit {
-                    putString(KEY_APP_LANGUAGE, language.toLocaleTag())
-                }
-            context.findActivity()?.recreate()
-        }
+        { language -> context.applyAppLanguageLocale(language) }
+    }
+}
+
+/**
+ * Persists [language] as the app locale (read by `MainActivity.attachBaseContext`) and recreates the
+ * current activity to apply it. Guarded against the stored value so re-applying the active locale —
+ * on startup or as an echo of a sync change already applied — does not trigger a recreate loop.
+ */
+internal fun Context.applyAppLanguageLocale(language: Language) {
+    val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    val currentTag = prefs.getString(KEY_APP_LANGUAGE, null)
+    val newTag = language.toLocaleTag()
+    if (currentTag == newTag) return
+    prefs.edit { putString(KEY_APP_LANGUAGE, newTag) }
+    if (currentTag != null) {
+        findActivity()?.recreate()
     }
 }
 

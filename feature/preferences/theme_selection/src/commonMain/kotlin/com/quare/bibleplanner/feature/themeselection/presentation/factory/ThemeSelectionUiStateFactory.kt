@@ -1,9 +1,11 @@
 package com.quare.bibleplanner.feature.themeselection.presentation.factory
 
+import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeSyncEnabledFlow
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -13,18 +15,24 @@ internal class ThemeSelectionUiStateFactory(
     private val getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
     private val getContrastTypeFlow: GetContrastTypeFlow,
     private val isDynamicColorSupported: IsDynamicColorSupported,
+    private val getThemeSyncEnabledFlow: GetThemeSyncEnabledFlow,
+    private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
 ) {
     fun create(): Flow<ThemeSelectionUiState> = combine(
         getThemeOptionFlow(),
         getIsDynamicColorsEnabledFlow(),
         getContrastTypeFlow(),
-    ) { theme, isDynamicColorEnabled, contrast ->
+        getThemeSyncEnabledFlow(),
+        observeAuthenticatedUserId(),
+    ) { theme, isDynamicColorEnabled, contrast, isSyncEnabled, userId ->
         ThemeSelectionUiState(
             isMaterialYouToggleOn = isDynamicColorEnabled.takeIf { isDynamicColorSupported() },
             options = ThemeOptionsFactory.themeOptions.map { themeOption ->
                 themeOption.copy(isActive = themeOption.preference == theme)
             },
             selectedContrast = contrast,
+            isSyncEnabled = isSyncEnabled,
+            isLoggedIn = userId != null,
         )
     }
 }

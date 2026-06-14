@@ -12,6 +12,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.utils)
+            implementation(projects.core.provider.room)
+            implementation(projects.core.date)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)

@@ -5,7 +5,10 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -20,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,15 +32,14 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.dyna
 import bibleplanner.feature.preferences.theme_selection.generated.resources.information
 import bibleplanner.feature.preferences.theme_selection.generated.resources.select_contrast
 import bibleplanner.feature.preferences.theme_selection.generated.resources.select_theme
+import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_description
+import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_title
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ContrastSelector
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ThemeOptionCard
-import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionModel
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiState
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
-import com.quare.bibleplanner.ui.theme.model.ContrastType
-import com.quare.bibleplanner.ui.theme.model.Theme
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,18 +53,6 @@ fun ThemeSelectionContent(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         portraitContent = {
-            uiState.isMaterialYouToggleOn?.let { isMaterialYouOn ->
-                item {
-                    DynamicColorOption(
-                        isChecked = isMaterialYouOn,
-                        onToggle = { onEvent(ThemeSelectionUiEvent.MaterialYouToggleClicked(it)) },
-                        onInfoClick = { onEvent(ThemeSelectionUiEvent.MaterialYouInfoClicked) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                    )
-                }
-            }
             item {
                 Text(
                     text = stringResource(Res.string.select_theme),
@@ -82,133 +73,54 @@ fun ThemeSelectionContent(
                     }
                 }
             }
-            responsiveItem {
-                AnimatedVisibility(
-                    visible = uiState.isMaterialYouToggleOn != true,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut(),
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(Res.string.select_contrast),
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                        )
-                        ContrastSelector(
-                            selectedContrast = uiState.selectedContrast,
-                            onContrastSelected = { onEvent(ThemeSelectionUiEvent.OnContrastSelected(it)) },
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
+            uiState.isMaterialYouToggleOn?.let { isMaterialYouOn ->
+                item {
+                    DynamicColorOption(
+                        isChecked = isMaterialYouOn,
+                        onToggle = { onEvent(ThemeSelectionUiEvent.MaterialYouToggleClicked(it)) },
+                        onInfoClick = { onEvent(ThemeSelectionUiEvent.MaterialYouInfoClicked) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                    )
                 }
             }
-        },
-        landscapeContent = {
             responsiveItem {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp),
-                    verticalAlignment = Alignment.Top,
-                ) {
-                    val isMaterialYouSupported = uiState.isMaterialYouToggleOn != null
-                    if (isMaterialYouSupported) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            ThemeSection(
-                                options = uiState.options,
-                                onThemeSelected = { onEvent(ThemeSelectionUiEvent.OnThemeSelected(it)) },
+                // Contrast and the sync row share one list slot so the collapsed contrast adds no
+                // extra arrangement gap: the sync row stays the same distance below dynamic colors as
+                // dynamic colors is below the theme cards.
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    AnimatedVisibility(
+                        visible = uiState.isMaterialYouToggleOn != true,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut(),
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(Res.string.select_contrast),
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                             )
-
-                            AnimatedVisibility(
-                                visible = !uiState.isMaterialYouToggleOn,
-                                enter = expandVertically() + fadeIn(),
-                                exit = shrinkVertically() + fadeOut(),
-                            ) {
-                                ContrastSection(
-                                    selectedContrast = uiState.selectedContrast,
-                                    onContrastSelected = { onEvent(ThemeSelectionUiEvent.OnContrastSelected(it)) },
-                                    modifier = Modifier.padding(top = 16.dp),
-                                )
-                            }
-                        }
-
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(top = 8.dp),
-                        ) {
-                            DynamicColorOption(
-                                isChecked = uiState.isMaterialYouToggleOn,
-                                onToggle = { onEvent(ThemeSelectionUiEvent.MaterialYouToggleClicked(it)) },
-                                onInfoClick = { onEvent(ThemeSelectionUiEvent.MaterialYouInfoClicked) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 8.dp),
-                            )
-                        }
-                    } else {
-                        Column(modifier = Modifier.weight(1f)) {
-                            ThemeSection(
-                                options = uiState.options,
-                                onThemeSelected = { onEvent(ThemeSelectionUiEvent.OnThemeSelected(it)) },
-                            )
-                        }
-                        Column(modifier = Modifier.weight(1f)) {
-                            ContrastSection(
+                            ContrastSelector(
                                 selectedContrast = uiState.selectedContrast,
                                 onContrastSelected = { onEvent(ThemeSelectionUiEvent.OnContrastSelected(it)) },
-                                modifier = Modifier.padding(top = 8.dp),
+                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
                     }
+                    SyncOption(
+                        isChecked = uiState.isSyncEnabled,
+                        isLoggedIn = uiState.isLoggedIn,
+                        onToggle = { onEvent(ThemeSelectionUiEvent.SyncToggleClicked(it)) },
+                        onBlockedClick = { onEvent(ThemeSelectionUiEvent.SyncToggleBlockedClicked) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                    )
                 }
             }
         },
     )
-}
-
-@Composable
-private fun ThemeSection(
-    options: List<ThemeSelectionModel>,
-    onThemeSelected: (Theme) -> Unit,
-) {
-    Column {
-        Text(
-            text = stringResource(Res.string.select_theme),
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            options.forEach { option ->
-                ThemeOptionCard(
-                    model = option,
-                    onClick = { onThemeSelected(option.preference) },
-                    modifier = Modifier.weight(1f),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ContrastSection(
-    selectedContrast: ContrastType,
-    onContrastSelected: (ContrastType) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(Res.string.select_contrast),
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
-        ContrastSelector(
-            selectedContrast = selectedContrast,
-            onContrastSelected = onContrastSelected,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
 }
 
 @Composable
@@ -241,5 +153,69 @@ private fun DynamicColorOption(
             checked = isChecked,
             onCheckedChange = onToggle,
         )
+    }
+}
+
+@Composable
+private fun SyncOption(
+    isChecked: Boolean,
+    isLoggedIn: Boolean,
+    onToggle: (Boolean) -> Unit,
+    onBlockedClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(Res.string.sync_across_devices_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(Res.string.sync_across_devices_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        SyncSwitch(
+            isChecked = isChecked,
+            isLoggedIn = isLoggedIn,
+            onToggle = onToggle,
+            onBlockedClick = onBlockedClick,
+        )
+    }
+}
+
+/**
+ * Locked when logged out: the switch is disabled and a transparent overlay captures taps over the
+ * switch only (not the whole row), so the caller can prompt the user to sign in.
+ */
+@Composable
+private fun SyncSwitch(
+    isChecked: Boolean,
+    isLoggedIn: Boolean,
+    onToggle: (Boolean) -> Unit,
+    onBlockedClick: () -> Unit,
+) {
+    Box {
+        Switch(
+            checked = isChecked && isLoggedIn,
+            onCheckedChange = onToggle.takeIf { isLoggedIn },
+            enabled = isLoggedIn,
+        )
+        if (!isLoggedIn) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onBlockedClick,
+                    ),
+            )
+        }
     }
 }

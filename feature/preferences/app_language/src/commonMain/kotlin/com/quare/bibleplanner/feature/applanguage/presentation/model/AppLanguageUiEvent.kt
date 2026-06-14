@@ -8,4 +8,10 @@ internal sealed interface AppLanguageUiEvent {
     ) : AppLanguageUiEvent
 
     data object OnDismiss : AppLanguageUiEvent
+
+    data class SyncToggleClicked(
+        val isNewValueOn: Boolean,
+    ) : AppLanguageUiEvent
+
+    data object SyncToggleBlockedClicked : AppLanguageUiEvent
 }

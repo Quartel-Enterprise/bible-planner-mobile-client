@@ -8,7 +8,10 @@ import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigServi
 import com.quare.bibleplanner.core.sync.domain.usecase.ObserveSync
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveAppLocale
+import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveLanguageSync
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelectedVersionUseCase
+import com.quare.bibleplanner.feature.materialyou.domain.usecase.ObserveDynamicColorsSync
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.joinAll
@@ -21,6 +24,9 @@ internal class InitializeAppContentUseCase(
     private val ensureDefaultPlanStartDate: EnsureDefaultPlanStartDateUseCase,
     private val observeSelectedVersion: ObserveSelectedVersionUseCase,
     private val observeAppLocale: ObserveAppLocale,
+    private val observeThemeSync: ObserveThemeSync,
+    private val observeDynamicColorsSync: ObserveDynamicColorsSync,
+    private val observeLanguageSync: ObserveLanguageSync,
     private val observeSync: ObserveSync,
     private val remoteConfig: RemoteConfigService, // Don't delete it, it is necessary to initialize remote config
 ) : InitializeAppContent {
@@ -37,6 +43,9 @@ internal class InitializeAppContentUseCase(
                 ensureStartDateDeferred,
             ).joinAll()
             launch { observeAppLocale() }
+            launch { observeThemeSync() }
+            launch { observeDynamicColorsSync() }
+            launch { observeLanguageSync() }
             // Launched after book rows exist so remote favorites can be applied to them.
             launch { observeSync() }
             observeSelectedVersion()

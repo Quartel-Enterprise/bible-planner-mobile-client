@@ -5,5 +5,7 @@ import com.quare.bibleplanner.ui.theme.model.ContrastType
 data class ThemeSelectionUiState(
     val isMaterialYouToggleOn: Boolean?,
     val options: List<ThemeSelectionModel>,
-    val selectedContrast: ContrastType = ContrastType.Standard,
+    val selectedContrast: ContrastType,
+    val isSyncEnabled: Boolean,
+    val isLoggedIn: Boolean,
 )
