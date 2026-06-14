@@ -5,7 +5,8 @@
     "Tu plan de lectura — fecha de inicio y tipo de plan — ahora se sincroniza en todos tus dispositivos cuando inicias sesión.",
     "Tu tema — claro/oscuro, contraste y colores dinámicos — ahora se sincroniza en todos tus dispositivos. Activa 'Sincronizar entre dispositivos' en los ajustes de Tema mientras tienes la sesión iniciada.",
     "El idioma de la aplicación ahora se sincroniza en todos tus dispositivos. Activa 'Sincronizar entre dispositivos' en los ajustes de idioma mientras tienes la sesión iniciada.",
-    "Mensaje más claro al iniciar sesión cuando hay problemas de conexión a internet."
+    "Mensaje más claro al iniciar sesión cuando hay problemas de conexión a internet.",
+    "Se corrigió un problema por el cual la fecha de inicio del plan de lectura desaparecía al cerrar sesión; ahora se restablece a la fecha de hoy."
   ],
   "1.15.0": [
     "La pantalla del plan de lectura ahora usa un diseño de dos columnas en tabletas y pantallas más grandes, con el panel de progreso a la izquierda y la lista de semanas a la derecha, ambos con desplazamiento independiente en todo el ancho de la pantalla.",
