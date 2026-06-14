@@ -20,6 +20,8 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.provider.supabase)
+            implementation(projects.core.provider.connectivity)
+            implementation(projects.core.date)
 
             // Room
             implementation(libs.androidx.room.runtime)
@@ -27,6 +29,9 @@ kotlin {
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.storage)
+            implementation(libs.supabase.auth)
+            implementation(libs.supabase.postgrest)
+            implementation(libs.supabase.realtime)
 
             // Compose
             implementation(libs.runtime)
@@ -44,6 +49,14 @@ kotlin {
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
+
+            // Logging
+            implementation(libs.kermit)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

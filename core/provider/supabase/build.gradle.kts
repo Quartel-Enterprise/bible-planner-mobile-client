@@ -21,6 +21,8 @@ kotlin {
             implementation(libs.supabase.compose.auth)
             implementation(libs.supabase.compose.auth.ui)
             implementation(libs.supabase.storage)
+            implementation(libs.supabase.postgrest)
+            implementation(libs.supabase.realtime)
 
             // Ktor
             implementation(libs.ktor.client.core)
@@ -34,6 +36,16 @@ kotlin {
 
             // Logging
             implementation(libs.kermit)
+        }
+
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.cio)
         }
     }
 }

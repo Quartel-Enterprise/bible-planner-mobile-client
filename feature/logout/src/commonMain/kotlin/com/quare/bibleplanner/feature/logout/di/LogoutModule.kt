@@ -1,9 +1,22 @@
 package com.quare.bibleplanner.feature.logout.di
 
+import com.quare.bibleplanner.feature.logout.domain.usecase.FlushPendingChangesUseCase
+import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutUseCase
+import com.quare.bibleplanner.feature.logout.presentation.mapper.LogoutErrorMapper
 import com.quare.bibleplanner.feature.logout.presentation.viewmodel.LogoutViewModel
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
+import kotlin.time.Duration.Companion.seconds
 
 val logoutModule = module {
+    factory {
+        FlushPendingChangesUseCase(
+            pushPendingFavorites = get(),
+            flushTimeout = 5.seconds,
+        )
+    }
+    factoryOf(::LogoutUseCase)
+    factoryOf(::LogoutErrorMapper)
     viewModelOf(::LogoutViewModel)
 }

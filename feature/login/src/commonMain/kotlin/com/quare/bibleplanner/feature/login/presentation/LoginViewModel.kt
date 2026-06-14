@@ -73,14 +73,22 @@ internal class LoginViewModel(
             }
 
             is LoginUiEvent.GoogleAuthResult -> {
-                if (uiEvent.result is NativeSignInResult.ClosedByUser) {
-                    _state.update { it.copy(isGoogleLoading = false) }
+                _state.update {
+                    when (uiEvent.result) {
+                        is NativeSignInResult.Success -> it
+                        is NativeSignInResult.ClosedByUser -> it.copy(isGoogleLoading = false)
+                        else -> it.copy(isGoogleLoading = false, isErrorVisible = true)
+                    }
                 }
             }
 
             is LoginUiEvent.AppleAuthResult -> {
-                if (uiEvent.result is NativeSignInResult.ClosedByUser) {
-                    _state.update { it.copy(isAppleLoading = false) }
+                _state.update {
+                    when (uiEvent.result) {
+                        is NativeSignInResult.Success -> it
+                        is NativeSignInResult.ClosedByUser -> it.copy(isAppleLoading = false)
+                        else -> it.copy(isAppleLoading = false, isErrorVisible = true)
+                    }
                 }
             }
 

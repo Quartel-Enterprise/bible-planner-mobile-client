@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.plan.data.mapper.ReadingPlanPreferenceMapperI
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
 import com.quare.bibleplanner.core.plan.data.repository.PlanRepositoryImpl
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
+import com.quare.bibleplanner.core.plan.domain.usecase.ClearReadingPlanUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetDaysWithNotesCountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
@@ -36,6 +37,7 @@ val planModule = module {
     factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
     factoryOf(::SetPlanStartTimeUseCase)
+    factoryOf(::ClearReadingPlanUseCase)
     factoryOf(::UpdateDayNotesUseCase)
     factoryOf(::DeleteDayNotesUseCase)
     factoryOf(::GetDaysWithNotesCountUseCase)

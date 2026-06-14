@@ -2,6 +2,7 @@ package com.quare.bibleplanner.domain.usecase.impl
 
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBookFavoritesSync
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveAppLocale
@@ -17,6 +18,7 @@ internal class InitializeAppContentUseCase(
     private val ensureStartDateIsAvailable: EnsureStartDateIsAvailableUseCase,
     private val observeSelectedVersion: ObserveSelectedVersionUseCase,
     private val observeAppLocale: ObserveAppLocale,
+    private val observeBookFavoritesSync: ObserveBookFavoritesSync,
     private val remoteConfig: RemoteConfigService, // Don't delete it, it is necessary to initialize remote config
 ) : InitializeAppContent {
     override operator fun invoke(coroutineScope: CoroutineScope) {
@@ -30,6 +32,8 @@ internal class InitializeAppContentUseCase(
                 ensureStartDateDeferred,
             ).joinAll()
             launch { observeAppLocale() }
+            // Launched after book rows exist so remote favorites can be applied to them.
+            launch { observeBookFavoritesSync() }
             observeSelectedVersion()
         }
     }

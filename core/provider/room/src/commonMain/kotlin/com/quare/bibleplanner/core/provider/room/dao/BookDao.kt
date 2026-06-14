@@ -49,11 +49,47 @@ interface BookDao {
         isRead: Boolean,
     )
 
-    @Query("UPDATE books SET isFavorite = :isFavorite WHERE id = :bookId")
+    @Query(
+        "UPDATE books SET isFavorite = :isFavorite, favoriteUpdatedAt = :updatedAt, " +
+            "isFavoritePendingSync = 1 WHERE id = :bookId",
+    )
     suspend fun updateBookFavoriteStatus(
         bookId: String,
         isFavorite: Boolean,
+        updatedAt: Long,
     )
+
+    @Query("SELECT * FROM books WHERE isFavoritePendingSync = 1")
+    fun getPendingFavoriteSyncBooksFlow(): Flow<List<BookEntity>>
+
+    @Query("SELECT * FROM books WHERE isFavoritePendingSync = 1")
+    suspend fun getPendingFavoriteSyncBooks(): List<BookEntity>
+
+    @Query(
+        "UPDATE books SET isFavoritePendingSync = 0 " +
+            "WHERE id = :bookId AND favoriteUpdatedAt = :syncedUpdatedAt",
+    )
+    suspend fun markFavoriteSynced(
+        bookId: String,
+        syncedUpdatedAt: Long,
+    )
+
+    @Query(
+        "UPDATE books SET isFavorite = :isFavorite, favoriteUpdatedAt = :remoteUpdatedAt " +
+            "WHERE id = :bookId AND isFavoritePendingSync = 0 " +
+            "AND (favoriteUpdatedAt IS NULL OR favoriteUpdatedAt < :remoteUpdatedAt)",
+    )
+    suspend fun applyRemoteFavorite(
+        bookId: String,
+        isFavorite: Boolean,
+        remoteUpdatedAt: Long,
+    )
+
+    @Query(
+        "UPDATE books SET isFavoritePendingSync = 1, favoriteUpdatedAt = :now " +
+            "WHERE isFavorite = 1 AND favoriteUpdatedAt IS NULL",
+    )
+    suspend fun markLegacyFavoritesPending(now: Long)
 
     @Query("DELETE FROM books WHERE id = :bookId")
     suspend fun deleteBook(bookId: String)
@@ -63,4 +99,7 @@ interface BookDao {
 
     @Query("UPDATE books SET isRead = 0")
     suspend fun resetAllBooksProgress()
+
+    @Query("UPDATE books SET isFavorite = 0, favoriteUpdatedAt = NULL, isFavoritePendingSync = 0")
+    suspend fun resetAllFavorites()
 }

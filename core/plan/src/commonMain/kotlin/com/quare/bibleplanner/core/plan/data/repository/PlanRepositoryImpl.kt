@@ -30,10 +30,6 @@ class PlanRepositoryImpl(
         planLocalDataSource.setPlanStartTimestamp(timestamp)
     }
 
-    override suspend fun deleteStartPlanTimestamp() {
-        planLocalDataSource.removeLocalDate()
-    }
-
     override fun getStartPlanTimestamp(): Flow<LocalDate?> =
         planLocalDataSource.getPlanStartTimeStamp().map { timestamp ->
             timestamp?.let(localDateTimeProvider::getLocalDateTime)?.toLocalDate()
@@ -48,5 +44,9 @@ class PlanRepositoryImpl(
         planLocalDataSource.setSelectedReadingPlan(
             readingPlanPreferenceMapper.mapModelToPreference(readingPlanType),
         )
+    }
+
+    override suspend fun resetPlan(startDate: Long) {
+        planLocalDataSource.resetPlanPreferences(startDate)
     }
 }

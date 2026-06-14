@@ -3,4 +3,9 @@
     <string name="logout_message">Are you sure you want to sign out of your account?</string>
     <string name="logout_confirm">Sign out</string>
     <string name="logout_cancel">Cancel</string>
+    <string name="logout_error_message">Couldn't sign out. Please try again.</string>
+    <string name="logout_sign_out_anyway">Sign out anyway</string>
+    <string name="logout_pending_changes_error_title">Couldn't sign out</string>
+    <string name="logout_pending_changes_error_message">We couldn't sync your %1$s before signing out. Try again, or stay signed in.</string>
+    <string name="logout_pending_favorites">favorites</string>
 </resources>

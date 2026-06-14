@@ -15,6 +15,9 @@ import bibleplanner.feature.logout.generated.resources.Res
 import bibleplanner.feature.logout.generated.resources.logout_cancel
 import bibleplanner.feature.logout.generated.resources.logout_confirm
 import bibleplanner.feature.logout.generated.resources.logout_message
+import bibleplanner.feature.logout.generated.resources.logout_pending_changes_error_message
+import bibleplanner.feature.logout.generated.resources.logout_pending_changes_error_title
+import bibleplanner.feature.logout.generated.resources.logout_sign_out_anyway
 import bibleplanner.feature.logout.generated.resources.logout_title
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiEvent
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiState
@@ -36,7 +39,13 @@ internal fun LogoutDialog(
         ),
         title = {
             Text(
-                text = stringResource(Res.string.logout_title),
+                text = stringResource(
+                    if (uiState is LogoutUiState.PendingChangesError) {
+                        Res.string.logout_pending_changes_error_title
+                    } else {
+                        Res.string.logout_title
+                    },
+                ),
                 style = MaterialTheme.typography.headlineSmall,
             )
         },
@@ -45,7 +54,14 @@ internal fun LogoutDialog(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = stringResource(Res.string.logout_message),
+                    text = if (uiState is LogoutUiState.PendingChangesError) {
+                        stringResource(
+                            Res.string.logout_pending_changes_error_message,
+                            stringResource(uiState.pendingResource),
+                        )
+                    } else {
+                        stringResource(Res.string.logout_message)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Start,
                 )
@@ -64,6 +80,16 @@ internal fun LogoutDialog(
                         },
                     ) {
                         Text(text = stringResource(Res.string.logout_confirm))
+                    }
+                }
+
+                is LogoutUiState.PendingChangesError -> {
+                    TextButton(
+                        onClick = {
+                            onEvent(LogoutUiEvent.OnForceLogout)
+                        },
+                    ) {
+                        Text(text = stringResource(Res.string.logout_sign_out_anyway))
                     }
                 }
             }

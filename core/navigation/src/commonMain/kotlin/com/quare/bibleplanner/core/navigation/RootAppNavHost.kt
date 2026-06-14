@@ -47,7 +47,10 @@ fun RootAppNavHost() {
         ) {
             val sharedTransitionScope = this@SharedTransitionLayout
             loginRoot(navController)
-            logout(navController)
+            logout(
+                navController = navController,
+                snackbarHostState = mainScaffoldState.snackbarHostState,
+            )
             mainScreen(mainScaffoldState, navController, sharedTransitionScope)
             day(navController, sharedTransitionScope)
             themeSettings(navController)
