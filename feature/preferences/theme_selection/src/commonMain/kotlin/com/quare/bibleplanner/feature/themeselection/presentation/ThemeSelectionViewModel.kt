@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.SetIsDynamicColorsEnabled
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetContrastType
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetThemeOption
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetThemeSyncEnabled
 import com.quare.bibleplanner.feature.themeselection.presentation.factory.ThemeSelectionUiStateFactory
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiAction
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
@@ -22,6 +23,7 @@ internal class ThemeSelectionViewModel(
     private val setThemeOption: SetThemeOption,
     private val setDynamicColorsEnabledFlow: SetIsDynamicColorsEnabled,
     private val setContrastType: SetContrastType,
+    private val setThemeSyncEnabled: SetThemeSyncEnabled,
     factory: ThemeSelectionUiStateFactory,
 ) : ViewModel() {
     private val _uiAction: MutableSharedFlow<ThemeSelectionUiAction> = MutableSharedFlow()
@@ -33,6 +35,9 @@ internal class ThemeSelectionViewModel(
         initialValue = ThemeSelectionUiState(
             isMaterialYouToggleOn = null,
             options = emptyList(),
+            selectedContrast = ContrastType.Standard,
+            isSyncEnabled = false,
+            isLoggedIn = false,
         ),
     )
 
@@ -58,6 +63,16 @@ internal class ThemeSelectionViewModel(
 
             is ThemeSelectionUiEvent.OnContrastSelected -> {
                 setContrast(event.contrastType)
+            }
+
+            is ThemeSelectionUiEvent.SyncToggleClicked -> {
+                viewModelScope.launch {
+                    setThemeSyncEnabled(event.isNewValueOn)
+                }
+            }
+
+            ThemeSelectionUiEvent.SyncToggleBlockedClicked -> {
+                emitUiAction(ThemeSelectionUiAction.NavigateToLoginWarning)
             }
         }
     }

@@ -6,12 +6,18 @@ import com.quare.bibleplanner.feature.themeselection.data.repository.ThemeSelect
 import com.quare.bibleplanner.feature.themeselection.domain.repository.ThemeSelectionRepository
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeSyncEnabledFlow
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.ObserveThemeSync
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetContrastType
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetThemeOption
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetThemeSyncEnabled
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetContrastTypeFlowUseCase
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetThemeOptionFlowUseCase
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetThemeSyncEnabledFlowUseCase
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.ObserveThemeSyncUseCase
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.SetContrastTypeUseCase
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.SetThemeOptionUseCase
+import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.SetThemeSyncEnabledUseCase
 import com.quare.bibleplanner.feature.themeselection.presentation.ThemeSelectionViewModel
 import com.quare.bibleplanner.feature.themeselection.presentation.factory.ThemeSelectionUiStateFactory
 import org.koin.core.module.dsl.factoryOf
@@ -29,6 +35,9 @@ val themeSelectionDomainModule = module {
     factoryOf(::SetThemeOptionUseCase).bind<SetThemeOption>()
     factoryOf(::GetContrastTypeFlowUseCase).bind<GetContrastTypeFlow>()
     factoryOf(::SetContrastTypeUseCase).bind<SetContrastType>()
+    factoryOf(::GetThemeSyncEnabledFlowUseCase).bind<GetThemeSyncEnabledFlow>()
+    factoryOf(::SetThemeSyncEnabledUseCase).bind<SetThemeSyncEnabled>()
+    factoryOf(::ObserveThemeSyncUseCase).bind<ObserveThemeSync>()
 
     // Presentation
     factoryOf(::ThemeSelectionUiStateFactory)

@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.core.navigation.RootAppNavHost
+import com.quare.bibleplanner.feature.applanguage.presentation.ApplyAppLocaleEffect
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
 import com.quare.bibleplanner.ui.theme.model.Theme
@@ -20,6 +21,7 @@ fun App(getSpecificColors: @Composable ((isAppInDarkTheme: Boolean) -> ColorSche
     val viewModel: AppViewModel = koinViewModel()
     val theme by viewModel.themeState.collectAsState()
     val contrast by viewModel.contrastState.collectAsState()
+    ApplyAppLocaleEffect()
     ProvideCompositionLocals(theme) {
         AppTheme(
             getSpecificColors = getSpecificColors,

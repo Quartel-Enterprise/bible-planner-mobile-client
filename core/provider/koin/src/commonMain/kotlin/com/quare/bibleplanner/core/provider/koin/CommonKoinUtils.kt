@@ -31,6 +31,7 @@ import com.quare.bibleplanner.feature.donation.di.donationModule
 import com.quare.bibleplanner.feature.donation.pixqr.di.pixQrModule
 import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModule
 import com.quare.bibleplanner.feature.login.di.loginModule
+import com.quare.bibleplanner.feature.loginwarning.di.loginWarningModule
 import com.quare.bibleplanner.feature.logout.di.logoutModule
 import com.quare.bibleplanner.feature.main.di.mainModule
 import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
@@ -78,6 +79,7 @@ object CommonKoinUtils {
         pixQrModule,
         bookDetailsModule,
         loginModule,
+        loginWarningModule,
         logoutModule,
         supabaseModule,
         userModule,

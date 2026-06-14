@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_warning_title">Login necessário</string>
+    <string name="login_warning_message_theme">Faça login primeiro para manter seu tema sincronizado em todos os seus dispositivos.</string>
+    <string name="login_warning_message_language">Faça login primeiro para manter seu idioma sincronizado em todos os seus dispositivos.</string>
+    <string name="login_warning_login">Fazer login</string>
+    <string name="login_warning_dismiss">Agora não</string>
+</resources>

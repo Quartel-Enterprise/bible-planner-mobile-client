@@ -3,6 +3,8 @@
     "Ahora puedes iniciar sesión con Google y Apple.",
     "Tus libros favoritos ahora se sincronizan en todos tus dispositivos cuando inicias sesión.",
     "Tu plan de lectura — fecha de inicio y tipo de plan — ahora se sincroniza en todos tus dispositivos cuando inicias sesión.",
+    "Tu tema — claro/oscuro, contraste y colores dinámicos — ahora se sincroniza en todos tus dispositivos. Activa 'Sincronizar entre dispositivos' en los ajustes de Tema mientras tienes la sesión iniciada.",
+    "El idioma de la aplicación ahora se sincroniza en todos tus dispositivos. Activa 'Sincronizar entre dispositivos' en los ajustes de idioma mientras tienes la sesión iniciada.",
     "Mensaje más claro al iniciar sesión cuando hay problemas de conexión a internet."
   ],
   "1.15.0": [

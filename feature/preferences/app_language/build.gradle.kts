@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.language)
             implementation(projects.core.model)
+            implementation(projects.core.user)
             implementation(projects.core.utils)
 
             // UI
@@ -42,6 +43,10 @@ kotlin {
             // Data Store
             implementation(libs.dataStore)
             implementation(libs.dataStore.preferences)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

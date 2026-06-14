@@ -19,4 +19,10 @@ sealed interface ThemeSelectionUiEvent {
     data class MaterialYouToggleClicked(
         val isNewValueOn: Boolean,
     ) : ThemeSelectionUiEvent
+
+    data class SyncToggleClicked(
+        val isNewValueOn: Boolean,
+    ) : ThemeSelectionUiEvent
+
+    data object SyncToggleBlockedClicked : ThemeSelectionUiEvent
 }

@@ -3,6 +3,8 @@
     "You can now sign in with Google and Apple.",
     "Your favorite books now sync across all your devices when you're signed in.",
     "Your reading plan — start date and plan type — now syncs across all your devices when you're signed in.",
+    "Your theme — light/dark, contrast, and dynamic colors — now syncs across all your devices. Turn on 'Sync across devices' in the Theme settings while signed in.",
+    "Your app language now syncs across all your devices. Turn on 'Sync across devices' in the language settings while signed in.",
     "Clearer message when signing in fails because of internet connection problems."
   ],
   "1.15.0": [

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.SetAppLanguage
+import com.quare.bibleplanner.feature.applanguage.domain.usecase.SetLanguageSyncEnabled
 import com.quare.bibleplanner.feature.applanguage.presentation.factory.AppLanguageUiStateFactory
 import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguageUiAction
 import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguageUiEvent
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 
 internal class AppLanguageViewModel(
     private val setAppLanguage: SetAppLanguage,
+    private val setLanguageSyncEnabled: SetLanguageSyncEnabled,
     factory: AppLanguageUiStateFactory,
 ) : ViewModel() {
     private val _uiAction: MutableSharedFlow<AppLanguageUiAction> = MutableSharedFlow()
@@ -32,7 +34,19 @@ internal class AppLanguageViewModel(
         when (event) {
             is AppLanguageUiEvent.OnLanguageSelected -> selectLanguage(event.language)
             AppLanguageUiEvent.OnDismiss -> emitAction(AppLanguageUiAction.NavigateUp)
+            is AppLanguageUiEvent.SyncToggleClicked -> setSyncEnabled(event.isNewValueOn)
+            AppLanguageUiEvent.SyncToggleBlockedClicked -> showLoginWarning()
         }
+    }
+
+    private fun setSyncEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            setLanguageSyncEnabled(enabled)
+        }
+    }
+
+    private fun showLoginWarning() {
+        emitAction(AppLanguageUiAction.NavigateToLoginWarning)
     }
 
     private fun selectLanguage(language: Language) {

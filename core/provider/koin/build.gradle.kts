@@ -33,6 +33,7 @@ kotlin {
             // Features
             implementation(projects.feature.books)
             implementation(projects.feature.login)
+            implementation(projects.feature.loginWarning)
             implementation(projects.feature.logout)
             implementation(projects.feature.bookDetails)
             implementation(projects.feature.addNotesFreeWarning)

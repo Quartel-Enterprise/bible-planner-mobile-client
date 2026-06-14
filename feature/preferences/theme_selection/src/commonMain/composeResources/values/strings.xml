@@ -13,4 +13,6 @@
     <string name="select_contrast">Contrast</string>
     <string name="select_theme">Theme</string>
     <string name="information">Information</string>
+    <string name="sync_across_devices_title">Sync across devices</string>
+    <string name="sync_across_devices_description">Keep your theme the same on all your devices</string>
 </resources>
