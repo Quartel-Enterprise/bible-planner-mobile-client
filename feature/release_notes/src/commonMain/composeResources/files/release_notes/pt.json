@@ -5,7 +5,8 @@
     "Seu plano de leitura — data de início e tipo de plano — agora sincroniza entre todos os seus dispositivos quando você está conectado.",
     "Seu tema — claro/escuro, contraste e cores dinâmicas — agora sincroniza entre todos os seus dispositivos. Ative 'Sincronizar entre dispositivos' nas configurações de Tema enquanto estiver conectado.",
     "O idioma do aplicativo agora sincroniza entre todos os seus dispositivos. Ative 'Sincronizar entre dispositivos' nas configurações de idioma enquanto estiver conectado.",
-    "Mensagem mais clara ao fazer login quando há problemas de conexão com a internet."
+    "Mensagem mais clara ao fazer login quando há problemas de conexão com a internet.",
+    "Corrigido um problema em que a data de início do plano de leitura desaparecia ao sair da conta; agora ela é redefinida para a data de hoje."
   ],
   "1.15.0": [
     "A tela do plano de leitura agora usa um layout em duas colunas em tablets e telas maiores, com o painel de progresso à esquerda e a lista de semanas à direita, ambos com rolagem independente em toda a largura da tela.",

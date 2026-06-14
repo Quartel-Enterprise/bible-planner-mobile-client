@@ -5,7 +5,8 @@
     "Your reading plan — start date and plan type — now syncs across all your devices when you're signed in.",
     "Your theme — light/dark, contrast, and dynamic colors — now syncs across all your devices. Turn on 'Sync across devices' in the Theme settings while signed in.",
     "Your app language now syncs across all your devices. Turn on 'Sync across devices' in the language settings while signed in.",
-    "Clearer message when signing in fails because of internet connection problems."
+    "Clearer message when signing in fails because of internet connection problems.",
+    "Fixed an issue where the reading plan start date would disappear after signing out; it's now reset to today's date."
   ],
   "1.15.0": [
     "The reading plan screen now uses a two-column layout on tablets and larger displays, with the progress panel on the left and the weeks list on the right, both scrollable independently across the full screen.",
