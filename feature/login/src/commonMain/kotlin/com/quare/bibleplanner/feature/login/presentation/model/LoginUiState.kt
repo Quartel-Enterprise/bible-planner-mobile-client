@@ -6,5 +6,5 @@ data class LoginUiState(
     val enabledProviders: List<LoginProvider>,
     val isGoogleLoading: Boolean,
     val isAppleLoading: Boolean,
-    val isErrorVisible: Boolean,
+    val error: LoginError?,
 )

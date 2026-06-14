@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.login.generated.resources.Res
+import bibleplanner.feature.login.generated.resources.login_error_connection
 import bibleplanner.feature.login.generated.resources.login_error_try_again_later
 import bibleplanner.feature.login.generated.resources.not_now
 import bibleplanner.feature.login.generated.resources.privacy_policy
@@ -28,8 +29,10 @@ import bibleplanner.feature.login.generated.resources.terms_agreement_part_3
 import bibleplanner.feature.login.generated.resources.terms_of_service
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.component.LoginProvidersComponent
+import com.quare.bibleplanner.feature.login.presentation.model.LoginError
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +45,7 @@ fun LoginBottomSheet(
     onLoginWithAppleClick: () -> Unit,
     isGoogleLoading: Boolean,
     isAppleLoading: Boolean,
-    isErrorVisible: Boolean,
+    error: LoginError?,
 ) {
     ModalBottomSheet(
         sheetState = sheetState,
@@ -62,10 +65,10 @@ fun LoginBottomSheet(
                 isAppleLoading = isAppleLoading,
             )
 
-            if (isErrorVisible) {
+            if (error != null) {
                 VerticalSpacer(16)
                 Text(
-                    text = stringResource(Res.string.login_error_try_again_later),
+                    text = stringResource(error.messageRes),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.error,
                     textAlign = TextAlign.Center,
@@ -113,3 +116,9 @@ fun LoginBottomSheet(
         }
     }
 }
+
+private val LoginError.messageRes: StringResource
+    get() = when (this) {
+        LoginError.CONNECTION -> Res.string.login_error_connection
+        LoginError.GENERIC -> Res.string.login_error_try_again_later
+    }

@@ -9,4 +9,5 @@
     <string name="terms_agreement_part_3">.</string>
     <string name="not_now">Agora não</string>
     <string name="login_error_try_again_later">Algo deu errado. Por favor, tente novamente mais tarde.</string>
+    <string name="login_error_connection">Tempo de conexão esgotado. Verifique sua internet e tente novamente.</string>
 </resources>

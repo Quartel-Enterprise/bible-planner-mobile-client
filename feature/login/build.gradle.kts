@@ -41,6 +41,9 @@ kotlin {
             // Navigation
             implementation(libs.compose.navigation)
 
+            // Ktor (HttpRequestTimeoutException, used to map login failures to a friendly message)
+            implementation(libs.ktor.client.core)
+
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)

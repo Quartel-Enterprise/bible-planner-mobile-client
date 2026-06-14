@@ -18,6 +18,6 @@ internal class LoginUiStateFactory(
         enabledProviders = enabledProviders,
         isGoogleLoading = false,
         isAppleLoading = false,
-        isErrorVisible = false,
+        error = null,
     )
 }

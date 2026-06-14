@@ -1,7 +1,8 @@
 {
   "1.16.0": [
     "You can now sign in with Google and Apple.",
-    "Your favorite books now sync across all your devices when you're signed in."
+    "Your favorite books now sync across all your devices when you're signed in.",
+    "Clearer message when signing in fails because of internet connection problems."
   ],
   "1.15.0": [
     "The reading plan screen now uses a two-column layout on tablets and larger displays, with the progress panel on the left and the weeks list on the right, both scrollable independently across the full screen.",
