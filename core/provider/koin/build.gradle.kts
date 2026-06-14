@@ -21,6 +21,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.clear)
+            implementation(projects.core.sync)
             implementation(projects.core.utils)
             implementation(projects.core.utils.jsonReader)
             implementation(projects.core.date)

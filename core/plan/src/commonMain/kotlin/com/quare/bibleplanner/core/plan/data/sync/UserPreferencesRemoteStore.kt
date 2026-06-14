@@ -1,6 +1,7 @@
-package com.quare.bibleplanner.core.books.data.datasource
+package com.quare.bibleplanner.core.plan.data.sync
 
-import com.quare.bibleplanner.core.books.data.dto.BookFavoriteDto
+import com.quare.bibleplanner.core.plan.data.dto.UserPreferenceDto
+import com.quare.bibleplanner.core.sync.domain.SyncRemoteStore
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
@@ -11,30 +12,27 @@ import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
-internal class FavoritesRemoteDataSourceImpl(
+internal class UserPreferencesRemoteStore(
     private val supabaseClient: SupabaseClient,
     private val realtime: Realtime,
-) : FavoritesRemoteDataSource {
-    override suspend fun upsertFavorites(favorites: List<BookFavoriteDto>) {
-        supabaseClient.from(TABLE).upsert(favorites) {
-            onConflict = "user_id,book_id"
+) : SyncRemoteStore<UserPreferenceDto> {
+    override suspend fun upsert(dtos: List<UserPreferenceDto>) {
+        supabaseClient.from(TABLE).upsert(dtos) {
+            onConflict = "user_id,key"
         }
     }
 
-    override suspend fun fetchFavorites(userId: String): List<BookFavoriteDto> = supabaseClient
+    override suspend fun fetch(userId: String): List<UserPreferenceDto> = supabaseClient
         .from(TABLE)
         .select {
             filter { eq("user_id", userId) }
         }.decodeList()
 
-    override fun getRealtimeStatusFlow(): StateFlow<Realtime.Status> = realtime.status
-
-    override fun observeRemoteFavorites(userId: String): Flow<BookFavoriteDto> = flow {
-        val channel = realtime.channel("book_favorites_$userId")
+    override fun observeRemote(userId: String): Flow<UserPreferenceDto> = flow {
+        val channel = realtime.channel("user_preferences_$userId")
         val changes = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
             table = TABLE
             filter("user_id", FilterOperator.EQ, userId)
@@ -43,8 +41,8 @@ internal class FavoritesRemoteDataSourceImpl(
         try {
             changes.collect { action ->
                 val dto = when (action) {
-                    is PostgresAction.Insert -> action.decodeRecord<BookFavoriteDto>()
-                    is PostgresAction.Update -> action.decodeRecord<BookFavoriteDto>()
+                    is PostgresAction.Insert -> action.decodeRecord<UserPreferenceDto>()
+                    is PostgresAction.Update -> action.decodeRecord<UserPreferenceDto>()
                     else -> null
                 }
                 if (dto != null) emit(dto)
@@ -57,6 +55,6 @@ internal class FavoritesRemoteDataSourceImpl(
     }
 
     private companion object {
-        const val TABLE = "book_favorites"
+        const val TABLE = "user_preferences"
     }
 }

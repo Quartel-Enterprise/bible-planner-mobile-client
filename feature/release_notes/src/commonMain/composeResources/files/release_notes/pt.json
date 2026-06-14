@@ -2,6 +2,7 @@
   "1.16.0": [
     "Agora é possível fazer login com Google e Apple.",
     "Seus livros favoritos agora sincronizam entre todos os seus dispositivos quando você está conectado.",
+    "Seu plano de leitura — data de início e tipo de plano — agora sincroniza entre todos os seus dispositivos quando você está conectado.",
     "Mensagem mais clara ao fazer login quando há problemas de conexão com a internet."
   ],
   "1.15.0": [

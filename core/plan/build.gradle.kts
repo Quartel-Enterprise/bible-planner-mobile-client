@@ -19,6 +19,19 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.date)
             implementation(projects.core.remoteConfig)
+            implementation(projects.core.sync)
+            implementation(projects.core.user)
+            implementation(projects.core.provider.room)
+            implementation(projects.core.provider.supabase)
+            implementation(projects.core.provider.connectivity)
+
+            // Room
+            implementation(libs.androidx.room.runtime)
+
+            // Supabase
+            implementation(project.dependencies.platform(libs.supabase.bom))
+            implementation(libs.supabase.postgrest)
+            implementation(libs.supabase.realtime)
 
             // Compose
             implementation(libs.runtime)
