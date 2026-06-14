@@ -16,8 +16,7 @@ internal class LoginUiStateFactory(
 
     fun create(): LoginUiState = LoginUiState(
         enabledProviders = enabledProviders,
-        isGoogleLoading = false,
-        isAppleLoading = false,
+        loadingProvider = null,
         error = null,
     )
 }

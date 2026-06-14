@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.login.presentation.model
 
+import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
 import io.github.jan.supabase.compose.auth.composable.NativeSignInState
 
@@ -8,23 +9,13 @@ sealed interface LoginUiEvent {
 
     data object NotNowClick : LoginUiEvent
 
-    sealed interface SocialLoginClick : LoginUiEvent {
-        val nativeSignInState: NativeSignInState
-
-        data class Google(
-            override val nativeSignInState: NativeSignInState,
-        ) : SocialLoginClick
-
-        data class Apple(
-            override val nativeSignInState: NativeSignInState,
-        ) : SocialLoginClick
-    }
-
-    data class GoogleAuthResult(
-        val result: NativeSignInResult,
+    data class SocialLoginClick(
+        val provider: LoginProvider,
+        val nativeSignInState: NativeSignInState,
     ) : LoginUiEvent
 
-    data class AppleAuthResult(
+    data class SocialAuthResult(
+        val provider: LoginProvider,
         val result: NativeSignInResult,
     ) : LoginUiEvent
 }

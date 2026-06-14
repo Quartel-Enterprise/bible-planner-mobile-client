@@ -41,10 +41,8 @@ fun LoginBottomSheet(
     sheetState: SheetState,
     enableProviders: List<LoginProvider>,
     onEvent: (LoginUiEvent) -> Unit,
-    onLoginWithGoogleClick: () -> Unit,
-    onLoginWithAppleClick: () -> Unit,
-    isGoogleLoading: Boolean,
-    isAppleLoading: Boolean,
+    onProviderClick: (LoginProvider) -> Unit,
+    loadingProvider: LoginProvider?,
     error: LoginError?,
 ) {
     ModalBottomSheet(
@@ -59,10 +57,8 @@ fun LoginBottomSheet(
         ) {
             LoginProvidersComponent(
                 providers = enableProviders,
-                onLoginWithGoogleClick = onLoginWithGoogleClick,
-                onLoginWithAppleClick = onLoginWithAppleClick,
-                isGoogleLoading = isGoogleLoading,
-                isAppleLoading = isAppleLoading,
+                onProviderClick = onProviderClick,
+                loadingProvider = loadingProvider,
             )
 
             if (error != null) {

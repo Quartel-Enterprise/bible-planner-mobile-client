@@ -15,7 +15,7 @@ internal actual fun AuthConfig.platformConfig() {
         // The Supabase Dashboard redirect-URL allowlist must include `http://localhost:**`
         // so any chosen port is accepted.
         htmlTitle = "Bible Planner"
-        // `redirectHtml` is updated per-login by `JvmGoogleSignInStarter`, so it can reflect
+        // `redirectHtml` is updated per-login by `JvmSignInStarter`, so it can reflect
         // the user's current in-app theme and language. The default supabase-kt page is only
         // shown if the user somehow triggers OAuth before any login attempt completes.
     }
