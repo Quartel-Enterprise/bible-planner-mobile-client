@@ -8,9 +8,8 @@ import com.quare.bibleplanner.core.books.domain.usecase.ObserveBookFavoritesSync
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
+import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.suspendRunCatching
-import io.github.jan.supabase.auth.Auth
-import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.realtime.Realtime
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -41,7 +40,7 @@ import kotlin.time.Duration.Companion.seconds
  * switch cancels every child (closing the realtime channel) and leaves local data untouched.
  */
 internal class BookFavoritesSyncManager(
-    private val auth: Auth,
+    private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val favoritesRemoteDataSource: FavoritesRemoteDataSource,
     private val bookDao: BookDao,
     private val bookFavoriteMapper: BookFavoriteMapper,
@@ -53,9 +52,8 @@ internal class BookFavoritesSyncManager(
     private val maxBackoff: Duration = 60.seconds
 
     override suspend fun invoke() {
-        auth.sessionStatus.collectLatest { status ->
-            val userId = (status as? SessionStatus.Authenticated)?.session?.user?.id
-                ?: return@collectLatest
+        observeAuthenticatedUserId().collectLatest { userId ->
+            if (userId == null) return@collectLatest
             coroutineScope {
                 bookDao.markLegacyFavoritesPending(currentTimestampProvider.getCurrentTimestamp())
                 launch { pushPendingLoop(userId) }

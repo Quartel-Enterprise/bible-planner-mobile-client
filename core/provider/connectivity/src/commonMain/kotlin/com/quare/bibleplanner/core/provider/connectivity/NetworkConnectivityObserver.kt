@@ -10,6 +10,6 @@ import kotlinx.coroutines.flow.Flow
  * writes (plain REST upserts) flush the moment connectivity returns, without waiting for the
  * websocket to detect the drop and reconnect.
  */
-interface NetworkConnectivityObserver {
+fun interface NetworkConnectivityObserver {
     fun observe(): Flow<Boolean>
 }

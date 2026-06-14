@@ -29,8 +29,8 @@ class LogoutUseCase(
     private val realtime: Realtime,
     private val flushPendingChanges: FlushPendingChangesUseCase,
     private val clearLocalUserData: ClearLocalUserData,
-) {
-    suspend operator fun invoke(shouldFlushPending: Boolean): Result<Unit> {
+) : Logout {
+    override suspend fun invoke(shouldFlushPending: Boolean): Result<Unit> {
         if (shouldFlushPending) {
             flushPendingChanges().onFailure { return Result.failure(LogoutFlushFailedException(it)) }
         }

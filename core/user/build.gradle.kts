@@ -16,6 +16,9 @@ kotlin {
             // Json
             implementation(libs.kotlin.serialization.json)
 
+            // Coroutines
+            implementation(libs.kotlinx.coroutines.core)
+
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)
@@ -25,6 +28,11 @@ kotlin {
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

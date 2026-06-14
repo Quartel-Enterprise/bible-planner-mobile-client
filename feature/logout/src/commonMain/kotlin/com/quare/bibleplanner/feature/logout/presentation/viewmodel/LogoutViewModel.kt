@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.logout.generated.resources.Res
 import bibleplanner.feature.logout.generated.resources.logout_pending_favorites
+import com.quare.bibleplanner.feature.logout.domain.usecase.Logout
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutFlushFailedException
-import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutUseCase
 import com.quare.bibleplanner.feature.logout.presentation.mapper.LogoutErrorMapper
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutError
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiAction
@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class LogoutViewModel(
-    private val logout: LogoutUseCase,
+    private val logout: Logout,
     private val logoutErrorMapper: LogoutErrorMapper,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<LogoutUiState> = MutableStateFlow(LogoutUiState.Idle)

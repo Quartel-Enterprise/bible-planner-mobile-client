@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataS
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.datasource.FavoritesRemoteDataSource
+import com.quare.bibleplanner.core.books.data.datasource.FavoritesRemoteDataSourceImpl
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.data.mapper.BookFavoriteMapper
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
@@ -55,7 +56,7 @@ val booksModule = module {
     singleOf(::BooksLocalDataSource)
     factoryOf(::BibleVersionsRemoteDataSource)
     factoryOf(::BibleVersionsLocalDataSource)
-    factoryOf(::FavoritesRemoteDataSource)
+    factoryOf(::FavoritesRemoteDataSourceImpl).bind<FavoritesRemoteDataSource>()
     factoryOf(::VersionMapper)
     factoryOf(::BookFavoriteMapper)
     singleOf(::BibleVersionRepositoryImpl).bind<BibleVersionRepository>()

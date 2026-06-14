@@ -34,12 +34,11 @@ import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastT
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
 import com.quare.bibleplanner.ui.theme.model.ContrastType
 import com.quare.bibleplanner.ui.theme.model.Theme
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -59,7 +58,7 @@ internal class MoreUiStateFactory(
     private val isProVerificationRequired: IsProVerificationRequiredUseCase,
     private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
     private val isDynamicColorSupported: IsDynamicColorSupported,
-    private val supabaseClient: SupabaseClient,
+    private val sessionStatus: StateFlow<SessionStatus>,
     private val sessionUserMapper: SessionUserMapper,
     private val bibleVersionDao: BibleVersionDao,
     private val getSelectedVersionDownloadedChapters: GetSelectedVersionDownloadedChaptersFlowUseCase,
@@ -70,7 +69,7 @@ internal class MoreUiStateFactory(
         val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(
             getMoreScreenRemoteConfigsFlow(),
             getThemeConfigurationFlow(),
-            supabaseClient.auth.sessionStatus,
+            sessionStatus,
             getSelectedBible(),
             bibleVersionDao.getAllVersionsFlow(),
         ) { remoteConfigs, themeConfiguration, sessionStatus, selectedBible, allVersions ->
