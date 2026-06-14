@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.seconds
 val logoutModule = module {
     factory {
         FlushPendingChangesUseCase(
-            pushPendingFavorites = get(),
+            pushAllPending = get(),
             flushTimeout = 5.seconds,
         )
     }

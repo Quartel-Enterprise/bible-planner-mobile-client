@@ -71,6 +71,7 @@ kotlin {
             api(projects.core.model)
             api(projects.core.navigation)
             api(projects.core.plan)
+            api(projects.core.sync)
             api(projects.core.remoteConfig)
             api(projects.core.provider.koin)
             api(projects.core.provider.language)

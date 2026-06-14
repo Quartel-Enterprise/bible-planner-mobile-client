@@ -14,7 +14,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
-            implementation(projects.core.books)
+            implementation(projects.core.sync)
             implementation(projects.core.clear)
             implementation(projects.core.utils)
 

@@ -10,11 +10,13 @@ import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
+import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 
@@ -26,6 +28,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         VerseTextEntity::class,
         DayEntity::class,
         BibleVersionEntity::class,
+        SyncedPreferenceEntity::class,
     ],
     version = 9,
     autoMigrations = [
@@ -48,4 +51,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dayDao(): DayDao
 
     abstract fun bibleVersionDao(): BibleVersionDao
+
+    abstract fun syncedPreferenceDao(): SyncedPreferenceDao
 }

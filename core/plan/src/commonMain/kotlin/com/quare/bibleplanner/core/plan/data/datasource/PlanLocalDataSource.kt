@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.plan.data.datasource
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -12,12 +13,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
+/**
+ * Loads bundled reading-plan JSON and holds the legacy reading-plan preferences that predate the
+ * synced key-value store. The legacy accessors exist only to support the one-time migration into
+ * `synced_preferences`; the live read/write path is the synced store (see `PlanRepositoryImpl`).
+ */
 @OptIn(ExperimentalResourceApi::class)
 class PlanLocalDataSource(
     private val dataStore: DataStore<Preferences>,
@@ -26,33 +31,20 @@ class PlanLocalDataSource(
 
     private val startDateKey = longPreferencesKey(PLAN_START_DATE_KEY)
     private val selectedReadingPlanKey = stringPreferencesKey(SELECTED_READING_PLAN_KEY)
+    private val migratedKey = booleanPreferencesKey(PLAN_PREFERENCES_MIGRATED_KEY)
 
-    fun getPlanStartTimeStamp(): Flow<Long?> = dataStore.data
-        .map { preferences ->
-            preferences[startDateKey]
-        }
+    suspend fun hasMigratedPlanPreferences(): Boolean = dataStore.data.first()[migratedKey] ?: false
 
-    suspend fun setPlanStartTimestamp(epoch: Long) {
+    suspend fun getLegacyPlanStartTimestamp(): Long? = dataStore.data.first()[startDateKey]
+
+    suspend fun getLegacySelectedReadingPlan(): String? = dataStore.data.first()[selectedReadingPlanKey]
+
+    /** Drops the legacy keys and records that the migration ran, so it never repeats. */
+    suspend fun finishPlanPreferencesMigration() {
         dataStore.edit { preferences ->
-            preferences[startDateKey] = epoch
-        }
-    }
-
-    fun getSelectedReadingPlanFlow(): Flow<String?> = dataStore.data
-        .map { preferences ->
-            preferences[selectedReadingPlanKey]
-        }
-
-    suspend fun setSelectedReadingPlan(readingPlan: String) {
-        dataStore.edit { preferences ->
-            preferences[selectedReadingPlanKey] = readingPlan
-        }
-    }
-
-    suspend fun resetPlanPreferences(startDateEpoch: Long) {
-        dataStore.edit { preferences ->
-            preferences[startDateKey] = startDateEpoch
+            preferences.remove(startDateKey)
             preferences.remove(selectedReadingPlanKey)
+            preferences[migratedKey] = true
         }
     }
 
@@ -94,5 +86,6 @@ class PlanLocalDataSource(
         private const val WEEKS_COUNT = 52
         private const val PLAN_START_DATE_KEY = "plan_start_date"
         private const val SELECTED_READING_PLAN_KEY = "selected_reading_plan"
+        private const val PLAN_PREFERENCES_MIGRATED_KEY = "plan_preferences_migrated"
     }
 }

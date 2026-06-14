@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.logout.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.usecase.PushPendingFavorites
+import com.quare.bibleplanner.core.sync.domain.usecase.PushAllPending
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -52,7 +52,7 @@ internal class FlushPendingChangesUseCaseTest {
         assertIs<FlushTimeoutException>(result.exceptionOrNull())
     }
 
-    private fun prepareScenario(push: PushPendingFavorites) {
-        useCase = FlushPendingChangesUseCase(pushPendingFavorites = push, flushTimeout = flushTimeout)
+    private fun prepareScenario(push: PushAllPending) {
+        useCase = FlushPendingChangesUseCase(pushAllPending = push, flushTimeout = flushTimeout)
     }
 }

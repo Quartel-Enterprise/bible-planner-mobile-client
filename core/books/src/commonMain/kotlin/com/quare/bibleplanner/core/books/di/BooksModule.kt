@@ -3,8 +3,6 @@ package com.quare.bibleplanner.core.books.di
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataSource
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
-import com.quare.bibleplanner.core.books.data.datasource.FavoritesRemoteDataSource
-import com.quare.bibleplanner.core.books.data.datasource.FavoritesRemoteDataSourceImpl
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.data.mapper.BookFavoriteMapper
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
@@ -14,7 +12,8 @@ import com.quare.bibleplanner.core.books.data.provider.BookMapsProvider
 import com.quare.bibleplanner.core.books.data.repository.BibleRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BibleVersionRepositoryImpl
 import com.quare.bibleplanner.core.books.data.repository.BooksRepositoryImpl
-import com.quare.bibleplanner.core.books.data.sync.BookFavoritesSyncManager
+import com.quare.bibleplanner.core.books.data.sync.FavoritesLocalStore
+import com.quare.bibleplanner.core.books.data.sync.FavoritesRemoteStore
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
@@ -34,9 +33,6 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededU
 import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterReadUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.ObserveBookFavoritesSync
-import com.quare.bibleplanner.core.books.domain.usecase.PushPendingFavorites
-import com.quare.bibleplanner.core.books.domain.usecase.PushPendingFavoritesUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
@@ -46,8 +42,11 @@ import com.quare.bibleplanner.core.books.domain.usecase.UpdateSpecificRangeChapt
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateWholeBookReadStatusIfNeededUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
+import com.quare.bibleplanner.core.sync.data.OfflineFirstSynchronizer
+import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -56,9 +55,10 @@ val booksModule = module {
     singleOf(::BooksLocalDataSource)
     factoryOf(::BibleVersionsRemoteDataSource)
     factoryOf(::BibleVersionsLocalDataSource)
-    factoryOf(::FavoritesRemoteDataSourceImpl).bind<FavoritesRemoteDataSource>()
     factoryOf(::VersionMapper)
     factoryOf(::BookFavoriteMapper)
+    factoryOf(::FavoritesLocalStore)
+    factoryOf(::FavoritesRemoteStore)
     singleOf(::BibleVersionRepositoryImpl).bind<BibleVersionRepository>()
     factoryOf(::BibleMapper)
 
@@ -75,8 +75,15 @@ val booksModule = module {
     singleOf(::BibleRepositoryImpl).bind<BibleRepository>()
 
     // Sync
-    singleOf(::BookFavoritesSyncManager).bind<ObserveBookFavoritesSync>()
-    factoryOf(::PushPendingFavoritesUseCase).bind<PushPendingFavorites>()
+    single<Synchronizer>(named("favoritesSync")) {
+        OfflineFirstSynchronizer(
+            localStore = get<FavoritesLocalStore>(),
+            remoteStore = get<FavoritesRemoteStore>(),
+            networkConnectivityObserver = get(),
+            getAuthenticatedUserId = get(),
+            logTag = "FavoritesSync",
+        )
+    }
     factoryOf(::ClearLocalReadingDataUseCase)
 
     // Mappers

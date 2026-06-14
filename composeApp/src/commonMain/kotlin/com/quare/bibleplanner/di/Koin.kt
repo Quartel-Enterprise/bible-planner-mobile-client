@@ -3,7 +3,6 @@ package com.quare.bibleplanner.di
 import com.quare.bibleplanner.AppViewModel
 import com.quare.bibleplanner.core.provider.koin.commonKoinInitializer
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
-import com.quare.bibleplanner.domain.usecase.impl.EnsureStartDateIsAvailableUseCase
 import com.quare.bibleplanner.domain.usecase.impl.InitializeAppContentUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelectedVersionUseCase
 import org.koin.core.KoinApplication
@@ -14,7 +13,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 private val appModule = module {
-    factoryOf(::EnsureStartDateIsAvailableUseCase)
     factoryOf(::ObserveSelectedVersionUseCase)
     factoryOf(::InitializeAppContentUseCase).bind<InitializeAppContent>()
     viewModelOf(::AppViewModel)

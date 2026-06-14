@@ -13,7 +13,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.books)
-            implementation(projects.core.plan)
+            implementation(projects.core.sync)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
