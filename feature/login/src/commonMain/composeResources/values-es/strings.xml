@@ -9,4 +9,5 @@
     <string name="terms_agreement_part_3">.</string>
     <string name="not_now">Ahora no</string>
     <string name="login_error_try_again_later">Algo salió mal. Por favor, inténtalo de nuevo más tarde.</string>
+    <string name="login_error_connection">Se agotó el tiempo de conexión. Verifica tu internet e inténtalo de nuevo.</string>
 </resources>

@@ -52,7 +52,7 @@ fun NavGraphBuilder.loginRoot(navController: NavController) {
             enableProviders = state.enabledProviders,
             isGoogleLoading = state.isGoogleLoading,
             isAppleLoading = state.isAppleLoading,
-            isErrorVisible = state.isErrorVisible,
+            error = state.error,
         )
     }
 }

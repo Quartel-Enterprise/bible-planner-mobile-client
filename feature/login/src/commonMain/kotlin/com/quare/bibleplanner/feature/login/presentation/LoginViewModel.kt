@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.login.presentation.factory.LoginUiStateFactory
+import com.quare.bibleplanner.feature.login.presentation.mapper.ThrowableToLoginErrorMapper
+import com.quare.bibleplanner.feature.login.presentation.model.LoginError
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiAction
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiState
@@ -27,6 +29,7 @@ internal class LoginViewModel(
     supabaseClient: SupabaseClient,
     observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     uiStateFactory: LoginUiStateFactory,
+    private val throwableToLoginErrorMapper: ThrowableToLoginErrorMapper,
 ) : ViewModel() {
     val composeAuth: ComposeAuth = supabaseClient.composeAuth
     private val _state: MutableStateFlow<LoginUiState> = MutableStateFlow(uiStateFactory.create())
@@ -52,39 +55,69 @@ internal class LoginViewModel(
             }
 
             is LoginUiEvent.SocialLoginClick.Google -> {
-                _state.update { it.copy(isGoogleLoading = true, isErrorVisible = false) }
+                _state.update { it.copy(isGoogleLoading = true, error = null) }
                 viewModelScope.launch {
-                    googleSignInStarter(uiEvent.nativeSignInState).onFailure {
-                        _state.update { it.copy(isGoogleLoading = false, isErrorVisible = true) }
+                    googleSignInStarter(uiEvent.nativeSignInState).onFailure { throwable ->
+                        _state.update {
+                            it.copy(
+                                isGoogleLoading = false,
+                                error = throwableToLoginErrorMapper(throwable),
+                            )
+                        }
                     }
                 }
             }
 
             is LoginUiEvent.SocialLoginClick.Apple -> {
-                _state.update { it.copy(isAppleLoading = true, isErrorVisible = false) }
+                _state.update { it.copy(isAppleLoading = true, error = null) }
                 viewModelScope.launch {
-                    appleSignInStarter(uiEvent.nativeSignInState).onFailure {
-                        _state.update { it.copy(isAppleLoading = false, isErrorVisible = true) }
+                    appleSignInStarter(uiEvent.nativeSignInState).onFailure { throwable ->
+                        _state.update {
+                            it.copy(
+                                isAppleLoading = false,
+                                error = throwableToLoginErrorMapper(throwable),
+                            )
+                        }
                     }
                 }
             }
 
             is LoginUiEvent.GoogleAuthResult -> {
                 _state.update {
-                    when (uiEvent.result) {
+                    when (val result = uiEvent.result) {
                         is NativeSignInResult.Success -> it
+
                         is NativeSignInResult.ClosedByUser -> it.copy(isGoogleLoading = false)
-                        else -> it.copy(isGoogleLoading = false, isErrorVisible = true)
+
+                        is NativeSignInResult.NetworkError -> it.copy(
+                            isGoogleLoading = false,
+                            error = LoginError.CONNECTION,
+                        )
+
+                        is NativeSignInResult.Error -> it.copy(
+                            isGoogleLoading = false,
+                            error = throwableToLoginErrorMapper(result.exception),
+                        )
                     }
                 }
             }
 
             is LoginUiEvent.AppleAuthResult -> {
                 _state.update {
-                    when (uiEvent.result) {
+                    when (val result = uiEvent.result) {
                         is NativeSignInResult.Success -> it
+
                         is NativeSignInResult.ClosedByUser -> it.copy(isAppleLoading = false)
-                        else -> it.copy(isAppleLoading = false, isErrorVisible = true)
+
+                        is NativeSignInResult.NetworkError -> it.copy(
+                            isAppleLoading = false,
+                            error = LoginError.CONNECTION,
+                        )
+
+                        is NativeSignInResult.Error -> it.copy(
+                            isAppleLoading = false,
+                            error = throwableToLoginErrorMapper(result.exception),
+                        )
                     }
                 }
             }
