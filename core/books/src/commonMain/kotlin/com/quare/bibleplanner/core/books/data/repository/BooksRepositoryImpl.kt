@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
@@ -29,6 +30,7 @@ class BooksRepositoryImpl(
     private val verseDao: VerseDao,
     private val booksWithChapterMapper: BooksWithChapterMapper,
     private val dataStore: DataStore<Preferences>,
+    private val currentTimestampProvider: CurrentTimestampProvider,
 ) : BooksRepository {
     private val initMutex = Mutex()
 
@@ -58,6 +60,8 @@ class BooksRepositoryImpl(
                     id = book.id.name,
                     isRead = book.isRead,
                     isFavorite = book.isFavorite,
+                    favoriteUpdatedAt = null,
+                    isFavoritePendingSync = false,
                 )
             }
             bookDao.insertBooks(bookEntities)
@@ -92,7 +96,11 @@ class BooksRepositoryImpl(
         bookId: BookId,
         isFavorite: Boolean,
     ) {
-        bookDao.updateBookFavoriteStatus(bookId.name, isFavorite)
+        bookDao.updateBookFavoriteStatus(
+            bookId = bookId.name,
+            isFavorite = isFavorite,
+            updatedAt = currentTimestampProvider.getCurrentTimestamp(),
+        )
     }
 
     override fun getBookLayoutFormatFlow(): Flow<String?> = dataStore.data.map { preferences ->

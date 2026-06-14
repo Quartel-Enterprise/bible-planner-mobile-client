@@ -14,6 +14,9 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.books)
+            implementation(projects.core.clear)
+            implementation(projects.core.utils)
 
             // UI
             implementation(projects.ui.utils)
@@ -31,12 +34,18 @@ kotlin {
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)
+            implementation(libs.supabase.realtime)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewModel)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

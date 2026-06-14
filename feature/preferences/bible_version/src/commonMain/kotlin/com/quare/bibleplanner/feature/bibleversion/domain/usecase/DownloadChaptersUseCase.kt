@@ -9,7 +9,6 @@ import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncChapterDto
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
 import io.github.jan.supabase.storage.BucketApi
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
@@ -37,7 +36,7 @@ class DownloadChaptersUseCase(
                 chunk
                     .map { chapter ->
                         launch {
-                            try {
+                            suspendRunCatching {
                                 val exists = verseDao.countVersesByChapterAndVersion(chapter.id, versionId) > 0
                                 if (!exists) {
                                     val fileName =
@@ -51,11 +50,7 @@ class DownloadChaptersUseCase(
                                         chapterDto = json.decodeFromString<SyncChapterDto>(bytes.decodeToString()),
                                     )
                                 }
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (e: Exception) {
-                                Logger.e { "Error syncing $bookId:${chapter.number}: ${e.message}" }
-                            }
+                            }.onFailure { Logger.e { "Error syncing $bookId:${chapter.number}: ${it.message}" } }
                         }
                     }.joinAll()
             }

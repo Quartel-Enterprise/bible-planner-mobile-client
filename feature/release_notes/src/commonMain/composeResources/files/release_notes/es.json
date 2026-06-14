@@ -1,6 +1,7 @@
 {
   "1.16.0": [
-    "Ahora puedes iniciar sesión con Google y Apple."
+    "Ahora puedes iniciar sesión con Google y Apple.",
+    "Tus libros favoritos ahora se sincronizan en todos tus dispositivos cuando inicias sesión."
   ],
   "1.15.0": [
     "La pantalla del plan de lectura ahora usa un diseño de dos columnas en tabletas y pantallas más grandes, con el panel de progreso a la izquierda y la lista de semanas a la derecha, ambos con desplazamiento independiente en todo el ancho de la pantalla.",

@@ -21,6 +21,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.user)
             implementation(projects.core.utils)
             implementation(projects.core.provider.platform)
 

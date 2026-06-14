@@ -32,12 +32,6 @@ class PlanLocalDataSource(
             preferences[startDateKey]
         }
 
-    suspend fun removeLocalDate() {
-        dataStore.edit { preferences ->
-            preferences.remove(startDateKey)
-        }
-    }
-
     suspend fun setPlanStartTimestamp(epoch: Long) {
         dataStore.edit { preferences ->
             preferences[startDateKey] = epoch
@@ -52,6 +46,13 @@ class PlanLocalDataSource(
     suspend fun setSelectedReadingPlan(readingPlan: String) {
         dataStore.edit { preferences ->
             preferences[selectedReadingPlanKey] = readingPlan
+        }
+    }
+
+    suspend fun resetPlanPreferences(startDateEpoch: Long) {
+        dataStore.edit { preferences ->
+            preferences[startDateKey] = startDateEpoch
+            preferences.remove(selectedReadingPlanKey)
         }
     }
 

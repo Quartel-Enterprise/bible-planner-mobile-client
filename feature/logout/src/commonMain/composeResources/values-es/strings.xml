@@ -3,4 +3,9 @@
     <string name="logout_message">¿Estás seguro de que deseas cerrar sesión?</string>
     <string name="logout_confirm">Cerrar sesión</string>
     <string name="logout_cancel">Cancelar</string>
+    <string name="logout_error_message">No se pudo cerrar sesión. Inténtalo de nuevo.</string>
+    <string name="logout_sign_out_anyway">Cerrar sesión de todos modos</string>
+    <string name="logout_pending_changes_error_title">No se pudo cerrar sesión</string>
+    <string name="logout_pending_changes_error_message">No pudimos sincronizar tus %1$s antes de cerrar sesión. Inténtalo de nuevo o mantén la sesión iniciada.</string>
+    <string name="logout_pending_favorites">favoritos</string>
 </resources>

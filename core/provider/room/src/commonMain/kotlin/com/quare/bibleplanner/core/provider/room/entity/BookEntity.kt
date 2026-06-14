@@ -10,4 +10,6 @@ data class BookEntity(
     val id: String, // BookId enum value as string
     @ColumnInfo(defaultValue = "0") val isRead: Boolean = false,
     @ColumnInfo(defaultValue = "0") val isFavorite: Boolean = false,
+    val favoriteUpdatedAt: Long?,
+    @ColumnInfo(defaultValue = "0") val isFavoritePendingSync: Boolean,
 )

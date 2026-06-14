@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.logout.presentation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.DialogProperties
@@ -13,7 +14,10 @@ import com.quare.bibleplanner.feature.logout.presentation.viewmodel.LogoutViewMo
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.logout(navController: NavHostController) {
+fun NavGraphBuilder.logout(
+    navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
+) {
     dialog<LogoutNavRoute>(
         dialogProperties = DialogProperties(
             dismissOnBackPress = false,
@@ -23,8 +27,9 @@ fun NavGraphBuilder.logout(navController: NavHostController) {
         val viewModel = koinViewModel<LogoutViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         LogoutUiActionCollector(
-            uiActionFlow = viewModel.backUiAction,
+            uiActionFlow = viewModel.uiAction,
             navController = navController,
+            snackbarHostState = snackbarHostState,
         )
         LogoutDialog(
             uiState = uiState,

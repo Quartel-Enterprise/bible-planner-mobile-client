@@ -2,14 +2,13 @@ package com.quare.bibleplanner.feature.login.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.login.presentation.factory.LoginUiStateFactory
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiAction
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiState
 import com.quare.bibleplanner.ui.utils.observe
 import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.auth.auth
-import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.compose.auth.ComposeAuth
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
 import io.github.jan.supabase.compose.auth.composeAuth
@@ -26,6 +25,7 @@ internal class LoginViewModel(
     private val googleSignInStarter: GoogleSignInStarter,
     private val appleSignInStarter: AppleSignInStarter,
     supabaseClient: SupabaseClient,
+    observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     uiStateFactory: LoginUiStateFactory,
 ) : ViewModel() {
     val composeAuth: ComposeAuth = supabaseClient.composeAuth
@@ -36,12 +36,9 @@ internal class LoginViewModel(
     val uiAction: SharedFlow<LoginUiAction> = _uiAction
 
     init {
-        observe(supabaseClient.auth.sessionStatus) { sessionStatus ->
-            when (sessionStatus) {
-                is SessionStatus.Authenticated -> close()
-                SessionStatus.Initializing -> Unit
-                is SessionStatus.NotAuthenticated -> Unit
-                is SessionStatus.RefreshFailure -> Unit
+        observe(observeAuthenticatedUserId()) { userId ->
+            if (userId != null) {
+                close()
             }
         }
     }
@@ -73,14 +70,22 @@ internal class LoginViewModel(
             }
 
             is LoginUiEvent.GoogleAuthResult -> {
-                if (uiEvent.result is NativeSignInResult.ClosedByUser) {
-                    _state.update { it.copy(isGoogleLoading = false) }
+                _state.update {
+                    when (uiEvent.result) {
+                        is NativeSignInResult.Success -> it
+                        is NativeSignInResult.ClosedByUser -> it.copy(isGoogleLoading = false)
+                        else -> it.copy(isGoogleLoading = false, isErrorVisible = true)
+                    }
                 }
             }
 
             is LoginUiEvent.AppleAuthResult -> {
-                if (uiEvent.result is NativeSignInResult.ClosedByUser) {
-                    _state.update { it.copy(isAppleLoading = false) }
+                _state.update {
+                    when (uiEvent.result) {
+                        is NativeSignInResult.Success -> it
+                        is NativeSignInResult.ClosedByUser -> it.copy(isAppleLoading = false)
+                        else -> it.copy(isAppleLoading = false, isErrorVisible = true)
+                    }
                 }
             }
 

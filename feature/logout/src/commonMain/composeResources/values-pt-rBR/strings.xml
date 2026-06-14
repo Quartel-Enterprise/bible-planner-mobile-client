@@ -3,4 +3,9 @@
     <string name="logout_message">Tem certeza de que deseja sair da sua conta?</string>
     <string name="logout_confirm">Sair</string>
     <string name="logout_cancel">Cancelar</string>
+    <string name="logout_error_message">Não foi possível sair. Tente novamente.</string>
+    <string name="logout_sign_out_anyway">Sair mesmo assim</string>
+    <string name="logout_pending_changes_error_title">Não foi possível sair</string>
+    <string name="logout_pending_changes_error_message">Não conseguimos sincronizar seus %1$s antes de sair. Tente novamente ou continue conectado.</string>
+    <string name="logout_pending_favorites">favoritos</string>
 </resources>

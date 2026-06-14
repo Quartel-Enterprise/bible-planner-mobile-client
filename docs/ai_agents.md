@@ -14,3 +14,4 @@ This document describes the architecture conventions of this project. Follow the
 - [@docs/architecture/code-style.md](architecture/code-style.md)
 - [@docs/architecture/dry.md](architecture/dry.md)
 - [@docs/architecture/coroutine-error-handling.md](architecture/coroutine-error-handling.md)
+- [@docs/testing/README.md](testing/README.md)

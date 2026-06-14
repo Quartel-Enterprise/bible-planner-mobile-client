@@ -14,11 +14,13 @@ kotlin {
             // Core
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.platform)
+            implementation(projects.core.provider.connectivity)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.billing)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.books)
             implementation(projects.core.plan)
+            implementation(projects.core.clear)
             implementation(projects.core.utils)
             implementation(projects.core.utils.jsonReader)
             implementation(projects.core.date)

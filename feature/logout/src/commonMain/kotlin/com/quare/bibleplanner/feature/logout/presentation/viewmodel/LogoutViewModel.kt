@@ -2,11 +2,15 @@ package com.quare.bibleplanner.feature.logout.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import bibleplanner.feature.logout.generated.resources.Res
+import bibleplanner.feature.logout.generated.resources.logout_pending_favorites
+import com.quare.bibleplanner.feature.logout.domain.usecase.Logout
+import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutFlushFailedException
+import com.quare.bibleplanner.feature.logout.presentation.mapper.LogoutErrorMapper
+import com.quare.bibleplanner.feature.logout.presentation.model.LogoutError
+import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiAction
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiEvent
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiState
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.auth.auth
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,43 +20,42 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class LogoutViewModel(
-    private val supabaseClient: SupabaseClient,
+    private val logout: Logout,
+    private val logoutErrorMapper: LogoutErrorMapper,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<LogoutUiState> = MutableStateFlow(LogoutUiState.Idle)
     val uiState: StateFlow<LogoutUiState> = _uiState.asStateFlow()
 
-    private val _backUiAction: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val backUiAction: SharedFlow<Unit> = _backUiAction
+    private val _uiAction: MutableSharedFlow<LogoutUiAction> = MutableSharedFlow()
+    val uiAction: SharedFlow<LogoutUiAction> = _uiAction
 
     fun onEvent(event: LogoutUiEvent) {
         when (event) {
-            LogoutUiEvent.OnConfirmLogout -> {
-                viewModelScope.launch {
-                    _uiState.update { LogoutUiState.Loading }
-                    try {
-                        supabaseClient.auth.signOut()
-                        _backUiAction.emit(Unit)
-                    } catch (e: CancellationException) {
-                        throw e
-                    } catch (_: Exception) {
+            is LogoutUiEvent.ConfirmLogoutClick -> performLogout(shouldFlushPending = event.shouldFlushPending)
+            LogoutUiEvent.OnCancel -> navigateBack()
+            LogoutUiEvent.OnDismiss -> if (_uiState.value != LogoutUiState.Loading) navigateBack()
+        }
+    }
+
+    private fun performLogout(shouldFlushPending: Boolean) {
+        viewModelScope.launch {
+            _uiState.update { LogoutUiState.Loading }
+            logout(shouldFlushPending = shouldFlushPending)
+                .onSuccess { _uiAction.emit(LogoutUiAction.NavigateBack) }
+                .onFailure { throwable ->
+                    if (throwable is LogoutFlushFailedException) {
+                        _uiState.update { LogoutUiState.PendingChangesError(Res.string.logout_pending_favorites) }
+                    } else {
                         _uiState.update { LogoutUiState.Idle }
+                        _uiAction.emit(LogoutUiAction.ShowSnackbar(logoutErrorMapper.map(LogoutError.UNKNOWN)))
                     }
                 }
-            }
+        }
+    }
 
-            LogoutUiEvent.OnCancel -> {
-                viewModelScope.launch {
-                    _backUiAction.emit(Unit)
-                }
-            }
-
-            LogoutUiEvent.OnDismiss -> {
-                if (_uiState.value != LogoutUiState.Loading) {
-                    viewModelScope.launch {
-                        _backUiAction.emit(Unit)
-                    }
-                }
-            }
+    private fun navigateBack() {
+        viewModelScope.launch {
+            _uiAction.emit(LogoutUiAction.NavigateBack)
         }
     }
 }

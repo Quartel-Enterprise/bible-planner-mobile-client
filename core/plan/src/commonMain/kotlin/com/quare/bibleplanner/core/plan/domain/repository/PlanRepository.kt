@@ -10,11 +10,11 @@ interface PlanRepository {
 
     suspend fun setStartPlanTimestamp(timestamp: Long)
 
-    suspend fun deleteStartPlanTimestamp()
-
     fun getStartPlanTimestamp(): Flow<LocalDate?>
 
     fun getSelectedReadingPlanFlow(): Flow<ReadingPlanType>
 
     suspend fun setSelectedReadingPlan(readingPlanType: ReadingPlanType)
+
+    suspend fun resetPlan(startDate: Long)
 }
