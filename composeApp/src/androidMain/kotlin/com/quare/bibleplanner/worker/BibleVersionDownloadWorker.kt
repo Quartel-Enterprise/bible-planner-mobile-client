@@ -1,12 +1,15 @@
 package com.quare.bibleplanner.worker
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
 import kotlinx.coroutines.CancellationException
@@ -32,11 +35,25 @@ internal class BibleVersionDownloadWorker(
     private val verseDao: VerseDao by inject()
     private val bibleRepository: BibleRepository by inject()
 
+    // Required for expedited work: used to run the worker as a foreground service / expedited job.
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val versionId = inputData.getString(KEY_VERSION_ID).orEmpty()
+        return notifier.buildForegroundInfo(
+            versionId = versionId,
+            versionName = versionId,
+        )
+    }
+
     override suspend fun doWork(): Result {
         val versionId = inputData.getString(KEY_VERSION_ID) ?: return Result.failure()
 
         bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.IN_PROGRESS)
-        setForeground(notifier.buildForegroundInfo(versionId, versionId))
+        // If foreground promotion is refused (started while backgrounded on Android 12+), keep
+        // downloading in the background instead of crashing.
+        suspendRunCatching { setForeground(getForegroundInfo()) }
+            .onFailure { error ->
+                Log.w(LOG_TAG, "Foreground promotion refused; continuing download in background", error)
+            }
 
         val versionName = bibleRepository
             .getBiblesFlow()
@@ -84,6 +101,7 @@ internal class BibleVersionDownloadWorker(
 
     companion object {
         const val KEY_VERSION_ID = "version_id"
+        private const val LOG_TAG = "BibleVersionDownload"
 
         fun workName(versionId: String) = "bible_version_download_$versionId"
     }

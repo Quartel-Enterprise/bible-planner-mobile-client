@@ -7,7 +7,8 @@
     "El idioma de la aplicación ahora se sincroniza en todos tus dispositivos. Activa 'Sincronizar entre dispositivos' en los ajustes de idioma mientras tienes la sesión iniciada.",
     "Tu progreso de lectura ahora se sincroniza en todos tus dispositivos en tiempo real cuando inicias sesión: al marcar un día, capítulo o versículo como leído en un dispositivo, aparece automáticamente en los demás, en la pantalla de planes, la pantalla de días y la pantalla del capítulo. Tus notas de los días también se sincronizan.",
     "Mensaje más claro al iniciar sesión cuando hay problemas de conexión a internet.",
-    "Se corrigió un problema por el cual la fecha de inicio del plan de lectura desaparecía al cerrar sesión; ahora se restablece a la fecha de hoy."
+    "Se corrigió un problema por el cual la fecha de inicio del plan de lectura desaparecía al cerrar sesión; ahora se restablece a la fecha de hoy.",
+    "Se corrigió un problema que podía detener la descarga de una versión de la Biblia cuando la app estaba en segundo plano."
   ],
   "1.15.0": [
     "La pantalla del plan de lectura ahora usa un diseño de dos columnas en tabletas y pantallas más grandes, con el panel de progreso a la izquierda y la lista de semanas a la derecha, ambos con desplazamiento independiente en todo el ancho de la pantalla.",
