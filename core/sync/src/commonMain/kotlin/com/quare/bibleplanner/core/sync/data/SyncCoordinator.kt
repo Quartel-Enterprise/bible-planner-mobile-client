@@ -13,17 +13,13 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 /**
- * Single session-scoped driver for every registered [Synchronizer]. The whole pipeline is scoped to
- * the authenticated session via [collectLatest]: sign-out or account switch cancels every child
- * (closing the realtime channels).
- *
- * When a different account signs in without a logout in between (logout is what normally clears local
- * data), the previous account's synced state is wiped before seeding/pulling. A pull only upserts the
- * remote snapshot — it never removes local rows the new account does not have — so without this wipe
- * the previous account's reads/favorites would leak into the new account and across devices.
+ * Single session-scoped driver for every registered [Synchronizer], scoped to the authenticated
+ * session via [collectLatest]: sign-out or account switch cancels every child (closing the realtime
+ * channels). On a switch to a different account the previous account's synced state is wiped before
+ * seeding/pulling, since a pull only upserts the remote snapshot and never removes local rows.
  *
  * Pull-on-connect is centralized here because [Realtime.status] is shared across datasets: on every
- * CONNECTED transition (cold start + reconnections) every synchronizer pulls its full snapshot.
+ * CONNECTED transition every synchronizer pulls its full snapshot.
  */
 internal class SyncCoordinator(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
