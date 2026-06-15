@@ -52,11 +52,6 @@ class BooksWithChapterMapper {
 
     private fun computeModel(bookWithChapters: BookWithChapters): BookDataModel = bookWithChapters.run {
         val chaptersModel = chapters.map { chapterWithVerses ->
-            // One model per verse (not per downloaded text): a verse with N bible versions has N
-            // texts, but it is still a single verse. Building one entry per text would make verse
-            // counts scale with the number of downloaded versions, so reading-progress counts (which
-            // sum chapter.verses) would diverge between devices. The reading screen builds its own
-            // per-version text list straight from the DAO, so it does not rely on this expansion.
             val versesModel = chapterWithVerses.verses.map { verseWithTexts ->
                 VerseModel(
                     number = verseWithTexts.verse.number,
