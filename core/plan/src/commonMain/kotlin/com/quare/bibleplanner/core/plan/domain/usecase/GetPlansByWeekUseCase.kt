@@ -1,5 +1,8 @@
 package com.quare.bibleplanner.core.plan.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.isRangeRead
+import com.quare.bibleplanner.core.books.domain.isVerseRead
+import com.quare.bibleplanner.core.books.domain.readVersesCount
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
@@ -118,31 +121,7 @@ class GetPlansByWeekUseCase(
     ): Boolean {
         val chapter = book.chapters.find { it.number == chapterPlan.number }
             ?: return false
-
-        val startVerse = chapterPlan.startVerse
-        val endVerse = chapterPlan.endVerse
-
-        return when {
-            // If verse range is specified, check those specific verses
-            startVerse != null && endVerse != null -> {
-                val requiredVerses = startVerse..endVerse
-                requiredVerses.all { verseNumber ->
-                    chapter.verses.find { it.number == verseNumber }?.isRead == true
-                }
-            }
-
-            // If only start verse is specified, check from that verse to end of chapter
-            startVerse != null -> {
-                chapter.verses
-                    .filter { it.number >= startVerse }
-                    .all { it.isRead }
-            }
-
-            // If no verse range specified, check if entire chapter is read
-            else -> {
-                chapter.isRead
-            }
-        }
+        return chapter.isRangeRead(chapterPlan.startVerse, chapterPlan.endVerse)
     }
 
     private fun calculateTotalVerses(
@@ -211,9 +190,7 @@ class GetPlansByWeekUseCase(
 
         // If no chapters specified (empty list), count all read verses in the book
         if (passage.chapters.isEmpty()) {
-            return book.chapters.sumOf { chapter ->
-                chapter.verses.count { it.isRead }
-            }
+            return book.chapters.sumOf { it.readVersesCount }
         }
 
         return passage.chapters.sumOf { chapterPlan ->
@@ -234,21 +211,19 @@ class GetPlansByWeekUseCase(
         return when {
             // If verse range is specified, count read verses in that range
             startVerse != null && endVerse != null -> {
-                chapter.verses.count { verse ->
-                    verse.number in startVerse..endVerse && verse.isRead
-                }
+                (startVerse..endVerse).count { verseNumber -> chapter.isVerseRead(verseNumber) }
             }
 
             // If only start verse is specified, count read verses from that verse to end of chapter
             startVerse != null -> {
                 chapter.verses.count { verse ->
-                    verse.number >= startVerse && verse.isRead
+                    verse.number >= startVerse && chapter.isVerseRead(verse.number)
                 }
             }
 
             // If no verse range specified, count all read verses in the chapter
             else -> {
-                chapter.verses.count { it.isRead }
+                chapter.readVersesCount
             }
         }
     }

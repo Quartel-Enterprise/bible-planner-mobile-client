@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.isRangeRead
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
@@ -35,30 +36,6 @@ class CalculateAllChaptersReadStatusUseCase {
     ): Boolean {
         val book = books.find { it.id == passage.bookId } ?: return false
         val bookChapter = book.chapters.find { it.number == chapter.number } ?: return false
-
-        val startVerse = chapter.startVerse
-        val endVerse = chapter.endVerse
-
-        return when {
-            // If verse range is specified, check those specific verses
-            startVerse != null && endVerse != null -> {
-                val requiredVerses = startVerse..endVerse
-                requiredVerses.all { verseNumber ->
-                    bookChapter.verses.find { it.number == verseNumber }?.isRead == true
-                }
-            }
-
-            // If only start verse is specified, check from that verse to end of chapter
-            startVerse != null -> {
-                bookChapter.verses
-                    .filter { it.number >= startVerse }
-                    .all { it.isRead }
-            }
-
-            // If no verse range specified, check if entire chapter is read
-            else -> {
-                bookChapter.isRead
-            }
-        }
+        return bookChapter.isRangeRead(chapter.startVerse, chapter.endVerse)
     }
 }

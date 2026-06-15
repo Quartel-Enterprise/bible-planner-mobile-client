@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.isRangeRead
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
-import com.quare.bibleplanner.core.model.book.BookChapterModel
-import com.quare.bibleplanner.core.model.book.BookDataModel
-import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import kotlinx.coroutines.flow.first
@@ -45,40 +43,7 @@ internal class IsChapterReadStatusUseCase(
         val bookChapter = book.chapters.find { it.number == chapter.number } ?: return errorResult
 
         // Check if a chapter is read based on verse ranges
-        val isCurrentlyRead = isChapterRead(
-            chapter = chapter,
-            bookChapter = bookChapter,
-        )
+        val isCurrentlyRead = bookChapter.isRangeRead(chapter.startVerse, chapter.endVerse)
         return Result.success(!isCurrentlyRead)
-    }
-
-    private fun isChapterRead(
-        chapter: ChapterModel,
-        bookChapter: BookChapterModel,
-    ): Boolean {
-        val startVerse = chapter.startVerse
-        val endVerse = chapter.endVerse
-
-        return when {
-            // If verse range is specified, check those specific verses
-            startVerse != null && endVerse != null -> {
-                val requiredVerses = startVerse..endVerse
-                requiredVerses.all { verseNumber ->
-                    bookChapter.verses.find { it.number == verseNumber }?.isRead == true
-                }
-            }
-
-            // If only start verse is specified, check from that verse to end of chapter
-            startVerse != null -> {
-                bookChapter.verses
-                    .filter { it.number >= startVerse }
-                    .all { it.isRead }
-            }
-
-            // If no verse range specified, check if entire chapter is read
-            else -> {
-                bookChapter.isRead
-            }
-        }
     }
 }

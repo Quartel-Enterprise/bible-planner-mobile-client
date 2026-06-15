@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
+import com.quare.bibleplanner.core.books.domain.readVersesCount
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,9 +24,7 @@ class CalculateBibleProgressUseCase(
         if (totalVerses == 0) return@map 0f
 
         val readVerses = books.sumOf { book ->
-            book.chapters.sumOf { chapter ->
-                chapter.verses.count { it.isRead }
-            }
+            book.chapters.sumOf { it.readVersesCount }
         }
 
         100 * (readVerses.toFloat() / totalVerses.toFloat())
