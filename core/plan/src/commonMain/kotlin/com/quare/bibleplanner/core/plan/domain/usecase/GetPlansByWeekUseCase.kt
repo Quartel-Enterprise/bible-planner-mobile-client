@@ -212,7 +212,7 @@ class GetPlansByWeekUseCase(
         // If no chapters specified (empty list), count all read verses in the book
         if (passage.chapters.isEmpty()) {
             return book.chapters.sumOf { chapter ->
-                chapter.verses.count { it.isRead }
+                if (chapter.isRead) chapter.verses.size else chapter.verses.count { it.isRead }
             }
         }
 
@@ -246,9 +246,11 @@ class GetPlansByWeekUseCase(
                 }
             }
 
-            // If no verse range specified, count all read verses in the chapter
+            // If no verse range specified, count all read verses in the chapter. A chapter flagged as
+            // read counts as fully read so the count matches the read indicator and stays consistent
+            // across devices even when individual verse flags are incomplete.
             else -> {
-                chapter.verses.count { it.isRead }
+                if (chapter.isRead) chapter.verses.size else chapter.verses.count { it.isRead }
             }
         }
     }
