@@ -24,9 +24,6 @@ class CalculateBibleProgressUseCase(
 
         val readVerses = books.sumOf { book ->
             book.chapters.sumOf { chapter ->
-                // A chapter flagged as read counts as fully read so the percentage matches the read
-                // indicators and stays consistent across devices, even when its individual verse flags
-                // are incomplete (legacy data, or whole-chapter reads synced at chapter granularity).
                 if (chapter.isRead) {
                     chapter.verses.size
                 } else {
