@@ -1,63 +1,64 @@
 # Commit timestamps and the "next day" GitHub grouping
 
-If you browse the commit list on GitHub and see commits grouped under a date **ahead** of
-your local one — e.g. an evening commit from June 15 (BRT) listed under "Commits on Jun 16" —
-nothing is wrong with the history. It is a display artifact of how GitHub groups the list. This
-doc explains the real rule and why there is no cosmetic fix.
+If you browse the commit list on GitHub and see a commit grouped under a date **ahead** of the one
+you expect — e.g. an evening commit listed under "Commits on Jun 17" when you made it on Jun 16 —
+nothing is wrong with the history. It is a display artifact driven by the timezone **offset stored
+in the commit**. This doc explains the rule and how this repo avoids the confusion.
 
-## The rule: GitHub groups by the UTC date
+## The rule: GitHub groups by the commit's stored offset
 
-The "Commits on <date>" headers on GitHub's commit list group commits by the **UTC calendar date
-of the author date** — i.e. by the commit's absolute instant, normalized to UTC. It does **not**
-use the timezone offset stored in the commit, and it does **not** use the viewer's timezone.
+The "Commits on <date>" headers on GitHub's commit list group commits by the **author date rendered
+in the timezone offset stored in that commit** — not by UTC, and not by the viewer's timezone.
 
-You can confirm this from the page's own embedded data (`react-app.embeddedData` →
-`payload.commitGroups`): a commit authored at `2026-06-15T21:51-03:00` carries the group title
-`Jun 16, 2026`, because that instant is `2026-06-16T00:51Z` in UTC.
+You can confirm this empirically: a commit whose author date is `2026-06-17T00:48:49+02:00` lands
+under "Jun 17" — even though that same instant is `Jun 16` in UTC (`22:48Z`) and `Jun 16` in your
+local `-0300` (`19:48`). The only date that matches the GitHub header is the one in the commit's
+**own stored offset** (`+0200` → Jun 17).
 
-The boundary is therefore **midnight UTC**. In Brazil (GMT-3, no DST) that is **21:00 local**:
+> Watch out: the GitHub REST API (`/commits`) returns dates normalized to **UTC** (`...Z`), and a
+> page payload fetched without a `Time-Zone` header may also show UTC-grouped titles. Those do **not**
+> reflect what the web UI actually renders. Trust the rendered page, which groups by the stored offset.
 
-| Author instant (BRT) | Same instant in UTC | GitHub group |
-|---|---|---|
-| Jun 15, 20:46 | Jun 15, 23:46 | **Jun 15** |
-| Jun 15, 21:07 | Jun 16, 00:07 | **Jun 16** |
-| Jun 15, 21:51 | Jun 16, 00:51 | **Jun 16** |
+## Where the wrong offset comes from
 
-So any commit authored after ~21:00 BRT shows up under the next day on GitHub. This repo's PRs are
-usually squash-merged in the evening Brazil time, which is why several land past the UTC boundary.
+Commits stamped with an unexpected offset in this repo come from the **Claude Code cloud sandbox**,
+which runs in a European timezone (`+0200`, CEST). A commit authored there in the evening Brazil time
+gets a `+0200` label, pushing its local date — and therefore its GitHub group — to the next day.
 
-## Why you cannot "fix" the remote grouping
+| Source | Stored offset |
+|---|---|
+| Commits made locally on your machine | follows your OS timezone (`-0300` in Brazil) |
+| GitHub Actions runners | `+0000` (UTC) |
+| Commits authored in the Claude Code cloud sandbox | `+0200` (CEST) |
 
-Because the grouping is keyed on the **absolute instant** (UTC), the stored timezone offset is
-irrelevant to it. Re-stamping commits with a `-0300` offset (e.g. via `git filter-branch`) keeps
-the exact same instant, so GitHub groups them identically — the rewrite changes the SHAs but not
-the day headers. The only way to move a commit to the previous day on GitHub would be to change
-its **actual timestamp** to before midnight UTC, i.e. to falsify when the work happened. Don't do
-that for a cosmetic list header.
+## The fix: set the timezone of the cloud sandbox
+
+Set `TZ=America/Sao_Paulo` in the **cloud environment configuration** at claude.ai/code
+(environment → *Environment variables*, `.env` format). This makes commits authored by the cloud
+agent carry `-0300`, so they group under the correct day.
+
+Do **not** commit a fixed `TZ` into the repo (e.g. in `.claude/settings.json` or a `SessionStart`
+hook): it would impose your timezone on every collaborator and is not travel-proof. The cloud
+environment setting is per-account and is not part of the repository — and note that user-level or
+local-only config (`~/.claude/settings.json`, `.claude/settings.local.json`) does **not** reach
+cloud sessions, which only see what is committed.
 
 ## The history itself is fine
 
-The absolute timestamps (`%ct`) stay monotonic and correctly ordered. Rendered in your own
-timezone, every commit lands on the correct local day:
+The absolute timestamps (`%ct`) are always monotonic and correctly ordered, whatever the offset.
+Rendered in your own timezone, every commit lands on the correct local day:
 
 ```bash
 git log --date=local --pretty=format:'%h  %ad  %s'
 ```
 
-## Local configuration
-
-This repo relies on git's `log.date=local` setting so the CLI always renders commit dates in the
-**current machine's timezone**:
+This repo sets `log.date=local` globally so the CLI always renders dates in the current machine's
+timezone — travel-proof, no maintenance:
 
 ```bash
 git config --global log.date local
 ```
 
-This is travel-proof: it follows whatever timezone your OS is set to, so it needs no maintenance
-when you work from another country. Do **not** hardcode `TZ` in your shell profile — git already
-reads the OS timezone for new local commits, and pinning it would make your commits report the
-wrong zone while traveling.
-
-Note this only affects your **local** `git log`. GitHub's web grouping is computed in UTC on the
-server and has no viewer-side timezone setting, so evening-BRT commits will still appear a day
-ahead there. That is purely cosmetic and is left as-is.
+This only affects your **local** `git log`. The GitHub web grouping is computed from each commit's
+stored offset and has no viewer-side setting, so commits already authored with `+0200` keep showing a
+day ahead there until they are re-stamped.
