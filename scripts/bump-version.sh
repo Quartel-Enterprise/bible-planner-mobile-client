@@ -23,11 +23,11 @@ sed -i.bak -E "s/^versionName=.*/versionName=${version}/" gradle.properties
 sed -i.bak -E "s/^CURRENT_PROJECT_VERSION=.*/CURRENT_PROJECT_VERSION=${code}/" iosApp/Configuration/Config.xcconfig
 sed -i.bak -E "s/^MARKETING_VERSION=.*/MARKETING_VERSION=${version}/" iosApp/Configuration/Config.xcconfig
 
-# Desktop — composeApp/build.gradle.kts
-sed -i.bak -E "s/packageVersion = \"[^\"]*\"/packageVersion = \"${version}\"/" composeApp/build.gradle.kts
+# Desktop — desktopApp/build.gradle.kts
+sed -i.bak -E "s/packageVersion = \"[^\"]*\"/packageVersion = \"${version}\"/" desktopApp/build.gradle.kts
 
 rm -f gradle.properties.bak \
       iosApp/Configuration/Config.xcconfig.bak \
-      composeApp/build.gradle.kts.bak
+      desktopApp/build.gradle.kts.bak
 
 echo "Bumped version to ${version} (versionCode ${code})"

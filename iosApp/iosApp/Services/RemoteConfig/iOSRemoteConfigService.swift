@@ -1,7 +1,7 @@
 import Foundation
 import FirebaseRemoteConfig
 import Network
-import ComposeApp
+import Shared
 
 class IosRemoteConfigService: RemoteConfigService {
     private let remoteConfig: RemoteConfig

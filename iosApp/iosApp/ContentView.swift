@@ -1,6 +1,6 @@
 import UIKit
 import SwiftUI
-import ComposeApp
+import Shared
 
 struct ComposeView: UIViewControllerRepresentable {
     let remoteConfigService: RemoteConfigService

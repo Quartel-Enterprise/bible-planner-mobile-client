@@ -2,7 +2,7 @@ import SwiftUI
 import FirebaseCore
 import FirebaseRemoteConfig
 import UserNotifications
-import ComposeApp
+import Shared
 
 @main
 struct iOSApp: App {

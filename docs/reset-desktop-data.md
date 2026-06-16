@@ -5,7 +5,7 @@ The desktop (JVM) target persists user data in three places, separate from the A
 | Data | Location | Defined in |
 |---|---|---|
 | Room database (`bible_planner.db` + `-wal`/`-shm`/`.lck`) | `java.io.tmpdir` (`$TMPDIR` on macOS/Linux) | `core/provider/room/.../DatabaseConstructor.desktop.kt` + `DatabaseUtils.PATH` |
-| DataStore preferences (`prefs.preferences_pb`) | App working directory — `composeApp/` when launched via Gradle | `core/provider/data_store/.../CreateDataStore.jvm.kt` |
+| DataStore preferences (`prefs.preferences_pb`) | App working directory — `desktopApp/` when launched via Gradle | `core/provider/data_store/.../CreateDataStore.jvm.kt` |
 | Supabase auth session (`sb-<ref>-supabase-co-session`) | JVM user-root preferences (`~/Library/Preferences/com.apple.java.util.prefs.plist` on macOS) | supabase-kt's default `SettingsSessionManager` |
 
 The Supabase session is the easy one to miss: it lives in `java.util.prefs.Preferences`, not in

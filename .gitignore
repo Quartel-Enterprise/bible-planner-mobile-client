@@ -31,8 +31,8 @@ captures
 node_modules/
 setup-java.sh
 
-/composeApp/prefs.preferences_pb
-/composeApp/release/
+/desktopApp/prefs.preferences_pb
+/desktopApp/release/
 /.vscode
 /build-logic/convention/bin/
 

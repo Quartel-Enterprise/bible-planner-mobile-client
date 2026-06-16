@@ -1,5 +1,5 @@
 import UserNotifications
-import ComposeApp
+import Shared
 
 class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationDelegate()

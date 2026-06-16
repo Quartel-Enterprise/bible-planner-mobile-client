@@ -3,7 +3,10 @@
 The project uses a multi-module Gradle setup. Every new feature gets its own module.
 
 ```
-composeApp/          # App entry point
+shared/              # Kotlin Multiplatform library with the shared code (UI + logic)
+androidApp/          # Android application module
+desktopApp/          # Desktop (JVM) application module
+iosApp/              # iOS application (Xcode project)
 core/
 ├── books/           # Books domain + data + DI
 ├── model/           # Shared data models and nav routes
