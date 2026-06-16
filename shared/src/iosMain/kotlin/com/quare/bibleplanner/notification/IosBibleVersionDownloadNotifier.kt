@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.notification
 
-import bibleplanner.composeapp.generated.resources.Res
-import bibleplanner.composeapp.generated.resources.notification_complete_message
-import bibleplanner.composeapp.generated.resources.notification_complete_title
-import bibleplanner.composeapp.generated.resources.notification_error_message
-import bibleplanner.composeapp.generated.resources.notification_error_title
+import bibleplanner.shared.generated.resources.Res
+import bibleplanner.shared.generated.resources.notification_complete_message
+import bibleplanner.shared.generated.resources.notification_complete_title
+import bibleplanner.shared.generated.resources.notification_error_message
+import bibleplanner.shared.generated.resources.notification_error_title
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import org.jetbrains.compose.resources.getString

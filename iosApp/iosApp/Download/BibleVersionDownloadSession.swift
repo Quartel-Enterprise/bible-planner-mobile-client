@@ -1,5 +1,5 @@
 import Foundation
-import ComposeApp
+import Shared
 
 class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDownloadSession {
     static let sessionIdentifier = "com.quare.bibleplanner.bible.download"

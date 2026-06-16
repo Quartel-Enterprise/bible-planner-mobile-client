@@ -1,5 +1,4 @@
 import com.bibleplanner.buildlogic.getAndroidSdkVersions
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -7,17 +6,10 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.bibleplanner.composeMultiplatform)
-    alias(libs.plugins.composeHotReload)
 }
 
 kotlin {
     val androidSdkVersions = getAndroidSdkVersions()
-    android {
-        compileSdk = androidSdkVersions.compileSdk
-        minSdk = androidSdkVersions.minSdk
-        namespace = "com.quare.bibleplanner.shared"
-    }
-
     android {
         compileSdk = androidSdkVersions.compileSdk
         minSdk = androidSdkVersions.minSdk
@@ -29,7 +21,7 @@ kotlin {
         iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = "Shared"
             isStatic = true
             export(projects.core.remoteConfig)
         }
@@ -110,37 +102,13 @@ kotlin {
             // Date
             implementation(libs.kotlinx.datetime)
         }
-        jvmMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutines.swing)
-        }
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "com.quare.bibleplanner.MainKt"
-
-        jvmArgs += listOf("-Xdock:icon=${project.file("../icons/bible_planner_logo.icns").absolutePath}")
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.quare.bibleplanner"
-            packageVersion = "1.15.0"
-
-            macOS {
-                iconFile.set(project.file("../icons/bible_planner_logo.icns"))
-            }
-
-            windows {
-                iconFile.set(project.file("../icons/bible_planner_logo.ico"))
-            }
-
-            linux {
-                iconFile.set(project.file("../icons/bible_planner_logo.png"))
-            }
-        }
-    }
+// Exposes the generated resources accessor so platform application modules
+// (e.g. desktopApp) can reference shared strings and drawables.
+compose.resources {
+    publicResClass = true
 }
 
 // Ensure resources from library modules are included

@@ -14,7 +14,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # Desktop app process marker — the JVM main class, present in the command line whether the
-# app runs via Gradle (:composeApp:run) or as a packaged distribution.
+# app runs via Gradle (:desktopApp:run) or as a packaged distribution.
 desktop_app_marker="com.quare.bibleplanner.MainKt"
 
 # Room DB: DatabaseConstructor.desktop.kt stores it under $TMPDIR with -wal/-shm/.lck sidecars.
@@ -23,7 +23,7 @@ db_path="${db_prefix%/}/bible_planner.db"
 
 # DataStore: CreateDataStore.jvm.kt writes prefs.preferences_pb relative to the launch dir.
 datastore_files=(
-  "composeApp/prefs.preferences_pb"
+  "desktopApp/prefs.preferences_pb"
   "prefs.preferences_pb"
 )
 
