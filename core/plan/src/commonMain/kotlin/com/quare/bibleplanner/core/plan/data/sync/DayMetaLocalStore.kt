@@ -40,8 +40,6 @@ internal class DayMetaLocalStore(
             notes = dto.notes,
             remoteUpdatedAt = remoteUpdatedAt,
         )
-        // No row matched: insert it only when the day is genuinely absent (a 0 result can also mean the
-        // local row is pending or newer, in which case Last-Write-Wins must keep it untouched).
         if (updated == 0 && dayDao.getDayByWeekAndDay(dto.weekNumber, dto.dayNumber, dto.planType) == null) {
             dayDao.insertDay(
                 DayEntity(

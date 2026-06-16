@@ -2,17 +2,11 @@ package com.quare.bibleplanner.core.books.domain
 
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 
-/*
- * Single source of truth for what counts as "read" inside a chapter.
- *
- * A chapter flagged as read (BookChapterModel.isRead, itself derived from the stored chapter flag OR
- * all of its verses being read) is treated as having ALL its verses read, even when the individual
- * verse flags are incomplete. Read state syncs at chapter granularity and legacy data may carry the
- * chapter flag without every verse flag, so deriving every read count and completion check from this
- * rule keeps progress consistent with the read indicators and identical across devices.
+/**
+ * Number of verses in this chapter that count as read. A chapter flagged as read counts as fully
+ * read, so reading progress matches the read indicators even when individual verse flags are
+ * incomplete.
  */
-
-/** Number of verses in this chapter that count as read. */
 val BookChapterModel.readVersesCount: Int
     get() = if (isRead) verses.size else verses.count { it.isRead }
 

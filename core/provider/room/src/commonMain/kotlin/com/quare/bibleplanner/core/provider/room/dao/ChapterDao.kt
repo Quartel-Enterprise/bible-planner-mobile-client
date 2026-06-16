@@ -57,8 +57,6 @@ interface ChapterDao {
         updatedAt: Long,
     )
 
-    // region Read-state sync
-
     @Query("SELECT * FROM chapters WHERE isReadPendingSync = 1")
     fun getPendingReadSyncChaptersFlow(): Flow<List<ChapterEntity>>
 
@@ -112,8 +110,6 @@ interface ChapterDao {
             "readUpdatedAt = CASE WHEN readUpdatedAt IS NOT NULL THEN :now ELSE readUpdatedAt END",
     )
     suspend fun resetAllChapterReadsForSync(now: Long)
-
-    // endregion
 
     @Query("DELETE FROM chapters WHERE id = :chapterId")
     suspend fun deleteChapter(chapterId: Long)

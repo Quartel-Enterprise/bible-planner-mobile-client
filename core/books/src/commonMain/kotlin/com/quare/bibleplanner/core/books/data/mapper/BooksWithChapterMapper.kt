@@ -52,24 +52,12 @@ class BooksWithChapterMapper {
 
     private fun computeModel(bookWithChapters: BookWithChapters): BookDataModel = bookWithChapters.run {
         val chaptersModel = chapters.map { chapterWithVerses ->
-            val versesModel = chapterWithVerses.verses.flatMap { verseWithTexts ->
-                if (verseWithTexts.texts.isNotEmpty()) {
-                    verseWithTexts.texts.map { textEntity ->
-                        VerseModel(
-                            number = verseWithTexts.verse.number,
-                            isRead = verseWithTexts.verse.isRead,
-                            text = textEntity.text,
-                        )
-                    }
-                } else {
-                    listOf(
-                        VerseModel(
-                            number = verseWithTexts.verse.number,
-                            isRead = verseWithTexts.verse.isRead,
-                            text = null,
-                        ),
-                    )
-                }
+            val versesModel = chapterWithVerses.verses.map { verseWithTexts ->
+                VerseModel(
+                    number = verseWithTexts.verse.number,
+                    isRead = verseWithTexts.verse.isRead,
+                    text = verseWithTexts.texts.firstOrNull()?.text,
+                )
             }
 
             // Derive chapter read status: either the flag is true, or all verses are read
