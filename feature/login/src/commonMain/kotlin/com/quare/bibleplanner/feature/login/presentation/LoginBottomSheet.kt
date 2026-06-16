@@ -12,11 +12,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.login.generated.resources.Res
 import bibleplanner.feature.login.generated.resources.login_error_connection
@@ -27,6 +29,7 @@ import bibleplanner.feature.login.generated.resources.terms_agreement_part_1
 import bibleplanner.feature.login.generated.resources.terms_agreement_part_2
 import bibleplanner.feature.login.generated.resources.terms_agreement_part_3
 import bibleplanner.feature.login.generated.resources.terms_of_service
+import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.component.LoginProvidersComponent
 import com.quare.bibleplanner.feature.login.presentation.model.LoginError
@@ -78,13 +81,24 @@ fun LoginBottomSheet(
             val part2 = stringResource(Res.string.terms_agreement_part_2)
             val privacyPolicy = stringResource(Res.string.privacy_policy)
             val part3 = stringResource(Res.string.terms_agreement_part_3)
+            val linkStyles = TextLinkStyles(style = SpanStyle(textDecoration = TextDecoration.Underline))
             val termsText = buildAnnotatedString {
                 append(part1)
-                withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                withLink(
+                    LinkAnnotation.Url(
+                        url = LegalUrl.TERMS_OF_SERVICE,
+                        styles = linkStyles,
+                    ),
+                ) {
                     append(termsOfService)
                 }
                 append(part2)
-                withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                withLink(
+                    LinkAnnotation.Url(
+                        url = LegalUrl.PRIVACY_POLICY,
+                        styles = linkStyles,
+                    ),
+                ) {
                     append(privacyPolicy)
                 }
                 append(part3)

@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.more.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
@@ -60,11 +61,11 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.PRIVACY_POLICY -> {
-                        emitAction(OpenLink(PRIVACY_URL))
+                        emitAction(OpenLink(LegalUrl.PRIVACY_POLICY))
                     }
 
                     MoreOptionItemType.TERMS -> {
-                        emitAction(OpenLink(TERMS_URL))
+                        emitAction(OpenLink(LegalUrl.TERMS_OF_SERVICE))
                     }
 
                     MoreOptionItemType.BECOME_PRO -> {
@@ -154,11 +155,5 @@ internal class MoreViewModel(
         viewModelScope.launch {
             _uiAction.emit(action)
         }
-    }
-
-    companion object {
-        private const val BASE_URL = "https://www.bibleplanner.app"
-        private const val PRIVACY_URL = "$BASE_URL/privacy"
-        private const val TERMS_URL = "$BASE_URL/terms"
     }
 }
