@@ -54,6 +54,10 @@ in your IDE's toolbar or open the [/iosApp](./iosApp) directory in Xcode and run
 
 This project uses ktlint for code formatting and style checking. The project is configured to automatically check code style during builds.
 
+## 🛠️ Contributing Notes
+
+- [Commit timestamps and the "next day" GitHub grouping](docs/commit-timezones.md)
+
 ## 📄 License
 
 This project is licensed under the MIT License. See [LICENSE.md](./LICENSE.md) for details.
