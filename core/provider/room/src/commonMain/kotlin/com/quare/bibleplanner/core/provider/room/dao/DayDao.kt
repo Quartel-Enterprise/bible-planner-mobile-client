@@ -96,8 +96,6 @@ interface DayDao {
     @Query("DELETE FROM days")
     suspend fun deleteAllDays()
 
-    // region Day-meta sync (readTimestamp + notes; isRead derives from chapter/verse state)
-
     @Query("SELECT * FROM days WHERE isMetaPendingSync = 1")
     fun getPendingDayMetaSyncFlow(): Flow<List<DayEntity>>
 
@@ -154,8 +152,6 @@ interface DayDao {
             "metaUpdatedAt = CASE WHEN metaUpdatedAt IS NOT NULL THEN :now ELSE metaUpdatedAt END",
     )
     suspend fun resetAllDayMetaForSync(now: Long)
-
-    // endregion
 
     @Query(
         """
