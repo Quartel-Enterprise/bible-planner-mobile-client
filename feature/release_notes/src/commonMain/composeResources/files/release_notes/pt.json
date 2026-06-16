@@ -8,6 +8,7 @@
     "Seu progresso de leitura agora sincroniza entre todos os seus dispositivos em tempo real quando você está conectado: ao marcar um dia, capítulo ou versículo como lido em um aparelho, isso aparece automaticamente nos demais, na tela de planos, na tela de dias e na tela do capítulo. Suas anotações dos dias também sincronizam.",
     "Mensagem mais clara ao fazer login quando há problemas de conexão com a internet.",
     "Corrigido um problema em que a data de início do plano de leitura desaparecia ao sair da conta; agora ela é redefinida para a data de hoje.",
+    "Corrigido um problema que podia interromper o download de uma versão da Bíblia quando o app estava em segundo plano.",
     "Os links de Termos de Serviço e Política de Privacidade na tela de login agora abrem ao tocar neles."
   ],
   "1.15.0": [
