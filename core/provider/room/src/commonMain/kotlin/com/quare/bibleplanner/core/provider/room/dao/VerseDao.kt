@@ -172,8 +172,6 @@ interface VerseDao {
         updatedAt: Long,
     )
 
-    // region Read-state sync (verse-range reads only; whole-chapter reads sync at chapter level)
-
     @Query(
         "SELECT c.bookId AS bookId, c.number AS chapterNumber, v.number AS verseNumber, " +
             "v.isRead AS isRead, v.readUpdatedAt AS readUpdatedAt " +
@@ -255,8 +253,6 @@ interface VerseDao {
             "readUpdatedAt = CASE WHEN readUpdatedAt IS NOT NULL THEN :now ELSE readUpdatedAt END",
     )
     suspend fun resetAllVerseReadsForSync(now: Long)
-
-    // endregion
 
     /**
      * Deletes a specific verse by its unique identifier.
