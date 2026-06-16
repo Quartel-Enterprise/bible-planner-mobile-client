@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 9,
-    "identityHash": "ab9da465759c6cbe7f74b501ae9b3e5c",
+    "identityHash": "798a4176e7fbd65b3c201ba0ad198d0f",
     "entities": [
       {
         "tableName": "books",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "chapters",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `number` INTEGER NOT NULL, `bookId` TEXT NOT NULL, `isRead` INTEGER NOT NULL, FOREIGN KEY(`bookId`) REFERENCES `books`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `number` INTEGER NOT NULL, `bookId` TEXT NOT NULL, `isRead` INTEGER NOT NULL, `readUpdatedAt` INTEGER DEFAULT NULL, `isReadPendingSync` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`bookId`) REFERENCES `books`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -75,6 +75,19 @@
             "columnName": "isRead",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "readUpdatedAt",
+            "columnName": "readUpdatedAt",
+            "affinity": "INTEGER",
+            "defaultValue": "NULL"
+          },
+          {
+            "fieldPath": "isReadPendingSync",
+            "columnName": "isReadPendingSync",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -110,7 +123,7 @@
       },
       {
         "tableName": "verses",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `number` INTEGER NOT NULL, `chapterId` INTEGER NOT NULL, `isRead` INTEGER NOT NULL, FOREIGN KEY(`chapterId`) REFERENCES `chapters`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `number` INTEGER NOT NULL, `chapterId` INTEGER NOT NULL, `isRead` INTEGER NOT NULL, `readUpdatedAt` INTEGER DEFAULT NULL, `isReadPendingSync` INTEGER NOT NULL DEFAULT 0, FOREIGN KEY(`chapterId`) REFERENCES `chapters`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -135,6 +148,19 @@
             "columnName": "isRead",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "readUpdatedAt",
+            "columnName": "readUpdatedAt",
+            "affinity": "INTEGER",
+            "defaultValue": "NULL"
+          },
+          {
+            "fieldPath": "isReadPendingSync",
+            "columnName": "isReadPendingSync",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -270,7 +296,7 @@
       },
       {
         "tableName": "days",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `weekNumber` INTEGER NOT NULL, `dayNumber` INTEGER NOT NULL, `readingPlanType` TEXT NOT NULL DEFAULT 'BOOKS', `isRead` INTEGER NOT NULL DEFAULT 0, `readTimestamp` INTEGER, `notes` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `weekNumber` INTEGER NOT NULL, `dayNumber` INTEGER NOT NULL, `readingPlanType` TEXT NOT NULL DEFAULT 'BOOKS', `isRead` INTEGER NOT NULL DEFAULT 0, `readTimestamp` INTEGER, `notes` TEXT, `metaUpdatedAt` INTEGER DEFAULT NULL, `isMetaPendingSync` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "id",
@@ -313,6 +339,19 @@
             "fieldPath": "notes",
             "columnName": "notes",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "metaUpdatedAt",
+            "columnName": "metaUpdatedAt",
+            "affinity": "INTEGER",
+            "defaultValue": "NULL"
+          },
+          {
+            "fieldPath": "isMetaPendingSync",
+            "columnName": "isMetaPendingSync",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -405,7 +444,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ab9da465759c6cbe7f74b501ae9b3e5c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '798a4176e7fbd65b3c201ba0ad198d0f')"
     ]
   }
 }
