@@ -34,7 +34,6 @@ internal class ChapterReadMapperTest {
     fun `toEpochMillis parses PostgREST timestamptz with microseconds and zero offset`() {
         val parsed = mapper.toEpochMillis("2026-06-12T08:00:00.123456+00:00")
 
-        // Microsecond precision is truncated to milliseconds on the way to epoch millis.
         val expected = Instant.parse("2026-06-12T08:00:00.123Z").toEpochMilliseconds()
         assertEquals(expected, parsed)
     }

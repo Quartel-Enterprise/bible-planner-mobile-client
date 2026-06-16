@@ -16,9 +16,6 @@ internal class BooksWithChapterMapperTest {
 
     @Test
     fun `maps one verse model per verse regardless of how many bible versions are downloaded`() = runTest {
-        // A single verse with two downloaded versions (two texts) must still map to one verse, so
-        // verse counts don't scale with the number of downloaded versions (which would diverge
-        // reading-progress percentages between devices).
         val book = BookWithChapters(
             book = BookEntity(id = "GEN", isRead = false, favoriteUpdatedAt = null, isFavoritePendingSync = false),
             chapters = listOf(
