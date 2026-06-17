@@ -10,4 +10,8 @@
     <string name="not_now">Agora não</string>
     <string name="login_error_try_again_later">Algo deu errado. Por favor, tente novamente mais tarde.</string>
     <string name="login_error_connection">Tempo de conexão esgotado. Verifique sua internet e tente novamente.</string>
+    <string name="no_google_account_title">Nenhuma conta Google</string>
+    <string name="no_google_account_message">Seu dispositivo não tem uma conta Google. Adicione uma para continuar o login com o Google.</string>
+    <string name="no_google_account_confirm">Adicionar conta</string>
+    <string name="no_google_account_dismiss">Cancelar</string>
 </resources>

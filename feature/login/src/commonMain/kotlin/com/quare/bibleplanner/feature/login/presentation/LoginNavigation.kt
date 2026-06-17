@@ -50,5 +50,8 @@ fun NavGraphBuilder.loginRoot(navController: NavController) {
             loadingProvider = state.loadingProvider,
             error = state.error,
         )
+        if (state.showAddGoogleAccountDialog) {
+            NoGoogleAccountDialog(onEvent = onEvent)
+        }
     }
 }

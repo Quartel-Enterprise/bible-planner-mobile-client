@@ -6,4 +6,5 @@ data class LoginUiState(
     val enabledProviders: List<LoginProvider>,
     val loadingProvider: LoginProvider?,
     val error: LoginError?,
+    val showAddGoogleAccountDialog: Boolean,
 )

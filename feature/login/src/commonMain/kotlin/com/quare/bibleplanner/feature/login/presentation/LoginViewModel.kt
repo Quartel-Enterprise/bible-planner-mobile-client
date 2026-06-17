@@ -29,6 +29,8 @@ internal class LoginViewModel(
     observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     uiStateFactory: LoginUiStateFactory,
     private val throwableToLoginErrorMapper: ThrowableToLoginErrorMapper,
+    private val noGoogleAccountClassifier: NoGoogleAccountClassifier,
+    private val addGoogleAccountLauncher: AddGoogleAccountLauncher,
 ) : ViewModel() {
     val composeAuth: ComposeAuth = supabaseClient.composeAuth
     private val _state: MutableStateFlow<LoginUiState> = MutableStateFlow(uiStateFactory.create())
@@ -79,10 +81,14 @@ internal class LoginViewModel(
                             error = LoginError.CONNECTION,
                         )
 
-                        is NativeSignInResult.Error -> it.copy(
-                            loadingProvider = null,
-                            error = throwableToLoginErrorMapper(result.exception),
-                        )
+                        is NativeSignInResult.Error -> if (noGoogleAccountClassifier(result.exception)) {
+                            it.copy(loadingProvider = null, showAddGoogleAccountDialog = true)
+                        } else {
+                            it.copy(
+                                loadingProvider = null,
+                                error = throwableToLoginErrorMapper(result.exception),
+                            )
+                        }
                     }
                 }
             }
@@ -91,6 +97,15 @@ internal class LoginViewModel(
                 viewModelScope.launch {
                     close()
                 }
+            }
+
+            LoginUiEvent.AddGoogleAccountConfirmClick -> {
+                addGoogleAccountLauncher()
+                _state.update { it.copy(showAddGoogleAccountDialog = false) }
+            }
+
+            LoginUiEvent.DismissAddGoogleAccountDialog -> {
+                _state.update { it.copy(showAddGoogleAccountDialog = false) }
             }
         }
     }
