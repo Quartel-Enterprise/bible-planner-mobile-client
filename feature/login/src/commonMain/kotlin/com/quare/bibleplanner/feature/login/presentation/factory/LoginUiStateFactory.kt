@@ -18,5 +18,6 @@ internal class LoginUiStateFactory(
         enabledProviders = enabledProviders,
         loadingProvider = null,
         error = null,
+        showAddGoogleAccountDialog = false,
     )
 }

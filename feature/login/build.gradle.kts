@@ -11,6 +11,11 @@ kotlin {
     jvm()
 
     sourceSets {
+        androidMain.dependencies {
+            // NoCredentialException, used to detect when the device has no Google account so the
+            // login flow can offer to add one instead of showing a generic error.
+            implementation(libs.androidx.credentials)
+        }
         jvmMain.dependencies {
             // Desktop-only: needed by JvmGoogleSignInStarter to render the OAuth success
             // page using the user's selected theme and language instead of the browser's.

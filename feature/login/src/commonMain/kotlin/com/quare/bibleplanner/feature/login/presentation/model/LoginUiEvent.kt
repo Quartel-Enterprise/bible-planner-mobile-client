@@ -9,6 +9,10 @@ sealed interface LoginUiEvent {
 
     data object NotNowClick : LoginUiEvent
 
+    data object AddGoogleAccountConfirmClick : LoginUiEvent
+
+    data object DismissAddGoogleAccountDialog : LoginUiEvent
+
     data class SocialLoginClick(
         val provider: LoginProvider,
         val nativeSignInState: NativeSignInState,
