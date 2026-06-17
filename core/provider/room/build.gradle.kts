@@ -26,6 +26,10 @@ kotlin {
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
         }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }
 

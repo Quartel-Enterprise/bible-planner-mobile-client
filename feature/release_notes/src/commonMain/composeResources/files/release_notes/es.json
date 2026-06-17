@@ -9,7 +9,8 @@
     "Mensaje más claro al iniciar sesión cuando hay problemas de conexión a internet.",
     "Se corrigió un problema por el cual la fecha de inicio del plan de lectura desaparecía al cerrar sesión; ahora se restablece a la fecha de hoy.",
     "Se corrigió un problema que podía detener la descarga de una versión de la Biblia cuando la app estaba en segundo plano.",
-    "Los enlaces de Términos de Servicio y Política de Privacidad en la pantalla de inicio de sesión ahora se abren al tocarlos."
+    "Los enlaces de Términos de Servicio y Política de Privacidad en la pantalla de inicio de sesión ahora se abren al tocarlos.",
+    "Se corrigió el Evangelio de Juan que mostraba el texto incorrecto o aparecía como no descargado; ahora se descarga y se muestra correctamente."
   ],
   "1.15.0": [
     "La pantalla del plan de lectura ahora usa un diseño de dos columnas en tabletas y pantallas más grandes, con el panel de progreso a la izquierda y la lista de semanas a la derecha, ambos con desplazamiento independiente en todo el ancho de la pantalla.",

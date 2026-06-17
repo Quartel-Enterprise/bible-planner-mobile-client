@@ -59,5 +59,9 @@ kotlin {
             implementation(libs.dataStore)
             implementation(libs.dataStore.preferences)
         }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }

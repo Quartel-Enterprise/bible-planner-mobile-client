@@ -46,7 +46,7 @@ class SupabaseBookAbbreviationMapper {
         BookId.MAT -> "Mt"
         BookId.MRK -> "Mc"
         BookId.LUK -> "Lc"
-        BookId.JHN -> "Jo"
+        BookId.JHN -> "Jh"
         BookId.ACT -> "At"
         BookId.ROM -> "Rm"
         BookId.FIRST_CO -> "1Co"
