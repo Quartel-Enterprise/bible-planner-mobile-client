@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.utils)
+            implementation(projects.core.loginNudge)
 
             // Features
 

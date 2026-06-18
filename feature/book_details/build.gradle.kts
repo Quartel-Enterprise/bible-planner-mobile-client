@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.model)
             implementation(projects.core.provider.platform)
+            implementation(projects.core.loginNudge)
 
             // UI
             implementation(projects.ui.component)

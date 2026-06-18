@@ -12,7 +12,8 @@
     "Os links de Termos de Serviço e Política de Privacidade na tela de login agora abrem ao tocar neles.",
     "Corrigido o Evangelho de João que exibia o texto errado ou aparecia como não baixado; agora ele é baixado e exibido corretamente.",
     "Quando o aparelho não tem uma conta Google, o login com o Google agora explica isso e permite adicionar uma conta, em vez de mostrar um erro genérico.",
-    "Ao fazer login com a Apple sem compartilhar seu e-mail, o app agora explica que o e-mail é necessário e pede para tentar novamente, em vez de mostrar um erro genérico."
+    "Ao fazer login com a Apple sem compartilhar seu e-mail, o app agora explica que o e-mail é necessário e pede para tentar novamente, em vez de mostrar um erro genérico.",
+    "Quando você não está conectado, o app agora lembra você de fazer login para que suas alterações tenham backup e sincronizem entre seus dispositivos. Você pode dispensar o aviso por enquanto ou desativá-lo de vez."
   ],
   "1.15.0": [
     "A tela do plano de leitura agora usa um layout em duas colunas em tablets e telas maiores, com o painel de progresso à esquerda e a lista de semanas à direita, ambos com rolagem independente em toda a largura da tela.",

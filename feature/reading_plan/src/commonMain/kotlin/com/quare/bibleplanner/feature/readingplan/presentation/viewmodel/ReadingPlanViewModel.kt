@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.readingplan.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
@@ -41,6 +42,7 @@ internal class ReadingPlanViewModel(
     private val calculateIsFirstUnreadWeekVisible: CalculateIsFirstUnreadWeekVisible,
     private val deleteProgressMapper: DeleteProgressMapper,
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
+    private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
@@ -338,6 +340,7 @@ internal class ReadingPlanViewModel(
                     readingPlanType = currentUiState.selectedReadingPlan,
                     isRead = newReadStatus,
                 )
+                requestLoginNudgeIfNeeded()
             }
         }
     }

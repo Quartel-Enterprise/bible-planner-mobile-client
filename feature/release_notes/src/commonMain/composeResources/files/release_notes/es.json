@@ -12,7 +12,8 @@
     "Los enlaces de Términos de Servicio y Política de Privacidad en la pantalla de inicio de sesión ahora se abren al tocarlos.",
     "Se corrigió el Evangelio de Juan que mostraba el texto incorrecto o aparecía como no descargado; ahora se descarga y se muestra correctamente.",
     "Cuando tu dispositivo no tiene una cuenta de Google, el inicio de sesión con Google ahora te lo explica y te permite agregar una, en lugar de mostrar un error genérico.",
-    "Al iniciar sesión con Apple sin compartir tu correo, la app ahora te explica que el correo es necesario y te pide intentarlo de nuevo, en lugar de mostrar un error genérico."
+    "Al iniciar sesión con Apple sin compartir tu correo, la app ahora te explica que el correo es necesario y te pide intentarlo de nuevo, en lugar de mostrar un error genérico.",
+    "Cuando no has iniciado sesión, la app ahora te recuerda iniciar sesión para que tus cambios tengan respaldo y se sincronicen en todos tus dispositivos. Puedes descartar el aviso por ahora o desactivarlo por completo."
   ],
   "1.15.0": [
     "La pantalla del plan de lectura ahora usa un diseño de dos columnas en tabletas y pantallas más grandes, con el panel de progreso a la izquierda y la lista de semanas a la derecha, ambos con desplazamiento independiente en todo el ancho de la pantalla.",

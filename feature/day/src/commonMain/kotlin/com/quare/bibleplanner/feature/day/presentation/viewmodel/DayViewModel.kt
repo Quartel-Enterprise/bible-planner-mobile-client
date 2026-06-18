@@ -7,6 +7,7 @@ import androidx.navigation.toRoute
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -43,6 +44,7 @@ internal class DayViewModel(
     private val useCases: DayUseCases,
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
+    private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     val platform: Platform,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
@@ -205,6 +207,7 @@ internal class DayViewModel(
                 isRead = newReadStatus,
                 readingPlanType = readingPlanType,
             )
+            requestLoginNudgeIfNeeded()
         }
     }
 
