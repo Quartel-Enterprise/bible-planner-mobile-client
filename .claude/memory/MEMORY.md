@@ -1,0 +1,14 @@
+- [No defaults in data classes](feedback_uistate_no_defaults.md) — data classes (UiState, DTOs, etc.) must not have default property values; for optional JSON fields, read from JsonObject directly instead of a defaulted DTO.
+- [Apple sign-in secret rotation](project_apple_signin_secret_rotation.md) — Supabase Apple client secret expires 2026-12-08; regenerate via supabase/generate_apple_client_secret.py and config push.
+- [GoTrue email_address_not_provided PR](project_gotrue_email_not_provided_pr.md) — pending upstream PR supabase/auth#2584; when merged, switch login mapper from message-match to error-code-match for the no-email case.
+- [Use suspendRunCatching](feedback_use_suspendruncatching.md) — prefer core/utils suspendRunCatching over manual try/catch(CancellationException)+catch(Exception); handle with onSuccess/onFailure.
+- [Duration in class scope](feedback_duration_class_scope.md) — kotlin.time.Duration constants go as a private val in the class (camelCase), never inside a companion object.
+- [Prefer method references](feedback_prefer_method_references.md) — use ::fn instead of a forwarding lambda (caveat: suspend refs can't go to non-suspend lambda params like map/let/forEach).
+- [Named args, one per line](feedback_named_args_multiline.md) — calls with >1 argument use named arguments each on its own line; single-arg calls stay inline.
+- [No constant-value params](feedback_no_constant_value_params.md) — if every caller passes the same literal, hoist it to a companion-object `const val UPPER_SNAKE` at the end of the class instead of a parameter; delete the inlined string.
+- [Parameterless setup → @BeforeTest](feedback_parameterless_setup_beforetest.md) — a prepareScenario with no params becomes a @BeforeTest setUp(); drop the per-test call and the // Given comment.
+- [KDoc simple-name links](feedback_kdoc_simple_name_links.md) — KDoc [links] use simple names + an import (never fully-qualified); qualify members like [BookEntity.favoriteUpdatedAt].
+- [No comments in production code](feedback_no_comments.md) — don't add comments (inline //, block /* */, or KDoc) to production Kotlin; allowed in gradle scripts, the version catalog, and tests (Given/When/Then).
+- [Worktree → remote branch only](feedback_worktree_remote_only.md) — after a worktree task, push then delete the local worktree, keeping only the remote branch; fetch/inspect before any force-push so you don't clobber the user's PR-branch updates.
+- [GitHub commit timezone grouping](project_github_commit_timezone.md) — GitHub groups commit-list by stale account tz (+0200), not commit offset; fixed via TZ in cloud env (claude.ai/code), bug reported as discussion #199224 (monitored daily). Don't force-push to fix — ineffective.
+- [Compose Resources apostrophes](feedback_compose_resources_apostrophe.md) — in composeResources strings.xml write apostrophes literally (doesn't), never escape with `\'` — Compose renders the backslash literally.
