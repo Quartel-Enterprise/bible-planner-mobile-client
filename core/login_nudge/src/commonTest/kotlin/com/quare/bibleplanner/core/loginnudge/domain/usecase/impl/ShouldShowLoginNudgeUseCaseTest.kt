@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.core.loginnudge.domain.usecase.impl
 
 import com.quare.bibleplanner.core.loginnudge.fake.FakeLoginNudgePreferences
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -80,7 +79,7 @@ internal class ShouldShowLoginNudgeUseCaseTest {
         isOnline: Boolean = true,
     ): ShouldShowLoginNudgeUseCase = ShouldShowLoginNudgeUseCase(
         getAuthenticatedUserId = { userId },
-        networkConnectivityObserver = { flowOf(isOnline) },
+        isConnected = { isOnline },
         loginNudgePreferences = preferences,
         currentTimestampProvider = { NOW },
     )

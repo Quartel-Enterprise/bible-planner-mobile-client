@@ -6,6 +6,6 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import kotlin.time.Duration.Companion.seconds
 
-actual val connectivityModule: Module = module {
+internal actual val platformConnectivityModule: Module = module {
     single<NetworkConnectivityObserver> { DesktopNetworkConnectivityObserver(pollInterval = 3.seconds) }
 }

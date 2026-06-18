@@ -47,4 +47,6 @@
     <string name="login_card_subtitle">Log in for a better experience.</string>
     <string name="login_card_button">Sign in</string>
     <string name="login_card_logout_button">Sign out</string>
+    <string name="login_requires_internet">You need an internet connection to sign in</string>
+    <string name="logout_requires_internet">You need an internet connection to sign out safely</string>
 </resources>

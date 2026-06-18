@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.more.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import bibleplanner.feature.more.generated.resources.Res
+import bibleplanner.feature.more.generated.resources.login_requires_internet
+import bibleplanner.feature.more.generated.resources.logout_requires_internet
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
@@ -14,6 +17,7 @@ import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
+import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.feature.more.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
@@ -30,12 +34,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 
 internal class MoreViewModel(
     uiStateFactory: MoreUiStateFactory,
     private val calculateBibleProgress: CalculateBibleProgressUseCase,
     private val getWebAppUrl: GetWebAppUrl,
     private val getInstagramUrl: GetInstagramUrlUseCase,
+    private val isConnected: IsConnected,
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
@@ -125,11 +131,17 @@ internal class MoreViewModel(
             }
 
             MoreUiEvent.OnLoginClick -> {
-                goToRoute(LoginNavRoute)
+                navigateIfOnline(
+                    route = LoginNavRoute,
+                    offlineMessage = Res.string.login_requires_internet,
+                )
             }
 
             MoreUiEvent.OnLogoutClick -> {
-                goToRoute(LogoutNavRoute)
+                navigateIfOnline(
+                    route = LogoutNavRoute,
+                    offlineMessage = Res.string.logout_requires_internet,
+                )
             }
         }
     }
@@ -144,6 +156,20 @@ internal class MoreViewModel(
                     MoreUiAction.ShowNoProgressToDelete
                 },
             )
+        }
+    }
+
+    private fun navigateIfOnline(
+        route: Any,
+        offlineMessage: StringResource,
+    ) {
+        viewModelScope.launch {
+            val action = if (isConnected()) {
+                MoreUiAction.GoToRoute(route)
+            } else {
+                MoreUiAction.ShowSnackbar(offlineMessage)
+            }
+            _uiAction.emit(action)
         }
     }
 
