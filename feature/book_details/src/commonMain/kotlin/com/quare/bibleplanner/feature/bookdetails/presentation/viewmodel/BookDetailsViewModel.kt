@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.util.toBookNameResource
+import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
@@ -31,6 +32,7 @@ class BookDetailsViewModel(
     private val booksRepository: BooksRepository,
     private val bookGroupMapper: BookGroupMapper,
     private val markBookRead: UpdateBookReadStatusUseCase,
+    private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     getBookByIdFlow: GetBookByIdFlowUseCase,
     val platform: Platform,
 ) : ViewModel() {
@@ -90,6 +92,7 @@ class BookDetailsViewModel(
                             bookId = bookId,
                             isFavorite = !it.isFavorite,
                         )
+                        requestLoginNudgeIfNeeded()
                     }
                 }
             }
@@ -106,6 +109,7 @@ class BookDetailsViewModel(
                 successState?.let {
                     viewModelScope.launch {
                         markBookRead(bookId = bookId, isRead = !it.areAllChaptersRead)
+                        requestLoginNudgeIfNeeded()
                     }
                 }
             }

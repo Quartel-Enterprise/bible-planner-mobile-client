@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.core.plan)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
+            implementation(projects.core.loginNudge)
 
             // UI
             implementation(projects.ui.component)

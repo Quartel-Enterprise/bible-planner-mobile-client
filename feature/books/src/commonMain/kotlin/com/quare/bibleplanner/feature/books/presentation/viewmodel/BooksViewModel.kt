@@ -12,6 +12,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCas
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.books.util.toBookNameResource
+import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
@@ -41,6 +42,7 @@ class BooksViewModel(
     private val getWebAppUrl: GetWebAppUrl,
     private val bookGroupMapper: BookGroupMapper,
     private val bookCategorizationMapper: BookCategorizationMapper,
+    private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
@@ -117,6 +119,7 @@ class BooksViewModel(
                 book?.let {
                     viewModelScope.launch {
                         toggleBookFavorite(event.bookId, !it.isFavorite)
+                        requestLoginNudgeIfNeeded()
                     }
                 }
             }

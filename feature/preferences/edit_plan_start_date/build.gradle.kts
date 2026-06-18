@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.utils)
             implementation(projects.core.date)
+            implementation(projects.core.loginNudge)
 
             // UI
             implementation(projects.ui.component)

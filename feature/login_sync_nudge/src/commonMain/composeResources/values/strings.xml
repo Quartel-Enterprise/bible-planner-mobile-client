@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_sync_nudge_title">Save your progress</string>
+    <string name="login_sync_nudge_message">You're not signed in, so this change is only saved on this device. Log in to back it up and keep it synced across your devices.</string>
+    <string name="login_sync_nudge_login">Log in</string>
+    <string name="login_sync_nudge_not_now">Not now</string>
+    <string name="login_sync_nudge_dont_show_again">Don't show again</string>
+</resources>
