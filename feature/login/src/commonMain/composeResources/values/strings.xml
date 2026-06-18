@@ -10,6 +10,7 @@
     <string name="not_now">Not now</string>
     <string name="login_error_try_again_later">Something went wrong. Please try again later.</string>
     <string name="login_error_connection">Connection timed out. Check your internet and try again.</string>
+    <string name="login_error_email_required">You need to share your email to sign in. Try again and choose to share it.</string>
     <string name="no_google_account_title">No Google account</string>
     <string name="no_google_account_message">Your device doesn't have a Google account. Add one to continue signing in with Google.</string>
     <string name="no_google_account_confirm">Add account</string>

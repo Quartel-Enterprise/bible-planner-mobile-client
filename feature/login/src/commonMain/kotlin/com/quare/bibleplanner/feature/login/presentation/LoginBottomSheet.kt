@@ -22,6 +22,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.login.generated.resources.Res
 import bibleplanner.feature.login.generated.resources.login_error_connection
+import bibleplanner.feature.login.generated.resources.login_error_email_required
 import bibleplanner.feature.login.generated.resources.login_error_try_again_later
 import bibleplanner.feature.login.generated.resources.not_now
 import bibleplanner.feature.login.generated.resources.privacy_policy
@@ -130,5 +131,6 @@ fun LoginBottomSheet(
 private val LoginError.messageRes: StringResource
     get() = when (this) {
         LoginError.CONNECTION -> Res.string.login_error_connection
+        LoginError.EMAIL_REQUIRED -> Res.string.login_error_email_required
         LoginError.GENERIC -> Res.string.login_error_try_again_later
     }
