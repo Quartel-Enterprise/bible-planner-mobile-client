@@ -6,6 +6,6 @@ fun interface CurrentTimestampProvider {
     fun getCurrentTimestamp(): Long
 }
 
-internal class CurrentTimestampProviderImpl : CurrentTimestampProvider {
+internal class DeviceClockTimestampProvider : CurrentTimestampProvider {
     override fun getCurrentTimestamp(): Long = Clock.System.now().toEpochMilliseconds()
 }
