@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
@@ -36,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -45,6 +47,7 @@ internal class DayViewModel(
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val applicationScope: ApplicationScope,
     val platform: Platform,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
@@ -59,7 +62,7 @@ internal class DayViewModel(
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
 
     private var notesSaveJob: Job? = null
-    private val notesDebounceDelay: Duration = 500.milliseconds
+    private val notesDebounceDelay: Duration = 2.seconds
 
     init {
         loadDayDetails()
@@ -234,21 +237,29 @@ internal class DayViewModel(
         updateLoadedState { loaded ->
             loaded.copy(day = loaded.day.copy(notes = event.notes))
         }
-
-        // Cancel previous save job if it exists
         notesSaveJob?.cancel()
-
         notesSaveJob = event.toJob()
     }
 
     private fun DayUiEvent.OnNotesChanged.toJob(): Job = viewModelScope.launch {
-        // Debounce database save to avoid excessive writes while user is typing
         delay(notesDebounceDelay)
+        saveNotes(notes)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if (notesSaveJob?.isActive != true) return
+        notesSaveJob?.cancel()
+        val pendingNotes = safeLoadedState?.day?.notes
+        applicationScope.launch { saveNotes(pendingNotes) }
+    }
+
+    private suspend fun saveNotes(notes: String?) {
         useCases.updateDayNotes(
             weekNumber = weekNumber,
             dayNumber = dayNumber,
             readingPlanType = readingPlanType,
-            notes = notes.ifBlank { null },
+            notes = notes?.ifBlank { null },
         )
     }
 
