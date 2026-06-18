@@ -1,17 +1,16 @@
 package com.quare.bibleplanner.core.plan.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.repository.DayRepository
 import kotlinx.coroutines.flow.first
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class UpdateDayReadStatusUseCase(
     private val dayRepository: DayRepository,
     private val updatePassageReadStatus: UpdatePassageReadStatusUseCase,
     private val getPlansByWeekUseCase: GetPlansByWeekUseCase,
+    private val currentTimestampProvider: CurrentTimestampProvider,
 ) {
     suspend operator fun invoke(
         weekNumber: Int,
@@ -33,7 +32,7 @@ class UpdateDayReadStatusUseCase(
 
         // Update day read status with timestamp
         val readTimestamp = if (isRead) {
-            Clock.System.now().toEpochMilliseconds()
+            currentTimestampProvider.getCurrentTimestamp()
         } else {
             null
         }

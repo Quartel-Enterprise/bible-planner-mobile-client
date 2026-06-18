@@ -20,5 +20,10 @@ kotlin {
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
         }
+
+        androidMain.dependencies {
+            implementation(libs.koinAndroid)
+            implementation(libs.play.services.time)
+        }
     }
 }
