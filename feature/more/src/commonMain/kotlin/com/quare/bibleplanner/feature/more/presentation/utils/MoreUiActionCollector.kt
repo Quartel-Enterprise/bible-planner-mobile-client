@@ -33,6 +33,8 @@ internal fun MoreUiActionCollector(
                 getString(Res.string.no_progress_to_delete_message),
             )
 
+            is MoreUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(getString(action.message))
+
             is MoreUiAction.GoToRoute -> navController.navigate(action.route) { launchSingleTop = true }
         }
     }

@@ -18,6 +18,7 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.provider.language)
+            implementation(projects.core.provider.connectivity)
             implementation(projects.core.utils)
             implementation(projects.core.provider.billing)
             implementation(projects.core.books)
