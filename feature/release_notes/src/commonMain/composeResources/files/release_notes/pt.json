@@ -11,7 +11,8 @@
     "Corrigido um problema que podia interromper o download de uma versão da Bíblia quando o app estava em segundo plano.",
     "Os links de Termos de Serviço e Política de Privacidade na tela de login agora abrem ao tocar neles.",
     "Corrigido o Evangelho de João que exibia o texto errado ou aparecia como não baixado; agora ele é baixado e exibido corretamente.",
-    "Quando o aparelho não tem uma conta Google, o login com o Google agora explica isso e permite adicionar uma conta, em vez de mostrar um erro genérico."
+    "Quando o aparelho não tem uma conta Google, o login com o Google agora explica isso e permite adicionar uma conta, em vez de mostrar um erro genérico.",
+    "Ao fazer login com a Apple sem compartilhar seu e-mail, o app agora explica que o e-mail é necessário e pede para tentar novamente, em vez de mostrar um erro genérico."
   ],
   "1.15.0": [
     "A tela do plano de leitura agora usa um layout em duas colunas em tablets e telas maiores, com o painel de progresso à esquerda e a lista de semanas à direita, ambos com rolagem independente em toda a largura da tela.",

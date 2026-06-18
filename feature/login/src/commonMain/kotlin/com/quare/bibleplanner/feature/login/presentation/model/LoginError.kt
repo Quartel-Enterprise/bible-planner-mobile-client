@@ -7,7 +7,6 @@ package com.quare.bibleplanner.feature.login.presentation.model
 enum class LoginError {
     /** The request to the auth server timed out or could not reach the network. */
     CONNECTION,
-
-    /** Any other, unexpected failure. */
+    EMAIL_REQUIRED,
     GENERIC,
 }
