@@ -1,20 +1,9 @@
 {
   "1.16.0": [
     "You can now sign in with Google and Apple.",
-    "Your favorite books now sync across all your devices when you're signed in.",
-    "Your reading plan — start date and plan type — now syncs across all your devices when you're signed in.",
-    "Your theme — light/dark, contrast, and dynamic colors — now syncs across all your devices. Turn on 'Sync across devices' in the Theme settings while signed in.",
-    "Your app language now syncs across all your devices. Turn on 'Sync across devices' in the language settings while signed in.",
-    "Your reading progress now syncs across all your devices in real time when you're signed in: marking a day, chapter, or verse as read on one device shows up automatically on the others, on the plans screen, the days screen, and the chapter screen. Your day notes sync too.",
-    "Clearer message when signing in fails because of internet connection problems.",
-    "Fixed an issue where the reading plan start date would disappear after signing out; it's now reset to today's date.",
-    "Fixed an issue that could stop a Bible version download when the app was in the background.",
-    "The Terms of Service and Privacy Policy links on the login screen now open when you tap them.",
-    "Fixed the Gospel of John showing the wrong text or appearing as not downloaded; it now downloads and displays correctly.",
-    "When your device has no Google account, signing in with Google now explains this and lets you add one, instead of showing a generic error.",
-    "When you sign in with Apple without sharing your email, the app now explains that your email is required and asks you to try again, instead of showing a generic error.",
-    "When you're not signed in, the app now gently reminds you to log in so your changes get backed up and synced across your devices. You can dismiss it for later or turn it off for good.",
-    "Tapping Sign in or Sign out without an internet connection now shows a message letting you know you need to be online, instead of opening a screen that wouldn't work."
+    "Your data now syncs across all your devices when you're signed in.",
+    "Fixed the Gospel of John, which showed the wrong text or appeared as not downloaded.",
+    "You can now become a Pro user."
   ],
   "1.15.0": [
     "The reading plan screen now uses a two-column layout on tablets and larger displays, with the progress panel on the left and the weeks list on the right, both scrollable independently across the full screen.",
