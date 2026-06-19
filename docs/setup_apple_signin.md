@@ -21,6 +21,31 @@ All created under the **Quare Software** team (`TTV2A365LG`) at
 | Services ID | `com.quare.bibleplanner.BiblePlanner.signin` | Client ID for the web OAuth flow (Android/desktop). Its Return URL is the Supabase callback. |
 | Key | `Bible Planner Sign in with Apple Key` (Key ID `S6T3824BDQ`) | Private key (`AuthKey_S6T3824BDQ.p8`) used to sign the client secret. **Apple only lets you download the .p8 once** — keep a backup in a safe place. |
 
+### Regenerating the provisioning profiles (fastlane match)
+
+The iOS release build signs with a provisioning profile managed by [fastlane match](release-process.md)
+and stored encrypted in the private `bible-planner-certs` repo. The release workflow consumes it with
+`match(readonly: true)` (see `fastlane/Fastfile`), so **CI never recreates profiles** — that is a
+one-time admin action done locally.
+
+When the "Sign in with Apple" capability is enabled on the App ID, **existing provisioning profiles are
+not updated automatically** — they must be regenerated, or the App Store build fails with:
+
+> Provisioning profile "match AppStore com.quare.bibleplanner.BiblePlanner" doesn't include the Sign In
+> with Apple capability.
+
+After enabling (or changing) any capability on the App ID, regenerate and re-push the profiles:
+
+```bash
+# Verify "Sign In with Apple" is checked on the App ID com.quare.bibleplanner.BiblePlanner
+# at developer.apple.com → Identifiers, then force-recreate the appstore profiles:
+MATCH_PASSWORD='<certs repo passphrase>' fastlane match appstore --force
+```
+
+`--force` recreates the certificate and the profiles for both bundle IDs (app + widget) so they pick up
+the App ID's current capabilities, and pushes the encrypted result back to `bible-planner-certs`. Re-run
+the release workflow afterwards.
+
 ## The client secret and `generate_apple_client_secret.py`
 
 Unlike Google, Apple does not give you a static OAuth client secret. The "secret" Supabase needs is a
@@ -83,5 +108,8 @@ Auth provider settings live in `supabase/config.toml` and are applied with `supa
 - **Browser lands on `127.0.0.1:3000` with tokens in the URL** — the OAuth `redirect_to` was rejected
   and Supabase fell back to the project Site URL; check `additional_redirect_urls`.
 - **`invalid_client` from Apple** — expired or invalid client secret; regenerate it (see above).
+- **iOS release fails: provisioning profile "doesn't include the Sign In with Apple capability"** — the
+  match profile predates the capability being enabled on the App ID; regenerate it with
+  `fastlane match appstore --force` (see [Regenerating the provisioning profiles](#regenerating-the-provisioning-profiles-fastlane-match)).
 - **Android logcat shows `Failed to load session ... No entry with the key sb-...-session`** — benign
   supabase-kt noise on cold start when no session is stored yet; not an error.
