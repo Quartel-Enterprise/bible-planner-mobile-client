@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.billing)
+            implementation(projects.core.plan)
 
             // UI
             implementation(projects.ui.component)

@@ -11,23 +11,25 @@ import bibleplanner.feature.more.generated.resources.support_section
 import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.Severity
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsInstagramLinkVisibleUseCase
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveProVerificationRequired
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.IsMoreWebAppEnabled
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveMoreWebAppEnabled
 import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.more.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
-import com.quare.bibleplanner.feature.more.domain.usecase.ShouldShowDonateOptionUseCase
+import com.quare.bibleplanner.feature.more.domain.usecase.ObserveShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.more.generated.MoreBuildKonfig
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
@@ -35,12 +37,9 @@ import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOpti
 import com.quare.bibleplanner.ui.theme.model.ContrastType
 import com.quare.bibleplanner.ui.theme.model.Theme
 import io.github.jan.supabase.auth.status.SessionStatus
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -49,14 +48,14 @@ import kotlin.time.Clock
 
 internal class MoreUiStateFactory(
     private val getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase?,
-    private val isInstagramLinkVisible: IsInstagramLinkVisibleUseCase,
-    private val shouldShowDonateOption: ShouldShowDonateOptionUseCase,
+    private val isInstagramLinkVisible: ObserveInstagramLinkVisible,
+    private val shouldShowDonateOption: ObserveShowDonateOptionUseCase,
     private val getPlanStartDate: GetPlanStartDateFlowUseCase,
     private val getThemeOptionFlow: GetThemeOptionFlow,
     private val getContrastTypeFlow: GetContrastTypeFlow,
     private val getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
-    private val isProVerificationRequired: IsProVerificationRequiredUseCase,
-    private val isMoreWebAppEnabled: IsMoreWebAppEnabled,
+    private val isProVerificationRequired: ObserveProVerificationRequired,
+    private val isMoreWebAppEnabled: ObserveMoreWebAppEnabled,
     private val isDynamicColorSupported: IsDynamicColorSupported,
     private val sessionStatus: StateFlow<SessionStatus>,
     private val sessionUserMapper: SessionUserMapper,
@@ -157,21 +156,19 @@ internal class MoreUiStateFactory(
         getIsDynamicColorsEnabledFlow(),
     ) { theme, contrast, isDynamic -> ThemeConfiguration(theme, contrast, isDynamic) }
 
-    private fun getMoreScreenRemoteConfigsFlow(): Flow<RemoteConfigs> = flow {
-        coroutineScope {
-            val isInstagramVisibleDeferred = async { isInstagramLinkVisible() }
-            val shouldShowDonateDeferred = async { shouldShowDonateOption() }
-            val isProDeferred = async { isProVerificationRequired() }
-            val isWebAppEnabledDeferred = async { isMoreWebAppEnabled() }
-            emit(
-                RemoteConfigs(
-                    isInstagramVisible = isInstagramVisibleDeferred.await(),
-                    shouldShowDonate = shouldShowDonateDeferred.await(),
-                    isProVerificationRequired = isProDeferred.await(),
-                    isWebAppVisible = isWebAppEnabledDeferred.await(),
-                ),
-            )
-        }
+    private fun getMoreScreenRemoteConfigsFlow(): Flow<RemoteConfigs> = combine(
+        isInstagramLinkVisible(),
+        shouldShowDonateOption(),
+        isProVerificationRequired(),
+        isMoreWebAppEnabled(),
+    ) { isInstagramVisible, shouldShowDonate, isProVerificationRequired, isWebAppVisible ->
+        Logger.d(tag = "MoreUiStateFactory") { "isProVerificationRequired: $isProVerificationRequired" }
+        RemoteConfigs(
+            isInstagramVisible = isInstagramVisible,
+            shouldShowDonate = shouldShowDonate,
+            isProVerificationRequired = isProVerificationRequired,
+            isWebAppVisible = isWebAppVisible,
+        )
     }
 
     private data class MoreScreenConfiguration(

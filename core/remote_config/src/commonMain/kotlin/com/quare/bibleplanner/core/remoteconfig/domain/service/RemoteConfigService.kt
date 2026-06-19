@@ -1,9 +1,20 @@
 package com.quare.bibleplanner.core.remoteconfig.domain.service
 
+import kotlinx.coroutines.flow.Flow
+
 interface RemoteConfigService {
-    suspend fun getBoolean(key: String): Boolean
+    fun observeBoolean(
+        key: String,
+        defaultValue: Boolean,
+    ): Flow<Boolean>
 
-    suspend fun getInt(key: String): Int
+    fun observeInt(
+        key: String,
+        defaultValue: Int,
+    ): Flow<Int>
 
-    suspend fun getString(key: String): String
+    fun observeString(
+        key: String,
+        defaultValue: String,
+    ): Flow<String>
 }

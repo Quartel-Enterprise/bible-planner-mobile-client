@@ -8,7 +8,7 @@
     <string name="paywall_title_part_2">Pro</string>
     <string name="paywall_description">Deepen your study without limits. Join thousands of daily readers.</string>
     <string name="feature_unlimited_notes">Create Unlimited Notes</string>
-    <string name="feature_unlimited_notes_subtext">Free plan limited to 3 notes.</string>
+    <string name="feature_unlimited_notes_subtext">Free plan limited to %1$d notes.</string>
     <string name="feature_support_development">Support Future Development</string>
     <string name="feature_ad_free">Ad-free Experience</string>
     <string name="plan_monthly">Monthly</string>

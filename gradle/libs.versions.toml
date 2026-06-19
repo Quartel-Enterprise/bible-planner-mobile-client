@@ -91,6 +91,7 @@ revenuecat-result = { group = "com.revenuecat.purchases", name = "purchases-kmp-
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 
 # Google Play Services
 play-services-time = { group = "com.google.android.gms", name = "play-services-time", version.ref = "playServicesTime" }

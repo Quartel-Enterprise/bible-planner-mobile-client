@@ -9,9 +9,10 @@ import kotlin.collections.orEmpty
 import kotlin.map
 
 internal class GetOfferingsResultMobileUseCase(
+    private val purchases: Purchases,
     private val packageMapper: PackageMapper,
 ) : GetOfferingsResultUseCase {
-    override suspend fun invoke(): Result<List<StorePackage>> = Purchases.sharedInstance
+    override suspend fun invoke(): Result<List<StorePackage>> = purchases
         .awaitOfferingsResult()
         .map { offerings: Offerings ->
             val current = offerings.current

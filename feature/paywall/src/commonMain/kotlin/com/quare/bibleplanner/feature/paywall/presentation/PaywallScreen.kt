@@ -68,7 +68,10 @@ private fun ResponsiveContentScope.portrait(
     onEvent: (PaywallUiEvent) -> Unit,
 ) {
     responsiveItem {
-        PremiumFeaturesList(modifier = Modifier.padding(horizontal = 16.dp))
+        PremiumFeaturesList(
+            maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
     }
     responsiveItem {
         VerticalSpacer(16)
@@ -106,7 +109,7 @@ private fun ResponsiveContentScope.landscape(
                 modifier = Modifier.weight(1.2f),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                PremiumFeaturesList()
+                PremiumFeaturesList(maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes)
                 VerticalSpacer(16)
                 SubscriptionPlans(
                     uiState = uiState,

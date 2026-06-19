@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.di.modelModule
 import com.quare.bibleplanner.core.loginnudge.di.loginNudgeModule
 import com.quare.bibleplanner.core.network.data.di.networkModule
 import com.quare.bibleplanner.core.plan.di.planModule
+import com.quare.bibleplanner.core.provider.analytics.di.analyticsModule
 import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
 import com.quare.bibleplanner.core.provider.connectivity.di.connectivityModule
 import com.quare.bibleplanner.core.provider.platform.di.platformModule
@@ -70,6 +71,7 @@ object CommonKoinUtils {
         dateModule,
         remoteConfigModule,
         billingProviderModule,
+        analyticsModule,
         congratsModule,
         mainModule,
         moreModule,

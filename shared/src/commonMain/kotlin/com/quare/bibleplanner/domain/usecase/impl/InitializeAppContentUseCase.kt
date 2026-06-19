@@ -4,6 +4,8 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsU
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.MigratePlanPreferencesToSyncStoreUseCase
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.ObserveTesterUserProperty
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
 import com.quare.bibleplanner.core.sync.domain.usecase.ObserveSync
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
@@ -28,6 +30,8 @@ internal class InitializeAppContentUseCase(
     private val observeDynamicColorsSync: ObserveDynamicColorsSync,
     private val observeLanguageSync: ObserveLanguageSync,
     private val observeSync: ObserveSync,
+    private val observeTesterUserProperty: ObserveTesterUserProperty,
+    private val syncBillingUserId: SyncBillingUserId,
     private val remoteConfig: RemoteConfigService, // Don't delete it, it is necessary to initialize remote config
 ) : InitializeAppContent {
     override operator fun invoke(coroutineScope: CoroutineScope) {
@@ -46,6 +50,8 @@ internal class InitializeAppContentUseCase(
             launch { observeThemeSync() }
             launch { observeDynamicColorsSync() }
             launch { observeLanguageSync() }
+            launch { observeTesterUserProperty() }
+            launch { syncBillingUserId() }
             // Launched after book rows exist so remote favorites can be applied to them.
             launch { observeSync() }
             observeSelectedVersion()
