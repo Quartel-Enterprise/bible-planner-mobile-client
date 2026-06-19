@@ -61,8 +61,16 @@ kotlin {
                 implementation(libs.koinCore)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(projects.core.remoteConfig)
+                implementation(projects.core.user)
                 implementation(libs.kotlinx.datetime)
                 implementation(projects.core.date)
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
 

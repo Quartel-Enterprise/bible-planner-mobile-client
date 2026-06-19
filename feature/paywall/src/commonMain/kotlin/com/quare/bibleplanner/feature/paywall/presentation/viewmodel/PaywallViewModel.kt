@@ -2,12 +2,15 @@ package com.quare.bibleplanner.feature.paywall.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetPurchaseResultUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetRestorePurchaseResultUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.isApple
+import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
 import com.quare.bibleplanner.feature.paywall.presentation.factory.PaywallUiStateFactory
 import com.quare.bibleplanner.feature.paywall.presentation.mapper.PaywallExceptionMapper
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
@@ -18,6 +21,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -25,7 +30,9 @@ internal class PaywallViewModel(
     private val factory: PaywallUiStateFactory,
     private val getPurchaseResultUseCase: GetPurchaseResultUseCase,
     private val getRestorePurchaseResultUseCase: GetRestorePurchaseResultUseCase,
+    private val getAuthenticatedUserId: GetAuthenticatedUserId,
     private val exceptionMapper: PaywallExceptionMapper,
+    private val observeIsProUser: ObserveIsProUser,
     val platform: Platform,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<PaywallUiState> = MutableStateFlow(PaywallUiState.Loading)
@@ -38,6 +45,8 @@ internal class PaywallViewModel(
 
     private var storePackages: List<StorePackage> = emptyList()
 
+    private var purchaseInitiated = false
+
     init {
         viewModelScope.launch {
             _uiState.update { PaywallUiState.Loading }
@@ -45,6 +54,26 @@ internal class PaywallViewModel(
             storePackages = initializationResult.storePackages
             _uiState.update { initializationResult.uiState }
         }
+        observeProStatus()
+    }
+
+    private fun observeProStatus() {
+        viewModelScope.launch {
+            observeIsProUser()
+                .drop(1)
+                .filter { it }
+                .collect {
+                    if (!purchaseInitiated) {
+                        _uiAction.emit(PaywallUiAction.NavigateBack)
+                    }
+                }
+        }
+    }
+
+    private suspend fun ensureLoggedIn(): Boolean {
+        if (getAuthenticatedUserId() != null) return true
+        _uiAction.emit(PaywallUiAction.NavigateToLoginWarning(LoginWarningReason.Purchase.key))
+        return false
     }
 
     fun onEvent(event: PaywallUiEvent) {
@@ -57,6 +86,7 @@ internal class PaywallViewModel(
 
             PaywallUiEvent.OnStartProJourneyClick -> {
                 viewModelScope.launch {
+                    if (!ensureLoggedIn()) return@launch
                     val currentState = _uiState.value
 
                     if (currentState is PaywallUiState.Success) {
@@ -73,6 +103,7 @@ internal class PaywallViewModel(
                         }
 
                         if (packageToPurchase != null) {
+                            purchaseInitiated = true
                             _uiState.update { currentState.copy(isPurchasing = true) }
 
                             getPurchaseResultUseCase(packageToPurchase)
@@ -105,6 +136,8 @@ internal class PaywallViewModel(
 
             PaywallUiEvent.OnRestorePurchases -> {
                 viewModelScope.launch {
+                    if (!ensureLoggedIn()) return@launch
+                    purchaseInitiated = true
                     val currentState = _uiState.value
                     if (currentState is PaywallUiState.Success) {
                         _uiState.update { currentState.copy(isPurchasing = true) }

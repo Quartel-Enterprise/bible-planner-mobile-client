@@ -24,6 +24,7 @@ kotlin {
             baseName = "Shared"
             isStatic = true
             export(projects.core.remoteConfig)
+            export(projects.core.provider.analytics)
         }
     }
 
@@ -70,6 +71,7 @@ kotlin {
             api(projects.core.provider.room)
             api(projects.core.provider.supabase)
             api(projects.core.provider.billing)
+            api(projects.core.provider.analytics)
             api(projects.core.utils)
 
             // UI

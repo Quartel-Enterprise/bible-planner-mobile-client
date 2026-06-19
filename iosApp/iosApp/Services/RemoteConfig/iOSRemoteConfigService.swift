@@ -3,7 +3,7 @@ import FirebaseRemoteConfig
 import Network
 import Shared
 
-class IosRemoteConfigService: RemoteConfigService {
+class IosRemoteConfigService: RemoteConfigDataSource {
     private let remoteConfig: RemoteConfig
     private var initializationTask: Task<Void, Never>?
     private let monitor = NWPathMonitor()
@@ -21,21 +21,35 @@ class IosRemoteConfigService: RemoteConfigService {
         }
     }
 
-    func getBoolean(key: String) async throws -> KotlinBoolean {
+    func getBoolean(key: String) async throws -> KotlinBoolean? {
         await initializationTask?.value
-        let value = remoteConfig.configValue(forKey: key).boolValue
-        return KotlinBoolean(bool: value)
+        let value = remoteConfig.configValue(forKey: key)
+        guard value.source != .static else { return nil }
+        return KotlinBoolean(bool: value.boolValue)
     }
 
-    func getInt(key: String) async throws -> KotlinInt {
+    func getInt(key: String) async throws -> KotlinInt? {
         await initializationTask?.value
-        let value = remoteConfig.configValue(forKey: key).numberValue.int32Value
-        return KotlinInt(int: value)
+        let value = remoteConfig.configValue(forKey: key)
+        guard value.source != .static else { return nil }
+        return KotlinInt(int: value.numberValue.int32Value)
     }
 
-    func getString(key: String) async throws -> String {
+    func getString(key: String) async throws -> String? {
         await initializationTask?.value
-        return remoteConfig.configValue(forKey: key).stringValue ?? ""
+        let value = remoteConfig.configValue(forKey: key)
+        guard value.source != .static else { return nil }
+        return value.stringValue
+    }
+
+    func addConfigUpdateListener(onUpdate: @escaping () -> Void) -> Cancellable {
+        let registration = remoteConfig.addOnConfigUpdateListener { [weak self] _, error in
+            guard error == nil else { return }
+            self?.remoteConfig.activate { _, _ in
+                onUpdate()
+            }
+        }
+        return ConfigUpdateCancellable(registration: registration)
     }
 
     private func waitForNetworkAndFetch() async {
@@ -84,5 +98,17 @@ class IosRemoteConfigService: RemoteConfigService {
                 try? await Task.sleep(nanoseconds: delay)
             }
         }
+    }
+}
+
+private class ConfigUpdateCancellable: Cancellable {
+    private let registration: ConfigUpdateListenerRegistration
+
+    init(registration: ConfigUpdateListenerRegistration) {
+        self.registration = registration
+    }
+
+    func cancel() {
+        registration.remove()
     }
 }

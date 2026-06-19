@@ -2,9 +2,11 @@ package com.quare.bibleplanner.core.provider.billing.domain.usecase
 
 import com.revenuecat.purchases.kmp.Purchases
 
-class InitializeBillingMobileUseCase : InitializeBillingUseCase {
+class InitializeBillingMobileUseCase(
+    private val purchases: Purchases,
+) : InitializeBillingUseCase {
     override fun invoke() {
-        Purchases.sharedInstance.getCustomerInfo(
+        purchases.getCustomerInfo(
             onSuccess = {},
             onError = {},
         )

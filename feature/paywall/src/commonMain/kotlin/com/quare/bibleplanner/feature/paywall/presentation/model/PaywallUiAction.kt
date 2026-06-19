@@ -9,6 +9,10 @@ sealed interface PaywallUiAction {
         val route: Any,
     ) : PaywallUiAction
 
+    data class NavigateToLoginWarning(
+        val reason: String,
+    ) : PaywallUiAction
+
     data class ShowSnackbar(
         val message: StringResource,
         val args: List<Any> = emptyList(),

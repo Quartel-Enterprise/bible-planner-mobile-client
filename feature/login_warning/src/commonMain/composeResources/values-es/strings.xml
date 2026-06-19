@@ -3,6 +3,7 @@
     <string name="login_warning_title">Inicio de sesión requerido</string>
     <string name="login_warning_message_theme">Inicia sesión primero para mantener tu tema sincronizado en todos tus dispositivos.</string>
     <string name="login_warning_message_language">Inicia sesión primero para mantener tu idioma sincronizado en todos tus dispositivos.</string>
+    <string name="login_warning_message_purchase">Inicia sesión primero para que tu suscripción Pro quede vinculada a tu cuenta en todos tus dispositivos.</string>
     <string name="login_warning_login">Iniciar sesión</string>
     <string name="login_warning_dismiss">Ahora no</string>
 </resources>

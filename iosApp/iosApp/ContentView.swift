@@ -3,12 +3,14 @@ import SwiftUI
 import Shared
 
 struct ComposeView: UIViewControllerRepresentable {
-    let remoteConfigService: RemoteConfigService
+    let remoteConfigService: RemoteConfigDataSource
+    let analyticsService: AnalyticsService
     let downloadSession: BibleVersionDownloadSession
 
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewControllerKt.MainViewController(
             remoteConfigService: remoteConfigService,
+            analyticsService: analyticsService,
             downloadSession: downloadSession
         )
     }
@@ -17,12 +19,14 @@ struct ComposeView: UIViewControllerRepresentable {
 }
 
 struct ContentView: View {
-    let remoteConfigService: RemoteConfigService
+    let remoteConfigService: RemoteConfigDataSource
+    let analyticsService: AnalyticsService
     let downloadSession: BibleVersionDownloadSession
 
     var body: some View {
         ComposeView(
             remoteConfigService: remoteConfigService,
+            analyticsService: analyticsService,
             downloadSession: downloadSession
         )
         .ignoresSafeArea()

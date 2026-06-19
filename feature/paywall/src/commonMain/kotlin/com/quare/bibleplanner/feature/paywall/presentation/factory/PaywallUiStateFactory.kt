@@ -5,6 +5,7 @@ import bibleplanner.feature.paywall.generated.resources.month
 import bibleplanner.feature.paywall.generated.resources.plan_annual
 import bibleplanner.feature.paywall.generated.resources.plan_monthly
 import bibleplanner.feature.paywall.generated.resources.year
+import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackageType
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetOfferingsResultUseCase
@@ -14,14 +15,16 @@ import com.quare.bibleplanner.feature.paywall.presentation.model.SubscriptionPla
 
 class PaywallUiStateFactory(
     private val getOfferingsResult: GetOfferingsResultUseCase,
+    private val getMaxFreeNotesAmount: GetMaxFreeNotesAmountUseCase,
 ) {
     data class PaywallInitializationResult(
         val uiState: PaywallUiState,
         val storePackages: List<StorePackage> = emptyList(),
     )
 
-    suspend fun create(storeName: String): PaywallInitializationResult = getOfferingsResult()
-        .fold(
+    suspend fun create(storeName: String): PaywallInitializationResult {
+        val maxFreeNotes = getMaxFreeNotesAmount()
+        return getOfferingsResult().fold(
             onSuccess = { offerings ->
                 val monthlyPackage = offerings.find { it.type == StorePackageType.MONTHLY }
                 val subscriptionPlans = offerings.mapNotNull { storePackage ->
@@ -55,6 +58,7 @@ class PaywallUiStateFactory(
                             subscriptionPlans = initialPlans,
                             isPurchasing = false,
                             storeName = storeName,
+                            maxFreeNotes = maxFreeNotes,
                         ),
                         storePackages = offerings,
                     )
@@ -64,6 +68,7 @@ class PaywallUiStateFactory(
                 PaywallInitializationResult(PaywallUiState.Error)
             },
         )
+    }
 
     private fun getSavePercentage(
         storePackage: StorePackage,

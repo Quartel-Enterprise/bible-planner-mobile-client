@@ -1,4 +1,8 @@
 - [No defaults in data classes](feedback_uistate_no_defaults.md) — data classes (UiState, DTOs, etc.) must not have default property values; for optional JSON fields, read from JsonObject directly instead of a defaulted DTO.
+- [RemoteConfig observe-first](project_remoteconfig_observe_first.md) — RemoteConfigService exposes observe*(key):Flow (real-time); Get*=observe().first(); platform layer is RemoteConfigDataSource (Swift can't build Flows).
+- [is_tester user property](project_tester_user_property_flow.md) — Analytics is_tester property gates pre-prod flags; set by combining auth + tester_user_ids allowlist; core/provider/analytics module.
+- [RevenueCat identity](project_revenuecat_identity.md) — RC App User ID tied to Supabase user.id via SyncBillingUserId (logIn/logOut); free-Pro via RC promotional entitlements, no isForcedPro column.
+- [Billing testing boundary](project_billing_testing_boundary.md) — Purchases is expect class (unfakeable); billing logic decoupled via domain interfaces, orchestrators in commonMain (jvmTest), RC adapters in mobileMain.
 - [Apple sign-in secret rotation](project_apple_signin_secret_rotation.md) — Supabase Apple client secret expires 2026-12-08; regenerate via supabase/generate_apple_client_secret.py and config push.
 - [GoTrue email_address_not_provided PR](project_gotrue_email_not_provided_pr.md) — pending upstream PR supabase/auth#2584; when merged, switch login mapper from message-match to error-code-match for the no-email case.
 - [Use suspendRunCatching](feedback_use_suspendruncatching.md) — prefer core/utils suspendRunCatching over manual try/catch(CancellationException)+catch(Exception); handle with onSuccess/onFailure.

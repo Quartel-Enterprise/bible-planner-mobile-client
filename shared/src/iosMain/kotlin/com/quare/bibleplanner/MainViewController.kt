@@ -4,11 +4,12 @@ import androidx.compose.ui.window.ComposeUIViewController
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
+import com.quare.bibleplanner.core.provider.analytics.domain.service.AnalyticsService
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.language.di.iosLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
-import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
+import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigDataSource
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.iosAppLanguageModule
 import com.quare.bibleplanner.feature.login.di.iosLoginModule
@@ -35,7 +36,8 @@ private var isInitialized = false
  */
 @OptIn(ExperimentalNativeApi::class)
 fun initializeKoinForIos(
-    remoteConfigService: RemoteConfigService,
+    remoteConfigService: RemoteConfigDataSource,
+    analyticsService: AnalyticsService,
     downloadSession: IosDownloadSession,
 ) {
     if (isInitialized) return
@@ -49,6 +51,7 @@ fun initializeKoinForIos(
                 module {
                     single { getDatabaseBuilder() }
                     single { remoteConfigService }
+                    single { analyticsService }
                     single { downloadSession }.bind<IosDownloadSession>()
                     single { IosBibleVersionDownloadNotifier(get()) }.bind<BibleVersionDownloadNotifier>()
                     singleOf(::IosBackgroundDownloadBridge)
@@ -68,11 +71,16 @@ fun initializeKoinForIos(
 }
 
 fun MainViewController(
-    remoteConfigService: RemoteConfigService,
+    remoteConfigService: RemoteConfigDataSource,
+    analyticsService: AnalyticsService,
     downloadSession: IosDownloadSession,
 ) = ComposeUIViewController(
     configure = {
-        initializeKoinForIos(remoteConfigService, downloadSession)
+        initializeKoinForIos(
+            remoteConfigService = remoteConfigService,
+            analyticsService = analyticsService,
+            downloadSession = downloadSession,
+        )
     },
 ) { App() }
 

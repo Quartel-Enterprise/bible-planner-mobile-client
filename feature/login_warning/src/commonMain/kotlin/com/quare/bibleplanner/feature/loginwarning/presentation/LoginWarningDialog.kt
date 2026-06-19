@@ -9,6 +9,7 @@ import bibleplanner.feature.login_warning.generated.resources.Res
 import bibleplanner.feature.login_warning.generated.resources.login_warning_dismiss
 import bibleplanner.feature.login_warning.generated.resources.login_warning_login
 import bibleplanner.feature.login_warning.generated.resources.login_warning_message_language
+import bibleplanner.feature.login_warning.generated.resources.login_warning_message_purchase
 import bibleplanner.feature.login_warning.generated.resources.login_warning_message_theme
 import bibleplanner.feature.login_warning.generated.resources.login_warning_title
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
@@ -49,6 +50,7 @@ internal fun LoginWarningDialog(
 }
 
 private fun LoginWarningReason.toMessageResource(): StringResource = when (this) {
+    LoginWarningReason.Purchase -> Res.string.login_warning_message_purchase
     LoginWarningReason.Preferences.Theme -> Res.string.login_warning_message_theme
     LoginWarningReason.Preferences.Language -> Res.string.login_warning_message_language
 }
