@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.paywall.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetPurchaseResultUseCase
@@ -9,6 +10,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetRestorePur
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.isApple
+import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
 import com.quare.bibleplanner.feature.paywall.presentation.factory.PaywallUiStateFactory
 import com.quare.bibleplanner.feature.paywall.presentation.mapper.PaywallExceptionMapper
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
@@ -28,6 +30,7 @@ internal class PaywallViewModel(
     private val factory: PaywallUiStateFactory,
     private val getPurchaseResultUseCase: GetPurchaseResultUseCase,
     private val getRestorePurchaseResultUseCase: GetRestorePurchaseResultUseCase,
+    private val getAuthenticatedUserId: GetAuthenticatedUserId,
     private val exceptionMapper: PaywallExceptionMapper,
     private val observeIsProUser: ObserveIsProUser,
     val platform: Platform,
@@ -67,6 +70,12 @@ internal class PaywallViewModel(
         }
     }
 
+    private suspend fun ensureLoggedIn(): Boolean {
+        if (getAuthenticatedUserId() != null) return true
+        _uiAction.emit(PaywallUiAction.NavigateToLoginWarning(LoginWarningReason.Purchase.key))
+        return false
+    }
+
     fun onEvent(event: PaywallUiEvent) {
         when (event) {
             PaywallUiEvent.OnBackClick -> {
@@ -77,6 +86,7 @@ internal class PaywallViewModel(
 
             PaywallUiEvent.OnStartProJourneyClick -> {
                 viewModelScope.launch {
+                    if (!ensureLoggedIn()) return@launch
                     val currentState = _uiState.value
 
                     if (currentState is PaywallUiState.Success) {
@@ -126,6 +136,7 @@ internal class PaywallViewModel(
 
             PaywallUiEvent.OnRestorePurchases -> {
                 viewModelScope.launch {
+                    if (!ensureLoggedIn()) return@launch
                     purchaseInitiated = true
                     val currentState = _uiState.value
                     if (currentState is PaywallUiState.Success) {

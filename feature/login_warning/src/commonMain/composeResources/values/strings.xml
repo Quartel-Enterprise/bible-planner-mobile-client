@@ -3,6 +3,7 @@
     <string name="login_warning_title">Login required</string>
     <string name="login_warning_message_theme">Log in first to keep your theme synced across all your devices.</string>
     <string name="login_warning_message_language">Log in first to keep your language synced across all your devices.</string>
+    <string name="login_warning_message_purchase">Log in first so your Pro subscription stays linked to your account across all your devices.</string>
     <string name="login_warning_login">Log in</string>
     <string name="login_warning_dismiss">Not now</string>
 </resources>

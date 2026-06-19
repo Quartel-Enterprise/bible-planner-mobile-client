@@ -9,6 +9,10 @@ package com.quare.bibleplanner.core.model.loginwarning
 sealed interface LoginWarningReason {
     val key: String
 
+    data object Purchase : LoginWarningReason {
+        override val key: String = "purchase"
+    }
+
     sealed interface Preferences : LoginWarningReason {
         data object Theme : Preferences {
             override val key: String = "preferences_theme"
@@ -21,6 +25,7 @@ sealed interface LoginWarningReason {
 
     companion object {
         private val entries: List<LoginWarningReason> = listOf(
+            Purchase,
             Preferences.Theme,
             Preferences.Language,
         )
