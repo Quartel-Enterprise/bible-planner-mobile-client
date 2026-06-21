@@ -32,6 +32,7 @@ materialIconsExtended = "1.7.3"
 composeMultiplatform = "1.11.1"
 supabase = "3.6.0"
 coil = "3.5.0"
+composeShimmer = "1.5.0-beta02"
 
 # Android versions
 android-minSdk = "26"
@@ -128,6 +129,9 @@ runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.r
 ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "composeMultiplatform" }
 ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "composeMultiplatform" }
 components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "composeMultiplatform" }
+
+# Shimmer
+compose-shimmer = { group = "com.valentinilk.shimmer", name = "compose-shimmer", version.ref = "composeShimmer" }
 
 # WorkManager
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManagerVersion" }

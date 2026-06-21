@@ -1,4 +1,7 @@
 {
+  "1.17.0": [
+    "The 'More' screen now opens instantly, with sections appearing right away; only the parts still loading show a smooth loading effect."
+  ],
   "1.16.0": [
     "You can now sign in with Google and Apple.",
     "Your data now syncs across all your devices when you're signed in.",
