@@ -1,4 +1,7 @@
 {
+  "1.18.0": [
+    "Na tela de detalhes do livro, o 'Ver mais' da sinopse agora aparece logo após o texto, em vez de em uma linha separada abaixo."
+  ],
   "1.17.0": [
     "A tela 'Mais' agora abre instantaneamente, com as seções aparecendo de imediato; apenas as partes que ainda estão carregando mostram um efeito de carregamento suave.",
     "As sinopses dos livros da Bíblia foram reescritas para contar de forma mais clara o que acontece em cada livro e qual é o seu tema central."
