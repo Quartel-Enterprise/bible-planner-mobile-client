@@ -21,6 +21,9 @@ kotlin {
             implementation(libs.ui)
             implementation(libs.material.icons.extended)
             implementation(libs.components.resources)
+
+            // Shimmer
+            implementation(libs.compose.shimmer)
         }
     }
 }

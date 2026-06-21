@@ -1,7 +1,9 @@
 package com.quare.bibleplanner.feature.more.presentation.content.component
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -10,7 +12,6 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,9 +32,10 @@ import bibleplanner.feature.more.generated.resources.login_card_button
 import bibleplanner.feature.more.generated.resources.login_card_logout_button
 import bibleplanner.feature.more.generated.resources.login_card_subtitle
 import bibleplanner.feature.more.generated.resources.login_card_title
-import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
+import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -63,19 +65,28 @@ internal fun LoginCard(
                         }
 
                         AccountStatusModel.Loading -> {
-                            CircularProgressIndicator(modifier = Modifier.size(48.dp))
+                            ShimmerBox(
+                                modifier = Modifier.size(48.dp),
+                                shape = CircleShape,
+                            )
                         }
 
                         is AccountStatusModel.LoggedIn -> {
                             val photo = accountStatusModel.user.photo
                             if (photo != null) {
-                                AsyncImage(
+                                SubcomposeAsyncImage(
                                     model = photo,
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .size(48.dp)
                                         .clip(CircleShape),
+                                    loading = {
+                                        ShimmerBox(
+                                            modifier = Modifier.fillMaxSize(),
+                                            shape = CircleShape,
+                                        )
+                                    },
                                 )
                             } else {
                                 Icon(
@@ -102,35 +113,48 @@ internal fun LoginCard(
                     }
                 },
                 headlineContent = {
-                    val text = when (accountStatusModel) {
-                        AccountStatusModel.Error -> "Error"
-                        AccountStatusModel.Loading -> "Loading..."
-                        is AccountStatusModel.LoggedIn -> accountStatusModel.user.name
-                        AccountStatusModel.LoggedOut -> stringResource(Res.string.login_card_title)
+                    if (accountStatusModel == AccountStatusModel.Loading) {
+                        ShimmerBox(modifier = Modifier.fillMaxWidth(0.5f).height(18.dp))
+                    } else {
+                        val text = when (accountStatusModel) {
+                            AccountStatusModel.Error -> "Error"
+                            AccountStatusModel.Loading -> ""
+                            is AccountStatusModel.LoggedIn -> accountStatusModel.user.name
+                            AccountStatusModel.LoggedOut -> stringResource(Res.string.login_card_title)
+                        }
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
-                    Text(
-                        text = text,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
                 },
                 supportingContent = {
-                    val supportingText = when (accountStatusModel) {
-                        AccountStatusModel.Error -> "There was an error while logging in."
-                        AccountStatusModel.Loading -> "Please wait while we log you in."
-                        is AccountStatusModel.LoggedIn -> accountStatusModel.user.email
-                        AccountStatusModel.LoggedOut -> stringResource(Res.string.login_card_subtitle)
+                    if (accountStatusModel == AccountStatusModel.Loading) {
+                        ShimmerBox(
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .fillMaxWidth(0.7f)
+                                .height(14.dp),
+                        )
+                    } else {
+                        val supportingText = when (accountStatusModel) {
+                            AccountStatusModel.Error -> "There was an error while logging in."
+                            AccountStatusModel.Loading -> ""
+                            is AccountStatusModel.LoggedIn -> accountStatusModel.user.email
+                            AccountStatusModel.LoggedOut -> stringResource(Res.string.login_card_subtitle)
+                        }
+                        Text(
+                            text = supportingText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
-                    Text(
-                        text = supportingText,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
                 },
                 trailingContent = if (accountStatusModel is AccountStatusModel.LoggedIn) {
                     {

@@ -1,30 +1,27 @@
 package com.quare.bibleplanner.feature.more.presentation.model
 
+import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
 
-internal sealed interface MoreUiState {
-    data object Loading : MoreUiState
-
-    data class Loaded(
-        val themeRes: StringResource,
-        val contrastRes: StringResource?,
-        val planStartDate: LocalDate?,
-        val currentDate: LocalDate,
-        val subscriptionStatus: SubscriptionStatus?,
-        val isInstagramLinkVisible: Boolean,
-        val shouldShowDonateOption: Boolean,
-        val headerRes: StringResource?,
-        val showSubscriptionDetailsDialog: Boolean = false,
-        val isProCardVisible: Boolean,
-        val isWebAppVisible: Boolean,
-        val appVersion: String,
-        val accountStatusModel: AccountStatusModel,
-        val bibleVersionName: String?,
-        val bibleDownloadProgress: Float?,
-        val selectedLanguage: Language,
-    ) : MoreUiState
-}
+internal data class MoreUiState(
+    val accountStatusModel: AccountStatusModel,
+    val subscriptionStatus: Loadable<SubscriptionStatus?>,
+    val isProCardVisible: Loadable<Boolean>,
+    val shouldShowDonateOption: Loadable<Boolean>,
+    val headerRes: Loadable<StringResource?>,
+    val isInstagramLinkVisible: Loadable<Boolean>,
+    val isWebAppVisible: Loadable<Boolean>,
+    val themeRes: Loadable<StringResource>,
+    val contrastRes: Loadable<StringResource?>,
+    val selectedLanguage: Loadable<Language>,
+    val bibleVersionName: Loadable<String?>,
+    val bibleDownloadProgress: Loadable<Float?>,
+    val planStartDate: Loadable<LocalDate?>,
+    val showSubscriptionDetailsDialog: Boolean,
+    val currentDate: LocalDate,
+    val appVersion: String,
+)

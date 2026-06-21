@@ -1,4 +1,6 @@
 - [No defaults in data classes](feedback_uistate_no_defaults.md) — data classes (UiState, DTOs, etc.) must not have default property values; for optional JSON fields, read from JsonObject directly instead of a defaulted DTO.
+- [Shimmer wrapper](project_shimmer_wrapper.md) — shimmer is a ui/component wrapper (Modifier.shimmer()/ShimmerBox) delegating to valentinilk compose-shimmer 1.5.0-beta02; beta needed for CMP 1.11 iOS Shader crash; PR #64 needed when bumping to CMP 1.12+.
+- [Loadable per-field loading](project_loadable_per_field_loading.md) — Loadable<T> in core/model + merge/scan reducer pattern: single data class UiState, each flow field a Loadable, sections shimmer independently (no full-screen Loading). Reusable strategy.
 - [RemoteConfig observe-first](project_remoteconfig_observe_first.md) — RemoteConfigService exposes observe*(key):Flow (real-time); Get*=observe().first(); platform layer is RemoteConfigDataSource (Swift can't build Flows).
 - [is_tester user property](project_tester_user_property_flow.md) — Analytics is_tester property gates pre-prod flags; set by combining auth + tester_user_ids allowlist; core/provider/analytics module.
 - [RevenueCat identity](project_revenuecat_identity.md) — RC App User ID tied to Supabase user.id via SyncBillingUserId (logIn/logOut); free-Pro via RC promotional entitlements, no isForcedPro column.

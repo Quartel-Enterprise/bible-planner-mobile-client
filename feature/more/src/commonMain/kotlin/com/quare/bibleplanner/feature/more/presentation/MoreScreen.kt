@@ -3,13 +3,9 @@ package com.quare.bibleplanner.feature.more.presentation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.more.presentation.content.moreScreenLandscapeLayout
@@ -31,43 +27,33 @@ internal fun MoreScreen(
 ) {
     val mainPadding = LocalMainPadding.current
 
-    when (state) {
-        MoreUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+    key(state.selectedLanguage) {
+        if (state.showSubscriptionDetailsDialog) {
+            SubscriptionDetailsDialog(
+                onDismiss = { onEvent(MoreUiEvent.OnDismissSubscriptionDetailsDialog) },
+            )
         }
-
-        is MoreUiState.Loaded -> {
-            key(state.selectedLanguage) {
-                if (state.showSubscriptionDetailsDialog) {
-                    SubscriptionDetailsDialog(
-                        onDismiss = { onEvent(MoreUiEvent.OnDismissSubscriptionDetailsDialog) },
-                    )
-                }
-                ResponsiveColumn(
-                    modifier = Modifier.padding(16.dp),
-                    contentPadding = mainPadding,
-                    portraitContent = {
-                        moreScreenPortraitLayout(
-                            state = state,
-                            onEvent = onEvent,
-                            becomeProTitleContent = becomeProTitleContent,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedContentScope = animatedContentScope,
-                        )
-                    },
-                    landscapeContent = {
-                        moreScreenLandscapeLayout(
-                            state = state,
-                            onEvent = onEvent,
-                            becomeProTitleContent = becomeProTitleContent,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedContentScope = animatedContentScope,
-                        )
-                    },
+        ResponsiveColumn(
+            modifier = Modifier.padding(16.dp),
+            contentPadding = mainPadding,
+            portraitContent = {
+                moreScreenPortraitLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    becomeProTitleContent = becomeProTitleContent,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
                 )
-            }
-        }
+            },
+            landscapeContent = {
+                moreScreenLandscapeLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    becomeProTitleContent = becomeProTitleContent,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
+                )
+            },
+        )
     }
 }

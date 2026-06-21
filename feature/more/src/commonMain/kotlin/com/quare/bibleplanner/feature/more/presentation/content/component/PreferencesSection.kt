@@ -13,12 +13,15 @@ import bibleplanner.feature.more.generated.resources.today
 import bibleplanner.feature.preferences.app_language.generated.resources.language_english
 import bibleplanner.feature.preferences.app_language.generated.resources.language_portuguese_brazil
 import bibleplanner.feature.preferences.app_language.generated.resources.language_spanish
+import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreMenuOptionsFactory
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.ui.utils.toStringResource
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import bibleplanner.feature.preferences.app_language.generated.resources.Res as AppLanguageRes
@@ -27,47 +30,62 @@ import bibleplanner.feature.preferences.app_language.generated.resources.Res as 
 @Composable
 internal fun PreferencesSection(
     modifier: Modifier = Modifier,
-    state: MoreUiState.Loaded,
+    state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeaderText(title = stringResource(Res.string.preferences))
         SectionCard {
-            val themeSubtitle = if (state.contrastRes != null) {
-                "${stringResource(state.themeRes)} • ${stringResource(state.contrastRes)}"
-            } else {
-                stringResource(state.themeRes)
-            }
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.theme,
-                subtitle = themeSubtitle,
+                subtitle = themeSubtitle(state),
+                isSubtitleLoading = state.themeRes is Loadable.Loading,
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.THEME)) },
             )
             HorizontalDivider()
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.appLanguage,
-                subtitle = stringResource(state.selectedLanguage.toStringResource()),
+                subtitle = state.selectedLanguage.valueOrNull()?.let { stringResource(it.toStringResource()) },
+                isSubtitleLoading = state.selectedLanguage is Loadable.Loading,
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.APP_LANGUAGE)) },
             )
             HorizontalDivider()
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.bibleVersion,
-                subtitle = state.bibleVersionName?.let { safeBibleVersionName ->
-                    if (state.bibleDownloadProgress != null) {
-                        "$safeBibleVersionName (${(state.bibleDownloadProgress * 100).toInt()}%)"
-                    } else {
-                        safeBibleVersionName
-                    }
-                },
+                subtitle = bibleVersionSubtitle(state),
+                isSubtitleLoading = state.bibleVersionName is Loadable.Loading,
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.BIBLE_VERSION)) },
             )
             HorizontalDivider()
             MoreMenuItem(
                 itemModel = MoreMenuOptionsFactory.editStartDate,
-                subtitle = formatPlanStartDateSubtitle(state.planStartDate, state.currentDate),
+                subtitle = state.planStartDate.valueOrNull()?.let { startDate ->
+                    formatPlanStartDateSubtitle(startDate, state.currentDate)
+                },
+                isSubtitleLoading = state.planStartDate is Loadable.Loading,
                 onClick = { onEvent(MoreUiEvent.OnItemClick(MoreOptionItemType.EDIT_PLAN_START_DAY)) },
             )
         }
+    }
+}
+
+@Composable
+private fun themeSubtitle(state: MoreUiState): String? = state.themeRes.valueOrNull()?.let { themeRes ->
+    val contrastRes = state.contrastRes.valueOrNull()
+    if (contrastRes != null) {
+        "${stringResource(themeRes)} • ${stringResource(contrastRes)}"
+    } else {
+        stringResource(themeRes)
+    }
+}
+
+@Composable
+private fun bibleVersionSubtitle(state: MoreUiState): String? = state.bibleVersionName.valueOrNull()?.let { name ->
+    val downloadProgress = state.bibleDownloadProgress.valueOrNull()
+    if (downloadProgress != null) {
+        "$name (${(downloadProgress * 100).toInt()}%)"
+    } else {
+        name
     }
 }
 
@@ -79,12 +97,11 @@ private fun Language.toStringResource(): StringResource = when (this) {
 
 @Composable
 private fun formatPlanStartDateSubtitle(
-    planStartDate: kotlinx.datetime.LocalDate?,
-    currentDate: kotlinx.datetime.LocalDate,
-): String = planStartDate
-    ?.let { date ->
-        val isToday = date == currentDate
-        val prefix = if (isToday) "${stringResource(Res.string.today)}, " else ""
-        val month = stringResource(date.month.toStringResource()).take(3)
-        "$prefix${date.day} $month ${date.year}"
-    }.orEmpty()
+    planStartDate: LocalDate,
+    currentDate: LocalDate,
+): String {
+    val isToday = planStartDate == currentDate
+    val prefix = if (isToday) "${stringResource(Res.string.today)}, " else ""
+    val month = stringResource(planStartDate.month.toStringResource()).take(3)
+    return "$prefix${planStartDate.day} $month ${planStartDate.year}"
+}

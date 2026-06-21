@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.more.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.CurrentAppVersionText
 import com.quare.bibleplanner.feature.more.presentation.content.component.DataSection
@@ -24,7 +25,7 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal fun ResponsiveContentScope.moreScreenPortraitLayout(
-    state: MoreUiState.Loaded,
+    state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
     becomeProTitleContent: @Composable () -> Unit = {},
     sharedTransitionScope: SharedTransitionScope,
@@ -46,7 +47,7 @@ internal fun ResponsiveContentScope.moreScreenPortraitLayout(
     responsiveItem { PreferencesSection(state = state, onEvent = onEvent) }
     item { VerticalSpacer() }
     responsiveItem { DataSection(onEvent = onEvent) }
-    if (state.isWebAppVisible) {
+    if (state.isWebAppVisible.valueOrNull() == true) {
         item { VerticalSpacer() }
         responsiveItem { WebSection(onEvent = onEvent) }
     }
@@ -58,7 +59,7 @@ internal fun ResponsiveContentScope.moreScreenPortraitLayout(
             animatedContentScope = animatedContentScope,
         )
     }
-    if (state.isInstagramLinkVisible) {
+    if (state.isInstagramLinkVisible.valueOrNull() == true) {
         item { VerticalSpacer() }
         responsiveItem { SocialSection(onEvent = onEvent) }
     }

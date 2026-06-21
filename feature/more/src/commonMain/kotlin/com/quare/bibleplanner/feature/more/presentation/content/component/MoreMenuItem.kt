@@ -4,15 +4,18 @@ import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.more.presentation.model.MoreMenuItemPresentationModel
+import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -20,6 +23,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun MoreMenuItem(
     itemModel: MoreMenuItemPresentationModel,
     subtitle: String? = null,
+    isSubtitleLoading: Boolean = false,
     onClick: () -> Unit,
     iconColor: Color = LocalContentColor.current.copy(alpha = 0.5f),
     trailingContent: @Composable (() -> Unit)? = null,
@@ -47,21 +51,33 @@ internal fun MoreMenuItem(
                 Text(text = text)
             }
         },
-        supportingContent = finalSubtitle?.let {
-            {
-                if (sharedTransitionScope != null && animatedContentScope != null && sharedElementSubtitleKey != null) {
-                    with(sharedTransitionScope) {
-                        Text(
-                            text = it,
-                            modifier = Modifier.sharedElement(
-                                rememberSharedContentState(key = sharedElementSubtitleKey),
-                                animatedVisibilityScope = animatedContentScope,
-                            ),
-                        )
+        supportingContent = when {
+            isSubtitleLoading -> {
+                { ShimmerBox(modifier = Modifier.width(120.dp).height(14.dp)) }
+            }
+
+            finalSubtitle != null -> {
+                {
+                    if (sharedTransitionScope != null && animatedContentScope != null &&
+                        sharedElementSubtitleKey != null
+                    ) {
+                        with(sharedTransitionScope) {
+                            Text(
+                                text = finalSubtitle,
+                                modifier = Modifier.sharedElement(
+                                    rememberSharedContentState(key = sharedElementSubtitleKey),
+                                    animatedVisibilityScope = animatedContentScope,
+                                ),
+                            )
+                        }
+                    } else {
+                        Text(finalSubtitle)
                     }
-                } else {
-                    Text(it)
                 }
+            }
+
+            else -> {
+                null
             }
         },
         leadingContent = {

@@ -12,17 +12,16 @@ import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
 import co.touchlab.kermit.Logger
-import co.touchlab.kermit.Severity
-import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
+import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveProVerificationRequired
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
-import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveMoreWebAppEnabled
 import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
@@ -40,7 +39,12 @@ import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.scan
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
@@ -64,97 +68,92 @@ internal class MoreUiStateFactory(
     private val getSelectedBible: GetSelectedBibleFlowUseCase,
     private val getAppLanguageFlow: GetAppLanguageFlow,
 ) {
-    fun create(): Flow<MoreUiState> {
-        val moreScreenFlows: Flow<MoreScreenConfiguration> = combine(
-            getMoreScreenRemoteConfigsFlow(),
-            getThemeConfigurationFlow(),
-            sessionStatus,
-            getSelectedBible(),
-            bibleVersionDao.getAllVersionsFlow(),
-        ) { remoteConfigs, themeConfiguration, sessionStatus, selectedBible, allVersions ->
-            MoreScreenConfiguration(
-                remoteConfigs = remoteConfigs,
-                themeConfiguration = themeConfiguration,
-                sessionStatus = sessionStatus,
-                selectedBible = selectedBible,
-                allVersions = allVersions,
-            )
-        }
+    fun initialState(): MoreUiState = MoreUiState(
+        accountStatusModel = AccountStatusModel.Loading,
+        subscriptionStatus = Loadable.Loading,
+        isProCardVisible = Loadable.Loading,
+        shouldShowDonateOption = Loadable.Loading,
+        headerRes = Loadable.Loading,
+        isInstagramLinkVisible = Loadable.Loading,
+        isWebAppVisible = Loadable.Loading,
+        themeRes = Loadable.Loading,
+        contrastRes = Loadable.Loading,
+        selectedLanguage = Loadable.Loading,
+        bibleVersionName = Loadable.Loading,
+        bibleDownloadProgress = Loadable.Loading,
+        planStartDate = Loadable.Loading,
+        showSubscriptionDetailsDialog = false,
+        currentDate = currentDate(),
+        appVersion = MoreBuildKonfig.APP_VERSION,
+    )
 
-        return combine(
-            getSubscriptionStatusFlow?.invoke() ?: flowOf(null),
-            getPlanStartDate(),
-            moreScreenFlows,
-            getSelectedVersionDownloadedChapters(),
-            getAppLanguageFlow(),
-        ) { subscriptionStatus, startDate, moreScreenConfiguration, downloadedChaptersCount, selectedLanguage ->
-            val remoteConfigs = moreScreenConfiguration.remoteConfigs
-            val themeConfiguration = moreScreenConfiguration.themeConfiguration
-            val shouldShowDonate = remoteConfigs.shouldShowDonate
-            val isProVerificationRequired = remoteConfigs.isProVerificationRequired
-            val headerRes = when {
-                isProVerificationRequired && shouldShowDonate -> Res.string.pro_and_support
-                isProVerificationRequired -> Res.string.pro_section
-                shouldShowDonate -> Res.string.support_section
-                else -> null
+    fun create(): Flow<MoreUiState> = merge(
+        getMoreScreenRemoteConfigsFlow().map { remoteConfigs ->
+            { state: MoreUiState ->
+                state.copy(
+                    isProCardVisible = Loadable.Loaded(remoteConfigs.isProVerificationRequired),
+                    shouldShowDonateOption = Loadable.Loaded(remoteConfigs.shouldShowDonate),
+                    isInstagramLinkVisible = Loadable.Loaded(remoteConfigs.isInstagramVisible),
+                    isWebAppVisible = Loadable.Loaded(remoteConfigs.isWebAppVisible),
+                    headerRes = Loadable.Loaded(remoteConfigs.toHeaderRes()),
+                )
             }
-
-            val selectedBible = moreScreenConfiguration.selectedBible
-            val bibleVersionEntity = moreScreenConfiguration.allVersions.find { it.id == selectedBible?.version?.id }
-            val downloadProgress = when (bibleVersionEntity?.status) {
-                DownloadStatus.DONE, DownloadStatus.NOT_STARTED, null -> null
-                else -> downloadedChaptersCount.toFloat() / bibleVersionEntity.totalChapters
+        },
+        getThemeConfigurationFlow().map { themeConfiguration ->
+            { state: MoreUiState ->
+                state.copy(
+                    themeRes = Loadable.Loaded(themeConfiguration.theme.toStringResource()),
+                    contrastRes = Loadable.Loaded(themeConfiguration.toContrastRes()),
+                )
             }
+        },
+        getAppLanguageFlow().map { language ->
+            { state: MoreUiState -> state.copy(selectedLanguage = Loadable.Loaded(language)) }
+        },
+        getPlanStartDate().map { startDate ->
+            { state: MoreUiState -> state.copy(planStartDate = Loadable.Loaded(startDate)) }
+        },
+        subscriptionStatusFlow().map { subscriptionStatus ->
+            { state: MoreUiState -> state.copy(subscriptionStatus = Loadable.Loaded(subscriptionStatus)) }
+        },
+        sessionStatus.map { status ->
+            { state: MoreUiState -> state.copy(accountStatusModel = status.toAccountStatusModel()) }
+        },
+        getBibleRowFlow().map { bibleRow ->
+            { state: MoreUiState ->
+                state.copy(
+                    bibleVersionName = Loadable.Loaded(bibleRow.name),
+                    bibleDownloadProgress = Loadable.Loaded(bibleRow.downloadProgress),
+                )
+            }
+        },
+    ).scan(initialState()) { state, reduce -> reduce(state) }
 
-            MoreUiState.Loaded(
-                themeRes = themeConfiguration.theme.toStringResource(),
-                contrastRes = when {
-                    themeConfiguration.isDynamicColorsEnabled && isDynamicColorSupported() -> Res.string.dynamic_colors
-                    else -> themeConfiguration.contrast.toStringResource()
-                },
-                planStartDate = startDate,
-                currentDate = Clock.System
-                    .now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault())
-                    .date,
-                subscriptionStatus = subscriptionStatus,
-                isInstagramLinkVisible = remoteConfigs.isInstagramVisible,
-                shouldShowDonateOption = remoteConfigs.shouldShowDonate,
-                headerRes = headerRes,
-                isProCardVisible = remoteConfigs.isProVerificationRequired,
-                isWebAppVisible = remoteConfigs.isWebAppVisible,
-                appVersion = MoreBuildKonfig.APP_VERSION,
-                accountStatusModel = when (val sessionStatus = moreScreenConfiguration.sessionStatus) {
-                    is SessionStatus.Authenticated -> {
-                        sessionStatus.session.user
-                            ?.let(sessionUserMapper::map)
-                            ?.let(AccountStatusModel::LoggedIn) ?: AccountStatusModel.Error
-                    }
+    private fun subscriptionStatusFlow(): Flow<SubscriptionStatus?> =
+        getSubscriptionStatusFlow?.invoke() ?: flowOf(null)
 
-                    SessionStatus.Initializing -> {
-                        AccountStatusModel.Loading
-                    }
-
-                    is SessionStatus.NotAuthenticated -> {
-                        AccountStatusModel.LoggedOut
-                    }
-
-                    is SessionStatus.RefreshFailure -> {
-                        AccountStatusModel.Error
-                    }
-                },
-                bibleVersionName = selectedBible?.version?.name,
-                bibleDownloadProgress = downloadProgress,
-                selectedLanguage = selectedLanguage,
-            )
+    private fun getBibleRowFlow(): Flow<BibleRow> = combine(
+        getSelectedBible(),
+        bibleVersionDao.getAllVersionsFlow(),
+        getSelectedVersionDownloadedChapters(),
+    ) { selectedBible, allVersions, downloadedChaptersCount ->
+        val bibleVersionEntity = allVersions.find { it.id == selectedBible?.version?.id }
+        val downloadProgress = when (bibleVersionEntity?.status) {
+            DownloadStatus.DONE, DownloadStatus.NOT_STARTED, null -> null
+            else -> downloadedChaptersCount.toFloat() / bibleVersionEntity.totalChapters
         }
-    }
+        BibleRow(
+            name = selectedBible?.version?.name,
+            downloadProgress = downloadProgress,
+        )
+    }.distinctUntilChanged()
 
     private fun getThemeConfigurationFlow(): Flow<ThemeConfiguration> = combine(
         getThemeOptionFlow(),
         getContrastTypeFlow(),
         getIsDynamicColorsEnabledFlow(),
     ) { theme, contrast, isDynamic -> ThemeConfiguration(theme, contrast, isDynamic) }
+        .distinctUntilChanged()
 
     private fun getMoreScreenRemoteConfigsFlow(): Flow<RemoteConfigs> = combine(
         isInstagramLinkVisible(),
@@ -169,14 +168,48 @@ internal class MoreUiStateFactory(
             isProVerificationRequired = isProVerificationRequired,
             isWebAppVisible = isWebAppVisible,
         )
+    }.distinctUntilChanged()
+
+    private fun currentDate(): LocalDate = Clock.System
+        .now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date
+
+    private fun SessionStatus.toAccountStatusModel(): AccountStatusModel = when (this) {
+        is SessionStatus.Authenticated -> {
+            session.user
+                ?.let(sessionUserMapper::map)
+                ?.let(AccountStatusModel::LoggedIn) ?: AccountStatusModel.Error
+        }
+
+        SessionStatus.Initializing -> {
+            AccountStatusModel.Loading
+        }
+
+        is SessionStatus.NotAuthenticated -> {
+            AccountStatusModel.LoggedOut
+        }
+
+        is SessionStatus.RefreshFailure -> {
+            AccountStatusModel.Error
+        }
     }
 
-    private data class MoreScreenConfiguration(
-        val remoteConfigs: RemoteConfigs,
-        val themeConfiguration: ThemeConfiguration,
-        val sessionStatus: SessionStatus,
-        val selectedBible: BibleModel?,
-        val allVersions: List<BibleVersionEntity>,
+    private fun RemoteConfigs.toHeaderRes(): StringResource? = when {
+        isProVerificationRequired && shouldShowDonate -> Res.string.pro_and_support
+        isProVerificationRequired -> Res.string.pro_section
+        shouldShowDonate -> Res.string.support_section
+        else -> null
+    }
+
+    private fun ThemeConfiguration.toContrastRes(): StringResource? = when {
+        isDynamicColorsEnabled && isDynamicColorSupported() -> Res.string.dynamic_colors
+        else -> contrast.toStringResource()
+    }
+
+    private data class BibleRow(
+        val name: String?,
+        val downloadProgress: Float?,
     )
 
     private data class RemoteConfigs(

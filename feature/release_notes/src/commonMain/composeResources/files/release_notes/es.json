@@ -1,4 +1,7 @@
 {
+  "1.17.0": [
+    "La pantalla 'Más' ahora se abre al instante, con las secciones apareciendo de inmediato; solo las partes que aún se están cargando muestran un efecto de carga suave."
+  ],
   "1.16.0": [
     "Ahora puedes iniciar sesión con Google y Apple.",
     "Tus datos ahora se sincronizan en todos tus dispositivos cuando inicias sesión.",

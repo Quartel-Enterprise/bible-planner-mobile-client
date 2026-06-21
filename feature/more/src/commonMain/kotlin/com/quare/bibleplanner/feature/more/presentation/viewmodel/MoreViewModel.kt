@@ -45,12 +45,12 @@ internal class MoreViewModel(
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
-    private val _uiState = MutableStateFlow<MoreUiState>(MoreUiState.Loading)
+    private val _uiState = MutableStateFlow(uiStateFactory.initialState())
     val uiState: StateFlow<MoreUiState> = _uiState
 
     init {
         observe(uiStateFactory.create()) { state ->
-            _uiState.update { state }
+            _uiState.value = state
         }
     }
 
@@ -111,23 +111,11 @@ internal class MoreViewModel(
             }
 
             MoreUiEvent.OnProCardClick -> {
-                _uiState.update {
-                    if (it is MoreUiState.Loaded) {
-                        it.copy(showSubscriptionDetailsDialog = true)
-                    } else {
-                        it
-                    }
-                }
+                _uiState.update { it.copy(showSubscriptionDetailsDialog = true) }
             }
 
             MoreUiEvent.OnDismissSubscriptionDetailsDialog -> {
-                _uiState.update {
-                    if (it is MoreUiState.Loaded) {
-                        it.copy(showSubscriptionDetailsDialog = false)
-                    } else {
-                        it
-                    }
-                }
+                _uiState.update { it.copy(showSubscriptionDetailsDialog = false) }
             }
 
             MoreUiEvent.OnLoginClick -> {

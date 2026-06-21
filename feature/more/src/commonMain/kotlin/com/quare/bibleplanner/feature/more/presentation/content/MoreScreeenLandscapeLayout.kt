@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.more.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.CurrentAppVersionText
 import com.quare.bibleplanner.feature.more.presentation.content.component.DataSection
@@ -27,7 +28,7 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
-    state: MoreUiState.Loaded,
+    state: MoreUiState,
     onEvent: (MoreUiEvent) -> Unit,
     becomeProTitleContent: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -59,7 +60,7 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
                     state = state,
                     onEvent = onEvent,
                 )
-                if (state.isInstagramLinkVisible) {
+                if (state.isInstagramLinkVisible.valueOrNull() == true) {
                     SocialSection(
                         onEvent = onEvent,
                     )
@@ -69,7 +70,7 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                if (state.isWebAppVisible) {
+                if (state.isWebAppVisible.valueOrNull() == true) {
                     WebSection(
                         onEvent = onEvent,
                     )
