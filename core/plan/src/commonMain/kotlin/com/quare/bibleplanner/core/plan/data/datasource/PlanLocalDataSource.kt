@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import bibleplanner.core.plan.generated.resources.Res
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.data.dto.WeekPlanDto
 import kotlinx.coroutines.Dispatchers
@@ -75,7 +76,8 @@ class PlanLocalDataSource(
             val jsonBytes: ByteArray = Res.readBytes(resourcePath)
             val jsonContent = jsonBytes.decodeToString()
             json.decodeFromString<WeekPlanDto>(jsonContent)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Logger.e(e) { "Failed to parse reading-plan week $weekNumber from $resourcePath" }
             null
         }
     }

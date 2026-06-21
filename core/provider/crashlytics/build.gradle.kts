@@ -18,6 +18,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
+            implementation(libs.kermit)
         }
 
         androidMain.dependencies {

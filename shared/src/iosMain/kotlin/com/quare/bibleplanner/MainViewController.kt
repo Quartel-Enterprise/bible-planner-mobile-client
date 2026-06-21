@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.provider.analytics.domain.service.AnalyticsService
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
+import com.quare.bibleplanner.core.provider.crashlytics.configure
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
 import com.quare.bibleplanner.core.provider.language.di.iosLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
@@ -67,7 +68,7 @@ fun initializeKoinForIos(
         // (no UI = no one else requests the facade from Koin).
         KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
         configureRevenueCat(isDebug = Platform.isDebugBinary)
-        crashReporter.setCollectionEnabled(enabled = !Platform.isDebugBinary)
+        crashReporter.configure(isDebug = Platform.isDebugBinary)
         isInitialized = true
     } catch (e: Exception) {
         Logger.e(e) { "Error initializing Koin for iOS" }
