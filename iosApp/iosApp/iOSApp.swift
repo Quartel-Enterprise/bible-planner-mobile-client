@@ -10,6 +10,7 @@ struct iOSApp: App {
 
     let remoteConfigService: RemoteConfigDataSource
     let analyticsService: AnalyticsService
+    let crashReporter: CrashReporter
     let downloadSession: BibleVersionDownloadSession
 
     init() {
@@ -19,12 +20,14 @@ struct iOSApp: App {
         FirebaseApp.configure()
         remoteConfigService = IosRemoteConfigService(remoteConfig: RemoteConfig.remoteConfig())
         analyticsService = IosAnalyticsService()
+        crashReporter = IosCrashReporter()
 
         // Initialize Koin early so background URLSession events can access the Koin graph
         // even when the app is launched solely to process background download events.
         MainViewControllerKt.initializeKoinForIos(
             remoteConfigService: remoteConfigService,
             analyticsService: analyticsService,
+            crashReporter: crashReporter,
             downloadSession: downloadSession
         )
 
@@ -46,6 +49,7 @@ struct iOSApp: App {
             ContentView(
                 remoteConfigService: remoteConfigService,
                 analyticsService: analyticsService,
+                crashReporter: crashReporter,
                 downloadSession: downloadSession
             )
             .onOpenURL { url in

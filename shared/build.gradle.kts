@@ -25,6 +25,7 @@ kotlin {
             isStatic = true
             export(projects.core.remoteConfig)
             export(projects.core.provider.analytics)
+            export(projects.core.provider.crashlytics)
         }
     }
 
@@ -72,6 +73,7 @@ kotlin {
             api(projects.core.provider.supabase)
             api(projects.core.provider.billing)
             api(projects.core.provider.analytics)
+            api(projects.core.provider.crashlytics)
             api(projects.core.utils)
 
             // UI
