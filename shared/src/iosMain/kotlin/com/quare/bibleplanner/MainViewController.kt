@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.provider.analytics.domain.service.AnalyticsService
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
+import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
 import com.quare.bibleplanner.core.provider.language.di.iosLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
@@ -38,6 +39,7 @@ private var isInitialized = false
 fun initializeKoinForIos(
     remoteConfigService: RemoteConfigDataSource,
     analyticsService: AnalyticsService,
+    crashReporter: CrashReporter,
     downloadSession: IosDownloadSession,
 ) {
     if (isInitialized) return
@@ -52,6 +54,7 @@ fun initializeKoinForIos(
                     single { getDatabaseBuilder() }
                     single { remoteConfigService }
                     single { analyticsService }
+                    single { crashReporter }
                     single { downloadSession }.bind<IosDownloadSession>()
                     single { IosBibleVersionDownloadNotifier(get()) }.bind<BibleVersionDownloadNotifier>()
                     singleOf(::IosBackgroundDownloadBridge)
@@ -64,6 +67,7 @@ fun initializeKoinForIos(
         // (no UI = no one else requests the facade from Koin).
         KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
         configureRevenueCat(isDebug = Platform.isDebugBinary)
+        crashReporter.setCollectionEnabled(enabled = !Platform.isDebugBinary)
         isInitialized = true
     } catch (e: Exception) {
         Logger.e(e) { "Error initializing Koin for iOS" }
@@ -73,12 +77,14 @@ fun initializeKoinForIos(
 fun MainViewController(
     remoteConfigService: RemoteConfigDataSource,
     analyticsService: AnalyticsService,
+    crashReporter: CrashReporter,
     downloadSession: IosDownloadSession,
 ) = ComposeUIViewController(
     configure = {
         initializeKoinForIos(
             remoteConfigService = remoteConfigService,
             analyticsService = analyticsService,
+            crashReporter = crashReporter,
             downloadSession = downloadSession,
         )
     },

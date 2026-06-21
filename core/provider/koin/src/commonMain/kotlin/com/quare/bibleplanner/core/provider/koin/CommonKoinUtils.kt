@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.plan.di.planModule
 import com.quare.bibleplanner.core.provider.analytics.di.analyticsModule
 import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
 import com.quare.bibleplanner.core.provider.connectivity.di.connectivityModule
+import com.quare.bibleplanner.core.provider.crashlytics.di.crashlyticsModule
 import com.quare.bibleplanner.core.provider.platform.di.platformModule
 import com.quare.bibleplanner.core.provider.room.di.roomModule
 import com.quare.bibleplanner.core.provider.supabase.supabaseModule
@@ -72,6 +73,7 @@ object CommonKoinUtils {
         remoteConfigModule,
         billingProviderModule,
         analyticsModule,
+        crashlyticsModule,
         congratsModule,
         mainModule,
         moreModule,

@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.analytics)
+            implementation(projects.core.provider.crashlytics)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.books)
             implementation(projects.core.plan)

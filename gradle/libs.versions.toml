@@ -25,6 +25,7 @@ buildKonfig = "0.21.2"
 kermit = "2.1.0"
 ktor = "3.5.0"
 firebaseBom = "34.15.0"
+firebaseCrashlyticsPlugin = "3.0.7"
 googeServices = "4.5.0"
 playServicesTime = "16.0.1"
 material3 = "1.9.0"
@@ -93,6 +94,7 @@ revenuecat-result = { group = "com.revenuecat.purchases", name = "purchases-kmp-
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 
 # Google Play Services
 play-services-time = { group = "com.google.android.gms", name = "play-services-time", version.ref = "playServicesTime" }
@@ -151,5 +153,6 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googeServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
 bibleplanner-kotlinMultiplatform = { id = "bibleplanner.kotlin.multiplatform" }
 bibleplanner-composeMultiplatform = { id = "bibleplanner.kotlin.composeMultiplatform" }
