@@ -6,7 +6,7 @@ import com.google.android.gms.time.TrustedTimeClient
 
 internal class AndroidTrustedTimestampProvider(
     context: Context,
-    private val deviceClockTimestampProvider: DeviceClockTimestampProvider,
+    private val networkTimeTimestampProvider: NetworkTimeTimestampProvider,
 ) : CurrentTimestampProvider {
     @Volatile
     private var trustedTimeClient: TrustedTimeClient? = null
@@ -18,5 +18,5 @@ internal class AndroidTrustedTimestampProvider(
     }
 
     override fun getCurrentTimestamp(): Long = trustedTimeClient?.computeCurrentUnixEpochMillis()
-        ?: deviceClockTimestampProvider.getCurrentTimestamp()
+        ?: networkTimeTimestampProvider.getCurrentTimestamp()
 }
