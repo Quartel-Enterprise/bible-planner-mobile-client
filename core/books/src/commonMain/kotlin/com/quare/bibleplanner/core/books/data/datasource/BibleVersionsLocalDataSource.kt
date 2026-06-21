@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.data.dto.VersionDto
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
@@ -18,7 +19,8 @@ internal class BibleVersionsLocalDataSource(
         val cachedData = preferences[stringPreferencesKey(CACHE_KEY)] ?: return null
         return runCatching {
             json.decodeFromString<List<VersionDto>>(cachedData)
-        }.getOrNull()
+        }.onFailure { Logger.e(it) { "Failed to parse cached Bible versions" } }
+            .getOrNull()
     }
 
     suspend fun getCacheTimestamp(): Long? {

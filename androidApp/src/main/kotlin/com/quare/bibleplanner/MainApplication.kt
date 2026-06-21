@@ -3,6 +3,7 @@ package com.quare.bibleplanner
 import android.app.Application
 import android.content.pm.ApplicationInfo
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
+import com.quare.bibleplanner.core.provider.crashlytics.configure
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
 import com.quare.bibleplanner.core.provider.language.di.androidLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
@@ -44,6 +45,6 @@ class MainApplication : Application() {
                 languageProviderModule,
             ),
         )
-        KoinPlatform.getKoin().get<CrashReporter>().setCollectionEnabled(enabled = !isDebug)
+        KoinPlatform.getKoin().get<CrashReporter>().configure(isDebug = isDebug)
     }
 }

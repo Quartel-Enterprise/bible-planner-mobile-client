@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.books.data.datasource
 
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.data.dto.VersionDto
 import io.github.jan.supabase.storage.BucketApi
 import kotlinx.coroutines.async
@@ -22,7 +23,8 @@ internal class BibleVersionsRemoteDataSource(
                             val path = "bible/${folder.name}/metadata.json"
                             val bytes = bucketApi.downloadPublic(path)
                             json.decodeFromString<VersionDto>(bytes.decodeToString())
-                        }.getOrNull()
+                        }.onFailure { Logger.e(it) { "Failed to load version metadata for ${folder.name}" } }
+                            .getOrNull()
                     }
                 }.awaitAll()
                 .filterNotNull()

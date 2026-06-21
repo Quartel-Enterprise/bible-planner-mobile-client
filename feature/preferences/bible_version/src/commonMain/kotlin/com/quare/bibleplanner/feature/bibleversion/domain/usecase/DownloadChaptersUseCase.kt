@@ -50,12 +50,12 @@ class DownloadChaptersUseCase(
                                         chapterDto = json.decodeFromString<SyncChapterDto>(bytes.decodeToString()),
                                     )
                                 }
-                            }.onFailure { Logger.e { "Error syncing $bookId:${chapter.number}: ${it.message}" } }
+                            }.onFailure { Logger.e(it) { "Error syncing $bookId:${chapter.number}" } }
                         }
                     }.joinAll()
             }
         }
-    }.onFailure { Logger.e { "Error downloading chapters for $bookId: ${it.message}" } }
+    }.onFailure { Logger.e(it) { "Error downloading chapters for $bookId" } }
 
     private suspend fun saveChapterToDatabase(
         chapterId: Long,
