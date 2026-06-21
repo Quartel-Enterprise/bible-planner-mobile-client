@@ -1,6 +1,7 @@
 {
   "1.17.0": [
-    "The 'More' screen now opens instantly, with sections appearing right away; only the parts still loading show a smooth loading effect."
+    "The 'More' screen now opens instantly, with sections appearing right away; only the parts still loading show a smooth loading effect.",
+    "The synopses for the books of the Bible have been rewritten to tell more clearly what happens in each book and what its central theme is."
   ],
   "1.16.0": [
     "You can now sign in with Google and Apple.",
