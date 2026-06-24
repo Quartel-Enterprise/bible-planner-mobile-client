@@ -103,9 +103,6 @@ dependencies {
     implementation(project.dependencies.platform(libs.koinBom))
     implementation(libs.koinAndroid)
 
-    // Facebook SDK
-    implementation(libs.facebook.sdk.android)
-
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
