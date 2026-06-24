@@ -15,7 +15,13 @@ import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.storage.BucketApi
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.runningReduce
+import kotlinx.coroutines.flow.stateIn
 import org.koin.dsl.module
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -51,9 +57,18 @@ val supabaseModule = module {
         }
     }
     single<Auth> { get<SupabaseClient>().auth }
-    single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus }
+    single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.ignoringTransientInitializing() }
     single<Realtime> { get<SupabaseClient>().realtime }
     single<BucketApi> {
         get<SupabaseClient>().storage.from(SUPABASE_BUCKET_NAME)
     }
 }
+
+private fun StateFlow<SessionStatus>.ignoringTransientInitializing(): StateFlow<SessionStatus> =
+    runningReduce { resolved, next ->
+        if (next is SessionStatus.Initializing) resolved else next
+    }.stateIn(
+        scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+        started = SharingStarted.Eagerly,
+        initialValue = value,
+    )
