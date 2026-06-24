@@ -19,7 +19,6 @@ sqlite = "2.6.2"
 ksp = "2.3.6"
 datasSoreVersion = "1.2.1"
 workManagerVersion = "2.11.2"
-facebookSdk = "18.2.3"
 revenuecat = "3.1.0"
 buildKonfig = "0.21.2"
 kermit = "2.1.0"
@@ -79,9 +78,6 @@ koinComposeViewModel = { group = "io.insert-koin", name = "koin-compose-viewmode
 # Data Store
 dataStore = { module = "androidx.datastore:datastore", version.ref = "datasSoreVersion" }
 dataStore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datasSoreVersion" }
-
-# Facebook SDK
-facebook-sdk-android = { group = "com.facebook.android", name = "facebook-android-sdk", version.ref = "facebookSdk" }
 
 # Kermit (logger)
 kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }

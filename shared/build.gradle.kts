@@ -40,9 +40,6 @@ kotlin {
             // Koin
             implementation(libs.koinAndroid)
 
-            // Facebook SDK
-            implementation(libs.facebook.sdk.android)
-
             // WorkManager
             implementation(libs.androidx.work.runtime.ktx)
         }

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Bible Planner</string>
-    <string name="facebook_app_id" translatable="false">1353222729433375</string>
     <string name="notification_preparing_title">Downloading %1$s</string>
     <string name="notification_preparing_progress">Downloading\u2026 %1$d%%</string>
     <string name="notification_preparing_starting">Starting download\u2026</string>
