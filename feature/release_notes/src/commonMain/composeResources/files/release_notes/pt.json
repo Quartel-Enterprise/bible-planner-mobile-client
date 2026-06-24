@@ -1,4 +1,7 @@
 {
+  "1.18.1": [
+    "Corrigido um piscar rápido ao reabrir o app, em que suas informações de conta e o status Pro podiam aparecer momentaneamente como se ainda estivessem carregando."
+  ],
   "1.18.0": [
     "Na tela de detalhes do livro, o 'Ver mais' da sinopse agora aparece logo após o texto, em vez de em uma linha separada abaixo."
   ],

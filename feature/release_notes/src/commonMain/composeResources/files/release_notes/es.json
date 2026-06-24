@@ -1,4 +1,7 @@
 {
+  "1.18.1": [
+    "Se corrigió un parpadeo breve al volver a abrir la app, donde tu información de cuenta y tu estado Pro podían aparecer momentáneamente como si aún se estuvieran cargando."
+  ],
   "1.18.0": [
     "En la pantalla de detalles del libro, el 'Ver más' de la sinopsis ahora aparece justo después del texto en lugar de en una línea separada debajo."
   ],

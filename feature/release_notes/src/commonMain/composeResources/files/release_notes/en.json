@@ -1,4 +1,7 @@
 {
+  "1.18.1": [
+    "Fixed a brief flicker when reopening the app, where your account info and Pro status could momentarily appear as still loading."
+  ],
   "1.18.0": [
     "On the book details screen, the synopsis 'Show more' now appears right after the text instead of on a separate line below it."
   ],
