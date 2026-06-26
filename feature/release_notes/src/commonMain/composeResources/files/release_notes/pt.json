@@ -1,4 +1,7 @@
 {
+  "1.18.2": [
+    "Corrigida a posição dos botões de atalho na tela do plano de leitura, que podiam ficar escondidos atrás da barra de navegação do celular, sobrepor o último dia da lista ou deixar um espaço vazio grande acima deles."
+  ],
   "1.18.1": [
     "Corrigido um piscar rápido ao reabrir o app, em que suas informações de conta e o status Pro podiam aparecer momentaneamente como se ainda estivessem carregando."
   ],

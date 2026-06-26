@@ -1,4 +1,7 @@
 {
+  "1.18.2": [
+    "Fixed the position of the quick-action buttons on the reading plan screen, which could be hidden behind the phone's navigation bar, overlap the last day in the list, or leave a large empty gap above them."
+  ],
   "1.18.1": [
     "Fixed a brief flicker when reopening the app, where your account info and Pro status could momentarily appear as still loading."
   ],

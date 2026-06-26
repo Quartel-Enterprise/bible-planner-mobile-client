@@ -1,4 +1,7 @@
 {
+  "1.18.2": [
+    "Se corrigió la posición de los botones de acceso rápido en la pantalla del plan de lectura, que podían quedar ocultos detrás de la barra de navegación del teléfono, superponerse al último día de la lista o dejar un espacio vacío grande encima de ellos."
+  ],
   "1.18.1": [
     "Se corrigió un parpadeo breve al volver a abrir la app, donde tu información de cuenta y tu estado Pro podían aparecer momentáneamente como si aún se estuvieran cargando."
   ],
