@@ -12,7 +12,6 @@ import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.feature.books.presentation.booksScreen
 import com.quare.bibleplanner.feature.more.presentation.more
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
-import com.quare.bibleplanner.ui.utils.MainScaffoldState
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -21,7 +20,8 @@ fun BottomNavHost(
     animatedContentScope: AnimatedContentScope,
     rootNavController: NavHostController,
     bottomNavController: NavHostController,
-    mainScaffoldState: MainScaffoldState,
+    navigationBar: @Composable (Modifier) -> Unit,
+    navigationRail: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -30,8 +30,26 @@ fun BottomNavHost(
         navController = bottomNavController,
         startDestination = BottomNavRoute.Plans,
     ) {
-        readingPlan(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
-        booksScreen(mainScaffoldState, rootNavController, sharedTransitionScope, animatedContentScope)
-        more(rootNavController, mainScaffoldState, sharedTransitionScope, animatedContentScope)
+        readingPlan(
+            navController = rootNavController,
+            navigationBar = navigationBar,
+            navigationRail = navigationRail,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+        )
+        booksScreen(
+            navigationBar = navigationBar,
+            navigationRail = navigationRail,
+            rootNavController = rootNavController,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedContentScope,
+        )
+        more(
+            navController = rootNavController,
+            navigationBar = navigationBar,
+            navigationRail = navigationRail,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+        )
     }
 }

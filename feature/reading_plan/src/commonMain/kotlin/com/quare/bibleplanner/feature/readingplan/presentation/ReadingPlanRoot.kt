@@ -5,13 +5,13 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -25,14 +25,16 @@ import com.quare.bibleplanner.feature.readingplan.presentation.utils.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToTopObserver
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToWeekAction
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
-import com.quare.bibleplanner.ui.utils.MainScaffoldState
+import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
+import com.quare.bibleplanner.ui.utils.MainTabScaffold
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.readingPlan(
     navController: NavController,
-    mainScaffoldState: MainScaffoldState,
+    navigationBar: @Composable (Modifier) -> Unit,
+    navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
@@ -41,13 +43,7 @@ fun NavGraphBuilder.readingPlan(
         val onEvent = viewModel::onEvent
         val uiState by viewModel.uiState.collectAsState()
         val lazyListState = rememberLazyListState()
-        val snackbarHostState = mainScaffoldState.snackbarHostState
-        // Update MainScaffoldState with local UI components
-        LaunchedEffect(Unit) {
-            mainScaffoldState.setFab {
-                ReadingPlanFabsComponent(uiState, onEvent)
-            }
-        }
+        val snackbarHostState = LocalSnackbarHostState.current
 
         ReadingPlanScreenObserver(
             lazyListState = lazyListState,
@@ -57,13 +53,24 @@ fun NavGraphBuilder.readingPlan(
             navController = navController,
             onEvent = onEvent,
         )
-        ReadingPlanScreen(
-            uiState = uiState,
-            onEvent = onEvent,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = animatedContentScope,
-            lazyListState = lazyListState,
-        )
+        MainTabScaffold(
+            navigationBar = navigationBar,
+            navigationRail = navigationRail,
+            floatingActionButton = {
+                ReadingPlanFabsComponent(
+                    uiState = uiState,
+                    onEvent = onEvent,
+                )
+            },
+        ) {
+            ReadingPlanScreen(
+                uiState = uiState,
+                onEvent = onEvent,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
+                lazyListState = lazyListState,
+            )
+        }
     }
 }
 

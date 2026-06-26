@@ -1,36 +1,44 @@
 package com.quare.bibleplanner.feature.main.presentation.screen
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavBackStackEntry
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
-import com.quare.bibleplanner.ui.utils.LocalMainPadding
-import com.quare.bibleplanner.ui.utils.MainScaffoldState
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainScreen(
     mainViewModel: MainScreenViewModel,
-    navBackStackEntry: NavBackStackEntry?,
-    mainScaffoldState: MainScaffoldState,
-    bottomNavHost: @Composable () -> Unit,
+    bottomNavController: NavHostController,
+    bottomNavHost: @Composable (
+        navigationBar: @Composable (Modifier) -> Unit,
+        navigationRail: @Composable () -> Unit,
+    ) -> Unit,
 ) {
     val language by mainViewModel.languageState.collectAsState()
+    val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
+    val currentDestination: NavDestination? = navBackStackEntry?.destination
     val onEvent = mainViewModel::dispatchUiEvent
-    MainScreenContent(
-        currentDestination = navBackStackEntry?.destination,
-        bottomNavigationModels = mainViewModel.bottomNavigationItemModels,
-        language = language,
-        onEvent = onEvent,
-        mainScaffoldState = mainScaffoldState,
-        content = { paddingValues ->
-            CompositionLocalProvider(
-                value = LocalMainPadding provides paddingValues,
-                content = bottomNavHost,
+    val bottomNavigationModels = mainViewModel.bottomNavigationItemModels
+    bottomNavHost(
+        { modifier ->
+            MainNavigationBar(
+                modifier = modifier,
+                currentDestination = currentDestination,
+                bottomNavigationModels = bottomNavigationModels,
+                language = language,
+                onEvent = onEvent,
+            )
+        },
+        {
+            MainNavigationRail(
+                currentDestination = currentDestination,
+                bottomNavigationModels = bottomNavigationModels,
+                language = language,
+                onEvent = onEvent,
             )
         },
     )

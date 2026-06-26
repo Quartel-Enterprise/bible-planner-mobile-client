@@ -2,7 +2,9 @@ package com.quare.bibleplanner.core.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -33,50 +35,52 @@ import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.ui.utils.ActionCollector
-import com.quare.bibleplanner.ui.utils.MainScaffoldState
+import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun RootAppNavHost() {
     val navController = rememberNavController()
-    val mainScaffoldState: MainScaffoldState = remember { MainScaffoldState() }
+    val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     EventBusNavigationListener(navController)
-    SharedTransitionLayout {
-        NavHost(
-            navController = navController,
-            startDestination = MainNavRoute,
-        ) {
-            val sharedTransitionScope = this@SharedTransitionLayout
-            loginRoot(navController)
-            loginWarning(navController)
-            loginSyncNudge(navController)
-            logout(
+    CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+        SharedTransitionLayout {
+            NavHost(
                 navController = navController,
-                snackbarHostState = mainScaffoldState.snackbarHostState,
-            )
-            mainScreen(mainScaffoldState, navController, sharedTransitionScope)
-            day(navController, sharedTransitionScope)
-            themeSettings(navController)
-            materialYou(navController)
-            deleteProgress(navController)
-            deleteNotes(navController)
-            addNotesFreeWarning(navController)
-            editPlanStartDate(navController)
-            releaseNotes(navController, sharedTransitionScope)
-            paywall(navController, sharedTransitionScope)
-            congrats(navController)
-            donation(navController)
-            pixQr(navController)
-            bookDetails(navController, sharedTransitionScope)
-            appLanguage(navController)
-            bibleVersionSelectionRoot(navController)
-            deleteVersion(navController)
-            read(
-                navController = navController,
-                sharedTransitionScope = sharedTransitionScope,
-            )
-            notificationPermission(navController)
+                startDestination = MainNavRoute,
+            ) {
+                val sharedTransitionScope = this@SharedTransitionLayout
+                loginRoot(navController)
+                loginWarning(navController)
+                loginSyncNudge(navController)
+                logout(
+                    navController = navController,
+                    snackbarHostState = snackbarHostState,
+                )
+                mainScreen(navController, sharedTransitionScope)
+                day(navController, sharedTransitionScope)
+                themeSettings(navController)
+                materialYou(navController)
+                deleteProgress(navController)
+                deleteNotes(navController)
+                addNotesFreeWarning(navController)
+                editPlanStartDate(navController)
+                releaseNotes(navController, sharedTransitionScope)
+                paywall(navController, sharedTransitionScope)
+                congrats(navController)
+                donation(navController)
+                pixQr(navController)
+                bookDetails(navController, sharedTransitionScope)
+                appLanguage(navController)
+                bibleVersionSelectionRoot(navController)
+                deleteVersion(navController)
+                read(
+                    navController = navController,
+                    sharedTransitionScope = sharedTransitionScope,
+                )
+                notificationPermission(navController)
+            }
         }
     }
 }
