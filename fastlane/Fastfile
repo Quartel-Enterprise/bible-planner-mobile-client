@@ -240,6 +240,9 @@ platform :ios do
 
     # The IPA is written to build/ios/ so the workflow can hand it to the
     # `upload` lane (a separate job), so a failed upload never costs a rebuild.
+    # derived_data_path is pinned so the Crashlytics upload-symbols binary
+    # (resolved by SPM under SourcePackages/) sits at a known path below.
+    derived_data = File.join(repo_root, "build/derived_data")
     build_app(
       project: File.join(repo_root, XCODE_PROJECT),
       scheme: "iosApp",
@@ -247,6 +250,7 @@ platform :ios do
       export_method: "app-store",
       output_directory: File.join(repo_root, "build/ios"),
       output_name: "BiblePlanner",
+      derived_data_path: derived_data,
       export_options: {
         signingStyle: "manual",
         provisioningProfiles: {
@@ -255,6 +259,32 @@ platform :ios do
         },
       },
     )
+
+    # Send dSYMs to Crashlytics explicitly. The Xcode "Upload Crashlytics dSYMs"
+    # build phase also does this mid-archive, but over the network as a
+    # best-effort step that fails silently on CI — leaving App Store builds
+    # unsymbolicated (the "Missing dSYM" alerts). gym already collected every
+    # dSYM (app + widget + the Kotlin `shared` framework) into one zip.
+    #
+    # Non-fatal, like the release-notes staging in the `upload` lane: a flaky
+    # symbol upload must not fail the build or cost a rebuild. The persistent
+    # "Missing dSYM" alert is the backstop — re-run scripts/upload_dsyms.sh by
+    # hand if it ever slips through.
+    begin
+      upload_symbols = File.join(
+        derived_data,
+        "SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols",
+      )
+      UI.user_error!("upload-symbols binary not found at #{upload_symbols}") unless File.exist?(upload_symbols)
+
+      upload_symbols_to_crashlytics(
+        dsym_path: File.join(repo_root, "build/ios/BiblePlanner.app.dSYM.zip"),
+        gsp_path: File.join(repo_root, "iosApp/iosApp/GoogleService-Info.plist"),
+        binary_path: upload_symbols,
+      )
+    rescue => e
+      UI.error("Could not upload dSYMs to Crashlytics, continuing: #{e.message}")
+    end
   end
 
   desc "Upload an already-built IPA (from the `build` lane) to App Store Connect"
