@@ -5,39 +5,30 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.UriHandler
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import bibleplanner.feature.books.generated.resources.Res
-import bibleplanner.feature.books.generated.resources.open_site
-import bibleplanner.feature.books.generated.resources.reading_not_available_yet
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
-import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.feature.books.presentation.utils.BooksUiActionCollector
 import com.quare.bibleplanner.feature.books.presentation.viewmodel.BooksViewModel
-import com.quare.bibleplanner.ui.utils.ActionCollector
-import com.quare.bibleplanner.ui.utils.MainScaffoldState
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import org.jetbrains.compose.resources.getString
+import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
+import com.quare.bibleplanner.ui.utils.MainTabScaffold
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.booksScreen(
-    mainScaffoldState: MainScaffoldState,
+    navigationBar: @Composable (Modifier) -> Unit,
+    navigationRail: @Composable () -> Unit,
     rootNavController: NavController,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -66,7 +57,7 @@ fun NavGraphBuilder.booksScreen(
                 )
             }
         }
-        val snackbarHostState = mainScaffoldState.snackbarHostState
+        val snackbarHostState = LocalSnackbarHostState.current
 
         val uriHandler = LocalUriHandler.current
         BooksUiActionCollector(
@@ -82,19 +73,24 @@ fun NavGraphBuilder.booksScreen(
             navController = rootNavController,
         )
 
-        BooksScreen(
-            state = state,
-            onEvent = viewModel::onEvent,
-            searchGridState = searchGridState,
-            searchListState = searchListState,
-            oldTestamentGridState = oldTestamentGridState,
-            oldTestamentListState = oldTestamentListState,
-            newTestamentGridState = newTestamentGridState,
-            newTestamentListState = newTestamentListState,
-            isScrolled = isScrolled,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope,
-        )
+        MainTabScaffold(
+            navigationBar = navigationBar,
+            navigationRail = navigationRail,
+        ) {
+            BooksScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                searchGridState = searchGridState,
+                searchListState = searchListState,
+                oldTestamentGridState = oldTestamentGridState,
+                oldTestamentListState = oldTestamentListState,
+                newTestamentGridState = newTestamentGridState,
+                newTestamentListState = newTestamentListState,
+                isScrolled = isScrolled,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+            )
+        }
     }
 }
 

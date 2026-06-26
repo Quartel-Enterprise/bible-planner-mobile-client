@@ -48,7 +48,6 @@ class MainScreenViewModel(
     fun dispatchUiEvent(event: MainScreenUiEvent) {
         when (event) {
             is MainScreenUiEvent.BottomNavItemClicked -> {
-                emitAction(MainScreenUiAction.ClearFabs)
                 emitAction(
                     MainScreenUiAction.NavigateToBottomRoute(
                         event.route,
