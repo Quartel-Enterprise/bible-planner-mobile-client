@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -27,17 +28,25 @@ internal fun SharedTransitionScope.PlannedReadDateComponent(
     animatedContentScope: AnimatedContentScope,
     plannedReadDate: LocalDate,
     isRead: Boolean,
+    isHighlighted: Boolean,
+    isOverdue: Boolean,
     shouldShowYear: Boolean,
     weekNumber: Int,
     dayNumber: Int,
 ) {
     val textDecoration = if (isRead) TextDecoration.LineThrough else TextDecoration.None
-    val accentColor = MaterialTheme.colorScheme.onSurface
-    val mutedColor = if (isRead) {
-        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val dayColor = resolveDateColor(
+        baseColor = MaterialTheme.colorScheme.onSurface,
+        isRead = isRead,
+        isHighlighted = isHighlighted,
+        isOverdue = isOverdue,
+    )
+    val monthColor = resolveDateColor(
+        baseColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        isRead = isRead,
+        isHighlighted = isHighlighted,
+        isOverdue = isOverdue,
+    )
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,11 +62,7 @@ internal fun SharedTransitionScope.PlannedReadDateComponent(
             text = plannedReadDate.day.toString().padStart(2, '0'),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            color = if (isRead) {
-                accentColor.copy(alpha = 0.38f)
-            } else {
-                accentColor
-            },
+            color = dayColor,
             textDecoration = textDecoration,
             textAlign = TextAlign.Center,
         )
@@ -70,7 +75,7 @@ internal fun SharedTransitionScope.PlannedReadDateComponent(
             ),
             text = stringResource(plannedReadDate.month.toStringResource()).take(3),
             style = MaterialTheme.typography.labelSmall,
-            color = mutedColor,
+            color = monthColor,
             textDecoration = textDecoration,
             textAlign = TextAlign.Center,
         )
@@ -86,10 +91,23 @@ internal fun SharedTransitionScope.PlannedReadDateComponent(
                     ),
                 text = plannedReadDate.year.toString(),
                 style = MaterialTheme.typography.labelSmall,
-                color = mutedColor,
+                color = monthColor,
                 textDecoration = textDecoration,
                 textAlign = TextAlign.Center,
             )
         }
     }
+}
+
+@Composable
+private fun resolveDateColor(
+    baseColor: Color,
+    isRead: Boolean,
+    isHighlighted: Boolean,
+    isOverdue: Boolean,
+): Color = when {
+    isRead -> baseColor.copy(alpha = 0.38f)
+    isOverdue -> MaterialTheme.colorScheme.tertiary
+    isHighlighted -> MaterialTheme.colorScheme.primary
+    else -> baseColor
 }

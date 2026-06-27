@@ -58,4 +58,62 @@
     <string name="sunday">Sunday"</string>
     <string name="edit_plan_start_day">Plan start day</string>
     <string name="start_date">Start date</string>
+
+    <string name="hero_kicker_new">YOUR FIRST READING</string>
+    <string name="hero_kicker_today">TODAY'S READING</string>
+    <string name="hero_kicker_ahead">YOU'RE AHEAD</string>
+    <string name="hero_kicker_behind">PICK UP WHERE YOU LEFT OFF</string>
+    <string name="hero_kicker_caughtup">YOU'RE UP TO DATE</string>
+    <string name="hero_tomorrow_day">Tomorrow · Day %1$d</string>
+    <string name="hero_caughtup_note">All caught up! You have already read everything planned for today.</string>
+    <string name="hero_primary_read_ahead">Read ahead</string>
+    <string name="hero_day_of_total">Day %1$d of %2$d</string>
+    <string name="hero_next_day">Next · Day %1$d</string>
+    <string name="hero_behind_day">Day %1$d · %2$s</string>
+    <string name="hero_primary_start">Start reading</string>
+    <string name="hero_primary_read_now">Read now</string>
+    <string name="hero_primary_continue">Continue reading</string>
+    <string name="hero_primary_resume">Resume reading</string>
+    <string name="hero_new_note">Welcome! One chapter at a time — you can do this.</string>
+    <string name="hero_skip_to_today">Skip to today · Day %1$d (%2$s)</string>
+    <string name="mark_as_read">Mark as read</string>
+    <string name="plan_done_title">Plan complete!</string>
+
+    <string name="section_current">THIS WEEK</string>
+    <string name="section_current_behind">PICK UP WHERE YOU LEFT OFF</string>
+    <string name="section_upcoming">UP NEXT</string>
+    <string name="section_completed">COMPLETED</string>
+
+    <string name="chip_overdue">Overdue</string>
+
+    <string name="fab_back_to_today">Back to today</string>
+    <string name="fab_next_reading">Next reading</string>
+    <string name="fab_resume">Where I left off</string>
+
+    <string name="see_less">See less</string>
+
+    <plurals name="streak_days_label">
+        <item quantity="one">%1$d day in a row</item>
+        <item quantity="other">%1$d days in a row</item>
+    </plurals>
+    <plurals name="see_more_weeks">
+        <item quantity="one">See %1$d more week</item>
+        <item quantity="other">See %1$d more weeks</item>
+    </plurals>
+    <plurals name="no_read_for_days">
+        <item quantity="one">No reading for %1$d day</item>
+        <item quantity="other">No reading for %1$d days</item>
+    </plurals>
+    <plurals name="days_ahead_note">
+        <item quantity="one">You're %1$d day ahead of plan. Keep your pace.</item>
+        <item quantity="other">You're %1$d days ahead of plan. Keep your pace.</item>
+    </plurals>
+    <plurals name="days_behind_reassure">
+        <item quantity="one">You're %1$d day behind — no rush.</item>
+        <item quantity="other">You're %1$d days behind — no rush.</item>
+    </plurals>
+    <plurals name="plan_done_subtitle">
+        <item quantity="one">What an achievement. %1$d day in the Word.</item>
+        <item quantity="other">What an achievement. %1$d days in the Word.</item>
+    </plurals>
 </resources>

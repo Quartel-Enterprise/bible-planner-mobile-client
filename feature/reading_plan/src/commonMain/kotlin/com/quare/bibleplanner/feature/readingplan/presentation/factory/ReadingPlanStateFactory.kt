@@ -9,5 +9,10 @@ internal class ReadingPlanStateFactory {
     fun createFirstState(): ReadingPlanUiState.Loading = ReadingPlanUiState.Loading(
         selectedReadingPlan = defaultPlan,
         isShowingMenu = false,
+        scrollToWeekNumber = 0,
+        scrollToWeekIsAutomatic = false,
+        scrollToTop = false,
+        isScrolledDown = false,
+        isActiveRowVisible = true,
     )
 }

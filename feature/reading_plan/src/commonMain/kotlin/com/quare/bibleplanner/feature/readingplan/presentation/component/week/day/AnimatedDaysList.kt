@@ -20,6 +20,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPre
 internal fun SharedTransitionScope.AnimatedDaysList(
     animatedContentScope: AnimatedContentScope,
     weekPresentation: WeekPlanPresentationModel,
+    flashTargetGlobalIndex: Int,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     AnimatedVisibility(
@@ -37,6 +38,7 @@ internal fun SharedTransitionScope.AnimatedDaysList(
                 DayItem(
                     weekNumber = weekPresentation.weekPlan.number,
                     dayPlan = dayPlan,
+                    isFlashing = flashTargetGlobalIndex != 0 && dayPlan.globalDayIndex == flashTargetGlobalIndex,
                     onEvent = onEvent,
                     animatedContentScope = animatedContentScope,
                 )

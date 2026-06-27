@@ -29,7 +29,13 @@ internal sealed interface ReadingPlanUiEvent {
         val option: OverflowOption,
     ) : ReadingPlanUiEvent
 
-    data object OnScrollToFirstUnreadWeekClick : ReadingPlanUiEvent
+    data object OnToggleUpcomingExpanded : ReadingPlanUiEvent
+
+    data object OnToggleCompletedExpanded : ReadingPlanUiEvent
+
+    data object OnGoToActiveRowClick : ReadingPlanUiEvent
+
+    data object OnSkipToTodayClick : ReadingPlanUiEvent
 
     data object OnScrollToTopClick : ReadingPlanUiEvent
 
@@ -37,9 +43,15 @@ internal sealed interface ReadingPlanUiEvent {
         val isScrolledDown: Boolean,
     ) : ReadingPlanUiEvent
 
+    data class OnActiveRowVisibilityChange(
+        val isActiveRowVisible: Boolean,
+    ) : ReadingPlanUiEvent
+
     data object OnScrollToWeekCompleted : ReadingPlanUiEvent
 
     data object OnScrollToTopCompleted : ReadingPlanUiEvent
+
+    data object OnFlashCompleted : ReadingPlanUiEvent
 
     data object OnEditPlanClick : ReadingPlanUiEvent
 }

@@ -19,6 +19,7 @@ internal fun PlanTypesSegmentedButtons(
     modifier: Modifier = Modifier,
     selectedReadingPlan: ReadingPlanType,
     onPlanClick: (ReadingPlanType) -> Unit,
+    onLabelOverflow: () -> Unit = {},
 ) {
     val typeList = getTypeList()
     SingleChoiceSegmentedButtonRow(modifier = modifier) {
@@ -37,6 +38,11 @@ internal fun PlanTypesSegmentedButtons(
                     text = stringResource(model.name),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    onTextLayout = { textLayoutResult ->
+                        if (textLayoutResult.hasVisualOverflow) {
+                            onLabelOverflow()
+                        }
+                    },
                 )
             }
         }

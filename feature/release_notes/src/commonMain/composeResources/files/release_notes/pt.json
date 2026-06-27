@@ -1,4 +1,14 @@
 {
+  "1.19.0": [
+    "A tela do plano de leitura ganhou um visual novo e mais bonito.",
+    "Um cartão em destaque no topo mostra sua próxima leitura e se adapta à sua situação — começando agora, leitura de hoje, em dia, adiantado ou continuando de onde parou.",
+    "As semanas agora ficam agrupadas em 'Esta semana', 'A seguir' e 'Concluídas', e você pode recolher ou expandir os grupos a seguir e concluídas.",
+    "O cartão de progresso agora mostra um anel de progresso circular junto com a sua sequência de dias seguidos.",
+    "Um botão leva você direto para a sua leitura atual e a destaca rapidamente.",
+    "Marcar um dia como lido agora responde na hora.",
+    "Enquanto o plano de leitura carrega, você agora vê espaços reservados suaves no lugar do indicador de carregamento.",
+    "Os números e os botões de marcar o dia agora animam suavemente conforme o seu progresso muda."
+  ],
   "1.18.2": [
     "Corrigida a posição dos botões de atalho na tela do plano de leitura, que podiam ficar escondidos atrás da barra de navegação do celular, sobrepor o último dia da lista ou deixar um espaço vazio grande acima deles."
   ],

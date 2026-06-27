@@ -6,6 +6,7 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedRead
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveDaySituationMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveMilestoneMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveOverallProgressMotivation
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolvePlanStatus
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveStreakMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.FindFirstWeekWithUnreadBookUseCase
@@ -14,10 +15,10 @@ import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.GetSelecte
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveDaySituationMotivationUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveMilestoneMotivationUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveOverallProgressMotivationUseCase
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolvePlanStatusUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolveStreakMotivationUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.SetSelectedReadingPlanUseCase
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
-import com.quare.bibleplanner.feature.readingplan.presentation.mapper.CalculateIsFirstUnreadWeekVisible
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.WeeksPlanPresentationMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
@@ -38,11 +39,11 @@ val readingPlanModule = module {
     factoryOf(::ResolveDaySituationMotivationUseCase).bind<ResolveDaySituationMotivation>()
     factoryOf(::ResolveOverallProgressMotivationUseCase).bind<ResolveOverallProgressMotivation>()
     factoryOf(::GetPlanMotivationMessageUseCase).bind<GetPlanMotivationMessage>()
+    factoryOf(::ResolvePlanStatusUseCase).bind<ResolvePlanStatus>()
 
     // Presentation
     viewModelOf(::ReadingPlanViewModel)
     factoryOf(::ReadingPlanStateFactory)
     factoryOf(::WeeksPlanPresentationMapper)
-    factoryOf(::CalculateIsFirstUnreadWeekVisible)
     factoryOf(::DeleteProgressMapper)
 }

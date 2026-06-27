@@ -4,10 +4,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -18,6 +16,7 @@ internal fun SharedTransitionScope.AnimatedPlannedReadDateComponent(
     animatedContentScope: AnimatedContentScope,
     weekNumber: Int,
     dayNumber: Int,
+    isHighlighted: Boolean,
 ) {
     val day = dayPlan.day
     AnimatedContent(
@@ -28,6 +27,8 @@ internal fun SharedTransitionScope.AnimatedPlannedReadDateComponent(
             PlannedReadDateComponent(
                 plannedReadDate = plannedReadDate,
                 isRead = day.isRead,
+                isHighlighted = isHighlighted,
+                isOverdue = dayPlan.isOverdue,
                 shouldShowYear = dayPlan.shouldShowYear,
                 animatedContentScope = animatedContentScope,
                 weekNumber = weekNumber,

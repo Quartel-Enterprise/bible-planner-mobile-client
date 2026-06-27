@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.day_title_part
 import bibleplanner.feature.day.generated.resources.week_title_part
+import com.quare.bibleplanner.core.plan.domain.getGlobalDayIndex
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
@@ -69,7 +70,10 @@ internal fun DayScreenTopBarComponent(
                             Text(
                                 text = stringResource(
                                     Res.string.day_title_part,
-                                    day.number,
+                                    getGlobalDayIndex(
+                                        weekNumber = weekNumber,
+                                        dayNumber = day.number,
+                                    ),
                                 ),
                                 modifier = Modifier.sharedElement(
                                     sharedContentState = rememberSharedContentState(

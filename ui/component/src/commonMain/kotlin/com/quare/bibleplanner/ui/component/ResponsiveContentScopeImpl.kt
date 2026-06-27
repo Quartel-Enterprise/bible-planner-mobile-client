@@ -66,6 +66,7 @@ internal class ResponsiveContentScopeImpl(
         items: List<T>,
         key: ((item: T) -> Any)?,
         contentType: (item: T) -> Any?,
+        animateItem: Boolean,
         itemContent: @Composable (item: T) -> Unit,
     ) {
         lazyListScope.items(
@@ -73,8 +74,9 @@ internal class ResponsiveContentScopeImpl(
             key = key,
             contentType = contentType,
         ) { item ->
+            val animationModifier = if (animateItem) Modifier.animateItem() else Modifier
             Box(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = animationModifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
                 Box(modifier = Modifier.width(this@ResponsiveContentScopeImpl.contentMaxWidth)) {
