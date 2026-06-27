@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.readingplan.domain.usecase.impl
 
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
-import com.quare.bibleplanner.feature.readingplan.domain.getGlobalDayIndex
+import com.quare.bibleplanner.core.plan.domain.getGlobalDayIndex
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanDayRef
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
