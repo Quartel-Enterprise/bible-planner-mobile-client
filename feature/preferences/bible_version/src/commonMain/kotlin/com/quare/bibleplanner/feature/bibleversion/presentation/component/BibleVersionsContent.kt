@@ -1,12 +1,10 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation.component
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -75,14 +73,7 @@ internal fun BibleVersionsContent(
             }
 
             BibleVersionsUiState.Loading -> {
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
+                bibleVersionsShimmer()
             }
 
             is BibleVersionsUiState.Success -> {

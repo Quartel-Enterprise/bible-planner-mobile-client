@@ -7,7 +7,8 @@
     "A button now takes you straight to your current reading and briefly highlights it.",
     "Marking a day as read now responds instantly.",
     "While the reading plan loads, you now see smooth placeholders instead of a loading spinner.",
-    "Numbers and the day toggles now animate smoothly as your progress changes."
+    "Numbers and the day toggles now animate smoothly as your progress changes.",
+    "While the Bible versions list loads, you now see smooth placeholders instead of a loading spinner."
   ],
   "1.18.2": [
     "Fixed the position of the quick-action buttons on the reading plan screen, which could be hidden behind the phone's navigation bar, overlap the last day in the list, or leave a large empty gap above them."
