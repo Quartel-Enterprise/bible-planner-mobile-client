@@ -31,13 +31,22 @@ internal fun PlanProgressShimmer(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            ShimmerBox(modifier = Modifier.width(160.dp).height(18.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                ShimmerBox(
+                    modifier = Modifier.size(20.dp),
+                    shape = CircleShape,
+                )
+                ShimmerBox(modifier = Modifier.width(120.dp).height(18.dp))
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 ShimmerBox(
-                    modifier = Modifier.size(92.dp),
+                    modifier = Modifier.size(100.dp),
                     shape = CircleShape,
                 )
                 Column(
@@ -47,12 +56,12 @@ internal fun PlanProgressShimmer(modifier: Modifier = Modifier) {
                     ShimmerBox(modifier = Modifier.fillMaxWidth(0.6f).height(18.dp))
                     ShimmerBox(modifier = Modifier.fillMaxWidth(0.4f).height(14.dp))
                     ShimmerBox(
-                        modifier = Modifier.width(120.dp).height(24.dp),
+                        modifier = Modifier.width(120.dp).height(28.dp),
                         shape = RoundedCornerShape(50),
                     )
                 }
             }
-            ShimmerBox(modifier = Modifier.fillMaxWidth().height(14.dp))
+            ShimmerBox(modifier = Modifier.fillMaxWidth(0.7f).height(14.dp))
         }
     }
 }

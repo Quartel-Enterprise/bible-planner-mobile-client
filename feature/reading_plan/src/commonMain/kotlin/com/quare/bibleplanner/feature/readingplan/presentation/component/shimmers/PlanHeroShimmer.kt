@@ -18,28 +18,59 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 
 @Composable
 internal fun PlanHeroShimmer(modifier: Modifier = Modifier) {
+    val placeholderColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = HERO_PLACEHOLDER_ALPHA)
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(24.dp),
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            ShimmerBox(modifier = Modifier.width(120.dp).height(12.dp))
-            ShimmerBox(modifier = Modifier.fillMaxWidth(0.7f).height(26.dp))
-            ShimmerBox(modifier = Modifier.width(140.dp).height(14.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            ShimmerBox(
+                modifier = Modifier.width(110.dp).height(14.dp),
+                color = placeholderColor,
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 ShimmerBox(
-                    modifier = Modifier.weight(1f).height(48.dp),
+                    modifier = Modifier.fillMaxWidth(0.85f).height(26.dp),
+                    color = placeholderColor,
+                )
+                ShimmerBox(
+                    modifier = Modifier.fillMaxWidth(0.55f).height(26.dp),
+                    color = placeholderColor,
+                )
+            }
+            ShimmerBox(
+                modifier = Modifier.width(120.dp).height(14.dp),
+                color = placeholderColor,
+            )
+            ShimmerBox(
+                modifier = Modifier.fillMaxWidth(0.7f).height(12.dp),
+                color = placeholderColor,
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                ShimmerBox(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
                     shape = RoundedCornerShape(16.dp),
+                    color = placeholderColor,
                 )
                 ShimmerBox(
                     modifier = Modifier.size(48.dp),
                     shape = RoundedCornerShape(16.dp),
+                    color = placeholderColor,
                 )
             }
         }
     }
 }
+
+private const val HERO_PLACEHOLDER_ALPHA = 0.18f

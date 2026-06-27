@@ -35,6 +35,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.component.Reading
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.PlanHeroCard
 import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.PlanHeroShimmer
 import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.PlanProgressShimmer
+import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.SectionHeaderShimmer
 import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.WeekShimmerCard
 import com.quare.bibleplanner.feature.readingplan.presentation.component.week.WeekPlanItem
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
@@ -163,12 +164,16 @@ private fun ResponsiveContentScope.weekItems(
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     if (loadedUiState == null) {
+        responsiveItem(key = "week_shimmer_section_header") {
+            SectionHeaderShimmer()
+        }
         repeat(WEEK_SHIMMER_COUNT) { index ->
             responsiveItem(key = "week_shimmer_$index") {
                 WeekShimmerCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
+                    isCurrent = index == 0,
                 )
             }
         }
