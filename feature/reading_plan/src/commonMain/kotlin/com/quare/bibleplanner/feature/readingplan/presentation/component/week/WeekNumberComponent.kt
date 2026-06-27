@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.week_number
@@ -19,6 +20,8 @@ internal fun SharedTransitionScope.WeekNumberComponent(
     modifier: Modifier = Modifier,
     weekNumber: Int,
     animatedContentScope: AnimatedContentScope,
+    color: Color = Color.Unspecified,
+    fontWeight: FontWeight = FontWeight.Medium,
 ) {
     Text(
         modifier = modifier.sharedElement(
@@ -32,6 +35,7 @@ internal fun SharedTransitionScope.WeekNumberComponent(
             weekNumber,
         ),
         style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Medium,
+        fontWeight = fontWeight,
+        color = color,
     )
 }

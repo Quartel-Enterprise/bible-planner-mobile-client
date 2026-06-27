@@ -23,7 +23,6 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ReadingPlanUiActionCollector
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToTopObserver
-import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToWeekAction
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.MainTabScaffold
@@ -84,23 +83,23 @@ private fun ReadingPlanScreenObserver(
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val scrollToTop = uiState.scrollToTop
-    val scrollToWeekNumber = uiState.scrollToWeekNumber
     val loadedUiState = remember(uiState) { uiState as? ReadingPlanUiState.Loaded }
-    // Track scroll position to determine if scroll-to-top FAB should be visible
-    LaunchedEffect(lazyListState.firstVisibleItemIndex, lazyListState.firstVisibleItemScrollOffset) {
+    val activeWeekNumber = loadedUiState?.planStatus?.nextDay?.weekNumber
+    LaunchedEffect(
+        lazyListState.firstVisibleItemIndex,
+        lazyListState.firstVisibleItemScrollOffset,
+        activeWeekNumber,
+    ) {
         val isScrolled = lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
         onEvent(ReadingPlanUiEvent.OnScrollStateChange(isScrolled))
+        val visibleKeys = lazyListState.layoutInfo.visibleItemsInfo.map { it.key }
+        val isActiveRowVisible = visibleKeys.contains(HERO_ITEM_KEY) ||
+            (activeWeekNumber != null && visibleKeys.contains(activeWeekNumber))
+        onEvent(ReadingPlanUiEvent.OnActiveRowVisibilityChange(isActiveRowVisible))
     }
 
     ScrollToTopObserver(
         scrollToTop = scrollToTop,
-        lazyListState = lazyListState,
-        onEvent = onEvent,
-    )
-
-    ScrollToWeekAction(
-        scrollToWeekNumber = scrollToWeekNumber,
-        loadedUiState = loadedUiState,
         lazyListState = lazyListState,
         onEvent = onEvent,
     )
@@ -111,3 +110,5 @@ private fun ReadingPlanScreenObserver(
         navController = navController,
     )
 }
+
+private const val HERO_ITEM_KEY = "hero"

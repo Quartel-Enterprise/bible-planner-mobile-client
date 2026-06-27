@@ -9,18 +9,20 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
+import com.quare.bibleplanner.feature.readingplan.domain.model.PlanDayRef
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetPlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolvePlanStatus
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
-import com.quare.bibleplanner.feature.readingplan.presentation.mapper.CalculateIsFirstUnreadWeekVisible
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.WeeksPlanPresentationMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
+import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 import com.quare.bibleplanner.ui.utils.observe
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,8 +40,8 @@ internal class ReadingPlanViewModel(
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
     private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
     private val getPlanMotivationMessage: GetPlanMotivationMessage,
+    private val resolvePlanStatus: ResolvePlanStatus,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
-    private val calculateIsFirstUnreadWeekVisible: CalculateIsFirstUnreadWeekVisible,
     private val deleteProgressMapper: DeleteProgressMapper,
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
@@ -53,6 +55,8 @@ internal class ReadingPlanViewModel(
     private var currentPlansModel: PlansModel? = null
     private var currentBibleProgress: Float = 0f
     private val expandedWeeks = mutableSetOf<Int>()
+    private val pendingReadOverrides = mutableMapOf<DayReadKey, Boolean>()
+    private var lastAuthoritativeReadDayCount: Int? = null
     private var isFirstLoad = true
 
     init {
@@ -76,79 +80,55 @@ internal class ReadingPlanViewModel(
         }
         observe(getSelectedReadingPlanFlow()) { selectedPlan ->
             _uiState.update { currentState ->
-                currentPlansModel?.let { plansModel ->
-                    val selectedWeeks = when (selectedPlan) {
-                        ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
-                        ReadingPlanType.BOOKS -> plansModel.booksOrder
+                val plansModel = currentPlansModel
+                if (plansModel == null) {
+                    when (currentState) {
+                        is ReadingPlanUiState.Loaded -> currentState.copy(selectedReadingPlan = selectedPlan)
+                        is ReadingPlanUiState.Loading -> currentState.copy(selectedReadingPlan = selectedPlan)
                     }
-                    val weekPresentationModels = selectedWeeks.mapToPresentation()
-
-                    ReadingPlanUiState.Loaded(
-                        weekPlans = weekPresentationModels,
-                        progress = currentBibleProgress,
-                        motivationMessage = getPlanMotivationMessage(selectedWeeks, currentBibleProgress),
-                        selectedReadingPlan = selectedPlan,
-                        isShowingMenu = currentState.isShowingMenu,
-                        scrollToWeekNumber = currentState.scrollToWeekNumber,
-                        scrollToTop = currentState.scrollToTop,
-                        isScrolledDown = currentState.isScrolledDown,
-                        isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
-                            weekPlans = weekPresentationModels,
-                            isScrolledDown = currentState.isScrolledDown,
-                        ),
+                } else {
+                    buildLoadedState(
+                        selectedPlan = selectedPlan,
+                        selectedWeeks = plansModel.withReadOverrides().weeksFor(selectedPlan),
+                        base = currentState,
                     )
-                } ?: when (currentState) {
-                    is ReadingPlanUiState.Loaded -> {
-                        currentState.copy(
-                            selectedReadingPlan = selectedPlan,
-                        )
-                    }
-
-                    is ReadingPlanUiState.Loading -> {
-                        currentState.copy(
-                            selectedReadingPlan = selectedPlan,
-                        )
-                    }
                 }
             }
         }
         observe(getPlansByWeek()) { plansModel ->
+            reconcileReadOverrides(plansModel)
             currentPlansModel = plansModel
+            val authoritativeReadDays = plansModel
+                .weeksFor(_uiState.value.selectedReadingPlan)
+                .sumOf { week -> week.days.count { it.isRead } }
+            val previousReadDays = lastAuthoritativeReadDayCount
+            val progressWasReset = previousReadDays != null && previousReadDays > 0 && authoritativeReadDays == 0
+            lastAuthoritativeReadDayCount = authoritativeReadDays
             _uiState.update { currentState ->
                 val selectedPlan = currentState.selectedReadingPlan
-                val selectedWeeks = when (selectedPlan) {
-                    ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
-                    ReadingPlanType.BOOKS -> plansModel.booksOrder
-                }
+                val selectedWeeks = plansModel.withReadOverrides().weeksFor(selectedPlan)
 
-                // On first load, find and expand the first week with unread books
                 var scrollToWeekNumber = currentState.scrollToWeekNumber
+                var scrollToWeekIsAutomatic = currentState.scrollToWeekIsAutomatic
                 if (isFirstLoad) {
                     val firstUnreadWeekNumber = findFirstWeekWithUnreadBook(selectedWeeks)
                     if (firstUnreadWeekNumber != null) {
                         expandedWeeks.add(firstUnreadWeekNumber)
-                        // Always set scrollToWeekNumber - Root will handle skipping scroll for week 1 if at top
                         scrollToWeekNumber = firstUnreadWeekNumber
+                        scrollToWeekIsAutomatic = true
                     }
                     isFirstLoad = false
+                } else if (progressWasReset) {
+                    expandedWeeks.clear()
+                    findFirstWeekWithUnreadBook(selectedWeeks)?.let { expandedWeeks.add(it) }
                 }
 
-                val weekPresentationModels = selectedWeeks.mapToPresentation()
-
-                val isScrolledDown = currentState.isScrolledDown
-                ReadingPlanUiState.Loaded(
-                    weekPlans = weekPresentationModels,
-                    progress = currentBibleProgress,
-                    motivationMessage = getPlanMotivationMessage(selectedWeeks, currentBibleProgress),
-                    selectedReadingPlan = selectedPlan,
-                    isShowingMenu = uiState.value.isShowingMenu,
+                buildLoadedState(
+                    selectedPlan = selectedPlan,
+                    selectedWeeks = selectedWeeks,
+                    base = currentState,
                     scrollToWeekNumber = scrollToWeekNumber,
-                    scrollToTop = currentState.scrollToTop,
-                    isScrolledDown = isScrolledDown,
-                    isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
-                        weekPlans = weekPresentationModels,
-                        isScrolledDown = isScrolledDown,
-                    ),
+                    scrollToWeekIsAutomatic = scrollToWeekIsAutomatic,
                 )
             }
         }
@@ -163,36 +143,7 @@ internal class ReadingPlanViewModel(
             }
 
             is ReadingPlanUiEvent.OnWeekExpandClick -> {
-                _uiState.update { currentUiState ->
-                    when (currentUiState) {
-                        is ReadingPlanUiState.Loaded -> {
-                            if (expandedWeeks.contains(event.weekNumber)) {
-                                expandedWeeks.remove(event.weekNumber)
-                            } else {
-                                expandedWeeks.add(event.weekNumber)
-                            }
-
-                            val weekPresentationModels = currentUiState.weekPlans
-                                .map { it.weekPlan }
-                                .mapToPresentation()
-
-                            currentUiState.copy(
-                                weekPlans = weekPresentationModels,
-                                scrollToWeekNumber = currentUiState.scrollToWeekNumber,
-                                scrollToTop = currentUiState.scrollToTop,
-                                isScrolledDown = currentUiState.isScrolledDown,
-                                isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
-                                    weekPlans = weekPresentationModels,
-                                    isScrolledDown = currentUiState.isScrolledDown,
-                                ),
-                            )
-                        }
-
-                        is ReadingPlanUiState.Loading -> {
-                            currentUiState
-                        }
-                    }
-                }
+                toggleWeekExpansion(event.weekNumber)
             }
 
             is ReadingPlanUiEvent.OnDayReadClick -> {
@@ -222,54 +173,28 @@ internal class ReadingPlanViewModel(
                 event.option.toUiAction()?.let(::emitUiAction)
             }
 
-            ReadingPlanUiEvent.OnScrollToFirstUnreadWeekClick -> {
-                val currentUiState = _uiState.value
-                val plansModel = currentPlansModel
-
-                if (currentUiState !is ReadingPlanUiState.Loaded || plansModel == null) {
-                    return
-                }
-
-                val selectedWeeks = when (currentUiState.selectedReadingPlan) {
-                    ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
-                    ReadingPlanType.BOOKS -> plansModel.booksOrder
-                }
-
-                val firstUnreadWeekNumber = findFirstWeekWithUnreadBook(selectedWeeks)
-                if (firstUnreadWeekNumber != null) {
-                    // Expand the week if it's not already expanded
-                    if (!expandedWeeks.contains(firstUnreadWeekNumber)) {
-                        expandedWeeks.add(firstUnreadWeekNumber)
-                        _uiState.update { state ->
-                            if (state is ReadingPlanUiState.Loaded) {
-                                val weekPresentationModels = state.weekPlans.map { it.weekPlan }.mapToPresentation()
-                                state.copy(
-                                    weekPlans = weekPresentationModels,
-                                    scrollToWeekNumber = state.scrollToWeekNumber,
-                                    scrollToTop = state.scrollToTop,
-                                    isScrolledDown = state.isScrolledDown,
-                                    isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
-                                        weekPlans = weekPresentationModels,
-                                        isScrolledDown = state.isScrolledDown,
-                                    ),
-                                )
-                            } else {
-                                state
-                            }
-                        }
-                    }
-                    // Scroll to the week
-                    _uiState.update { state ->
-                        when (state) {
-                            is ReadingPlanUiState.Loaded -> state.copy(scrollToWeekNumber = firstUnreadWeekNumber)
-                            is ReadingPlanUiState.Loading -> state.copy(scrollToWeekNumber = firstUnreadWeekNumber)
-                        }
-                    }
+            ReadingPlanUiEvent.OnToggleUpcomingExpanded -> {
+                updateLoaded { state ->
+                    state.copy(upcomingExpanded = !state.upcomingExpanded)
                 }
             }
 
+            ReadingPlanUiEvent.OnToggleCompletedExpanded -> {
+                updateLoaded { state ->
+                    state.copy(completedExpanded = !state.completedExpanded)
+                }
+            }
+
+            ReadingPlanUiEvent.OnGoToActiveRowClick -> {
+                scrollAndFlashToDay(loadedState()?.planStatus?.nextDay)
+            }
+
+            ReadingPlanUiEvent.OnSkipToTodayClick -> {
+                scrollAndFlashToDay(loadedState()?.planStatus?.todayDay)
+            }
+
             ReadingPlanUiEvent.OnScrollToTopClick -> {
-                _uiState.update { state ->
+                updateState { state ->
                     when (state) {
                         is ReadingPlanUiState.Loaded -> state.copy(scrollToTop = true)
                         is ReadingPlanUiState.Loading -> state.copy(scrollToTop = true)
@@ -278,40 +203,51 @@ internal class ReadingPlanViewModel(
             }
 
             is ReadingPlanUiEvent.OnScrollStateChange -> {
-                _uiState.update { state ->
+                updateState { state ->
                     when (state) {
-                        is ReadingPlanUiState.Loaded -> {
-                            state.copy(
-                                isScrolledDown = event.isScrolledDown,
-                                isFirstUnreadWeekVisible = calculateIsFirstUnreadWeekVisible(
-                                    weekPlans = state.weekPlans,
-                                    isScrolledDown = event.isScrolledDown,
-                                ),
-                            )
-                        }
+                        is ReadingPlanUiState.Loaded -> state.copy(isScrolledDown = event.isScrolledDown)
+                        is ReadingPlanUiState.Loading -> state.copy(isScrolledDown = event.isScrolledDown)
+                    }
+                }
+            }
 
-                        is ReadingPlanUiState.Loading -> {
-                            state.copy(isScrolledDown = event.isScrolledDown)
-                        }
+            is ReadingPlanUiEvent.OnActiveRowVisibilityChange -> {
+                updateState { state ->
+                    when (state) {
+                        is ReadingPlanUiState.Loaded -> state.copy(isActiveRowVisible = event.isActiveRowVisible)
+                        is ReadingPlanUiState.Loading -> state.copy(isActiveRowVisible = event.isActiveRowVisible)
                     }
                 }
             }
 
             ReadingPlanUiEvent.OnScrollToWeekCompleted -> {
-                _uiState.update { state ->
+                updateState { state ->
                     when (state) {
-                        is ReadingPlanUiState.Loaded -> state.copy(scrollToWeekNumber = 0)
-                        is ReadingPlanUiState.Loading -> state.copy(scrollToWeekNumber = 0)
+                        is ReadingPlanUiState.Loaded -> state.copy(
+                            scrollToWeekNumber = 0,
+                            scrollToWeekIsAutomatic = false,
+                        )
+
+                        is ReadingPlanUiState.Loading -> state.copy(
+                            scrollToWeekNumber = 0,
+                            scrollToWeekIsAutomatic = false,
+                        )
                     }
                 }
             }
 
             ReadingPlanUiEvent.OnScrollToTopCompleted -> {
-                _uiState.update { state ->
+                updateState { state ->
                     when (state) {
                         is ReadingPlanUiState.Loaded -> state.copy(scrollToTop = false)
                         is ReadingPlanUiState.Loading -> state.copy(scrollToTop = false)
                     }
+                }
+            }
+
+            ReadingPlanUiEvent.OnFlashCompleted -> {
+                updateLoaded { state ->
+                    state.copy(flashTargetGlobalIndex = 0)
                 }
             }
 
@@ -321,52 +257,207 @@ internal class ReadingPlanViewModel(
         }
     }
 
+    private fun toggleWeekExpansion(weekNumber: Int) {
+        if (expandedWeeks.contains(weekNumber)) {
+            expandedWeeks.remove(weekNumber)
+        } else {
+            expandedWeeks.add(weekNumber)
+        }
+        updateLoaded { state ->
+            state.copy(weekPlans = state.weekPlans.map { it.weekPlan }.mapToPresentation())
+        }
+    }
+
+    private fun scrollAndFlashToDay(dayRef: PlanDayRef?) {
+        if (dayRef == null) return
+        expandedWeeks.add(dayRef.weekNumber)
+        updateLoaded { state ->
+            val targetGroup = state.weekPlans
+                .find { it.weekPlan.number == dayRef.weekNumber }
+                ?.group
+            state.copy(
+                weekPlans = state.weekPlans.map { it.weekPlan }.mapToPresentation(),
+                upcomingExpanded = state.upcomingExpanded || targetGroup == WeekGroup.Upcoming,
+                completedExpanded = state.completedExpanded || targetGroup == WeekGroup.Completed,
+                scrollToWeekNumber = dayRef.weekNumber,
+                scrollToWeekIsAutomatic = false,
+                flashTargetGlobalIndex = dayRef.globalIndex,
+            )
+        }
+    }
+
     private fun onDayReadClick(event: ReadingPlanUiEvent.OnDayReadClick) {
         val currentUiState = _uiState.value
+        if (currentUiState !is ReadingPlanUiState.Loaded) return
+        val selectedPlan = currentUiState.selectedReadingPlan
+        val day = currentUiState.weekPlans
+            .find { it.weekPlan.number == event.weekNumber }
+            ?.weekPlan
+            ?.days
+            ?.find { it.number == event.dayNumber }
+            ?: return
+        val newReadStatus = !day.isRead
+        val currentWeekBefore = currentUiState.weekPlans
+            .firstOrNull { it.group == WeekGroup.Current }
+            ?.weekPlan
+            ?.number
 
-        if (currentUiState is ReadingPlanUiState.Loaded) {
-            val safeCurrentPlans = currentPlansModel ?: return
-            val selectedWeeks = when (currentUiState.selectedReadingPlan) {
-                ReadingPlanType.CHRONOLOGICAL -> safeCurrentPlans.chronologicalOrder
-                ReadingPlanType.BOOKS -> safeCurrentPlans.booksOrder
+        pendingReadOverrides[DayReadKey(selectedPlan, event.weekNumber, event.dayNumber)] = newReadStatus
+        focusCurrentWeekIfJustCompleted(
+            completedWeekNumber = event.weekNumber,
+            currentWeekBefore = currentWeekBefore,
+            didMarkRead = newReadStatus,
+            plan = selectedPlan,
+        )
+        rebuildLoadedFromCurrentModel()
+
+        viewModelScope.launch {
+            updateDayReadStatus(
+                weekNumber = event.weekNumber,
+                dayNumber = event.dayNumber,
+                readingPlanType = selectedPlan,
+                isRead = newReadStatus,
+            )
+            requestLoginNudgeIfNeeded()
+        }
+    }
+
+    private fun focusCurrentWeekIfJustCompleted(
+        completedWeekNumber: Int,
+        currentWeekBefore: Int?,
+        didMarkRead: Boolean,
+        plan: ReadingPlanType,
+    ) {
+        if (!didMarkRead || completedWeekNumber != currentWeekBefore) return
+        val effectiveWeeks = currentPlansModel?.withReadOverrides()?.weeksFor(plan).orEmpty()
+        val isWeekComplete = effectiveWeeks
+            .find { it.number == completedWeekNumber }
+            ?.days
+            ?.all { it.isRead } == true
+        if (!isWeekComplete) return
+        val newCurrentWeek = effectiveWeeks
+            .firstOrNull { week -> week.days.any { !it.isRead } }
+            ?.number
+        expandedWeeks.clear()
+        newCurrentWeek?.let { expandedWeeks.add(it) }
+    }
+
+    private fun rebuildLoadedFromCurrentModel() {
+        val model = currentPlansModel ?: return
+        updateLoaded { state ->
+            buildLoadedState(
+                selectedPlan = state.selectedReadingPlan,
+                selectedWeeks = model.withReadOverrides().weeksFor(state.selectedReadingPlan),
+                base = state,
+            )
+        }
+    }
+
+    private fun PlansModel.withReadOverrides(): PlansModel {
+        if (pendingReadOverrides.isEmpty()) return this
+        var chronological = chronologicalOrder
+        var books = booksOrder
+        pendingReadOverrides.forEach { (key, isRead) ->
+            when (key.plan) {
+                ReadingPlanType.CHRONOLOGICAL -> {
+                    chronological = chronological.applyReadOverride(key.weekNumber, key.dayNumber, isRead)
+                }
+
+                ReadingPlanType.BOOKS -> {
+                    books = books.applyReadOverride(key.weekNumber, key.dayNumber, isRead)
+                }
             }
-            val week = selectedWeeks.find { it.number == event.weekNumber } ?: return
-            val day = week.days.find { it.number == event.dayNumber } ?: return
-            val newReadStatus = !day.isRead
-            viewModelScope.launch {
-                updateDayReadStatus(
-                    weekNumber = event.weekNumber,
-                    dayNumber = event.dayNumber,
-                    readingPlanType = currentUiState.selectedReadingPlan,
-                    isRead = newReadStatus,
-                )
-                requestLoginNudgeIfNeeded()
-            }
+        }
+        return copy(chronologicalOrder = chronological, booksOrder = books)
+    }
+
+    private fun List<WeekPlanModel>.applyReadOverride(
+        weekNumber: Int,
+        dayNumber: Int,
+        isRead: Boolean,
+    ): List<WeekPlanModel> = map { week ->
+        if (week.number != weekNumber) {
+            week
+        } else {
+            week.copy(
+                days = week.days.map { day ->
+                    if (day.number != dayNumber) {
+                        day
+                    } else {
+                        day.copy(
+                            isRead = isRead,
+                            passages = day.passages.map { it.copy(isRead = isRead) },
+                        )
+                    }
+                },
+            )
+        }
+    }
+
+    private fun reconcileReadOverrides(authoritative: PlansModel) {
+        pendingReadOverrides.entries.removeAll { (key, isRead) ->
+            val day = authoritative
+                .weeksFor(key.plan)
+                .find { it.number == key.weekNumber }
+                ?.days
+                ?.find { it.number == key.dayNumber }
+            day != null && day.isRead == isRead
         }
     }
 
     private fun changeMenuVisibility(isShowing: Boolean) {
-        _uiState.update { currentUiState ->
-            when (currentUiState) {
-                is ReadingPlanUiState.Loaded -> {
-                    currentUiState.copy(
-                        isShowingMenu = isShowing,
-                        scrollToWeekNumber = currentUiState.scrollToWeekNumber,
-                        scrollToTop = currentUiState.scrollToTop,
-                        isScrolledDown = currentUiState.isScrolledDown,
-                    )
-                }
-
-                is ReadingPlanUiState.Loading -> {
-                    currentUiState.copy(
-                        isShowingMenu = isShowing,
-                        scrollToWeekNumber = currentUiState.scrollToWeekNumber,
-                        scrollToTop = currentUiState.scrollToTop,
-                        isScrolledDown = currentUiState.isScrolledDown,
-                    )
-                }
+        updateState { state ->
+            when (state) {
+                is ReadingPlanUiState.Loaded -> state.copy(isShowingMenu = isShowing)
+                is ReadingPlanUiState.Loading -> state.copy(isShowingMenu = isShowing)
             }
         }
+    }
+
+    private fun buildLoadedState(
+        selectedPlan: ReadingPlanType,
+        selectedWeeks: List<WeekPlanModel>,
+        base: ReadingPlanUiState,
+        scrollToWeekNumber: Int = base.scrollToWeekNumber,
+        scrollToWeekIsAutomatic: Boolean = base.scrollToWeekIsAutomatic,
+    ): ReadingPlanUiState.Loaded {
+        val loadedBase = base as? ReadingPlanUiState.Loaded
+        return ReadingPlanUiState.Loaded(
+            weekPlans = selectedWeeks.mapToPresentation(),
+            progress = currentBibleProgress,
+            motivationMessage = getPlanMotivationMessage(selectedWeeks, currentBibleProgress),
+            planStatus = resolvePlanStatus(selectedWeeks),
+            upcomingExpanded = loadedBase?.upcomingExpanded ?: false,
+            completedExpanded = loadedBase?.completedExpanded ?: false,
+            flashTargetGlobalIndex = loadedBase?.flashTargetGlobalIndex ?: 0,
+            selectedReadingPlan = selectedPlan,
+            isShowingMenu = base.isShowingMenu,
+            scrollToWeekNumber = scrollToWeekNumber,
+            scrollToWeekIsAutomatic = scrollToWeekIsAutomatic,
+            scrollToTop = base.scrollToTop,
+            isScrolledDown = base.isScrolledDown,
+            isActiveRowVisible = base.isActiveRowVisible,
+        )
+    }
+
+    private fun loadedState(): ReadingPlanUiState.Loaded? = _uiState.value as? ReadingPlanUiState.Loaded
+
+    private fun updateLoaded(transform: (ReadingPlanUiState.Loaded) -> ReadingPlanUiState.Loaded) {
+        _uiState.update { state ->
+            when (state) {
+                is ReadingPlanUiState.Loaded -> transform(state)
+                is ReadingPlanUiState.Loading -> state
+            }
+        }
+    }
+
+    private fun updateState(transform: (ReadingPlanUiState) -> ReadingPlanUiState) {
+        _uiState.update(transform)
+    }
+
+    private fun PlansModel.weeksFor(plan: ReadingPlanType): List<WeekPlanModel> = when (plan) {
+        ReadingPlanType.CHRONOLOGICAL -> chronologicalOrder
+        ReadingPlanType.BOOKS -> booksOrder
     }
 
     private fun OverflowOption.toUiAction(): ReadingPlanUiAction? = when (this) {
@@ -385,4 +476,10 @@ internal class ReadingPlanViewModel(
             _uiAction.emit(uiAction)
         }
     }
+
+    private data class DayReadKey(
+        val plan: ReadingPlanType,
+        val weekNumber: Int,
+        val dayNumber: Int,
+    )
 }

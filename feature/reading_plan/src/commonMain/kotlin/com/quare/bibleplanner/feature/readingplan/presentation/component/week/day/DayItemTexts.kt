@@ -16,16 +16,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
+import bibleplanner.feature.reading_plan.generated.resources.chip_overdue
 import bibleplanner.feature.reading_plan.generated.resources.day_number
 import bibleplanner.feature.reading_plan.generated.resources.today_badge
-import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.model.plan.DayModel
-import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
+import com.quare.bibleplanner.feature.readingplan.presentation.component.toReadingLabel
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -33,16 +34,17 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SharedTransitionScope.DayItemTexts(
     modifier: Modifier = Modifier,
     day: DayModel,
+    globalDayIndex: Int,
     weekNumber: Int,
-    isNextToRead: Boolean,
+    isHighlighted: Boolean,
+    isOverdue: Boolean,
     animatedContentScope: AnimatedContentScope,
 ) {
     val isRead = day.isRead
-    val isToday = day.isToday
     val titleColor by animateColorAsState(
         targetValue = when {
             isRead -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-            isNextToRead -> MaterialTheme.colorScheme.onPrimaryContainer
+            isHighlighted -> MaterialTheme.colorScheme.onPrimaryContainer
             else -> MaterialTheme.colorScheme.onSurface
         },
         label = "dayTitleColor",
@@ -50,13 +52,12 @@ internal fun SharedTransitionScope.DayItemTexts(
     val passageColor by animateColorAsState(
         targetValue = when {
             isRead -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
-            isNextToRead -> MaterialTheme.colorScheme.onPrimaryContainer
-            else -> MaterialTheme.colorScheme.onSurface
+            isHighlighted -> MaterialTheme.colorScheme.onPrimaryContainer
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
         },
         label = "dayPassageColor",
     )
     val textDecoration = if (isRead) TextDecoration.LineThrough else TextDecoration.None
-    val dayNumber = day.number
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -68,22 +69,23 @@ internal fun SharedTransitionScope.DayItemTexts(
             Text(
                 modifier = Modifier.sharedElement(
                     sharedContentState = rememberSharedContentState(
-                        key = SharedTransitionAnimationUtils.buildDayNumberId(weekNumber, dayNumber),
+                        key = SharedTransitionAnimationUtils.buildDayNumberId(weekNumber, day.number),
                     ),
                     animatedVisibilityScope = animatedContentScope,
                 ),
-                text = stringResource(Res.string.day_number, dayNumber),
+                text = stringResource(Res.string.day_number, globalDayIndex),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
                 color = titleColor,
                 textDecoration = textDecoration,
             )
-            if (isToday) {
-                TodayBadge()
-            }
+            DayStateChip(
+                isToday = day.isToday && !isRead,
+                isOverdue = isOverdue,
+            )
         }
         Text(
-            text = day.passages.toDayReadingFormat(),
+            text = day.passages.toReadingLabel(),
             style = MaterialTheme.typography.bodyMedium,
             color = passageColor,
             textDecoration = textDecoration,
@@ -92,32 +94,46 @@ internal fun SharedTransitionScope.DayItemTexts(
 }
 
 @Composable
-private fun TodayBadge() {
-    Surface(
-        color = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
-        shape = RoundedCornerShape(50),
-    ) {
-        Text(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
+private fun DayStateChip(
+    isToday: Boolean,
+    isOverdue: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    when {
+        isToday -> StateChip(
+            modifier = modifier,
             text = stringResource(Res.string.today_badge),
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Medium,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+        )
+
+        isOverdue -> StateChip(
+            modifier = modifier,
+            text = stringResource(Res.string.chip_overdue),
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
         )
     }
 }
 
 @Composable
-private fun List<PassageModel>.toDayReadingFormat(): String {
-    val passagesPresentation = map { passage ->
-        passage.run {
-            val bookName = passage.bookId.getBookName()
-            if (chapterRanges.orEmpty().isEmpty()) {
-                bookName
-            } else {
-                "$bookName $chapterRanges"
-            }
-        }
+private fun StateChip(
+    text: String,
+    containerColor: Color,
+    contentColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier,
+        color = containerColor,
+        contentColor = contentColor,
+        shape = RoundedCornerShape(50),
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Medium,
+        )
     }
-    return passagesPresentation.joinToString(", ")
 }

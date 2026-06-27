@@ -58,4 +58,62 @@
     <string name="sunday">Domingo</string>
     <string name="edit_plan_start_day">Data de início do plano</string>
     <string name="start_date">Data de início</string>
+
+    <string name="hero_kicker_new">SUA PRIMEIRA LEITURA</string>
+    <string name="hero_kicker_today">LEITURA DE HOJE</string>
+    <string name="hero_kicker_ahead">VOCÊ ESTÁ ADIANTADO</string>
+    <string name="hero_kicker_behind">CONTINUE DE ONDE PAROU</string>
+    <string name="hero_kicker_caughtup">VOCÊ ESTÁ EM DIA</string>
+    <string name="hero_tomorrow_day">Amanhã · Dia %1$d</string>
+    <string name="hero_caughtup_note">Tudo em dia! Você já leu o que estava planejado para hoje.</string>
+    <string name="hero_primary_read_ahead">Adiantar leitura</string>
+    <string name="hero_day_of_total">Dia %1$d de %2$d</string>
+    <string name="hero_next_day">Próxima · Dia %1$d</string>
+    <string name="hero_behind_day">Dia %1$d · %2$s</string>
+    <string name="hero_primary_start">Começar a ler</string>
+    <string name="hero_primary_read_now">Ler agora</string>
+    <string name="hero_primary_continue">Continuar leitura</string>
+    <string name="hero_primary_resume">Retomar leitura</string>
+    <string name="hero_new_note">Bem-vindo! Um capítulo de cada vez — você consegue.</string>
+    <string name="hero_skip_to_today">Pular para hoje · Dia %1$d (%2$s)</string>
+    <string name="mark_as_read">Marcar como lido</string>
+    <string name="plan_done_title">Plano concluído!</string>
+
+    <string name="section_current">ESTA SEMANA</string>
+    <string name="section_current_behind">CONTINUAR DE ONDE PAROU</string>
+    <string name="section_upcoming">A SEGUIR</string>
+    <string name="section_completed">CONCLUÍDAS</string>
+
+    <string name="chip_overdue">Atrasado</string>
+
+    <string name="fab_back_to_today">Voltar para hoje</string>
+    <string name="fab_next_reading">Próxima leitura</string>
+    <string name="fab_resume">Onde parei</string>
+
+    <string name="see_less">Ver menos</string>
+
+    <plurals name="streak_days_label">
+        <item quantity="one">%1$d dia seguido</item>
+        <item quantity="other">%1$d dias seguidos</item>
+    </plurals>
+    <plurals name="see_more_weeks">
+        <item quantity="one">Ver mais %1$d semana</item>
+        <item quantity="other">Ver mais %1$d semanas</item>
+    </plurals>
+    <plurals name="no_read_for_days">
+        <item quantity="one">Sem leitura há %1$d dia</item>
+        <item quantity="other">Sem leitura há %1$d dias</item>
+    </plurals>
+    <plurals name="days_ahead_note">
+        <item quantity="one">Você está %1$d dia à frente do plano. Siga no seu ritmo.</item>
+        <item quantity="other">Você está %1$d dias à frente do plano. Siga no seu ritmo.</item>
+    </plurals>
+    <plurals name="days_behind_reassure">
+        <item quantity="one">Você está %1$d dia atrás — sem pressa.</item>
+        <item quantity="other">Você está %1$d dias atrás — sem pressa.</item>
+    </plurals>
+    <plurals name="plan_done_subtitle">
+        <item quantity="one">Que conquista. %1$d dia na Palavra.</item>
+        <item quantity="other">Que conquista. %1$d dias na Palavra.</item>
+    </plurals>
 </resources>

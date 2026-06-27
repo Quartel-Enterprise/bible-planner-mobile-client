@@ -1,4 +1,14 @@
 {
+  "1.19.0": [
+    "The reading plan screen has a fresh, more beautiful new look.",
+    "A highlighted card at the top shows your next reading and adapts to where you are — just starting, today's reading, all caught up, ahead of plan, or picking up where you left off.",
+    "Weeks are now grouped into 'This week', 'Up next', and 'Completed', and you can collapse or expand the upcoming and completed groups.",
+    "The progress card now shows a circular progress ring along with your reading streak.",
+    "A button now takes you straight to your current reading and briefly highlights it.",
+    "Marking a day as read now responds instantly.",
+    "While the reading plan loads, you now see smooth placeholders instead of a loading spinner.",
+    "Numbers and the day toggles now animate smoothly as your progress changes."
+  ],
   "1.18.2": [
     "Fixed the position of the quick-action buttons on the reading plan screen, which could be hidden behind the phone's navigation bar, overlap the last day in the list, or leave a large empty gap above them."
   ],

@@ -63,6 +63,7 @@ interface ResponsiveContentScope {
         items: List<T>,
         key: ((item: T) -> Any)? = null,
         contentType: (item: T) -> Any? = { null },
+        animateItem: Boolean = false,
         itemContent: @Composable (item: T) -> Unit,
     )
 }

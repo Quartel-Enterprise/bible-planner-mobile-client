@@ -1,4 +1,14 @@
 {
+  "1.19.0": [
+    "La pantalla del plan de lectura tiene un aspecto nuevo y más bonito.",
+    "Una tarjeta destacada en la parte superior muestra tu próxima lectura y se adapta a tu situación — empezando, lectura de hoy, al día, adelantado o retomando donde lo dejaste.",
+    "Las semanas ahora se agrupan en 'Esta semana', 'A continuación' y 'Completadas', y puedes contraer o expandir los grupos a continuación y completadas.",
+    "La tarjeta de progreso ahora muestra un anillo de progreso circular junto con tu racha de días seguidos.",
+    "Un botón te lleva directo a tu lectura actual y la resalta brevemente.",
+    "Marcar un día como leído ahora responde al instante.",
+    "Mientras el plan de lectura se carga, ahora ves marcadores de posición suaves en lugar del indicador de carga.",
+    "Los números y los botones para marcar el día ahora se animan suavemente a medida que cambia tu progreso."
+  ],
   "1.18.2": [
     "Se corrigió la posición de los botones de acceso rápido en la pantalla del plan de lectura, que podían quedar ocultos detrás de la barra de navegación del teléfono, superponerse al último día de la lista o dejar un espacio vacío grande encima de ellos."
   ],
