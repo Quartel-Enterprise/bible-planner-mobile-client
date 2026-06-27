@@ -115,8 +115,8 @@ private fun DayShimmerRow() {
                 .padding(
                     start = 12.dp,
                     end = 8.dp,
-                    top = 10.dp,
-                    bottom = 10.dp,
+                    top = 12.dp,
+                    bottom = 12.dp,
                 ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -125,15 +125,15 @@ private fun DayShimmerRow() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                ShimmerBox(modifier = Modifier.width(24.dp).height(16.dp))
-                ShimmerBox(modifier = Modifier.width(20.dp).height(10.dp))
+                ShimmerBox(modifier = Modifier.width(22.dp).height(16.dp))
+                ShimmerBox(modifier = Modifier.width(18.dp).height(10.dp))
             }
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                ShimmerBox(modifier = Modifier.fillMaxWidth(0.4f).height(16.dp))
-                ShimmerBox(modifier = Modifier.fillMaxWidth(0.6f).height(12.dp))
+                ShimmerBox(modifier = Modifier.fillMaxWidth(0.45f).height(16.dp))
+                ShimmerBox(modifier = Modifier.fillMaxWidth(0.65f).height(12.dp))
             }
             ShimmerBox(
                 modifier = Modifier.size(36.dp),
@@ -144,4 +144,4 @@ private fun DayShimmerRow() {
     }
 }
 
-private const val DAY_SHIMMER_COUNT = 3
+private const val DAY_SHIMMER_COUNT = 7
