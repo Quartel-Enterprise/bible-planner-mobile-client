@@ -169,6 +169,7 @@ private fun ResponsiveContentScope.weekItems(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
+                    isCurrent = index == 0,
                 )
             }
         }

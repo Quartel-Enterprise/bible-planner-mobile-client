@@ -20,19 +20,30 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 internal fun PlanHeroShimmer(modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        color = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(24.dp),
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            ShimmerBox(modifier = Modifier.width(120.dp).height(12.dp))
-            ShimmerBox(modifier = Modifier.fillMaxWidth(0.7f).height(26.dp))
-            ShimmerBox(modifier = Modifier.width(140.dp).height(14.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            ShimmerBox(modifier = Modifier.width(110.dp).height(14.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                ShimmerBox(modifier = Modifier.fillMaxWidth(0.85f).height(26.dp))
+                ShimmerBox(modifier = Modifier.fillMaxWidth(0.55f).height(26.dp))
+            }
+            ShimmerBox(modifier = Modifier.width(120.dp).height(14.dp))
+            ShimmerBox(modifier = Modifier.fillMaxWidth(0.7f).height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
                 ShimmerBox(
-                    modifier = Modifier.weight(1f).height(48.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
                     shape = RoundedCornerShape(16.dp),
                 )
                 ShimmerBox(
