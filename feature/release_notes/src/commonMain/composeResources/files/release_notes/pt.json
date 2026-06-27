@@ -7,7 +7,8 @@
     "Um botão leva você direto para a sua leitura atual e a destaca rapidamente.",
     "Marcar um dia como lido agora responde na hora.",
     "Enquanto o plano de leitura carrega, você agora vê espaços reservados suaves no lugar do indicador de carregamento.",
-    "Os números e os botões de marcar o dia agora animam suavemente conforme o seu progresso muda."
+    "Os números e os botões de marcar o dia agora animam suavemente conforme o seu progresso muda.",
+    "Enquanto a lista de versões da Bíblia carrega, você agora vê espaços reservados suaves no lugar do indicador de carregamento."
   ],
   "1.18.2": [
     "Corrigida a posição dos botões de atalho na tela do plano de leitura, que podiam ficar escondidos atrás da barra de navegação do celular, sobrepor o último dia da lista ou deixar um espaço vazio grande acima deles."
