@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.LocalFireDepartment
@@ -155,7 +157,7 @@ private fun PlanProgressRing(
         contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator(
-            modifier = Modifier.size(92.dp),
+            modifier = Modifier.size(100.dp),
             progress = { (progress / 100f).coerceIn(0f, 1f) },
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -164,10 +166,16 @@ private fun PlanProgressRing(
             gapSize = 0.dp,
         )
         Text(
+            modifier = Modifier.width(64.dp),
             text = text,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            autoSize = TextAutoSize.StepBased(
+                maxFontSize = MaterialTheme.typography.titleLarge.fontSize,
+            ),
         )
     }
 }
