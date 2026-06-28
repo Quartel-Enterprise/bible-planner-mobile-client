@@ -67,7 +67,7 @@ internal fun BehindHero(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(Res.string.hero_primary_resume),
             icon = Icons.Default.PlayArrow,
-            trailingIcon = false,
+            trailingIcon = true,
             onClick = { onEvent(next.toDayClick()) },
         )
         planStatus.todayDay?.let { today ->
