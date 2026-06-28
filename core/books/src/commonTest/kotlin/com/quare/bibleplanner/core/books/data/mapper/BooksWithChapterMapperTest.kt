@@ -45,4 +45,54 @@ internal class BooksWithChapterMapperTest {
         assertEquals(listOf(1, 2), verses.map { it.number })
         assertEquals(1, verses.count { it.isRead })
     }
+
+    @Test
+    fun `chapter read date is the latest read moment across the chapter flag and its verses`() = runTest {
+        // Given
+        val book = BookWithChapters(
+            book = BookEntity(id = "GEN", isRead = false, favoriteUpdatedAt = null, isFavoritePendingSync = false),
+            chapters = listOf(
+                ChapterWithVerses(
+                    chapter = ChapterEntity(id = 1, number = 1, bookId = "GEN", isRead = true, readUpdatedAt = 100L),
+                    verses = listOf(
+                        VerseWithTexts(
+                            verse = VerseEntity(id = 1, number = 1, chapterId = 1, isRead = true, readUpdatedAt = 250L),
+                            texts = emptyList(),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val result = mapper.mapModel(book)
+
+        // Then
+        assertEquals(250L, result.chapters.single().readUpdatedAt)
+    }
+
+    @Test
+    fun `chapter read date is null when neither the chapter nor its verses were read`() = runTest {
+        // Given
+        val book = BookWithChapters(
+            book = BookEntity(id = "GEN", isRead = false, favoriteUpdatedAt = null, isFavoritePendingSync = false),
+            chapters = listOf(
+                ChapterWithVerses(
+                    chapter = ChapterEntity(id = 1, number = 1, bookId = "GEN", isRead = false),
+                    verses = listOf(
+                        VerseWithTexts(
+                            verse = VerseEntity(id = 1, number = 1, chapterId = 1, isRead = false),
+                            texts = emptyList(),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+        val result = mapper.mapModel(book)
+
+        // Then
+        assertEquals(null, result.chapters.single().readUpdatedAt)
+    }
 }

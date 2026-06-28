@@ -4,4 +4,5 @@ data class BookChapterModel(
     val number: Int,
     val verses: List<VerseModel>,
     val isRead: Boolean,
+    val readUpdatedAt: Long?,
 )

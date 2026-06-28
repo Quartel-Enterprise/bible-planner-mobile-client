@@ -43,7 +43,16 @@ internal class DayUiStateFlowFactory(
 
             // Calculate initial timestamp and date components
             val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
-            val savedTimestamp = day.readTimestamp ?: currentTimeMillis
+            val derivedReadTimestamp = if (day.isRead) {
+                deriveCompletedTimestamp(
+                    passages = day.passages,
+                    books = books,
+                )
+            } else {
+                null
+            }
+            val effectiveReadTimestamp = day.readTimestamp ?: derivedReadTimestamp
+            val savedTimestamp = effectiveReadTimestamp ?: currentTimeMillis
             // Convert to UTC midnight for DatePicker (DatePicker expects UTC midnight)
             val initialTimestamp = convertTimestampToDatePickerInitialDate(savedTimestamp)
             val initialDate = localDateTimeProvider.getLocalDateTime(savedTimestamp)
@@ -82,7 +91,7 @@ internal class DayUiStateFlowFactory(
                 day = day,
                 weekNumber = weekNumber,
                 datePickerUiState = datePickerUiState,
-                formattedReadDate = day.readTimestamp?.let(readDateFormatter::format),
+                formattedReadDate = effectiveReadTimestamp?.let(readDateFormatter::format),
                 chapterReadStatus = calculateAllChaptersReadStatus(
                     passages = day.passages,
                     books = books,
@@ -94,6 +103,23 @@ internal class DayUiStateFlowFactory(
             DayUiState.Loading
         }
     }
+
+    private fun deriveCompletedTimestamp(
+        passages: List<PassageModel>,
+        books: List<BookDataModel>,
+    ): Long? = passages
+        .flatMap { passage ->
+            val book = books.find { it.id == passage.bookId }
+                ?: return@flatMap emptyList<Long>()
+            val chapters = if (passage.chapters.isEmpty()) {
+                book.chapters
+            } else {
+                passage.chapters.mapNotNull { chapter ->
+                    book.chapters.find { it.number == chapter.number }
+                }
+            }
+            chapters.mapNotNull { it.readUpdatedAt }
+        }.maxOrNull()
 
     /**
      * Calculate the total number of chapters/items displayed and how many are completed.

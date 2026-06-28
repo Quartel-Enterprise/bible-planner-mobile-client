@@ -65,10 +65,16 @@ class BooksWithChapterMapper {
                 versesModel.isNotEmpty() && versesModel.all { it.isRead }
             )
 
+            val readUpdatedAt = (
+                listOfNotNull(chapterWithVerses.chapter.readUpdatedAt) +
+                    chapterWithVerses.verses.mapNotNull { it.verse.readUpdatedAt }
+            ).maxOrNull()
+
             BookChapterModel(
                 number = chapterWithVerses.chapter.number,
                 verses = versesModel,
                 isRead = isChapterRead,
+                readUpdatedAt = readUpdatedAt,
             )
         }
 
