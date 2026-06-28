@@ -1,4 +1,7 @@
 {
+  "1.19.1": [
+    "Se corrigió un problema por el que la 'Fecha de finalización' de un día aparecía como 'No hay fecha establecida' cuando completabas el día leyendo sus capítulos desde la pantalla de lectura; ahora muestra la fecha de tu lectura más reciente de ese día."
+  ],
   "1.19.0": [
     "La pantalla del plan de lectura tiene un aspecto nuevo y más bonito.",
     "Una tarjeta destacada en la parte superior muestra tu próxima lectura y se adapta a tu situación — empezando, lectura de hoy, al día, adelantado o retomando donde lo dejaste.",

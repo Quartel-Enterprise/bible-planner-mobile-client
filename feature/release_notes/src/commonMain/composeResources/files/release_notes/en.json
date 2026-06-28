@@ -1,4 +1,7 @@
 {
+  "1.19.1": [
+    "Fixed an issue where a day's 'Completed date' showed as 'No date set' when you finished the day by reading its chapters from the reading screen; it now shows the date of your most recent reading for that day."
+  ],
   "1.19.0": [
     "The reading plan screen has a fresh, more beautiful new look.",
     "A highlighted card at the top shows your next reading and adapts to where you are — just starting, today's reading, all caught up, ahead of plan, or picking up where you left off.",

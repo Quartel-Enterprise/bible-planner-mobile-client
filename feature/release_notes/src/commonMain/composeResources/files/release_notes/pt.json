@@ -1,4 +1,7 @@
 {
+  "1.19.1": [
+    "Corrigido um problema em que a 'Data de conclusão' de um dia aparecia como 'Nenhuma data definida' quando você concluía o dia lendo seus capítulos pela tela de leitura; agora ela mostra a data da sua leitura mais recente daquele dia."
+  ],
   "1.19.0": [
     "A tela do plano de leitura ganhou um visual novo e mais bonito.",
     "Um cartão em destaque no topo mostra sua próxima leitura e se adapta à sua situação — começando agora, leitura de hoje, em dia, adiantado ou continuando de onde parou.",

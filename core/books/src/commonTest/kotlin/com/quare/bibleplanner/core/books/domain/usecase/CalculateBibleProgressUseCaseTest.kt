@@ -24,11 +24,13 @@ internal class CalculateBibleProgressUseCaseTest {
                     number = 1,
                     isRead = true,
                     verses = listOf(verse(1, isRead = true), verse(2, isRead = false)),
+                    readUpdatedAt = null,
                 ),
                 BookChapterModel(
                     number = 2,
                     isRead = false,
                     verses = listOf(verse(1, isRead = true), verse(2, isRead = false)),
+                    readUpdatedAt = null,
                 ),
             ),
         )

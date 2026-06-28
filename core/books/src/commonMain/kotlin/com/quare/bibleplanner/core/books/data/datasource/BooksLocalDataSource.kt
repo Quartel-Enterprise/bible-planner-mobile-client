@@ -54,6 +54,7 @@ class BooksLocalDataSource(
                         )
                     },
                     isRead = false,
+                    readUpdatedAt = null,
                 )
             },
             isRead = false,
