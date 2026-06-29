@@ -231,6 +231,15 @@ git remote update
 git checkout origin/main
 ```
 
+**Delete the local branch:** since the squash merge replaces the branch's commits with a single
+new one, the local feature branch is now stale and must be force-deleted (a plain `-d` would fail
+because git doesn't see it as merged):
+```bash
+git branch -D <branch>
+```
+
+Replace `<branch>` with the feature branch name captured earlier.
+
 If the user declines, skip this step entirely and end the workflow.
 
 ## Edge cases
