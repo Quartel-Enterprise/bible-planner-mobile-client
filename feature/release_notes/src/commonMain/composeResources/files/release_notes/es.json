@@ -1,4 +1,7 @@
 {
+  "1.20.0": [
+    "Se corrigió un problema que podía impedir que la aplicación se abriera en algunos dispositivos Android."
+  ],
   "1.19.1": [
     "Se corrigió un problema por el que la 'Fecha de finalización' de un día aparecía como 'No hay fecha establecida' cuando completabas el día leyendo sus capítulos desde la pantalla de lectura; ahora muestra la fecha de tu lectura más reciente de ese día."
   ],

@@ -42,6 +42,20 @@ kotlin {
 
             // WorkManager
             implementation(libs.androidx.work.runtime.ktx)
+
+            // Room: framework SQLite driver, so the Android app does not ship the
+            // bundled libsqliteJni.so native library (missing-ABI-split crashes).
+            implementation(libs.androidx.sqlite.framework)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.androidx.sqlite.bundled)
+        }
+
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.androidx.sqlite.bundled)
+            }
         }
         commonMain.dependencies {
             // Feature
@@ -98,7 +112,6 @@ kotlin {
 
             // Room
             implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.sqlite.bundled)
 
             // Date
             implementation(libs.kotlinx.datetime)

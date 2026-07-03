@@ -1,4 +1,7 @@
 {
+  "1.20.0": [
+    "Corrigido um problema que podia impedir o aplicativo de abrir em alguns aparelhos Android."
+  ],
   "1.19.1": [
     "Corrigido um problema em que a 'Data de conclusão' de um dia aparecia como 'Nenhuma data definida' quando você concluía o dia lendo seus capítulos pela tela de leitura; agora ela mostra a data da sua leitura mais recente daquele dia."
   ],
