@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.core.provider.room.di
 
 import androidx.room3.RoomDatabase
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
@@ -17,7 +16,6 @@ val roomModule = module {
     single<AppDatabase> {
         val builder: RoomDatabase.Builder<AppDatabase> = get()
         builder
-            .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .fallbackToDestructiveMigration(true)
             .build()

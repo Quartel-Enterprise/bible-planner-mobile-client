@@ -20,16 +20,33 @@ kotlin {
 
             // Room
             implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.sqlite.bundled)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
         }
 
+        androidMain.dependencies {
+            // Framework SQLite driver: relies on the OS-provided SQLite so the
+            // Android app does not ship/load the bundled libsqliteJni.so native
+            // library, which can be missing when an AAB ABI split fails to install.
+            implementation(libs.androidx.sqlite.framework)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.androidx.sqlite.bundled)
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(libs.androidx.sqlite.bundled)
+            }
+        }
+
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.androidx.sqlite.bundled)
         }
     }
 }
