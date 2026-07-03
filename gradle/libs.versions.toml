@@ -14,8 +14,8 @@ kotlinx-datetime = "0.8.0"
 kotlinSerializationJson = "1.11.0"
 navigationComposeMultiplatform = "2.9.2"
 koinVersion = "4.2.2"
-room = "2.8.4"
-sqlite = "2.6.2"
+room = "3.0.0"
+sqlite = "2.7.0"
 ksp = "2.3.6"
 datasSoreVersion = "1.2.1"
 workManagerVersion = "2.11.2"
@@ -57,8 +57,8 @@ kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-s
 
 # Room (KMP)
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-runtime = { group = "androidx.room3", name = "room3-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room" }
 
 # Coroutines
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -146,7 +146,7 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-androidx-room = { id = "androidx.room", version.ref = "room" }
+androidx-room = { id = "androidx.room3", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googeServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }

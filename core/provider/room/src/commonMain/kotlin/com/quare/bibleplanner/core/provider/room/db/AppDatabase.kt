@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.core.provider.room.db
 
-import androidx.room.AutoMigration
-import androidx.room.ConstructedBy
-import androidx.room.Database
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
+import androidx.room3.AutoMigration
+import androidx.room3.ColumnTypeConverters
+import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
 import com.quare.bibleplanner.core.provider.room.converter.BibleVersionDownloadStatusConverter
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
@@ -39,7 +39,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
     ],
     exportSchema = true,
 )
-@TypeConverters(BibleVersionDownloadStatusConverter::class)
+@ColumnTypeConverters(BibleVersionDownloadStatusConverter::class)
 @ConstructedBy(DatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun bookDao(): BookDao

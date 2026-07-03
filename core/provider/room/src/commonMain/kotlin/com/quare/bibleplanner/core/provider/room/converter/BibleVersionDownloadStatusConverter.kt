@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.core.provider.room.converter
 
-import androidx.room.TypeConverter
+import androidx.room3.ColumnTypeConverter
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 
 class BibleVersionDownloadStatusConverter {
-    @TypeConverter
+    @ColumnTypeConverter
     fun fromBibleVersionDownloadStatus(status: DownloadStatus): String = status.name
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun toBibleVersionDownloadStatus(name: String): DownloadStatus = DownloadStatus.valueOf(name)
 }

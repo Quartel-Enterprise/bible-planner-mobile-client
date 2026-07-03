@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.provider.room.db
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
+import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -47,7 +48,7 @@ internal class Migration8To9SpecTest {
     }
 
     @Test
-    fun `GIVEN John texts from a done version WHEN migrating THEN deletes them and re-arms the version`() {
+    fun `GIVEN John texts from a done version WHEN migrating THEN deletes them and re-arms the version`() = runTest {
         // When
         spec.onPostMigrate(connection)
 
@@ -57,7 +58,7 @@ internal class Migration8To9SpecTest {
     }
 
     @Test
-    fun `GIVEN other books texts WHEN migrating THEN keeps them untouched`() {
+    fun `GIVEN other books texts WHEN migrating THEN keeps them untouched`() = runTest {
         // When
         spec.onPostMigrate(connection)
 
@@ -67,7 +68,7 @@ internal class Migration8To9SpecTest {
     }
 
     @Test
-    fun `GIVEN a version without John texts WHEN migrating THEN leaves its status untouched`() {
+    fun `GIVEN a version without John texts WHEN migrating THEN leaves its status untouched`() = runTest {
         // When
         spec.onPostMigrate(connection)
 

@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.provider.room.db
 
-import androidx.room.migration.AutoMigrationSpec
+import androidx.room3.migration.AutoMigrationSpec
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import com.quare.bibleplanner.core.model.book.BookId
@@ -14,7 +14,7 @@ import com.quare.bibleplanner.core.model.book.BookId
  * corrected source instead of skipping the already-populated chapters.
  */
 class Migration8To9Spec : AutoMigrationSpec {
-    override fun onPostMigrate(connection: SQLiteConnection) {
+    override suspend fun onPostMigrate(connection: SQLiteConnection) {
         connection.execSQL(
             "UPDATE bible_versions SET status = 'IN_PROGRESS' " +
                 "WHERE status = 'DONE' AND id IN (" +

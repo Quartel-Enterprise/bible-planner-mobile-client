@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.provider.room.relation
 
-import androidx.room.Embedded
-import androidx.room.Relation
+import androidx.room3.Embedded
+import androidx.room3.Relation
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 
@@ -10,8 +10,8 @@ data class BookWithChapters(
     val book: BookEntity,
     @Relation(
         entity = ChapterEntity::class,
-        parentColumn = "id",
-        entityColumn = "bookId",
+        parentColumns = ["id"],
+        entityColumns = ["bookId"],
     )
     val chapters: List<ChapterWithVerses>,
 )

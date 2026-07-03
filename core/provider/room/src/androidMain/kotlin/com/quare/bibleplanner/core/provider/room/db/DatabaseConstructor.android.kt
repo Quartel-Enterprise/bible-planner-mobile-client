@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.core.provider.room.db
 
 import android.content.Context
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room3.Room
+import androidx.room3.RoomDatabase
 import com.quare.bibleplanner.core.provider.room.utils.DatabaseUtils
 
 fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<AppDatabase> {
