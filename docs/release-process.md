@@ -190,6 +190,7 @@ All secrets are stored in the `Production` environment, never committed:
 `MATCH_SSH_PRIVATE_KEY`, `LOCAL_PROPERTIES`.
 
 `LOCAL_PROPERTIES` holds the contents of `local.properties` (minus `sdk.dir`) — the
-build-time values consumed by BuildKonfig (Supabase, RevenueCat, donation addresses and the
-GitHub token). The workflow writes it to `local.properties` before building, since that file
+build-time values consumed by BuildKonfig (Supabase, RevenueCat, donation addresses, the
+GitHub token and the desktop analytics keys `GA_MEASUREMENT_ID` / `GA_MEASUREMENT_API_SECRET`).
+The workflow writes it to `local.properties` before building, since that file
 is git-ignored and would otherwise be missing on the runner.
