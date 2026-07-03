@@ -1,5 +1,9 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -30,6 +34,13 @@ kotlin {
             implementation(libs.koinAndroid)
         }
 
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.kermit)
+            implementation(projects.core.utils)
+        }
+
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
@@ -43,6 +54,28 @@ kotlin {
         }
         val iosSimulatorArm64Main by getting {
             dependsOn(iosMain)
+        }
+    }
+}
+
+buildkonfig {
+    packageName = "com.quare.bibleplanner.core.provider.analytics.generated"
+    objectName = "AnalyticsBuildKonfig"
+    exposeObjectWithName = "AnalyticsBuildKonfig"
+
+    defaultConfigs {
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+        }
+        val propertiesKeys = listOf("GA_MEASUREMENT_ID", "GA_MEASUREMENT_API_SECRET")
+        propertiesKeys.forEach { propertyKey ->
+            val propertyValue = properties.getProperty(propertyKey).orEmpty()
+            if (propertyValue.isBlank()) {
+                logger.warn("⚠️ $propertyKey not found in local.properties. Desktop analytics will be disabled.")
+            }
+            buildConfigField(FieldSpec.Type.STRING, propertyKey, propertyValue)
         }
     }
 }
