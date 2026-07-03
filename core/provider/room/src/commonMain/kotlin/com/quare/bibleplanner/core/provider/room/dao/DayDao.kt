@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.core.provider.room.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room3.Dao
+import androidx.room3.Insert
+import androidx.room3.OnConflictStrategy
+import androidx.room3.Query
+import androidx.room3.Update
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import kotlinx.coroutines.flow.Flow
 

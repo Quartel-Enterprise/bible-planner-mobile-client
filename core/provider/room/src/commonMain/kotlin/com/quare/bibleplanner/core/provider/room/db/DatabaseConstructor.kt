@@ -2,7 +2,7 @@
 
 package com.quare.bibleplanner.core.provider.room.db
 
-import androidx.room.RoomDatabaseConstructor
+import androidx.room3.RoomDatabaseConstructor
 
 expect object DatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase
