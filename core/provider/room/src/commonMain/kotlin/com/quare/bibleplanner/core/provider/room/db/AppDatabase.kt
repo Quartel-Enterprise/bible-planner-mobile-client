@@ -10,12 +10,18 @@ import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
+import com.quare.bibleplanner.core.provider.room.dao.DayStudyDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyChapterSummaryEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyFactEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyQuestionEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyTakeawayEntity
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
@@ -29,13 +35,19 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         DayEntity::class,
         BibleVersionEntity::class,
         SyncedPreferenceEntity::class,
+        DayStudyEntity::class,
+        DayStudyChapterSummaryEntity::class,
+        DayStudyTakeawayEntity::class,
+        DayStudyFactEntity::class,
+        DayStudyQuestionEntity::class,
     ],
-    version = 9,
+    version = 10,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8, spec = Migration7To8Spec::class),
         AutoMigration(from = 8, to = 9, spec = Migration8To9Spec::class),
+        AutoMigration(from = 9, to = 10),
     ],
     exportSchema = true,
 )
@@ -53,4 +65,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun bibleVersionDao(): BibleVersionDao
 
     abstract fun syncedPreferenceDao(): SyncedPreferenceDao
+
+    abstract fun dayStudyDao(): DayStudyDao
 }

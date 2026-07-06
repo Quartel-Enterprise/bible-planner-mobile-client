@@ -3,4 +3,6 @@ package com.quare.bibleplanner.core.model.route
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object LoginNavRoute
+data class LoginNavRoute(
+    val notifyResultViaSnackbar: Boolean,
+)

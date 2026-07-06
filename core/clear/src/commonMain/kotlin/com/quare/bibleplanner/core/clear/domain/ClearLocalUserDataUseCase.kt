@@ -18,11 +18,13 @@ import kotlinx.coroutines.launch
 internal class ClearLocalUserDataUseCase(
     private val clearLocalReadingData: ClearLocalReadingDataUseCase,
     private val clearAllSyncedLocalData: ClearAllSyncedLocalData,
+    private val clearDayStudyLocalData: ClearDayStudyLocalData,
     private val ensureDefaultPlanStartDate: EnsureDefaultPlanStartDateUseCase,
 ) : ClearLocalUserData {
     override suspend fun invoke() {
         coroutineScope {
             launch { clearLocalReadingData() }
+            launch { clearDayStudyLocalData() }
             launch {
                 clearAllSyncedLocalData()
                 ensureDefaultPlanStartDate()

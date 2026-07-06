@@ -5,7 +5,8 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.loadedDayLandscapeScreenContent
+import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.LoadedDayLandscapeContent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.portrait.loadedDayPortraitScreenContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -14,32 +15,37 @@ import com.quare.bibleplanner.ui.component.ResponsiveColumn
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LoadedDayContent(
-    modifier: Modifier = Modifier,
     uiState: DayUiState.Loaded,
+    onEvent: (DayUiEvent) -> Unit,
+    platform: Platform,
+    isLandscape: Boolean,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
-    onEvent: (DayUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val day = uiState.day
-    ResponsiveColumn(
-        modifier = modifier,
-        portraitContent = {
-            loadedDayPortraitScreenContent(
-                day = day,
-                onEvent = onEvent,
-                uiState = uiState,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-            )
-        },
-        landscapeContent = {
-            loadedDayLandscapeScreenContent(
-                day = day,
-                uiState = uiState,
-                onEvent = onEvent,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-            )
-        },
-    )
+    if (isLandscape) {
+        LoadedDayLandscapeContent(
+            modifier = modifier,
+            day = day,
+            uiState = uiState,
+            onEvent = onEvent,
+            platform = platform,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+        )
+    } else {
+        ResponsiveColumn(
+            modifier = modifier,
+            portraitContent = {
+                loadedDayPortraitScreenContent(
+                    day = day,
+                    onEvent = onEvent,
+                    uiState = uiState,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
+                )
+            },
+        )
+    }
 }

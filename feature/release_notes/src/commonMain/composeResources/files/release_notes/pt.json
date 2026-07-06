@@ -1,5 +1,7 @@
 {
-  "1.20.0": [
+  "2.0.0": [
+    "Novo: Estudo do dia com IA — gere uma análise das leituras de cada dia, com visão geral, contexto histórico e perguntas para reflexão.",
+    "A tela Pro foi redesenhada, deixando os planos de assinatura mais claros.",
     "Corrigido um problema que podia impedir o aplicativo de abrir em alguns aparelhos Android."
   ],
   "1.19.1": [

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.book_details.generated.resources.Res
 import bibleplanner.feature.book_details.generated.resources.synopsis
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
+import com.quare.bibleplanner.ui.component.ExpandableText
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
@@ -70,10 +71,11 @@ fun SynopsisSection(
             }
         }
         VerticalSpacer(16)
-        SynopsisText(
-            synopsis = synopsis,
+        ExpandableText(
+            text = synopsis,
             isExpanded = isExpanded,
             onToggleExpanded = onToggleExpanded,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

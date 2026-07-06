@@ -92,8 +92,6 @@
     <string name="reading_progress">Progresso de Leitura</string>
     <string name="read_count">%1$d / %2$d lidos</string>
     <string name="tap_to_mark">toque para marcar</string>
-    <string name="show_more">Ver mais</string>
-    <string name="show_less">Ver menos</string>
     <string name="mark_all_as_read">Marcar todos como lidos</string>
     <string name="mark_all_as_unread">Marcar todos como não lidos</string>
     <string name="read_count_suffix"> lidos</string>

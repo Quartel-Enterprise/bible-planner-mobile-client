@@ -31,6 +31,7 @@ import bibleplanner.feature.reading_plan.generated.resources.hero_primary_read_a
 import bibleplanner.feature.reading_plan.generated.resources.hero_primary_read_now
 import bibleplanner.feature.reading_plan.generated.resources.hero_primary_start
 import bibleplanner.feature.reading_plan.generated.resources.hero_tomorrow_day
+import com.quare.bibleplanner.core.books.util.toReadingLabel
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroContainer
@@ -41,7 +42,6 @@ import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.co
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toDayClick
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toReadClick
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toShortLabel
-import com.quare.bibleplanner.feature.readingplan.presentation.component.toReadingLabel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource

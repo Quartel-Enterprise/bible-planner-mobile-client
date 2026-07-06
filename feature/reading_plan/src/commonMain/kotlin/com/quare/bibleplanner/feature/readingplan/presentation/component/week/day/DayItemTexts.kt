@@ -24,9 +24,9 @@ import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.chip_overdue
 import bibleplanner.feature.reading_plan.generated.resources.day_number
 import bibleplanner.feature.reading_plan.generated.resources.today_badge
+import com.quare.bibleplanner.core.books.util.toReadingLabel
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
-import com.quare.bibleplanner.feature.readingplan.presentation.component.toReadingLabel
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)

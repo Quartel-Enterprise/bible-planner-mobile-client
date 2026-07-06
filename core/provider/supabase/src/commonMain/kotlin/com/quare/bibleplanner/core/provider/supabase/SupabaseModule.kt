@@ -4,6 +4,8 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.functions.Functions
+import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.storage.BucketApi
@@ -24,6 +26,7 @@ val supabaseModule = module {
     single<Auth> { get<SupabaseClient>().auth }
     single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.ignoringTransientInitializing() }
     single<Realtime> { get<SupabaseClient>().realtime }
+    single<Functions> { get<SupabaseClient>().functions }
     single<BucketApi> {
         get<SupabaseClient>().storage.from(SUPABASE_BUCKET_NAME)
     }

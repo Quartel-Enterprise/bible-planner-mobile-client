@@ -120,7 +120,7 @@ internal class MoreViewModel(
 
             MoreUiEvent.OnLoginClick -> {
                 navigateIfOnline(
-                    route = LoginNavRoute,
+                    route = LoginNavRoute(notifyResultViaSnackbar = false),
                     offlineMessage = Res.string.login_requires_internet,
                 )
             }

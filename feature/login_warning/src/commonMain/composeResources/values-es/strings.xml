@@ -6,4 +6,5 @@
     <string name="login_warning_message_purchase">Inicia sesión primero para que tu suscripción Pro quede vinculada a tu cuenta en todos tus dispositivos.</string>
     <string name="login_warning_login">Iniciar sesión</string>
     <string name="login_warning_dismiss">Ahora no</string>
+    <string name="login_warning_message_day_study">Inicia sesión primero para que tus análisis gratis de IA queden vinculados a tu cuenta en todos tus dispositivos.</string>
 </resources>

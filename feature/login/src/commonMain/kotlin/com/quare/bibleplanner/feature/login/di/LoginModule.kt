@@ -3,12 +3,15 @@ package com.quare.bibleplanner.feature.login.di
 import com.quare.bibleplanner.feature.login.presentation.LoginViewModel
 import com.quare.bibleplanner.feature.login.presentation.factory.LoginUiStateFactory
 import com.quare.bibleplanner.feature.login.presentation.mapper.ThrowableToLoginErrorMapper
+import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val loginModule = module {
     factoryOf(::LoginUiStateFactory)
     factoryOf(::ThrowableToLoginErrorMapper)
+    singleOf(::AppSnackbarController)
     viewModelOf(::LoginViewModel)
 }

@@ -1,5 +1,7 @@
 {
-  "1.20.0": [
+  "2.0.0": [
+    "Nuevo: Estudio del día con IA — genera un análisis de las lecturas de cada día, con una visión general, contexto histórico y preguntas para reflexionar.",
+    "La pantalla Pro fue rediseñada para mostrar los planes de suscripción con mayor claridad.",
     "Se corrigió un problema que podía impedir que la aplicación se abriera en algunos dispositivos Android."
   ],
   "1.19.1": [

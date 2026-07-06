@@ -7,18 +7,23 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.dialog
+import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.utils.LoginUiActionCollector
+import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import io.github.jan.supabase.compose.auth.composable.GoogleDialogType
 import io.github.jan.supabase.compose.auth.composable.rememberSignInWithApple
 import io.github.jan.supabase.compose.auth.composable.rememberSignInWithGoogle
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.loginRoot(navController: NavController) {
-    dialog<LoginNavRoute> {
+    dialog<LoginNavRoute> { backStackEntry ->
+        val notifyResultViaSnackbar = backStackEntry.toRoute<LoginNavRoute>().notifyResultViaSnackbar
+        val appSnackbarController = koinInject<AppSnackbarController>()
         val viewModel = koinViewModel<LoginViewModel>()
         val onEvent = viewModel::onEvent
         val composeAuth = viewModel.composeAuth
@@ -37,6 +42,11 @@ fun NavGraphBuilder.loginRoot(navController: NavController) {
             uiActionFlow = viewModel.uiAction,
             navController = navController,
             sheetState = sheetState,
+            onLoginResult = { message ->
+                if (notifyResultViaSnackbar) {
+                    appSnackbarController.show(message)
+                }
+            },
         )
         LoginBottomSheet(
             sheetState = sheetState,

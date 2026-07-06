@@ -17,7 +17,9 @@ internal fun LoginWarningActionCollector(
         when (action) {
             LoginWarningUiAction.NavigateBack -> navController.navigateUp()
 
-            LoginWarningUiAction.NavigateToLogin -> navController.navigate(LoginNavRoute) {
+            LoginWarningUiAction.NavigateToLogin -> navController.navigate(
+                LoginNavRoute(notifyResultViaSnackbar = true),
+            ) {
                 popUpTo<LoginWarningNavRoute> { inclusive = true }
             }
         }

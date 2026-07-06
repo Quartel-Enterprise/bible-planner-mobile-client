@@ -20,13 +20,15 @@ private const val ANIMATION_TIME_MILLIS = 350
 @Composable
 internal fun SubscriptionPlanCard(
     title: String,
+    description: String,
     price: String,
+    period: String,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
     val containerColor by animateColorAsState(
         targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
         } else {
             MaterialTheme.colorScheme.surface
         },
@@ -38,7 +40,7 @@ internal fun SubscriptionPlanCard(
         targetValue = if (isSelected) {
             MaterialTheme.colorScheme.primary
         } else {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+            MaterialTheme.colorScheme.outlineVariant
         },
         animationSpec = tween(durationMillis = ANIMATION_TIME_MILLIS),
         label = "borderColor",
@@ -61,7 +63,9 @@ internal fun SubscriptionPlanCard(
                 .fillMaxWidth()
                 .padding(16.dp),
             title = title,
+            description = description,
             price = price,
+            period = period,
             isSelected = isSelected,
         )
     }

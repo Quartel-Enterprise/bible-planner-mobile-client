@@ -23,6 +23,7 @@ kotlin {
             implementation(libs.supabase.storage)
             implementation(libs.supabase.postgrest)
             implementation(libs.supabase.realtime)
+            implementation(libs.supabase.functions)
 
             // Ktor
             implementation(libs.ktor.client.core)

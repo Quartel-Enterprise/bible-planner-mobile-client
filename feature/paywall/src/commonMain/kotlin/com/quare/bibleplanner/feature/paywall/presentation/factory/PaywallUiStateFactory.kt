@@ -1,10 +1,12 @@
 package com.quare.bibleplanner.feature.paywall.presentation.factory
 
 import bibleplanner.feature.paywall.generated.resources.Res
-import bibleplanner.feature.paywall.generated.resources.month
+import bibleplanner.feature.paywall.generated.resources.per_month
+import bibleplanner.feature.paywall.generated.resources.per_year
 import bibleplanner.feature.paywall.generated.resources.plan_annual
+import bibleplanner.feature.paywall.generated.resources.plan_annual_description
 import bibleplanner.feature.paywall.generated.resources.plan_monthly
-import bibleplanner.feature.paywall.generated.resources.year
+import bibleplanner.feature.paywall.generated.resources.plan_monthly_description
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackageType
@@ -99,13 +101,19 @@ class PaywallUiStateFactory(
             SubscriptionPlanType.Annual -> Res.string.plan_annual
         }
 
+        val descriptionRes = when (planType) {
+            SubscriptionPlanType.Monthly -> Res.string.plan_monthly_description
+            SubscriptionPlanType.Annual -> Res.string.plan_annual_description
+        }
+
         val periodRes = when (planType) {
-            SubscriptionPlanType.Monthly -> Res.string.month
-            SubscriptionPlanType.Annual -> Res.string.year
+            SubscriptionPlanType.Monthly -> Res.string.per_month
+            SubscriptionPlanType.Annual -> Res.string.per_year
         }
 
         return SubscriptionPlanPresentationModel(
             title = titleRes,
+            description = descriptionRes,
             period = periodRes,
             savePercentage = savePercent,
             isSelected = false,

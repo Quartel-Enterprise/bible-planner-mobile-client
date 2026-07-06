@@ -4,4 +4,6 @@
     <string name="expand">Expand</string>
     <string name="edit">Edit</string>
     <string name="favorite">Favorite</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
 </resources>

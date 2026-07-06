@@ -27,6 +27,7 @@ import com.quare.bibleplanner.feature.bookdetails.di.bookDetailsModule
 import com.quare.bibleplanner.feature.books.di.featureBooksModule
 import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.day.di.dayModule
+import com.quare.bibleplanner.feature.daystudy.di.dayStudyModule
 import com.quare.bibleplanner.feature.deletenotes.di.deleteNotesModule
 import com.quare.bibleplanner.feature.deleteprogress.di.deleteProgressModule
 import com.quare.bibleplanner.feature.deleteversion.di.deleteVersionModule
@@ -60,6 +61,7 @@ object CommonKoinUtils {
         materialYouModule,
         readingPlanModule,
         dayModule,
+        dayStudyModule,
         deleteProgressModule,
         deleteVersionModule,
         deleteNotesModule,

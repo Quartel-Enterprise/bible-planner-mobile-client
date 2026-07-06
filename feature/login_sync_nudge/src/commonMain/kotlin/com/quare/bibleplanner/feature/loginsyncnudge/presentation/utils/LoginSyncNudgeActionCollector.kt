@@ -17,7 +17,9 @@ internal fun LoginSyncNudgeActionCollector(
         when (action) {
             LoginSyncNudgeUiAction.Dismiss -> navController.navigateUp()
 
-            LoginSyncNudgeUiAction.NavigateToLogin -> navController.navigate(LoginNavRoute) {
+            LoginSyncNudgeUiAction.NavigateToLogin -> navController.navigate(
+                LoginNavRoute(notifyResultViaSnackbar = true),
+            ) {
                 popUpTo<LoginSyncNudgeNavRoute> { inclusive = true }
             }
         }

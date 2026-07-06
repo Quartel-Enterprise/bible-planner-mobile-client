@@ -15,4 +15,6 @@
     <string name="no_google_account_message">Tu dispositivo no tiene una cuenta de Google. Agrega una para continuar con el inicio de sesión con Google.</string>
     <string name="no_google_account_confirm">Agregar cuenta</string>
     <string name="no_google_account_dismiss">Cancelar</string>
+    <string name="login_result_success">Sesión iniciada correctamente</string>
+    <string name="login_result_error">No se pudo iniciar sesión. Inténtalo de nuevo.</string>
 </resources>

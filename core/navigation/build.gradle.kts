@@ -37,6 +37,7 @@ kotlin {
             implementation(projects.feature.preferences.appLanguage)
             implementation(projects.feature.read)
             implementation(projects.feature.notificationPermission)
+            implementation(projects.feature.dayStudy)
 
             // Core
             implementation(projects.core.model)
@@ -51,6 +52,7 @@ kotlin {
             implementation(libs.runtime)
             implementation(libs.material3)
             implementation(libs.ui)
+            implementation(libs.components.resources)
 
             // UI
             implementation(projects.ui.utils)

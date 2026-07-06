@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase
@@ -90,6 +91,11 @@ internal class DayUiStateFlowFactory(
             DayUiState.Loaded(
                 day = day,
                 weekNumber = weekNumber,
+                dayRoute = DayNavRoute(
+                    dayNumber = dayNumber,
+                    weekNumber = weekNumber,
+                    readingPlanType = readingPlanType.name,
+                ),
                 datePickerUiState = datePickerUiState,
                 formattedReadDate = effectiveReadTimestamp?.let(readDateFormatter::format),
                 chapterReadStatus = calculateAllChaptersReadStatus(
