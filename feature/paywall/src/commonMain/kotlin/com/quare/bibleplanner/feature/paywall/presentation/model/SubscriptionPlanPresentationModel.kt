@@ -5,6 +5,7 @@ import org.jetbrains.compose.resources.StringResource
 
 data class SubscriptionPlanPresentationModel(
     val title: StringResource,
+    val description: StringResource,
     val period: StringResource,
     val savePercentage: Int?,
     val isSelected: Boolean,

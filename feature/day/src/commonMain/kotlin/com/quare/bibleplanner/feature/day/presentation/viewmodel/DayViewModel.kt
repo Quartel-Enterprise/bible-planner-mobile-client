@@ -8,9 +8,12 @@ import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
@@ -138,6 +141,36 @@ internal class DayViewModel(
             is DayUiEvent.OnChapterClick -> {
                 onChapterClick(event.strategy)
             }
+
+            is DayUiEvent.OnDayStudySubscribeClick -> {
+                navigateToPaywall()
+            }
+
+            is DayUiEvent.OnDayStudyLoginRequired -> {
+                navigateToDayStudyLoginWarning()
+            }
+
+            is DayUiEvent.OnDayStudyMessage -> {
+                showSnackBarText(event.message)
+            }
+        }
+    }
+
+    private fun navigateToPaywall() {
+        viewModelScope.launch {
+            _uiAction.emit(DayUiAction.NavigateToRoute(PaywallNavRoute))
+        }
+    }
+
+    private fun navigateToDayStudyLoginWarning() {
+        viewModelScope.launch {
+            _uiAction.emit(DayUiAction.NavigateToRoute(LoginWarningNavRoute(LoginWarningReason.DayStudy.key)))
+        }
+    }
+
+    private fun showSnackBarText(message: String) {
+        viewModelScope.launch {
+            _uiAction.emit(DayUiAction.ShowSnackBarText(message))
         }
     }
 

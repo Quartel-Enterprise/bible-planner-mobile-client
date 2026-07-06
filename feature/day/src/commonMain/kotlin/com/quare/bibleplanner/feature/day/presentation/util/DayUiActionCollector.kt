@@ -24,6 +24,10 @@ internal fun DayUiActionCollector(
                 snackbarHostState.showSnackbar(getString(action.message))
             }
 
+            is DayUiAction.ShowSnackBarText -> {
+                snackbarHostState.showSnackbar(action.message)
+            }
+
             is DayUiAction.NavigateBack -> {
                 navController.navigateUp()
             }

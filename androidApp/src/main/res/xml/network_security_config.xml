@@ -1,0 +1,9 @@
+<network-security-config>
+    <!-- Release/base config: trust-only system CAs, no cleartext. The debug build type
+         overrides this whole file with src/debug/res/xml/network_security_config.xml. -->
+    <base-config>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

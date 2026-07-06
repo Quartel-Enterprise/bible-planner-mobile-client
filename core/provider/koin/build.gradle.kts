@@ -47,6 +47,7 @@ kotlin {
             implementation(projects.feature.preferences.themeSelection)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
+            implementation(projects.feature.dayStudy)
             implementation(projects.feature.preferences.editPlanStartDate)
             implementation(projects.feature.paywall)
             implementation(projects.feature.deleteNotes)

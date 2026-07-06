@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.day.presentation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,6 +14,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.component.DayScreenTopBarComponent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.DayContent
@@ -30,30 +32,41 @@ internal fun DayScreen(
     onEvent: (DayUiEvent) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        },
-        topBar = {
-            DayScreenTopBarComponent(
-                platform = platform,
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isLandscape = maxWidth > LandscapeMinWidth
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
+            topBar = {
+                if (!isLandscape) {
+                    DayScreenTopBarComponent(
+                        platform = platform,
+                        uiState = uiState,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope,
+                        scrollBehavior = scrollBehavior,
+                        onEvent = onEvent,
+                    )
+                }
+            },
+        ) { paddingValues ->
+            DayContent(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 uiState = uiState,
+                onEvent = onEvent,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope,
-                scrollBehavior = scrollBehavior,
-                onEvent = onEvent,
+                platform = platform,
+                isLandscape = isLandscape,
             )
-        },
-    ) { paddingValues ->
-        DayContent(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
-            uiState = uiState,
-            onEvent = onEvent,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = animatedContentScope,
-        )
+        }
     }
 }
+
+private val LandscapeMinWidth = 700.dp

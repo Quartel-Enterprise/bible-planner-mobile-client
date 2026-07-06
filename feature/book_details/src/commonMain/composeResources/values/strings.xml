@@ -92,8 +92,6 @@
     <string name="reading_progress">Reading Progress</string>
     <string name="read_count">%1$d / %2$d read</string>
     <string name="tap_to_mark">tap to mark</string>
-    <string name="show_more">Show more</string>
-    <string name="show_less">Show less</string>
     <string name="mark_all_as_read">Mark all as read</string>
     <string name="mark_all_as_unread">Mark all as unread</string>
     <string name="read_count_suffix"> read</string>

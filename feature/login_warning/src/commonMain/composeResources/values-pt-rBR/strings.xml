@@ -6,4 +6,5 @@
     <string name="login_warning_message_purchase">Faça login primeiro para que sua assinatura Pro fique vinculada à sua conta em todos os seus dispositivos.</string>
     <string name="login_warning_login">Fazer login</string>
     <string name="login_warning_dismiss">Agora não</string>
+    <string name="login_warning_message_day_study">Faça login primeiro para que suas análises grátis de IA fiquem vinculadas à sua conta em todos os seus dispositivos.</string>
 </resources>

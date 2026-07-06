@@ -15,4 +15,6 @@
     <string name="no_google_account_message">Your device doesn't have a Google account. Add one to continue signing in with Google.</string>
     <string name="no_google_account_confirm">Add account</string>
     <string name="no_google_account_dismiss">Cancel</string>
+    <string name="login_result_success">Signed in successfully</string>
+    <string name="login_result_error">Couldn't sign in. Please try again.</string>
 </resources>

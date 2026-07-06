@@ -1,17 +1,15 @@
 package com.quare.bibleplanner.feature.paywall.presentation.component.subscription.option.component
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,34 +19,35 @@ internal fun SubscriptionPlanIcon(
     modifier: Modifier = Modifier,
     isSelected: Boolean,
 ) {
-    AnimatedContent(isSelected) { selected ->
-        if (selected) {
-            Box(
-                modifier = modifier
-                    .size(24.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape,
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    imageVector = Icons.Default.Check,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
+    val borderColor by animateColorAsState(
+        targetValue = if (isSelected) {
+            MaterialTheme.colorScheme.primary
         } else {
-            Box(
-                modifier = modifier
-                    .size(24.dp)
-                    .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.outline,
-                        shape = RoundedCornerShape(12.dp),
-                    ),
-            )
-        }
+            MaterialTheme.colorScheme.outline
+        },
+        label = "radioBorderColor",
+    )
+    val dotSize by animateDpAsState(
+        targetValue = if (isSelected) 11.dp else 0.dp,
+        label = "radioDotSize",
+    )
+    Box(
+        modifier = modifier
+            .size(22.dp)
+            .border(
+                width = 2.dp,
+                color = borderColor,
+                shape = CircleShape,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(dotSize)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape,
+                ),
+        )
     }
 }

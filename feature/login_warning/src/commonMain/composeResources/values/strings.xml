@@ -6,4 +6,5 @@
     <string name="login_warning_message_purchase">Log in first so your Pro subscription stays linked to your account across all your devices.</string>
     <string name="login_warning_login">Log in</string>
     <string name="login_warning_dismiss">Not now</string>
+    <string name="login_warning_message_day_study">Log in first so your free AI analyses stay linked to your account across all your devices.</string>
 </resources>

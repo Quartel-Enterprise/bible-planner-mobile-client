@@ -5,7 +5,12 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -73,14 +78,13 @@ internal fun ChapterItemComponent(
             checked = isRead,
             onCheckedChange = { onToggle() },
         )
+        Icon(
+            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .size(22.dp),
+            tint = MaterialTheme.colorScheme.outline,
+        )
     }
-}
-
-private fun formatChapterText(
-    bookName: String,
-    chapterNumber: Int?,
-): String = if (chapterNumber == null) {
-    bookName
-} else {
-    "$bookName $chapterNumber"
 }

@@ -1,0 +1,11 @@
+<network-security-config>
+    <!-- Debug-only: trust user-added CAs (e.g. Proxyman) and allow cleartext so local
+         proxy tooling works. This file is applied only to the debug build type; release
+         uses src/main/res/xml/network_security_config.xml. -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

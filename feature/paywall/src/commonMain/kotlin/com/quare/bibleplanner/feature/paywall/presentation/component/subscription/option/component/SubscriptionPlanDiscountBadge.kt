@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.save_percent
 import org.jetbrains.compose.resources.stringResource
@@ -24,13 +25,14 @@ internal fun SubscriptionPlanDiscountBadge(
             .background(
                 color = MaterialTheme.colorScheme.tertiary,
                 shape = RoundedCornerShape(4.dp),
-            ).padding(horizontal = 8.dp, vertical = 4.dp),
+            ).padding(horizontal = 8.dp, vertical = 3.dp),
     ) {
         Text(
             text = stringResource(Res.string.save_percent, savePercentage),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onTertiary,
             fontWeight = FontWeight.Bold,
+            letterSpacing = 0.3.sp,
         )
     }
 }

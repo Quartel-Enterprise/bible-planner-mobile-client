@@ -7,6 +7,10 @@ internal sealed interface DayUiAction {
         val message: StringResource,
     ) : DayUiAction
 
+    data class ShowSnackBarText(
+        val message: String,
+    ) : DayUiAction
+
     data class NavigateToRoute(
         val route: Any,
     ) : DayUiAction

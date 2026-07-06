@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatusButton
 import com.quare.bibleplanner.feature.day.presentation.component.DayReadSection
+import com.quare.bibleplanner.feature.day.presentation.component.DayStudySectionForDay
 import com.quare.bibleplanner.feature.day.presentation.component.notes.NotesSection
 import com.quare.bibleplanner.feature.day.presentation.component.portraitPassageList
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedReadDateComponent
@@ -26,6 +27,18 @@ internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
     animatedContentScope: AnimatedContentScope,
 ) {
     val isDayRead = day.isRead
+    responsiveItem {
+        DayStudySectionForDay(
+            passages = day.passages,
+            dayRoute = uiState.dayRoute,
+            onEvent = onEvent,
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 8.dp,
+            ),
+        )
+    }
+
     responsiveItem {
         ChangeReadStatusButton(
             isDayRead = isDayRead,

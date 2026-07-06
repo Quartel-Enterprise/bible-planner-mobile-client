@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.compose.resources.StringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -14,11 +15,13 @@ internal fun LoginUiActionCollector(
     uiActionFlow: Flow<LoginUiAction>,
     navController: NavController,
     sheetState: SheetState,
+    onLoginResult: (StringResource) -> Unit,
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             LoginUiAction.NavigateBack -> navController.navigateUp()
             LoginUiAction.CloseBottomSheet -> sheetState.hide()
+            is LoginUiAction.NotifyLoginResult -> onLoginResult(uiAction.message)
         }
     }
 }

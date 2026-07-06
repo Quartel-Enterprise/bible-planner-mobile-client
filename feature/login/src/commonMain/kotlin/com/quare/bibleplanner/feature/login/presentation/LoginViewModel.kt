@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.login.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import bibleplanner.feature.login.generated.resources.Res
+import bibleplanner.feature.login.generated.resources.login_result_error
+import bibleplanner.feature.login.generated.resources.login_result_success
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.login.presentation.factory.LoginUiStateFactory
 import com.quare.bibleplanner.feature.login.presentation.mapper.ThrowableToLoginErrorMapper
@@ -91,6 +94,7 @@ internal class LoginViewModel(
                         }
                     }
                 }
+                notifyLoginResult(uiEvent.result)
             }
 
             LoginUiEvent.NotNowClick -> {
@@ -107,6 +111,25 @@ internal class LoginViewModel(
             LoginUiEvent.DismissAddGoogleAccountDialog -> {
                 _state.update { it.copy(showAddGoogleAccountDialog = false) }
             }
+        }
+    }
+
+    private fun notifyLoginResult(result: NativeSignInResult) {
+        val message = when (result) {
+            is NativeSignInResult.Success -> Res.string.login_result_success
+
+            is NativeSignInResult.NetworkError -> Res.string.login_result_error
+
+            is NativeSignInResult.Error -> if (noGoogleAccountClassifier(result.exception)) {
+                null
+            } else {
+                Res.string.login_result_error
+            }
+
+            is NativeSignInResult.ClosedByUser -> null
+        } ?: return
+        viewModelScope.launch {
+            _uiAction.emit(LoginUiAction.NotifyLoginResult(message))
         }
     }
 

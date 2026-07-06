@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ai_study_title">Estudio del día</string>
+    <string name="ai_study_generate">Generar</string>
+    <string name="ai_study_view">Ver</string>
+    <string name="ai_study_subscribe">Suscribirse</string>
+    <string name="ai_study_generate_hint">Generar usa 1 análisis gratis</string>
+    <string name="ai_study_generate_hint_pro">Genera una visión general de los pasajes de este día</string>
+    <string name="ai_study_view_hint">Resumen de los pasajes de este día</string>
+    <string name="ai_study_quota_free">%1$d gratis</string>
+    <string name="ai_study_exhausted_subtitle">Has usado tus %1$d análisis gratis</string>
+    <string name="ai_study_pro_badge">PRO</string>
+    <string name="ai_study_generated">Generado</string>
+    <string name="ai_study_error">No se pudo cargar el estudio. Inténtalo de nuevo.</string>
+    <string name="ai_study_limit_reached_message">Ya usaste todos tus análisis gratis.</string>
+    <string name="ai_study_offline_message">No tienes conexión a internet en este momento, por eso no es posible generar el estudio.</string>
+    <string name="ai_study_generating_title">Preparando tu estudio</string>
+    <string name="ai_study_generating_subtitle">La IA está leyendo los pasajes de hoy. Esto puede tardar hasta 1 minuto — puedes cerrar y volver cuando quieras.</string>
+    <string name="ai_study_generating_card_title">Generando tu estudio…</string>
+    <string name="ai_study_phase_reading">Leyendo los pasajes de hoy</string>
+    <string name="ai_study_phase_chapters">Resumiendo cada capítulo</string>
+    <string name="ai_study_phase_context">Reuniendo el contexto histórico</string>
+    <string name="ai_study_phase_questions">Planteando preguntas comunes</string>
+    <string name="ai_study_bg_generating_title">Generando estudio — %1$s</string>
+    <string name="ai_study_bg_done_title">Estudio listo — %1$s</string>
+    <string name="ai_study_bg_done_subtitle">Tu análisis ya está disponible.</string>
+    <string name="ai_study_bg_open">Abrir</string>
+    <string name="ai_study_bg_header_generating">Generando %1$d estudios</string>
+    <string name="ai_study_bg_header_mixed">Generando %1$d estudios · %2$d listos</string>
+    <string name="ai_study_bg_header_done">%1$d estudios listos</string>
+    <string name="ai_study_bg_multi_done_subtitle">Listo · toca Abrir</string>
+    <string name="ai_tab_summary">Resumen</string>
+    <string name="ai_tab_context">Contexto</string>
+    <string name="ai_tab_questions">Preguntas</string>
+    <string name="ai_summary_by_chapter">POR CAPÍTULO</string>
+    <string name="ai_summary_takeaways">En resumen</string>
+    <string name="ai_context_title">Contexto histórico</string>
+    <string name="ai_questions_title">Preguntas comunes</string>
+    <string name="ai_disclaimer">Contenido generado por IA para apoyar la comprensión. No sustituye la lectura del texto completo.</string>
+    <plurals name="ai_study_wait_for_generations">
+        <item quantity="one">Espera a que termine el análisis en curso antes de generar uno nuevo.</item>
+        <item quantity="other">Espera a que terminen los %1$d análisis en curso antes de generar uno nuevo.</item>
+    </plurals>
+</resources>

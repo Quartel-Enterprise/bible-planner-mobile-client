@@ -38,4 +38,12 @@ internal sealed interface DayUiEvent {
     data object OnNotesFocus : DayUiEvent
 
     data object OnBackClick : DayUiEvent
+
+    data object OnDayStudySubscribeClick : DayUiEvent
+
+    data object OnDayStudyLoginRequired : DayUiEvent
+
+    data class OnDayStudyMessage(
+        val message: String,
+    ) : DayUiEvent
 }

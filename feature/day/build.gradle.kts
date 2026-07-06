@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.model)
+            implementation(projects.feature.dayStudy)
             implementation(projects.core.utils)
             implementation(projects.core.date)
             implementation(projects.core.provider.platform)
