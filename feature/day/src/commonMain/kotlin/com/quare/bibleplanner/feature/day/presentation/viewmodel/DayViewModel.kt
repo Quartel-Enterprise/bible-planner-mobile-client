@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.day.presentation.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
 import co.touchlab.kermit.Logger
@@ -45,7 +43,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 internal class DayViewModel(
-    savedStateHandle: SavedStateHandle,
+    route: DayNavRoute,
     private val useCases: DayUseCases,
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
@@ -59,7 +57,6 @@ internal class DayViewModel(
 
     private val _uiAction: MutableSharedFlow<DayUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<DayUiAction> = _uiAction
-    private val route = savedStateHandle.toRoute<DayNavRoute>()
     private val weekNumber = route.weekNumber
     private val dayNumber = route.dayNumber
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)

@@ -52,8 +52,8 @@ kotlin {
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewModel)
 
-            // Navigation
-            implementation(libs.compose.navigation)
+            // Navigation 3
+            implementation(libs.compose.navigation3.ui)
 
             // Ktor
             implementation(libs.ktor.client.core)

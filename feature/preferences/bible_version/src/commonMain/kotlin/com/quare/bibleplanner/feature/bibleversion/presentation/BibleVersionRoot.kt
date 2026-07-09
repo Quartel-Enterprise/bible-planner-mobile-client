@@ -13,9 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.dialog
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import bibleplanner.feature.preferences.bible_version.generated.resources.Res
 import bibleplanner.feature.preferences.bible_version.generated.resources.bible_versions
 import bibleplanner.feature.preferences.bible_version.generated.resources.manage_bible_versions_description
@@ -28,16 +28,20 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.bibleVersionSelectionRoot(navController: NavHostController) {
-    dialog<BibleVersionSelectorRoute>(
-        dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot(
+    onNavigate: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
+) {
+    entry<BibleVersionSelectorRoute>(
+        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
         val viewModel: BibleVersionViewModel = koinViewModel()
         val onEvent = viewModel::onEvent
         val uiState by viewModel.uiState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         BibleVersionsActionCollector(
-            navController = navController,
+            onNavigate = onNavigate,
+            onNavigateBack = onNavigateBack,
             uiActionFlow = viewModel.uiAction,
             snackbarHostState = snackbarHostState,
         )

@@ -48,8 +48,8 @@ kotlin {
             implementation(libs.material.icons.extended)
             implementation(libs.components.resources)
 
-            // Navigation
-            implementation(libs.compose.navigation)
+            // Navigation 3
+            implementation(libs.compose.navigation3.ui)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

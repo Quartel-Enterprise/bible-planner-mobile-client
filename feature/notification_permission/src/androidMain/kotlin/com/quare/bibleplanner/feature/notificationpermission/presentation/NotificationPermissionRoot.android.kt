@@ -1,22 +1,21 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.dialog
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.feature.notificationpermission.presentation.content.NotificationPermissionContent
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiAction
@@ -26,17 +25,13 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
-actual fun NavGraphBuilder.notificationPermission(navController: NavController) {
-    dialog<NotificationPermissionNavRoute> {
+actual fun EntryProviderScope<NavKey>.notificationPermission(onNavigateBack: () -> Unit) {
+    entry<NotificationPermissionNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<NotificationPermissionViewModel>()
         val state by viewModel.uiState.collectAsState()
-        val context = remember { navController.context }
+        val context = LocalContext.current
         val activity = context as? ComponentActivity
-        val navHostController = navController as NavHostController
 
-        // This dialog is only navigated to when permission is permanently denied —
-        // skip the initial "Allow" state and go straight to "Open Settings".
         LaunchedEffect(Unit) {
             viewModel.onEvent(
                 NotificationPermissionUiEvent.OnPermissionResult(
@@ -66,7 +61,7 @@ actual fun NavGraphBuilder.notificationPermission(navController: NavController) 
 
         NotificationPermissionUiActionCollector(
             uiActionFlow = viewModel.uiAction,
-            navController = navHostController,
+            onNavigateBack = onNavigateBack,
             context = context,
             permissionLauncher = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -85,8 +80,8 @@ actual fun NavGraphBuilder.notificationPermission(navController: NavController) 
 @Composable
 private fun NotificationPermissionUiActionCollector(
     uiActionFlow: Flow<NotificationPermissionUiAction>,
-    navController: NavHostController,
-    context: android.content.Context,
+    onNavigateBack: () -> Unit,
+    context: Context,
     permissionLauncher: () -> Unit,
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
@@ -96,7 +91,7 @@ private fun NotificationPermissionUiActionCollector(
             }
 
             NotificationPermissionUiAction.NavigateBack -> {
-                navController.navigateUp()
+                onNavigateBack()
             }
 
             NotificationPermissionUiAction.OpenNotificationSettings -> {

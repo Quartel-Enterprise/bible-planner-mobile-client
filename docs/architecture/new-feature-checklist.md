@@ -8,8 +8,9 @@
 - [ ] Group use cases in a `FeatureUseCases` data class if there are more than 2
 - [ ] Implement `FeatureViewModel` with `StateFlow<UiState>` and `SharedFlow<UiAction>`
 - [ ] Create `FeatureContent` composable with Loading/Loaded split
-- [ ] Define a `@Serializable` route in `core/model/.../route/`
-- [ ] Create `NavGraphBuilder.feature()` extension (Root composable)
-- [ ] Register the route in `AppNavHost`
+- [ ] Define a `@Serializable` route implementing `NavKey` in `core/model/.../route/`
+- [ ] Register the route in `Nav3SavedStateConfiguration` (polymorphic serializers module)
+- [ ] Create `EntryProviderScope<NavKey>.feature()` extension (Root composable)
+- [ ] Register the entry in `RootAppNavDisplay`
 - [ ] Create a Koin module in `di/` and register it in `CommonKoinUtils`
 - [ ] Add the new Gradle module to `settings.gradle.kts`

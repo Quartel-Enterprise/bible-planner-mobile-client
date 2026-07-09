@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.deletenotes.presentation.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
@@ -17,10 +15,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DeleteNotesViewModel(
-    savedStateHandle: SavedStateHandle,
+    route: DeleteNotesRoute,
     private val deleteDayNotes: DeleteDayNotesUseCase,
 ) : ViewModel() {
-    private val route = savedStateHandle.toRoute<DeleteNotesRoute>()
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
     private val weekNumber = route.week
     private val dayNumber = route.day

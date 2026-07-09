@@ -6,26 +6,30 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.feature.paywall.presentation.utils.PaywallUiActionCollector
 import com.quare.bibleplanner.feature.paywall.presentation.viewmodel.PaywallViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.paywall(
-    navController: NavHostController,
+fun EntryProviderScope<NavKey>.paywall(
+    onNavigate: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
+    onNavigateReplacingTop: (Any) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
-    composable<PaywallNavRoute> {
+    entry<PaywallNavRoute> {
         val viewModel = koinViewModel<PaywallViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         PaywallUiActionCollector(
             actionsFlow = viewModel.uiAction,
-            navController = navController,
+            onNavigate = onNavigate,
+            onNavigateBack = onNavigateBack,
+            onNavigateReplacingTop = onNavigateReplacingTop,
             snackbarHostState = snackbarHostState,
         )
 
@@ -35,7 +39,7 @@ fun NavGraphBuilder.paywall(
             uiState = uiState,
             onEvent = viewModel::onEvent,
             sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = this@composable,
+            animatedVisibilityScope = LocalNavAnimatedContentScope.current,
         )
     }
 }

@@ -1,10 +1,7 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 
-@OptIn(ExperimentalMaterial3Api::class)
-actual fun NavGraphBuilder.notificationPermission(navController: NavController) {
-    // No-op for JVM
+actual fun EntryProviderScope<NavKey>.notificationPermission(onNavigateBack: () -> Unit) {
 }

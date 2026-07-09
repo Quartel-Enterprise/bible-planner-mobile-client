@@ -35,7 +35,7 @@ kotlin {
             implementation(libs.koinComposeViewModel)
 
             // Navigation
-            implementation(libs.compose.navigation)
+            implementation(libs.compose.navigation3.ui)
 
             // Date
             implementation(libs.kotlinx.datetime)

@@ -8,9 +8,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.dialog
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import bibleplanner.feature.preferences.app_language.generated.resources.Res
 import bibleplanner.feature.preferences.app_language.generated.resources.app_language_title
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
@@ -21,15 +21,19 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.appLanguage(navController: NavHostController) {
-    dialog<AppLanguageNavRoute>(
-        dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+fun EntryProviderScope<NavKey>.appLanguage(
+    onNavigate: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
+) {
+    entry<AppLanguageNavRoute>(
+        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
         val viewModel = koinViewModel<AppLanguageViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         AppLanguageActionCollector(
             actionsFlow = viewModel.uiAction,
-            navController = navController,
+            onNavigate = onNavigate,
+            onNavigateBack = onNavigateBack,
         )
         val onEvent = viewModel::onEvent
 

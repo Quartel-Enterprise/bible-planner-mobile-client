@@ -9,9 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.dialog
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -20,8 +20,11 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.donation(navController: NavHostController) {
-    dialog<DonationNavRoute> {
+fun EntryProviderScope<NavKey>.donation(
+    onNavigate: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
+) {
+    entry<DonationNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<DonationViewModel>()
         val state by viewModel.uiState.collectAsState()
 
@@ -29,7 +32,8 @@ fun NavGraphBuilder.donation(navController: NavHostController) {
 
         DonationActionCollector(
             sheetState = sheetState,
-            navController = navController,
+            onNavigate = onNavigate,
+            onNavigateBack = onNavigateBack,
             flow = viewModel.uiAction,
         )
 
@@ -49,7 +53,8 @@ fun NavGraphBuilder.donation(navController: NavHostController) {
 @Composable
 private fun DonationActionCollector(
     sheetState: SheetState,
-    navController: NavHostController,
+    onNavigate: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
     flow: Flow<DonationUiAction>,
 ) {
     val clipboardManager = LocalClipboard.current
@@ -57,7 +62,7 @@ private fun DonationActionCollector(
     ActionCollector(flow) { action ->
         when (action) {
             DonationUiAction.NavigateBack -> {
-                navController.navigateUp()
+                onNavigateBack()
             }
 
             is DonationUiAction.Copy -> {
@@ -75,7 +80,7 @@ private fun DonationActionCollector(
             }
 
             DonationUiAction.NavigateToPixQr -> {
-                navController.navigate(PixQrNavRoute)
+                onNavigate(PixQrNavRoute)
             }
         }
     }

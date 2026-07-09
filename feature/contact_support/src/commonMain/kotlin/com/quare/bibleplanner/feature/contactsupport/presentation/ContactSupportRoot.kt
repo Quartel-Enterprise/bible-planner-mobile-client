@@ -10,9 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.dialog
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
 import com.quare.bibleplanner.feature.contactsupport.presentation.content.ContactSupportDialogContent
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiEvent
@@ -22,9 +22,9 @@ import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.contactSupport(navController: NavHostController) {
-    dialog<ContactSupportNavRoute>(
-        dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+fun EntryProviderScope<NavKey>.contactSupport(onNavigateBack: () -> Unit) {
+    entry<ContactSupportNavRoute>(
+        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
         val viewModel = koinViewModel<ContactSupportViewModel>()
         val uiState by viewModel.uiState.collectAsState()
@@ -32,7 +32,7 @@ fun NavGraphBuilder.contactSupport(navController: NavHostController) {
         val snackbarHostState = remember { SnackbarHostState() }
         ContactSupportUiActionCollector(
             actionsFlow = viewModel.uiAction,
-            navController = navController,
+            onNavigateBack = onNavigateBack,
             snackbarHostState = snackbarHostState,
         )
         ResponsiveDialogSheet(

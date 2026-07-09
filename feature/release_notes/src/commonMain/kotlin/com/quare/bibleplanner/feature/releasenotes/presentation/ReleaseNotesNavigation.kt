@@ -3,23 +3,23 @@ package com.quare.bibleplanner.feature.releasenotes.presentation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.releaseNotes(
-    navController: NavController,
+fun EntryProviderScope<NavKey>.releaseNotes(
+    onNavigateBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
-    composable<ReleaseNotesNavRoute> {
+    entry<ReleaseNotesNavRoute> {
         val uriHandler = LocalUriHandler.current
         ReleaseNotesRoot(
-            navigateBack = { navController.navigateUp() },
+            navigateBack = onNavigateBack,
             openUrl = { url -> uriHandler.openUri(url) },
             sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = this,
+            animatedContentScope = LocalNavAnimatedContentScope.current,
         )
     }
 }

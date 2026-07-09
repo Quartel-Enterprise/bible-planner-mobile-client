@@ -1,13 +1,11 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.dialog
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.feature.notificationpermission.presentation.content.NotificationPermissionContent
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiAction
@@ -16,15 +14,14 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
-actual fun NavGraphBuilder.notificationPermission(navController: NavController) {
-    dialog<NotificationPermissionNavRoute> {
+actual fun EntryProviderScope<NavKey>.notificationPermission(onNavigateBack: () -> Unit) {
+    entry<NotificationPermissionNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<NotificationPermissionViewModel>()
         val state by viewModel.uiState.collectAsState()
 
         NotificationPermissionUiActionCollector(
             uiActionFlow = viewModel.uiAction,
-            navController = navController,
+            onNavigateBack = onNavigateBack,
         )
 
         NotificationPermissionContent(
@@ -37,22 +34,20 @@ actual fun NavGraphBuilder.notificationPermission(navController: NavController) 
 @Composable
 private fun NotificationPermissionUiActionCollector(
     uiActionFlow: Flow<NotificationPermissionUiAction>,
-    navController: NavController,
+    onNavigateBack: () -> Unit,
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             NotificationPermissionUiAction.RequestSystemPermission -> {
-                // iOS handles notification permissions through system settings
-                navController.navigateUp()
+                onNavigateBack()
             }
 
             NotificationPermissionUiAction.NavigateBack -> {
-                navController.navigateUp()
+                onNavigateBack()
             }
 
             NotificationPermissionUiAction.OpenNotificationSettings -> {
-                // iOS handles notification permissions through system settings
-                navController.navigateUp()
+                onNavigateBack()
             }
         }
     }

@@ -4,10 +4,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.dialog
-import androidx.navigation.toRoute
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
@@ -20,9 +19,9 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun NavGraphBuilder.loginRoot(navController: NavController) {
-    dialog<LoginNavRoute> { backStackEntry ->
-        val notifyResultViaSnackbar = backStackEntry.toRoute<LoginNavRoute>().notifyResultViaSnackbar
+fun EntryProviderScope<NavKey>.loginRoot(onNavigateBack: () -> Unit) {
+    entry<LoginNavRoute>(metadata = DialogSceneStrategy.dialog()) { route ->
+        val notifyResultViaSnackbar = route.notifyResultViaSnackbar
         val appSnackbarController = koinInject<AppSnackbarController>()
         val viewModel = koinViewModel<LoginViewModel>()
         val onEvent = viewModel::onEvent
@@ -40,7 +39,7 @@ fun NavGraphBuilder.loginRoot(navController: NavController) {
         val state by viewModel.state.collectAsState()
         LoginUiActionCollector(
             uiActionFlow = viewModel.uiAction,
-            navController = navController,
+            onNavigateBack = onNavigateBack,
             sheetState = sheetState,
             onLoginResult = { message ->
                 if (notifyResultViaSnackbar) {

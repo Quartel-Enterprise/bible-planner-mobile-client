@@ -12,9 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
@@ -26,71 +25,89 @@ import com.quare.bibleplanner.ui.utils.MainTabScaffold
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.booksScreen(
+fun EntryProviderScope<NavKey>.booksScreen(
+    onNavigate: (Any) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
-    rootNavController: NavController,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    composable<BottomNavRoute.Books> {
-        val viewModel = koinViewModel<BooksViewModel>()
-        val state by viewModel.uiState.collectAsState()
-
-        val searchGridState = rememberLazyGridState()
-        val searchListState = rememberLazyGridState()
-        val oldTestamentGridState = rememberLazyGridState()
-        val oldTestamentListState = rememberLazyGridState()
-        val newTestamentGridState = rememberLazyGridState()
-        val newTestamentListState = rememberLazyGridState()
-
-        val isScrolled by remember(state) {
-            derivedStateOf {
-                calculateIsScrolled(
-                    state = state,
-                    searchGridState = searchGridState,
-                    searchListState = searchListState,
-                    oldTestamentGridState = oldTestamentGridState,
-                    oldTestamentListState = oldTestamentListState,
-                    newTestamentGridState = newTestamentGridState,
-                    newTestamentListState = newTestamentListState,
-                )
-            }
-        }
-        val snackbarHostState = LocalSnackbarHostState.current
-
-        val uriHandler = LocalUriHandler.current
-        BooksUiActionCollector(
-            uiAction = viewModel.uiAction,
-            searchGridState = searchGridState,
-            searchListState = searchListState,
-            oldTestamentGridState = oldTestamentGridState,
-            oldTestamentListState = oldTestamentListState,
-            newTestamentGridState = newTestamentGridState,
-            newTestamentListState = newTestamentListState,
-            uriHandler = uriHandler,
-            snackbarHostState = snackbarHostState,
-            navController = rootNavController,
-        )
-
-        MainTabScaffold(
+    entry<BottomNavRoute.Books> {
+        BooksTabContent(
+            onNavigate = onNavigate,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
-        ) {
-            BooksScreen(
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun BooksTabContent(
+    onNavigate: (Any) -> Unit,
+    navigationBar: @Composable (Modifier) -> Unit,
+    navigationRail: @Composable () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+) {
+    val viewModel = koinViewModel<BooksViewModel>()
+    val state by viewModel.uiState.collectAsState()
+
+    val searchGridState = rememberLazyGridState()
+    val searchListState = rememberLazyGridState()
+    val oldTestamentGridState = rememberLazyGridState()
+    val oldTestamentListState = rememberLazyGridState()
+    val newTestamentGridState = rememberLazyGridState()
+    val newTestamentListState = rememberLazyGridState()
+
+    val isScrolled by remember(state) {
+        derivedStateOf {
+            calculateIsScrolled(
                 state = state,
-                onEvent = viewModel::onEvent,
                 searchGridState = searchGridState,
                 searchListState = searchListState,
                 oldTestamentGridState = oldTestamentGridState,
                 oldTestamentListState = oldTestamentListState,
                 newTestamentGridState = newTestamentGridState,
                 newTestamentListState = newTestamentListState,
-                isScrolled = isScrolled,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope,
             )
         }
+    }
+    val snackbarHostState = LocalSnackbarHostState.current
+
+    val uriHandler = LocalUriHandler.current
+    BooksUiActionCollector(
+        uiAction = viewModel.uiAction,
+        searchGridState = searchGridState,
+        searchListState = searchListState,
+        oldTestamentGridState = oldTestamentGridState,
+        oldTestamentListState = oldTestamentListState,
+        newTestamentGridState = newTestamentGridState,
+        newTestamentListState = newTestamentListState,
+        uriHandler = uriHandler,
+        snackbarHostState = snackbarHostState,
+        onNavigate = onNavigate,
+    )
+
+    MainTabScaffold(
+        navigationBar = navigationBar,
+        navigationRail = navigationRail,
+    ) {
+        BooksScreen(
+            state = state,
+            onEvent = viewModel::onEvent,
+            searchGridState = searchGridState,
+            searchListState = searchListState,
+            oldTestamentGridState = oldTestamentGridState,
+            oldTestamentListState = oldTestamentListState,
+            newTestamentGridState = newTestamentGridState,
+            newTestamentListState = newTestamentListState,
+            isScrolled = isScrolled,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
+        )
     }
 }
 

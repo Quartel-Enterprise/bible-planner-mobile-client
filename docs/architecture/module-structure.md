@@ -10,7 +10,7 @@ iosApp/              # iOS application (Xcode project)
 core/
 ├── books/           # Books domain + data + DI
 ├── model/           # Shared data models and nav routes
-├── navigation/      # AppNavHost
+├── navigation/      # RootAppNavDisplay
 ├── plan/            # Plan data (JSON) domain + data
 ├── utils/           # Kotlin extension utilities
 └── provider/
@@ -68,4 +68,4 @@ src/commonMain/kotlin/.../
 | DTO | `NounDto` | `WeekPlanDto` |
 | Entity | `NounEntity` | `BookEntity` |
 | Mapper | `NounMapper` / `NounMapperImpl` | `ReadingPlanPreferenceMapper` |
-| Root composable extension | `NavGraphBuilder.featureName()` | `NavGraphBuilder.day()` |
+| Root composable extension | `EntryProviderScope<NavKey>.featureName()` | `EntryProviderScope<NavKey>.day()` |

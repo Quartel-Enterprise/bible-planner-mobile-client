@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.addnotesfreewarning.presentation.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.model.AddNotesFreeWarningUiAction
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.model.AddNotesFreeWarningUiEvent
@@ -12,9 +10,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 internal class AddNotesFreeWarningViewModel(
-    savedStateHandle: SavedStateHandle,
+    route: AddNotesFreeWarningNavRoute,
 ) : ViewModel() {
-    val maxFreeNotesAmount = savedStateHandle.toRoute<AddNotesFreeWarningNavRoute>().maxFreeNotesAmount
+    val maxFreeNotesAmount = route.maxFreeNotesAmount
 
     private val _uiAction: MutableSharedFlow<AddNotesFreeWarningUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<AddNotesFreeWarningUiAction> = _uiAction

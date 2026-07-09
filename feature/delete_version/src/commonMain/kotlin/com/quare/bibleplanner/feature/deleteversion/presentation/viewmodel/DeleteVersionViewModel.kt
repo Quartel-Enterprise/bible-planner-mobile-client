@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.deleteversion.presentation.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.feature.deleteversion.presentation.model.DeleteVersionUiEvent
@@ -17,14 +15,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DeleteVersionViewModel(
-    savedStateHandle: SavedStateHandle,
+    route: DeleteVersionNavRoute,
     private val bibleVersionDownloaderFacade: BibleVersionDownloaderFacade,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DeleteVersionUiState> =
         MutableStateFlow(DeleteVersionUiState.Idle)
     val uiState: StateFlow<DeleteVersionUiState> = _uiState.asStateFlow()
 
-    private val versionId = savedStateHandle.toRoute<DeleteVersionNavRoute>().versionId
+    private val versionId = route.versionId
 
     private val _backUiAction: MutableSharedFlow<Unit> = MutableSharedFlow()
     val backUiAction: SharedFlow<Unit> = _backUiAction

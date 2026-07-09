@@ -12,9 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_pro_part_1
 import bibleplanner.feature.more.generated.resources.become_pro_part_2
@@ -28,57 +27,75 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.more(
-    navController: NavController,
+fun EntryProviderScope<NavKey>.more(
+    onNavigate: (Any) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    composable<BottomNavRoute.More> {
-        val viewModel = koinViewModel<MoreViewModel>()
-        MoreUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            navController = navController,
-            snackbarHostState = LocalSnackbarHostState.current,
-        )
-        val uiState by viewModel.uiState.collectAsState()
-
-        MainTabScaffold(
+    entry<BottomNavRoute.More> {
+        MoreTabContent(
+            onNavigate = onNavigate,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
-        ) {
-            MoreScreen(
-                state = uiState,
-                onEvent = viewModel::onEvent,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-                becomeProTitleContent = {
-                    Row {
-                        with(sharedTransitionScope) {
-                            Text(
-                                modifier = Modifier.sharedElement(
-                                    rememberSharedContentState(key = "become_pro_part_1"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                ),
-                                text = stringResource(Res.string.become_pro_part_1),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                            HorizontalSpacer(4.dp)
-                            Text(
-                                modifier = Modifier.sharedElement(
-                                    rememberSharedContentState(key = "become_pro_part_2"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                ),
-                                text = stringResource(Res.string.become_pro_part_2),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun MoreTabContent(
+    onNavigate: (Any) -> Unit,
+    navigationBar: @Composable (Modifier) -> Unit,
+    navigationRail: @Composable () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+) {
+    val viewModel = koinViewModel<MoreViewModel>()
+    MoreUiActionCollector(
+        uiActionFlow = viewModel.uiAction,
+        onNavigate = onNavigate,
+        snackbarHostState = LocalSnackbarHostState.current,
+    )
+    val uiState by viewModel.uiState.collectAsState()
+
+    MainTabScaffold(
+        navigationBar = navigationBar,
+        navigationRail = navigationRail,
+    ) {
+        MoreScreen(
+            state = uiState,
+            onEvent = viewModel::onEvent,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+            becomeProTitleContent = {
+                Row {
+                    with(sharedTransitionScope) {
+                        Text(
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(key = "become_pro_part_1"),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
+                            text = stringResource(Res.string.become_pro_part_1),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        HorizontalSpacer(4.dp)
+                        Text(
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(key = "become_pro_part_2"),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
+                            text = stringResource(Res.string.become_pro_part_2),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
-                },
-            )
-        }
+                }
+            },
+        )
     }
 }

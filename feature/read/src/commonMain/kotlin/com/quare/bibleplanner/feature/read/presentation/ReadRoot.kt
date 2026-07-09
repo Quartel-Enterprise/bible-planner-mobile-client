@@ -3,33 +3,37 @@ package com.quare.bibleplanner.feature.read.presentation
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.feature.read.presentation.screen.ReadScreen
 import com.quare.bibleplanner.feature.read.presentation.utils.ReadUiActionCollector
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.read(
-    navController: NavController,
+fun EntryProviderScope<NavKey>.read(
+    onNavigate: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
+    onNavigateReplacingTop: (Any) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
-    composable<ReadNavRoute> {
-        val viewModel: ReadViewModel = koinViewModel()
+    entry<ReadNavRoute> { route ->
+        val viewModel = koinViewModel<ReadViewModel> { parametersOf(route) }
         val state by viewModel.uiState.collectAsState()
         ReadUiActionCollector(
             uiActionFlow = viewModel.uiAction,
-            navController = navController,
+            onNavigate = onNavigate,
+            onNavigateBack = onNavigateBack,
+            onNavigateReplacingTop = onNavigateReplacingTop,
         )
-        val animatedVisibilityScope = this
         val onEvent = viewModel::onEvent
         ReadScreen(
             platform = viewModel.platform,
             state = state,
             onEvent = onEvent,
             sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope,
+            animatedVisibilityScope = LocalNavAnimatedContentScope.current,
         )
     }
 }

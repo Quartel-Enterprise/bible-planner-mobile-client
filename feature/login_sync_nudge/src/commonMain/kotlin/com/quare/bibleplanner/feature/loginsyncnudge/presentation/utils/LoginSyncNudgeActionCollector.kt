@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.loginsyncnudge.presentation.utils
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
-import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
 import com.quare.bibleplanner.feature.loginsyncnudge.presentation.model.LoginSyncNudgeUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
@@ -11,17 +9,16 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 internal fun LoginSyncNudgeActionCollector(
     uiActionFlow: Flow<LoginSyncNudgeUiAction>,
-    navController: NavController,
+    onNavigateBack: () -> Unit,
+    onNavigateReplacingTop: (Any) -> Unit,
 ) {
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            LoginSyncNudgeUiAction.Dismiss -> navController.navigateUp()
+            LoginSyncNudgeUiAction.Dismiss -> onNavigateBack()
 
-            LoginSyncNudgeUiAction.NavigateToLogin -> navController.navigate(
+            LoginSyncNudgeUiAction.NavigateToLogin -> onNavigateReplacingTop(
                 LoginNavRoute(notifyResultViaSnackbar = true),
-            ) {
-                popUpTo<LoginSyncNudgeNavRoute> { inclusive = true }
-            }
+            )
         }
     }
 }

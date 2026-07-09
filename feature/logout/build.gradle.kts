@@ -28,8 +28,8 @@ kotlin {
             implementation(libs.ui)
             implementation(libs.components.resources)
 
-            // Navigation
-            implementation(libs.compose.navigation)
+            // Navigation 3
+            implementation(libs.compose.navigation3.ui)
 
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
