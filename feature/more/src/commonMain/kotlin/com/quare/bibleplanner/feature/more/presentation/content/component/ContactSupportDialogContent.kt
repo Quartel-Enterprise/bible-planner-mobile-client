@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -44,6 +45,7 @@ import com.quare.bibleplanner.feature.more.domain.model.SupportContact
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.feature.more.presentation.model.toStringResource
+import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
@@ -93,7 +95,7 @@ internal fun ContactSupportDialogContent(
         VerticalSpacer(20.dp)
 
         DiagnosticsCard {
-            EmailToRow()
+            EmailToRow(onCopyClick = { onEvent(MoreUiEvent.OnCopySupportEmailClick) })
         }
 
         VerticalSpacer(16.dp)
@@ -177,31 +179,42 @@ private fun DiagnosticsCard(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun EmailToRow() {
+private fun EmailToRow(onCopyClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Icon(
-            imageVector = Icons.Default.AlternateEmail,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Column {
-            Text(
-                text = stringResource(Res.string.contact_support_email_to_label),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Default.AlternateEmail,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Text(
-                text = SupportContact.EMAIL,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-            )
+            Column {
+                Text(
+                    text = stringResource(Res.string.contact_support_email_to_label),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = SupportContact.EMAIL,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
         }
+        CommonIconButton(
+            imageVector = Icons.Default.ContentCopy,
+            contentDescription = stringResource(Res.string.copy_email_address_button),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            onClick = onCopyClick,
+        )
     }
 }
 
