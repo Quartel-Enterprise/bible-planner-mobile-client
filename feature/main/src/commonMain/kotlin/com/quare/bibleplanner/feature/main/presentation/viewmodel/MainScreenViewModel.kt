@@ -11,11 +11,11 @@ import bibleplanner.feature.main.generated.resources.Res
 import bibleplanner.feature.main.generated.resources.books
 import bibleplanner.feature.main.generated.resources.more
 import bibleplanner.feature.main.generated.resources.plans
-import com.quare.bibleplanner.core.model.route.BottomNavRoute
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemModel
-import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemPresentationModel
+import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemModel
+import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemPresentationModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,12 +28,6 @@ import kotlinx.coroutines.launch
 class MainScreenViewModel(
     getAppLanguageFlow: GetAppLanguageFlow,
 ) : ViewModel() {
-    private val routes: List<BottomNavRoute> = listOf(
-        BottomNavRoute.Plans,
-        BottomNavRoute.Books,
-        BottomNavRoute.More,
-    )
-
     val languageState: StateFlow<Language> = getAppLanguageFlow().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -43,8 +37,12 @@ class MainScreenViewModel(
     private val _uiAction: MutableSharedFlow<MainScreenUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<MainScreenUiAction> = _uiAction
 
-    val bottomNavigationItemModels: List<BottomNavigationItemModel<NavKey>> =
-        routes.map { it.toBottomNavHost() }
+    val mainNavigationItemModels: List<MainNavigationItemModel<NavKey>> =
+        listOf(
+            MainNavRouteDestination.Plans,
+            MainNavRouteDestination.Books,
+            MainNavRouteDestination.More,
+        ).map(::mapToMainNavigationItemModel)
 
     fun dispatchUiEvent(event: MainScreenUiEvent) {
         when (event) {
@@ -64,23 +62,26 @@ class MainScreenViewModel(
         }
     }
 
-    private fun BottomNavRoute.toBottomNavHost(): BottomNavigationItemModel<NavKey> = BottomNavigationItemModel(
-        route = this,
-        presentationModel = when (this) {
-            BottomNavRoute.Plans -> BottomNavigationItemPresentationModel(
-                title = Res.string.plans,
-                icon = Icons.Default.DateRange,
-            )
+    private fun mapToMainNavigationItemModel(bottomNavRoute: MainNavRouteDestination): MainNavigationItemModel<NavKey> =
+        bottomNavRoute.run {
+            MainNavigationItemModel(
+                route = this,
+                presentationModel = when (this) {
+                    MainNavRouteDestination.Plans -> MainNavigationItemPresentationModel(
+                        title = Res.string.plans,
+                        icon = Icons.Default.DateRange,
+                    )
 
-            BottomNavRoute.Books -> BottomNavigationItemPresentationModel(
-                title = Res.string.books,
-                icon = Icons.AutoMirrored.Filled.MenuBook,
-            )
+                    MainNavRouteDestination.Books -> MainNavigationItemPresentationModel(
+                        title = Res.string.books,
+                        icon = Icons.AutoMirrored.Filled.MenuBook,
+                    )
 
-            BottomNavRoute.More -> BottomNavigationItemPresentationModel(
-                title = Res.string.more,
-                icon = Icons.Default.Menu,
+                    MainNavRouteDestination.More -> MainNavigationItemPresentationModel(
+                        title = Res.string.more,
+                        icon = Icons.Default.Menu,
+                    )
+                },
             )
-        },
-    )
+        }
 }

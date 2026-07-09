@@ -4,15 +4,14 @@ import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
 
-val nav3SavedStateConfiguration = SavedStateConfiguration {
+val navigationSavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
             subclass(MainNavRoute::class, MainNavRoute.serializer())
-            subclass(BottomNavRoute.Plans::class, BottomNavRoute.Plans.serializer())
-            subclass(BottomNavRoute.Books::class, BottomNavRoute.Books.serializer())
-            subclass(BottomNavRoute.More::class, BottomNavRoute.More.serializer())
+            subclass(MainNavRouteDestination.Plans::class, MainNavRouteDestination.Plans.serializer())
+            subclass(MainNavRouteDestination.Books::class, MainNavRouteDestination.Books.serializer())
+            subclass(MainNavRouteDestination.More::class, MainNavRouteDestination.More.serializer())
             subclass(AddNotesFreeWarningNavRoute::class, AddNotesFreeWarningNavRoute.serializer())
             subclass(AppLanguageNavRoute::class, AppLanguageNavRoute.serializer())
             subclass(BibleVersionSelectorRoute::class, BibleVersionSelectorRoute.serializer())

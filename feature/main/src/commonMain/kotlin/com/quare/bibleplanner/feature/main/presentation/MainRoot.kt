@@ -18,12 +18,12 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
-import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRoute
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.feature.books.presentation.booksScreen
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
-import com.quare.bibleplanner.feature.main.presentation.navhost.BottomNavTabState
-import com.quare.bibleplanner.feature.main.presentation.navhost.rememberBottomNavTabState
+import com.quare.bibleplanner.feature.main.presentation.navhost.NavTabState
+import com.quare.bibleplanner.feature.main.presentation.navhost.rememberNavTabState
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationBar
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationRail
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
@@ -57,66 +57,80 @@ private fun MainRootContent(
     animatedContentScope: AnimatedContentScope,
 ) {
     val mainViewModel: MainScreenViewModel = koinViewModel()
-    val tabState: BottomNavTabState = rememberBottomNavTabState()
+    val tabState: NavTabState = rememberNavTabState()
     NotificationPermissionStartEffect(onNavigate)
     ActionCollector(mainViewModel.uiAction) { uiAction ->
         when (uiAction) {
             is MainScreenUiAction.NavigateToBottomRoute -> {
-                (uiAction.route as? BottomNavRoute)?.let(tabState::switchTo)
+                (uiAction.route as? MainNavRouteDestination)?.let(tabState::switchTo)
             }
         }
     }
     val language by mainViewModel.languageState.collectAsState()
-    val bottomNavigationModels = mainViewModel.bottomNavigationItemModels
+    val mainNavigationModels = mainViewModel.mainNavigationItemModels
     val onEvent = mainViewModel::dispatchUiEvent
-    val navigationBar: @Composable (Modifier) -> Unit = { modifier ->
-        MainNavigationBar(
-            modifier = modifier,
-            selectedRoute = tabState.selectedTab,
-            bottomNavigationModels = bottomNavigationModels,
-            language = language,
-            onEvent = onEvent,
-        )
-    }
-    val navigationRail: @Composable () -> Unit = {
-        MainNavigationRail(
-            selectedRoute = tabState.selectedTab,
-            bottomNavigationModels = bottomNavigationModels,
-            language = language,
-            onEvent = onEvent,
-        )
-    }
     NavDisplay(
         entries = tabState.toDecoratedEntries(
             entryProvider {
-                readingPlan(
+                toMainEntries(
                     onNavigate = onNavigate,
-                    navigationBar = navigationBar,
-                    navigationRail = navigationRail,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope,
-                )
-                booksScreen(
-                    onNavigate = onNavigate,
-                    navigationBar = navigationBar,
-                    navigationRail = navigationRail,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedContentScope,
-                )
-                more(
-                    onNavigate = onNavigate,
-                    navigationBar = navigationBar,
-                    navigationRail = navigationRail,
+                    navigationBar = { modifier ->
+                        MainNavigationBar(
+                            modifier = modifier,
+                            selectedRoute = tabState.selectedTab,
+                            mainNavigationModels = mainNavigationModels,
+                            language = language,
+                            onEvent = onEvent,
+                        )
+                    },
+                    navigationRail = {
+                        MainNavigationRail(
+                            selectedRoute = tabState.selectedTab,
+                            mainNavigationModels = mainNavigationModels,
+                            language = language,
+                            onEvent = onEvent,
+                        )
+                    },
                     sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,
                 )
             },
         ),
         modifier = Modifier.fillMaxSize(),
-        onBack = { tabState.goBack() },
+        onBack = tabState::goBack,
         transitionSpec = { tabTransitionSpec() },
         popTransitionSpec = { tabTransitionSpec() },
         predictivePopTransitionSpec = { tabTransitionSpec() },
+    )
+}
+
+private fun EntryProviderScope<NavKey>.toMainEntries(
+    onNavigate: (NavKey) -> Unit,
+    navigationBar: @Composable ((Modifier) -> Unit),
+    navigationRail: @Composable (() -> Unit),
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+) {
+    readingPlan(
+        onNavigate = onNavigate,
+        navigationBar = navigationBar,
+        navigationRail = navigationRail,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedContentScope = animatedContentScope,
+    )
+    booksScreen(
+        onNavigate = onNavigate,
+        navigationBar = navigationBar,
+        navigationRail = navigationRail,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedContentScope,
+    )
+    more(
+        onNavigate = onNavigate,
+        navigationBar = navigationBar,
+        navigationRail = navigationRail,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedContentScope = animatedContentScope,
     )
 }
 

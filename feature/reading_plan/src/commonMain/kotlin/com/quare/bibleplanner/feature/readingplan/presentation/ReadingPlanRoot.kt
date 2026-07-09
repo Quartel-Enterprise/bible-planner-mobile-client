@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import com.quare.bibleplanner.core.model.route.BottomNavRoute
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.feature.readingplan.presentation.component.fabs.ReadingPlanFabsComponent
 import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanScreen
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
@@ -36,7 +36,7 @@ fun EntryProviderScope<NavKey>.readingPlan(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    entry<BottomNavRoute.Plans> {
+    entry<MainNavRouteDestination.Plans> {
         ReadingPlanTabContent(
             onNavigate = onNavigate,
             navigationBar = navigationBar,

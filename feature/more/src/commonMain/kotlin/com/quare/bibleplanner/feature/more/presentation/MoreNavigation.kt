@@ -17,7 +17,7 @@ import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_pro_part_1
 import bibleplanner.feature.more.generated.resources.become_pro_part_2
-import com.quare.bibleplanner.core.model.route.BottomNavRoute
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.feature.more.presentation.utils.MoreUiActionCollector
 import com.quare.bibleplanner.feature.more.presentation.viewmodel.MoreViewModel
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
@@ -34,7 +34,7 @@ fun EntryProviderScope<NavKey>.more(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    entry<BottomNavRoute.More> {
+    entry<MainNavRouteDestination.More> {
         MoreTabContent(
             onNavigate = onNavigate,
             navigationBar = navigationBar,

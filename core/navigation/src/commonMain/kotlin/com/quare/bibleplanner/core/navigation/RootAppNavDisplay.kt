@@ -21,7 +21,7 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
-import com.quare.bibleplanner.core.model.route.nav3SavedStateConfiguration
+import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
 import com.quare.bibleplanner.feature.applanguage.presentation.appLanguage
 import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelectionRoot
@@ -57,7 +57,7 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun RootAppNavDisplay() {
-    val backStack = rememberNavBackStack(nav3SavedStateConfiguration, MainNavRoute)
+    val backStack = rememberNavBackStack(navigationSavedStateConfiguration, MainNavRoute)
     val onNavigate: (NavKey) -> Unit = { route ->
         if (backStack.lastOrNull() != route) {
             backStack.add(route)

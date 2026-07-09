@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemModel
+import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
 import org.jetbrains.compose.resources.stringResource
 
@@ -20,14 +20,14 @@ import org.jetbrains.compose.resources.stringResource
 internal fun MainNavigationBar(
     modifier: Modifier,
     selectedRoute: NavKey?,
-    bottomNavigationModels: List<BottomNavigationItemModel<NavKey>>,
+    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
     NavigationBar(modifier = modifier) {
         key(language) {
-            MainNavigationItems(
-                bottomNavigationModels = bottomNavigationModels,
+            MainNavigationItemsComponent(
+                mainNavigationModels = mainNavigationModels,
                 isItemSelected = { it.route == selectedRoute },
                 onEvent = onEvent,
             ) { selected, onClick, icon, label ->
@@ -45,14 +45,14 @@ internal fun MainNavigationBar(
 @Composable
 internal fun MainNavigationRail(
     selectedRoute: NavKey?,
-    bottomNavigationModels: List<BottomNavigationItemModel<NavKey>>,
+    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
     NavigationRail {
         key(language) {
-            MainNavigationItems(
-                bottomNavigationModels = bottomNavigationModels,
+            MainNavigationItemsComponent(
+                mainNavigationModels = mainNavigationModels,
                 isItemSelected = { it.route == selectedRoute },
                 onEvent = onEvent,
             ) { selected, onClick, icon, label ->
@@ -68,13 +68,13 @@ internal fun MainNavigationRail(
 }
 
 @Composable
-private fun MainNavigationItems(
-    bottomNavigationModels: List<BottomNavigationItemModel<NavKey>>,
-    isItemSelected: (BottomNavigationItemModel<NavKey>) -> Boolean,
+private fun MainNavigationItemsComponent(
+    mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
+    isItemSelected: (MainNavigationItemModel<NavKey>) -> Boolean,
     onEvent: (MainScreenUiEvent) -> Unit,
     itemFactory: @Composable (Boolean, () -> Unit, @Composable () -> Unit, @Composable () -> Unit) -> Unit,
 ) {
-    bottomNavigationModels.forEach { bottomNavigationItemModel ->
+    mainNavigationModels.forEach { bottomNavigationItemModel ->
         val presentationItem = bottomNavigationItemModel.presentationModel
         val isSelected = isItemSelected(bottomNavigationItemModel)
         itemFactory(
