@@ -12,7 +12,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 fun EntryProviderScope<NavKey>.loginSyncNudge(
     onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (Any) -> Unit,
+    onNavigateReplacingTop: (NavKey) -> Unit,
 ) {
     entry<LoginSyncNudgeNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<LoginSyncNudgeViewModel>()

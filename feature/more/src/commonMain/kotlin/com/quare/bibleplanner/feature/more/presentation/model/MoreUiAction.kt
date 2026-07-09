@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.more.presentation.model
 
+import androidx.navigation3.runtime.NavKey
 import org.jetbrains.compose.resources.StringResource
 
 internal sealed interface MoreUiAction {
@@ -18,6 +19,6 @@ internal sealed interface MoreUiAction {
     ) : MoreUiAction
 
     data class GoToRoute(
-        val route: Any,
+        val route: NavKey,
     ) : MoreUiAction
 }

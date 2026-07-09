@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.loginwarning.presentation.utils
 
 import androidx.compose.runtime.Composable
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.feature.loginwarning.presentation.model.LoginWarningUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 internal fun LoginWarningActionCollector(
     uiActionFlow: Flow<LoginWarningUiAction>,
     onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (Any) -> Unit,
+    onNavigateReplacingTop: (NavKey) -> Unit,
 ) {
     ActionCollector(uiActionFlow) { action ->
         when (action) {

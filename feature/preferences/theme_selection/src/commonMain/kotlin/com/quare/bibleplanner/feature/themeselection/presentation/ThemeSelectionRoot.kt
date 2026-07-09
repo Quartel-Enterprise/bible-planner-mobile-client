@@ -18,7 +18,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.themeSettings(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     entry<ThemeNavRoute>(

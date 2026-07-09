@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.day.presentation.util
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ import org.jetbrains.compose.resources.getString
 internal fun DayUiActionCollector(
     uiActionFlow: Flow<DayUiAction>,
     snackbarHostState: SnackbarHostState,
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current

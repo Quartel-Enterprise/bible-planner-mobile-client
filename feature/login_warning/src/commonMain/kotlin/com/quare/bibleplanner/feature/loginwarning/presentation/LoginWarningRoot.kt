@@ -11,7 +11,7 @@ import org.koin.core.parameter.parametersOf
 
 fun EntryProviderScope<NavKey>.loginWarning(
     onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (Any) -> Unit,
+    onNavigateReplacingTop: (NavKey) -> Unit,
 ) {
     entry<LoginWarningNavRoute>(metadata = DialogSceneStrategy.dialog()) { route ->
         val viewModel = koinViewModel<LoginWarningViewModel> { parametersOf(route) }

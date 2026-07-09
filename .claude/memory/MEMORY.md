@@ -25,3 +25,4 @@
 - [Android SQLite framework driver](project_sqlite_driver_android_framework.md) — Android uses AndroidSQLiteDriver (framework SQLite) not BundledSQLiteDriver to avoid the libsqliteJni.so missing-ABI-split crash (issue 9775ecb7); driver dep set per-platform in getDatabaseBuilder and mirrored in BOTH core/provider/room and shared build.gradle.kts.
 - [One data class per file](feedback_one_data_class_per_file.md) — every data class/enum gets its own .kt file; never group several in one file.
 - [No JSON blobs in Room](feedback_no_json_blobs_in_room.md) — model normalized entities (parent + child tables, FK cascade, position column, @Relation POJO) instead of persisting JSON strings.
+- [Navigation 3 migration](project_navigation3_migration.md) — app fully on Nav3 (navigation3-ui 1.1.x stable, EntryProviderScope not EntryProviderBuilder, polymorphic NavKey registration required on iOS/web, browser history pending CMP-8924).

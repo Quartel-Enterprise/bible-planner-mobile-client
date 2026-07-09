@@ -30,7 +30,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.mainScreen(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
     entry<MainNavRoute> {
@@ -45,7 +45,7 @@ fun EntryProviderScope<NavKey>.mainScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun MainRootContent(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {

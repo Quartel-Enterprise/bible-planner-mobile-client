@@ -4,6 +4,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.no_progress_to_delete_message
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction
@@ -15,7 +16,7 @@ import org.jetbrains.compose.resources.getString
 @Composable
 internal fun MoreUiActionCollector(
     uiActionFlow: Flow<MoreUiAction>,
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     snackbarHostState: SnackbarHostState,
 ) {
     val uriHandler = LocalUriHandler.current

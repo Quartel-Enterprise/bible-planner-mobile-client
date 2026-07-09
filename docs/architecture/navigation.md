@@ -33,15 +33,15 @@ subclass(SomeFeatureNavRoute::class, SomeFeatureNavRoute.serializer())
 Navigation is expressed through lambdas instead of a `NavController`. Take only the ones the
 feature needs:
 
-- `onNavigate: (Any) -> Unit` — push a route
+- `onNavigate: (NavKey) -> Unit` — push a route
 - `onNavigateBack: () -> Unit` — pop the top entry
-- `onNavigateReplacingTop: (Any) -> Unit` — pop the current entry and push a route (the old
+- `onNavigateReplacingTop: (NavKey) -> Unit` — pop the current entry and push a route (the old
   `popUpTo(current) { inclusive = true }` pattern)
 
 ```kotlin
 // SomeFeatureRoot.kt
 fun EntryProviderScope<NavKey>.someFeature(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     entry<SomeFeatureNavRoute> { route ->

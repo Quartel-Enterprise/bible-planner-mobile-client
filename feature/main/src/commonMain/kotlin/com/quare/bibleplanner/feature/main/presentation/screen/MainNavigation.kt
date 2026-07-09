@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
@@ -18,8 +19,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun MainNavigationBar(
     modifier: Modifier,
-    selectedRoute: Any?,
-    bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
+    selectedRoute: NavKey?,
+    bottomNavigationModels: List<BottomNavigationItemModel<NavKey>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
@@ -43,8 +44,8 @@ internal fun MainNavigationBar(
 
 @Composable
 internal fun MainNavigationRail(
-    selectedRoute: Any?,
-    bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
+    selectedRoute: NavKey?,
+    bottomNavigationModels: List<BottomNavigationItemModel<NavKey>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
@@ -68,8 +69,8 @@ internal fun MainNavigationRail(
 
 @Composable
 private fun MainNavigationItems(
-    bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
-    isItemSelected: (BottomNavigationItemModel<Any>) -> Boolean,
+    bottomNavigationModels: List<BottomNavigationItemModel<NavKey>>,
+    isItemSelected: (BottomNavigationItemModel<NavKey>) -> Boolean,
     onEvent: (MainScreenUiEvent) -> Unit,
     itemFactory: @Composable (Boolean, () -> Unit, @Composable () -> Unit, @Composable () -> Unit) -> Unit,
 ) {

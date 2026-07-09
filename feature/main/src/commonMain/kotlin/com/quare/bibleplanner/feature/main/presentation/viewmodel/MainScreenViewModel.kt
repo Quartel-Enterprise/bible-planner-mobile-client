@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Menu
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.main.generated.resources.Res
 import bibleplanner.feature.main.generated.resources.books
 import bibleplanner.feature.main.generated.resources.more
@@ -42,7 +43,7 @@ class MainScreenViewModel(
     private val _uiAction: MutableSharedFlow<MainScreenUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<MainScreenUiAction> = _uiAction
 
-    val bottomNavigationItemModels: List<BottomNavigationItemModel<Any>> =
+    val bottomNavigationItemModels: List<BottomNavigationItemModel<NavKey>> =
         routes.map { it.toBottomNavHost() }
 
     fun dispatchUiEvent(event: MainScreenUiEvent) {
@@ -63,7 +64,7 @@ class MainScreenViewModel(
         }
     }
 
-    private fun BottomNavRoute.toBottomNavHost(): BottomNavigationItemModel<Any> = BottomNavigationItemModel(
+    private fun BottomNavRoute.toBottomNavHost(): BottomNavigationItemModel<NavKey> = BottomNavigationItemModel(
         route = this,
         presentationModel = when (this) {
             BottomNavRoute.Plans -> BottomNavigationItemPresentationModel(

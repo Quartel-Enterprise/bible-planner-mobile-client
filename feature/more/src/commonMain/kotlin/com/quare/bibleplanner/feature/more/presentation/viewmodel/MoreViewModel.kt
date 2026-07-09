@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.more.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.login_requires_internet
 import bibleplanner.feature.more.generated.resources.logout_requires_internet
@@ -155,7 +156,7 @@ internal class MoreViewModel(
     }
 
     private fun navigateIfOnline(
-        route: Any,
+        route: NavKey,
         offlineMessage: StringResource,
     ) {
         viewModelScope.launch {
@@ -168,7 +169,7 @@ internal class MoreViewModel(
         }
     }
 
-    private fun goToRoute(route: Any) {
+    private fun goToRoute(route: NavKey) {
         emitAction(MoreUiAction.GoToRoute(route))
     }
 

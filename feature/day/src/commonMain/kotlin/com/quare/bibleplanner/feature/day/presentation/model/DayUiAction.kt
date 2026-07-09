@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.model
 
+import androidx.navigation3.runtime.NavKey
 import org.jetbrains.compose.resources.StringResource
 
 internal sealed interface DayUiAction {
@@ -12,7 +13,7 @@ internal sealed interface DayUiAction {
     ) : DayUiAction
 
     data class NavigateToRoute(
-        val route: Any,
+        val route: NavKey,
     ) : DayUiAction
 
     data object NavigateBack : DayUiAction
