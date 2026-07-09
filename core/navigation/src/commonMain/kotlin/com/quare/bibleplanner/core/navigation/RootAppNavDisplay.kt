@@ -73,7 +73,12 @@ fun RootAppNavDisplay() {
     val appSnackbarController = koinInject<AppSnackbarController>()
     EventBusNavigationListener(onNavigate)
     ActionCollector(appSnackbarController.messages) { message ->
-        appSnackbarHostState.showSnackbar(getString(message))
+        message.run {
+            appSnackbarHostState.showSnackbar(
+                message = getString(stringResource),
+                withDismissAction = isDismissible,
+            )
+        }
     }
     Box(modifier = Modifier.fillMaxSize()) {
         CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
@@ -100,7 +105,6 @@ fun RootAppNavDisplay() {
                         )
                         logout(
                             onNavigateBack = onNavigateBack,
-                            snackbarHostState = snackbarHostState,
                         )
                         mainScreen(
                             onNavigate = onNavigate,

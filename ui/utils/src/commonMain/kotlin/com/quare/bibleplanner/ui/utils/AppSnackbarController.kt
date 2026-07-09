@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.ui.utils
 
+import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.StringResource
@@ -10,10 +11,10 @@ import org.jetbrains.compose.resources.StringResource
  * before the snackbar is shown (e.g. the login sheet closing on success).
  */
 class AppSnackbarController {
-    private val _messages: MutableSharedFlow<StringResource> = MutableSharedFlow(extraBufferCapacity = 1)
-    val messages: SharedFlow<StringResource> = _messages
+    private val _messages: MutableSharedFlow<AppSnackbarMessage> = MutableSharedFlow(extraBufferCapacity = 1)
+    val messages: SharedFlow<AppSnackbarMessage> = _messages
 
-    fun show(message: StringResource) {
+    fun show(message: AppSnackbarMessage) {
         _messages.tryEmit(message)
     }
 }

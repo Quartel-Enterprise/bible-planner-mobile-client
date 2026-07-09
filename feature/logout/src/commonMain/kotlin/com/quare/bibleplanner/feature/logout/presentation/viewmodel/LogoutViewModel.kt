@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.logout.generated.resources.Res
 import bibleplanner.feature.logout.generated.resources.logout_pending_favorites
+import bibleplanner.feature.logout.generated.resources.logout_success_message
 import com.quare.bibleplanner.feature.logout.domain.usecase.Logout
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutFlushFailedException
+import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutProgress
 import com.quare.bibleplanner.feature.logout.presentation.mapper.LogoutErrorMapper
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutError
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiAction
@@ -16,6 +18,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -33,23 +37,31 @@ internal class LogoutViewModel(
         when (event) {
             is LogoutUiEvent.ConfirmLogoutClick -> performLogout(shouldFlushPending = event.shouldFlushPending)
             LogoutUiEvent.OnCancel -> navigateBack()
-            LogoutUiEvent.OnDismiss -> if (_uiState.value != LogoutUiState.Loading) navigateBack()
+            LogoutUiEvent.OnDismiss -> if (_uiState.value !is LogoutUiState.Loading) navigateBack()
         }
     }
 
     private fun performLogout(shouldFlushPending: Boolean) {
-        viewModelScope.launch {
-            _uiState.update { LogoutUiState.Loading }
-            logout(shouldFlushPending = shouldFlushPending)
-                .onSuccess { _uiAction.emit(LogoutUiAction.NavigateBack) }
-                .onFailure { throwable ->
-                    if (throwable is LogoutFlushFailedException) {
-                        _uiState.update { LogoutUiState.PendingChangesError(Res.string.logout_pending_favorites) }
-                    } else {
-                        _uiState.update { LogoutUiState.Idle }
-                        _uiAction.emit(LogoutUiAction.ShowSnackbar(logoutErrorMapper.map(LogoutError.UNKNOWN)))
-                    }
+        logout(shouldFlushPending)
+            .onEach { progress ->
+                when (progress) {
+                    is LogoutProgress.InProgress -> _uiState.update { LogoutUiState.Loading(progress.phase) }
+                    is LogoutProgress.Finished -> progress.result.handleLogout()
                 }
+            }.launchIn(viewModelScope)
+    }
+
+    private suspend fun Result<Unit>.handleLogout() {
+        onSuccess {
+            _uiAction.emit(LogoutUiAction.NotifySuccess(Res.string.logout_success_message))
+            _uiAction.emit(LogoutUiAction.NavigateBack)
+        }.onFailure { throwable ->
+            if (throwable is LogoutFlushFailedException) {
+                _uiState.update { LogoutUiState.PendingChangesError(Res.string.logout_pending_favorites) }
+            } else {
+                _uiState.update { LogoutUiState.Idle }
+                _uiAction.emit(LogoutUiAction.ShowSnackbar(logoutErrorMapper.map(LogoutError.UNKNOWN)))
+            }
         }
     }
 

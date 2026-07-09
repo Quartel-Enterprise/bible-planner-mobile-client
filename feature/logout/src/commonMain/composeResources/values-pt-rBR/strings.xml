@@ -8,4 +8,7 @@
     <string name="logout_pending_changes_error_title">Não foi possível sair</string>
     <string name="logout_pending_changes_error_message">Não conseguimos sincronizar seus %1$s antes de sair. Tente novamente ou continue conectado.</string>
     <string name="logout_pending_favorites">favoritos</string>
+    <string name="logout_syncing_progress">Sincronizando seu progresso…</string>
+    <string name="logout_ending_session">Encerrando sessão…</string>
+    <string name="logout_success_message">Você saiu com segurança</string>
 </resources>

@@ -9,11 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
+import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.more.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.CurrentAppVersionText
-import com.quare.bibleplanner.feature.more.presentation.content.component.DataSection
+import com.quare.bibleplanner.feature.more.presentation.content.component.DeleteDataSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.LegalSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.LoginCard
+import com.quare.bibleplanner.feature.more.presentation.content.component.LogoutButton
 import com.quare.bibleplanner.feature.more.presentation.content.component.PreferencesSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.SocialSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.SupportSection
@@ -49,12 +51,10 @@ internal fun ResponsiveContentScope.moreScreenPortraitLayout(
     item { VerticalSpacer() }
     responsiveItem { SupportSection(onEvent = onEvent) }
     item { VerticalSpacer() }
-    responsiveItem { DataSection(onEvent = onEvent) }
     if (state.isWebAppVisible.valueOrNull() == true) {
-        item { VerticalSpacer() }
         responsiveItem { WebSection(onEvent = onEvent) }
+        item { VerticalSpacer() }
     }
-    item { VerticalSpacer() }
     responsiveItem {
         AppSection(
             onEvent = onEvent,
@@ -65,6 +65,14 @@ internal fun ResponsiveContentScope.moreScreenPortraitLayout(
     if (state.isInstagramLinkVisible.valueOrNull() == true) {
         item { VerticalSpacer() }
         responsiveItem { SocialSection(onEvent = onEvent) }
+    }
+    responsiveItem { DeleteDataSection(onEvent = onEvent) }
+    item { VerticalSpacer() }
+    if (state.accountStatusModel is AccountStatusModel.LoggedIn) {
+        item { VerticalSpacer() }
+        responsiveItem {
+            LogoutButton(onClick = { onEvent(MoreUiEvent.OnLogoutClick) })
+        }
     }
     item { VerticalSpacer() }
     responsiveItem {

@@ -12,6 +12,7 @@ import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.utils.LoginUiActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
+import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import io.github.jan.supabase.compose.auth.composable.GoogleDialogType
 import io.github.jan.supabase.compose.auth.composable.rememberSignInWithApple
 import io.github.jan.supabase.compose.auth.composable.rememberSignInWithGoogle
@@ -43,7 +44,12 @@ fun EntryProviderScope<NavKey>.loginRoot(onNavigateBack: () -> Unit) {
             sheetState = sheetState,
             onLoginResult = { message ->
                 if (notifyResultViaSnackbar) {
-                    appSnackbarController.show(message)
+                    appSnackbarController.show(
+                        AppSnackbarMessage(
+                            stringResource = message,
+                            isDismissible = false,
+                        ),
+                    )
                 }
             },
         )

@@ -12,11 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
+import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.more.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.CurrentAppVersionText
-import com.quare.bibleplanner.feature.more.presentation.content.component.DataSection
+import com.quare.bibleplanner.feature.more.presentation.content.component.DeleteDataSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.LegalSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.LoginCard
+import com.quare.bibleplanner.feature.more.presentation.content.component.LogoutButton
 import com.quare.bibleplanner.feature.more.presentation.content.component.PreferencesSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.SocialSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.SupportSection
@@ -79,15 +81,22 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
                         onEvent = onEvent,
                     )
                 }
-                DataSection(
-                    onEvent = onEvent,
-                )
                 AppSection(
                     onEvent = onEvent,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,
                 )
-                Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                DeleteDataSection(
+                    onEvent = onEvent,
+                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    if (state.accountStatusModel is AccountStatusModel.LoggedIn) {
+                        LogoutButton(onClick = { onEvent(MoreUiEvent.OnLogoutClick) })
+                    }
                     LegalSection(
                         onEvent = onEvent,
                     )

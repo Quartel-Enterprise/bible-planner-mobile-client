@@ -8,4 +8,7 @@
     <string name="logout_pending_changes_error_title">Couldn't sign out</string>
     <string name="logout_pending_changes_error_message">We couldn't sync your %1$s before signing out. Try again, or stay signed in.</string>
     <string name="logout_pending_favorites">favorites</string>
+    <string name="logout_syncing_progress">Syncing your progress…</string>
+    <string name="logout_ending_session">Ending session…</string>
+    <string name="logout_success_message">You signed out safely</string>
 </resources>

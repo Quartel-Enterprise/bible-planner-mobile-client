@@ -49,7 +49,7 @@
     <string name="login_card_title">No has iniciado sesión</string>
     <string name="login_card_subtitle">Inicie sesión para disfrutar de una mejor experiencia.</string>
     <string name="login_card_button">Iniciar sesión</string>
-    <string name="login_card_logout_button">Cerrar sesión</string>
+    <string name="logout_button">Cerrar sesión</string>
     <string name="login_requires_internet">Necesitas conexión a internet para iniciar sesión</string>
     <string name="logout_requires_internet">Necesitas conexión a internet para cerrar sesión de forma segura</string>
 </resources>
