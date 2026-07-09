@@ -1,8 +1,13 @@
 package com.quare.bibleplanner.feature.main.presentation
 
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,6 +32,8 @@ import com.quare.bibleplanner.feature.notificationpermission.presentation.Notifi
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.viewmodel.koinViewModel
+
+private const val TAB_TRANSITION_DURATION_MILLIS = 300
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.mainScreen(
@@ -107,5 +114,12 @@ private fun MainRootContent(
         ),
         modifier = Modifier.fillMaxSize(),
         onBack = { tabState.goBack() },
+        transitionSpec = { tabTransitionSpec() },
+        popTransitionSpec = { tabTransitionSpec() },
+        predictivePopTransitionSpec = { tabTransitionSpec() },
     )
 }
+
+private fun tabTransitionSpec(): ContentTransform =
+    fadeIn(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS)) togetherWith
+        fadeOut(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS))
