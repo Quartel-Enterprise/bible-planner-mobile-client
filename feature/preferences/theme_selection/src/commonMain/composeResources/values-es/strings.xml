@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="light_title">Claro</string>
-    <string name="light_description">Interfaz brillante y clara</string>
     <string name="dark_title">Oscuro</string>
-    <string name="dark_description">Reduce la fatiga visual, ideal para ambientes con poca luz</string>
     <string name="system_title">Sistema</string>
-    <string name="system_description">Se adapta automáticamente a la configuración del sistema</string>
+    <string name="appearance">Apariencia</string>
     <string name="dynamic_colors_title">Colores dinámicos</string>
     <string name="standard_contrast">Estándar</string>
     <string name="medium_contrast">Medio</string>
@@ -14,5 +12,5 @@
     <string name="select_theme">Tema</string>
     <string name="information">Información</string>
     <string name="sync_across_devices_title">Sincronizar entre dispositivos</string>
-    <string name="sync_across_devices_description">Mantén tu tema igual en todos tus dispositivos</string>
+    <string name="sync_across_devices_description">Guarda tu tema en tu cuenta y lo aplica en todos tus dispositivos</string>
 </resources>
