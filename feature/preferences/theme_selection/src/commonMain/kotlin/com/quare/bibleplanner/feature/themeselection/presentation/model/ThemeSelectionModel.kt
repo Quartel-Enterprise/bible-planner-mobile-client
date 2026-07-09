@@ -6,7 +6,6 @@ import org.jetbrains.compose.resources.StringResource
 
 data class ThemeSelectionModel(
     val title: StringResource,
-    val subtitle: StringResource,
     val icon: ImageVector,
     val preference: Theme,
     val isActive: Boolean,

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="light_title">Light</string>
-    <string name="light_description">Bright and clear interface</string>
     <string name="dark_title">Dark</string>
-    <string name="dark_description">Reduces eye strain, ideal for low-light environments</string>
     <string name="system_title">System</string>
-    <string name="system_description">Automatically adapts to system settings</string>
+    <string name="appearance">Appearance</string>
     <string name="dynamic_colors_title">Dynamic colors</string>
     <string name="standard_contrast">Standard</string>
     <string name="medium_contrast">Medium</string>
@@ -14,5 +12,5 @@
     <string name="select_theme">Theme</string>
     <string name="information">Information</string>
     <string name="sync_across_devices_title">Sync across devices</string>
-    <string name="sync_across_devices_description">Keep your theme the same on all your devices</string>
+    <string name="sync_across_devices_description">Saves your theme to your account and applies it to all your devices</string>
 </resources>
