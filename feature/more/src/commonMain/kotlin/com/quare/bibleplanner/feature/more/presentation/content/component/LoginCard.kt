@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +27,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.login_card_button
-import bibleplanner.feature.more.generated.resources.login_card_logout_button
 import bibleplanner.feature.more.generated.resources.login_card_subtitle
 import bibleplanner.feature.more.generated.resources.login_card_title
 import coil3.compose.SubcomposeAsyncImage
@@ -155,19 +152,6 @@ internal fun LoginCard(
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
-                },
-                trailingContent = if (accountStatusModel is AccountStatusModel.LoggedIn) {
-                    {
-                        IconButton(onClick = { onEvent(MoreUiEvent.OnLogoutClick) }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Logout,
-                                contentDescription = stringResource(Res.string.login_card_logout_button),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                } else {
-                    null
                 },
             )
             if (accountStatusModel == AccountStatusModel.LoggedOut) {

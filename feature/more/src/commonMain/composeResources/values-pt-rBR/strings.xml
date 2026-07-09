@@ -48,7 +48,7 @@
     <string name="login_card_title">Você não está logado</string>
     <string name="login_card_subtitle">Faça login para ter uma melhor experiência.</string>
     <string name="login_card_button">Entrar</string>
-    <string name="login_card_logout_button">Sair</string>
+    <string name="logout_button">Sair</string>
     <string name="login_requires_internet">Você precisa de internet para entrar</string>
     <string name="logout_requires_internet">Você precisa de internet para sair com segurança</string>
 </resources>

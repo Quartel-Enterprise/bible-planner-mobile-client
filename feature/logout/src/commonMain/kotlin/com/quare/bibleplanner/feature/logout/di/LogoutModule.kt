@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.logout.di
 
+import com.quare.bibleplanner.feature.logout.domain.usecase.EndSession
+import com.quare.bibleplanner.feature.logout.domain.usecase.EndSessionUseCase
 import com.quare.bibleplanner.feature.logout.domain.usecase.FlushPendingChangesUseCase
 import com.quare.bibleplanner.feature.logout.domain.usecase.Logout
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutUseCase
@@ -18,6 +20,7 @@ val logoutModule = module {
             flushTimeout = 5.seconds,
         )
     }
+    factoryOf(::EndSessionUseCase).bind<EndSession>()
     factoryOf(::LogoutUseCase).bind<Logout>()
     factoryOf(::LogoutErrorMapper)
     viewModelOf(::LogoutViewModel)

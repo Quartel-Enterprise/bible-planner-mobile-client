@@ -16,7 +16,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun DataSection(
+internal fun DeleteDataSection(
     modifier: Modifier = Modifier,
     onEvent: (MoreUiEvent) -> Unit,
 ) {

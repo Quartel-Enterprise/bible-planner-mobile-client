@@ -8,4 +8,7 @@
     <string name="logout_pending_changes_error_title">No se pudo cerrar sesión</string>
     <string name="logout_pending_changes_error_message">No pudimos sincronizar tus %1$s antes de cerrar sesión. Inténtalo de nuevo o mantén la sesión iniciada.</string>
     <string name="logout_pending_favorites">favoritos</string>
+    <string name="logout_syncing_progress">Sincronizando tu progreso…</string>
+    <string name="logout_ending_session">Cerrando sesión…</string>
+    <string name="logout_success_message">Cerraste sesión de forma segura</string>
 </resources>
