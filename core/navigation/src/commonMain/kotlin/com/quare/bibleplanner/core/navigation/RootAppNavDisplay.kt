@@ -58,15 +58,15 @@ import org.koin.compose.koinInject
 @Composable
 fun RootAppNavDisplay() {
     val backStack = rememberNavBackStack(nav3SavedStateConfiguration, MainNavRoute)
-    val onNavigate: (Any) -> Unit = { route ->
+    val onNavigate: (NavKey) -> Unit = { route ->
         if (backStack.lastOrNull() != route) {
-            backStack.add(route as NavKey)
+            backStack.add(route)
         }
     }
     val onNavigateBack: () -> Unit = { backStack.removeLastOrNull() }
-    val onNavigateReplacingTop: (Any) -> Unit = { route ->
+    val onNavigateReplacingTop: (NavKey) -> Unit = { route ->
         backStack.removeLastOrNull()
-        backStack.add(route as NavKey)
+        backStack.add(route)
     }
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -177,7 +177,7 @@ fun RootAppNavDisplay() {
 }
 
 @Composable
-private fun EventBusNavigationListener(onNavigate: (Any) -> Unit) {
+private fun EventBusNavigationListener(onNavigate: (NavKey) -> Unit) {
     val navigationEventBus: NavigationEventBus = koinInject()
     ActionCollector(navigationEventBus.events) { route ->
         onNavigate(route)

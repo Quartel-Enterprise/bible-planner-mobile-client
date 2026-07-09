@@ -28,7 +28,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.more(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -48,7 +48,7 @@ fun EntryProviderScope<NavKey>.more(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun MoreTabContent(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,

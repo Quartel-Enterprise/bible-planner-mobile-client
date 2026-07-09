@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.bibleversion.presentation.utils
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.preferences.bible_version.generated.resources.Res
 import bibleplanner.feature.preferences.bible_version.generated.resources.download_tip_keep_app_open
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
@@ -11,7 +12,7 @@ import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun BibleVersionsActionCollector(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
     uiActionFlow: Flow<BibleVersionUiAction>,
     snackbarHostState: SnackbarHostState,

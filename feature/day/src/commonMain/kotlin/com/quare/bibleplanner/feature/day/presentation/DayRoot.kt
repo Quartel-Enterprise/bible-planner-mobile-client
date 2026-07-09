@@ -20,7 +20,7 @@ import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.day(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
@@ -38,7 +38,7 @@ fun EntryProviderScope<NavKey>.day(
 @Composable
 private fun DayRootContent(
     route: DayNavRoute,
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {

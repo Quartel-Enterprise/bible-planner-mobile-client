@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.applanguage.presentation.utils
 
 import androidx.compose.runtime.Composable
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.utils.locale.Language
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 internal fun AppLanguageActionCollector(
     actionsFlow: Flow<AppLanguageUiAction>,
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     val applyLanguage = rememberApplyLanguage()

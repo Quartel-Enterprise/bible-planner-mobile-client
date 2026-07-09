@@ -16,9 +16,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.paywall(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (Any) -> Unit,
+    onNavigateReplacingTop: (NavKey) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
     entry<PaywallNavRoute> {

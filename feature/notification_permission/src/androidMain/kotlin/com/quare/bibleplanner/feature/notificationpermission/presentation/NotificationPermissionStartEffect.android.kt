@@ -10,10 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 
 @Composable
-actual fun NotificationPermissionStartEffect(onNavigate: (Any) -> Unit) {
+actual fun NotificationPermissionStartEffect(onNavigate: (NavKey) -> Unit) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
 
     val context = LocalContext.current

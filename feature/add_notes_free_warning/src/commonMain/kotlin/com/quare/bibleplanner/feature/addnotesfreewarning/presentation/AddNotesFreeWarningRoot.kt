@@ -13,7 +13,7 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.addNotesFreeWarning(
     onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (Any) -> Unit,
+    onNavigateReplacingTop: (NavKey) -> Unit,
 ) {
     entry<AddNotesFreeWarningNavRoute>(metadata = DialogSceneStrategy.dialog()) { route ->
         val viewModel = koinViewModel<AddNotesFreeWarningViewModel> { parametersOf(route) }

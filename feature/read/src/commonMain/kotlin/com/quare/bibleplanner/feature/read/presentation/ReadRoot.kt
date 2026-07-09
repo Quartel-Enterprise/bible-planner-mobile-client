@@ -13,9 +13,9 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun EntryProviderScope<NavKey>.read(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (Any) -> Unit,
+    onNavigateReplacingTop: (NavKey) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
     entry<ReadNavRoute> { route ->

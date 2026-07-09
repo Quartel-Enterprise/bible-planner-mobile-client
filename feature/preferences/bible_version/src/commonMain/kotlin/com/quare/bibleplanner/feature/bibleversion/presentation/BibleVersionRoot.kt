@@ -29,7 +29,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     entry<BibleVersionSelectorRoute>(

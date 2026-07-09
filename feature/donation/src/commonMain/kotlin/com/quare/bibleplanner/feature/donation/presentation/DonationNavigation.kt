@@ -21,7 +21,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.donation(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     entry<DonationNavRoute>(metadata = DialogSceneStrategy.dialog()) {
@@ -53,7 +53,7 @@ fun EntryProviderScope<NavKey>.donation(
 @Composable
 private fun DonationActionCollector(
     sheetState: SheetState,
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
     flow: Flow<DonationUiAction>,
 ) {

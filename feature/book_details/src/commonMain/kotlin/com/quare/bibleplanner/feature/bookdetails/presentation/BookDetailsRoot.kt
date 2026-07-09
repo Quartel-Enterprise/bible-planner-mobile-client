@@ -16,7 +16,7 @@ import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.bookDetails(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {

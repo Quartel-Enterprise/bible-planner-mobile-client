@@ -6,6 +6,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.UriHandler
+import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.open_site
 import bibleplanner.feature.books.generated.resources.reading_not_available_yet
@@ -26,7 +27,7 @@ internal fun BooksUiActionCollector(
     newTestamentListState: LazyGridState,
     uriHandler: UriHandler,
     snackbarHostState: SnackbarHostState,
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
 ) {
     ActionCollector(uiAction) { action ->
         when (action) {

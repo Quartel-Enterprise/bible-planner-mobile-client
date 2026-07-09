@@ -30,7 +30,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.readingPlan(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -50,7 +50,7 @@ fun EntryProviderScope<NavKey>.readingPlan(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ReadingPlanTabContent(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -96,7 +96,7 @@ private fun ReadingPlanScreenObserver(
     snackbarHostState: SnackbarHostState,
     uiActionFlow: Flow<ReadingPlanUiAction>,
     uiState: ReadingPlanUiState,
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val scrollToTop = uiState.scrollToTop

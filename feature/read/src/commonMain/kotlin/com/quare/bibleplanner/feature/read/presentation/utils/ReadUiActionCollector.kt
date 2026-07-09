@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.utils
 
 import androidx.compose.runtime.Composable
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
@@ -8,9 +9,9 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 internal fun ReadUiActionCollector(
     uiActionFlow: Flow<ReadUiAction>,
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (Any) -> Unit,
+    onNavigateReplacingTop: (NavKey) -> Unit,
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {

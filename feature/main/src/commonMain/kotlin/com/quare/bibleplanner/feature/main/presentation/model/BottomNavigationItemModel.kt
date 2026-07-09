@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.main.presentation.model
 
-data class BottomNavigationItemModel<T : Any>(
+import androidx.navigation3.runtime.NavKey
+
+data class BottomNavigationItemModel<T : NavKey>(
     val presentationModel: BottomNavigationItemPresentationModel,
     val route: T,
 )

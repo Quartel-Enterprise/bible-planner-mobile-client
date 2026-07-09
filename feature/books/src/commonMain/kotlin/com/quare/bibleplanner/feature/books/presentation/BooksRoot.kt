@@ -26,7 +26,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.booksScreen(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -46,7 +46,7 @@ fun EntryProviderScope<NavKey>.booksScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun BooksTabContent(
-    onNavigate: (Any) -> Unit,
+    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
