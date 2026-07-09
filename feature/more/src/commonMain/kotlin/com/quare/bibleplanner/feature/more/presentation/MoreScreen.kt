@@ -38,8 +38,9 @@ internal fun MoreScreen(
         if (state.showContactSupportDialog) {
             ResponsiveDialogSheet(
                 onCloseClick = { onEvent(MoreUiEvent.OnDismissContactSupportDialog) },
+                skipPartiallyExpanded = true,
             ) {
-                ContactSupportDialogContent(onEvent = onEvent)
+                ContactSupportDialogContent(state = state, onEvent = onEvent)
             }
         }
         ResponsiveColumn(

@@ -89,7 +89,7 @@ private fun bibleVersionSubtitle(state: MoreUiState): String? = state.bibleVersi
     }
 }
 
-private fun Language.toStringResource(): StringResource = when (this) {
+internal fun Language.toStringResource(): StringResource = when (this) {
     Language.ENGLISH -> AppLanguageRes.string.language_english
     Language.PORTUGUESE_BRAZIL -> AppLanguageRes.string.language_portuguese_brazil
     Language.SPANISH -> AppLanguageRes.string.language_spanish
