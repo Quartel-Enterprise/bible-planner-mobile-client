@@ -39,6 +39,9 @@ kotlin {
             // Navigation
             implementation(libs.compose.navigation)
 
+            // Navigation 3
+            implementation(libs.compose.navigation3.ui)
+
             // DateTime
             implementation(libs.kotlinx.datetime)
 

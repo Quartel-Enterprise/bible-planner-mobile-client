@@ -41,6 +41,9 @@ kotlin {
             // Navigation
             implementation(libs.compose.navigation)
 
+            // Navigation 3
+            implementation(libs.compose.navigation3.ui)
+
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)

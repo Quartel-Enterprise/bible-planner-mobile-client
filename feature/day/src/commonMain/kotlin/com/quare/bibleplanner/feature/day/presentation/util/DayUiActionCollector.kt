@@ -3,9 +3,6 @@ package com.quare.bibleplanner.feature.day.presentation.util
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.navigation.NavController
-import bibleplanner.feature.day.generated.resources.Res
-import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +12,8 @@ import org.jetbrains.compose.resources.getString
 internal fun DayUiActionCollector(
     uiActionFlow: Flow<DayUiAction>,
     snackbarHostState: SnackbarHostState,
-    navController: NavController,
+    onNavigate: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     ActionCollector(uiActionFlow) { action ->
@@ -29,11 +27,11 @@ internal fun DayUiActionCollector(
             }
 
             is DayUiAction.NavigateBack -> {
-                navController.navigateUp()
+                onNavigateBack()
             }
 
             is DayUiAction.NavigateToRoute -> {
-                navController.navigate(action.route)
+                onNavigate(action.route)
             }
 
             DayUiAction.ClearFocus -> {

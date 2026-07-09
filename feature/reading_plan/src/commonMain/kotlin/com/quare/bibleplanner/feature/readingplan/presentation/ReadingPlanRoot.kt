@@ -38,38 +38,56 @@ fun NavGraphBuilder.readingPlan(
     animatedContentScope: AnimatedContentScope,
 ) {
     composable<BottomNavRoute.Plans> {
-        val viewModel = koinViewModel<ReadingPlanViewModel>()
-        val onEvent = viewModel::onEvent
-        val uiState by viewModel.uiState.collectAsState()
-        val lazyListState = rememberLazyListState()
-        val snackbarHostState = LocalSnackbarHostState.current
-
-        ReadingPlanScreenObserver(
-            lazyListState = lazyListState,
-            uiActionFlow = viewModel.uiAction,
-            snackbarHostState = snackbarHostState,
-            uiState = uiState,
-            navController = navController,
-            onEvent = onEvent,
-        )
-        MainTabScaffold(
+        ReadingPlanTabContent(
+            onNavigate = { route -> navController.navigate(route) },
             navigationBar = navigationBar,
             navigationRail = navigationRail,
-            floatingActionButton = {
-                ReadingPlanFabsComponent(
-                    uiState = uiState,
-                    onEvent = onEvent,
-                )
-            },
-        ) {
-            ReadingPlanScreen(
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+internal fun ReadingPlanTabContent(
+    onNavigate: (Any) -> Unit,
+    navigationBar: @Composable (Modifier) -> Unit,
+    navigationRail: @Composable () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+) {
+    val viewModel = koinViewModel<ReadingPlanViewModel>()
+    val onEvent = viewModel::onEvent
+    val uiState by viewModel.uiState.collectAsState()
+    val lazyListState = rememberLazyListState()
+    val snackbarHostState = LocalSnackbarHostState.current
+
+    ReadingPlanScreenObserver(
+        lazyListState = lazyListState,
+        uiActionFlow = viewModel.uiAction,
+        snackbarHostState = snackbarHostState,
+        uiState = uiState,
+        onNavigate = onNavigate,
+        onEvent = onEvent,
+    )
+    MainTabScaffold(
+        navigationBar = navigationBar,
+        navigationRail = navigationRail,
+        floatingActionButton = {
+            ReadingPlanFabsComponent(
                 uiState = uiState,
                 onEvent = onEvent,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-                lazyListState = lazyListState,
             )
-        }
+        },
+    ) {
+        ReadingPlanScreen(
+            uiState = uiState,
+            onEvent = onEvent,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+            lazyListState = lazyListState,
+        )
     }
 }
 
@@ -79,7 +97,7 @@ private fun ReadingPlanScreenObserver(
     snackbarHostState: SnackbarHostState,
     uiActionFlow: Flow<ReadingPlanUiAction>,
     uiState: ReadingPlanUiState,
-    navController: NavController,
+    onNavigate: (Any) -> Unit,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val scrollToTop = uiState.scrollToTop
@@ -107,7 +125,7 @@ private fun ReadingPlanScreenObserver(
     ReadingPlanUiActionCollector(
         snackbarHostState = snackbarHostState,
         flow = uiActionFlow,
-        navController = navController,
+        onNavigate = onNavigate,
     )
 }
 

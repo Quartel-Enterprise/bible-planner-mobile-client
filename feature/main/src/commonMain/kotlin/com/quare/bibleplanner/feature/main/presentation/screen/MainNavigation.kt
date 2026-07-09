@@ -31,7 +31,7 @@ fun MainNavigationBar(
         key(language) {
             MainNavigationItems(
                 bottomNavigationModels = bottomNavigationModels,
-                currentDestination = currentDestination,
+                isItemSelected = { isSelected(currentDestination, it) },
                 onEvent = onEvent,
             ) { selected, onClick, icon, label ->
                 NavigationBarItem(
@@ -56,7 +56,7 @@ fun MainNavigationRail(
         key(language) {
             MainNavigationItems(
                 bottomNavigationModels = bottomNavigationModels,
-                currentDestination = currentDestination,
+                isItemSelected = { isSelected(currentDestination, it) },
                 onEvent = onEvent,
             ) { selected, onClick, icon, label ->
                 NavigationRailItem(
@@ -71,15 +71,15 @@ fun MainNavigationRail(
 }
 
 @Composable
-private fun MainNavigationItems(
+internal fun MainNavigationItems(
     bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
-    currentDestination: NavDestination?,
+    isItemSelected: (BottomNavigationItemModel<Any>) -> Boolean,
     onEvent: (MainScreenUiEvent) -> Unit,
     itemFactory: @Composable (Boolean, () -> Unit, @Composable () -> Unit, @Composable () -> Unit) -> Unit,
 ) {
     bottomNavigationModels.forEach { bottomNavigationItemModel ->
         val presentationItem = bottomNavigationItemModel.presentationModel
-        val isSelected = isSelected(currentDestination, bottomNavigationItemModel)
+        val isSelected = isItemSelected(bottomNavigationItemModel)
         itemFactory(
             isSelected,
             {

@@ -34,63 +34,81 @@ fun NavGraphBuilder.booksScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     composable<BottomNavRoute.Books> {
-        val viewModel = koinViewModel<BooksViewModel>()
-        val state by viewModel.uiState.collectAsState()
-
-        val searchGridState = rememberLazyGridState()
-        val searchListState = rememberLazyGridState()
-        val oldTestamentGridState = rememberLazyGridState()
-        val oldTestamentListState = rememberLazyGridState()
-        val newTestamentGridState = rememberLazyGridState()
-        val newTestamentListState = rememberLazyGridState()
-
-        val isScrolled by remember(state) {
-            derivedStateOf {
-                calculateIsScrolled(
-                    state = state,
-                    searchGridState = searchGridState,
-                    searchListState = searchListState,
-                    oldTestamentGridState = oldTestamentGridState,
-                    oldTestamentListState = oldTestamentListState,
-                    newTestamentGridState = newTestamentGridState,
-                    newTestamentListState = newTestamentListState,
-                )
-            }
-        }
-        val snackbarHostState = LocalSnackbarHostState.current
-
-        val uriHandler = LocalUriHandler.current
-        BooksUiActionCollector(
-            uiAction = viewModel.uiAction,
-            searchGridState = searchGridState,
-            searchListState = searchListState,
-            oldTestamentGridState = oldTestamentGridState,
-            oldTestamentListState = oldTestamentListState,
-            newTestamentGridState = newTestamentGridState,
-            newTestamentListState = newTestamentListState,
-            uriHandler = uriHandler,
-            snackbarHostState = snackbarHostState,
-            navController = rootNavController,
-        )
-
-        MainTabScaffold(
+        BooksTabContent(
+            onNavigate = { route -> rootNavController.navigate(route) },
             navigationBar = navigationBar,
             navigationRail = navigationRail,
-        ) {
-            BooksScreen(
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+internal fun BooksTabContent(
+    onNavigate: (Any) -> Unit,
+    navigationBar: @Composable (Modifier) -> Unit,
+    navigationRail: @Composable () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+) {
+    val viewModel = koinViewModel<BooksViewModel>()
+    val state by viewModel.uiState.collectAsState()
+
+    val searchGridState = rememberLazyGridState()
+    val searchListState = rememberLazyGridState()
+    val oldTestamentGridState = rememberLazyGridState()
+    val oldTestamentListState = rememberLazyGridState()
+    val newTestamentGridState = rememberLazyGridState()
+    val newTestamentListState = rememberLazyGridState()
+
+    val isScrolled by remember(state) {
+        derivedStateOf {
+            calculateIsScrolled(
                 state = state,
-                onEvent = viewModel::onEvent,
                 searchGridState = searchGridState,
                 searchListState = searchListState,
                 oldTestamentGridState = oldTestamentGridState,
                 oldTestamentListState = oldTestamentListState,
                 newTestamentGridState = newTestamentGridState,
                 newTestamentListState = newTestamentListState,
-                isScrolled = isScrolled,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope,
             )
         }
+    }
+    val snackbarHostState = LocalSnackbarHostState.current
+
+    val uriHandler = LocalUriHandler.current
+    BooksUiActionCollector(
+        uiAction = viewModel.uiAction,
+        searchGridState = searchGridState,
+        searchListState = searchListState,
+        oldTestamentGridState = oldTestamentGridState,
+        oldTestamentListState = oldTestamentListState,
+        newTestamentGridState = newTestamentGridState,
+        newTestamentListState = newTestamentListState,
+        uriHandler = uriHandler,
+        snackbarHostState = snackbarHostState,
+        onNavigate = onNavigate,
+    )
+
+    MainTabScaffold(
+        navigationBar = navigationBar,
+        navigationRail = navigationRail,
+    ) {
+        BooksScreen(
+            state = state,
+            onEvent = viewModel::onEvent,
+            searchGridState = searchGridState,
+            searchListState = searchListState,
+            oldTestamentGridState = oldTestamentGridState,
+            oldTestamentListState = oldTestamentListState,
+            newTestamentGridState = newTestamentGridState,
+            newTestamentListState = newTestamentListState,
+            isScrolled = isScrolled,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
+        )
     }
 }
 

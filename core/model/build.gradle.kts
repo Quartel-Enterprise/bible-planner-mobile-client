@@ -19,6 +19,9 @@ kotlin {
             // Serialization
             implementation(libs.kotlin.serialization.json)
 
+            // Navigation 3 (NavKey)
+            api(libs.compose.navigation3.runtime)
+
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)

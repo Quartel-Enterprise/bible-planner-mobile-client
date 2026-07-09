@@ -59,6 +59,13 @@ kotlin {
 
             // Navigation
             implementation(libs.compose.navigation)
+
+            // Navigation 3
+            implementation(libs.compose.navigation3.ui)
+            implementation(libs.androidx.lifecycle.viewmodelNavigation3)
+
+            // Logging
+            implementation(libs.kermit)
         }
     }
 }

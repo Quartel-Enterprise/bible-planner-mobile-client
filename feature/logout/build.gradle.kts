@@ -31,6 +31,9 @@ kotlin {
             // Navigation
             implementation(libs.compose.navigation)
 
+            // Navigation 3
+            implementation(libs.compose.navigation3.ui)
+
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)

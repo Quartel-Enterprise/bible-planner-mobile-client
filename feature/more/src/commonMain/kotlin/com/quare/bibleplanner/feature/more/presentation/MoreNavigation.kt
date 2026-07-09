@@ -36,49 +36,67 @@ fun NavGraphBuilder.more(
     animatedContentScope: AnimatedContentScope,
 ) {
     composable<BottomNavRoute.More> {
-        val viewModel = koinViewModel<MoreViewModel>()
-        MoreUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            navController = navController,
-            snackbarHostState = LocalSnackbarHostState.current,
-        )
-        val uiState by viewModel.uiState.collectAsState()
-
-        MainTabScaffold(
+        MoreTabContent(
+            onNavigate = { route -> navController.navigate(route) { launchSingleTop = true } },
             navigationBar = navigationBar,
             navigationRail = navigationRail,
-        ) {
-            MoreScreen(
-                state = uiState,
-                onEvent = viewModel::onEvent,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-                becomeProTitleContent = {
-                    Row {
-                        with(sharedTransitionScope) {
-                            Text(
-                                modifier = Modifier.sharedElement(
-                                    rememberSharedContentState(key = "become_pro_part_1"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                ),
-                                text = stringResource(Res.string.become_pro_part_1),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                            HorizontalSpacer(4.dp)
-                            Text(
-                                modifier = Modifier.sharedElement(
-                                    rememberSharedContentState(key = "become_pro_part_2"),
-                                    animatedVisibilityScope = animatedContentScope,
-                                ),
-                                text = stringResource(Res.string.become_pro_part_2),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+        )
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+internal fun MoreTabContent(
+    onNavigate: (Any) -> Unit,
+    navigationBar: @Composable (Modifier) -> Unit,
+    navigationRail: @Composable () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
+) {
+    val viewModel = koinViewModel<MoreViewModel>()
+    MoreUiActionCollector(
+        uiActionFlow = viewModel.uiAction,
+        onNavigate = onNavigate,
+        snackbarHostState = LocalSnackbarHostState.current,
+    )
+    val uiState by viewModel.uiState.collectAsState()
+
+    MainTabScaffold(
+        navigationBar = navigationBar,
+        navigationRail = navigationRail,
+    ) {
+        MoreScreen(
+            state = uiState,
+            onEvent = viewModel::onEvent,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+            becomeProTitleContent = {
+                Row {
+                    with(sharedTransitionScope) {
+                        Text(
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(key = "become_pro_part_1"),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
+                            text = stringResource(Res.string.become_pro_part_1),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        HorizontalSpacer(4.dp)
+                        Text(
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(key = "become_pro_part_2"),
+                                animatedVisibilityScope = animatedContentScope,
+                            ),
+                            text = stringResource(Res.string.become_pro_part_2),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
-                },
-            )
-        }
+                }
+            },
+        )
     }
 }

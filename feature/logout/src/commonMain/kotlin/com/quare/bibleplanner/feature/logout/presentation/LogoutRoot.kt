@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.logout.presentation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.DialogProperties
@@ -24,16 +25,27 @@ fun NavGraphBuilder.logout(
             dismissOnClickOutside = false,
         ),
     ) {
-        val viewModel = koinViewModel<LogoutViewModel>()
-        val uiState by viewModel.uiState.collectAsState()
-        LogoutUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            navController = navController,
+        LogoutRootContent(
+            onNavigateBack = { navController.navigateUp() },
             snackbarHostState = snackbarHostState,
         )
-        LogoutDialog(
-            uiState = uiState,
-            onEvent = viewModel::onEvent,
-        )
     }
+}
+
+@Composable
+internal fun LogoutRootContent(
+    onNavigateBack: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+) {
+    val viewModel = koinViewModel<LogoutViewModel>()
+    val uiState by viewModel.uiState.collectAsState()
+    LogoutUiActionCollector(
+        uiActionFlow = viewModel.uiAction,
+        onNavigateBack = onNavigateBack,
+        snackbarHostState = snackbarHostState,
+    )
+    LogoutDialog(
+        uiState = uiState,
+        onEvent = viewModel::onEvent,
+    )
 }
