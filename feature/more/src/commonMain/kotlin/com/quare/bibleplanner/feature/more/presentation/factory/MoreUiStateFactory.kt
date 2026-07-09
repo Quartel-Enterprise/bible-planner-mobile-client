@@ -7,11 +7,9 @@ import bibleplanner.feature.more.generated.resources.contrast_standard
 import bibleplanner.feature.more.generated.resources.dynamic_colors
 import bibleplanner.feature.more.generated.resources.pro_and_support
 import bibleplanner.feature.more.generated.resources.pro_section
-import bibleplanner.feature.more.generated.resources.support_section
 import bibleplanner.feature.more.generated.resources.theme_dark
 import bibleplanner.feature.more.generated.resources.theme_light
 import bibleplanner.feature.more.generated.resources.theme_system
-import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.model.loadable.Loadable
@@ -19,7 +17,6 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCa
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveProVerificationRequired
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveMoreWebAppEnabled
@@ -58,7 +55,6 @@ internal class MoreUiStateFactory(
     private val getThemeOptionFlow: GetThemeOptionFlow,
     private val getContrastTypeFlow: GetContrastTypeFlow,
     private val getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
-    private val isProVerificationRequired: ObserveProVerificationRequired,
     private val isMoreWebAppEnabled: ObserveMoreWebAppEnabled,
     private val isDynamicColorSupported: IsDynamicColorSupported,
     private val sessionStatus: StateFlow<SessionStatus>,
@@ -71,7 +67,7 @@ internal class MoreUiStateFactory(
     fun initialState(): MoreUiState = MoreUiState(
         accountStatusModel = AccountStatusModel.Loading,
         subscriptionStatus = Loadable.Loading,
-        isProCardVisible = Loadable.Loading,
+        isProCardVisible = Loadable.Loaded(true),
         shouldShowDonateOption = Loadable.Loading,
         headerRes = Loadable.Loading,
         isInstagramLinkVisible = Loadable.Loading,
@@ -90,7 +86,6 @@ internal class MoreUiStateFactory(
         getMoreScreenRemoteConfigsFlow().map { remoteConfigs ->
             { state: MoreUiState ->
                 state.copy(
-                    isProCardVisible = Loadable.Loaded(remoteConfigs.isProVerificationRequired),
                     shouldShowDonateOption = Loadable.Loaded(remoteConfigs.shouldShowDonate),
                     isInstagramLinkVisible = Loadable.Loaded(remoteConfigs.isInstagramVisible),
                     isWebAppVisible = Loadable.Loaded(remoteConfigs.isWebAppVisible),
@@ -157,14 +152,11 @@ internal class MoreUiStateFactory(
     private fun getMoreScreenRemoteConfigsFlow(): Flow<RemoteConfigs> = combine(
         isInstagramLinkVisible(),
         shouldShowDonateOption(),
-        isProVerificationRequired(),
         isMoreWebAppEnabled(),
-    ) { isInstagramVisible, shouldShowDonate, isProVerificationRequired, isWebAppVisible ->
-        Logger.d(tag = "MoreUiStateFactory") { "isProVerificationRequired: $isProVerificationRequired" }
+    ) { isInstagramVisible, shouldShowDonate, isWebAppVisible ->
         RemoteConfigs(
             isInstagramVisible = isInstagramVisible,
             shouldShowDonate = shouldShowDonate,
-            isProVerificationRequired = isProVerificationRequired,
             isWebAppVisible = isWebAppVisible,
         )
     }.distinctUntilChanged()
@@ -194,11 +186,9 @@ internal class MoreUiStateFactory(
         }
     }
 
-    private fun RemoteConfigs.toHeaderRes(): StringResource? = when {
-        isProVerificationRequired && shouldShowDonate -> Res.string.pro_and_support
-        isProVerificationRequired -> Res.string.pro_section
-        shouldShowDonate -> Res.string.support_section
-        else -> null
+    private fun RemoteConfigs.toHeaderRes(): StringResource = when {
+        shouldShowDonate -> Res.string.pro_and_support
+        else -> Res.string.pro_section
     }
 
     private fun ThemeConfiguration.toContrastRes(): StringResource? = when {
@@ -214,7 +204,6 @@ internal class MoreUiStateFactory(
     private data class RemoteConfigs(
         val isInstagramVisible: Boolean,
         val shouldShowDonate: Boolean,
-        val isProVerificationRequired: Boolean,
         val isWebAppVisible: Boolean,
     )
 

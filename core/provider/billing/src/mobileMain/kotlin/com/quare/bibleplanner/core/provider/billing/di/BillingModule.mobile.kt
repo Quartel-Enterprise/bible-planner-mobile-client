@@ -15,18 +15,12 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBil
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBillingUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserInRevenueCat
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserInRevenueCatUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserUseCase
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserUseCaseImpl
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequired
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProVerificationRequiredUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisibleInMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUserUseCase
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveProMobileVerificationRequiredUseCase
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveProVerificationRequired
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreSubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreSubscriptionStatusUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
@@ -47,14 +41,11 @@ actual val billingProviderModule = module {
     factoryOf(::GetRestorePurchaseResultMobileUseCase).bind<GetRestorePurchaseResultUseCase>()
     factoryOf(::IsFreeUserMobileUseCase).bind<IsFreeUserUseCase>()
     factoryOf(::InitializeBillingMobileUseCase).bind<InitializeBillingUseCase>()
-    factoryOf(::IsProUserUseCaseImpl).bind<IsProUserUseCase>()
-    factoryOf(::IsProVerificationRequiredUseCase).bind<IsProVerificationRequired>()
-    factoryOf(::IsProUserInRevenueCatUseCase).bind<IsProUserInRevenueCat>()
+    factoryOf(::IsProUserMobileUseCase).bind<IsProUserUseCase>()
     factoryOf(::ObserveInstagramLinkVisibleInMobileUseCase).bind<ObserveInstagramLinkVisible>()
     factoryOf(::ObserveStoreSubscriptionStatusUseCase).bind<ObserveStoreSubscriptionStatus>()
     factoryOf(::GetSubscriptionStatusFlowUseCaseImpl).bind<GetSubscriptionStatusFlowUseCase>()
     factoryOf(::ObserveIsProUserUseCase).bind<ObserveIsProUser>()
-    factoryOf(::ObserveProMobileVerificationRequiredUseCase).bind<ObserveProVerificationRequired>()
     factoryOf(::BillingUserAccountImpl).bind<BillingUserAccount>()
     factoryOf(::SyncBillingUserIdUseCase).bind<SyncBillingUserId>()
 }
