@@ -4,6 +4,7 @@
     "The Pro screen was redesigned to make the subscription plans clearer.",
     "The theme picker was redesigned: each option now shows a small preview of what it looks like, and on tablets and desktop it opens as a dialog with a close button.",
     "The language picker was also redesigned, with a cleaner list and a clearer view of your selected language.",
+    "The Bible version picker was redesigned too, with versions grouped by language and a colored badge for each one.",
     "Fixed an issue that could prevent the app from opening on some Android devices."
   ],
   "1.19.1": [
