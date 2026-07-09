@@ -24,6 +24,16 @@
     <string name="data_section">Datos</string>
     <string name="legal_section">Legal</string>
     <string name="social_section">Social</string>
+    <string name="support_comments_section">Soporte y comentarios</string>
+    <string name="contact_support_option">Contactar soporte</string>
+    <string name="rate_app_option">Valorar la app</string>
+    <string name="contact_support_email_subject">Soporte Bible Planner</string>
+    <string name="contact_support_email_body">\n\n---\nVersión de la app: %1$s</string>
+    <string name="contact_support_dialog_title">Contactar soporte</string>
+    <string name="contact_support_dialog_description">¿Tienes una duda, sugerencia o encontraste un problema? Escríbenos, solemos responder en pocos días.</string>
+    <string name="send_support_email_button">Enviar correo</string>
+    <string name="copy_support_email_button">Copiar correo</string>
+    <string name="support_email_copied_message">Correo copiado al portapapeles</string>
     <string name="web_section">Web</string>
     <string name="web_app">Web App</string>
     <string name="web_app_subtitle">Abre la versión web en tu navegador</string>

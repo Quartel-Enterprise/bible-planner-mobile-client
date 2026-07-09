@@ -83,6 +83,7 @@ internal class MoreUiStateFactory(
         bibleDownloadProgress = Loadable.Loading,
         planStartDate = Loadable.Loading,
         showSubscriptionDetailsDialog = false,
+        showContactSupportDialog = false,
         currentDate = currentDate(),
         appVersion = MoreBuildKonfig.APP_VERSION,
     )

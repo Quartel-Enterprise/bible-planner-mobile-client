@@ -16,6 +16,7 @@ import com.quare.bibleplanner.feature.more.presentation.content.component.LegalS
 import com.quare.bibleplanner.feature.more.presentation.content.component.LoginCard
 import com.quare.bibleplanner.feature.more.presentation.content.component.PreferencesSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.SocialSection
+import com.quare.bibleplanner.feature.more.presentation.content.component.SupportSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.WebSection
 import com.quare.bibleplanner.feature.more.presentation.content.component.headerSection
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
@@ -45,6 +46,8 @@ internal fun ResponsiveContentScope.moreScreenPortraitLayout(
     )
     item { VerticalSpacer() }
     responsiveItem { PreferencesSection(state = state, onEvent = onEvent) }
+    item { VerticalSpacer() }
+    responsiveItem { SupportSection(onEvent = onEvent) }
     item { VerticalSpacer() }
     responsiveItem { DataSection(onEvent = onEvent) }
     if (state.isWebAppVisible.valueOrNull() == true) {

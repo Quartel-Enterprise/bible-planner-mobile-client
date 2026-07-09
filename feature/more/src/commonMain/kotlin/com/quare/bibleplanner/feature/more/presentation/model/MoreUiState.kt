@@ -22,6 +22,7 @@ internal data class MoreUiState(
     val bibleDownloadProgress: Loadable<Float?>,
     val planStartDate: Loadable<LocalDate?>,
     val showSubscriptionDetailsDialog: Boolean,
+    val showContactSupportDialog: Boolean,
     val currentDate: LocalDate,
     val appVersion: String,
 )
