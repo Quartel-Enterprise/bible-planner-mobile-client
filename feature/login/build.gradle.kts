@@ -43,8 +43,8 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
 
-            // Navigation
-            implementation(libs.compose.navigation)
+            // Navigation 3
+            implementation(libs.compose.navigation3.ui)
 
             // Ktor (HttpRequestTimeoutException, used to map login failures to a friendly message)
             implementation(libs.ktor.client.core)

@@ -1,23 +1,23 @@
 package com.quare.bibleplanner.feature.congrats.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.dialog
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.feature.congrats.presentation.model.CongratsUiAction
 import com.quare.bibleplanner.feature.congrats.presentation.viewmodel.CongratsViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
-fun NavGraphBuilder.congrats(navController: NavController) {
-    dialog<CongratsNavRoute> {
+fun EntryProviderScope<NavKey>.congrats(onNavigateBack: () -> Unit) {
+    entry<CongratsNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel: CongratsViewModel = koinViewModel()
         val onEvent = viewModel::onEvent
 
         CongratsActionCollector(
             viewModel = viewModel,
-            navController = navController,
+            onNavigateBack = onNavigateBack,
         )
 
         CongratsBottomSheet(
@@ -29,11 +29,11 @@ fun NavGraphBuilder.congrats(navController: NavController) {
 @Composable
 private fun CongratsActionCollector(
     viewModel: CongratsViewModel,
-    navController: NavController,
+    onNavigateBack: () -> Unit,
 ) {
     ActionCollector(viewModel.uiAction) { action ->
         when (action) {
-            CongratsUiAction.Close -> navController.navigateUp()
+            CongratsUiAction.Close -> onNavigateBack()
         }
     }
 }

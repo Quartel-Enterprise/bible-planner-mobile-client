@@ -17,7 +17,7 @@ import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.core.model.route.nav3SavedStateConfiguration
 
 @Composable
-internal fun rememberNav3BottomNavTabState(): Nav3BottomNavTabState {
+internal fun rememberBottomNavTabState(): BottomNavTabState {
     val tabs: List<BottomNavRoute> = listOf(
         BottomNavRoute.Plans,
         BottomNavRoute.Books,
@@ -28,7 +28,7 @@ internal fun rememberNav3BottomNavTabState(): Nav3BottomNavTabState {
     }
     val selectedIndexState = rememberSaveable { mutableIntStateOf(0) }
     return remember {
-        Nav3BottomNavTabState(
+        BottomNavTabState(
             tabs = tabs,
             backStacks = backStacks,
             selectedIndexState = selectedIndexState,
@@ -36,7 +36,7 @@ internal fun rememberNav3BottomNavTabState(): Nav3BottomNavTabState {
     }
 }
 
-internal class Nav3BottomNavTabState(
+internal class BottomNavTabState(
     private val tabs: List<BottomNavRoute>,
     private val backStacks: Map<BottomNavRoute, NavBackStack<NavKey>>,
     selectedIndexState: MutableState<Int>,

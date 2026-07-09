@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.donation.pixqr.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.dialog
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.scene.DialogSceneStrategy
 import bibleplanner.feature.donation.pix_qr.generated.resources.Res
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.utils.shareContent
@@ -11,12 +11,12 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
-fun NavGraphBuilder.pixQr(navController: NavHostController) {
-    dialog<PixQrNavRoute> {
+fun EntryProviderScope<NavKey>.pixQr(onNavigateBack: () -> Unit) {
+    entry<PixQrNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<PixQrViewModel>()
 
         PixQrActionCollector(
-            navController = navController,
+            onNavigateBack = onNavigateBack,
             flow = viewModel.uiAction,
         )
 
@@ -28,13 +28,13 @@ fun NavGraphBuilder.pixQr(navController: NavHostController) {
 
 @Composable
 private fun PixQrActionCollector(
-    navController: NavHostController,
+    onNavigateBack: () -> Unit,
     flow: Flow<PixQrUiAction>,
 ) {
     ActionCollector(flow) { action ->
         when (action) {
             PixQrUiAction.NavigateBack -> {
-                navController.navigateUp()
+                onNavigateBack()
             }
 
             is PixQrUiAction.ShareQrCode -> {

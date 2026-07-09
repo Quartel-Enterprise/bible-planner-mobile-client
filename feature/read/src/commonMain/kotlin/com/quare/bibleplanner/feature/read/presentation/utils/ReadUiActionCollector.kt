@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.read.presentation.utils
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
@@ -9,24 +8,21 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 internal fun ReadUiActionCollector(
     uiActionFlow: Flow<ReadUiAction>,
-    navController: NavController,
+    onNavigate: (Any) -> Unit,
+    onNavigateBack: () -> Unit,
+    onNavigateReplacingTop: (Any) -> Unit,
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             ReadUiAction.NavigateBack -> {
-                navController.navigateUp()
+                onNavigateBack()
             }
 
             is ReadUiAction.NavigateToRoute -> {
-                navController.navigate(uiAction.route) {
-                    launchSingleTop = true
-                    if (uiAction.replace) {
-                        navController.currentDestination?.route?.let { currentRoute ->
-                            popUpTo(currentRoute) {
-                                inclusive = true
-                            }
-                        }
-                    }
+                if (uiAction.replace) {
+                    onNavigateReplacingTop(uiAction.route)
+                } else {
+                    onNavigate(uiAction.route)
                 }
             }
         }

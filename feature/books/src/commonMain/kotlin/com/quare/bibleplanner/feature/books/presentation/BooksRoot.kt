@@ -12,9 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
@@ -26,16 +25,16 @@ import com.quare.bibleplanner.ui.utils.MainTabScaffold
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.booksScreen(
+fun EntryProviderScope<NavKey>.booksScreen(
+    onNavigate: (Any) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
-    rootNavController: NavController,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    composable<BottomNavRoute.Books> {
+    entry<BottomNavRoute.Books> {
         BooksTabContent(
-            onNavigate = { route -> rootNavController.navigate(route) },
+            onNavigate = onNavigate,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
             sharedTransitionScope = sharedTransitionScope,
@@ -46,7 +45,7 @@ fun NavGraphBuilder.booksScreen(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun BooksTabContent(
+private fun BooksTabContent(
     onNavigate: (Any) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,

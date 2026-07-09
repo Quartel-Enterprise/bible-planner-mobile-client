@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
@@ -25,13 +23,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ReadViewModel(
-    savedStateHandle: SavedStateHandle,
+    private val route: ReadNavRoute,
     private val readDataPresentationModelFactory: ReadDataPresentationModelFactory,
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     val platform: Platform,
 ) : ViewModel() {
-    private val route = savedStateHandle.toRoute<ReadNavRoute>()
     private val chapterNumber = route.chapterNumber
     private val isChapterRead = route.isChapterRead
     private val bookId = BookId.valueOf(route.bookId)

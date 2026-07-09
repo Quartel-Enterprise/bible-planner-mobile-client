@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.feature.bookdetails.presentation.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
@@ -28,7 +26,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 class BookDetailsViewModel(
-    savedStateHandle: SavedStateHandle,
+    route: BookDetailsNavRoute,
     private val booksRepository: BooksRepository,
     private val bookGroupMapper: BookGroupMapper,
     private val markBookRead: UpdateBookReadStatusUseCase,
@@ -36,7 +34,6 @@ class BookDetailsViewModel(
     getBookByIdFlow: GetBookByIdFlowUseCase,
     val platform: Platform,
 ) : ViewModel() {
-    private val route = savedStateHandle.toRoute<BookDetailsNavRoute>()
     private val bookId = BookId.valueOf(route.bookId)
 
     private val _uiState = MutableStateFlow<BookDetailsUiState>(BookDetailsUiState.Loading)

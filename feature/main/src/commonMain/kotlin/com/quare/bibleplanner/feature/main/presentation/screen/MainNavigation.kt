@@ -10,19 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.main.presentation.model.BottomNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun MainNavigationBar(
+internal fun MainNavigationBar(
     modifier: Modifier,
-    currentDestination: NavDestination?,
+    selectedRoute: Any?,
     bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
@@ -31,7 +27,7 @@ fun MainNavigationBar(
         key(language) {
             MainNavigationItems(
                 bottomNavigationModels = bottomNavigationModels,
-                isItemSelected = { isSelected(currentDestination, it) },
+                isItemSelected = { it.route == selectedRoute },
                 onEvent = onEvent,
             ) { selected, onClick, icon, label ->
                 NavigationBarItem(
@@ -46,8 +42,8 @@ fun MainNavigationBar(
 }
 
 @Composable
-fun MainNavigationRail(
-    currentDestination: NavDestination?,
+internal fun MainNavigationRail(
+    selectedRoute: Any?,
     bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
@@ -56,7 +52,7 @@ fun MainNavigationRail(
         key(language) {
             MainNavigationItems(
                 bottomNavigationModels = bottomNavigationModels,
-                isItemSelected = { isSelected(currentDestination, it) },
+                isItemSelected = { it.route == selectedRoute },
                 onEvent = onEvent,
             ) { selected, onClick, icon, label ->
                 NavigationRailItem(
@@ -71,7 +67,7 @@ fun MainNavigationRail(
 }
 
 @Composable
-internal fun MainNavigationItems(
+private fun MainNavigationItems(
     bottomNavigationModels: List<BottomNavigationItemModel<Any>>,
     isItemSelected: (BottomNavigationItemModel<Any>) -> Boolean,
     onEvent: (MainScreenUiEvent) -> Unit,
@@ -104,14 +100,3 @@ internal fun MainNavigationItems(
         )
     }
 }
-
-private fun isSelected(
-    currentDestination: NavDestination?,
-    bottomNavigationItemModel: BottomNavigationItemModel<Any>,
-): Boolean = currentDestination
-    ?.hierarchy
-    ?.any { navDestination: NavDestination ->
-        (bottomNavigationItemModel.route as? BottomNavRoute)?.let { route ->
-            navDestination.hasRoute(route::class)
-        } ?: false
-    } ?: false

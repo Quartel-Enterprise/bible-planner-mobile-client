@@ -12,9 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.become_pro_part_1
 import bibleplanner.feature.more.generated.resources.become_pro_part_2
@@ -28,16 +27,16 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.more(
-    navController: NavController,
+fun EntryProviderScope<NavKey>.more(
+    onNavigate: (Any) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    composable<BottomNavRoute.More> {
+    entry<BottomNavRoute.More> {
         MoreTabContent(
-            onNavigate = { route -> navController.navigate(route) { launchSingleTop = true } },
+            onNavigate = onNavigate,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
             sharedTransitionScope = sharedTransitionScope,
@@ -48,7 +47,7 @@ fun NavGraphBuilder.more(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun MoreTabContent(
+private fun MoreTabContent(
     onNavigate: (Any) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,

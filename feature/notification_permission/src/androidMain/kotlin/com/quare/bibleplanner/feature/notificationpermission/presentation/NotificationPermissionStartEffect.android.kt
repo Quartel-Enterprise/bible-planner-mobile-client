@@ -10,11 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 
 @Composable
-actual fun NotificationPermissionStartEffect(navController: NavController) {
+actual fun NotificationPermissionStartEffect(onNavigate: (Any) -> Unit) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
 
     val context = LocalContext.current
@@ -33,7 +32,6 @@ actual fun NotificationPermissionStartEffect(navController: NavController) {
 
     if (shouldShowRationale) return
 
-    // Either first time or permanently denied — request the system dialog
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
     ) { isGranted ->
@@ -42,7 +40,7 @@ actual fun NotificationPermissionStartEffect(navController: NavController) {
                 Manifest.permission.POST_NOTIFICATIONS,
             ) == false
             if (permanentlyDenied) {
-                navController.navigate(NotificationPermissionNavRoute)
+                onNavigate(NotificationPermissionNavRoute)
             }
         }
     }

@@ -22,8 +22,6 @@ kotlin {
             implementation(projects.ui.component)
             implementation(projects.ui.utils)
 
-            implementation(libs.compose.navigation)
-
             // Navigation 3
             implementation(libs.compose.navigation3.ui)
             implementation(libs.androidx.lifecycle.viewmodelCompose)

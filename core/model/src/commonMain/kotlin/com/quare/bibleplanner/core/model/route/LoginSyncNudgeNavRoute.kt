@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.model.route
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 /**
@@ -7,4 +8,4 @@ import kotlinx.serialization.Serializable
  * backed up and synced. A single global dialog, hence no parameters.
  */
 @Serializable
-data object LoginSyncNudgeNavRoute
+data object LoginSyncNudgeNavRoute : NavKey

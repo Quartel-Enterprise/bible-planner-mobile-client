@@ -12,9 +12,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.BottomNavRoute
 import com.quare.bibleplanner.feature.readingplan.presentation.component.fabs.ReadingPlanFabsComponent
 import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanScreen
@@ -30,16 +29,16 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.readingPlan(
-    navController: NavController,
+fun EntryProviderScope<NavKey>.readingPlan(
+    onNavigate: (Any) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    composable<BottomNavRoute.Plans> {
+    entry<BottomNavRoute.Plans> {
         ReadingPlanTabContent(
-            onNavigate = { route -> navController.navigate(route) },
+            onNavigate = onNavigate,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
             sharedTransitionScope = sharedTransitionScope,
@@ -50,7 +49,7 @@ fun NavGraphBuilder.readingPlan(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun ReadingPlanTabContent(
+private fun ReadingPlanTabContent(
     onNavigate: (Any) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,

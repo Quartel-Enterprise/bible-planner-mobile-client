@@ -19,14 +19,33 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
-import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.nav3SavedStateConfiguration
+import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
+import com.quare.bibleplanner.feature.applanguage.presentation.appLanguage
+import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelectionRoot
+import com.quare.bibleplanner.feature.bookdetails.presentation.bookDetails
+import com.quare.bibleplanner.feature.congrats.presentation.congrats
 import com.quare.bibleplanner.feature.day.presentation.day
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
+import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
+import com.quare.bibleplanner.feature.deleteprogress.presentation.deleteProgress
+import com.quare.bibleplanner.feature.deleteversion.presentation.deleteVersion
+import com.quare.bibleplanner.feature.donation.pixqr.presentation.pixQr
+import com.quare.bibleplanner.feature.donation.presentation.donation
+import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
+import com.quare.bibleplanner.feature.login.presentation.loginRoot
+import com.quare.bibleplanner.feature.loginsyncnudge.presentation.loginSyncNudge
+import com.quare.bibleplanner.feature.loginwarning.presentation.loginWarning
 import com.quare.bibleplanner.feature.logout.presentation.logout
 import com.quare.bibleplanner.feature.main.presentation.mainScreen
+import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
+import com.quare.bibleplanner.feature.notificationpermission.presentation.notificationPermission
+import com.quare.bibleplanner.feature.paywall.presentation.paywall
+import com.quare.bibleplanner.feature.read.presentation.read
+import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
+import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
@@ -38,15 +57,15 @@ import org.koin.compose.koinInject
 fun RootAppNavDisplay() {
     val backStack = rememberNavBackStack(nav3SavedStateConfiguration, MainNavRoute)
     val onNavigate: (Any) -> Unit = { route ->
-        if (route is NavKey) {
-            if (backStack.lastOrNull() != route) {
-                backStack.add(route)
-            }
-        } else {
-            Logger.w { "Route not migrated to Navigation 3 yet: $route" }
+        if (backStack.lastOrNull() != route) {
+            backStack.add(route as NavKey)
         }
     }
     val onNavigateBack: () -> Unit = { backStack.removeLastOrNull() }
+    val onNavigateReplacingTop: (Any) -> Unit = { route ->
+        backStack.removeLastOrNull()
+        backStack.add(route as NavKey)
+    }
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarController = koinInject<AppSnackbarController>()
@@ -67,19 +86,78 @@ fun RootAppNavDisplay() {
                         rememberViewModelStoreNavEntryDecorator(),
                     ),
                     entryProvider = entryProvider {
-                        mainScreen(
-                            onNavigate = onNavigate,
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                        )
-                        day(
-                            onNavigate = onNavigate,
+                        val sharedTransitionScope = this@SharedTransitionLayout
+                        loginRoot(onNavigateBack)
+                        loginWarning(
                             onNavigateBack = onNavigateBack,
-                            sharedTransitionScope = this@SharedTransitionLayout,
+                            onNavigateReplacingTop = onNavigateReplacingTop,
+                        )
+                        loginSyncNudge(
+                            onNavigateBack = onNavigateBack,
+                            onNavigateReplacingTop = onNavigateReplacingTop,
                         )
                         logout(
                             onNavigateBack = onNavigateBack,
                             snackbarHostState = snackbarHostState,
                         )
+                        mainScreen(
+                            onNavigate = onNavigate,
+                            sharedTransitionScope = sharedTransitionScope,
+                        )
+                        day(
+                            onNavigate = onNavigate,
+                            onNavigateBack = onNavigateBack,
+                            sharedTransitionScope = sharedTransitionScope,
+                        )
+                        themeSettings(
+                            onNavigate = onNavigate,
+                            onNavigateBack = onNavigateBack,
+                        )
+                        materialYou(onNavigateBack)
+                        deleteProgress(onNavigateBack)
+                        deleteNotes(onNavigateBack)
+                        addNotesFreeWarning(
+                            onNavigateBack = onNavigateBack,
+                            onNavigateReplacingTop = onNavigateReplacingTop,
+                        )
+                        editPlanStartDate(onNavigateBack)
+                        releaseNotes(
+                            onNavigateBack = onNavigateBack,
+                            sharedTransitionScope = sharedTransitionScope,
+                        )
+                        paywall(
+                            onNavigate = onNavigate,
+                            onNavigateBack = onNavigateBack,
+                            onNavigateReplacingTop = onNavigateReplacingTop,
+                            sharedTransitionScope = sharedTransitionScope,
+                        )
+                        congrats(onNavigateBack)
+                        donation(
+                            onNavigate = onNavigate,
+                            onNavigateBack = onNavigateBack,
+                        )
+                        pixQr(onNavigateBack)
+                        bookDetails(
+                            onNavigate = onNavigate,
+                            onNavigateBack = onNavigateBack,
+                            sharedTransitionScope = sharedTransitionScope,
+                        )
+                        appLanguage(
+                            onNavigate = onNavigate,
+                            onNavigateBack = onNavigateBack,
+                        )
+                        bibleVersionSelectionRoot(
+                            onNavigate = onNavigate,
+                            onNavigateBack = onNavigateBack,
+                        )
+                        deleteVersion(onNavigateBack)
+                        read(
+                            onNavigate = onNavigate,
+                            onNavigateBack = onNavigateBack,
+                            onNavigateReplacingTop = onNavigateReplacingTop,
+                            sharedTransitionScope = sharedTransitionScope,
+                        )
+                        notificationPermission(onNavigateBack)
                     },
                 )
             }

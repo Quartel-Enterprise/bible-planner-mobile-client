@@ -12,7 +12,6 @@ kotlinx-coroutines = "1.11.0"
 ktlint = "14.2.0"
 kotlinx-datetime = "0.8.0"
 kotlinSerializationJson = "1.11.0"
-navigationComposeMultiplatform = "2.9.2"
 navigation3Multiplatform = "1.1.1"
 navigation3Runtime = "1.1.4"
 koinVersion = "4.2.2"
@@ -51,11 +50,7 @@ androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecyc
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidxCredentials" }
 
-# Compose Multiplatform Navigation
-compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "navigationComposeMultiplatform" }
-
 # Compose Multiplatform Navigation 3
-# navigation3-ui pulls androidx.navigation3:navigation3-runtime (KMP) transitively
 compose-navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3Multiplatform" }
 compose-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3Runtime" }
 androidx-lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
