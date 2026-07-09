@@ -7,15 +7,19 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material.icons.filled.Translate
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.app_language_option
 import bibleplanner.feature.more.generated.resources.become_pro
 import bibleplanner.feature.more.generated.resources.bible_version_option
+import bibleplanner.feature.more.generated.resources.contact_support_option
 import bibleplanner.feature.more.generated.resources.delete_progress_option
 import bibleplanner.feature.more.generated.resources.ic_instagram
 import bibleplanner.feature.more.generated.resources.instagram
+import bibleplanner.feature.more.generated.resources.rate_app_option
 import bibleplanner.feature.more.generated.resources.release_notes_option
 import bibleplanner.feature.more.generated.resources.release_notes_subtitle
 import bibleplanner.feature.more.generated.resources.start_date
@@ -73,5 +77,15 @@ internal object MoreMenuOptionsFactory {
         name = Res.string.bible_version_option,
         icon = MoreIcon.ImageVectorIcon(Icons.AutoMirrored.Filled.MenuBook),
         type = MoreOptionItemType.BIBLE_VERSION,
+    )
+    val contactSupport = MoreMenuItemPresentationModel(
+        name = Res.string.contact_support_option,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.SupportAgent),
+        type = MoreOptionItemType.CONTACT_SUPPORT,
+    )
+    val rateApp = MoreMenuItemPresentationModel(
+        name = Res.string.rate_app_option,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.RateReview),
+        type = MoreOptionItemType.RATE_APP,
     )
 }

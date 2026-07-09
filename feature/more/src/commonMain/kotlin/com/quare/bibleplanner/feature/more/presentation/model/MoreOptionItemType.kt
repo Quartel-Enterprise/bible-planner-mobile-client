@@ -13,4 +13,6 @@ enum class MoreOptionItemType {
     EDIT_PLAN_START_DAY,
     RELEASE_NOTES,
     BIBLE_VERSION,
+    CONTACT_SUPPORT,
+    RATE_APP,
 }

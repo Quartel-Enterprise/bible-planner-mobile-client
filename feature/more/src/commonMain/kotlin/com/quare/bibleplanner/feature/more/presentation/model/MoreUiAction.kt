@@ -13,6 +13,10 @@ internal sealed interface MoreUiAction {
         val message: StringResource,
     ) : MoreUiAction
 
+    data class Copy(
+        val text: String,
+    ) : MoreUiAction
+
     data class GoToRoute(
         val route: Any,
     ) : MoreUiAction

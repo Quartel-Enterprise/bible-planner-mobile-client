@@ -13,6 +13,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.runtime)
+            implementation(projects.core.utils)
+            implementation(projects.core.provider.language)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

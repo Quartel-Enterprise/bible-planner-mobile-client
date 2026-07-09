@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.more.presentation.model
 
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import kotlinx.datetime.LocalDate
@@ -22,6 +23,8 @@ internal data class MoreUiState(
     val bibleDownloadProgress: Loadable<Float?>,
     val planStartDate: Loadable<LocalDate?>,
     val showSubscriptionDetailsDialog: Boolean,
+    val showContactSupportDialog: Boolean,
     val currentDate: LocalDate,
     val appVersion: String,
+    val platform: Platform,
 )
