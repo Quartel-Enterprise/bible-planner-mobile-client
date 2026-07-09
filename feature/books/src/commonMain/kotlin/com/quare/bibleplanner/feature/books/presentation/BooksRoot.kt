@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
-import com.quare.bibleplanner.core.model.route.BottomNavRoute
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.feature.books.presentation.utils.BooksUiActionCollector
@@ -32,7 +32,7 @@ fun EntryProviderScope<NavKey>.booksScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    entry<BottomNavRoute.Books> {
+    entry<MainNavRouteDestination.Books> {
         BooksTabContent(
             onNavigate = onNavigate,
             navigationBar = navigationBar,
