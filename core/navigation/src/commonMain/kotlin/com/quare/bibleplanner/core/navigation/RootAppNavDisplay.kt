@@ -78,7 +78,7 @@ fun RootAppNavDisplay() {
             SharedTransitionLayout {
                 NavDisplay(
                     backStack = backStack,
-                    onBack = { backStack.removeLastOrNull() },
+                    onBack = onNavigateBack,
                     sceneStrategies = listOf(DialogSceneStrategy()),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     entryDecorators = listOf(
