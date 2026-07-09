@@ -36,7 +36,6 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.appe
 import bibleplanner.feature.preferences.theme_selection.generated.resources.dynamic_colors_title
 import bibleplanner.feature.preferences.theme_selection.generated.resources.information
 import bibleplanner.feature.preferences.theme_selection.generated.resources.select_contrast
-import bibleplanner.feature.preferences.theme_selection.generated.resources.select_theme
 import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_title
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ContrastSelector
@@ -59,12 +58,6 @@ fun ThemeSelectionContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(
-            text = stringResource(Res.string.select_theme),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 8.dp),
-        )
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp),

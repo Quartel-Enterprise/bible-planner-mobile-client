@@ -21,10 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.preferences.app_language.generated.resources.Res
-import bibleplanner.feature.preferences.app_language.generated.resources.app_language_title
 import bibleplanner.feature.preferences.app_language.generated.resources.language_english
 import bibleplanner.feature.preferences.app_language.generated.resources.language_portuguese_brazil
 import bibleplanner.feature.preferences.app_language.generated.resources.language_spanish
@@ -52,12 +50,6 @@ internal fun AppLanguageContent(
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
-        Text(
-            text = stringResource(Res.string.app_language_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        )
         LazyColumn(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))

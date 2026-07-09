@@ -10,12 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.preferences.bible_version.generated.resources.Res
-import bibleplanner.feature.preferences.bible_version.generated.resources.bible_versions
 import bibleplanner.feature.preferences.bible_version.generated.resources.download_bible_versions_error
-import bibleplanner.feature.preferences.bible_version.generated.resources.manage_bible_versions_description
 import bibleplanner.feature.preferences.bible_version.generated.resources.try_again
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionsUiState
@@ -31,23 +28,6 @@ internal fun BibleVersionsContent(
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
     ) {
-        item {
-            Text(
-                modifier = Modifier.padding(
-                    vertical = 8.dp,
-                ),
-                text = stringResource(Res.string.bible_versions),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
-        }
-        item {
-            Text(
-                text = stringResource(Res.string.manage_bible_versions_description),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
         item {
             VerticalSpacer(8)
         }
@@ -83,6 +63,9 @@ internal fun BibleVersionsContent(
                     selectionMap = uiState.data,
                     onEvent = onEvent,
                 )
+                item {
+                    VerticalSpacer(8)
+                }
             }
         }
     }
