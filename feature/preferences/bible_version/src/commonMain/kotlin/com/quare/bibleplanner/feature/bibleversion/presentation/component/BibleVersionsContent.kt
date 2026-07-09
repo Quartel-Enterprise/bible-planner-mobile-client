@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.preferences.bible_version.generated.resources.Res
 import bibleplanner.feature.preferences.bible_version.generated.resources.bible_versions
@@ -37,6 +38,7 @@ internal fun BibleVersionsContent(
                 ),
                 text = stringResource(Res.string.bible_versions),
                 style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
             )
         }
         item {

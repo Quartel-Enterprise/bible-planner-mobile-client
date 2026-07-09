@@ -38,6 +38,7 @@ internal fun BibleVersionItemDownloadStatusComponent(
             CommonIconButton(
                 imageVector = Icons.Rounded.Download,
                 contentDescription = stringResource(Res.string.download),
+                tint = MaterialTheme.colorScheme.primary,
                 onClick = { onEvent(BibleVersionUiEvent::OnDownload) },
             )
         }
@@ -78,6 +79,7 @@ private fun DeleteIcon(onEvent: ((String) -> BibleVersionUiEvent) -> Unit) {
     CommonIconButton(
         imageVector = Icons.Rounded.Delete,
         contentDescription = stringResource(Res.string.delete),
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
         onClick = { onEvent(BibleVersionUiEvent::OnDelete) },
     )
 }
@@ -90,6 +92,7 @@ private fun CircularProgressAction(
     contentDescription: String,
     onClick: () -> Unit,
     progressColor: Color = MaterialTheme.colorScheme.primary,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
     Box(
         modifier = modifier,
@@ -106,6 +109,7 @@ private fun CircularProgressAction(
             modifier = Modifier.size(24.dp),
             imageVector = imageVector,
             contentDescription = contentDescription,
+            tint = iconTint,
             onClick = onClick,
         )
     }
