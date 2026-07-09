@@ -83,7 +83,9 @@ internal fun LogoutDialog(
         },
         confirmButton = {
             when (uiState) {
-                is LogoutUiState.Loading -> Unit
+                is LogoutUiState.Loading -> {
+                    Unit
+                }
 
                 LogoutUiState.Idle -> {
                     TextButton(

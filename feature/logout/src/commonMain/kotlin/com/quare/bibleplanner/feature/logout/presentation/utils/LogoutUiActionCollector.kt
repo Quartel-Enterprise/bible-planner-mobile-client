@@ -20,15 +20,17 @@ internal fun LogoutUiActionCollector(
     ActionCollector(uiActionFlow) { action ->
         when (action) {
             LogoutUiAction.NavigateBack -> onNavigateBack()
+
             is LogoutUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
                 getString(action.message),
                 withDismissAction = true,
             )
+
             is LogoutUiAction.NotifySuccess -> appSnackbarController.show(
                 AppSnackbarMessage(
                     stringResource = action.message,
                     isDismissible = false,
-                )
+                ),
             )
         }
     }

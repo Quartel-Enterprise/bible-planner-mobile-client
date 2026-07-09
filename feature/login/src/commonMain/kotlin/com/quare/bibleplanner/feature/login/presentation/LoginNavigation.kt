@@ -48,7 +48,7 @@ fun EntryProviderScope<NavKey>.loginRoot(onNavigateBack: () -> Unit) {
                         AppSnackbarMessage(
                             stringResource = message,
                             isDismissible = false,
-                        )
+                        ),
                     )
                 }
             },

@@ -48,8 +48,7 @@ internal class LogoutViewModel(
                     is LogoutProgress.InProgress -> _uiState.update { LogoutUiState.Loading(progress.phase) }
                     is LogoutProgress.Finished -> progress.result.handleLogout()
                 }
-            }
-            .launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
     }
 
     private suspend fun Result<Unit>.handleLogout() {
