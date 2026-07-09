@@ -1,0 +1,21 @@
+<resources>
+    <string name="contact_support_email_subject">Bible Planner Support</string>
+    <string name="contact_support_dialog_title">Contact support</string>
+    <string name="contact_support_dialog_description">We'll open your email app with a ready message. Just describe the issue and send — support is 100% human, handled by real people.</string>
+    <string name="contact_support_email_to_label">To</string>
+    <string name="contact_support_diagnostics_header">Will be included in the email</string>
+    <string name="diagnostics_app_version_label">App version</string>
+    <string name="diagnostics_platform_label">Platform</string>
+    <string name="diagnostics_language_label">Language</string>
+    <string name="diagnostics_account_label">Account</string>
+    <string name="diagnostics_subscription_label">Subscription</string>
+    <string name="diagnostics_account_not_connected">Not connected</string>
+    <string name="diagnostics_subscription_free">Free</string>
+    <string name="diagnostics_subscription_pro">Pro</string>
+    <string name="platform_android">Android</string>
+    <string name="platform_ios">iOS</string>
+    <string name="platform_desktop">Desktop</string>
+    <string name="open_email_button">Open email</string>
+    <string name="copy_email_address_button">Copy email address</string>
+    <string name="support_email_copied_message">Email copied to clipboard</string>
+</resources>

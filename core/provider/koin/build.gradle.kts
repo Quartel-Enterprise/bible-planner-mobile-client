@@ -54,6 +54,7 @@ kotlin {
             implementation(projects.feature.main)
             implementation(projects.feature.congrats)
             implementation(projects.feature.subscriptionDetails)
+            implementation(projects.feature.contactSupport)
             implementation(projects.feature.more)
             implementation(projects.feature.releaseNotes)
             implementation(projects.feature.donation)
