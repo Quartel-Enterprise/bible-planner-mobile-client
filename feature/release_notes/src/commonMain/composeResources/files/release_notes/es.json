@@ -5,7 +5,8 @@
     "La pantalla de selección de tema fue rediseñada: cada opción ahora muestra una pequeña vista previa de su apariencia, y en tablets y escritorio se abre como una ventana con botón de cerrar.",
     "La pantalla de selección de idioma también fue rediseñada, con una lista más clara y el idioma seleccionado más fácil de identificar.",
     "La pantalla de selección de la versión de la Biblia también fue rediseñada, con las versiones agrupadas por idioma y una insignia de color para cada una.",
-    "Se corrigió un problema que podía impedir que la aplicación se abriera en algunos dispositivos Android."
+    "Se corrigió un problema que podía impedir que la aplicación se abriera en algunos dispositivos Android.",
+    "Nueva sección 'Soporte y comentarios' en la pantalla de perfil: contacta al soporte con un correo ya preparado (con botón para copiar), o valora la aplicación directamente en la tienda."
   ],
   "1.19.1": [
     "Se corrigió un problema por el que la 'Fecha de finalización' de un día aparecía como 'No hay fecha establecida' cuando completabas el día leyendo sus capítulos desde la pantalla de lectura; ahora muestra la fecha de tu lectura más reciente de ese día."
