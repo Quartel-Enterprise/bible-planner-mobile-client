@@ -3,6 +3,7 @@
     "New: AI Daily Study — generate an analysis of each day's readings, with an overview, historical context, and questions for reflection.",
     "The Pro screen was redesigned to make the subscription plans clearer.",
     "The theme picker was redesigned: each option now shows a small preview of what it looks like, and on tablets and desktop it opens as a dialog with a close button.",
+    "The language picker was also redesigned, with a cleaner list and a clearer view of your selected language.",
     "Fixed an issue that could prevent the app from opening on some Android devices."
   ],
   "1.19.1": [
