@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.applanguage.presentation
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.preferences.app_language.generated.resources.Res
 import bibleplanner.feature.preferences.app_language.generated.resources.app_language_title
@@ -52,19 +54,25 @@ internal fun AppLanguageContent(
     ) {
         Text(
             text = stringResource(Res.string.app_language_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         )
         LazyColumn(
-            modifier = Modifier.clip(RoundedCornerShape(16.dp)),
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
         ) {
             itemsIndexed(sortedLanguages) { index, language ->
                 AppLanguageItem(
+                    code = language.toCode(),
                     name = languageNames[language].orEmpty(),
                     isSelected = language == uiState.selectedLanguage,
                     onClick = { onEvent(AppLanguageUiEvent.OnLanguageSelected(language)) },
                 )
-                if (!sortedLanguages.isLastIndex(index)) HorizontalDivider()
+                if (!sortedLanguages.isLastIndex(index)) {
+                    HorizontalDivider(modifier = Modifier.padding(start = 66.dp))
+                }
             }
         }
         SyncOption(
@@ -147,4 +155,10 @@ private fun Language.toStringResource(): StringResource = when (this) {
     Language.ENGLISH -> Res.string.language_english
     Language.PORTUGUESE_BRAZIL -> Res.string.language_portuguese_brazil
     Language.SPANISH -> Res.string.language_spanish
+}
+
+private fun Language.toCode(): String = when (this) {
+    Language.ENGLISH -> "EN"
+    Language.PORTUGUESE_BRAZIL -> "PT"
+    Language.SPANISH -> "ES"
 }

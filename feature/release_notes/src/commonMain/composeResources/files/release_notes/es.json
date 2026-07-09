@@ -2,6 +2,9 @@
   "2.0.0": [
     "Nuevo: Estudio del día con IA — genera un análisis de las lecturas de cada día, con una visión general, contexto histórico y preguntas para reflexionar.",
     "La pantalla Pro fue rediseñada para mostrar los planes de suscripción con mayor claridad.",
+    "La pantalla de selección de tema fue rediseñada: cada opción ahora muestra una pequeña vista previa de su apariencia, y en tablets y escritorio se abre como una ventana con botón de cerrar.",
+    "La pantalla de selección de idioma también fue rediseñada, con una lista más clara y el idioma seleccionado más fácil de identificar.",
+    "La pantalla de selección de la versión de la Biblia también fue rediseñada, con las versiones agrupadas por idioma y una insignia de color para cada una.",
     "Se corrigió un problema que podía impedir que la aplicación se abriera en algunos dispositivos Android."
   ],
   "1.19.1": [
