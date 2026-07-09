@@ -6,13 +6,15 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetRestorePur
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBillingUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserDesktopUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveProVerificationRequired
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.provider.billing.model.BillingUnavailableException
 import kotlinx.coroutines.flow.flowOf
+import org.koin.core.module.dsl.factoryOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 actual val billingProviderModule = module {
@@ -28,18 +30,13 @@ actual val billingProviderModule = module {
     factory {
         IsFreeUserUseCase { false }
     }
-    factory {
-        IsProUserUseCase { true }
-    }
+    factoryOf(::IsProUserDesktopUseCase).bind<IsProUserUseCase>()
     factory {
         InitializeBillingUseCase {
         }
     }
     factory {
         ObserveInstagramLinkVisible { flowOf(true) }
-    }
-    factory {
-        ObserveProVerificationRequired { flowOf(false) }
     }
     factory {
         GetSubscriptionStatusFlowUseCase { flowOf(null) }

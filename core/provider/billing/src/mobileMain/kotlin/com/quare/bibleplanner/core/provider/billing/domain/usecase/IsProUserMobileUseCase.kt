@@ -5,9 +5,9 @@ import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.models.CacheFetchPolicy
 import com.revenuecat.purchases.kmp.result.awaitCustomerInfoResult
 
-internal class IsProUserInRevenueCatUseCase(
+internal class IsProUserMobileUseCase(
     private val purchases: Purchases,
-) : IsProUserInRevenueCat {
+) : IsProUserUseCase {
     override suspend fun invoke(): Boolean = purchases
         .awaitCustomerInfoResult(CacheFetchPolicy.NOT_STALE_CACHED_OR_CURRENT)
         .getOrNull()
