@@ -38,6 +38,8 @@ kotlin {
             implementation(projects.feature.read)
             implementation(projects.feature.notificationPermission)
             implementation(projects.feature.dayStudy)
+            implementation(projects.feature.subscriptionDetails)
+            implementation(projects.feature.contactSupport)
 
             // Core
             implementation(projects.core.model)

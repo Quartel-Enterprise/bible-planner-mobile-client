@@ -27,6 +27,7 @@ import com.quare.bibleplanner.feature.applanguage.presentation.appLanguage
 import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelectionRoot
 import com.quare.bibleplanner.feature.bookdetails.presentation.bookDetails
 import com.quare.bibleplanner.feature.congrats.presentation.congrats
+import com.quare.bibleplanner.feature.contactsupport.presentation.contactSupport
 import com.quare.bibleplanner.feature.day.presentation.day
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
 import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
@@ -45,6 +46,7 @@ import com.quare.bibleplanner.feature.notificationpermission.presentation.notifi
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
 import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
+import com.quare.bibleplanner.feature.subscriptiondetails.presentation.subscriptionDetails
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
@@ -151,6 +153,8 @@ fun RootAppNavDisplay() {
                             onNavigateBack = onNavigateBack,
                         )
                         deleteVersion(onNavigateBack)
+                        subscriptionDetails(onNavigateBack)
+                        contactSupport(onNavigateBack)
                         read(
                             onNavigate = onNavigate,
                             onNavigateBack = onNavigateBack,

@@ -18,6 +18,7 @@ val nav3SavedStateConfiguration = SavedStateConfiguration {
             subclass(BibleVersionSelectorRoute::class, BibleVersionSelectorRoute.serializer())
             subclass(BookDetailsNavRoute::class, BookDetailsNavRoute.serializer())
             subclass(CongratsNavRoute::class, CongratsNavRoute.serializer())
+            subclass(ContactSupportNavRoute::class, ContactSupportNavRoute.serializer())
             subclass(DayNavRoute::class, DayNavRoute.serializer())
             subclass(DeleteAllProgressNavRoute::class, DeleteAllProgressNavRoute.serializer())
             subclass(DeleteNotesRoute::class, DeleteNotesRoute.serializer())
@@ -34,6 +35,7 @@ val nav3SavedStateConfiguration = SavedStateConfiguration {
             subclass(PixQrNavRoute::class, PixQrNavRoute.serializer())
             subclass(ReadNavRoute::class, ReadNavRoute.serializer())
             subclass(ReleaseNotesNavRoute::class, ReleaseNotesNavRoute.serializer())
+            subclass(SubscriptionDetailsNavRoute::class, SubscriptionDetailsNavRoute.serializer())
             subclass(ThemeNavRoute::class, ThemeNavRoute.serializer())
         }
     }

@@ -16,11 +16,15 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
+import bibleplanner.feature.preferences.bible_version.generated.resources.Res
+import bibleplanner.feature.preferences.bible_version.generated.resources.bible_versions
+import bibleplanner.feature.preferences.bible_version.generated.resources.manage_bible_versions_description
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.feature.bibleversion.presentation.component.BibleVersionsContent
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.feature.bibleversion.presentation.utils.BibleVersionsActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +45,11 @@ fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot(
             uiActionFlow = viewModel.uiAction,
             snackbarHostState = snackbarHostState,
         )
-        ResponsiveDialogSheet(onCloseClick = { onEvent(BibleVersionUiEvent.OnDismiss) }) {
+        ResponsiveDialogSheet(
+            onCloseClick = { onEvent(BibleVersionUiEvent.OnDismiss) },
+            title = stringResource(Res.string.bible_versions),
+            subtitle = stringResource(Res.string.manage_bible_versions_description),
+        ) {
             Box {
                 BibleVersionsContent(
                     modifier = Modifier
