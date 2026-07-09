@@ -18,8 +18,8 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
-import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.model.route.MainNavRoute
+import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.feature.books.presentation.booksScreen
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.navhost.NavTabState
@@ -92,7 +92,7 @@ private fun MainRootContent(
                         )
                     },
                     sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope
+                    animatedContentScope = animatedContentScope,
                 )
             },
         ),
