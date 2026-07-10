@@ -23,6 +23,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCore)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(projects.core.model)
             implementation(projects.core.user)
             implementation(projects.core.remoteConfig)
             implementation(libs.kotlin.serialization.json)

@@ -8,7 +8,11 @@ import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIf
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.presentation.factory.ReadDataPresentationModelFactory
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
@@ -27,6 +31,7 @@ class ReadViewModel(
     private val readDataPresentationModelFactory: ReadDataPresentationModelFactory,
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val trackEvent: TrackEvent,
     val platform: Platform,
 ) : ViewModel() {
     private val chapterNumber = route.chapterNumber
@@ -57,9 +62,18 @@ class ReadViewModel(
 
             is ReadUiEvent.ToggleReadStatus -> {
                 viewModelScope.launch {
-                    toggleWholeChapterReadStatus(
+                    val isRead = toggleWholeChapterReadStatus(
                         bookId = bookId,
                         chapterNumber = chapterNumber,
+                    )
+                    trackEvent(
+                        name = AnalyticsEventNames.CHAPTER_READ_TOGGLED,
+                        params = mapOf(
+                            AnalyticsParams.BOOK_ID to bookId.name.lowercase(),
+                            AnalyticsParams.CHAPTER_NUMBER to chapterNumber,
+                            AnalyticsParams.IS_READ to isRead,
+                            AnalyticsParams.SOURCE to SOURCE_READER,
+                        ),
                     )
                     requestLoginNudgeIfNeeded()
                 }
@@ -78,6 +92,14 @@ class ReadViewModel(
 
             is ReadUiEvent.OnNavigationSuggestionClick -> {
                 val suggestion = event.suggestion
+                trackEvent(
+                    name = AnalyticsEventNames.READING_SUGGESTION_CLICKED,
+                    params = mapOf(
+                        AnalyticsParams.DIRECTION to suggestion.toDirection(),
+                        AnalyticsParams.BOOK_ID to suggestion.bookId.name.lowercase(),
+                        AnalyticsParams.CHAPTER_NUMBER to suggestion.chapterNumber,
+                    ),
+                )
                 viewModelScope.launch {
                     _uiAction.emit(
                         ReadUiAction.NavigateToRoute(
@@ -125,4 +147,13 @@ class ReadViewModel(
             next = null,
         ),
     )
+
+    private fun ReadNavigationSuggestionModel.toDirection(): String =
+        if (this == uiState.value.navigationSuggestions.previous) DIRECTION_PREVIOUS else DIRECTION_NEXT
+
+    private companion object {
+        const val SOURCE_READER = "reader"
+        const val DIRECTION_PREVIOUS = "previous"
+        const val DIRECTION_NEXT = "next"
+    }
 }

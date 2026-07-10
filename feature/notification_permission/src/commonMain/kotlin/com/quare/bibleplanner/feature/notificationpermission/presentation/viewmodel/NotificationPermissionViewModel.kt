@@ -7,6 +7,9 @@ import bibleplanner.feature.notification_permission.generated.resources.notifica
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_explanation
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_open_settings
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_settings_message
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiAction
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiEvent
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiState
@@ -18,7 +21,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class NotificationPermissionViewModel : ViewModel() {
+internal class NotificationPermissionViewModel(
+    private val trackEvent: TrackEvent,
+) : ViewModel() {
+    private var hasRequestedSystemPermission = false
+
     private val _uiState: MutableStateFlow<NotificationPermissionUiState> =
         MutableStateFlow(
             NotificationPermissionUiState(
@@ -50,19 +57,32 @@ internal class NotificationPermissionViewModel : ViewModel() {
     }
 
     private fun handleConfirm() {
-        emit(
-            if (_uiState.value.isFirstTime) {
-                NotificationPermissionUiAction.RequestSystemPermission
-            } else {
-                NotificationPermissionUiAction.OpenNotificationSettings
-            },
-        )
+        if (_uiState.value.isFirstTime) {
+            hasRequestedSystemPermission = true
+            trackEvent(
+                name = AnalyticsEventNames.NOTIFICATION_PERMISSION_PROMPTED,
+                params = mapOf(AnalyticsParams.IS_FIRST_TIME to _uiState.value.isFirstTime),
+            )
+            emit(NotificationPermissionUiAction.RequestSystemPermission)
+        } else {
+            emit(NotificationPermissionUiAction.OpenNotificationSettings)
+        }
     }
 
     private fun handlePermissionResult(
         granted: Boolean,
         canAskAgain: Boolean,
     ) {
+        if (hasRequestedSystemPermission) {
+            hasRequestedSystemPermission = false
+            trackEvent(
+                name = AnalyticsEventNames.NOTIFICATION_PERMISSION_RESULT,
+                params = mapOf(
+                    AnalyticsParams.IS_GRANTED to granted,
+                    AnalyticsParams.CAN_ASK_AGAIN to canAskAgain,
+                ),
+            )
+        }
         if (!granted && !canAskAgain) {
             _uiState.update {
                 NotificationPermissionUiState(

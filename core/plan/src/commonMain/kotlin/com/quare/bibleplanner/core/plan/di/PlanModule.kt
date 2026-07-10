@@ -22,6 +22,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayU
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.MigratePlanPreferencesToSyncStoreUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.TrackReadingCompletionEventsUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
 import com.quare.bibleplanner.core.sync.data.OfflineFirstSynchronizer
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
@@ -80,4 +81,5 @@ val planModule = module {
     factoryOf(::GetDaysWithNotesCountUseCase)
     factoryOf(::GetMaxFreeNotesAmountUseCase)
     factoryOf(::GetPlanStartDateFlowUseCase)
+    factoryOf(::TrackReadingCompletionEventsUseCase)
 }

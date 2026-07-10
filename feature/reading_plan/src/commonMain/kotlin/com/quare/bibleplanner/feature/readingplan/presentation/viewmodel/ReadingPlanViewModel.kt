@@ -9,7 +9,12 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanDayRef
+import com.quare.bibleplanner.feature.readingplan.domain.tracker.BibleProgressMilestoneTracker
+import com.quare.bibleplanner.feature.readingplan.domain.tracker.ReadingStreakMilestoneTracker
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetPlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
@@ -45,6 +50,9 @@ internal class ReadingPlanViewModel(
     private val deleteProgressMapper: DeleteProgressMapper,
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val trackEvent: TrackEvent,
+    private val bibleProgressMilestoneTracker: BibleProgressMilestoneTracker,
+    private val readingStreakMilestoneTracker: ReadingStreakMilestoneTracker,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
@@ -61,6 +69,7 @@ internal class ReadingPlanViewModel(
 
     init {
         observe(calculateBibleProgress()) { progress ->
+            bibleProgressMilestoneTracker.onProgress(progress)
             currentBibleProgress = progress
             _uiState.update { currentState ->
                 when (currentState) {
@@ -132,11 +141,23 @@ internal class ReadingPlanViewModel(
                 )
             }
         }
+        observe(uiState) { state ->
+            (state as? ReadingPlanUiState.Loaded)
+                ?.planStatus
+                ?.streakDays
+                ?.let(readingStreakMilestoneTracker::onStreak)
+        }
     }
 
     fun onEvent(event: ReadingPlanUiEvent) {
         when (event) {
             is ReadingPlanUiEvent.OnPlanClick -> {
+                if (event.type != uiState.value.selectedReadingPlan) {
+                    trackEvent(
+                        name = AnalyticsEventNames.PLAN_SELECTED,
+                        params = mapOf(AnalyticsParams.PLAN_TYPE to event.type.name.lowercase()),
+                    )
+                }
                 viewModelScope.launch {
                     setSelectedReadingPlan(event.type)
                 }
@@ -174,26 +195,39 @@ internal class ReadingPlanViewModel(
             }
 
             ReadingPlanUiEvent.OnToggleUpcomingExpanded -> {
-                updateLoaded { state ->
-                    state.copy(upcomingExpanded = !state.upcomingExpanded)
+                loadedState()?.let { state ->
+                    val isExpanded = !state.upcomingExpanded
+                    updateLoaded { it.copy(upcomingExpanded = isExpanded) }
+                    trackGroupToggled(
+                        group = GROUP_UPCOMING,
+                        isExpanded = isExpanded,
+                    )
                 }
             }
 
             ReadingPlanUiEvent.OnToggleCompletedExpanded -> {
-                updateLoaded { state ->
-                    state.copy(completedExpanded = !state.completedExpanded)
+                loadedState()?.let { state ->
+                    val isExpanded = !state.completedExpanded
+                    updateLoaded { it.copy(completedExpanded = isExpanded) }
+                    trackGroupToggled(
+                        group = GROUP_COMPLETED,
+                        isExpanded = isExpanded,
+                    )
                 }
             }
 
             ReadingPlanUiEvent.OnGoToActiveRowClick -> {
+                trackShortcutUsed(SHORTCUT_ACTIVE_ROW)
                 scrollAndFlashToDay(loadedState()?.planStatus?.nextDay)
             }
 
             ReadingPlanUiEvent.OnSkipToTodayClick -> {
+                trackShortcutUsed(SHORTCUT_TODAY)
                 scrollAndFlashToDay(loadedState()?.planStatus?.todayDay)
             }
 
             ReadingPlanUiEvent.OnScrollToTopClick -> {
+                trackShortcutUsed(SHORTCUT_SCROLL_TOP)
                 updateState { state ->
                     when (state) {
                         is ReadingPlanUiState.Loaded -> state.copy(scrollToTop = true)
@@ -266,6 +300,33 @@ internal class ReadingPlanViewModel(
         updateLoaded { state ->
             state.copy(weekPlans = state.weekPlans.map { it.weekPlan }.mapToPresentation())
         }
+        trackEvent(
+            name = AnalyticsEventNames.PLAN_WEEK_TOGGLED,
+            params = mapOf(
+                AnalyticsParams.WEEK_NUMBER to weekNumber,
+                AnalyticsParams.IS_EXPANDED to expandedWeeks.contains(weekNumber),
+            ),
+        )
+    }
+
+    private fun trackGroupToggled(
+        group: String,
+        isExpanded: Boolean,
+    ) {
+        trackEvent(
+            name = AnalyticsEventNames.PLAN_GROUP_TOGGLED,
+            params = mapOf(
+                AnalyticsParams.GROUP to group,
+                AnalyticsParams.IS_EXPANDED to isExpanded,
+            ),
+        )
+    }
+
+    private fun trackShortcutUsed(shortcut: String) {
+        trackEvent(
+            name = AnalyticsEventNames.PLAN_SHORTCUT_USED,
+            params = mapOf(AnalyticsParams.SHORTCUT to shortcut),
+        )
     }
 
     private fun scrollAndFlashToDay(dayRef: PlanDayRef?) {
@@ -297,6 +358,16 @@ internal class ReadingPlanViewModel(
             ?.find { it.number == event.dayNumber }
             ?: return
         val newReadStatus = !day.isRead
+        trackEvent(
+            name = AnalyticsEventNames.DAY_READ_TOGGLED,
+            params = mapOf(
+                AnalyticsParams.PLAN_TYPE to selectedPlan.name.lowercase(),
+                AnalyticsParams.WEEK_NUMBER to event.weekNumber,
+                AnalyticsParams.DAY_NUMBER to event.dayNumber,
+                AnalyticsParams.IS_READ to newReadStatus,
+                AnalyticsParams.SOURCE to SOURCE_PLAN_LIST,
+            ),
+        )
         val currentWeekBefore = currentUiState.weekPlans
             .firstOrNull { it.group == WeekGroup.Current }
             ?.weekPlan
@@ -482,4 +553,13 @@ internal class ReadingPlanViewModel(
         val weekNumber: Int,
         val dayNumber: Int,
     )
+
+    private companion object {
+        const val SOURCE_PLAN_LIST = "plan_list"
+        const val GROUP_UPCOMING = "upcoming"
+        const val GROUP_COMPLETED = "completed"
+        const val SHORTCUT_ACTIVE_ROW = "active_row"
+        const val SHORTCUT_TODAY = "today"
+        const val SHORTCUT_SCROLL_TOP = "scroll_top"
+    }
 }

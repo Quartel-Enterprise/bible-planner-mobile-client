@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.materialyou.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.feature.materialyou.domain.model.MaterialYouUseCases
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiAction
@@ -16,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class AndroidColorSchemeViewModel(
     private val useCases: MaterialYouUseCases,
+    private val trackEvent: TrackEvent,
 ) : ViewModel() {
     private val _uiAction: Channel<AndroidColorSchemeUiAction> = Channel()
     val uiAction = _uiAction.receiveAsFlow()
@@ -36,6 +40,13 @@ class AndroidColorSchemeViewModel(
         viewModelScope.launch {
             when (event) {
                 is AndroidColorSchemeUiEvent.OnIsDynamicColorsEnabledChange -> {
+                    trackEvent(
+                        name = AnalyticsEventNames.DYNAMIC_COLORS_TOGGLED,
+                        params = mapOf(
+                            AnalyticsParams.IS_ENABLED to event.isEnabled,
+                            AnalyticsParams.SOURCE to DYNAMIC_COLORS_SOURCE,
+                        ),
+                    )
                     useCases.setIsDynamicColorsEnabled(event.isEnabled)
                 }
 
@@ -46,5 +57,9 @@ class AndroidColorSchemeViewModel(
                 }
             }
         }
+    }
+
+    private companion object {
+        const val DYNAMIC_COLORS_SOURCE = "material_you"
     }
 }

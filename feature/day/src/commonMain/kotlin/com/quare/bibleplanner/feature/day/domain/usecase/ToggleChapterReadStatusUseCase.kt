@@ -14,11 +14,10 @@ internal class ToggleChapterReadStatusUseCase(
         strategy: UpdateReadStatusOfPassageStrategy,
         passage: PassageModel,
         readingPlanType: ReadingPlanType,
-    ): Result<Unit> = calculateChapterReadStatus(
+    ): Result<Boolean> = calculateChapterReadStatus(
         passage = passage,
         strategy = strategy,
     ).map { newReadStatus ->
-        // Update the chapter read status
         updateChapterReadStatus(
             weekNumber = weekNumber,
             dayNumber = dayNumber,
@@ -26,5 +25,6 @@ internal class ToggleChapterReadStatusUseCase(
             isRead = newReadStatus,
             readingPlanType = readingPlanType,
         )
+        newReadStatus
     }
 }

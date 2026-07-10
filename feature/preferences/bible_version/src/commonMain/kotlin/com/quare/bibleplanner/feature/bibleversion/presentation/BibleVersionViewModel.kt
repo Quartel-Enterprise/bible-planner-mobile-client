@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
@@ -21,6 +24,7 @@ class BibleVersionViewModel(
     private val setSelectedVersion: SetSelectedVersionUseCase,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val initializeBibleVersions: InitializeBibleVersionsUseCase,
+    private val trackEvent: TrackEvent,
     uiStateFactory: BibleVersionsUiStateFactory,
 ) : ViewModel() {
     private val _uiAction: MutableSharedFlow<BibleVersionUiAction> = MutableSharedFlow()
@@ -69,6 +73,10 @@ class BibleVersionViewModel(
     }
 
     private fun downloadVersion(id: String) {
+        trackDownloadStarted(
+            id = id,
+            isResume = false,
+        )
         downloaderFacade.downloadVersion(id)
         if (downloaderFacade.shouldShowDownloadTip) {
             emitUiAction(BibleVersionUiAction.ShowDownloadTip)
@@ -76,12 +84,20 @@ class BibleVersionViewModel(
     }
 
     private fun pauseDownload(id: String) {
+        trackEvent(
+            name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_PAUSED,
+            params = mapOf(AnalyticsParams.VERSION_ID to id),
+        )
         viewModelScope.launch {
             downloaderFacade.pauseDownload(id)
         }
     }
 
     private fun resumeDownload(id: String) {
+        trackDownloadStarted(
+            id = id,
+            isResume = true,
+        )
         viewModelScope.launch {
             downloaderFacade.downloadVersion(id)
         }
@@ -92,9 +108,34 @@ class BibleVersionViewModel(
     }
 
     private fun selectVersion(id: String) {
+        if (!isAlreadySelected(id)) {
+            trackEvent(
+                name = AnalyticsEventNames.BIBLE_VERSION_SELECTED,
+                params = mapOf(AnalyticsParams.VERSION_ID to id),
+            )
+        }
         viewModelScope.launch {
             setSelectedVersion(id)
         }
+    }
+
+    private fun isAlreadySelected(id: String): Boolean = (uiState.value as? BibleVersionsUiState.Success)
+        ?.data
+        ?.values
+        ?.flatten()
+        ?.any { it.version.id == id && it.isSelected } == true
+
+    private fun trackDownloadStarted(
+        id: String,
+        isResume: Boolean,
+    ) {
+        trackEvent(
+            name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_STARTED,
+            params = mapOf(
+                AnalyticsParams.VERSION_ID to id,
+                AnalyticsParams.IS_RESUME to isResume,
+            ),
+        )
     }
 
     private fun dismiss() {

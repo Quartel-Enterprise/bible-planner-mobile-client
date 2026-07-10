@@ -1,9 +1,8 @@
 package com.quare.bibleplanner.core.model.route
 
-import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-sealed interface MainNavRouteDestination : NavKey {
+sealed interface MainNavRouteDestination : NavRoute {
     @Serializable
     data object Plans : MainNavRouteDestination
 

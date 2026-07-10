@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.sync.di
 
+import com.quare.bibleplanner.core.sync.data.SnapshotPuller
 import com.quare.bibleplanner.core.sync.data.SyncCoordinator
 import com.quare.bibleplanner.core.sync.domain.usecase.ClearAllSyncedLocalData
 import com.quare.bibleplanner.core.sync.domain.usecase.ClearAllSyncedLocalDataUseCase
@@ -19,6 +20,10 @@ val syncModule = module {
         SyncCoordinator(
             observeAuthenticatedUserId = get(),
             synchronizers = getAll(),
+            snapshotPuller = SnapshotPuller(
+                synchronizers = getAll(),
+                trackEvent = get(),
+            ),
             realtime = get(),
             currentTimestampProvider = get(),
         )

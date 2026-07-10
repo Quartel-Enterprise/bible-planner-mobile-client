@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.donation.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.donation.generated.DonationBuildKonfig
 import com.quare.bibleplanner.feature.donation.presentation.factory.DonationUiStateFactory
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class DonationViewModel(
     factory: DonationUiStateFactory,
+    private val trackEvent: TrackEvent,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(factory.create())
     val uiState = _uiState.asStateFlow()
@@ -42,26 +46,49 @@ class DonationViewModel(
                         }
                         _uiState.update { it.copy(copiedType = event.type) }
                         _uiAction.emit(DonationUiAction.Copy(text))
+                        trackEvent(
+                            name = AnalyticsEventNames.DONATION_METHOD_COPIED,
+                            params = mapOf(AnalyticsParams.METHOD to event.type.name.lowercase()),
+                        )
                     }
                 }
             }
 
             DonationUiEvent.OpenGitHubSponsors -> {
+                trackEvent(
+                    name = AnalyticsEventNames.GITHUB_SPONSORS_OPENED,
+                    params = emptyMap(),
+                )
                 viewModelScope.launch {
                     _uiAction.emit(DonationUiAction.OpenUrl("https://github.com/sponsors/Quartel-Enterprise"))
                 }
             }
 
             DonationUiEvent.ToggleBitcoin -> {
-                _uiState.update { it.copy(isBitcoinExpanded = !it.isBitcoinExpanded) }
+                val isExpanded = !_uiState.value.isBitcoinExpanded
+                _uiState.update { it.copy(isBitcoinExpanded = isExpanded) }
+                trackSectionToggled(
+                    section = BITCOIN_SECTION,
+                    isExpanded = isExpanded,
+                )
             }
 
             DonationUiEvent.ToggleUsdt -> {
-                _uiState.update { it.copy(isUsdtExpanded = !it.isUsdtExpanded) }
+                val isExpanded = !_uiState.value.isUsdtExpanded
+                _uiState.update { it.copy(isUsdtExpanded = isExpanded) }
+                trackSectionToggled(
+                    section = USDT_SECTION,
+                    isExpanded = isExpanded,
+                )
             }
 
             DonationUiEvent.TogglePix -> {
-                _uiState.update { it.copy(isPixExpanded = !it.isPixExpanded) }
+                val isExpanded = !_uiState.value.isPixExpanded
+                _uiState.update { it.copy(isPixExpanded = isExpanded) }
+                trackSectionToggled(
+                    section = PIX_SECTION,
+                    isExpanded = isExpanded,
+                )
             }
 
             DonationUiEvent.OpenPixQr -> {
@@ -70,5 +97,24 @@ class DonationViewModel(
                 }
             }
         }
+    }
+
+    private fun trackSectionToggled(
+        section: String,
+        isExpanded: Boolean,
+    ) {
+        trackEvent(
+            name = AnalyticsEventNames.DONATION_SECTION_TOGGLED,
+            params = mapOf(
+                AnalyticsParams.SECTION to section,
+                AnalyticsParams.IS_EXPANDED to isExpanded,
+            ),
+        )
+    }
+
+    private companion object {
+        const val BITCOIN_SECTION = "bitcoin"
+        const val USDT_SECTION = "usdt"
+        const val PIX_SECTION = "pix"
     }
 }

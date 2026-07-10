@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.readingplan.di
 
+import com.quare.bibleplanner.feature.readingplan.domain.tracker.BibleProgressMilestoneTracker
+import com.quare.bibleplanner.feature.readingplan.domain.tracker.ReadingStreakMilestoneTracker
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetPlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
@@ -40,6 +42,8 @@ val readingPlanModule = module {
     factoryOf(::ResolveOverallProgressMotivationUseCase).bind<ResolveOverallProgressMotivation>()
     factoryOf(::GetPlanMotivationMessageUseCase).bind<GetPlanMotivationMessage>()
     factoryOf(::ResolvePlanStatusUseCase).bind<ResolvePlanStatus>()
+    factoryOf(::BibleProgressMilestoneTracker)
+    factoryOf(::ReadingStreakMilestoneTracker)
 
     // Presentation
     viewModelOf(::ReadingPlanViewModel)

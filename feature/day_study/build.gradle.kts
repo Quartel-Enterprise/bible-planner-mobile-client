@@ -24,6 +24,7 @@ kotlin {
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.connectivity)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.remoteConfig)
 
             // UI

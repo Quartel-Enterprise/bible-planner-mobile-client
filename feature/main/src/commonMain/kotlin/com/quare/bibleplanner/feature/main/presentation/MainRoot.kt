@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.books.presentation.booksScreen
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.navhost.NavTabState
@@ -31,6 +33,7 @@ import com.quare.bibleplanner.feature.more.presentation.more
 import com.quare.bibleplanner.feature.notificationpermission.presentation.NotificationPermissionStartEffect
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.ui.utils.ActionCollector
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val TAB_TRANSITION_DURATION_MILLIS = 300
@@ -58,6 +61,11 @@ private fun MainRootContent(
 ) {
     val mainViewModel: MainScreenViewModel = koinViewModel()
     val tabState: NavTabState = rememberNavTabState()
+    val trackDestination = koinInject<TrackDestination>()
+    val selectedTab = tabState.selectedTab
+    LaunchedEffect(selectedTab) {
+        trackDestination(selectedTab)
+    }
     NotificationPermissionStartEffect(onNavigate)
     ActionCollector(mainViewModel.uiAction) { uiAction ->
         when (uiAction) {

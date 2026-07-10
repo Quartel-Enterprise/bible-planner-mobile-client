@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.releasenotes.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.releasenotes.presentation.factory.ReleaseNotesUiStateFactory
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiAction
@@ -17,6 +20,7 @@ import kotlinx.coroutines.launch
 
 class ReleaseNotesViewModel(
     private val uiStateFactory: ReleaseNotesUiStateFactory,
+    private val trackEvent: TrackEvent,
     val platform: Platform,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(uiStateFactory.createInitialState())
@@ -32,6 +36,10 @@ class ReleaseNotesViewModel(
     fun onEvent(event: ReleaseNotesUiEvent) {
         when (event) {
             is ReleaseNotesUiEvent.OnTabSelected -> {
+                trackEvent(
+                    name = AnalyticsEventNames.RELEASE_NOTES_TAB_SELECTED,
+                    params = mapOf(AnalyticsParams.TAB to event.tab.name.lowercase()),
+                )
                 _uiState.update { state ->
                     if (state is ReleaseNotesUiState.Success) {
                         state.copy(currentTab = event.tab)
@@ -46,6 +54,10 @@ class ReleaseNotesViewModel(
             }
 
             ReleaseNotesUiEvent.OnGithubAllReleasesClicked -> {
+                trackEvent(
+                    name = AnalyticsEventNames.GITHUB_RELEASE_OPENED,
+                    params = emptyMap(),
+                )
                 viewModelScope.launch {
                     _uiAction.send(
                         ReleaseNotesUiAction.OpenUrl(ALL_RELEASES_LINK),
@@ -54,6 +66,10 @@ class ReleaseNotesViewModel(
             }
 
             is ReleaseNotesUiEvent.OnGithubVersionClicked -> {
+                trackEvent(
+                    name = AnalyticsEventNames.GITHUB_RELEASE_OPENED,
+                    params = mapOf(AnalyticsParams.VERSION to event.version),
+                )
                 viewModelScope.launch {
                     _uiAction.send(
                         ReleaseNotesUiAction.OpenUrl("$ALL_RELEASES_PREFIX${event.version}"),

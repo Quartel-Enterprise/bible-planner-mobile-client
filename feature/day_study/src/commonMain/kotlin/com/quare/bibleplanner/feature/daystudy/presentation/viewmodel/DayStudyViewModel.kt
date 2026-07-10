@@ -11,6 +11,9 @@ import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
@@ -57,6 +60,7 @@ internal class DayStudyViewModel(
     private val observeIsProUser: ObserveIsProUser,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val cardUiModelFactory: DayStudyCardUiModelFactory,
+    private val trackEvent: TrackEvent,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DayStudyUiState> = MutableStateFlow(
         DayStudyUiState(
@@ -157,6 +161,7 @@ internal class DayStudyViewModel(
         if (_uiState.value.isStudyOpen) {
             if (_uiState.value.generation != null) completeGenerationPhases()
             _uiState.update { it.copy(generation = null, openStudy = study, isStudyOpen = true) }
+            trackStudyOpened(isCached = false)
         } else {
             _uiState.update { it.copy(generation = null, openStudy = study) }
         }
@@ -197,7 +202,15 @@ internal class DayStudyViewModel(
 
     private fun onCardClick() {
         val card = _uiState.value.card.valueOrNull() ?: return
+        trackEvent(
+            name = AnalyticsEventNames.DAY_STUDY_CARD_CLICKED,
+            params = mapOf(
+                AnalyticsParams.CARD_MODE to card.mode.name.lowercase(),
+                AnalyticsParams.IS_PRO to card.isPro,
+            ),
+        )
         if (_uiState.value.openStudy != null || _uiState.value.generation != null) {
+            if (_uiState.value.openStudy != null) trackStudyOpened(isCached = true)
             _uiState.update { it.copy(isStudyOpen = true) }
             return
         }
@@ -229,10 +242,25 @@ internal class DayStudyViewModel(
             return
         }
         if (!isConnected()) {
+            trackEvent(
+                name = AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
+                params = dayParams(route) + mapOf(
+                    AnalyticsParams.REASON to OFFLINE_REASON,
+                    AnalyticsParams.IS_PRO to isPro,
+                ),
+            )
             _uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
             return
         }
-        if (!canStartFreeGeneration(getDayStudyQuota(passages))) return
+        val quota = getDayStudyQuota(passages)
+        if (!canStartFreeGeneration(quota)) return
+        trackEvent(
+            name = AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED,
+            params = dayParams(route) + mapOf(
+                AnalyticsParams.IS_PRO to isPro,
+                AnalyticsParams.REMAINING_FREE to quota.remainingFree,
+            ),
+        )
         jobKey = generationCoordinator.start(passages, route, label)
         _uiState.update {
             it.copy(
@@ -260,6 +288,7 @@ internal class DayStudyViewModel(
             .mapNotNull { (it as? DayStudyGenerationEventModel.Completed)?.study }
             .first()
         _uiState.update { it.copy(openStudy = study, isStudyOpen = true) }
+        trackStudyOpened(isCached = true)
     }
 
     private fun onStudyDismiss() {
@@ -291,6 +320,19 @@ internal class DayStudyViewModel(
         }
     }
 
+    private fun trackStudyOpened(isCached: Boolean) {
+        trackEvent(
+            name = AnalyticsEventNames.DAY_STUDY_OPENED,
+            params = mapOf(AnalyticsParams.IS_CACHED to isCached),
+        )
+    }
+
+    private fun dayParams(route: DayNavRoute): Map<String, Any> = mapOf(
+        AnalyticsParams.PLAN_TYPE to route.readingPlanType,
+        AnalyticsParams.WEEK_NUMBER to route.weekNumber,
+        AnalyticsParams.DAY_NUMBER to route.dayNumber,
+    )
+
     private fun emitAction(action: DayStudyUiAction) {
         viewModelScope.launch {
             _uiAction.emit(action)
@@ -300,6 +342,10 @@ internal class DayStudyViewModel(
     override fun onCleared() {
         super.onCleared()
         jobKey?.let(generationCoordinator::clearActive)
+    }
+
+    private companion object {
+        const val OFFLINE_REASON = "offline"
     }
 }
 

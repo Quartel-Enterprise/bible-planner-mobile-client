@@ -15,6 +15,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.language)
             implementation(projects.core.utils)

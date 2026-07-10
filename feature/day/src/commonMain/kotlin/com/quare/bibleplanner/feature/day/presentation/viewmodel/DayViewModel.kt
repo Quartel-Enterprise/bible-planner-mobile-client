@@ -7,16 +7,21 @@ import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_mes
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
+import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
@@ -49,6 +54,7 @@ internal class DayViewModel(
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val applicationScope: ApplicationScope,
+    private val trackEvent: TrackEvent,
     val platform: Platform,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
@@ -154,6 +160,10 @@ internal class DayViewModel(
     }
 
     private fun navigateToPaywall() {
+        trackEvent(
+            name = AnalyticsEventNames.PAYWALL_VIEWED,
+            params = mapOf(AnalyticsParams.SOURCE to SOURCE_DAY_STUDY),
+        )
         viewModelScope.launch {
             _uiAction.emit(DayUiAction.NavigateToRoute(PaywallNavRoute))
         }
@@ -218,6 +228,11 @@ internal class DayViewModel(
             )
         }
 
+        trackEvent(
+            name = AnalyticsEventNames.READ_DATE_EDITED,
+            params = dayParams(),
+        )
+
         viewModelScope.launch {
             useCases.updateDayReadTimestampWithDateAndTime(
                 weekNumber = weekNumber,
@@ -233,6 +248,14 @@ internal class DayViewModel(
         val currentState = _uiState.value as? DayUiState.Loaded ?: return
         val newReadStatus = !currentState.day.isRead
 
+        trackEvent(
+            name = AnalyticsEventNames.DAY_READ_TOGGLED,
+            params = dayParams() + mapOf(
+                AnalyticsParams.IS_READ to newReadStatus,
+                AnalyticsParams.SOURCE to SOURCE_DAY_SCREEN,
+            ),
+        )
+
         viewModelScope.launch {
             useCases.updateDayReadStatus(
                 weekNumber = weekNumber,
@@ -246,6 +269,7 @@ internal class DayViewModel(
 
     private fun onChapterToggle(event: DayUiEvent.OnChapterCheckboxClick) {
         val currentState = _uiState.value as? DayUiState.Loaded ?: return
+        val passage = currentState.day.passages.getOrNull(event.strategy.passageIndex) ?: return
 
         viewModelScope.launch {
             useCases
@@ -253,11 +277,48 @@ internal class DayViewModel(
                     weekNumber = weekNumber,
                     dayNumber = dayNumber,
                     strategy = event.strategy,
-                    passage = currentState.day.passages.getOrNull(event.strategy.passageIndex) ?: return@launch,
+                    passage = passage,
                     readingPlanType = readingPlanType,
-                ).onFailure {
+                ).onSuccess { isRead ->
+                    trackChapterToggle(
+                        strategy = event.strategy,
+                        passage = passage,
+                        isRead = isRead,
+                    )
+                }.onFailure {
                     _uiAction.emit(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message))
                 }
+        }
+    }
+
+    private fun trackChapterToggle(
+        strategy: UpdateReadStatusOfPassageStrategy,
+        passage: PassageModel,
+        isRead: Boolean,
+    ) {
+        when (strategy) {
+            is UpdateReadStatusOfPassageStrategy.EntireBook -> {
+                trackEvent(
+                    name = AnalyticsEventNames.BOOK_READ_TOGGLED,
+                    params = mapOf(
+                        AnalyticsParams.BOOK_ID to passage.bookId.name.lowercase(),
+                        AnalyticsParams.IS_READ to isRead,
+                    ),
+                )
+            }
+
+            is UpdateReadStatusOfPassageStrategy.Chapter -> {
+                val chapterNumber = passage.chapters.getOrNull(strategy.chapterIndex)?.number ?: return
+                trackEvent(
+                    name = AnalyticsEventNames.CHAPTER_READ_TOGGLED,
+                    params = dayParams() + mapOf(
+                        AnalyticsParams.BOOK_ID to passage.bookId.name.lowercase(),
+                        AnalyticsParams.CHAPTER_NUMBER to chapterNumber,
+                        AnalyticsParams.IS_READ to isRead,
+                        AnalyticsParams.SOURCE to SOURCE_DAY_SCREEN,
+                    ),
+                )
+            }
         }
     }
 
@@ -285,12 +346,19 @@ internal class DayViewModel(
     }
 
     private suspend fun saveNotes(notes: String?) {
+        val sanitizedNotes = notes?.ifBlank { null }
         useCases.updateDayNotes(
             weekNumber = weekNumber,
             dayNumber = dayNumber,
             readingPlanType = readingPlanType,
-            notes = notes?.ifBlank { null },
+            notes = sanitizedNotes,
         )
+        sanitizedNotes?.let { savedNotes ->
+            trackEvent(
+                name = AnalyticsEventNames.NOTE_SAVED,
+                params = dayParams() + mapOf(AnalyticsParams.NOTE_LENGTH to savedNotes.length),
+            )
+        }
     }
 
     private fun onNotesClear() {
@@ -334,9 +402,14 @@ internal class DayViewModel(
     }
 
     private suspend fun blockAddNotes() {
+        val maxFreeNotes = useCases.getMaxFreeNotesAmount()
+        trackEvent(
+            name = AnalyticsEventNames.NOTES_LIMIT_REACHED,
+            params = mapOf(AnalyticsParams.MAX_FREE_NOTES to maxFreeNotes),
+        )
         _uiAction.run {
             emit(DayUiAction.ClearFocus)
-            emit(DayUiAction.NavigateToRoute(AddNotesFreeWarningNavRoute(useCases.getMaxFreeNotesAmount())))
+            emit(DayUiAction.NavigateToRoute(AddNotesFreeWarningNavRoute(maxFreeNotes)))
         }
     }
 
@@ -356,5 +429,16 @@ internal class DayViewModel(
         viewModelScope.launch {
             _uiAction.emit(DayUiAction.NavigateBack)
         }
+    }
+
+    private fun dayParams(): Map<String, Any> = mapOf(
+        AnalyticsParams.PLAN_TYPE to readingPlanType.name.lowercase(),
+        AnalyticsParams.WEEK_NUMBER to weekNumber,
+        AnalyticsParams.DAY_NUMBER to dayNumber,
+    )
+
+    private companion object {
+        const val SOURCE_DAY_SCREEN = "day_screen"
+        const val SOURCE_DAY_STUDY = "day_study"
     }
 }

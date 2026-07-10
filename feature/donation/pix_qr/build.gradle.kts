@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.provider.language)
             implementation(projects.core.utils)
             implementation(projects.core.provider.platform)
+            implementation(projects.core.provider.analytics)
             implementation(projects.ui.utils)
             implementation(projects.ui.component)
 

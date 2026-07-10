@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.sync)
             implementation(projects.core.clear)
             implementation(projects.core.utils)
+            implementation(projects.core.provider.analytics)
 
             // UI
             implementation(projects.ui.utils)

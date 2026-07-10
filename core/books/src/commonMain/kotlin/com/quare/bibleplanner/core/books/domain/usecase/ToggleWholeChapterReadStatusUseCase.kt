@@ -9,12 +9,13 @@ class ToggleWholeChapterReadStatusUseCase(
     suspend operator fun invoke(
         bookId: BookId,
         chapterNumber: Int,
-    ) {
+    ): Boolean {
         val newReadStatus = !isWholeChapterRead(chapterNumber, bookId)
         updateWholeChapterRead(
             chapterNumber = chapterNumber,
             isRead = newReadStatus,
             bookId = bookId,
         )
+        return newReadStatus
     }
 }

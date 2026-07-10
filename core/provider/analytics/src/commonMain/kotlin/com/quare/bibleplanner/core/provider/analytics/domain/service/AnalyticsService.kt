@@ -5,4 +5,9 @@ interface AnalyticsService {
         name: String,
         value: String?,
     )
+
+    fun logEvent(
+        name: String,
+        params: Map<String, Any>,
+    )
 }

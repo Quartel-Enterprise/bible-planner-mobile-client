@@ -13,9 +13,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.supabase.SupabaseDeeplinkHandler
 import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
+import com.quare.bibleplanner.notification.NotificationAnalyticsType
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
@@ -23,6 +27,7 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModel()
     private val supabaseDeeplinkHandler: SupabaseDeeplinkHandler by inject()
+    private val trackEvent: TrackEvent by inject()
 
     override fun attachBaseContext(newBase: Context) {
         val localeTag = newBase
@@ -66,6 +71,10 @@ class MainActivity : ComponentActivity() {
 
     private fun handleNotificationIntent(intent: Intent?) {
         if (intent?.shouldOpenBibleVersionManager().orFalse()) {
+            trackEvent(
+                name = AnalyticsEventNames.NOTIFICATION_OPENED,
+                params = mapOf(AnalyticsParams.TYPE to NotificationAnalyticsType.VERSION_DOWNLOAD_COMPLETE),
+            )
             viewModel.navigationEventBus.send(BibleVersionSelectorRoute)
         }
     }

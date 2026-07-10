@@ -3,6 +3,9 @@ package com.quare.bibleplanner.feature.deleteprogress.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,6 +18,7 @@ import kotlinx.coroutines.launch
 
 internal class DeleteAllProgressViewModel(
     private val resetAllProgress: ResetAllProgressUseCase,
+    private val trackEvent: TrackEvent,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<DeleteAllProgressUiState> =
         MutableStateFlow(DeleteAllProgressUiState.Idle)
@@ -28,18 +32,25 @@ internal class DeleteAllProgressViewModel(
             DeleteAllProgressUiEvent.OnConfirmDelete -> {
                 viewModelScope.launch {
                     _uiState.update { DeleteAllProgressUiState.Loading }
-                    try {
-                        resetAllProgress()
-                        _uiState.update { DeleteAllProgressUiState.Success }
-                        _backUiAction.emit(Unit)
-                    } catch (e: Exception) {
-                        // On error, go back to idle state
-                        _uiState.update { DeleteAllProgressUiState.Idle }
-                    }
+                    suspendRunCatching { resetAllProgress() }
+                        .onSuccess {
+                            trackEvent(
+                                name = AnalyticsEventNames.PROGRESS_RESET_CONFIRMED,
+                                params = emptyMap(),
+                            )
+                            _uiState.update { DeleteAllProgressUiState.Success }
+                            _backUiAction.emit(Unit)
+                        }.onFailure {
+                            _uiState.update { DeleteAllProgressUiState.Idle }
+                        }
                 }
             }
 
             DeleteAllProgressUiEvent.OnCancel -> {
+                trackEvent(
+                    name = AnalyticsEventNames.PROGRESS_RESET_CANCELLED,
+                    params = emptyMap(),
+                )
                 viewModelScope.launch {
                     _backUiAction.emit(Unit)
                 }

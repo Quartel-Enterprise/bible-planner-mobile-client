@@ -15,6 +15,7 @@ kotlin {
             // Core
             implementation(projects.core.plan)
             implementation(projects.core.model)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.utils)
             implementation(projects.core.date)
             implementation(projects.core.loginNudge)

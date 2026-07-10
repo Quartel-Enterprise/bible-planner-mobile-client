@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.applanguage.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.SetAppLanguage
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.SetLanguageSyncEnabled
@@ -19,6 +22,7 @@ import kotlinx.coroutines.launch
 internal class AppLanguageViewModel(
     private val setAppLanguage: SetAppLanguage,
     private val setLanguageSyncEnabled: SetLanguageSyncEnabled,
+    private val trackEvent: TrackEvent,
     factory: AppLanguageUiStateFactory,
 ) : ViewModel() {
     private val _uiAction: MutableSharedFlow<AppLanguageUiAction> = MutableSharedFlow()
@@ -40,6 +44,13 @@ internal class AppLanguageViewModel(
     }
 
     private fun setSyncEnabled(enabled: Boolean) {
+        trackEvent(
+            name = AnalyticsEventNames.SETTING_SYNC_TOGGLED,
+            params = mapOf(
+                AnalyticsParams.SETTING to SYNC_SETTING,
+                AnalyticsParams.IS_ENABLED to enabled,
+            ),
+        )
         viewModelScope.launch {
             setLanguageSyncEnabled(enabled)
         }
@@ -50,15 +61,29 @@ internal class AppLanguageViewModel(
     }
 
     private fun selectLanguage(language: Language) {
+        trackEvent(
+            name = AnalyticsEventNames.LANGUAGE_CHANGED,
+            params = mapOf(AnalyticsParams.LANGUAGE to language.toAnalyticsLanguage()),
+        )
         viewModelScope.launch {
             setAppLanguage(language)
             emitAction(AppLanguageUiAction.ApplyAndNavigateUp(language))
         }
     }
 
+    private fun Language.toAnalyticsLanguage(): String = when (this) {
+        Language.ENGLISH -> "en"
+        Language.PORTUGUESE_BRAZIL -> "pt"
+        Language.SPANISH -> "es"
+    }
+
     private fun emitAction(action: AppLanguageUiAction) {
         viewModelScope.launch {
             _uiAction.emit(action)
         }
+    }
+
+    private companion object {
+        const val SYNC_SETTING = "language"
     }
 }

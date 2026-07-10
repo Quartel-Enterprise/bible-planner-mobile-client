@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.billing)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.plan)
             implementation(projects.core.user)
 
@@ -44,6 +45,10 @@ kotlin {
 
             // Kermit
             implementation(libs.kermit)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }

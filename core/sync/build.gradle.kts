@@ -15,6 +15,7 @@ kotlin {
             implementation(projects.core.user)
             implementation(projects.core.date)
             implementation(projects.core.utils)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.connectivity)
             implementation(projects.core.provider.supabase)
 

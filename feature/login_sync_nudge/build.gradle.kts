@@ -15,6 +15,7 @@ kotlin {
             // Core
             implementation(projects.core.model)
             implementation(projects.core.loginNudge)
+            implementation(projects.core.provider.analytics)
 
             // UI
             implementation(projects.ui.utils)
@@ -34,6 +35,11 @@ kotlin {
             implementation(libs.koinCore)
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewModel)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

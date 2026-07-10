@@ -20,6 +20,9 @@ import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
@@ -30,6 +33,7 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction.OpenLink
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
+import com.quare.bibleplanner.feature.more.presentation.model.toAnalyticsOption
 import com.quare.bibleplanner.ui.utils.observe
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +50,7 @@ internal class MoreViewModel(
     private val getInstagramUrl: GetInstagramUrlUseCase,
     private val getAppStoreLink: GetAppStoreLinkUseCase,
     private val isConnected: IsConnected,
+    private val trackEvent: TrackEvent,
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
@@ -61,6 +66,10 @@ internal class MoreViewModel(
     fun onEvent(event: MoreUiEvent) {
         when (event) {
             is MoreUiEvent.OnItemClick -> {
+                trackEvent(
+                    name = AnalyticsEventNames.MORE_OPTION_CLICKED,
+                    params = mapOf(AnalyticsParams.OPTION to event.type.toAnalyticsOption()),
+                )
                 when (event.type) {
                     MoreOptionItemType.THEME -> {
                         goToRoute(ThemeNavRoute)
@@ -79,6 +88,10 @@ internal class MoreViewModel(
                     }
 
                     MoreOptionItemType.BECOME_PRO -> {
+                        trackEvent(
+                            name = AnalyticsEventNames.PAYWALL_VIEWED,
+                            params = mapOf(AnalyticsParams.SOURCE to PAYWALL_SOURCE),
+                        )
                         goToRoute(PaywallNavRoute)
                     }
 
@@ -177,5 +190,9 @@ internal class MoreViewModel(
         viewModelScope.launch {
             _uiAction.emit(action)
         }
+    }
+
+    private companion object {
+        const val PAYWALL_SOURCE = "more_menu"
     }
 }

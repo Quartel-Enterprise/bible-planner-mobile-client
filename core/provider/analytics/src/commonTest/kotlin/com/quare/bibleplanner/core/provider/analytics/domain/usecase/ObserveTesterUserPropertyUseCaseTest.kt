@@ -78,6 +78,11 @@ class ObserveTesterUserPropertyUseCaseTest {
         ) {
             userProperties[name] = value
         }
+
+        override fun logEvent(
+            name: String,
+            params: Map<String, Any>,
+        ) = Unit
     }
 
     private companion object {

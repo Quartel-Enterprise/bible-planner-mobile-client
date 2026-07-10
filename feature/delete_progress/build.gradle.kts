@@ -16,6 +16,8 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.model)
             implementation(projects.core.plan)
+            implementation(projects.core.provider.analytics)
+            implementation(projects.core.utils)
 
             // UI
             implementation(projects.ui.utils)
