@@ -57,6 +57,7 @@ internal fun ResponsiveContentScope.moreScreenPortraitLayout(
     }
     responsiveItem {
         AppSection(
+            state = state,
             onEvent = onEvent,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = animatedContentScope,

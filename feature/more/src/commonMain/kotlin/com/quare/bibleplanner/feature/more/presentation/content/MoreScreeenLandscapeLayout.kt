@@ -82,6 +82,7 @@ internal fun ResponsiveContentScope.moreScreenLandscapeLayout(
                     )
                 }
                 AppSection(
+                    state = state,
                     onEvent = onEvent,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,

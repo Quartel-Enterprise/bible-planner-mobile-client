@@ -18,6 +18,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionSta
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveMoreWebAppEnabled
 import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
@@ -63,6 +64,7 @@ internal class MoreUiStateFactory(
     private val getSelectedVersionDownloadedChapters: GetSelectedVersionDownloadedChaptersFlowUseCase,
     private val getSelectedBible: GetSelectedBibleFlowUseCase,
     private val getAppLanguageFlow: GetAppLanguageFlow,
+    private val platform: Platform,
 ) {
     fun initialState(): MoreUiState = MoreUiState(
         accountStatusModel = AccountStatusModel.Loading,
@@ -80,6 +82,8 @@ internal class MoreUiStateFactory(
         planStartDate = Loadable.Loading,
         currentDate = currentDate(),
         appVersion = MoreBuildKonfig.APP_VERSION,
+        isUpdateRowVisible = platform !is Platform.Desktop,
+        isCheckingForUpdate = false,
     )
 
     fun create(): Flow<MoreUiState> = merge(

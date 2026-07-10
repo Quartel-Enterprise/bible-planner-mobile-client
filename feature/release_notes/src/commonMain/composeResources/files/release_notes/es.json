@@ -7,7 +7,8 @@
     "La pantalla de selección de la versión de la Biblia también fue rediseñada, con las versiones agrupadas por idioma y una insignia de color para cada una.",
     "Se corrigió un problema que podía impedir que la aplicación se abriera en algunos dispositivos Android.",
     "Nueva sección 'Soporte y comentarios' en la pantalla de perfil: contacta al soporte con un correo ya preparado (con botón para copiar), o valora la aplicación directamente en la tienda.",
-    "En iOS, cambiar entre las pestañas Planes, Libros y Más ahora usa una transición suave en lugar de un deslizamiento."
+    "En iOS, cambiar entre las pestañas Planes, Libros y Más ahora usa una transición suave en lugar de un deslizamiento.",
+    "Ahora puedes buscar actualizaciones desde la pantalla de perfil, y la app te avisa cuando hay una nueva versión disponible. En Android puedes descargar e instalar la actualización sin salir de la aplicación."
   ],
   "1.19.1": [
     "Se corrigió un problema por el que la 'Fecha de finalización' de un día aparecía como 'No hay fecha establecida' cuando completabas el día leyendo sus capítulos desde la pantalla de lectura; ahora muestra la fecha de tu lectura más reciente de ese día."

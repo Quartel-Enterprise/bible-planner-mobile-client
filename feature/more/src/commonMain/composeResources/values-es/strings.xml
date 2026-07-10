@@ -27,6 +27,10 @@
     <string name="support_comments_section">Soporte y comentarios</string>
     <string name="contact_support_option">Contactar soporte</string>
     <string name="rate_app_option">Valorar la app</string>
+    <string name="check_for_updates_option">Buscar actualizaciones</string>
+    <string name="check_for_updates_checking">Buscando…</string>
+    <string name="check_for_updates_subtitle">Versión %1$s</string>
+    <string name="up_to_date_message">Ya tienes la versión más reciente</string>
     <string name="web_section">Web</string>
     <string name="web_app">Web App</string>
     <string name="web_app_subtitle">Abre la versión web en tu navegador</string>

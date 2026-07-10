@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.releasenotes.presentation.factory
 
+import com.quare.bibleplanner.core.utils.version.VersionComparator
 import com.quare.bibleplanner.feature.releasenotes.domain.usecase.GetReleaseNotesUseCase
-import com.quare.bibleplanner.feature.releasenotes.domain.utils.VersionComparator
 import com.quare.bibleplanner.feature.releasenotes.generated.ReleaseNotesBuildKonfig
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesTab
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesUiState

@@ -11,10 +11,12 @@ import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.Update
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.app_language_option
 import bibleplanner.feature.more.generated.resources.become_pro
 import bibleplanner.feature.more.generated.resources.bible_version_option
+import bibleplanner.feature.more.generated.resources.check_for_updates_option
 import bibleplanner.feature.more.generated.resources.contact_support_option
 import bibleplanner.feature.more.generated.resources.delete_progress_option
 import bibleplanner.feature.more.generated.resources.ic_instagram
@@ -87,5 +89,10 @@ internal object MoreMenuOptionsFactory {
         name = Res.string.rate_app_option,
         icon = MoreIcon.ImageVectorIcon(Icons.Default.RateReview),
         type = MoreOptionItemType.RATE_APP,
+    )
+    val checkForUpdate = MoreMenuItemPresentationModel(
+        name = Res.string.check_for_updates_option,
+        icon = MoreIcon.ImageVectorIcon(Icons.Default.Update),
+        type = MoreOptionItemType.CHECK_FOR_UPDATE,
     )
 }

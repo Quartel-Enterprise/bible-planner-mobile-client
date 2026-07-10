@@ -79,6 +79,9 @@ object AnalyticsEventNames {
     const val CONTACT_SUPPORT_EMAIL_OPENED = "contact_support_email_opened"
     const val CONTACT_SUPPORT_EMAIL_COPIED = "contact_support_email_copied"
 
+    const val UPDATE_PROMPT_SHOWN = "update_prompt_shown"
+    const val UPDATE_ACCEPTED = "update_accepted"
+
     const val BOOKS_SEARCH_USED = "books_search_used"
     const val BOOKS_FILTER_TOGGLED = "books_filter_toggled"
     const val BOOKS_SORT_CHANGED = "books_sort_changed"

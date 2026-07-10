@@ -12,6 +12,7 @@ import com.quare.bibleplanner.domain.usecase.InitializeAppContent
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveAppLocale
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveLanguageSync
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelectedVersionUseCase
+import com.quare.bibleplanner.feature.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.ObserveDynamicColorsSync
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +33,7 @@ internal class InitializeAppContentUseCase(
     private val observeSync: ObserveSync,
     private val observeTesterUserProperty: ObserveTesterUserProperty,
     private val syncBillingUserId: SyncBillingUserId,
+    private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val remoteConfig: RemoteConfigService, // Don't delete it, it is necessary to initialize remote config
 ) : InitializeAppContent {
     override operator fun invoke(coroutineScope: CoroutineScope) {
@@ -52,6 +54,7 @@ internal class InitializeAppContentUseCase(
             launch { observeLanguageSync() }
             launch { observeTesterUserProperty() }
             launch { syncBillingUserId() }
+            launch { requestUpdatePromptIfNeeded() }
             // Launched after book rows exist so remote favorites can be applied to them.
             launch { observeSync() }
             observeSelectedVersion()

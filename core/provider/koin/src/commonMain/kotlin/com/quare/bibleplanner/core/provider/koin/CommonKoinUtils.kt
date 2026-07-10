@@ -35,6 +35,7 @@ import com.quare.bibleplanner.feature.deleteversion.di.deleteVersionModule
 import com.quare.bibleplanner.feature.donation.di.donationModule
 import com.quare.bibleplanner.feature.donation.pixqr.di.pixQrModule
 import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModule
+import com.quare.bibleplanner.feature.inappupdate.di.inAppUpdateModule
 import com.quare.bibleplanner.feature.login.di.loginModule
 import com.quare.bibleplanner.feature.loginsyncnudge.di.loginSyncNudgeModule
 import com.quare.bibleplanner.feature.loginwarning.di.loginWarningModule
@@ -100,5 +101,6 @@ object CommonKoinUtils {
         modelModule,
         com.quare.bibleplanner.feature.read.di.featureReadModule,
         notificationPermissionModule,
+        inAppUpdateModule,
     )
 }

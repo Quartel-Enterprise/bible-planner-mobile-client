@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="update_available_title">Atualização disponível</string>
+    <string name="update_available_version">Versão %1$s</string>
+    <string name="update_description_android">O Google Play instala a atualização sem sair do app.</string>
+    <string name="update_description_store">Você será levado à App Store para instalar a nova versão.</string>
+    <string name="update_action_android">Atualizar</string>
+    <string name="update_action_store">Abrir na App Store</string>
+    <string name="update_dismiss">Agora não</string>
+    <string name="update_downloading">Baixando atualização…</string>
+    <string name="update_downloaded_title">Atualização baixada</string>
+    <string name="update_downloaded_message">A atualização foi baixada. Reinicie o app para concluir a instalação.</string>
+    <string name="update_restart_now">Reiniciar agora</string>
+    <string name="update_restart_later">Mais tarde</string>
+    <string name="update_download_failed">Falha ao baixar a atualização. Tente novamente mais tarde.</string>
+    <string name="update_icon_content_description">Atualização</string>
+</resources>

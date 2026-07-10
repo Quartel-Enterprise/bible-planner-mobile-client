@@ -12,6 +12,7 @@ import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
@@ -27,6 +28,7 @@ import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
+import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.DestinationType
 import kotlin.test.Test
@@ -62,6 +64,7 @@ class NavRouteToDestinationMapperImplTest {
             DeleteVersionNavRoute(versionId = "kjv") to ("delete_version" to DestinationType.DIALOG),
             DonationNavRoute to ("donation" to DestinationType.BOTTOM_SHEET),
             EditPlanStartDateNavRoute to ("edit_plan_start_date" to DestinationType.DIALOG),
+            InAppUpdateNavRoute(versionName = "2.0.0") to ("in_app_update" to DestinationType.RESPONSIVE),
             LoginNavRoute(notifyResultViaSnackbar = true) to ("login" to DestinationType.BOTTOM_SHEET),
             LoginSyncNudgeNavRoute to ("login_sync_nudge" to DestinationType.DIALOG),
             LoginWarningNavRoute(reason = "sync_setting") to ("login_warning" to DestinationType.DIALOG),
@@ -75,6 +78,7 @@ class NavRouteToDestinationMapperImplTest {
             ReleaseNotesNavRoute to ("release_notes" to DestinationType.SCREEN),
             SubscriptionDetailsNavRoute to ("subscription_details" to DestinationType.DIALOG),
             ThemeNavRoute to ("theme_selection" to DestinationType.RESPONSIVE),
+            UpdateDownloadedNavRoute to ("update_downloaded" to DestinationType.DIALOG),
         )
 
         expectations.forEach { (route, expected) ->
