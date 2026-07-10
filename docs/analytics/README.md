@@ -82,6 +82,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `DeleteVersionNavRoute` | `delete_version` | `dialog` | `version_id` |
 | `DonationNavRoute` | `donation` | `bottom_sheet` | — |
 | `EditPlanStartDateNavRoute` | `edit_plan_start_date` | `dialog` | — |
+| `InAppUpdateNavRoute` | `in_app_update` | `responsive` | — |
 | `LoginNavRoute` | `login` | `bottom_sheet` | — |
 | `LoginSyncNudgeNavRoute` | `login_sync_nudge` | `dialog` | — |
 | `LoginWarningNavRoute` | `login_warning` | `dialog` | `reason` |
@@ -94,6 +95,9 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `ReleaseNotesNavRoute` | `release_notes` | `screen` | — |
 | `SubscriptionDetailsNavRoute` | `subscription_details` | `dialog` | — |
 | `ThemeNavRoute` | `theme_selection` | `responsive` | — |
+| `UpdateDownloadedNavRoute` | `update_downloaded` | `dialog` | — |
+
+`InAppUpdateNavRoute` carries `version_name` and `source` args, but — like `LoginNavRoute` — they are not mapped onto `destination_view`; the richer funnel parameters live on the dedicated [update_prompt_shown](events/update_prompt_shown.md) event instead.
 
 `MaterialYouBottomSheetNavRoute` is named after an earlier bottom-sheet implementation but currently renders as a centered `Dialog` (`feature/material_you/.../MaterialYouDialog.kt`) — classified by actual rendering, not by route name.
 
@@ -227,6 +231,16 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [github_release_opened](events/github_release_opened.md) | P2 | Settings |
 | [contact_support_email_opened](events/contact_support_email_opened.md) | P1 | Settings |
 | [contact_support_email_copied](events/contact_support_email_copied.md) | P2 | Settings |
+
+### App updates
+
+| Event | Tier | Domain |
+|---|---|---|
+| [update_prompt_shown](events/update_prompt_shown.md) | P1 | Updates |
+| [update_accepted](events/update_accepted.md) | P1 | Updates |
+| [update_dismissed](events/update_dismissed.md) | P2 | Updates |
+| [update_download_failed](events/update_download_failed.md) | P2 | Updates |
+| [update_install_started](events/update_install_started.md) | P2 | Updates |
 
 ### Books browsing UI
 

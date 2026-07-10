@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.inappupdate.domain.usecase.impl
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSessionGuard
+import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -21,7 +22,10 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
 
         useCase()
 
-        assertEquals(InAppUpdateNavRoute(versionName = "2.0.0"), navigationEventBus.events.first())
+        assertEquals(
+            InAppUpdateNavRoute(versionName = "2.0.0", source = UpdatePromptSource.STARTUP),
+            navigationEventBus.events.first(),
+        )
     }
 
     @Test

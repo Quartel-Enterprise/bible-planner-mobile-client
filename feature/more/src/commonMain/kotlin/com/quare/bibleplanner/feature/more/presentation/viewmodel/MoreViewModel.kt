@@ -28,6 +28,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
+import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.feature.inappupdate.domain.usecase.CheckForUpdate
 import com.quare.bibleplanner.feature.more.domain.usecase.GetInstagramUrlUseCase
@@ -149,7 +150,12 @@ internal class MoreViewModel(
             isCheckingForUpdate.value = false
             val action = when (availability) {
                 is UpdateAvailability.Available ->
-                    MoreUiAction.GoToRoute(InAppUpdateNavRoute(availability.versionName))
+                    MoreUiAction.GoToRoute(
+                        InAppUpdateNavRoute(
+                            versionName = availability.versionName,
+                            source = UpdatePromptSource.MANUAL,
+                        ),
+                    )
 
                 UpdateAvailability.NotAvailable ->
                     MoreUiAction.ShowSnackbar(Res.string.up_to_date_message)

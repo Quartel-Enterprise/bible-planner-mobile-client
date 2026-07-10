@@ -81,6 +81,9 @@ object AnalyticsEventNames {
 
     const val UPDATE_PROMPT_SHOWN = "update_prompt_shown"
     const val UPDATE_ACCEPTED = "update_accepted"
+    const val UPDATE_DISMISSED = "update_dismissed"
+    const val UPDATE_DOWNLOAD_FAILED = "update_download_failed"
+    const val UPDATE_INSTALL_STARTED = "update_install_started"
 
     const val BOOKS_SEARCH_USED = "books_search_used"
     const val BOOKS_FILTER_TOGGLED = "books_filter_toggled"

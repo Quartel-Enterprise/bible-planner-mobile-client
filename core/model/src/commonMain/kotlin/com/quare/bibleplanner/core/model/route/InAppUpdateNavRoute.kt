@@ -5,4 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class InAppUpdateNavRoute(
     val versionName: String?,
+    val source: String,
 ) : NavRoute
