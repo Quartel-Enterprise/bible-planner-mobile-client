@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
+import com.quare.bibleplanner.feature.daystudy.domain.exception.LimitReachedException
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
@@ -154,6 +155,64 @@ internal class DayStudyGenerationCoordinatorTest {
         assertEquals(0, coordinator.generatingCount(excludingKey = null))
     }
 
+    @Test
+    fun `GIVEN a completing stream WHEN start THEN tracks day_study_generation_completed with the day params`() =
+        runTest {
+            // Given
+            val coordinator = coordinator(
+                FakeDayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
+            )
+
+            // When
+            coordinator.start(passages, dayRoute, LABEL)
+            advanceUntilIdle()
+
+            // Then
+            val (name, params) = trackedEvents.single()
+            assertEquals("day_study_generation_completed", name)
+            assertEquals(dayRoute.readingPlanType, params["plan_type"])
+            assertEquals(dayRoute.weekNumber, params["week_number"])
+            assertEquals(dayRoute.dayNumber, params["day_number"])
+            assertEquals(false, params["is_pro"])
+        }
+
+    @Test
+    fun `GIVEN a limit reached failure WHEN start THEN tracks day_study_generation_failed with limit_reached`() =
+        runTest {
+            // Given
+            val coordinator = coordinator(
+                FakeDayStudyRepository(events = emptyList(), error = LimitReachedException()),
+            )
+
+            // When
+            coordinator.start(passages, dayRoute, LABEL)
+            advanceUntilIdle()
+
+            // Then
+            val (name, params) = trackedEvents.single()
+            assertEquals("day_study_generation_failed", name)
+            assertEquals("limit_reached", params["reason"])
+        }
+
+    @Test
+    fun `GIVEN a generic failure WHEN start THEN tracks day_study_generation_failed with error reason`() = runTest {
+        // Given
+        val coordinator = coordinator(
+            FakeDayStudyRepository(events = emptyList(), error = IllegalStateException("boom")),
+        )
+
+        // When
+        coordinator.start(passages, dayRoute, LABEL)
+        advanceUntilIdle()
+
+        // Then
+        val (name, params) = trackedEvents.single()
+        assertEquals("day_study_generation_failed", name)
+        assertEquals("error", params["reason"])
+    }
+
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+
     private fun TestScope.coordinator(repository: FakeDayStudyRepository): DayStudyGenerationCoordinator =
         DayStudyGenerationCoordinator(
             applicationScope = ApplicationScope(this),
@@ -163,6 +222,8 @@ internal class DayStudyGenerationCoordinatorTest {
                 getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
                 languageCodeMapper = LanguageCodeMapper(),
             ),
+            observeIsProUser = { flowOf(false) },
+            trackEvent = { name, params -> trackedEvents += name to params },
         )
 
     private val passages = listOf(

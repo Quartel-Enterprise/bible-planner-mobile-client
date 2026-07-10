@@ -1,11 +1,9 @@
 package com.quare.bibleplanner.core.sync.data
 
-import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import com.quare.bibleplanner.core.sync.domain.usecase.ObserveSync
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
-import com.quare.bibleplanner.core.utils.suspendRunCatching
 import io.github.jan.supabase.realtime.Realtime
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -28,11 +26,10 @@ import kotlinx.coroutines.launch
 internal class SyncCoordinator(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val synchronizers: List<Synchronizer>,
+    private val snapshotPuller: SnapshotPuller,
     private val realtime: Realtime,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : ObserveSync {
-    private val logger = Logger.withTag(LOG_TAG)
-
     override suspend fun invoke() {
         var previousUserId: String? = null
         observeAuthenticatedUserId().collectLatest { userId ->
@@ -59,15 +56,6 @@ internal class SyncCoordinator(
     private suspend fun pullOnConnected() {
         realtime.status
             .filter { it == Realtime.Status.CONNECTED }
-            .collect {
-                synchronizers.forEach { synchronizer ->
-                    suspendRunCatching { synchronizer.pullSnapshot() }
-                        .onFailure { error -> logger.e(error) { "Failed to pull snapshot" } }
-                }
-            }
-    }
-
-    private companion object {
-        const val LOG_TAG = "Sync"
+            .collect { snapshotPuller.pullAll() }
     }
 }

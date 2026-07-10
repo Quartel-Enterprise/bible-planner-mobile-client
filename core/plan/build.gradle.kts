@@ -16,6 +16,7 @@ kotlin {
             // Core
             implementation(projects.core.books)
             implementation(projects.core.model)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.utils)
             implementation(projects.core.date)
             implementation(projects.core.remoteConfig)
@@ -56,6 +57,10 @@ kotlin {
             // DataStore (multiplatform)
             implementation(libs.dataStore)
             implementation(libs.dataStore.preferences)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }

@@ -15,6 +15,7 @@ kotlin {
             // Core
             implementation(projects.core.books)
             implementation(projects.core.model)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.loginNudge)
 

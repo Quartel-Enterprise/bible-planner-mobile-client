@@ -13,6 +13,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.language)
             implementation(projects.core.model)

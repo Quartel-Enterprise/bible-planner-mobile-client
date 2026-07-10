@@ -15,6 +15,9 @@ import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.feature.books.presentation.mapper.BookCategorizationMapper
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
@@ -27,6 +30,8 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.removeAccents
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -35,6 +40,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 class BooksViewModel(
     private val booksRepository: BooksRepository,
@@ -43,6 +50,7 @@ class BooksViewModel(
     private val bookGroupMapper: BookGroupMapper,
     private val bookCategorizationMapper: BookCategorizationMapper,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val trackEvent: TrackEvent,
     getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
@@ -82,6 +90,8 @@ class BooksViewModel(
     }
 
     private var activeFilterTypes: Set<BookFilterType> = emptySet()
+    private var searchTrackJob: Job? = null
+    private val searchTrackDebounceDelay: Duration = 1.seconds
     private var isFilterMenuVisible: Boolean = false
     private var isSortMenuVisible: Boolean = false
     private var sortOrder: BookSortOrder? = null
@@ -92,6 +102,7 @@ class BooksViewModel(
         when (event) {
             is BooksUiEvent.OnSearchQueryChange -> {
                 updateState(searchQuery = event.query)
+                trackSearchUsed(event.query)
                 viewModelScope.launch {
                     _uiAction.emit(BooksUiAction.ScrollToTop)
                 }
@@ -100,6 +111,10 @@ class BooksViewModel(
             is BooksUiEvent.OnTestamentSelect -> {
                 persistedTestamentValue = event.testament
                 updateState(selectedTestament = event.testament)
+                trackEvent(
+                    name = AnalyticsEventNames.TESTAMENT_SWITCHED,
+                    params = mapOf(AnalyticsParams.TESTAMENT to event.testament.toAnalyticsValue()),
+                )
                 viewModelScope.launch {
                     booksRepository.setSelectedTestament(event.testament.name)
                     _uiAction.emit(BooksUiAction.ScrollToTop)
@@ -117,8 +132,17 @@ class BooksViewModel(
             is BooksUiEvent.OnToggleFavorite -> {
                 val book = (uiState.value as? BooksUiState.Success)?.books?.find { it.id == event.bookId }
                 book?.let {
+                    val isFavorite = !it.isFavorite
+                    trackEvent(
+                        name = AnalyticsEventNames.BOOK_FAVORITE_TOGGLED,
+                        params = mapOf(
+                            AnalyticsParams.BOOK_ID to event.bookId.name.lowercase(),
+                            AnalyticsParams.IS_FAVORITE to isFavorite,
+                            AnalyticsParams.SOURCE to SOURCE_BOOKS_LIST,
+                        ),
+                    )
                     viewModelScope.launch {
-                        toggleBookFavorite(event.bookId, !it.isFavorite)
+                        toggleBookFavorite(event.bookId, isFavorite)
                         requestLoginNudgeIfNeeded()
                     }
                 }
@@ -138,6 +162,12 @@ class BooksViewModel(
                 sortOrder = if (sortOrder == event.sortOrder) null else event.sortOrder
                 isSortMenuVisible = false
                 updateState()
+                sortOrder?.let { newSortOrder ->
+                    trackEvent(
+                        name = AnalyticsEventNames.BOOKS_SORT_CHANGED,
+                        params = mapOf(AnalyticsParams.SORT_ORDER to newSortOrder.toAnalyticsValue()),
+                    )
+                }
                 viewModelScope.launch {
                     _uiAction.emit(BooksUiAction.ScrollToTop)
                 }
@@ -160,6 +190,10 @@ class BooksViewModel(
             is BooksUiEvent.OnLayoutFormatSelect -> {
                 layoutFormat = event.layoutFormat
                 updateState()
+                trackEvent(
+                    name = AnalyticsEventNames.BOOKS_LAYOUT_CHANGED,
+                    params = mapOf(AnalyticsParams.LAYOUT to event.layoutFormat.toAnalyticsValue()),
+                )
                 viewModelScope.launch {
                     booksRepository.setBookLayoutFormat(event.layoutFormat.name)
                     _uiAction.emit(BooksUiAction.ScrollToTop)
@@ -167,6 +201,10 @@ class BooksViewModel(
             }
 
             BooksUiEvent.OnWebAppLinkClick -> {
+                trackEvent(
+                    name = AnalyticsEventNames.WEB_APP_LINK_OPENED,
+                    params = emptyMap(),
+                )
                 viewModelScope.launch {
                     _uiAction.emit(BooksUiAction.OpenWebAppLink(getWebAppUrl()))
                 }
@@ -178,9 +216,49 @@ class BooksViewModel(
         activeFilterTypes = getActiveFilterTypes(filterType)
         isFilterMenuVisible = false
         updateState()
+        trackEvent(
+            name = AnalyticsEventNames.BOOKS_FILTER_TOGGLED,
+            params = mapOf(
+                AnalyticsParams.FILTER_TYPE to filterType.toAnalyticsValue(),
+                AnalyticsParams.IS_ACTIVE to activeFilterTypes.contains(filterType),
+            ),
+        )
         viewModelScope.launch {
             _uiAction.emit(BooksUiAction.ScrollToTop)
         }
+    }
+
+    private fun trackSearchUsed(query: String) {
+        searchTrackJob?.cancel()
+        if (query.isBlank()) return
+        searchTrackJob = viewModelScope.launch {
+            delay(searchTrackDebounceDelay)
+            trackEvent(
+                name = AnalyticsEventNames.BOOKS_SEARCH_USED,
+                params = mapOf(AnalyticsParams.QUERY_LENGTH to query.length),
+            )
+        }
+    }
+
+    private fun BookTestament.toAnalyticsValue(): String = when (this) {
+        BookTestament.OldTestament -> "old"
+        BookTestament.NewTestament -> "new"
+    }
+
+    private fun BookFilterType.toAnalyticsValue(): String = when (this) {
+        BookFilterType.OnlyRead -> "only_read"
+        BookFilterType.OnlyUnread -> "only_unread"
+        BookFilterType.Favorites -> "favorites"
+    }
+
+    private fun BookSortOrder.toAnalyticsValue(): String = when (this) {
+        BookSortOrder.AlphabeticalAscending -> "alphabetical_ascending"
+        BookSortOrder.AlphabeticalDescending -> "alphabetical_descending"
+    }
+
+    private fun BookLayoutFormat.toAnalyticsValue(): String = when (this) {
+        BookLayoutFormat.List -> "list"
+        BookLayoutFormat.Grid -> "grid"
     }
 
     private fun getActiveFilterTypes(filterType: BookFilterType): Set<BookFilterType> = when (filterType) {
@@ -332,5 +410,9 @@ class BooksViewModel(
                 layoutFormat = layoutFormat,
             )
         }
+    }
+
+    private companion object {
+        const val SOURCE_BOOKS_LIST = "books_list"
     }
 }

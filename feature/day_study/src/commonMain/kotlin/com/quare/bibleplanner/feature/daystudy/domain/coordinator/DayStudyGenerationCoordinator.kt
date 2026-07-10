@@ -2,6 +2,10 @@ package com.quare.bibleplanner.feature.daystudy.domain.coordinator
 
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.daystudy.domain.exception.LimitReachedException
@@ -12,6 +16,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -26,6 +31,8 @@ import kotlinx.coroutines.launch
 class DayStudyGenerationCoordinator(
     private val applicationScope: ApplicationScope,
     private val getDayStudy: GetDayStudyUseCase,
+    private val observeIsProUser: ObserveIsProUser,
+    private val trackEvent: TrackEvent,
 ) {
     private val _jobs: MutableStateFlow<List<DayStudyGenerationJob>> = MutableStateFlow(emptyList())
     val jobs: StateFlow<List<DayStudyGenerationJob>> = _jobs.asStateFlow()
@@ -76,15 +83,27 @@ class DayStudyGenerationCoordinator(
 
                         is DayStudyGenerationEventModel.Completed -> {
                             updateJob(key) { it.copy(status = DayStudyGenerationStatus.Done(event.study)) }
+                            trackGenerationEnd(
+                                name = AnalyticsEventNames.DAY_STUDY_GENERATION_COMPLETED,
+                                dayRoute = dayRoute,
+                            )
                         }
                     }
                 }
             }.onFailure { throwable ->
+                val isLimitReached = throwable is LimitReachedException
                 updateJob(key) {
                     it.copy(
-                        status = DayStudyGenerationStatus.Failed(isLimitReached = throwable is LimitReachedException),
+                        status = DayStudyGenerationStatus.Failed(isLimitReached = isLimitReached),
                     )
                 }
+                trackGenerationEnd(
+                    name = AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
+                    dayRoute = dayRoute,
+                    extraParams = mapOf(
+                        AnalyticsParams.REASON to if (isLimitReached) LIMIT_REACHED_REASON else ERROR_REASON,
+                    ),
+                )
             }
         }
         return key
@@ -133,7 +152,25 @@ class DayStudyGenerationCoordinator(
         _jobs.update { jobs -> jobs.map { job -> if (job.key == key) transform(job) else job } }
     }
 
+    private suspend fun trackGenerationEnd(
+        name: String,
+        dayRoute: DayNavRoute,
+        extraParams: Map<String, Any> = emptyMap(),
+    ) {
+        trackEvent(
+            name = name,
+            params = mapOf(
+                AnalyticsParams.PLAN_TYPE to dayRoute.readingPlanType,
+                AnalyticsParams.WEEK_NUMBER to dayRoute.weekNumber,
+                AnalyticsParams.DAY_NUMBER to dayRoute.dayNumber,
+                AnalyticsParams.IS_PRO to observeIsProUser().first(),
+            ) + extraParams,
+        )
+    }
+
     private companion object {
         const val KEY_SEPARATOR = "|"
+        const val LIMIT_REACHED_REASON = "limit_reached"
+        const val ERROR_REASON = "error"
     }
 }

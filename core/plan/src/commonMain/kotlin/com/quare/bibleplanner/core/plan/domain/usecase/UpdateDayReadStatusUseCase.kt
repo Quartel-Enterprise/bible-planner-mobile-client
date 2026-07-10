@@ -11,6 +11,7 @@ class UpdateDayReadStatusUseCase(
     private val updatePassageReadStatus: UpdatePassageReadStatusUseCase,
     private val getPlansByWeekUseCase: GetPlansByWeekUseCase,
     private val currentTimestampProvider: CurrentTimestampProvider,
+    private val trackReadingCompletionEvents: TrackReadingCompletionEventsUseCase,
 ) {
     suspend operator fun invoke(
         weekNumber: Int,
@@ -37,5 +38,14 @@ class UpdateDayReadStatusUseCase(
             null
         }
         dayRepository.updateDayReadStatus(weekNumber, dayNumber, readingPlanType, isRead, readTimestamp)
+
+        if (isRead) {
+            trackReadingCompletionEvents(
+                before = plansModel,
+                after = getPlansByWeekUseCase().first(),
+                readingPlanType = readingPlanType,
+                weekNumber = weekNumber,
+            )
+        }
     }
 }

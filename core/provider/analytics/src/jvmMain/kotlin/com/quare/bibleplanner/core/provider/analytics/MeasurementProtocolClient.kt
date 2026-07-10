@@ -24,7 +24,7 @@ internal class MeasurementProtocolClient(
 
     suspend fun send(
         eventName: String,
-        params: Map<String, String>,
+        params: Map<String, Any>,
         userProperties: Map<String, String?>,
     ) {
         if (measurementId.isBlank() || apiSecret.isBlank()) return
@@ -49,7 +49,7 @@ internal class MeasurementProtocolClient(
 
     private fun buildPayload(
         eventName: String,
-        params: Map<String, String>,
+        params: Map<String, Any>,
         userProperties: Map<String, String?>,
     ): JsonObject = buildJsonObject {
         put(CLIENT_ID_FIELD, clientIdProvider.getClientId())
@@ -63,7 +63,13 @@ internal class MeasurementProtocolClient(
             addJsonObject {
                 put(EVENT_NAME_FIELD, eventName)
                 putJsonObject(EVENT_PARAMS_FIELD) {
-                    params.forEach { (key, value) -> put(key, value) }
+                    params.forEach { (key, value) ->
+                        when (value) {
+                            is Long -> put(key, value)
+                            is Double -> put(key, value)
+                            else -> put(key, value.toString())
+                        }
+                    }
                 }
             }
         }

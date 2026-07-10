@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.deletenotes.presentation.model.DeleteNotesUiEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +20,7 @@ import kotlinx.coroutines.launch
 internal class DeleteNotesViewModel(
     route: DeleteNotesRoute,
     private val deleteDayNotes: DeleteDayNotesUseCase,
+    private val trackEvent: TrackEvent,
 ) : ViewModel() {
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
     private val weekNumber = route.week
@@ -33,6 +37,14 @@ internal class DeleteNotesViewModel(
                         weekNumber = weekNumber,
                         dayNumber = dayNumber,
                         readingPlanType = readingPlanType,
+                    )
+                    trackEvent(
+                        name = AnalyticsEventNames.NOTE_DELETED,
+                        params = mapOf(
+                            AnalyticsParams.PLAN_TYPE to readingPlanType.name.lowercase(),
+                            AnalyticsParams.WEEK_NUMBER to weekNumber,
+                            AnalyticsParams.DAY_NUMBER to dayNumber,
+                        ),
                     )
                     _backUiAction.emit(Unit)
                 }

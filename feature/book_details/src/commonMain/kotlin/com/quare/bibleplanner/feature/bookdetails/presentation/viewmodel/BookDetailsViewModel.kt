@@ -11,6 +11,9 @@ import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIf
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiAction
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
@@ -31,6 +34,7 @@ class BookDetailsViewModel(
     private val bookGroupMapper: BookGroupMapper,
     private val markBookRead: UpdateBookReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val trackEvent: TrackEvent,
     getBookByIdFlow: GetBookByIdFlowUseCase,
     val platform: Platform,
 ) : ViewModel() {
@@ -84,10 +88,19 @@ class BookDetailsViewModel(
 
             BookDetailsUiEvent.OnToggleFavorite -> {
                 successState?.let {
+                    val isFavorite = !it.isFavorite
+                    trackEvent(
+                        name = AnalyticsEventNames.BOOK_FAVORITE_TOGGLED,
+                        params = mapOf(
+                            AnalyticsParams.BOOK_ID to bookId.name.lowercase(),
+                            AnalyticsParams.IS_FAVORITE to isFavorite,
+                            AnalyticsParams.SOURCE to SOURCE_BOOK_DETAILS,
+                        ),
+                    )
                     viewModelScope.launch {
                         booksRepository.updateBookFavoriteStatus(
                             bookId = bookId,
-                            isFavorite = !it.isFavorite,
+                            isFavorite = isFavorite,
                         )
                         requestLoginNudgeIfNeeded()
                     }
@@ -95,17 +108,38 @@ class BookDetailsViewModel(
             }
 
             BookDetailsUiEvent.OnToggleSynopsisExpanded -> {
-                _uiState.update {
-                    (it as? BookDetailsUiState.Success)?.copy(
-                        isSynopsisExpanded = !it.isSynopsisExpanded,
-                    ) ?: it
+                successState?.let {
+                    val isExpanded = !it.isSynopsisExpanded
+                    _uiState.update { currentState ->
+                        (currentState as? BookDetailsUiState.Success)?.copy(
+                            isSynopsisExpanded = isExpanded,
+                        ) ?: currentState
+                    }
+                    trackEvent(
+                        name = AnalyticsEventNames.SYNOPSIS_TOGGLED,
+                        params = mapOf(
+                            AnalyticsParams.BOOK_ID to bookId.name.lowercase(),
+                            AnalyticsParams.IS_EXPANDED to isExpanded,
+                        ),
+                    )
                 }
             }
 
             BookDetailsUiEvent.OnToggleAllChapters -> {
                 successState?.let {
+                    val isRead = !it.areAllChaptersRead
+                    trackEvent(
+                        name = AnalyticsEventNames.BOOK_READ_TOGGLED,
+                        params = mapOf(
+                            AnalyticsParams.BOOK_ID to bookId.name.lowercase(),
+                            AnalyticsParams.IS_READ to isRead,
+                        ),
+                    )
                     viewModelScope.launch {
-                        markBookRead(bookId = bookId, isRead = !it.areAllChaptersRead)
+                        markBookRead(
+                            bookId = bookId,
+                            isRead = isRead,
+                        )
                         requestLoginNudgeIfNeeded()
                     }
                 }
@@ -131,5 +165,9 @@ class BookDetailsViewModel(
                 }
             }
         }
+    }
+
+    private companion object {
+        const val SOURCE_BOOK_DETAILS = "book_details"
     }
 }

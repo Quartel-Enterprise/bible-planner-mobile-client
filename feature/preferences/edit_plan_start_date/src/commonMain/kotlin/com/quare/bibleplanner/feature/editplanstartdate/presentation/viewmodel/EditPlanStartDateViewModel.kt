@@ -10,6 +10,8 @@ import com.quare.bibleplanner.core.date.toTimestampUTC
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
@@ -30,6 +32,7 @@ internal class EditPlanStartDateViewModel(
     private val currentTimestampProvider: CurrentTimestampProvider,
     private val localDateTimeProvider: LocalDateTimeProvider,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val trackEvent: TrackEvent,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<EditPlanStartDateUiState> =
         MutableStateFlow(EditPlanStartDateUiState.Loading)
@@ -80,6 +83,10 @@ internal class EditPlanStartDateViewModel(
                 strategy = SetPlanStartTimeUseCase.Strategy.SpecificTime(
                     timestamp = getFinalTimestampAfterEdition(convertUtcDateToLocalDate(utcDateMillis)),
                 ),
+            )
+            trackEvent(
+                name = AnalyticsEventNames.PLAN_START_DATE_CHANGED,
+                params = emptyMap(),
             )
             dismissDialog()
             requestLoginNudgeIfNeeded()

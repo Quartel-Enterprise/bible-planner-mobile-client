@@ -19,6 +19,7 @@ kotlin {
             implementation(projects.feature.dayStudy)
             implementation(projects.core.utils)
             implementation(projects.core.date)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.billing)

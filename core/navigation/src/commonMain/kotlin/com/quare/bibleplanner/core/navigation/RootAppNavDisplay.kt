@@ -9,6 +9,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
 import com.quare.bibleplanner.feature.applanguage.presentation.appLanguage
 import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelectionRoot
@@ -71,6 +73,11 @@ fun RootAppNavDisplay() {
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarController = koinInject<AppSnackbarController>()
+    val trackDestination = koinInject<TrackDestination>()
+    val currentNavKey = backStack.lastOrNull()
+    LaunchedEffect(currentNavKey) {
+        currentNavKey?.let(trackDestination::invoke)
+    }
     EventBusNavigationListener(onNavigate)
     ActionCollector(appSnackbarController.messages) { message ->
         message.run {

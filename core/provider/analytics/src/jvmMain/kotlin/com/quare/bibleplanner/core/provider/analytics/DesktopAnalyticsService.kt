@@ -19,11 +19,31 @@ internal class DesktopAnalyticsService(
         value: String?,
     ) {
         userProperties[name] = value
+        send(
+            eventName = SESSION_EVENT,
+            params = emptyMap(),
+        )
+    }
+
+    override fun logEvent(
+        name: String,
+        params: Map<String, Any>,
+    ) {
+        send(
+            eventName = name,
+            params = params,
+        )
+    }
+
+    private fun send(
+        eventName: String,
+        params: Map<String, Any>,
+    ) {
         val snapshot = userProperties.toMap()
         coroutineScope.launch {
             measurementProtocolClient.send(
-                eventName = SESSION_EVENT,
-                params = mapOf(
+                eventName = eventName,
+                params = params + mapOf(
                     SESSION_ID_PARAM to sessionId,
                     ENGAGEMENT_TIME_PARAM to ENGAGEMENT_TIME_VALUE,
                 ),

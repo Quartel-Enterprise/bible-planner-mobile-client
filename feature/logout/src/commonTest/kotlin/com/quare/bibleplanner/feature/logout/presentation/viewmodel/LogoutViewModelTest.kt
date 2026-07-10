@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.logout.presentation.viewmodel
 
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutFlushFailedException
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutPhase
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutProgress
@@ -32,6 +34,7 @@ internal class LogoutViewModelTest {
     private lateinit var actions: List<LogoutUiAction>
     private lateinit var states: List<LogoutUiState>
     private var requestedShouldFlush: Boolean? = null
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
 
     @BeforeTest
     fun setUp() {
@@ -149,10 +152,72 @@ internal class LogoutViewModelTest {
         assertEquals(listOf(LogoutUiAction.NavigateBack), actions)
     }
 
+    @Test
+    fun `GIVEN a logout WHEN confirming THEN tracks logout_confirmed as not forced`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(result = Result.success(Unit))
+
+        // When
+        viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
+
+        // Then
+        assertEquals(
+            listOf(AnalyticsEventNames.LOGOUT_CONFIRMED to mapOf<String, Any>(AnalyticsParams.IS_FORCED to false)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a logout WHEN forcing THEN tracks logout_confirmed as forced`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(result = Result.success(Unit))
+
+        // When
+        viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnForceLogout)
+
+        // Then
+        assertEquals(
+            listOf(AnalyticsEventNames.LOGOUT_CONFIRMED to mapOf<String, Any>(AnalyticsParams.IS_FORCED to true)),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN a flush failure WHEN confirming THEN tracks logout_failed with pending_changes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(result = Result.failure(LogoutFlushFailedException(IllegalStateException())))
+
+            // When
+            viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
+
+            // Then
+            assertEquals(
+                AnalyticsEventNames.LOGOUT_FAILED to mapOf<String, Any>(AnalyticsParams.REASON to "pending_changes"),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN a non-flush failure WHEN confirming THEN tracks logout_failed with unknown`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(result = Result.failure(IllegalStateException("boom")))
+
+        // When
+        viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
+
+        // Then
+        assertEquals(
+            AnalyticsEventNames.LOGOUT_FAILED to mapOf<String, Any>(AnalyticsParams.REASON to "unknown"),
+            trackedEvents.last(),
+        )
+    }
+
     private fun TestScope.prepareScenario(result: Result<Unit>) {
         viewModel = LogoutViewModel(
             logout = { shouldFlush -> fakeLogout(shouldFlush, result) },
             logoutErrorMapper = LogoutErrorMapper(),
+            trackEvent = { name, params -> trackedEvents += name to params },
         )
         actions = mutableListOf<LogoutUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }

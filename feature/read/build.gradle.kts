@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.model)
             implementation(projects.core.plan)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
             implementation(projects.core.loginNudge)

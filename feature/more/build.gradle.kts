@@ -17,6 +17,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.connectivity)
@@ -72,6 +73,9 @@ kotlin {
 
             // Logging
             implementation(libs.kermit)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }
