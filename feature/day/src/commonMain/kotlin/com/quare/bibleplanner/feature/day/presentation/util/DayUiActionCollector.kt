@@ -19,25 +19,11 @@ internal fun DayUiActionCollector(
     val focusManager = LocalFocusManager.current
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            is DayUiAction.ShowSnackBar -> {
-                snackbarHostState.showSnackbar(getString(action.message))
-            }
-
-            is DayUiAction.ShowSnackBarText -> {
-                snackbarHostState.showSnackbar(action.message)
-            }
-
-            is DayUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
-
-            is DayUiAction.NavigateToRoute -> {
-                onNavigate(action.route)
-            }
-
-            DayUiAction.ClearFocus -> {
-                focusManager.clearFocus()
-            }
+            is DayUiAction.ShowSnackBar -> snackbarHostState.showSnackbar(getString(action.message))
+            is DayUiAction.ShowSnackBarText -> snackbarHostState.showSnackbar(action.message)
+            is DayUiAction.NavigateBack -> onNavigateBack()
+            is DayUiAction.NavigateToRoute -> onNavigate(action.route)
+            DayUiAction.ClearFocus -> focusManager.clearFocus()
         }
     }
 }

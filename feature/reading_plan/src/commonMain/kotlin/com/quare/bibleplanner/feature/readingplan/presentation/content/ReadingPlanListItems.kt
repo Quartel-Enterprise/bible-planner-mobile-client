@@ -4,6 +4,8 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 
+private const val COLLAPSED_WEEK_LIMIT = 2
+
 internal sealed interface ReadingPlanListItem {
     data class SectionHeader(
         val group: WeekGroup,
@@ -75,5 +77,3 @@ private fun MutableList<ReadingPlanListItem>.addGroupSection(
         add(ReadingPlanListItem.ShowMore(group = group, totalWeeks = weeks.size))
     }
 }
-
-private const val COLLAPSED_WEEK_LIMIT = 2

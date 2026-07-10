@@ -63,9 +63,7 @@ fun BookDetailsScreen(
                 .fillMaxSize(),
         ) {
             when (state) {
-                BookDetailsUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+                BookDetailsUiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
 
                 is BookDetailsUiState.Success -> {
                     ResponsiveColumn(

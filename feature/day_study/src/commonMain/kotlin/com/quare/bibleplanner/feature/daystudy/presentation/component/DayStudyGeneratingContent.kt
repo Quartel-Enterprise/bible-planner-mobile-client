@@ -50,6 +50,18 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
+private val subtitleMaxWidth = 280.dp
+private val progressBarWidth = 220.dp
+private val progressBarHeight = 4.dp
+private val phaseListMaxWidth = 300.dp
+private val iconBoxSize = 64.dp
+private val iconSize = 34.dp
+private val phaseIndicatorSize = 24.dp
+private const val TRACK_ALPHA = 0.12f
+private const val PULSE_MAX_SCALE = 1.09f
+private const val PULSE_MIN_ALPHA = 0.82f
+private const val PULSE_HALF_CYCLE_MILLIS = 950
+
 @Composable
 internal fun DayStudyGeneratingContent(
     generation: DayStudyGenerationUiModel,
@@ -69,7 +81,7 @@ internal fun DayStudyGeneratingContent(
         VerticalSpacer(6)
         Text(
             text = stringResource(Res.string.ai_study_generating_subtitle),
-            modifier = Modifier.widthIn(max = SubtitleMaxWidth),
+            modifier = Modifier.widthIn(max = subtitleMaxWidth),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -77,8 +89,8 @@ internal fun DayStudyGeneratingContent(
         VerticalSpacer(18)
         LinearProgressIndicator(
             modifier = Modifier
-                .width(ProgressBarWidth)
-                .height(ProgressBarHeight),
+                .width(progressBarWidth)
+                .height(progressBarHeight),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.primary.copy(alpha = TRACK_ALPHA),
             strokeCap = StrokeCap.Round,
@@ -86,7 +98,7 @@ internal fun DayStudyGeneratingContent(
         VerticalSpacer(26)
         Column(
             modifier = Modifier
-                .widthIn(max = PhaseListMaxWidth)
+                .widthIn(max = phaseListMaxWidth)
                 .fillMaxWidth(),
         ) {
             DayStudyGenerationPhase.entries.forEach { phase ->
@@ -123,7 +135,7 @@ private fun PulsingIcon() {
     )
     Box(
         modifier = Modifier
-            .size(IconBoxSize)
+            .size(iconBoxSize)
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(20.dp),
@@ -134,7 +146,7 @@ private fun PulsingIcon() {
             imageVector = Icons.Rounded.AutoAwesome,
             contentDescription = null,
             modifier = Modifier
-                .size(IconSize)
+                .size(iconSize)
                 .graphicsLayer {
                     scaleX = scale
                     scaleY = scale
@@ -190,7 +202,7 @@ private fun PhaseIndicator(
     }
     Box(
         modifier = Modifier
-            .size(PhaseIndicatorSize)
+            .size(phaseIndicatorSize)
             .background(
                 color = if (isDone) MaterialTheme.colorScheme.primary else Color.Transparent,
                 shape = CircleShape,
@@ -225,15 +237,3 @@ internal val DayStudyGenerationPhase.titleRes: StringResource
         DayStudyGenerationPhase.CONTEXT -> Res.string.ai_study_phase_context
         DayStudyGenerationPhase.QUESTIONS -> Res.string.ai_study_phase_questions
     }
-
-private const val TRACK_ALPHA = 0.12f
-private const val PULSE_MAX_SCALE = 1.09f
-private const val PULSE_MIN_ALPHA = 0.82f
-private const val PULSE_HALF_CYCLE_MILLIS = 950
-private val SubtitleMaxWidth = 280.dp
-private val ProgressBarWidth = 220.dp
-private val ProgressBarHeight = 4.dp
-private val PhaseListMaxWidth = 300.dp
-private val IconBoxSize = 64.dp
-private val IconSize = 34.dp
-private val PhaseIndicatorSize = 24.dp

@@ -159,19 +159,13 @@ class GetPlansByWeekUseCase(
 
         return when {
             // If verse range is specified, count those specific verses
-            startVerse != null && endVerse != null -> {
-                endVerse - startVerse + 1
-            }
+            startVerse != null && endVerse != null -> endVerse - startVerse + 1
 
             // If only start verse is specified, count from that verse to end of chapter
-            startVerse != null -> {
-                chapter.verses.count { it.number >= startVerse }
-            }
+            startVerse != null -> chapter.verses.count { it.number >= startVerse }
 
             // If no verse range specified, count all verses in the chapter
-            else -> {
-                chapter.verses.size
-            }
+            else -> chapter.verses.size
         }
     }
 
@@ -210,9 +204,8 @@ class GetPlansByWeekUseCase(
 
         return when {
             // If verse range is specified, count read verses in that range
-            startVerse != null && endVerse != null -> {
+            startVerse != null && endVerse != null ->
                 (startVerse..endVerse).count { verseNumber -> chapter.isVerseRead(verseNumber) }
-            }
 
             // If only start verse is specified, count read verses from that verse to end of chapter
             startVerse != null -> {
@@ -222,9 +215,7 @@ class GetPlansByWeekUseCase(
             }
 
             // If no verse range specified, count all read verses in the chapter
-            else -> {
-                chapter.readVersesCount
-            }
+            else -> chapter.readVersesCount
         }
     }
 }

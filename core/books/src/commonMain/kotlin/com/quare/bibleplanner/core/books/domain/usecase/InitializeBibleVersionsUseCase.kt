@@ -1,5 +1,5 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
-interface InitializeBibleVersionsUseCase {
+fun interface InitializeBibleVersionsUseCase {
     suspend operator fun invoke()
 }

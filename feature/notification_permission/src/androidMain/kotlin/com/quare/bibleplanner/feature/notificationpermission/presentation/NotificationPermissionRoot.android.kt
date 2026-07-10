@@ -86,13 +86,9 @@ private fun NotificationPermissionUiActionCollector(
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
-            NotificationPermissionUiAction.RequestSystemPermission -> {
-                permissionLauncher()
-            }
+            NotificationPermissionUiAction.RequestSystemPermission -> permissionLauncher()
 
-            NotificationPermissionUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
+            NotificationPermissionUiAction.NavigateBack -> onNavigateBack()
 
             NotificationPermissionUiAction.OpenNotificationSettings -> {
                 val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {

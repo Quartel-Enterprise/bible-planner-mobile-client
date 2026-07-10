@@ -15,9 +15,7 @@ internal fun ReadUiActionCollector(
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
-            ReadUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
+            ReadUiAction.NavigateBack -> onNavigateBack()
 
             is ReadUiAction.NavigateToRoute -> {
                 if (uiAction.replace) {

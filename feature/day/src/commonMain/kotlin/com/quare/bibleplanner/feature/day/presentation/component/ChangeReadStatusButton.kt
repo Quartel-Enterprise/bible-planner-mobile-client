@@ -31,7 +31,7 @@ import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
 
 private const val ANIMATION_TIME_MILLIS = 300
-private val ButtonMinHeight = 44.dp
+private val buttonMinHeight = 44.dp
 
 @Composable
 internal fun ChangeReadStatusButton(
@@ -41,7 +41,7 @@ internal fun ChangeReadStatusButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = buttonModifier.heightIn(min = ButtonMinHeight),
+        modifier = buttonModifier.heightIn(min = buttonMinHeight),
         shape = RoundedCornerShape(percent = 50),
     ) {
         AnimatedContent(

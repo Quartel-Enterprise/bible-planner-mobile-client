@@ -76,9 +76,7 @@ internal fun MoreMenuItem(
                 }
             }
 
-            else -> {
-                null
-            }
+            else -> null
         },
         leadingContent = {
             MoreItemIcon(

@@ -52,6 +52,8 @@ import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
+private val pillShape = RoundedCornerShape(percent = 50)
+
 @Composable
 internal fun ContactSupportDialogContent(
     state: ContactSupportUiState,
@@ -150,7 +152,7 @@ internal fun ContactSupportDialogContent(
         ) {
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                shape = PillShape,
+                shape = pillShape,
                 onClick = { onEvent(ContactSupportUiEvent.OnSendEmailClick) },
             ) {
                 Icon(imageVector = Icons.Default.Email, contentDescription = null)
@@ -159,7 +161,7 @@ internal fun ContactSupportDialogContent(
             }
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                shape = PillShape,
+                shape = pillShape,
                 onClick = { onEvent(ContactSupportUiEvent.OnCopyEmailClick) },
             ) {
                 Text(text = stringResource(Res.string.copy_email_address_button))
@@ -247,13 +249,8 @@ private fun DiagnosticsRow(
 
 @Composable
 private fun AccountStatusModel.toDisplayText(): String = when (this) {
-    is AccountStatusModel.LoggedIn -> {
-        user.email
-    }
+    is AccountStatusModel.LoggedIn -> user.email
 
-    AccountStatusModel.LoggedOut, AccountStatusModel.Loading, AccountStatusModel.Error -> {
+    AccountStatusModel.LoggedOut, AccountStatusModel.Loading, AccountStatusModel.Error ->
         stringResource(Res.string.diagnostics_account_not_connected)
-    }
 }
-
-private val PillShape = RoundedCornerShape(percent = 50)

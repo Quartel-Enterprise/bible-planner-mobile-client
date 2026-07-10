@@ -25,6 +25,11 @@ import bibleplanner.ui.component.generated.resources.show_less
 import bibleplanner.ui.component.generated.resources.show_more
 import org.jetbrains.compose.resources.stringResource
 
+private const val DEFAULT_COLLAPSED_MAX_LINES = 3
+private const val ELLIPSIS = "… "
+private const val TOGGLE_SEPARATOR = "  "
+private const val TOGGLE_TAG = "expandable_text_toggle"
+
 @Composable
 fun ExpandableText(
     text: String,
@@ -86,9 +91,7 @@ fun ExpandableText(
                 withLink(toggleLink) { append(showMore) }
             }
 
-            else -> {
-                append(text)
-            }
+            else -> append(text)
         }
     }
     SelectionContainer(modifier = modifier) {
@@ -111,8 +114,3 @@ fun ExpandableText(
         )
     }
 }
-
-private const val DEFAULT_COLLAPSED_MAX_LINES = 3
-private const val ELLIPSIS = "… "
-private const val TOGGLE_SEPARATOR = "  "
-private const val TOGGLE_TAG = "expandable_text_toggle"

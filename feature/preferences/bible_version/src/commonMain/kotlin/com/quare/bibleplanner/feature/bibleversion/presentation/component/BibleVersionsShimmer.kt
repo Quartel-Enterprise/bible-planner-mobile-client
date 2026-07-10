@@ -15,6 +15,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 
+private const val SHIMMER_GROUP_COUNT = 2
+private const val SHIMMER_ITEMS_PER_GROUP = 1
+
 internal fun LazyListScope.bibleVersionsShimmer() {
     repeat(SHIMMER_GROUP_COUNT) {
         item {
@@ -66,6 +69,3 @@ private fun BibleVersionItemShimmer(modifier: Modifier = Modifier) {
         },
     )
 }
-
-private const val SHIMMER_GROUP_COUNT = 2
-private const val SHIMMER_ITEMS_PER_GROUP = 1

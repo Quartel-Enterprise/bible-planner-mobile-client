@@ -46,17 +46,11 @@ fun LocalDate.toDateRepresentation(): DateRepresentation {
     val yesterday = today.minus(1, DateTimeUnit.DAY)
 
     return when {
-        this == tomorrow -> {
-            DateRepresentation.Tomorrow
-        }
+        this == tomorrow -> DateRepresentation.Tomorrow
 
-        this == today -> {
-            DateRepresentation.Today
-        }
+        this == today -> DateRepresentation.Today
 
-        this == yesterday -> {
-            DateRepresentation.Yesterday
-        }
+        this == yesterday -> DateRepresentation.Yesterday
 
         this < yesterday -> {
             val period = this.periodUntil(today)
@@ -73,8 +67,6 @@ fun LocalDate.toDateRepresentation(): DateRepresentation {
             }
         }
 
-        else -> {
-            DateRepresentation.Custom(this)
-        }
+        else -> DateRepresentation.Custom(this)
     }
 }

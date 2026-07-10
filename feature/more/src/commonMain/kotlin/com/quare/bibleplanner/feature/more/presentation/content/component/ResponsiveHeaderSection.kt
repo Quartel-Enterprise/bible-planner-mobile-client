@@ -56,9 +56,7 @@ internal fun ResponsiveContentScope.headerSection(
         ) {
             if (state.isProCardVisible.valueOrNull() == true) {
                 when (val subscriptionStatus = state.subscriptionStatus) {
-                    Loadable.Loading -> {
-                        ProCardShimmer(modifier = Modifier.weight(1f))
-                    }
+                    Loadable.Loading -> ProCardShimmer(modifier = Modifier.weight(1f))
 
                     is Loadable.Loaded -> {
                         when (subscriptionStatus.value) {

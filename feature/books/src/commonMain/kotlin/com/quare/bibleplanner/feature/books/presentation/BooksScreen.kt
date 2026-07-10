@@ -49,9 +49,7 @@ fun BooksScreen(
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             when (state) {
-                is BooksUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+                is BooksUiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
 
                 is BooksUiState.Success -> {
                     val isGrid = state.layoutFormat == BookLayoutFormat.Grid

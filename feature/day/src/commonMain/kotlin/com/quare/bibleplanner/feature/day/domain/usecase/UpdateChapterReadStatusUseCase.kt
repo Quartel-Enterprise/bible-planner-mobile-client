@@ -53,9 +53,7 @@ class UpdateChapterReadStatusUseCase(
                 )
             }
 
-            is UpdateReadStatusOfPassageStrategy.EntireBook -> {
-                passage
-            }
+            is UpdateReadStatusOfPassageStrategy.EntireBook -> passage
         }
 
         // Update the specific chapter

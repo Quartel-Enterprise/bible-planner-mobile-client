@@ -10,6 +10,7 @@ coreKtx = "1.19.0"
 kotlin = "2.4.0"
 kotlinx-coroutines = "1.11.0"
 ktlint = "14.2.0"
+ktlintCore = "1.8.0"
 kotlinx-datetime = "0.8.0"
 kotlinSerializationJson = "1.11.0"
 navigation3Multiplatform = "1.1.1"
@@ -138,6 +139,10 @@ compose-shimmer = { group = "com.valentinilk.shimmer", name = "compose-shimmer",
 
 # WorkManager
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workManagerVersion" }
+
+# Ktlint custom rule set
+ktlint-rule-engine-core = { module = "com.pinterest.ktlint:ktlint-rule-engine-core", version.ref = "ktlintCore" }
+ktlint-cli-ruleset-core = { module = "com.pinterest.ktlint:ktlint-cli-ruleset-core", version.ref = "ktlintCore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -121,21 +121,15 @@ private fun calculateIsScrolled(
     newTestamentListState: LazyGridState,
 ): Boolean {
     val activeState = when {
-        state !is BooksUiState.Success -> {
-            searchGridState
-        }
+        state !is BooksUiState.Success -> searchGridState
 
-        !state.shouldShowTestamentToggle -> {
+        !state.shouldShowTestamentToggle ->
             if (state.layoutFormat == BookLayoutFormat.Grid) searchGridState else searchListState
-        }
 
-        state.selectedTestament == BookTestament.OldTestament -> {
+        state.selectedTestament == BookTestament.OldTestament ->
             if (state.layoutFormat == BookLayoutFormat.Grid) oldTestamentGridState else oldTestamentListState
-        }
 
-        else -> {
-            if (state.layoutFormat == BookLayoutFormat.Grid) newTestamentGridState else newTestamentListState
-        }
+        else -> if (state.layoutFormat == BookLayoutFormat.Grid) newTestamentGridState else newTestamentListState
     }
     return activeState.firstVisibleItemIndex > 0 || activeState.firstVisibleItemScrollOffset > 0
 }

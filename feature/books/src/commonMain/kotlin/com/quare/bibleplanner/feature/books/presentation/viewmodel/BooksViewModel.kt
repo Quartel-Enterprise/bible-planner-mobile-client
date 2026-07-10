@@ -121,13 +121,9 @@ class BooksViewModel(
                 }
             }
 
-            is BooksUiEvent.OnBookClick -> {
-                onBookClick(event.book)
-            }
+            is BooksUiEvent.OnBookClick -> onBookClick(event.book)
 
-            is BooksUiEvent.OnToggleFilter -> {
-                onToggleFilter(event.filterType)
-            }
+            is BooksUiEvent.OnToggleFilter -> onToggleFilter(event.filterType)
 
             is BooksUiEvent.OnToggleFavorite -> {
                 val book = (uiState.value as? BooksUiState.Success)?.books?.find { it.id == event.bookId }
@@ -183,9 +179,7 @@ class BooksViewModel(
                 updateState()
             }
 
-            is BooksUiEvent.OnClearSearch -> {
-                updateState(searchQuery = "")
-            }
+            is BooksUiEvent.OnClearSearch -> updateState(searchQuery = "")
 
             is BooksUiEvent.OnLayoutFormatSelect -> {
                 layoutFormat = event.layoutFormat

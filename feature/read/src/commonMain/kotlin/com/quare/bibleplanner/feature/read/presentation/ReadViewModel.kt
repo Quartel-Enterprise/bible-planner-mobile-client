@@ -52,13 +52,9 @@ class ReadViewModel(
 
     fun onEvent(event: ReadUiEvent) {
         when (event) {
-            ReadUiEvent.OnArrowBackClick -> {
-                navigateBack()
-            }
+            ReadUiEvent.OnArrowBackClick -> navigateBack()
 
-            ReadUiEvent.OnRetryClick -> {
-                loadChapterContent()
-            }
+            ReadUiEvent.OnRetryClick -> loadChapterContent()
 
             is ReadUiEvent.ToggleReadStatus -> {
                 viewModelScope.launch {

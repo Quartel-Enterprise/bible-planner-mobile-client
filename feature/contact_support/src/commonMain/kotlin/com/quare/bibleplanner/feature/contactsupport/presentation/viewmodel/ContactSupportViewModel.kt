@@ -41,13 +41,9 @@ internal class ContactSupportViewModel(
 
     fun onEvent(event: ContactSupportUiEvent) {
         when (event) {
-            ContactSupportUiEvent.OnDismiss -> {
-                emitAction(ContactSupportUiAction.NavigateBack)
-            }
+            ContactSupportUiEvent.OnDismiss -> emitAction(ContactSupportUiAction.NavigateBack)
 
-            ContactSupportUiEvent.OnSendEmailClick -> {
-                sendSupportEmailClick()
-            }
+            ContactSupportUiEvent.OnSendEmailClick -> sendSupportEmailClick()
 
             ContactSupportUiEvent.OnCopyEmailClick -> {
                 trackEvent(

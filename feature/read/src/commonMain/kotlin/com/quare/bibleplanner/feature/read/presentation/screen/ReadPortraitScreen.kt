@@ -58,9 +58,7 @@ fun ReadPortraitScreen(
     ) { paddingValues ->
         val commonModifier = Modifier.fillMaxSize().padding(paddingValues)
         when (state) {
-            is ReadUiState.Loading -> {
-                ReadLoadingContent(commonModifier)
-            }
+            is ReadUiState.Loading -> ReadLoadingContent(commonModifier)
 
             is ReadUiState.Error -> {
                 ReadErrorContent(

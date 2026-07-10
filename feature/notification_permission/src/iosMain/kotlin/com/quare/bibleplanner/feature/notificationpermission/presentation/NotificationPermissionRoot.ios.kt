@@ -38,17 +38,9 @@ private fun NotificationPermissionUiActionCollector(
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
-            NotificationPermissionUiAction.RequestSystemPermission -> {
-                onNavigateBack()
-            }
-
-            NotificationPermissionUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
-
-            NotificationPermissionUiAction.OpenNotificationSettings -> {
-                onNavigateBack()
-            }
+            NotificationPermissionUiAction.RequestSystemPermission -> onNavigateBack()
+            NotificationPermissionUiAction.NavigateBack -> onNavigateBack()
+            NotificationPermissionUiAction.OpenNotificationSettings -> onNavigateBack()
         }
     }
 }

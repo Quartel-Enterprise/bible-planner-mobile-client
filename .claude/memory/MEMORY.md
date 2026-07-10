@@ -26,3 +26,4 @@
 - [One data class per file](feedback_one_data_class_per_file.md) — every data class/enum gets its own .kt file; never group several in one file.
 - [No JSON blobs in Room](feedback_no_json_blobs_in_room.md) — model normalized entities (parent + child tables, FK cascade, position column, @Relation POJO) instead of persisting JSON strings.
 - [Navigation 3 migration](project_navigation3_migration.md) — app fully on Nav3 (navigation3-ui 1.1.x stable, EntryProviderScope not EntryProviderBuilder, polymorphic NavKey registration required on iOS/web, browser history pending CMP-8924).
+- [Ktlint custom enforcement preference](feedback_ktlint_custom_enforcement.md) — user prefers repo-wide rename + real enforcement (custom ktlint rule module) over docs-only convention changes.

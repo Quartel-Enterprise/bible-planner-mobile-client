@@ -49,7 +49,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-private val SPLIT_BREAKPOINT = 600.dp
+private val splitBreakpoint = 600.dp
 private const val WEEK_SHIMMER_COUNT = 4
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -64,7 +64,7 @@ internal fun ReadingPlanScreen(
     val loadedUiState = uiState as? ReadingPlanUiState.Loaded
     val mainPadding = LocalMainPadding.current
     BoxWithConstraints {
-        val includeSidePanel = maxWidth <= SPLIT_BREAKPOINT
+        val includeSidePanel = maxWidth <= splitBreakpoint
         ScrollToWeekAction(
             scrollToWeekNumber = uiState.scrollToWeekNumber,
             scrollToWeekIsAutomatic = uiState.scrollToWeekIsAutomatic,

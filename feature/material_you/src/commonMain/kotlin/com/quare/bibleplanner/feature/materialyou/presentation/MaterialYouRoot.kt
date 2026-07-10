@@ -38,9 +38,7 @@ private fun MaterialYouActionCollector(
 ) {
     ActionCollector(flow) { uiAction ->
         when (uiAction) {
-            AndroidColorSchemeUiAction.CloseBottomSheet -> {
-                onNavigateBack()
-            }
+            AndroidColorSchemeUiAction.CloseBottomSheet -> onNavigateBack()
         }
     }
 }

@@ -28,6 +28,8 @@ import com.quare.bibleplanner.ui.utils.MainTabScaffold
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val HERO_ITEM_KEY = "hero"
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.readingPlan(
     onNavigate: (NavKey) -> Unit,
@@ -127,5 +129,3 @@ private fun ReadingPlanScreenObserver(
         onNavigate = onNavigate,
     )
 }
-
-private const val HERO_ITEM_KEY = "hero"

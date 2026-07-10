@@ -23,9 +23,7 @@ fun EntryProviderScope<NavKey>.editPlanStartDate(onNavigateBack: () -> Unit) {
         }
 
         when (val state = uiState) {
-            is EditPlanStartDateUiState.Loading -> {
-                Unit
-            }
+            is EditPlanStartDateUiState.Loading -> Unit
 
             is EditPlanStartDateUiState.Loaded -> {
                 EditPlanStartDateDialog(

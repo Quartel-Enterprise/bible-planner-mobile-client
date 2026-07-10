@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 
+private const val DAY_SHIMMER_COUNT = 7
+
 @Composable
 internal fun WeekShimmerCard(
     isCurrent: Boolean,
@@ -143,5 +145,3 @@ private fun DayShimmerRow() {
         }
     }
 }
-
-private const val DAY_SHIMMER_COUNT = 7

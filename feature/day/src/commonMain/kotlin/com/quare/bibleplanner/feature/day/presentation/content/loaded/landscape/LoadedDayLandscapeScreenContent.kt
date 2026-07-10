@@ -29,8 +29,8 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
 private const val READING_WEIGHT = 2f
 private const val STUDY_WEIGHT = 3f
-private val ReadingContentMaxWidth = 560.dp
-private val StudyContentMaxWidth = 560.dp
+private val readingContentMaxWidth = 560.dp
+private val studyContentMaxWidth = 560.dp
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -52,7 +52,7 @@ internal fun LoadedDayLandscapeContent(
         ) {
             Column(
                 modifier = Modifier
-                    .widthIn(max = ReadingContentMaxWidth)
+                    .widthIn(max = readingContentMaxWidth)
                     .fillMaxHeight(),
             ) {
                 DayLandscapeHeader(
@@ -95,7 +95,7 @@ internal fun LoadedDayLandscapeContent(
         ) {
             LoadedDayLandscapeScreenRightContent(
                 modifier = Modifier
-                    .widthIn(max = StudyContentMaxWidth)
+                    .widthIn(max = studyContentMaxWidth)
                     .fillMaxSize(),
                 day = day,
                 dayRoute = uiState.dayRoute,

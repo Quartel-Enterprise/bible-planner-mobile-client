@@ -52,9 +52,7 @@ class AndroidColorSchemeViewModel(
 
                 AndroidColorSchemeUiEvent.OnInformationDialogDismiss,
                 AndroidColorSchemeUiEvent.BottomSheetGotItClick,
-                -> {
-                    _uiAction.send(AndroidColorSchemeUiAction.CloseBottomSheet)
-                }
+                -> _uiAction.send(AndroidColorSchemeUiAction.CloseBottomSheet)
             }
         }
     }

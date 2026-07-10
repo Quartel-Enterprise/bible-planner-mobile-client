@@ -34,6 +34,9 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 
+private const val FLASH_START_ALPHA = 0.28f
+private const val FLASH_DURATION_MILLIS = 1400
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun SharedTransitionScope.DayItem(
@@ -157,6 +160,3 @@ internal fun SharedTransitionScope.DayItem(
         }
     }
 }
-
-private const val FLASH_START_ALPHA = 0.28f
-private const val FLASH_DURATION_MILLIS = 1400

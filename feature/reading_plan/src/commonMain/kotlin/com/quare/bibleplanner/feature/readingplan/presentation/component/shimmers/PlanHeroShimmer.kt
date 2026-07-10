@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 
+private const val HERO_PLACEHOLDER_ALPHA = 0.18f
+
 @Composable
 internal fun PlanHeroShimmer(modifier: Modifier = Modifier) {
     val placeholderColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = HERO_PLACEHOLDER_ALPHA)
@@ -72,5 +74,3 @@ internal fun PlanHeroShimmer(modifier: Modifier = Modifier) {
         }
     }
 }
-
-private const val HERO_PLACEHOLDER_ALPHA = 0.18f

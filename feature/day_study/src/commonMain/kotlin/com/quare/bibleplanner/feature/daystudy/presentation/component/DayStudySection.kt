@@ -37,21 +37,14 @@ fun DayStudySection(
 
     ActionCollector(viewModel.uiAction) { action ->
         when (action) {
-            DayStudyUiAction.NavigateToPaywall -> {
-                onOpenPaywall()
-            }
+            DayStudyUiAction.NavigateToPaywall -> onOpenPaywall()
 
-            DayStudyUiAction.NavigateToLoginWarning -> {
-                onOpenLoginWarning()
-            }
+            DayStudyUiAction.NavigateToLoginWarning -> onOpenLoginWarning()
 
-            is DayStudyUiAction.ShowSnackBar -> {
-                onShowSnackBar(getString(action.message))
-            }
+            is DayStudyUiAction.ShowSnackBar -> onShowSnackBar(getString(action.message))
 
-            is DayStudyUiAction.ShowSnackBarPlural -> {
+            is DayStudyUiAction.ShowSnackBarPlural ->
                 onShowSnackBar(getPluralString(action.resource, action.count, action.count))
-            }
         }
     }
 

@@ -123,9 +123,7 @@ internal class LoginViewModel(
                 _state.update { it.copy(showAddGoogleAccountDialog = false) }
             }
 
-            LoginUiEvent.DismissAddGoogleAccountDialog -> {
-                _state.update { it.copy(showAddGoogleAccountDialog = false) }
-            }
+            LoginUiEvent.DismissAddGoogleAccountDialog -> _state.update { it.copy(showAddGoogleAccountDialog = false) }
         }
     }
 

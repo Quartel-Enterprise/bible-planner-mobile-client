@@ -19,6 +19,12 @@ plugins {
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
+    if (path != ":tools:ktlint-custom-rules") {
+        dependencies {
+            add("ktlintRuleset", project(":tools:ktlint-custom-rules"))
+        }
+    }
+
     extensions.configure<KtlintExtension> {
         version.set("1.8.0")
         debug.set(false)

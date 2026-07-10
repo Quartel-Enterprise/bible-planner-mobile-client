@@ -109,16 +109,10 @@ class ChaptersRangeMapper {
             }
         }
 
-        startVerse != null -> {
-            "$startVerse"
-        }
+        startVerse != null -> "$startVerse"
 
-        endVerse != null -> {
-            "-$endVerse"
-        }
+        endVerse != null -> "-$endVerse"
 
-        else -> {
-            null
-        }
+        else -> null
     }
 }

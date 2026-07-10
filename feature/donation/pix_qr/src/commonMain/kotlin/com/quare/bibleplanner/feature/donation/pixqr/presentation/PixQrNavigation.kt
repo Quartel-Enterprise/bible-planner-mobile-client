@@ -33,9 +33,7 @@ private fun PixQrActionCollector(
 ) {
     ActionCollector(flow) { action ->
         when (action) {
-            PixQrUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
+            PixQrUiAction.NavigateBack -> onNavigateBack()
 
             is PixQrUiAction.ShareQrCode -> {
                 val bytes = Res.readBytes("drawable/qr_code_pix_share.png")

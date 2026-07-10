@@ -21,6 +21,8 @@ import com.quare.bibleplanner.feature.day.presentation.content.loaded.DayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
+private val landscapeMinWidth = 700.dp
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun DayScreen(
@@ -33,7 +35,7 @@ internal fun DayScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val isLandscape = maxWidth > LandscapeMinWidth
+        val isLandscape = maxWidth > landscapeMinWidth
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,5 +70,3 @@ internal fun DayScreen(
         }
     }
 }
-
-private val LandscapeMinWidth = 700.dp

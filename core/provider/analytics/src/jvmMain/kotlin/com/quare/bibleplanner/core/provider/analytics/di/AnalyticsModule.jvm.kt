@@ -12,6 +12,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+private const val REQUEST_TIMEOUT_MILLIS = 10_000L
+
 internal actual val platformAnalyticsModule: Module = module {
     singleOf(::ClientIdProvider)
     single {
@@ -28,5 +30,3 @@ private fun createHttpClient(): HttpClient = HttpClient(CIO) {
         requestTimeoutMillis = REQUEST_TIMEOUT_MILLIS
     }
 }
-
-private const val REQUEST_TIMEOUT_MILLIS = 10_000L

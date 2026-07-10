@@ -42,9 +42,7 @@ internal fun BooksUiActionCollector(
                 ).forEach { it.srollToTop() }
             }
 
-            is BooksUiAction.OpenWebAppLink -> {
-                uriHandler.openUri(action.url)
-            }
+            is BooksUiAction.OpenWebAppLink -> uriHandler.openUri(action.url)
 
             is BooksUiAction.ShowReadingNotAvailableYetSnackbar -> {
                 val result = snackbarHostState.showSnackbar(
@@ -57,9 +55,7 @@ internal fun BooksUiActionCollector(
                 }
             }
 
-            is BooksUiAction.NavigateToBookDetails -> {
-                onNavigate(BookDetailsNavRoute(action.bookId))
-            }
+            is BooksUiAction.NavigateToBookDetails -> onNavigate(BookDetailsNavRoute(action.bookId))
         }
     }
 }

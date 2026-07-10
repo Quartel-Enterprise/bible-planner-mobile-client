@@ -15,13 +15,8 @@ internal fun AddNotesFreeWarningUiActionCollector(
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
-            AddNotesFreeWarningUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
-
-            AddNotesFreeWarningUiAction.NavigateToPro -> {
-                onNavigateReplacingTop(PaywallNavRoute)
-            }
+            AddNotesFreeWarningUiAction.NavigateBack -> onNavigateBack()
+            AddNotesFreeWarningUiAction.NavigateToPro -> onNavigateReplacingTop(PaywallNavRoute)
         }
     }
 }
