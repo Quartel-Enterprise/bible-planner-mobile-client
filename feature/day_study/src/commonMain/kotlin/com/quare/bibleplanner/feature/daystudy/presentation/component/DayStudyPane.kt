@@ -44,6 +44,8 @@ import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
+private val descriptionMaxWidth = 300.dp
+
 @Composable
 internal fun DayStudyPane(
     cardState: Loadable<DayStudyCardUiModel>,
@@ -122,7 +124,7 @@ private fun DayStudyPaneHero(
         VerticalSpacer(10)
         Text(
             text = dayStudyCardSubtitle(card),
-            modifier = Modifier.widthIn(max = DESCRIPTION_MAX_WIDTH),
+            modifier = Modifier.widthIn(max = descriptionMaxWidth),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -185,5 +187,3 @@ private fun heroButtonLabel(mode: DayStudyCardMode) = when (mode) {
     DayStudyCardMode.VIEW -> Res.string.ai_study_view
     DayStudyCardMode.LOCKED -> Res.string.ai_study_subscribe
 }
-
-private val DESCRIPTION_MAX_WIDTH = 300.dp

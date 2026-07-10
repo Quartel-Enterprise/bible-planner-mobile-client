@@ -66,8 +66,8 @@ internal fun ResponsiveContentScope.moreScreenPortraitLayout(
         item { VerticalSpacer() }
         responsiveItem { SocialSection(onEvent = onEvent) }
     }
-    responsiveItem { DeleteDataSection(onEvent = onEvent) }
     item { VerticalSpacer() }
+    responsiveItem { DeleteDataSection(onEvent = onEvent) }
     if (state.accountStatusModel is AccountStatusModel.LoggedIn) {
         item { VerticalSpacer() }
         responsiveItem {

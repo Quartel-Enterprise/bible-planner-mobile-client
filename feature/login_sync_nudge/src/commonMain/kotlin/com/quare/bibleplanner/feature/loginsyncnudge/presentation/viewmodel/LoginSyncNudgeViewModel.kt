@@ -28,9 +28,7 @@ internal class LoginSyncNudgeViewModel(
 
     fun onEvent(event: LoginSyncNudgeUiEvent) {
         when (event) {
-            is LoginSyncNudgeUiEvent.OnDontShowAgainToggled -> {
-                _dontShowAgain.update { event.isChecked }
-            }
+            is LoginSyncNudgeUiEvent.OnDontShowAgainToggled -> _dontShowAgain.update { event.isChecked }
 
             LoginSyncNudgeUiEvent.OnLoginClick -> {
                 close(

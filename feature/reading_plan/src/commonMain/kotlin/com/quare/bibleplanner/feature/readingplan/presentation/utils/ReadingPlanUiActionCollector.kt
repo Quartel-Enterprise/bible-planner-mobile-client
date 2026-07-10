@@ -34,17 +34,11 @@ internal fun ReadingPlanUiActionCollector(
                 )
             }
 
-            ReadingPlanUiAction.GoToDeleteAllProgress -> {
-                onNavigate(DeleteAllProgressNavRoute)
-            }
+            ReadingPlanUiAction.GoToDeleteAllProgress -> onNavigate(DeleteAllProgressNavRoute)
 
-            ReadingPlanUiAction.GoToTheme -> {
-                onNavigate(ThemeNavRoute)
-            }
+            ReadingPlanUiAction.GoToTheme -> onNavigate(ThemeNavRoute)
 
-            is ReadingPlanUiAction.OpenLink -> {
-                uriHandler.openUri(uiAction.url)
-            }
+            is ReadingPlanUiAction.OpenLink -> uriHandler.openUri(uiAction.url)
 
             ReadingPlanUiAction.ShowNoProgressToDelete -> {
                 snackbarHostState.showSnackbar(
@@ -52,9 +46,7 @@ internal fun ReadingPlanUiActionCollector(
                 )
             }
 
-            ReadingPlanUiAction.GoToChangeStartDate -> {
-                onNavigate(EditPlanStartDateNavRoute)
-            }
+            ReadingPlanUiAction.GoToChangeStartDate -> onNavigate(EditPlanStartDateNavRoute)
         }
     }
 }

@@ -31,6 +31,8 @@ import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
+private val wideLayoutMinWidth = 600.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResponsiveDialogSheet(
@@ -42,7 +44,7 @@ fun ResponsiveDialogSheet(
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        if (maxWidth >= WideLayoutMinWidth) {
+        if (maxWidth >= wideLayoutMinWidth) {
             ResponsiveDialogSheetCard(onCloseClick = onCloseClick) {
                 CloseableContent(
                     onCloseClick = onCloseClick,
@@ -149,5 +151,3 @@ private fun ResponsiveDialogSheetCard(
         }
     }
 }
-
-private val WideLayoutMinWidth = 600.dp

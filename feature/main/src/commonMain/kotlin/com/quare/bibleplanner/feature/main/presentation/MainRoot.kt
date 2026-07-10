@@ -69,9 +69,8 @@ private fun MainRootContent(
     NotificationPermissionStartEffect(onNavigate)
     ActionCollector(mainViewModel.uiAction) { uiAction ->
         when (uiAction) {
-            is MainScreenUiAction.NavigateToBottomRoute -> {
+            is MainScreenUiAction.NavigateToBottomRoute ->
                 (uiAction.route as? MainNavRouteDestination)?.let(tabState::switchTo)
-            }
         }
     }
     val language by mainViewModel.languageState.collectAsState()

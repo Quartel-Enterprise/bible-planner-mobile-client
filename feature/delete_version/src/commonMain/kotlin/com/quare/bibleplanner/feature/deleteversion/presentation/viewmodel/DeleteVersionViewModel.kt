@@ -46,9 +46,7 @@ internal class DeleteVersionViewModel(
                 }
             }
 
-            DeleteVersionUiEvent.OnCancel -> {
-                dismiss()
-            }
+            DeleteVersionUiEvent.OnCancel -> dismiss()
         }
     }
 

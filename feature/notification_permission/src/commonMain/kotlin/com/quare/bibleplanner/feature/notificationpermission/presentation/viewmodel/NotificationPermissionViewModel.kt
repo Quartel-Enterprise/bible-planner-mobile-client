@@ -42,17 +42,12 @@ internal class NotificationPermissionViewModel(
 
     fun onEvent(event: NotificationPermissionUiEvent) {
         when (event) {
-            NotificationPermissionUiEvent.OnConfirm -> {
-                handleConfirm()
-            }
+            NotificationPermissionUiEvent.OnConfirm -> handleConfirm()
 
-            NotificationPermissionUiEvent.OnDecline -> {
-                emit(NotificationPermissionUiAction.NavigateBack)
-            }
+            NotificationPermissionUiEvent.OnDecline -> emit(NotificationPermissionUiAction.NavigateBack)
 
-            is NotificationPermissionUiEvent.OnPermissionResult -> {
+            is NotificationPermissionUiEvent.OnPermissionResult ->
                 handlePermissionResult(event.granted, event.canAskAgain)
-            }
         }
     }
 

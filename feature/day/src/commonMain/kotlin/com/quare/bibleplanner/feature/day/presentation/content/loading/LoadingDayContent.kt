@@ -29,6 +29,29 @@ import com.quare.bibleplanner.feature.day.presentation.component.DayLandscapeHea
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 
+private val readingContentMaxWidth = 560.dp
+private val studyContentMaxWidth = 560.dp
+private val portraitContentMaxWidth = 600.dp
+private val studyCardHeight = 88.dp
+private val buttonHeight = 44.dp
+private val passageLabelWidth = 120.dp
+private val passageLabelHeight = 18.dp
+private val checkboxSize = 24.dp
+private val notesLabelWidth = 80.dp
+private val notesLabelHeight = 20.dp
+private val notesFieldHeight = 120.dp
+private val paneTitleWidth = 160.dp
+private val paneTitleHeight = 24.dp
+private val paneSubtitleWidth = 100.dp
+private val paneSubtitleHeight = 16.dp
+private val paneTabsHeight = 36.dp
+private val paneLineHeight = 14.dp
+private const val PASSAGE_ROW_COUNT = 3
+private const val PANE_LINE_COUNT = 4
+private const val PANE_LAST_LINE_FRACTION = 0.5f
+private const val READING_WEIGHT = 2f
+private const val STUDY_WEIGHT = 3f
+
 @Composable
 internal fun LoadingDayContent(
     modifier: Modifier,
@@ -55,7 +78,7 @@ private fun PortraitSkeleton(modifier: Modifier) {
     ) {
         Column(
             modifier = Modifier
-                .widthIn(max = PortraitContentMaxWidth)
+                .widthIn(max = portraitContentMaxWidth)
                 .fillMaxWidth()
                 .padding(
                     horizontal = 16.dp,
@@ -86,7 +109,7 @@ private fun LandscapeSkeleton(
         ) {
             Column(
                 modifier = Modifier
-                    .widthIn(max = ReadingContentMaxWidth)
+                    .widthIn(max = readingContentMaxWidth)
                     .fillMaxHeight(),
             ) {
                 DayLandscapeHeader(
@@ -117,7 +140,7 @@ private fun LandscapeSkeleton(
         VerticalDivider()
         SkeletonColumn(
             weight = STUDY_WEIGHT,
-            maxWidth = StudyContentMaxWidth,
+            maxWidth = studyContentMaxWidth,
             padding = Modifier.padding(20.dp),
         ) {
             StudyPaneSkeleton()
@@ -154,7 +177,7 @@ private fun StudyCardSkeleton() {
     ShimmerBox(
         modifier = Modifier
             .fillMaxWidth()
-            .height(StudyCardHeight),
+            .height(studyCardHeight),
         shape = RoundedCornerShape(18.dp),
     )
 }
@@ -164,7 +187,7 @@ private fun ButtonSkeleton() {
     ShimmerBox(
         modifier = Modifier
             .fillMaxWidth()
-            .height(ButtonHeight),
+            .height(buttonHeight),
         shape = RoundedCornerShape(percent = 50),
     )
 }
@@ -183,11 +206,11 @@ private fun PassagesCardSkeleton() {
                 ) {
                     ShimmerBox(
                         modifier = Modifier
-                            .width(PassageLabelWidth)
-                            .height(PassageLabelHeight),
+                            .width(passageLabelWidth)
+                            .height(passageLabelHeight),
                     )
                     ShimmerBox(
-                        modifier = Modifier.size(CheckboxSize),
+                        modifier = Modifier.size(checkboxSize),
                         shape = RoundedCornerShape(6.dp),
                     )
                 }
@@ -204,13 +227,13 @@ private fun NotesSkeleton() {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         ShimmerBox(
             modifier = Modifier
-                .width(NotesLabelWidth)
-                .height(NotesLabelHeight),
+                .width(notesLabelWidth)
+                .height(notesLabelHeight),
         )
         ShimmerBox(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(NotesFieldHeight),
+                .height(notesFieldHeight),
             shape = RoundedCornerShape(12.dp),
         )
     }
@@ -220,53 +243,30 @@ private fun NotesSkeleton() {
 private fun StudyPaneSkeleton() {
     ShimmerBox(
         modifier = Modifier
-            .width(PaneTitleWidth)
-            .height(PaneTitleHeight),
+            .width(paneTitleWidth)
+            .height(paneTitleHeight),
     )
     ShimmerBox(
         modifier = Modifier
-            .width(PaneSubtitleWidth)
-            .height(PaneSubtitleHeight),
+            .width(paneSubtitleWidth)
+            .height(paneSubtitleHeight),
     )
     ShimmerBox(
         modifier = Modifier
             .fillMaxWidth()
-            .height(PaneTabsHeight),
+            .height(paneTabsHeight),
         shape = RoundedCornerShape(8.dp),
     )
     repeat(PANE_LINE_COUNT) {
         ShimmerBox(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(PaneLineHeight),
+                .height(paneLineHeight),
         )
     }
     ShimmerBox(
         modifier = Modifier
             .fillMaxWidth(PANE_LAST_LINE_FRACTION)
-            .height(PaneLineHeight),
+            .height(paneLineHeight),
     )
 }
-
-private const val PASSAGE_ROW_COUNT = 3
-private const val PANE_LINE_COUNT = 4
-private const val PANE_LAST_LINE_FRACTION = 0.5f
-private const val READING_WEIGHT = 2f
-private const val STUDY_WEIGHT = 3f
-private val ReadingContentMaxWidth = 560.dp
-private val StudyContentMaxWidth = 560.dp
-private val PortraitContentMaxWidth = 600.dp
-private val StudyCardHeight = 88.dp
-private val ButtonHeight = 44.dp
-private val PassageLabelWidth = 120.dp
-private val PassageLabelHeight = 18.dp
-private val CheckboxSize = 24.dp
-private val NotesLabelWidth = 80.dp
-private val NotesLabelHeight = 20.dp
-private val NotesFieldHeight = 120.dp
-private val PaneTitleWidth = 160.dp
-private val PaneTitleHeight = 24.dp
-private val PaneSubtitleWidth = 100.dp
-private val PaneSubtitleHeight = 16.dp
-private val PaneTabsHeight = 36.dp
-private val PaneLineHeight = 14.dp

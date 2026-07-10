@@ -52,6 +52,12 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
+private const val SOFT_PRIMARY_ALPHA = 0.12f
+private const val BORDER_ALPHA = 0.2f
+private const val SKELETON_ALPHA = 0.18f
+private const val SKELETON_TITLE_WIDTH_FRACTION = 0.5f
+private const val SKELETON_SUBTITLE_WIDTH_FRACTION = 0.8f
+
 @Composable
 internal fun AiStudyEntryCard(
     card: DayStudyCardUiModel,
@@ -348,9 +354,3 @@ internal fun dayStudyCardSubtitle(card: DayStudyCardUiModel): String = when (car
         card.freeLimit,
     )
 }
-
-private const val SOFT_PRIMARY_ALPHA = 0.12f
-private const val BORDER_ALPHA = 0.2f
-private const val SKELETON_ALPHA = 0.18f
-private const val SKELETON_TITLE_WIDTH_FRACTION = 0.5f
-private const val SKELETON_SUBTITLE_WIDTH_FRACTION = 0.8f

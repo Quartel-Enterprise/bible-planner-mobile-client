@@ -13,9 +13,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun BibleVersionItemSupportingContent(downloadStatus: DownloadStatusModel) {
     val text = when (downloadStatus) {
-        DownloadStatusModel.Downloaded -> {
-            stringResource(Res.string.downloaded)
-        }
+        DownloadStatusModel.Downloaded -> stringResource(Res.string.downloaded)
 
         is DownloadStatusModel.InProgress -> {
             when (downloadStatus) {
@@ -31,9 +29,7 @@ internal fun BibleVersionItemSupportingContent(downloadStatus: DownloadStatusMod
             }
         }
 
-        DownloadStatusModel.NotStarted -> {
-            null
-        }
+        DownloadStatusModel.NotStarted -> null
     }
     text?.let {
         Text(

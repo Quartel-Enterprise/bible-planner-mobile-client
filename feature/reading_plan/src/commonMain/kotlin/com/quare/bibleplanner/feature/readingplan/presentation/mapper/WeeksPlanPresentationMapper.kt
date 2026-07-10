@@ -36,18 +36,14 @@ internal class WeeksPlanPresentationMapper(
         var currentAssigned = false
         return weeks.map { week ->
             val group = when {
-                week.days.all { it.isRead } -> {
-                    WeekGroup.Completed
-                }
+                week.days.all { it.isRead } -> WeekGroup.Completed
 
                 !currentAssigned -> {
                     currentAssigned = true
                     WeekGroup.Current
                 }
 
-                else -> {
-                    WeekGroup.Upcoming
-                }
+                else -> WeekGroup.Upcoming
             }
             WeekPlanPresentationModel(
                 weekPlan = week,

@@ -43,9 +43,7 @@ internal fun BibleVersionItemDownloadStatusComponent(
             )
         }
 
-        DownloadStatusModel.Downloaded -> {
-            DeleteIcon(onEvent)
-        }
+        DownloadStatusModel.Downloaded -> DeleteIcon(onEvent)
 
         is DownloadStatusModel.InProgress.Downloading -> {
             CircularProgressAction(

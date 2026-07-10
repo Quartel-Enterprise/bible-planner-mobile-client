@@ -49,9 +49,8 @@ class ReleaseNotesViewModel(
                 }
             }
 
-            ReleaseNotesUiEvent.OnBackClicked -> {
+            ReleaseNotesUiEvent.OnBackClicked ->
                 viewModelScope.launch { _uiAction.send(ReleaseNotesUiAction.NavigateBack) }
-            }
 
             ReleaseNotesUiEvent.OnGithubAllReleasesClicked -> {
                 trackEvent(

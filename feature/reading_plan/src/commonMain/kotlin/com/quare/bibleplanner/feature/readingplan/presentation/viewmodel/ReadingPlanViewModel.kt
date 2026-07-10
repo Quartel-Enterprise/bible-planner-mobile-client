@@ -81,9 +81,7 @@ internal class ReadingPlanViewModel(
                         )
                     }
 
-                    is ReadingPlanUiState.Loading -> {
-                        currentState
-                    }
+                    is ReadingPlanUiState.Loading -> currentState
                 }
             }
         }
@@ -163,13 +161,9 @@ internal class ReadingPlanViewModel(
                 }
             }
 
-            is ReadingPlanUiEvent.OnWeekExpandClick -> {
-                toggleWeekExpansion(event.weekNumber)
-            }
+            is ReadingPlanUiEvent.OnWeekExpandClick -> toggleWeekExpansion(event.weekNumber)
 
-            is ReadingPlanUiEvent.OnDayReadClick -> {
-                onDayReadClick(event)
-            }
+            is ReadingPlanUiEvent.OnDayReadClick -> onDayReadClick(event)
 
             is ReadingPlanUiEvent.OnDayClick -> {
                 emitUiAction(
@@ -181,13 +175,9 @@ internal class ReadingPlanViewModel(
                 )
             }
 
-            ReadingPlanUiEvent.OnOverflowClick -> {
-                changeMenuVisibility(true)
-            }
+            ReadingPlanUiEvent.OnOverflowClick -> changeMenuVisibility(true)
 
-            ReadingPlanUiEvent.OnOverflowDismiss -> {
-                changeMenuVisibility(false)
-            }
+            ReadingPlanUiEvent.OnOverflowDismiss -> changeMenuVisibility(false)
 
             is ReadingPlanUiEvent.OnOverflowOptionClick -> {
                 changeMenuVisibility(false)
@@ -285,9 +275,7 @@ internal class ReadingPlanViewModel(
                 }
             }
 
-            ReadingPlanUiEvent.OnEditPlanClick -> {
-                emitUiAction(ReadingPlanUiAction.GoToChangeStartDate)
-            }
+            ReadingPlanUiEvent.OnEditPlanClick -> emitUiAction(ReadingPlanUiAction.GoToChangeStartDate)
         }
     }
 
@@ -430,13 +418,10 @@ internal class ReadingPlanViewModel(
         var books = booksOrder
         pendingReadOverrides.forEach { (key, isRead) ->
             when (key.plan) {
-                ReadingPlanType.CHRONOLOGICAL -> {
+                ReadingPlanType.CHRONOLOGICAL ->
                     chronological = chronological.applyReadOverride(key.weekNumber, key.dayNumber, isRead)
-                }
 
-                ReadingPlanType.BOOKS -> {
-                    books = books.applyReadOverride(key.weekNumber, key.dayNumber, isRead)
-                }
+                ReadingPlanType.BOOKS -> books = books.applyReadOverride(key.weekNumber, key.dayNumber, isRead)
             }
         }
         return copy(chronologicalOrder = chronological, booksOrder = books)

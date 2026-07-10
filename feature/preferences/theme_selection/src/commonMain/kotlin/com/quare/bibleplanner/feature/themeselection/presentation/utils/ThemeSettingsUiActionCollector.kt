@@ -17,17 +17,12 @@ internal fun ThemeSettingsUiActionCollector(
 ) {
     ActionCollector(actionsFlow) { uiAction ->
         when (uiAction) {
-            ThemeSelectionUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
+            ThemeSelectionUiAction.NavigateBack -> onNavigateBack()
 
-            ThemeSelectionUiAction.NavigateToMaterialYou -> {
-                onNavigate(MaterialYouBottomSheetNavRoute)
-            }
+            ThemeSelectionUiAction.NavigateToMaterialYou -> onNavigate(MaterialYouBottomSheetNavRoute)
 
-            ThemeSelectionUiAction.NavigateToLoginWarning -> {
+            ThemeSelectionUiAction.NavigateToLoginWarning ->
                 onNavigate(LoginWarningNavRoute(LoginWarningReason.Preferences.Theme.key))
-            }
         }
     }
 }

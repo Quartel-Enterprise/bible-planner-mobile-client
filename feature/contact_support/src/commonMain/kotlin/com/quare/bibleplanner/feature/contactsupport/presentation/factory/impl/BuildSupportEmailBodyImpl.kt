@@ -26,13 +26,10 @@ internal class BuildSupportEmailBodyImpl : BuildSupportEmailBody {
             .orEmpty()
         val accountLabel = getString(Res.string.diagnostics_account_label)
         val accountValue = when (val accountStatus = state.accountStatusModel) {
-            is AccountStatusModel.LoggedIn -> {
-                accountStatus.user.email
-            }
+            is AccountStatusModel.LoggedIn -> accountStatus.user.email
 
-            AccountStatusModel.LoggedOut, AccountStatusModel.Loading, AccountStatusModel.Error -> {
+            AccountStatusModel.LoggedOut, AccountStatusModel.Loading, AccountStatusModel.Error ->
                 getString(Res.string.diagnostics_account_not_connected)
-            }
         }
         val subscriptionLabel = getString(Res.string.diagnostics_subscription_label)
         val subscriptionValue = state.subscriptionStatus

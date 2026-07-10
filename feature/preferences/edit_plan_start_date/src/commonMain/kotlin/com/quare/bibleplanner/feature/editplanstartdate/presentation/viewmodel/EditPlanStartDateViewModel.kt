@@ -61,13 +61,8 @@ internal class EditPlanStartDateViewModel(
 
     fun onEvent(event: EditPlanStartDateUiEvent) {
         when (event) {
-            is EditPlanStartDateUiEvent.OnDismissDialog -> {
-                dismissDialog()
-            }
-
-            is EditPlanStartDateUiEvent.OnDateSelected -> {
-                onDateSelected(event.utcDateMillis)
-            }
+            is EditPlanStartDateUiEvent.OnDismissDialog -> dismissDialog()
+            is EditPlanStartDateUiEvent.OnDateSelected -> onDateSelected(event.utcDateMillis)
         }
     }
 

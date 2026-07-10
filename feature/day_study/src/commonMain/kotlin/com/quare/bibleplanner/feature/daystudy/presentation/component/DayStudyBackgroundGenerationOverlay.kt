@@ -65,6 +65,16 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
+private val wideMinWidth = 700.dp
+private val desktopCardWidth = 392.dp
+private val desktopEdgePadding = 24.dp
+private val mobileHorizontalPadding = 12.dp
+private val mobileBottomPadding = 24.dp
+private const val TRACK_ALPHA = 0.12f
+private const val DIVIDER_ALPHA = 0.5f
+private const val PULSE_MAX_SCALE = 1.09f
+private const val PULSE_HALF_CYCLE_MILLIS = 950
+
 /**
  * App-wide floating card that surfaces day-study generations running in the background (i.e. not
  * currently shown in a foreground sheet/pane on the day). Rendered once at the root over any screen.
@@ -85,19 +95,19 @@ fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
     if (visibleJobs.isEmpty()) return
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val isWide = maxWidth > WideMinWidth
+        val isWide = maxWidth > wideMinWidth
         val cardAlignment = if (isWide) Alignment.BottomEnd else Alignment.BottomCenter
         val cardModifier = if (isWide) {
             Modifier
                 .align(cardAlignment)
-                .padding(DesktopEdgePadding)
-                .width(DesktopCardWidth)
+                .padding(desktopEdgePadding)
+                .width(desktopCardWidth)
         } else {
             Modifier
                 .align(cardAlignment)
                 .fillMaxWidth()
-                .padding(horizontal = MobileHorizontalPadding)
-                .padding(bottom = MobileBottomPadding)
+                .padding(horizontal = mobileHorizontalPadding)
+                .padding(bottom = mobileBottomPadding)
                 .navigationBarsPadding()
         }
         BackgroundCard(
@@ -343,13 +353,3 @@ private fun CloseButton(onClick: () -> Unit) {
 private fun DividerLine() {
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = DIVIDER_ALPHA))
 }
-
-private const val TRACK_ALPHA = 0.12f
-private const val DIVIDER_ALPHA = 0.5f
-private const val PULSE_MAX_SCALE = 1.09f
-private const val PULSE_HALF_CYCLE_MILLIS = 950
-private val WideMinWidth = 700.dp
-private val DesktopCardWidth = 392.dp
-private val DesktopEdgePadding = 24.dp
-private val MobileHorizontalPadding = 12.dp
-private val MobileBottomPadding = 24.dp

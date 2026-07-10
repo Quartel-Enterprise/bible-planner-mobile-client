@@ -19,17 +19,11 @@ internal fun PaywallUiActionCollector(
 ) {
     ActionCollector(actionsFlow) { uiAction ->
         when (uiAction) {
-            PaywallUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
+            PaywallUiAction.NavigateBack -> onNavigateBack()
 
-            is PaywallUiAction.NavigateTo -> {
-                onNavigateReplacingTop(uiAction.route)
-            }
+            is PaywallUiAction.NavigateTo -> onNavigateReplacingTop(uiAction.route)
 
-            is PaywallUiAction.NavigateToLoginWarning -> {
-                onNavigate(LoginWarningNavRoute(uiAction.reason))
-            }
+            is PaywallUiAction.NavigateToLoginWarning -> onNavigate(LoginWarningNavRoute(uiAction.reason))
 
             is PaywallUiAction.ShowSnackbar -> {
                 val message = getString(uiAction.message, *uiAction.args.toTypedArray())

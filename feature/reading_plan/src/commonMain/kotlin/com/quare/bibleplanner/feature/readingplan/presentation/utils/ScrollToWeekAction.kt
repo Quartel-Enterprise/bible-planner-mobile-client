@@ -8,6 +8,8 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import kotlinx.coroutines.delay
 
+private const val SCROLL_LAYOUT_SETTLE_MILLIS = 100L
+
 @Composable
 internal fun ScrollToWeekAction(
     scrollToWeekNumber: Int,
@@ -36,5 +38,3 @@ internal fun ScrollToWeekAction(
         onEvent(ReadingPlanUiEvent.OnScrollToWeekCompleted)
     }
 }
-
-private const val SCROLL_LAYOUT_SETTLE_MILLIS = 100L

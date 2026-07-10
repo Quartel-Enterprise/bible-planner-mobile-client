@@ -28,6 +28,9 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+private val fabBottomSpacing = 16.dp
+private const val WIDE_SCREEN_WIDTH = 600
+
 @Composable
 fun MainTabScaffold(
     navigationBar: @Composable (Modifier) -> Unit,
@@ -145,9 +148,6 @@ private fun PaddingValues.withFabClearance(
         start = calculateStartPadding(layoutDirection),
         top = calculateTopPadding(),
         end = calculateEndPadding(layoutDirection),
-        bottom = navigationBarBottom + fabAreaHeight + FAB_BOTTOM_SPACING,
+        bottom = navigationBarBottom + fabAreaHeight + fabBottomSpacing,
     )
 }
-
-private const val WIDE_SCREEN_WIDTH = 600
-private val FAB_BOTTOM_SPACING = 16.dp

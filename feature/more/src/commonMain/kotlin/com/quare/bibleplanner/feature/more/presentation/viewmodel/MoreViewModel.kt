@@ -71,21 +71,13 @@ internal class MoreViewModel(
                     params = mapOf(AnalyticsParams.OPTION to event.type.toAnalyticsOption()),
                 )
                 when (event.type) {
-                    MoreOptionItemType.THEME -> {
-                        goToRoute(ThemeNavRoute)
-                    }
+                    MoreOptionItemType.THEME -> goToRoute(ThemeNavRoute)
 
-                    MoreOptionItemType.APP_LANGUAGE -> {
-                        goToRoute(AppLanguageNavRoute)
-                    }
+                    MoreOptionItemType.APP_LANGUAGE -> goToRoute(AppLanguageNavRoute)
 
-                    MoreOptionItemType.PRIVACY_POLICY -> {
-                        emitAction(OpenLink(LegalUrl.PRIVACY_POLICY))
-                    }
+                    MoreOptionItemType.PRIVACY_POLICY -> emitAction(OpenLink(LegalUrl.PRIVACY_POLICY))
 
-                    MoreOptionItemType.TERMS -> {
-                        emitAction(OpenLink(LegalUrl.TERMS_OF_SERVICE))
-                    }
+                    MoreOptionItemType.TERMS -> emitAction(OpenLink(LegalUrl.TERMS_OF_SERVICE))
 
                     MoreOptionItemType.BECOME_PRO -> {
                         trackEvent(
@@ -95,21 +87,13 @@ internal class MoreViewModel(
                         goToRoute(PaywallNavRoute)
                     }
 
-                    MoreOptionItemType.INSTAGRAM -> {
-                        emitAction(OpenLink(getInstagramUrl()))
-                    }
+                    MoreOptionItemType.INSTAGRAM -> emitAction(OpenLink(getInstagramUrl()))
 
-                    MoreOptionItemType.EDIT_PLAN_START_DAY -> {
-                        goToRoute(EditPlanStartDateNavRoute)
-                    }
+                    MoreOptionItemType.EDIT_PLAN_START_DAY -> goToRoute(EditPlanStartDateNavRoute)
 
-                    MoreOptionItemType.DELETE_PROGRESS -> {
-                        deleteProgressClick()
-                    }
+                    MoreOptionItemType.DELETE_PROGRESS -> deleteProgressClick()
 
-                    MoreOptionItemType.DONATE -> {
-                        goToRoute(DonationNavRoute)
-                    }
+                    MoreOptionItemType.DONATE -> goToRoute(DonationNavRoute)
 
                     MoreOptionItemType.WEB_APP -> {
                         viewModelScope.launch {
@@ -117,27 +101,17 @@ internal class MoreViewModel(
                         }
                     }
 
-                    MoreOptionItemType.RELEASE_NOTES -> {
-                        goToRoute(ReleaseNotesNavRoute)
-                    }
+                    MoreOptionItemType.RELEASE_NOTES -> goToRoute(ReleaseNotesNavRoute)
 
-                    MoreOptionItemType.BIBLE_VERSION -> {
-                        goToRoute(BibleVersionSelectorRoute)
-                    }
+                    MoreOptionItemType.BIBLE_VERSION -> goToRoute(BibleVersionSelectorRoute)
 
-                    MoreOptionItemType.CONTACT_SUPPORT -> {
-                        goToRoute(ContactSupportNavRoute)
-                    }
+                    MoreOptionItemType.CONTACT_SUPPORT -> goToRoute(ContactSupportNavRoute)
 
-                    MoreOptionItemType.RATE_APP -> {
-                        emitAction(OpenLink(getAppStoreLink()))
-                    }
+                    MoreOptionItemType.RATE_APP -> emitAction(OpenLink(getAppStoreLink()))
                 }
             }
 
-            MoreUiEvent.OnProCardClick -> {
-                goToRoute(SubscriptionDetailsNavRoute)
-            }
+            MoreUiEvent.OnProCardClick -> goToRoute(SubscriptionDetailsNavRoute)
 
             MoreUiEvent.OnLoginClick -> {
                 navigateIfOnline(

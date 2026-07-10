@@ -47,9 +47,7 @@ internal class ThemeSelectionViewModel(
 
     fun onEvent(event: ThemeSelectionUiEvent) {
         when (event) {
-            ThemeSelectionUiEvent.MaterialYouInfoClicked -> {
-                emitUiAction(ThemeSelectionUiAction.NavigateToMaterialYou)
-            }
+            ThemeSelectionUiEvent.MaterialYouInfoClicked -> emitUiAction(ThemeSelectionUiAction.NavigateToMaterialYou)
 
             is ThemeSelectionUiEvent.MaterialYouToggleClicked -> {
                 trackEvent(
@@ -64,17 +62,11 @@ internal class ThemeSelectionViewModel(
                 }
             }
 
-            ThemeSelectionUiEvent.OnDismiss -> {
-                emitUiAction(ThemeSelectionUiAction.NavigateBack)
-            }
+            ThemeSelectionUiEvent.OnDismiss -> emitUiAction(ThemeSelectionUiAction.NavigateBack)
 
-            is ThemeSelectionUiEvent.OnThemeSelected -> {
-                setTheme(event.theme)
-            }
+            is ThemeSelectionUiEvent.OnThemeSelected -> setTheme(event.theme)
 
-            is ThemeSelectionUiEvent.OnContrastSelected -> {
-                setContrast(event.contrastType)
-            }
+            is ThemeSelectionUiEvent.OnContrastSelected -> setContrast(event.contrastType)
 
             is ThemeSelectionUiEvent.SyncToggleClicked -> {
                 trackEvent(
@@ -89,9 +81,8 @@ internal class ThemeSelectionViewModel(
                 }
             }
 
-            ThemeSelectionUiEvent.SyncToggleBlockedClicked -> {
+            ThemeSelectionUiEvent.SyncToggleBlockedClicked ->
                 emitUiAction(ThemeSelectionUiAction.NavigateToLoginWarning)
-            }
         }
     }
 

@@ -47,13 +47,9 @@ internal class LogoutViewModel(
                 performLogout(shouldFlushPending = event.shouldFlushPending)
             }
 
-            LogoutUiEvent.OnCancel -> {
-                navigateBack()
-            }
+            LogoutUiEvent.OnCancel -> navigateBack()
 
-            LogoutUiEvent.OnDismiss -> {
-                if (_uiState.value !is LogoutUiState.Loading) navigateBack()
-            }
+            LogoutUiEvent.OnDismiss -> if (_uiState.value !is LogoutUiState.Loading) navigateBack()
         }
     }
 

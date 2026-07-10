@@ -2,6 +2,6 @@ package com.quare.bibleplanner.feature.themeselection.domain.usecase
 
 import com.quare.bibleplanner.ui.theme.model.ContrastType
 
-interface SetContrastType {
+fun interface SetContrastType {
     suspend operator fun invoke(contrastType: ContrastType)
 }

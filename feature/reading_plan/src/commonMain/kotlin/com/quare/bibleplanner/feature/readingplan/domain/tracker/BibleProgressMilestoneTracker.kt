@@ -14,9 +14,7 @@ internal class BibleProgressMilestoneTracker(
         val reached = thresholds.lastOrNull { percent >= it } ?: 0
         val previous = highestReachedThreshold
         highestReachedThreshold = when {
-            previous == null || percent == 0f -> {
-                reached
-            }
+            previous == null || percent == 0f -> reached
 
             reached > previous -> {
                 thresholds
@@ -25,9 +23,7 @@ internal class BibleProgressMilestoneTracker(
                 reached
             }
 
-            else -> {
-                previous
-            }
+            else -> previous
         }
     }
 

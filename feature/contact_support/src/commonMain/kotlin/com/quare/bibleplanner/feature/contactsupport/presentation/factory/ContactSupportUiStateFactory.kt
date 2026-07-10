@@ -54,16 +54,10 @@ internal class ContactSupportUiStateFactory(
                 ?.let(AccountStatusModel::LoggedIn) ?: AccountStatusModel.Error
         }
 
-        SessionStatus.Initializing -> {
-            AccountStatusModel.Loading
-        }
+        SessionStatus.Initializing -> AccountStatusModel.Loading
 
-        is SessionStatus.NotAuthenticated -> {
-            AccountStatusModel.LoggedOut
-        }
+        is SessionStatus.NotAuthenticated -> AccountStatusModel.LoggedOut
 
-        is SessionStatus.RefreshFailure -> {
-            AccountStatusModel.Error
-        }
+        is SessionStatus.RefreshFailure -> AccountStatusModel.Error
     }
 }

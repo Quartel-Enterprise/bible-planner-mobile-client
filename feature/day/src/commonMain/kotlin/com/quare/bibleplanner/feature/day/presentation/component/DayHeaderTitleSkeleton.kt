@@ -10,6 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 
+private val titleWidth = 140.dp
+private val titleHeight = 22.dp
+private val subtitleWidth = 90.dp
+private val subtitleHeight = 14.dp
+
 @Composable
 internal fun DayHeaderTitleSkeleton(
     modifier: Modifier = Modifier,
@@ -22,18 +27,13 @@ internal fun DayHeaderTitleSkeleton(
     ) {
         ShimmerBox(
             modifier = Modifier
-                .width(TitleWidth)
-                .height(TitleHeight),
+                .width(titleWidth)
+                .height(titleHeight),
         )
         ShimmerBox(
             modifier = Modifier
-                .width(SubtitleWidth)
-                .height(SubtitleHeight),
+                .width(subtitleWidth)
+                .height(subtitleHeight),
         )
     }
 }
-
-private val TitleWidth = 140.dp
-private val TitleHeight = 22.dp
-private val SubtitleWidth = 90.dp
-private val SubtitleHeight = 14.dp

@@ -14,6 +14,8 @@ import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer as valentinilkShimmer
 
+private const val SHIMMER_CORNER_RADIUS = 8
+
 @Composable
 fun Modifier.shimmer(): Modifier {
     val shimmer = rememberShimmer(shimmerBounds = ShimmerBounds.Window)
@@ -33,5 +35,3 @@ fun ShimmerBox(
             .background(color),
     )
 }
-
-private const val SHIMMER_CORNER_RADIUS = 8

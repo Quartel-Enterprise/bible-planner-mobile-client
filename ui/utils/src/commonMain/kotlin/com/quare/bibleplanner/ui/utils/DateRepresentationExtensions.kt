@@ -16,37 +16,21 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DateRepresentation.format(): String = when (this) {
-    DateRepresentation.Today -> {
-        stringResource(Res.string.date_today)
-    }
+    DateRepresentation.Today -> stringResource(Res.string.date_today)
 
-    DateRepresentation.Yesterday -> {
-        stringResource(Res.string.date_yesterday)
-    }
+    DateRepresentation.Yesterday -> stringResource(Res.string.date_yesterday)
 
-    DateRepresentation.Tomorrow -> {
-        stringResource(Res.string.date_tomorrow)
-    }
+    DateRepresentation.Tomorrow -> stringResource(Res.string.date_tomorrow)
 
-    is DateRepresentation.DaysAgo -> {
-        pluralStringResource(Res.plurals.date_days_ago, days, days)
-    }
+    is DateRepresentation.DaysAgo -> pluralStringResource(Res.plurals.date_days_ago, days, days)
 
-    DateRepresentation.LastWeek -> {
-        stringResource(Res.string.date_last_week)
-    }
+    DateRepresentation.LastWeek -> stringResource(Res.string.date_last_week)
 
-    is DateRepresentation.WeeksAgo -> {
-        pluralStringResource(Res.plurals.date_weeks_ago, weeks, weeks)
-    }
+    is DateRepresentation.WeeksAgo -> pluralStringResource(Res.plurals.date_weeks_ago, weeks, weeks)
 
-    DateRepresentation.LastMonth -> {
-        stringResource(Res.string.date_last_month)
-    }
+    DateRepresentation.LastMonth -> stringResource(Res.string.date_last_month)
 
-    is DateRepresentation.MonthsAgo -> {
-        pluralStringResource(Res.plurals.date_months_ago, months, months)
-    }
+    is DateRepresentation.MonthsAgo -> pluralStringResource(Res.plurals.date_months_ago, months, months)
 
     is DateRepresentation.Custom -> {
         val monthStr = stringResource(date.month.toStringResource())

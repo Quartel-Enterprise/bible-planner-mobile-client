@@ -61,9 +61,7 @@ private fun DonationActionCollector(
     val uriHandler = LocalUriHandler.current
     ActionCollector(flow) { action ->
         when (action) {
-            DonationUiAction.NavigateBack -> {
-                onNavigateBack()
-            }
+            DonationUiAction.NavigateBack -> onNavigateBack()
 
             is DonationUiAction.Copy -> {
                 clipboardManager.setClipEntry(
@@ -71,17 +69,11 @@ private fun DonationActionCollector(
                 )
             }
 
-            is DonationUiAction.OpenUrl -> {
-                uriHandler.openUri(action.url)
-            }
+            is DonationUiAction.OpenUrl -> uriHandler.openUri(action.url)
 
-            DonationUiAction.Close -> {
-                sheetState.hide()
-            }
+            DonationUiAction.Close -> sheetState.hide()
 
-            DonationUiAction.NavigateToPixQr -> {
-                onNavigate(PixQrNavRoute)
-            }
+            DonationUiAction.NavigateToPixQr -> onNavigate(PixQrNavRoute)
         }
     }
 }

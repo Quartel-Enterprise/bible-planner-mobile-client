@@ -77,9 +77,7 @@ class DayStudyGenerationCoordinator(
             suspendRunCatching {
                 getDayStudy(passages).collect { event ->
                     when (event) {
-                        is DayStudyGenerationEventModel.PhaseChanged -> {
-                            updateJob(key) { it.copy(phase = event.phase) }
-                        }
+                        is DayStudyGenerationEventModel.PhaseChanged -> updateJob(key) { it.copy(phase = event.phase) }
 
                         is DayStudyGenerationEventModel.Completed -> {
                             updateJob(key) { it.copy(status = DayStudyGenerationStatus.Done(event.study)) }

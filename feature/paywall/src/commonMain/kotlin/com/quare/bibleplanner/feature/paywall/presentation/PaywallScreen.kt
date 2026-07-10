@@ -54,8 +54,8 @@ import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
-private val LANDSCAPE_MIN_WIDTH = 600.dp
-private val VALUE_PANEL_WIDTH = 400.dp
+private val landscapeMinWidth = 600.dp
+private val valuePanelWidth = 400.dp
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -68,7 +68,7 @@ fun PaywallScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        if (maxWidth > LANDSCAPE_MIN_WIDTH) {
+        if (maxWidth > landscapeMinWidth) {
             PaywallLandscapeContent(
                 snackbarHostState = snackbarHostState,
                 uiState = uiState,
@@ -186,7 +186,7 @@ private fun PaywallLandscapeContent(
         ) {
             Column(
                 modifier = Modifier
-                    .width(VALUE_PANEL_WIDTH)
+                    .width(valuePanelWidth)
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .verticalScroll(rememberScrollState())

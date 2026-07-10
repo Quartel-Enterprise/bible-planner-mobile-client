@@ -23,6 +23,10 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 
+private const val SHEET_HEIGHT_FRACTION = 0.92f
+private const val SWAP_ANIMATION_MILLIS = 450
+private const val SWAP_SLIDE_FRACTION = 24
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun DayStudySheet(
@@ -104,7 +108,3 @@ private fun getSwapTransition() = (
         initialOffsetY = { it / SWAP_SLIDE_FRACTION },
     )
 ) togetherWith fadeOut(animationSpec = tween(SWAP_ANIMATION_MILLIS))
-
-private const val SHEET_HEIGHT_FRACTION = 0.92f
-private const val SWAP_ANIMATION_MILLIS = 450
-private const val SWAP_SLIDE_FRACTION = 24

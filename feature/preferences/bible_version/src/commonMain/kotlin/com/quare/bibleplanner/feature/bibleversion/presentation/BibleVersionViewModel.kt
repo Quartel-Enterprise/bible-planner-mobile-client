@@ -40,29 +40,17 @@ class BibleVersionViewModel(
 
     fun onEvent(event: BibleVersionUiEvent) {
         when (event) {
-            is BibleVersionUiEvent.OnDownload -> {
-                downloadVersion(event.id)
-            }
+            is BibleVersionUiEvent.OnDownload -> downloadVersion(event.id)
 
-            is BibleVersionUiEvent.OnPause -> {
-                pauseDownload(event.id)
-            }
+            is BibleVersionUiEvent.OnPause -> pauseDownload(event.id)
 
-            is BibleVersionUiEvent.OnResume -> {
-                resumeDownload(event.id)
-            }
+            is BibleVersionUiEvent.OnResume -> resumeDownload(event.id)
 
-            is BibleVersionUiEvent.OnDelete -> {
-                deleteVersion(event.id)
-            }
+            is BibleVersionUiEvent.OnDelete -> deleteVersion(event.id)
 
-            is BibleVersionUiEvent.OnSelect -> {
-                selectVersion(event.id)
-            }
+            is BibleVersionUiEvent.OnSelect -> selectVersion(event.id)
 
-            BibleVersionUiEvent.OnDismiss -> {
-                dismiss()
-            }
+            BibleVersionUiEvent.OnDismiss -> dismiss()
 
             BibleVersionUiEvent.TryToDownloadBibleVersionsAgain -> {
                 viewModelScope.launch {

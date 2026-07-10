@@ -1,5 +1,5 @@
 package com.quare.bibleplanner.feature.materialyou.domain.usecase
 
-interface SetIsDynamicColorsEnabled {
+fun interface SetIsDynamicColorsEnabled {
     suspend operator fun invoke(isEnabled: Boolean)
 }

@@ -97,65 +97,21 @@ internal class DayViewModel(
 
     fun onEvent(event: DayUiEvent) {
         when (event) {
-            is DayUiEvent.OnChapterCheckboxClick -> {
-                onChapterToggle(event)
-            }
-
-            DayUiEvent.OnDayReadToggle -> {
-                onDayReadToggle()
-            }
-
-            is DayUiEvent.OnEditReadDate -> {
-                onEditReadDate(event)
-            }
-
-            is DayUiEvent.OnEditDateClick -> {
-                onEditDateClick()
-            }
-
-            is DayUiEvent.OnShowTimePicker -> {
-                updateDatePickerState { it.copy(visiblePicker = PickerType.TIME) }
-            }
-
-            is DayUiEvent.OnDismissPicker -> {
-                updateDatePickerState { it.copy(visiblePicker = null) }
-            }
-
-            is DayUiEvent.OnDateSelected -> {
-                onDateSelected(event)
-            }
-
-            is DayUiEvent.OnNotesChanged -> {
-                onNotesChanged(event)
-            }
-
-            is DayUiEvent.OnNotesClear -> {
-                onNotesClear()
-            }
-
-            is DayUiEvent.OnNotesFocus -> {
-                onNotesFocus()
-            }
-
-            is DayUiEvent.OnBackClick -> {
-                backToPreviousScreen()
-            }
-
-            is DayUiEvent.OnChapterClick -> {
-                onChapterClick(event.strategy)
-            }
-
-            is DayUiEvent.OnDayStudySubscribeClick -> {
-                navigateToPaywall()
-            }
-
-            is DayUiEvent.OnDayStudyLoginRequired -> {
-                navigateToDayStudyLoginWarning()
-            }
-
-            is DayUiEvent.OnDayStudyMessage -> {
-                showSnackBarText(event.message)
-            }
+            is DayUiEvent.OnChapterCheckboxClick -> onChapterToggle(event)
+            DayUiEvent.OnDayReadToggle -> onDayReadToggle()
+            is DayUiEvent.OnEditReadDate -> onEditReadDate(event)
+            is DayUiEvent.OnEditDateClick -> onEditDateClick()
+            is DayUiEvent.OnShowTimePicker -> updateDatePickerState { it.copy(visiblePicker = PickerType.TIME) }
+            is DayUiEvent.OnDismissPicker -> updateDatePickerState { it.copy(visiblePicker = null) }
+            is DayUiEvent.OnDateSelected -> onDateSelected(event)
+            is DayUiEvent.OnNotesChanged -> onNotesChanged(event)
+            is DayUiEvent.OnNotesClear -> onNotesClear()
+            is DayUiEvent.OnNotesFocus -> onNotesFocus()
+            is DayUiEvent.OnBackClick -> backToPreviousScreen()
+            is DayUiEvent.OnChapterClick -> onChapterClick(event.strategy)
+            is DayUiEvent.OnDayStudySubscribeClick -> navigateToPaywall()
+            is DayUiEvent.OnDayStudyLoginRequired -> navigateToDayStudyLoginWarning()
+            is DayUiEvent.OnDayStudyMessage -> showSnackBarText(event.message)
         }
     }
 

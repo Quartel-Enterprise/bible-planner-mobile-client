@@ -54,9 +54,7 @@ internal fun BibleVersionsContent(
                 }
             }
 
-            BibleVersionsUiState.Loading -> {
-                bibleVersionsShimmer()
-            }
+            BibleVersionsUiState.Loading -> bibleVersionsShimmer()
 
             is BibleVersionsUiState.Success -> {
                 bibleVersionsListComponent(

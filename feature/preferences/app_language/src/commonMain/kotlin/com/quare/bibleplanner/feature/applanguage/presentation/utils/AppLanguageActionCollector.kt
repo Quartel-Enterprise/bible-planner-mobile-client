@@ -18,18 +18,15 @@ internal fun AppLanguageActionCollector(
     val applyLanguage = rememberApplyLanguage()
     ActionCollector(actionsFlow) { action ->
         when (action) {
-            AppLanguageUiAction.NavigateUp -> {
-                onNavigateBack()
-            }
+            AppLanguageUiAction.NavigateUp -> onNavigateBack()
 
             is AppLanguageUiAction.ApplyAndNavigateUp -> {
                 applyLanguage(action.language)
                 onNavigateBack()
             }
 
-            AppLanguageUiAction.NavigateToLoginWarning -> {
+            AppLanguageUiAction.NavigateToLoginWarning ->
                 onNavigate(LoginWarningNavRoute(LoginWarningReason.Preferences.Language.key))
-            }
         }
     }
 }
