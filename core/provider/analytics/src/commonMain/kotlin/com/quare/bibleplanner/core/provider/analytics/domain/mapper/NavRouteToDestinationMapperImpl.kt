@@ -12,6 +12,7 @@ import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
@@ -27,6 +28,7 @@ import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
+import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.Destination
 import com.quare.bibleplanner.core.provider.analytics.domain.model.DestinationType
@@ -88,6 +90,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
 
         is EditPlanStartDateNavRoute -> dialog("edit_plan_start_date")
 
+        is InAppUpdateNavRoute -> responsive("in_app_update")
+
         is LoginNavRoute -> bottomSheet("login")
 
         is LoginSyncNudgeNavRoute -> dialog("login_sync_nudge")
@@ -120,6 +124,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is SubscriptionDetailsNavRoute -> dialog("subscription_details")
 
         is ThemeNavRoute -> responsive("theme_selection")
+
+        is UpdateDownloadedNavRoute -> dialog("update_downloaded")
     }
 
     private fun screen(

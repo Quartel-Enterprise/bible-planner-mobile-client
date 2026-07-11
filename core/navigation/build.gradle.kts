@@ -15,6 +15,7 @@ kotlin {
         commonMain.dependencies {
             // Feature
             implementation(projects.feature.bookDetails)
+            implementation(projects.feature.inAppUpdate)
             implementation(projects.feature.main)
             implementation(projects.feature.preferences.themeSelection)
             implementation(projects.feature.materialYou)

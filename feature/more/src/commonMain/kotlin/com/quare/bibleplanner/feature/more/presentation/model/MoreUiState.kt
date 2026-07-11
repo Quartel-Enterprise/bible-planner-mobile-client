@@ -23,4 +23,6 @@ internal data class MoreUiState(
     val planStartDate: Loadable<LocalDate?>,
     val currentDate: LocalDate,
     val appVersion: String,
+    val isUpdateRowVisible: Boolean,
+    val isCheckingForUpdate: Boolean,
 )

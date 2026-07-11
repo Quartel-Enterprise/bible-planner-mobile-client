@@ -15,4 +15,5 @@ enum class MoreOptionItemType {
     BIBLE_VERSION,
     CONTACT_SUPPORT,
     RATE_APP,
+    CHECK_FOR_UPDATE,
 }

@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.login_requires_internet
 import bibleplanner.feature.more.generated.resources.logout_requires_internet
+import bibleplanner.feature.more.generated.resources.up_to_date_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
@@ -14,6 +15,7 @@ import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
@@ -26,6 +28,9 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
+import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
+import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
+import com.quare.bibleplanner.feature.inappupdate.domain.usecase.CheckForUpdate
 import com.quare.bibleplanner.feature.more.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.more.presentation.factory.MoreUiStateFactory
 import com.quare.bibleplanner.feature.more.presentation.model.MoreOptionItemType
@@ -34,12 +39,14 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction.OpenL
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
 import com.quare.bibleplanner.feature.more.presentation.model.toAnalyticsOption
-import com.quare.bibleplanner.ui.utils.observe
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 
@@ -50,18 +57,22 @@ internal class MoreViewModel(
     private val getInstagramUrl: GetInstagramUrlUseCase,
     private val getAppStoreLink: GetAppStoreLinkUseCase,
     private val isConnected: IsConnected,
+    private val checkForUpdate: CheckForUpdate,
     private val trackEvent: TrackEvent,
 ) : ViewModel() {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
-    private val _uiState = MutableStateFlow(uiStateFactory.initialState())
-    val uiState: StateFlow<MoreUiState> = _uiState
-
-    init {
-        observe(uiStateFactory.create()) { state ->
-            _uiState.value = state
-        }
-    }
+    private val isCheckingForUpdate = MutableStateFlow(false)
+    val uiState: StateFlow<MoreUiState> = combine(
+        uiStateFactory.create(),
+        isCheckingForUpdate,
+    ) { state, checking ->
+        state.copy(isCheckingForUpdate = checking)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+        initialValue = uiStateFactory.initialState(),
+    )
 
     fun onEvent(event: MoreUiEvent) {
         when (event) {
@@ -108,6 +119,8 @@ internal class MoreViewModel(
                     MoreOptionItemType.CONTACT_SUPPORT -> goToRoute(ContactSupportNavRoute)
 
                     MoreOptionItemType.RATE_APP -> emitAction(OpenLink(getAppStoreLink()))
+
+                    MoreOptionItemType.CHECK_FOR_UPDATE -> checkForUpdateClick()
                 }
             }
 
@@ -126,6 +139,28 @@ internal class MoreViewModel(
                     offlineMessage = Res.string.logout_requires_internet,
                 )
             }
+        }
+    }
+
+    private fun checkForUpdateClick() {
+        if (isCheckingForUpdate.value) return
+        isCheckingForUpdate.value = true
+        viewModelScope.launch {
+            val availability = checkForUpdate()
+            isCheckingForUpdate.value = false
+            val action = when (availability) {
+                is UpdateAvailability.Available ->
+                    MoreUiAction.GoToRoute(
+                        InAppUpdateNavRoute(
+                            versionName = availability.versionName,
+                            source = UpdatePromptSource.MANUAL,
+                        ),
+                    )
+
+                UpdateAvailability.NotAvailable ->
+                    MoreUiAction.ShowSnackbar(Res.string.up_to_date_message)
+            }
+            _uiAction.emit(action)
         }
     }
 
@@ -168,5 +203,6 @@ internal class MoreViewModel(
 
     private companion object {
         const val PAYWALL_SOURCE = "more_menu"
+        const val STOP_TIMEOUT_MILLIS = 5_000L
     }
 }

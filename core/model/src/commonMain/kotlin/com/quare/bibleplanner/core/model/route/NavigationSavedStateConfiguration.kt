@@ -24,6 +24,7 @@ val navigationSavedStateConfiguration = SavedStateConfiguration {
             subclass(DeleteVersionNavRoute::class, DeleteVersionNavRoute.serializer())
             subclass(DonationNavRoute::class, DonationNavRoute.serializer())
             subclass(EditPlanStartDateNavRoute::class, EditPlanStartDateNavRoute.serializer())
+            subclass(InAppUpdateNavRoute::class, InAppUpdateNavRoute.serializer())
             subclass(LoginNavRoute::class, LoginNavRoute.serializer())
             subclass(LoginSyncNudgeNavRoute::class, LoginSyncNudgeNavRoute.serializer())
             subclass(LoginWarningNavRoute::class, LoginWarningNavRoute.serializer())
@@ -36,6 +37,7 @@ val navigationSavedStateConfiguration = SavedStateConfiguration {
             subclass(ReleaseNotesNavRoute::class, ReleaseNotesNavRoute.serializer())
             subclass(SubscriptionDetailsNavRoute::class, SubscriptionDetailsNavRoute.serializer())
             subclass(ThemeNavRoute::class, ThemeNavRoute.serializer())
+            subclass(UpdateDownloadedNavRoute::class, UpdateDownloadedNavRoute.serializer())
         }
     }
 }

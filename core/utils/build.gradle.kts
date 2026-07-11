@@ -23,6 +23,9 @@ kotlin {
             // Logging
             implementation(libs.kermit)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
         androidMain.dependencies {
             implementation(libs.koinAndroid)
             implementation(libs.androidx.core.ktx)

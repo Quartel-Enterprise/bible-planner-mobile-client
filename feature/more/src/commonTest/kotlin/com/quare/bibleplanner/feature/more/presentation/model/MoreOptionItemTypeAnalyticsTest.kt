@@ -22,6 +22,7 @@ internal class MoreOptionItemTypeAnalyticsTest {
             MoreOptionItemType.BIBLE_VERSION to "bible_version",
             MoreOptionItemType.CONTACT_SUPPORT to "contact_support",
             MoreOptionItemType.RATE_APP to "rate_app",
+            MoreOptionItemType.CHECK_FOR_UPDATE to "check_for_update",
         )
 
         // When

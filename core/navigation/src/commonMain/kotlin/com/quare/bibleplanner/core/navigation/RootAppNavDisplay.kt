@@ -38,6 +38,9 @@ import com.quare.bibleplanner.feature.deleteversion.presentation.deleteVersion
 import com.quare.bibleplanner.feature.donation.pixqr.presentation.pixQr
 import com.quare.bibleplanner.feature.donation.presentation.donation
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
+import com.quare.bibleplanner.feature.inappupdate.presentation.InAppUpdateDownloadOverlay
+import com.quare.bibleplanner.feature.inappupdate.presentation.inAppUpdate
+import com.quare.bibleplanner.feature.inappupdate.presentation.updateDownloaded
 import com.quare.bibleplanner.feature.login.presentation.loginRoot
 import com.quare.bibleplanner.feature.loginsyncnudge.presentation.loginSyncNudge
 import com.quare.bibleplanner.feature.loginwarning.presentation.loginWarning
@@ -173,6 +176,8 @@ fun RootAppNavDisplay() {
                             sharedTransitionScope = sharedTransitionScope,
                         )
                         notificationPermission(onNavigateBack)
+                        inAppUpdate(onNavigateBack)
+                        updateDownloaded(onNavigateBack)
                     },
                 )
             }
@@ -180,6 +185,12 @@ fun RootAppNavDisplay() {
         DayStudyBackgroundGenerationOverlay()
         SnackbarHost(
             hostState = appSnackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding(),
+        )
+        InAppUpdateDownloadOverlay(
+            onNavigate = onNavigate,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .navigationBarsPadding(),

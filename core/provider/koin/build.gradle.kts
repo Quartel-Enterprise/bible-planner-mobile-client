@@ -63,6 +63,7 @@ kotlin {
             implementation(projects.feature.preferences.appLanguage)
             implementation(projects.feature.read)
             implementation(projects.feature.notificationPermission)
+            implementation(projects.feature.inAppUpdate)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
