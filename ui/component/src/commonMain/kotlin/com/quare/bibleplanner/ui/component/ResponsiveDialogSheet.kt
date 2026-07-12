@@ -43,6 +43,7 @@ fun ResponsiveDialogSheet(
     skipPartiallyExpanded: Boolean = false,
     content: @Composable () -> Unit,
 ) {
+    DialogWindowDimEffect()
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         if (maxWidth >= wideLayoutMinWidth) {
             ResponsiveDialogSheetCard(onCloseClick = onCloseClick) {
