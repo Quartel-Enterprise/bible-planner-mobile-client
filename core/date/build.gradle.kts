@@ -32,6 +32,11 @@ kotlin {
             implementation(libs.koinCore)
         }
 
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
+
         androidMain.dependencies {
             implementation(libs.koinAndroid)
             implementation(libs.play.services.time)

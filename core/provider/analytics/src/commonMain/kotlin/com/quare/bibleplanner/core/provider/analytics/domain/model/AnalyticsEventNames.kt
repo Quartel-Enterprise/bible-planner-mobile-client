@@ -64,6 +64,10 @@ object AnalyticsEventNames {
     const val LOGIN_WARNING_DISMISSED = "login_warning_dismissed"
     const val SYNC_COMPLETED = "sync_completed"
     const val SYNC_FAILED = "sync_failed"
+    const val CONNECTED_DEVICES_TOGGLED = "connected_devices_toggled"
+    const val DEVICE_SIGNED_OUT = "device_signed_out"
+    const val DEVICE_RENAMED = "device_renamed"
+    const val DEVICE_RENAME_CANCELLED = "device_rename_cancelled"
 
     const val MORE_OPTION_CLICKED = "more_option_clicked"
     const val THEME_CHANGED = "theme_changed"

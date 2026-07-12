@@ -30,6 +30,7 @@ kotlin {
             implementation(projects.core.provider.supabase)
             implementation(projects.core.network)
             implementation(projects.core.user)
+            implementation(projects.core.devices)
             implementation(projects.core.model)
             implementation(projects.core.loginNudge)
 
@@ -54,6 +55,7 @@ kotlin {
             implementation(projects.feature.main)
             implementation(projects.feature.congrats)
             implementation(projects.feature.subscriptionDetails)
+            implementation(projects.feature.accountDetails)
             implementation(projects.feature.contactSupport)
             implementation(projects.feature.more)
             implementation(projects.feature.releaseNotes)

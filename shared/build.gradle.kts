@@ -87,6 +87,7 @@ kotlin {
             api(projects.core.provider.analytics)
             api(projects.core.provider.crashlytics)
             api(projects.core.utils)
+            implementation(projects.core.devices)
 
             // UI
             api(projects.ui.theme)

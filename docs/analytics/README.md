@@ -70,6 +70,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `MainNavRouteDestination.Plans` | `plans` | `screen` | — |
 | `MainNavRouteDestination.Books` | `books` | `screen` | — |
 | `MainNavRouteDestination.More` | `more` | `screen` | — |
+| `AccountDetailsNavRoute` | `account_details` | `responsive` | — |
 | `AddNotesFreeWarningNavRoute` | `add_notes_free_warning` | `dialog` | `max_free_notes` |
 | `AppLanguageNavRoute` | `app_language` | `responsive` | — |
 | `BibleVersionSelectorRoute` | `bible_version_selector` | `responsive` | — |
@@ -93,6 +94,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `PixQrNavRoute` | `pix_qr` | `dialog` | — |
 | `ReadNavRoute` | `read` | `screen` | `book_id`, `chapter_number` |
 | `ReleaseNotesNavRoute` | `release_notes` | `screen` | — |
+| `RenameDeviceNavRoute` | `rename_device` | `dialog` | — |
 | `SubscriptionDetailsNavRoute` | `subscription_details` | `dialog` | — |
 | `ThemeNavRoute` | `theme_selection` | `responsive` | — |
 | `UpdateDownloadedNavRoute` | `update_downloaded` | `dialog` | — |

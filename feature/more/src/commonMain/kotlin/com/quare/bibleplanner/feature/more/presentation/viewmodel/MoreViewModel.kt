@@ -9,6 +9,7 @@ import bibleplanner.feature.more.generated.resources.logout_requires_internet
 import bibleplanner.feature.more.generated.resources.up_to_date_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.model.legal.LegalUrl
+import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
@@ -125,6 +126,8 @@ internal class MoreViewModel(
             }
 
             MoreUiEvent.OnProCardClick -> goToRoute(SubscriptionDetailsNavRoute)
+
+            MoreUiEvent.OnAccountCardClick -> goToRoute(AccountDetailsNavRoute)
 
             MoreUiEvent.OnLoginClick -> {
                 navigateIfOnline(

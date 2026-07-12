@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.more.presentation.content.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,8 +42,17 @@ internal fun LoginCard(
     onEvent: (MoreUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cardModifier = modifier
+        .fillMaxWidth()
+        .then(
+            if (accountStatusModel is AccountStatusModel.LoggedIn) {
+                Modifier.clickable { onEvent(MoreUiEvent.OnAccountCardClick) }
+            } else {
+                Modifier
+            },
+        )
     ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = cardModifier,
         shape = MaterialTheme.shapes.large,
     ) {
         Column {

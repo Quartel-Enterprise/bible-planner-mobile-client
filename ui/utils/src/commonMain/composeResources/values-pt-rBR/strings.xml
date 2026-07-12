@@ -33,4 +33,16 @@
         <item quantity="one">%1$d mês atrás</item>
         <item quantity="other">%1$d meses atrás</item>
     </plurals>
+
+    <string name="relative_active_now">Ativo agora</string>
+
+    <plurals name="relative_minutes_ago">
+        <item quantity="one">há %1$d min</item>
+        <item quantity="other">há %1$d min</item>
+    </plurals>
+
+    <plurals name="relative_hours_ago">
+        <item quantity="one">há %1$d hora</item>
+        <item quantity="other">há %1$d horas</item>
+    </plurals>
 </resources>

@@ -17,6 +17,9 @@ class SessionUserMapper {
                 ?: return@let null,
             id = sessionUser.id,
             email = sessionUser.email ?: return@let null,
+            provider = sessionUser.appMetadata?.stringOrNull(KEY_PROVIDER),
+            lastSignInAt = sessionUser.lastSignInAt,
+            createdAt = sessionUser.createdAt,
         )
     }
 
@@ -26,5 +29,6 @@ class SessionUserMapper {
         const val KEY_AVATAR_URL = "avatar_url"
         const val KEY_NAME = "name"
         const val KEY_FULL_NAME = "full_name"
+        const val KEY_PROVIDER = "provider"
     }
 }

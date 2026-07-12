@@ -7,6 +7,8 @@ internal sealed interface MoreUiEvent {
 
     data object OnProCardClick : MoreUiEvent
 
+    data object OnAccountCardClick : MoreUiEvent
+
     data object OnLoginClick : MoreUiEvent
 
     data object OnLogoutClick : MoreUiEvent

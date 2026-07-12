@@ -34,7 +34,15 @@ internal class BuildSupportEmailBodyImplTest {
         prepareScenario()
         val state = ContactSupportUiState(
             accountStatusModel = AccountStatusModel.LoggedIn(
-                user = UserModel(id = "user-1", name = "Ana", email = "ana@example.com", photo = null),
+                user = UserModel(
+                    id = "user-1",
+                    name = "Ana",
+                    email = "ana@example.com",
+                    photo = null,
+                    provider = "google",
+                    lastSignInAt = null,
+                    createdAt = null,
+                ),
             ),
             subscriptionStatus = Loadable.Loaded(
                 SubscriptionStatus.Pro(planName = "Pro", purchaseDate = null, expirationDate = null, willRenew = true),

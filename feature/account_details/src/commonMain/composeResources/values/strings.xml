@@ -1,0 +1,28 @@
+<resources>
+    <string name="account_details_title">Account details</string>
+    <string name="account_details_login_method">Login method</string>
+    <string name="account_details_login_google">Google</string>
+    <string name="account_details_login_apple">Apple</string>
+    <string name="account_details_login_other">Email</string>
+    <string name="account_details_last_login">Last login</string>
+    <string name="account_details_created_at">Account created on</string>
+    <string name="account_details_connected_devices">Connected devices</string>
+
+    <plurals name="account_details_devices_active">
+        <item quantity="one">%1$d active</item>
+        <item quantity="other">%1$d active</item>
+    </plurals>
+
+    <string name="account_details_this_device">THIS DEVICE</string>
+    <string name="account_details_device_options">Device options</string>
+    <string name="account_details_rename">Rename</string>
+    <string name="account_details_sign_out">Sign out</string>
+    <string name="account_details_logout">Sign out of account</string>
+    <string name="account_details_rename_title">Rename device</string>
+    <string name="account_details_rename_placeholder">Device name</string>
+    <string name="account_details_rename_confirm">Save</string>
+    <string name="account_details_rename_cancel">Cancel</string>
+    <string name="account_details_value_unknown">—</string>
+    <string name="account_details_device_signed_out">Session ended on that device</string>
+    <string name="account_details_action_error">Something went wrong. Please try again.</string>
+</resources>

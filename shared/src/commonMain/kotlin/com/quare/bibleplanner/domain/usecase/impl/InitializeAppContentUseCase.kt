@@ -2,6 +2,8 @@ package com.quare.bibleplanner.domain.usecase.impl
 
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
+import com.quare.bibleplanner.core.devices.domain.usecase.ObserveCurrentDeviceRevoked
+import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDeviceRegistration
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.MigratePlanPreferencesToSyncStoreUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.ObserveTesterUserProperty
@@ -13,6 +15,7 @@ import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveAppLocal
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveLanguageSync
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelectedVersionUseCase
 import com.quare.bibleplanner.feature.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
+import com.quare.bibleplanner.feature.logout.domain.usecase.EndSession
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.ObserveDynamicColorsSync
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +35,9 @@ internal class InitializeAppContentUseCase(
     private val observeLanguageSync: ObserveLanguageSync,
     private val observeSync: ObserveSync,
     private val observeTesterUserProperty: ObserveTesterUserProperty,
+    private val observeDeviceRegistration: ObserveDeviceRegistration,
+    private val observeCurrentDeviceRevoked: ObserveCurrentDeviceRevoked,
+    private val endSession: EndSession,
     private val syncBillingUserId: SyncBillingUserId,
     private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val remoteConfig: RemoteConfigService, // Don't delete it, it is necessary to initialize remote config
@@ -53,6 +59,9 @@ internal class InitializeAppContentUseCase(
             launch { observeDynamicColorsSync() }
             launch { observeLanguageSync() }
             launch { observeTesterUserProperty() }
+            launch { observeDeviceRegistration() }
+            // A remote sign-out deletes this device's row; end the local session as soon as we see it.
+            launch { observeCurrentDeviceRevoked().collect { endSession() } }
             launch { syncBillingUserId() }
             launch { requestUpdatePromptIfNeeded() }
             // Launched after book rows exist so remote favorites can be applied to them.

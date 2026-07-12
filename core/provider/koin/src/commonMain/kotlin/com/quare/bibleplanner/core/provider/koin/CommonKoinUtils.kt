@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.books.di.booksModule
 import com.quare.bibleplanner.core.clear.di.clearModule
 import com.quare.bibleplanner.core.datastore.di.dataStoreProviderModule
 import com.quare.bibleplanner.core.date.di.dateModule
+import com.quare.bibleplanner.core.devices.di.devicesModule
 import com.quare.bibleplanner.core.di.modelModule
 import com.quare.bibleplanner.core.loginnudge.di.loginNudgeModule
 import com.quare.bibleplanner.core.network.data.di.networkModule
@@ -20,6 +21,7 @@ import com.quare.bibleplanner.core.sync.di.syncModule
 import com.quare.bibleplanner.core.user.di.userModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
 import com.quare.bibleplanner.core.utils.jsonreader.di.jsonReaderModule
+import com.quare.bibleplanner.feature.accountdetails.di.accountDetailsModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
 import com.quare.bibleplanner.feature.applanguage.di.appLanguageModule
 import com.quare.bibleplanner.feature.bibleversion.di.bibleVersionModule
@@ -83,6 +85,8 @@ object CommonKoinUtils {
         moreModule,
         featureBooksModule,
         subscriptionDetailsModule,
+        accountDetailsModule,
+        devicesModule,
         contactSupportModule,
         releaseNotesModule,
         donationModule,
