@@ -70,6 +70,7 @@ object AnalyticsEventNames {
     const val DEVICE_RENAME_CANCELLED = "device_rename_cancelled"
 
     const val MORE_OPTION_CLICKED = "more_option_clicked"
+    const val RATE_APP_REVIEW_REQUESTED = "rate_app_review_requested"
     const val THEME_CHANGED = "theme_changed"
     const val CONTRAST_CHANGED = "contrast_changed"
     const val DYNAMIC_COLORS_TOGGLED = "dynamic_colors_toggled"

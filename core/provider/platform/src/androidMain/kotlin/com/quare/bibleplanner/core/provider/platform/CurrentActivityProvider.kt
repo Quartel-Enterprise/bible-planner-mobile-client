@@ -1,9 +1,9 @@
-package com.quare.bibleplanner.feature.inappupdate
+package com.quare.bibleplanner.core.provider.platform
 
 import android.app.Activity
 import java.lang.ref.WeakReference
 
-class InAppUpdateActivityProvider {
+class CurrentActivityProvider {
     private var activityRef: WeakReference<Activity>? = null
 
     var activity: Activity?

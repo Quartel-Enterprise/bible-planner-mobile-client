@@ -10,7 +10,8 @@
     "En iOS, cambiar entre las pestañas Planes, Libros y Más ahora usa una transición suave en lugar de un deslizamiento.",
     "Ahora puedes buscar actualizaciones desde la pantalla de perfil, y la app te avisa cuando hay una nueva versión disponible. En Android puedes descargar e instalar la actualización sin salir de la aplicación.",
     "Nueva pantalla de Detalles de la cuenta: consulta tu método de inicio de sesión, cuándo entraste por última vez y cuándo se creó tu cuenta.",
-    "Nuevo: Dispositivos conectados — mira en tiempo real todos los dispositivos conectados a tu cuenta, cambia el nombre de un dispositivo o cierra su sesión de forma remota."
+    "Nuevo: Dispositivos conectados — mira en tiempo real todos los dispositivos conectados a tu cuenta, cambia el nombre de un dispositivo o cierra su sesión de forma remota.",
+    "Ahora, calificar la aplicación en Android abre la ventana de reseñas de Google Play directamente dentro de la app, en lugar de llevarte a la tienda."
   ],
   "1.19.1": [
     "Se corrigió un problema por el que la 'Fecha de finalización' de un día aparecía como 'No hay fecha establecida' cuando completabas el día leyendo sus capítulos desde la pantalla de lectura; ahora muestra la fecha de tu lectura más reciente de ese día."

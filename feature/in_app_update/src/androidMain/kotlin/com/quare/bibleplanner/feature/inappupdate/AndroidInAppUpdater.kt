@@ -9,6 +9,7 @@ import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
+import com.quare.bibleplanner.core.provider.platform.CurrentActivityProvider
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateDownloadState
@@ -22,7 +23,7 @@ import com.google.android.play.core.install.model.UpdateAvailability as PlayUpda
 
 internal class AndroidInAppUpdater(
     private val appUpdateManager: AppUpdateManager,
-    private val activityProvider: InAppUpdateActivityProvider,
+    private val activityProvider: CurrentActivityProvider,
 ) {
     private val _downloadState = MutableStateFlow<UpdateDownloadState>(UpdateDownloadState.Idle)
     val downloadState: StateFlow<UpdateDownloadState> = _downloadState.asStateFlow()
