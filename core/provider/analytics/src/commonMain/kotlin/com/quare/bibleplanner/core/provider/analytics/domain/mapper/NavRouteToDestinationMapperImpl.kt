@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.provider.analytics.domain.mapper
 
+import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
@@ -26,6 +27,7 @@ import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
+import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
@@ -42,6 +44,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is MainNavRouteDestination.Books -> screen("books")
 
         is MainNavRouteDestination.More -> screen("more")
+
+        is AccountDetailsNavRoute -> responsive("account_details")
 
         is AddNotesFreeWarningNavRoute -> dialog(
             name = "add_notes_free_warning",
@@ -120,6 +124,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         )
 
         is ReleaseNotesNavRoute -> screen("release_notes")
+
+        is RenameDeviceNavRoute -> dialog("rename_device")
 
         is SubscriptionDetailsNavRoute -> dialog("subscription_details")
 

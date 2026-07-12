@@ -1,0 +1,28 @@
+<resources>
+    <string name="account_details_title">Detalhes da conta</string>
+    <string name="account_details_login_method">Método de login</string>
+    <string name="account_details_login_google">Google</string>
+    <string name="account_details_login_apple">Apple</string>
+    <string name="account_details_login_other">E-mail</string>
+    <string name="account_details_last_login">Último login</string>
+    <string name="account_details_created_at">Conta criada em</string>
+    <string name="account_details_connected_devices">Dispositivos conectados</string>
+
+    <plurals name="account_details_devices_active">
+        <item quantity="one">%1$d ativo</item>
+        <item quantity="other">%1$d ativos</item>
+    </plurals>
+
+    <string name="account_details_this_device">ESTE APARELHO</string>
+    <string name="account_details_device_options">Opções do dispositivo</string>
+    <string name="account_details_rename">Renomear</string>
+    <string name="account_details_sign_out">Sair</string>
+    <string name="account_details_logout">Sair da conta</string>
+    <string name="account_details_rename_title">Renomear dispositivo</string>
+    <string name="account_details_rename_placeholder">Nome do dispositivo</string>
+    <string name="account_details_rename_confirm">Salvar</string>
+    <string name="account_details_rename_cancel">Cancelar</string>
+    <string name="account_details_value_unknown">—</string>
+    <string name="account_details_device_signed_out">Sessão encerrada nesse aparelho</string>
+    <string name="account_details_action_error">Algo deu errado. Tente novamente.</string>
+</resources>

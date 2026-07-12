@@ -24,6 +24,8 @@ import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
+import com.quare.bibleplanner.feature.accountdetails.presentation.accountDetails
+import com.quare.bibleplanner.feature.accountdetails.presentation.renameDevice
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
 import com.quare.bibleplanner.feature.applanguage.presentation.appLanguage
 import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelectionRoot
@@ -168,6 +170,12 @@ fun RootAppNavDisplay() {
                         )
                         deleteVersion(onNavigateBack)
                         subscriptionDetails(onNavigateBack)
+                        accountDetails(
+                            onNavigateBack = onNavigateBack,
+                            onNavigateReplacingTop = onNavigateReplacingTop,
+                            onNavigate = onNavigate,
+                        )
+                        renameDevice(onNavigateBack)
                         contactSupport(onNavigateBack)
                         read(
                             onNavigate = onNavigate,

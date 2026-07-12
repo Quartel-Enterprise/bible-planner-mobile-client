@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.sync)
             implementation(projects.core.clear)
+            implementation(projects.core.devices)
             implementation(projects.core.utils)
             implementation(projects.core.provider.analytics)
 

@@ -33,4 +33,16 @@
         <item quantity="one">Hace %1$d mes</item>
         <item quantity="other">Hace %1$d meses</item>
     </plurals>
+
+    <string name="relative_active_now">Activo ahora</string>
+
+    <plurals name="relative_minutes_ago">
+        <item quantity="one">Hace %1$d min</item>
+        <item quantity="other">Hace %1$d min</item>
+    </plurals>
+
+    <plurals name="relative_hours_ago">
+        <item quantity="one">Hace %1$d hora</item>
+        <item quantity="other">Hace %1$d horas</item>
+    </plurals>
 </resources>

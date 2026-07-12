@@ -8,7 +8,9 @@
     "Corrigido um problema que podia impedir o aplicativo de abrir em alguns aparelhos Android.",
     "Nova seção 'Suporte e comentários' na tela de perfil: contate o suporte com um e-mail pronto (com botão de copiar), ou avalie o aplicativo direto na loja.",
     "No iOS, a troca entre as abas Planos, Livros e Mais agora usa uma transição suave em vez de um deslizamento.",
-    "Agora você pode buscar atualizações pela tela de perfil, e o app avisa quando uma nova versão está disponível. No Android, dá para baixar e instalar a atualização sem sair do aplicativo."
+    "Agora você pode buscar atualizações pela tela de perfil, e o app avisa quando uma nova versão está disponível. No Android, dá para baixar e instalar a atualização sem sair do aplicativo.",
+    "Nova tela de Detalhes da conta: veja seu método de login, quando você entrou pela última vez e quando sua conta foi criada.",
+    "Novo: Dispositivos conectados — veja em tempo real todos os aparelhos conectados à sua conta, renomeie um dispositivo ou encerre a sessão dele remotamente."
   ],
   "1.19.1": [
     "Corrigido um problema em que a 'Data de conclusão' de um dia aparecia como 'Nenhuma data definida' quando você concluía o dia lendo seus capítulos pela tela de leitura; agora ela mostra a data da sua leitura mais recente daquele dia."
