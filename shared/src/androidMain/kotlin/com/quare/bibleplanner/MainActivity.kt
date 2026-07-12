@@ -16,9 +16,9 @@ import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.platform.CurrentActivityProvider
 import com.quare.bibleplanner.core.provider.supabase.SupabaseDeeplinkHandler
 import com.quare.bibleplanner.core.utils.orFalse
-import com.quare.bibleplanner.feature.inappupdate.InAppUpdateActivityProvider
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
 import com.quare.bibleplanner.notification.NotificationAnalyticsType
 import org.koin.android.ext.android.inject
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModel()
     private val supabaseDeeplinkHandler: SupabaseDeeplinkHandler by inject()
     private val trackEvent: TrackEvent by inject()
-    private val inAppUpdateActivityProvider: InAppUpdateActivityProvider by inject()
+    private val currentActivityProvider: CurrentActivityProvider by inject()
 
     override fun attachBaseContext(newBase: Context) {
         val localeTag = newBase
@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        inAppUpdateActivityProvider.activity = this
+        currentActivityProvider.activity = this
         supabaseDeeplinkHandler.handle(intent)
         handleNotificationIntent(intent)
 

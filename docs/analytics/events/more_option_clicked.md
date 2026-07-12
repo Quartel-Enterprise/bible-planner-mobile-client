@@ -23,3 +23,4 @@ User taps any list item on the More screen.
 - The Pro banner card, login and logout rows are separate events on `MoreUiEvent` (`OnProCardClick`, `OnLoginClick`, `OnLogoutClick`) and are covered by the monetization/auth funnels, not by this event.
 - The enum value is `EDIT_PLAN_START_DAY` (day, not date), so the param value is `edit_plan_start_day`.
 - Destination impressions are also captured by [destination_view](destination_view.md); this event additionally covers options that open external links (`instagram`, `privacy_policy`, `terms`, `web_app`, `rate_app`) with no screen of their own.
+- `rate_app` may resolve to the native in-app review flow instead of an external link — see [rate_app_review_requested](rate_app_review_requested.md) for that outcome.

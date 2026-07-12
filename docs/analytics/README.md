@@ -221,6 +221,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | Event | Tier | Domain |
 |---|---|---|
 | [more_option_clicked](events/more_option_clicked.md) | P1 | Settings |
+| [rate_app_review_requested](events/rate_app_review_requested.md) | P1 | Settings |
 | [theme_changed](events/theme_changed.md) | P1 | Settings |
 | [contrast_changed](events/contrast_changed.md) | P2 | Settings |
 | [dynamic_colors_toggled](events/dynamic_colors_toggled.md) | P2 | Settings |
