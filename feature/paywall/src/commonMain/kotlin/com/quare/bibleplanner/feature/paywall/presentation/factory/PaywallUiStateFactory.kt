@@ -7,6 +7,7 @@ import bibleplanner.feature.paywall.generated.resources.plan_annual
 import bibleplanner.feature.paywall.generated.resources.plan_annual_description
 import bibleplanner.feature.paywall.generated.resources.plan_monthly
 import bibleplanner.feature.paywall.generated.resources.plan_monthly_description
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackageType
@@ -34,6 +35,7 @@ class PaywallUiStateFactory(
                 }
 
                 if (subscriptionPlans.isEmpty()) {
+                    Logger.e { "No subscription plans available for store: $storeName" }
                     PaywallInitializationResult(PaywallUiState.Error)
                 } else {
                     // Select Annual by default if available, otherwise first
@@ -66,7 +68,8 @@ class PaywallUiStateFactory(
                     )
                 }
             },
-            onFailure = {
+            onFailure = { throwable ->
+                Logger.e(throwable) { "Failed to initialize paywall" }
                 PaywallInitializationResult(PaywallUiState.Error)
             },
         )
