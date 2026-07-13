@@ -1,17 +1,11 @@
 {
   "2.0.0": [
     "Nuevo: Estudio del día con IA — genera un análisis de las lecturas de cada día, con una visión general, contexto histórico y preguntas para reflexionar.",
-    "La pantalla Pro fue rediseñada para mostrar los planes de suscripción con mayor claridad.",
-    "La pantalla de selección de tema fue rediseñada: cada opción ahora muestra una pequeña vista previa de su apariencia, y en tablets y escritorio se abre como una ventana con botón de cerrar.",
-    "La pantalla de selección de idioma también fue rediseñada, con una lista más clara y el idioma seleccionado más fácil de identificar.",
-    "La pantalla de selección de la versión de la Biblia también fue rediseñada, con las versiones agrupadas por idioma y una insignia de color para cada una.",
-    "Se corrigió un problema que podía impedir que la aplicación se abriera en algunos dispositivos Android.",
-    "Nueva sección 'Soporte y comentarios' en la pantalla de perfil: contacta al soporte con un correo ya preparado (con botón para copiar), o valora la aplicación directamente en la tienda.",
+    "La pantalla Pro, el selector de tema, el selector de idioma y el selector de la versión de la Biblia fueron rediseñados para una experiencia más limpia y consistente.",
+    "Nueva sección 'Soporte y comentarios' en la pantalla de perfil: contacta al soporte con un correo ya preparado, o valora la aplicación directamente en la tienda. En Android, calificar ahora abre la ventana de reseñas de Google Play directamente dentro de la app.",
     "En iOS, cambiar entre las pestañas Planes, Libros y Más ahora usa una transición suave en lugar de un deslizamiento.",
     "Ahora puedes buscar actualizaciones desde la pantalla de perfil, y la app te avisa cuando hay una nueva versión disponible. En Android puedes descargar e instalar la actualización sin salir de la aplicación.",
-    "Nueva pantalla de Detalles de la cuenta: consulta tu método de inicio de sesión, cuándo entraste por última vez y cuándo se creó tu cuenta.",
-    "Nuevo: Dispositivos conectados — mira en tiempo real todos los dispositivos conectados a tu cuenta, cambia el nombre de un dispositivo o cierra su sesión de forma remota.",
-    "Ahora, calificar la aplicación en Android abre la ventana de reseñas de Google Play directamente dentro de la app, en lugar de llevarte a la tienda."
+    "Nueva pantalla de Detalles de la cuenta: consulta tu método de inicio de sesión e historial de acceso, y gestiona todos los dispositivos conectados a tu cuenta — cambia el nombre de un dispositivo o cierra su sesión de forma remota."
   ],
   "1.19.1": [
     "Se corrigió un problema por el que la 'Fecha de finalización' de un día aparecía como 'No hay fecha establecida' cuando completabas el día leyendo sus capítulos desde la pantalla de lectura; ahora muestra la fecha de tu lectura más reciente de ese día."

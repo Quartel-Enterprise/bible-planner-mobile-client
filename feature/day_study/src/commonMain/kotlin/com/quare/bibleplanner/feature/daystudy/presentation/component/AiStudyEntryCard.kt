@@ -19,6 +19,7 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +63,7 @@ private const val SKELETON_SUBTITLE_WIDTH_FRACTION = 0.8f
 internal fun AiStudyEntryCard(
     card: DayStudyCardUiModel,
     generation: DayStudyGenerationUiModel?,
+    isOpening: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -97,6 +99,7 @@ internal fun AiStudyEntryCard(
             IdleCardContent(
                 card = card,
                 isLocked = isLocked,
+                isOpening = isOpening,
                 onClick = onClick,
             )
         }
@@ -107,6 +110,7 @@ internal fun AiStudyEntryCard(
 private fun IdleCardContent(
     card: DayStudyCardUiModel,
     isLocked: Boolean,
+    isOpening: Boolean,
     onClick: () -> Unit,
 ) {
     Row(
@@ -142,6 +146,7 @@ private fun IdleCardContent(
         }
         CardButton(
             mode = card.mode,
+            isLoading = isOpening,
             onClick = onClick,
         )
     }
@@ -318,24 +323,34 @@ internal fun CardBadge(card: DayStudyCardUiModel) {
 @Composable
 private fun CardButton(
     mode: DayStudyCardMode,
+    isLoading: Boolean,
     onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
+        enabled = !isLoading,
         contentPadding = PaddingValues(
             horizontal = 16.dp,
             vertical = 8.dp,
         ),
     ) {
-        Text(
-            text = stringResource(
-                when (mode) {
-                    DayStudyCardMode.GENERATE -> Res.string.ai_study_generate
-                    DayStudyCardMode.VIEW -> Res.string.ai_study_view
-                    DayStudyCardMode.LOCKED -> Res.string.ai_study_subscribe
-                },
-            ),
-        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(16.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = 2.dp,
+            )
+        } else {
+            Text(
+                text = stringResource(
+                    when (mode) {
+                        DayStudyCardMode.GENERATE -> Res.string.ai_study_generate
+                        DayStudyCardMode.VIEW -> Res.string.ai_study_view
+                        DayStudyCardMode.LOCKED -> Res.string.ai_study_subscribe
+                    },
+                ),
+            )
+        }
     }
 }
 

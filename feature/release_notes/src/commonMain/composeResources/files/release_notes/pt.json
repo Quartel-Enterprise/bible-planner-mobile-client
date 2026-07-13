@@ -1,17 +1,11 @@
 {
   "2.0.0": [
     "Novo: Estudo do dia com IA — gere uma análise das leituras de cada dia, com visão geral, contexto histórico e perguntas para reflexão.",
-    "A tela Pro foi redesenhada, deixando os planos de assinatura mais claros.",
-    "A tela de escolha de tema foi redesenhada: cada opção agora mostra uma pequena prévia de como fica, e em tablets e desktop ela abre como uma janela com botão de fechar.",
-    "A tela de escolha de idioma também foi redesenhada, com uma lista mais limpa e o idioma selecionado mais fácil de identificar.",
-    "A tela de escolha da versão da Bíblia também foi redesenhada, com as versões agrupadas por idioma e um selo colorido para cada uma.",
-    "Corrigido um problema que podia impedir o aplicativo de abrir em alguns aparelhos Android.",
-    "Nova seção 'Suporte e comentários' na tela de perfil: contate o suporte com um e-mail pronto (com botão de copiar), ou avalie o aplicativo direto na loja.",
+    "A tela Pro, o seletor de tema, o seletor de idioma e o seletor de versão da Bíblia foram redesenhados para uma experiência mais limpa e consistente.",
+    "Nova seção 'Suporte e comentários' na tela de perfil: contate o suporte com um e-mail pronto, ou avalie o aplicativo direto na loja. No Android, avaliar agora abre a janela de avaliação da Google Play direto dentro do app.",
     "No iOS, a troca entre as abas Planos, Livros e Mais agora usa uma transição suave em vez de um deslizamento.",
     "Agora você pode buscar atualizações pela tela de perfil, e o app avisa quando uma nova versão está disponível. No Android, dá para baixar e instalar a atualização sem sair do aplicativo.",
-    "Nova tela de Detalhes da conta: veja seu método de login, quando você entrou pela última vez e quando sua conta foi criada.",
-    "Novo: Dispositivos conectados — veja em tempo real todos os aparelhos conectados à sua conta, renomeie um dispositivo ou encerre a sessão dele remotamente.",
-    "Avaliar o aplicativo no Android agora abre a janela de avaliação da Google Play direto dentro do app, em vez de te levar até a loja."
+    "Nova tela de Detalhes da conta: veja seu método de login e histórico de acesso, e gerencie todos os dispositivos conectados à sua conta — renomeie um dispositivo ou encerre a sessão dele remotamente."
   ],
   "1.19.1": [
     "Corrigido um problema em que a 'Data de conclusão' de um dia aparecia como 'Nenhuma data definida' quando você concluía o dia lendo seus capítulos pela tela de leitura; agora ela mostra a data da sua leitura mais recente daquele dia."
