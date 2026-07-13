@@ -51,6 +51,7 @@ internal fun DayStudyPane(
     cardState: Loadable<DayStudyCardUiModel>,
     openStudy: DayStudyModel?,
     generation: DayStudyGenerationUiModel?,
+    isOpeningStudy: Boolean,
     onCardClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -79,6 +80,7 @@ internal fun DayStudyPane(
 
             cardState is Loadable.Loaded -> DayStudyPaneHero(
                 card = cardState.value,
+                isOpening = isOpeningStudy,
                 onClick = onCardClick,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -96,6 +98,7 @@ internal fun DayStudyPane(
 @Composable
 private fun DayStudyPaneHero(
     card: DayStudyCardUiModel,
+    isOpening: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -132,6 +135,7 @@ private fun DayStudyPaneHero(
         VerticalSpacer(24)
         HeroButton(
             mode = card.mode,
+            isLoading = isOpening,
             onClick = onClick,
         )
     }
@@ -160,20 +164,30 @@ private fun HeroIcon(icon: ImageVector) {
 @Composable
 private fun HeroButton(
     mode: DayStudyCardMode,
+    isLoading: Boolean,
     onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
+        enabled = !isLoading,
         modifier = Modifier.height(50.dp),
         shape = RoundedCornerShape(16.dp),
     ) {
-        Icon(
-            imageVector = heroButtonIcon(mode),
-            contentDescription = null,
-            modifier = Modifier.size(ButtonDefaults.IconSize),
-        )
-        HorizontalSpacer(ButtonDefaults.IconSpacing)
-        Text(text = stringResource(heroButtonLabel(mode)))
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = 2.dp,
+            )
+        } else {
+            Icon(
+                imageVector = heroButtonIcon(mode),
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+            HorizontalSpacer(ButtonDefaults.IconSpacing)
+            Text(text = stringResource(heroButtonLabel(mode)))
+        }
     }
 }
 

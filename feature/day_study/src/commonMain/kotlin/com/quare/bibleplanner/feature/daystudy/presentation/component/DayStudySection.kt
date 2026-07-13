@@ -53,6 +53,7 @@ fun DayStudySection(
             cardState = uiState.card,
             openStudy = uiState.openStudy,
             generation = uiState.generation,
+            isOpeningStudy = uiState.isOpeningStudy,
             onCardClick = { viewModel.onEvent(DayStudyUiEvent.OnCardClick) },
             modifier = modifier,
         )
@@ -65,6 +66,7 @@ fun DayStudySection(
         is Loadable.Loaded -> AiStudyEntryCard(
             card = card.value,
             generation = uiState.generation,
+            isOpening = uiState.isOpeningStudy,
             onClick = { viewModel.onEvent(DayStudyUiEvent.OnCardClick) },
             modifier = modifier,
         )

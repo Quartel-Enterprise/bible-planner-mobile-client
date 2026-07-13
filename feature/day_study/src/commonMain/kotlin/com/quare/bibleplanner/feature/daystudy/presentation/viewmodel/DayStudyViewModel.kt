@@ -68,6 +68,7 @@ internal class DayStudyViewModel(
             generation = null,
             isStudyOpen = false,
             openStudy = null,
+            isOpeningStudy = false,
         ),
     )
     val uiState: StateFlow<DayStudyUiState> = _uiState.asStateFlow()
@@ -106,7 +107,9 @@ internal class DayStudyViewModel(
         jobKey = key
         generationCoordinator.setActive(key)
         if (routeChanged) {
-            _uiState.update { it.copy(generation = null, isStudyOpen = false, openStudy = null) }
+            _uiState.update {
+                it.copy(generation = null, isStudyOpen = false, openStudy = null, isOpeningStudy = false)
+            }
         }
         if (generationCoordinator.pendingOpenKey.value == key) {
             generationCoordinator.consumePendingOpen(key)
@@ -223,16 +226,27 @@ internal class DayStudyViewModel(
 
     private fun generateIfLoggedIn() {
         viewModelScope.launch {
-            if (observeAuthenticatedUserId().first() == null) {
-                _uiAction.emit(DayStudyUiAction.NavigateToLoginWarning)
-            } else {
-                startGenerationOrCachedOpen()
+            withOpeningIndicator {
+                if (observeAuthenticatedUserId().first() == null) {
+                    _uiAction.emit(DayStudyUiAction.NavigateToLoginWarning)
+                } else {
+                    startGenerationOrCachedOpen()
+                }
             }
         }
     }
 
     private fun generateOrOpen() {
-        viewModelScope.launch { startGenerationOrCachedOpen() }
+        viewModelScope.launch { withOpeningIndicator { startGenerationOrCachedOpen() } }
+    }
+
+    private suspend fun withOpeningIndicator(block: suspend () -> Unit) {
+        _uiState.update { it.copy(isOpeningStudy = true) }
+        try {
+            block()
+        } finally {
+            _uiState.update { it.copy(isOpeningStudy = false) }
+        }
     }
 
     private suspend fun startGenerationOrCachedOpen() {

@@ -8,4 +8,5 @@ internal data class DayStudyUiState(
     val generation: DayStudyGenerationUiModel?,
     val isStudyOpen: Boolean,
     val openStudy: DayStudyModel?,
+    val isOpeningStudy: Boolean,
 )

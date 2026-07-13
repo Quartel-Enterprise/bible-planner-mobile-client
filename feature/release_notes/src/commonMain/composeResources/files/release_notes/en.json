@@ -1,17 +1,11 @@
 {
   "2.0.0": [
     "New: AI Daily Study — generate an analysis of each day's readings, with an overview, historical context, and questions for reflection.",
-    "The Pro screen was redesigned to make the subscription plans clearer.",
-    "The theme picker was redesigned: each option now shows a small preview of what it looks like, and on tablets and desktop it opens as a dialog with a close button.",
-    "The language picker was also redesigned, with a cleaner list and a clearer view of your selected language.",
-    "The Bible version picker was redesigned too, with versions grouped by language and a colored badge for each one.",
-    "Fixed an issue that could prevent the app from opening on some Android devices.",
-    "New 'Support & comments' section on the profile screen: contact support with a ready-made email (with a copy button), or rate the app directly on the store.",
+    "Redesigned the Pro screen, theme picker, language picker, and Bible version picker for a cleaner, more consistent look.",
+    "New 'Support & comments' section on the profile screen: contact support with a ready-made email, or rate the app directly on the store. On Android, rating now opens Google Play's review dialog right inside the app.",
     "On iOS, switching between the Plans, Books, and More tabs now uses a smooth fade instead of a sliding animation.",
     "You can now check for updates from the profile screen, and the app lets you know when a new version is available. On Android you can download and install the update without leaving the app.",
-    "New Account details screen: see your login method, when you last signed in, and when your account was created.",
-    "New: Connected devices — see every device signed into your account in real time, rename a device, or remotely sign one out.",
-    "Rating the app on Android now opens Google Play's review dialog right inside the app instead of sending you to the Play Store."
+    "New Account details screen: see your login method and sign-in history, and manage every device connected to your account — rename a device or remotely sign it out."
   ],
   "1.19.1": [
     "Fixed an issue where a day's 'Completed date' showed as 'No date set' when you finished the day by reading its chapters from the reading screen; it now shows the date of your most recent reading for that day."
