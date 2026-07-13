@@ -22,14 +22,14 @@ internal fun getHttpClient(): HttpClient = HttpClient {
     install(HttpTimeout) {
         requestTimeoutMillis = REQUEST_TIMEOUT_MILLIS
     }
+    val json = Json {
+        prettyPrint = true
+        isLenient = true
+        explicitNulls = false
+        ignoreUnknownKeys = true
+    }
     install(ContentNegotiation) {
-        json(
-            Json {
-                prettyPrint = true
-                isLenient = true
-                explicitNulls = false
-                ignoreUnknownKeys = true
-            },
-        )
+        json(json = json, contentType = ContentType.Application.Json)
+        json(json = json, contentType = ContentType.Text.JavaScript)
     }
 }
