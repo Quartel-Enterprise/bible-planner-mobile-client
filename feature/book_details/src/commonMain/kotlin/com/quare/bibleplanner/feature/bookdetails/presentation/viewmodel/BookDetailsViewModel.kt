@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.bookdetails.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
@@ -20,6 +19,7 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetails
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
 import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -34,10 +34,10 @@ class BookDetailsViewModel(
     private val bookGroupMapper: BookGroupMapper,
     private val markBookRead: UpdateBookReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
-    private val trackEvent: TrackEvent,
+    trackEvent: TrackEvent,
     getBookByIdFlow: GetBookByIdFlowUseCase,
     val platform: Platform,
-) : ViewModel() {
+) : TrackedViewModel<BookDetailsUiEvent>(trackEvent) {
     private val bookId = BookId.valueOf(route.bookId)
 
     private val _uiState = MutableStateFlow<BookDetailsUiState>(BookDetailsUiState.Loading)
@@ -78,7 +78,7 @@ class BookDetailsViewModel(
         }
     }
 
-    fun onEvent(event: BookDetailsUiEvent) {
+    override fun handleEvent(event: BookDetailsUiEvent) {
         when (event) {
             BookDetailsUiEvent.OnBackClick -> {
                 viewModelScope.launch {

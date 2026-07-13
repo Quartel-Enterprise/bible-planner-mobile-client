@@ -113,7 +113,30 @@ Invoke the skill by following the instructions in `docs/skills/release-notes-upd
 changes inferred in step 3 should be enough context — pass them along so the skill doesn't need
 to re-run the git commands.
 
-### 7. Commit all uncommitted changes
+### 7. Verify analytics catalog (feature/enhancement)
+
+Skip this for `fix` and `refactor`. For `feature` and `enhancement`, check whether the diff adds
+or changes user actions that should be tracked — i.e. it touches
+`feature/**/presentation/model/*UiEvent.kt` (new or changed `UiEvent` cases) or other feature
+code introducing user-facing interactions.
+
+The compiler already guarantees every `UiEvent` declares an `analytics` decision, so the gap here
+is the part the compiler can't see: the **event catalog and constants**. If the diff added
+trackable actions, confirm it also updated:
+
+- `docs/analytics/events/<name>.md` (a new event file) and the index table in
+  `docs/analytics/README.md`, and
+- `AnalyticsEventNames.kt` / `AnalyticsParams.kt` constants for any new event.
+
+If a user-facing feature added trackable actions but none of the above changed, warn the user and
+offer to run the `add-analytics-event` skill before committing:
+
+> "This feature adds user actions but the analytics catalog wasn't updated. Want me to run
+> add-analytics-event to add the events, or are these deliberately not tracked?"
+
+Do not block on it — if the user confirms the actions are deliberately `NotTracked`, continue.
+
+### 8. Commit all uncommitted changes
 
 If the release-notes-updater skill was run in step 6, show the user what was written and ask:
 > "The release notes have been updated. Want me to commit now?"
@@ -134,13 +157,13 @@ The commit message must:
 
 If there are no uncommitted changes (the user already committed everything), skip this step.
 
-### 8. Push the branch
+### 9. Push the branch
 
 ```bash
 git push -u origin HEAD
 ```
 
-### 9. Create the pull request
+### 10. Create the pull request
 
 First, check if the GitHub CLI is available:
 
@@ -202,7 +225,7 @@ Given uncommitted changes that remove a `navigationBarsPadding()` modifier from 
 - **PR description:**
   > The books screen had extra whitespace appearing below the search bar due to `navigationBarsPadding()` being applied to the top bar instead of the screen content. This modifier adds padding matching the system navigation bar height, which caused the top bar surface to grow downward unnecessarily. Removed the modifier from the top bar to fix the layout.
 
-### 10. Squash and switch to main (optional)
+### 11. Squash and switch to main (optional)
 
 After the PR is created, use the `AskUserQuestion` tool to ask the user with a menu:
 

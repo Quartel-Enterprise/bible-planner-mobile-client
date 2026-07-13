@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.read.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.util.toBookNameResource
@@ -19,6 +18,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -31,9 +31,9 @@ class ReadViewModel(
     private val readDataPresentationModelFactory: ReadDataPresentationModelFactory,
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
-    private val trackEvent: TrackEvent,
+    trackEvent: TrackEvent,
     val platform: Platform,
-) : ViewModel() {
+) : TrackedViewModel<ReadUiEvent>(trackEvent) {
     private val chapterNumber = route.chapterNumber
     private val isChapterRead = route.isChapterRead
     private val bookId = BookId.valueOf(route.bookId)
@@ -50,7 +50,7 @@ class ReadViewModel(
         loadChapterContent()
     }
 
-    fun onEvent(event: ReadUiEvent) {
+    override fun handleEvent(event: ReadUiEvent) {
         when (event) {
             ReadUiEvent.OnArrowBackClick -> navigateBack()
 

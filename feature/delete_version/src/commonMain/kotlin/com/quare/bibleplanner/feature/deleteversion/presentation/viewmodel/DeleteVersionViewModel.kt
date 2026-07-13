@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.deleteversion.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
@@ -9,6 +8,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.deleteversion.presentation.model.DeleteVersionUiEvent
 import com.quare.bibleplanner.feature.deleteversion.presentation.model.DeleteVersionUiState
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,8 +20,8 @@ import kotlinx.coroutines.launch
 internal class DeleteVersionViewModel(
     route: DeleteVersionNavRoute,
     private val bibleVersionDownloaderFacade: BibleVersionDownloaderFacade,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<DeleteVersionUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<DeleteVersionUiState> =
         MutableStateFlow(DeleteVersionUiState.Idle)
     val uiState: StateFlow<DeleteVersionUiState> = _uiState.asStateFlow()
@@ -31,7 +31,7 @@ internal class DeleteVersionViewModel(
     private val _backUiAction: MutableSharedFlow<Unit> = MutableSharedFlow()
     val backUiAction: SharedFlow<Unit> = _backUiAction
 
-    fun onEvent(event: DeleteVersionUiEvent) {
+    override fun handleEvent(event: DeleteVersionUiEvent) {
         when (event) {
             DeleteVersionUiEvent.OnConfirmDelete -> {
                 viewModelScope.launch {

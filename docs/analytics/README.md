@@ -12,7 +12,42 @@ Events flow through the `AnalyticsService` abstraction in `core/provider/analyti
 - **iOS**: `IosAnalyticsService.swift` delegates to the Firebase iOS SDK (linked via SPM), injected through Koin.
 - **Desktop (JVM)**: `DesktopAnalyticsService` posts directly to GA4 via the Measurement Protocol (`MeasurementProtocolClient`), since Firebase has no JVM SDK.
 
-Today the interface only exposes `setUserProperty`. Implementing the events in this catalog requires adding a `logEvent(name, params)` method to `AnalyticsService` and a `TrackEvent` use case for ViewModels — that implementation work is tracked separately; this folder only defines *what* to track.
+`AnalyticsService` exposes `setUserProperty` and `logEvent(name, params)`. ViewModels never touch `AnalyticsService` directly — they go through the `TrackEvent` use case (`core/provider/analytics/.../domain/usecase/TrackEvent.kt`). This folder is the source of truth for *what* to track; the sections below describe *how* tracking is enforced in code.
+
+### Compile-time enforcement: every `UiEvent` declares its analytics decision
+
+A user action can only ship without analytics if someone consciously decides so — the compiler enforces it. Every `XxxUiEvent` (the user-intent type each ViewModel receives via `onEvent`) implements the `UiEvent` marker (`ui/utils/.../presentation/UiEvent.kt`), which has one abstract member:
+
+```kotlin
+interface UiEvent {
+    val analytics: EventAnalytics
+}
+```
+
+Because the member is abstract, **adding a new `UiEvent` case that doesn't declare `analytics` is a compile error** — the same guarantee `NavRouteToDestinationMapper` gives for `destination_view`. The top-level split (`EventAnalytics`, in `core/provider/analytics/.../domain/model/`) answers whether the event is tracked at all:
+
+- `Track` — the event is tracked. Splits on *how*:
+  - `Track.Automatic(name, params)` — the event and its params are fully known from the event itself. The base ViewModel emits it automatically; do **not** also call `trackEvent` manually.
+  - `Track.Manual(names)` — the event *is* tracked, but inside the `when` branch, because its params only exist after a domain call (e.g. `is_read` is the result of a toggle) or depend on `UiState`. Keep the `trackEvent(...)` call(s) in the branch; `names` lists every event name the branch may emit for that case.
+- `NotTracked` — genuinely not a trackable action: UI plumbing only (scroll, menu open/close, animation callbacks, retry; see "Explicitly not tracked" below). No business action should ever be classified this way — if a case neither navigates nor calls `trackEvent`, that's a gap, not a `NotTracked`.
+
+**Every click gets its own event, even when it also triggers navigation.** A click and the
+resulting `destination_view` are different funnel signals — click-through rate vs. screen-view
+rate are not the same number, and collapsing them loses the distinction. There is no "covered by
+navigation" opt-out: a click that opens a screen/dialog/sheet gets its own `Track` event in
+addition to whatever `destination_view` also logs. This applies uniformly, including bottom-tab/
+nav-rail clicks (`bottom_tab_clicked`).
+
+ViewModels that receive user intents extend `TrackedViewModel<XxxUiEvent>` (`ui/utils/.../presentation/TrackedViewModel.kt`), passing `TrackEvent` to the base and implementing `handleEvent` instead of `onEvent`. The base reads `event.analytics`, auto-emits any `Track.Automatic`, then delegates to `handleEvent`.
+
+### Automated enforcement: `Track.Manual` names must actually be wired
+
+Declaring a decision doesn't prove it's true, so `AnalyticsCatalogTest` (`core/provider/analytics/src/jvmTest/.../AnalyticsCatalogTest.kt`) statically checks the whole repo on every run of that module's `jvmTest`:
+
+- every name listed in a `Track.Manual(names)` must appear in an actual `trackEvent(...)` call somewhere else in the same Gradle module (proof the wiring exists, not just the declaration);
+- every name declared via `Track.Automatic` or `Track.Manual` anywhere must have a matching `docs/analytics/events/<name>.md` catalog entry.
+
+Because this test reads files outside its own module's normal Gradle inputs, `core/provider/analytics/build.gradle.kts` explicitly declares `feature/` and `docs/analytics/events/` as task inputs for `jvmTest` — without that, Gradle's up-to-date check wouldn't notice changes to other modules and the guarantee would silently stop firing.
 
 ## Naming conventions
 
@@ -149,6 +184,17 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [progress_reset_confirmed](events/progress_reset_confirmed.md) | P1 | Reading |
 | [progress_reset_cancelled](events/progress_reset_cancelled.md) | P2 | Reading |
 | [reading_suggestion_clicked](events/reading_suggestion_clicked.md) | P2 | Reading |
+| [day_card_clicked](events/day_card_clicked.md) | P2 | Reading |
+| [read_back_clicked](events/read_back_clicked.md) | P2 | Reading |
+| [book_clicked](events/book_clicked.md) | P2 | Reading |
+| [book_details_back_clicked](events/book_details_back_clicked.md) | P2 | Reading |
+| [chapter_clicked](events/chapter_clicked.md) | P2 | Reading |
+| [day_back_clicked](events/day_back_clicked.md) | P2 | Reading |
+| [read_retry_clicked](events/read_retry_clicked.md) | P2 | Reading |
+| [day_edit_date_clicked](events/day_edit_date_clicked.md) | P2 | Reading |
+| [day_time_picker_shown](events/day_time_picker_shown.md) | P2 | Reading |
+| [day_date_picker_dismissed](events/day_date_picker_dismissed.md) | P2 | Reading |
+| [day_date_selected](events/day_date_selected.md) | P2 | Reading |
 
 ### Notes
 
@@ -156,7 +202,10 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 |---|---|---|
 | [note_saved](events/note_saved.md) | P1 | Notes |
 | [note_deleted](events/note_deleted.md) | P1 | Notes |
+| [note_delete_cancelled](events/note_delete_cancelled.md) | P2 | Notes |
 | [notes_limit_reached](events/notes_limit_reached.md) | P1 | Notes |
+| [add_notes_free_warning_dismissed](events/add_notes_free_warning_dismissed.md) | P2 | Notes |
+| [notes_clear_clicked](events/notes_clear_clicked.md) | P2 | Notes |
 
 ### Day Study (AI)
 
@@ -167,6 +216,8 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_study_generation_completed](events/day_study_generation_completed.md) | P1 | DayStudy |
 | [day_study_generation_failed](events/day_study_generation_failed.md) | P1 | DayStudy |
 | [day_study_opened](events/day_study_opened.md) | P2 | DayStudy |
+| [day_study_dismissed](events/day_study_dismissed.md) | P2 | DayStudy |
+| [day_study_login_required_clicked](events/day_study_login_required_clicked.md) | P2 | DayStudy |
 
 ### Bible versions
 
@@ -178,6 +229,11 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [bible_version_download_failed](events/bible_version_download_failed.md) | P1 | BibleVersions |
 | [bible_version_download_paused](events/bible_version_download_paused.md) | P2 | BibleVersions |
 | [bible_version_deleted](events/bible_version_deleted.md) | P2 | BibleVersions |
+| [bible_version_delete_cancelled](events/bible_version_delete_cancelled.md) | P2 | BibleVersions |
+| [bible_version_manage_clicked](events/bible_version_manage_clicked.md) | P2 | BibleVersions |
+| [bible_version_delete_clicked](events/bible_version_delete_clicked.md) | P2 | BibleVersions |
+| [bible_version_manager_dismissed](events/bible_version_manager_dismissed.md) | P2 | BibleVersions |
+| [bible_version_download_retry_clicked](events/bible_version_download_retry_clicked.md) | P2 | BibleVersions |
 
 ### Monetization
 
@@ -195,6 +251,11 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [github_sponsors_opened](events/github_sponsors_opened.md) | P1 | Monetization |
 | [donation_section_toggled](events/donation_section_toggled.md) | P2 | Monetization |
 | [pix_qr_shared](events/pix_qr_shared.md) | P1 | Monetization |
+| [congrats_dismissed](events/congrats_dismissed.md) | P2 | Monetization |
+| [congrats_explore_clicked](events/congrats_explore_clicked.md) | P2 | Monetization |
+| [donation_dismissed](events/donation_dismissed.md) | P2 | Monetization |
+| [pix_qr_opened](events/pix_qr_opened.md) | P2 | Monetization |
+| [pix_qr_dismissed](events/pix_qr_dismissed.md) | P2 | Monetization |
 
 ### Auth & sync
 
@@ -204,17 +265,23 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [login_started](events/login_started.md) | P1 | Auth |
 | [login_failed](events/login_failed.md) | P1 | Auth |
 | [login_cancelled](events/login_cancelled.md) | P2 | Auth |
+| [google_account_add_confirmed](events/google_account_add_confirmed.md) | P2 | Auth |
+| [google_account_add_declined](events/google_account_add_declined.md) | P2 | Auth |
+| [login_sheet_dismissed](events/login_sheet_dismissed.md) | P2 | Auth |
 | [logout_confirmed](events/logout_confirmed.md) | P1 | Auth |
+| [logout_cancelled](events/logout_cancelled.md) | P2 | Auth |
 | [logout_failed](events/logout_failed.md) | P1 | Auth |
 | [login_nudge_shown](events/login_nudge_shown.md) | P1 | Auth |
 | [login_nudge_accepted](events/login_nudge_accepted.md) | P1 | Auth |
 | [login_nudge_snoozed](events/login_nudge_snoozed.md) | P2 | Auth |
 | [login_nudge_disabled](events/login_nudge_disabled.md) | P1 | Auth |
+| [login_nudge_dont_show_again_toggled](events/login_nudge_dont_show_again_toggled.md) | P2 | Auth |
 | [login_warning_shown](events/login_warning_shown.md) | P1 | Auth |
 | [login_warning_accepted](events/login_warning_accepted.md) | P1 | Auth |
 | [login_warning_dismissed](events/login_warning_dismissed.md) | P2 | Auth |
 | [sync_completed](events/sync_completed.md) | P2 | Auth |
 | [sync_failed](events/sync_failed.md) | P2 | Auth |
+| [rename_device_clicked](events/rename_device_clicked.md) | P2 | Auth |
 
 ### Settings & shell
 
@@ -229,11 +296,26 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [language_changed](events/language_changed.md) | P1 | Settings |
 | [notification_permission_result](events/notification_permission_result.md) | P1 | Settings |
 | [notification_permission_prompted](events/notification_permission_prompted.md) | P2 | Settings |
+| [notification_permission_declined](events/notification_permission_declined.md) | P2 | Settings |
 | [notification_opened](events/notification_opened.md) | P2 | Settings |
 | [release_notes_tab_selected](events/release_notes_tab_selected.md) | P2 | Settings |
 | [github_release_opened](events/github_release_opened.md) | P2 | Settings |
 | [contact_support_email_opened](events/contact_support_email_opened.md) | P1 | Settings |
 | [contact_support_email_copied](events/contact_support_email_copied.md) | P2 | Settings |
+| [contact_support_dismissed](events/contact_support_dismissed.md) | P2 | Settings |
+| [release_notes_back_clicked](events/release_notes_back_clicked.md) | P2 | Settings |
+| [theme_selection_dismissed](events/theme_selection_dismissed.md) | P2 | Settings |
+| [material_you_info_clicked](events/material_you_info_clicked.md) | P2 | Settings |
+| [material_you_info_dismissed](events/material_you_info_dismissed.md) | P2 | Settings |
+| [material_you_got_it_clicked](events/material_you_got_it_clicked.md) | P2 | Settings |
+| [sync_toggle_blocked_clicked](events/sync_toggle_blocked_clicked.md) | P2 | Settings |
+| [app_language_dismissed](events/app_language_dismissed.md) | P2 | Settings |
+| [edit_plan_start_date_dismissed](events/edit_plan_start_date_dismissed.md) | P2 | Settings |
+| [pro_card_clicked](events/pro_card_clicked.md) | P2 | Settings |
+| [account_card_clicked](events/account_card_clicked.md) | P2 | Settings |
+| [login_row_clicked](events/login_row_clicked.md) | P2 | Settings |
+| [logout_clicked](events/logout_clicked.md) | P2 | Settings |
+| [bottom_tab_clicked](events/bottom_tab_clicked.md) | P2 | Settings |
 
 ### App updates
 
@@ -244,6 +326,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [update_dismissed](events/update_dismissed.md) | P2 | Updates |
 | [update_download_failed](events/update_download_failed.md) | P2 | Updates |
 | [update_install_started](events/update_install_started.md) | P2 | Updates |
+| [update_install_postponed](events/update_install_postponed.md) | P2 | Updates |
 
 ### Books browsing UI
 
@@ -253,25 +336,43 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [books_filter_toggled](events/books_filter_toggled.md) | P2 | Books |
 | [books_sort_changed](events/books_sort_changed.md) | P2 | Books |
 | [books_layout_changed](events/books_layout_changed.md) | P2 | Books |
+| [books_filter_menu_opened](events/books_filter_menu_opened.md) | P2 | Books |
+| [books_filter_menu_dismissed](events/books_filter_menu_dismissed.md) | P2 | Books |
+| [books_sort_menu_opened](events/books_sort_menu_opened.md) | P2 | Books |
+| [books_sort_menu_dismissed](events/books_sort_menu_dismissed.md) | P2 | Books |
+| [books_search_cleared](events/books_search_cleared.md) | P2 | Books |
 | [testament_switched](events/testament_switched.md) | P2 | Books |
 | [web_app_link_opened](events/web_app_link_opened.md) | P2 | Books |
 | [synopsis_toggled](events/synopsis_toggled.md) | P2 | Books |
 | [plan_week_toggled](events/plan_week_toggled.md) | P2 | Books |
 | [plan_group_toggled](events/plan_group_toggled.md) | P2 | Books |
 | [plan_shortcut_used](events/plan_shortcut_used.md) | P2 | Books |
+| [plan_overflow_option_clicked](events/plan_overflow_option_clicked.md) | P2 | Books |
+| [plan_edit_clicked](events/plan_edit_clicked.md) | P2 | Books |
+| [plan_overflow_clicked](events/plan_overflow_clicked.md) | P2 | Books |
+| [plan_overflow_dismissed](events/plan_overflow_dismissed.md) | P2 | Books |
 
 ## Explicitly not tracked
 
-These interactions were reviewed and deliberately left out (pure UI bookkeeping with no analytical value):
+These interactions were reviewed and deliberately left out — not user actions at all, so there is
+no click to attribute (see "Every click gets its own event" above for what *is* tracked, including
+menu open/close, retries, and picker steps, which all have dedicated events despite also being
+low-signal-sounding names):
 
-- Menu open/close events (`OnToggleFilterMenu`, `OnToggleSortMenu`, `OnOverflowClick` and their dismiss counterparts).
-- Scroll bookkeeping (`OnScrollStateChange`, `OnScrollToWeekCompleted`, `OnFlashCompleted`, etc.).
-- Date/time picker dismissals and intermediate picker steps.
-- Retry buttons (`OnRetryClick`) and snackbar-only bridge events.
-- Bottom-tab clicks — covered by `destination_view` on the `MainNavRouteDestination` keys.
+- Scroll bookkeeping (`OnScrollStateChange`, `OnActiveRowVisibilityChange`, etc.) — continuous
+  signals fired during a gesture, not a discrete action.
+- Animation/scroll-completion callbacks (`OnScrollToWeekCompleted`, `OnScrollToTopCompleted`,
+  `OnFlashCompleted`) — fired when a programmatic animation finishes, not user-initiated.
+- VM lifecycle hooks not triggered by the user (`DayStudyUiEvent.OnStart`) and incoming
+  messages/snackbar bridges (`DayUiEvent.OnDayStudyMessage`).
 
 ## Adding a new event
 
-1. Create `events/<event_name>.md` following the template used by the existing files (Tier/Domain header, When it fires, Trigger source, Parameters, Notes).
-2. Add the event to the index table above, in its domain section.
-3. Instrument the code through the `TrackEvent` use case, matching the documented name and parameters exactly.
+Prefer running the `add-analytics-event` skill, which walks these steps:
+
+1. Decide whether the action needs an event at all. Every click gets its own event — even one that only opens a screen/dialog/sheet, since `destination_view` measures screen-view rate, not click-through rate. Only genuine UI plumbing (see "Explicitly not tracked" above) is exempt, classified as `NotTracked`. A business action — including navigation — should never end up `NotTracked`.
+2. Add the event name as a `const val` in `AnalyticsEventNames.kt` and any new parameter keys in `AnalyticsParams.kt`.
+3. Classify the `UiEvent` case: `Track.Automatic(name, params)` for static params (auto-emitted), or `Track.Manual(names)` (keep the `trackEvent(...)` call in the branch) for params only known post-domain / from `UiState`.
+4. Create `events/<event_name>.md` following the template used by the existing files (Tier/Domain header, When it fires, Trigger source, Parameters, Notes).
+5. Add the event to the index table above, in its domain section.
+6. Run `:core:provider:analytics:jvmTest` — `AnalyticsCatalogTest` fails if a `Track.Manual` name isn't actually wired to a `trackEvent` call, or if any declared name is missing its catalog entry.

@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.login.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.login.generated.resources.Res
 import bibleplanner.feature.login.generated.resources.login_result_error
@@ -17,6 +16,7 @@ import com.quare.bibleplanner.feature.login.presentation.model.LoginUiAction
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiState
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.compose.auth.ComposeAuth
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
@@ -38,8 +38,8 @@ internal class LoginViewModel(
     private val throwableToLoginErrorMapper: ThrowableToLoginErrorMapper,
     private val noGoogleAccountClassifier: NoGoogleAccountClassifier,
     private val addGoogleAccountLauncher: AddGoogleAccountLauncher,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<LoginUiEvent>(trackEvent) {
     val composeAuth: ComposeAuth = supabaseClient.composeAuth
     private val _state: MutableStateFlow<LoginUiState> = MutableStateFlow(uiStateFactory.create())
     val state: StateFlow<LoginUiState> = _state
@@ -55,7 +55,7 @@ internal class LoginViewModel(
         }
     }
 
-    fun onEvent(uiEvent: LoginUiEvent) {
+    override fun handleEvent(uiEvent: LoginUiEvent) {
         when (uiEvent) {
             LoginUiEvent.DismissClick -> {
                 viewModelScope.launch {
@@ -64,10 +64,6 @@ internal class LoginViewModel(
             }
 
             is LoginUiEvent.SocialLoginClick -> {
-                trackLoginEvent(
-                    name = AnalyticsEventNames.LOGIN_STARTED,
-                    provider = uiEvent.provider,
-                )
                 _state.update { it.copy(loadingProvider = uiEvent.provider, error = null) }
                 viewModelScope.launch {
                     signInStarter(uiEvent.provider, uiEvent.nativeSignInState).onFailure { throwable ->

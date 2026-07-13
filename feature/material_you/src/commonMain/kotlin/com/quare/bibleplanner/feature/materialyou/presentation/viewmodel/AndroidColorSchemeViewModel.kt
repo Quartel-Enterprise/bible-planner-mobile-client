@@ -1,15 +1,13 @@
 package com.quare.bibleplanner.feature.materialyou.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
-import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.feature.materialyou.domain.model.MaterialYouUseCases
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiAction
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiEvent
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,8 +17,8 @@ import kotlinx.coroutines.launch
 
 class AndroidColorSchemeViewModel(
     private val useCases: MaterialYouUseCases,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<AndroidColorSchemeUiEvent>(trackEvent) {
     private val _uiAction: Channel<AndroidColorSchemeUiAction> = Channel()
     val uiAction = _uiAction.receiveAsFlow()
 
@@ -36,28 +34,16 @@ class AndroidColorSchemeViewModel(
         )
     }
 
-    fun onEvent(event: AndroidColorSchemeUiEvent) {
+    override fun handleEvent(event: AndroidColorSchemeUiEvent) {
         viewModelScope.launch {
             when (event) {
-                is AndroidColorSchemeUiEvent.OnIsDynamicColorsEnabledChange -> {
-                    trackEvent(
-                        name = AnalyticsEventNames.DYNAMIC_COLORS_TOGGLED,
-                        params = mapOf(
-                            AnalyticsParams.IS_ENABLED to event.isEnabled,
-                            AnalyticsParams.SOURCE to DYNAMIC_COLORS_SOURCE,
-                        ),
-                    )
+                is AndroidColorSchemeUiEvent.OnIsDynamicColorsEnabledChange ->
                     useCases.setIsDynamicColorsEnabled(event.isEnabled)
-                }
 
                 AndroidColorSchemeUiEvent.OnInformationDialogDismiss,
                 AndroidColorSchemeUiEvent.BottomSheetGotItClick,
                 -> _uiAction.send(AndroidColorSchemeUiAction.CloseBottomSheet)
             }
         }
-    }
-
-    private companion object {
-        const val DYNAMIC_COLORS_SOURCE = "material_you"
     }
 }

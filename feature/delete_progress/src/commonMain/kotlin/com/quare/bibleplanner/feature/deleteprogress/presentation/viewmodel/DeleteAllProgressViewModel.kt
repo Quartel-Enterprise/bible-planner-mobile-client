@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.deleteprogress.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -8,6 +7,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,8 +18,8 @@ import kotlinx.coroutines.launch
 
 internal class DeleteAllProgressViewModel(
     private val resetAllProgress: ResetAllProgressUseCase,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<DeleteAllProgressUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<DeleteAllProgressUiState> =
         MutableStateFlow(DeleteAllProgressUiState.Idle)
     val uiState: StateFlow<DeleteAllProgressUiState> = _uiState.asStateFlow()
@@ -27,7 +27,7 @@ internal class DeleteAllProgressViewModel(
     private val _backUiAction: MutableSharedFlow<Unit> = MutableSharedFlow()
     val backUiAction: SharedFlow<Unit> = _backUiAction
 
-    fun onEvent(event: DeleteAllProgressUiEvent) {
+    override fun handleEvent(event: DeleteAllProgressUiEvent) {
         when (event) {
             DeleteAllProgressUiEvent.OnConfirmDelete -> {
                 viewModelScope.launch {
@@ -47,10 +47,6 @@ internal class DeleteAllProgressViewModel(
             }
 
             DeleteAllProgressUiEvent.OnCancel -> {
-                trackEvent(
-                    name = AnalyticsEventNames.PROGRESS_RESET_CANCELLED,
-                    params = emptyMap(),
-                )
                 viewModelScope.launch {
                     _backUiAction.emit(Unit)
                 }

@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.editplanstartdate.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
@@ -10,12 +9,12 @@ import com.quare.bibleplanner.core.date.toTimestampUTC
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
-import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -32,8 +31,8 @@ internal class EditPlanStartDateViewModel(
     private val currentTimestampProvider: CurrentTimestampProvider,
     private val localDateTimeProvider: LocalDateTimeProvider,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<EditPlanStartDateUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<EditPlanStartDateUiState> =
         MutableStateFlow(EditPlanStartDateUiState.Loading)
     val uiState: StateFlow<EditPlanStartDateUiState> = _uiState.asStateFlow()
@@ -59,7 +58,7 @@ internal class EditPlanStartDateViewModel(
         }
     }
 
-    fun onEvent(event: EditPlanStartDateUiEvent) {
+    override fun handleEvent(event: EditPlanStartDateUiEvent) {
         when (event) {
             is EditPlanStartDateUiEvent.OnDismissDialog -> dismissDialog()
             is EditPlanStartDateUiEvent.OnDateSelected -> onDateSelected(event.utcDateMillis)
@@ -78,10 +77,6 @@ internal class EditPlanStartDateViewModel(
                 strategy = SetPlanStartTimeUseCase.Strategy.SpecificTime(
                     timestamp = getFinalTimestampAfterEdition(convertUtcDateToLocalDate(utcDateMillis)),
                 ),
-            )
-            trackEvent(
-                name = AnalyticsEventNames.PLAN_START_DATE_CHANGED,
-                params = emptyMap(),
             )
             dismissDialog()
             requestLoginNudgeIfNeeded()

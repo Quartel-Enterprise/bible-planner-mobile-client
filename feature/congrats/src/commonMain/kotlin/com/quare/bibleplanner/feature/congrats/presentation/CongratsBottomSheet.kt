@@ -35,7 +35,7 @@ internal fun CongratsBottomSheet(onEvent: (CongratsUiEvent) -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         onDismissRequest = {
-            onEvent(CongratsUiEvent.ON_DISMISS)
+            onEvent(CongratsUiEvent.OnDismiss)
         },
         sheetState = sheetState,
     ) {
@@ -74,7 +74,7 @@ internal fun CongratsBottomSheet(onEvent: (CongratsUiEvent) -> Unit) {
             VerticalSpacer(32.dp)
 
             Button(
-                onClick = { onEvent(CongratsUiEvent.ON_DISMISS) },
+                onClick = { onEvent(CongratsUiEvent.OnDismiss) },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = stringResource(Res.string.congrats_button))

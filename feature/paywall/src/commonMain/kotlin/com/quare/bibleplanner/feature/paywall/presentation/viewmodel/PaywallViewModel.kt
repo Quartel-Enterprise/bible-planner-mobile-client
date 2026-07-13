@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.paywall.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
@@ -21,6 +20,7 @@ import com.quare.bibleplanner.feature.paywall.presentation.mapper.PaywallExcepti
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiAction
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -39,9 +39,9 @@ internal class PaywallViewModel(
     private val exceptionMapper: PaywallExceptionMapper,
     private val analyticsReasonMapper: PaywallAnalyticsReasonMapper,
     private val observeIsProUser: ObserveIsProUser,
-    private val trackEvent: TrackEvent,
+    trackEvent: TrackEvent,
     val platform: Platform,
-) : ViewModel() {
+) : TrackedViewModel<PaywallUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<PaywallUiState> = MutableStateFlow(PaywallUiState.Loading)
     val uiState: StateFlow<PaywallUiState> = _uiState.asStateFlow()
 
@@ -85,7 +85,7 @@ internal class PaywallViewModel(
         return false
     }
 
-    fun onEvent(event: PaywallUiEvent) {
+    override fun handleEvent(event: PaywallUiEvent) {
         when (event) {
             PaywallUiEvent.OnBackClick -> {
                 trackEvent(

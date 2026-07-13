@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.day.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
@@ -30,6 +29,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -54,9 +54,9 @@ internal class DayViewModel(
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val applicationScope: ApplicationScope,
-    private val trackEvent: TrackEvent,
+    trackEvent: TrackEvent,
     val platform: Platform,
-) : ViewModel() {
+) : TrackedViewModel<DayUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
     val uiState: StateFlow<DayUiState> = _uiState.asStateFlow()
     private val safeLoadedState: DayUiState.Loaded? get() = uiState.value as? DayUiState.Loaded
@@ -95,7 +95,7 @@ internal class DayViewModel(
         }
     }
 
-    fun onEvent(event: DayUiEvent) {
+    override fun handleEvent(event: DayUiEvent) {
         when (event) {
             is DayUiEvent.OnChapterCheckboxClick -> onChapterToggle(event)
             DayUiEvent.OnDayReadToggle -> onDayReadToggle()
@@ -116,10 +116,6 @@ internal class DayViewModel(
     }
 
     private fun navigateToPaywall() {
-        trackEvent(
-            name = AnalyticsEventNames.PAYWALL_VIEWED,
-            params = mapOf(AnalyticsParams.SOURCE to SOURCE_DAY_STUDY),
-        )
         viewModelScope.launch {
             _uiAction.emit(DayUiAction.NavigateToRoute(PaywallNavRoute))
         }
@@ -395,6 +391,5 @@ internal class DayViewModel(
 
     private companion object {
         const val SOURCE_DAY_SCREEN = "day_screen"
-        const val SOURCE_DAY_STUDY = "day_study"
     }
 }

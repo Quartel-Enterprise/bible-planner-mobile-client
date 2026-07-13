@@ -1,7 +1,20 @@
 package com.quare.bibleplanner.feature.deletenotes.presentation.model
 
-sealed interface DeleteNotesUiEvent {
-    data object OnConfirmDelete : DeleteNotesUiEvent
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
+import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-    data object OnCancel : DeleteNotesUiEvent
+sealed interface DeleteNotesUiEvent : UiEvent {
+    data object OnConfirmDelete : DeleteNotesUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.NOTE_DELETED,
+        )
+    }
+
+    data object OnCancel : DeleteNotesUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.NOTE_DELETE_CANCELLED,
+            params = emptyMap(),
+        )
+    }
 }

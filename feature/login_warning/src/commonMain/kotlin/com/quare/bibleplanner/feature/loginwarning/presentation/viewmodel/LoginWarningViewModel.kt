@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.loginwarning.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
@@ -9,14 +8,15 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.loginwarning.presentation.model.LoginWarningUiAction
 import com.quare.bibleplanner.feature.loginwarning.presentation.model.LoginWarningUiEvent
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 internal class LoginWarningViewModel(
     route: LoginWarningNavRoute,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<LoginWarningUiEvent>(trackEvent) {
     val reason: LoginWarningReason = LoginWarningReason.fromKey(route.reason)
 
     private val _uiAction: MutableSharedFlow<LoginWarningUiAction> = MutableSharedFlow()
@@ -26,7 +26,7 @@ internal class LoginWarningViewModel(
         track(AnalyticsEventNames.LOGIN_WARNING_SHOWN)
     }
 
-    fun onEvent(event: LoginWarningUiEvent) {
+    override fun handleEvent(event: LoginWarningUiEvent) {
         viewModelScope.launch {
             _uiAction.emit(
                 when (event) {

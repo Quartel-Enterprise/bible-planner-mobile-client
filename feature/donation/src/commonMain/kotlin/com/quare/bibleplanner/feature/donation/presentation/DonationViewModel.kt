@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.feature.donation.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.donation.generated.DonationBuildKonfig
 import com.quare.bibleplanner.feature.donation.presentation.factory.DonationUiStateFactory
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,15 +16,15 @@ import kotlinx.coroutines.launch
 
 class DonationViewModel(
     factory: DonationUiStateFactory,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<DonationUiEvent>(trackEvent) {
     private val _uiState = MutableStateFlow(factory.create())
     val uiState = _uiState.asStateFlow()
 
     private val _uiAction = MutableSharedFlow<DonationUiAction>()
     val uiAction = _uiAction.asSharedFlow()
 
-    fun onEvent(event: DonationUiEvent) {
+    override fun handleEvent(event: DonationUiEvent) {
         when (event) {
             DonationUiEvent.Dismiss -> {
                 viewModelScope.launch {
@@ -55,10 +55,6 @@ class DonationViewModel(
             }
 
             DonationUiEvent.OpenGitHubSponsors -> {
-                trackEvent(
-                    name = AnalyticsEventNames.GITHUB_SPONSORS_OPENED,
-                    params = emptyMap(),
-                )
                 viewModelScope.launch {
                     _uiAction.emit(DonationUiAction.OpenUrl("https://github.com/sponsors/Quartel-Enterprise"))
                 }

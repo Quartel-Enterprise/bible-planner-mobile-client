@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.inappupdate.presentation
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -12,6 +11,7 @@ import com.quare.bibleplanner.feature.inappupdate.domain.usecase.StartUpdate
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiAction
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiEvent
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiState
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,8 +22,8 @@ internal class InAppUpdateViewModel(
     route: InAppUpdateNavRoute,
     platform: Platform,
     private val startUpdate: StartUpdate,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<InAppUpdateUiEvent>(trackEvent) {
     private val source = route.source
 
     private val _uiAction = MutableSharedFlow<InAppUpdateUiAction>()
@@ -41,7 +41,7 @@ internal class InAppUpdateViewModel(
         trackEvent(AnalyticsEventNames.UPDATE_PROMPT_SHOWN, promptParams(route.versionName))
     }
 
-    fun onEvent(event: InAppUpdateUiEvent) {
+    override fun handleEvent(event: InAppUpdateUiEvent) {
         when (event) {
             InAppUpdateUiEvent.OnUpdateClick -> onUpdateClick()
             InAppUpdateUiEvent.OnDismiss -> onDismiss()

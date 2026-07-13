@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.notification_permission.generated.resources.Res
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_accept
@@ -13,6 +12,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiAction
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiEvent
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiState
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,8 +22,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class NotificationPermissionViewModel(
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<NotificationPermissionUiEvent>(trackEvent) {
     private var hasRequestedSystemPermission = false
 
     private val _uiState: MutableStateFlow<NotificationPermissionUiState> =
@@ -40,7 +40,7 @@ internal class NotificationPermissionViewModel(
     private val _uiAction: MutableSharedFlow<NotificationPermissionUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<NotificationPermissionUiAction> = _uiAction
 
-    fun onEvent(event: NotificationPermissionUiEvent) {
+    override fun handleEvent(event: NotificationPermissionUiEvent) {
         when (event) {
             NotificationPermissionUiEvent.OnConfirm -> handleConfirm()
 

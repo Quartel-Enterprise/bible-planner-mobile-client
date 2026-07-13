@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
@@ -30,6 +29,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -50,10 +50,10 @@ internal class ReadingPlanViewModel(
     private val deleteProgressMapper: DeleteProgressMapper,
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
-    private val trackEvent: TrackEvent,
+    trackEvent: TrackEvent,
     private val bibleProgressMilestoneTracker: BibleProgressMilestoneTracker,
     private val readingStreakMilestoneTracker: ReadingStreakMilestoneTracker,
-) : ViewModel() {
+) : TrackedViewModel<ReadingPlanUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
     val uiState: StateFlow<ReadingPlanUiState> = _uiState
 
@@ -147,7 +147,7 @@ internal class ReadingPlanViewModel(
         }
     }
 
-    fun onEvent(event: ReadingPlanUiEvent) {
+    override fun handleEvent(event: ReadingPlanUiEvent) {
         when (event) {
             is ReadingPlanUiEvent.OnPlanClick -> {
                 if (event.type != uiState.value.selectedReadingPlan) {
@@ -206,18 +206,13 @@ internal class ReadingPlanViewModel(
                 }
             }
 
-            ReadingPlanUiEvent.OnGoToActiveRowClick -> {
-                trackShortcutUsed(SHORTCUT_ACTIVE_ROW)
+            ReadingPlanUiEvent.OnGoToActiveRowClick ->
                 scrollAndFlashToDay(loadedState()?.planStatus?.nextDay)
-            }
 
-            ReadingPlanUiEvent.OnSkipToTodayClick -> {
-                trackShortcutUsed(SHORTCUT_TODAY)
+            ReadingPlanUiEvent.OnSkipToTodayClick ->
                 scrollAndFlashToDay(loadedState()?.planStatus?.todayDay)
-            }
 
             ReadingPlanUiEvent.OnScrollToTopClick -> {
-                trackShortcutUsed(SHORTCUT_SCROLL_TOP)
                 updateState { state ->
                     when (state) {
                         is ReadingPlanUiState.Loaded -> state.copy(scrollToTop = true)
@@ -307,13 +302,6 @@ internal class ReadingPlanViewModel(
                 AnalyticsParams.GROUP to group,
                 AnalyticsParams.IS_EXPANDED to isExpanded,
             ),
-        )
-    }
-
-    private fun trackShortcutUsed(shortcut: String) {
-        trackEvent(
-            name = AnalyticsEventNames.PLAN_SHORTCUT_USED,
-            params = mapOf(AnalyticsParams.SHORTCUT to shortcut),
         )
     }
 
@@ -543,8 +531,5 @@ internal class ReadingPlanViewModel(
         const val SOURCE_PLAN_LIST = "plan_list"
         const val GROUP_UPCOMING = "upcoming"
         const val GROUP_COMPLETED = "completed"
-        const val SHORTCUT_ACTIVE_ROW = "active_row"
-        const val SHORTCUT_TODAY = "today"
-        const val SHORTCUT_SCROLL_TOP = "scroll_top"
     }
 }
