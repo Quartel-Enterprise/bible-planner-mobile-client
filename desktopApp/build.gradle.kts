@@ -39,7 +39,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.quare.bibleplanner"
-            packageVersion = "1.19.1"
+            packageVersion = "2.0.0"
 
             macOS {
                 iconFile.set(project.file("../icons/bible_planner_logo.icns"))
