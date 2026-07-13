@@ -75,7 +75,7 @@ private fun MainRootContent(
     }
     val language by mainViewModel.languageState.collectAsState()
     val mainNavigationModels = mainViewModel.mainNavigationItemModels
-    val onEvent = mainViewModel::dispatchUiEvent
+    val onEvent = mainViewModel::onEvent
     NavDisplay(
         entries = tabState.toDecoratedEntries(
             entryProvider {

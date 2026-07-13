@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.contactsupport.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.contact_support.generated.resources.Res
 import bibleplanner.feature.contact_support.generated.resources.support_email_copied_message
@@ -17,6 +16,7 @@ import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactS
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiEvent
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiState
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -26,8 +26,8 @@ import kotlinx.coroutines.launch
 internal class ContactSupportViewModel(
     uiStateFactory: ContactSupportUiStateFactory,
     private val mailtoFactory: ContactSupportMailtoFactory,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ContactSupportUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<ContactSupportUiAction>()
     val uiAction: SharedFlow<ContactSupportUiAction> = _uiAction
     private val _uiState = MutableStateFlow(uiStateFactory.initialState())
@@ -39,17 +39,13 @@ internal class ContactSupportViewModel(
         }
     }
 
-    fun onEvent(event: ContactSupportUiEvent) {
+    override fun handleEvent(event: ContactSupportUiEvent) {
         when (event) {
             ContactSupportUiEvent.OnDismiss -> emitAction(ContactSupportUiAction.NavigateBack)
 
             ContactSupportUiEvent.OnSendEmailClick -> sendSupportEmailClick()
 
             ContactSupportUiEvent.OnCopyEmailClick -> {
-                trackEvent(
-                    name = AnalyticsEventNames.CONTACT_SUPPORT_EMAIL_COPIED,
-                    params = emptyMap(),
-                )
                 viewModelScope.launch {
                     _uiAction.emit(ContactSupportUiAction.Copy(SupportContact.EMAIL))
                     _uiAction.emit(ContactSupportUiAction.ShowSnackbar(Res.string.support_email_copied_message))

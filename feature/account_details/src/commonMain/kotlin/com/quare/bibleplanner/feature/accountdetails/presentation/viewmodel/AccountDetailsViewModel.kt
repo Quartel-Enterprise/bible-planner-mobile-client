@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.accountdetails.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.account_details.generated.resources.Res
 import bibleplanner.feature.account_details.generated.resources.account_details_action_error
@@ -23,6 +22,7 @@ import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountD
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountInfo
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.DeviceUiModel
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.LoginMethod
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,8 +41,8 @@ internal class AccountDetailsViewModel(
     observeDevices: ObserveDevices,
     private val deviceUiModelMapper: DeviceUiModelMapper,
     private val signOutDevice: SignOutDevice,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<AccountDetailsUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<AccountDetailsUiAction>()
     val uiAction: SharedFlow<AccountDetailsUiAction> = _uiAction
 
@@ -75,7 +75,7 @@ internal class AccountDetailsViewModel(
         initialValue = initialState(),
     )
 
-    fun onEvent(event: AccountDetailsUiEvent) {
+    override fun handleEvent(event: AccountDetailsUiEvent) {
         when (event) {
             AccountDetailsUiEvent.OnToggleDevices -> toggleDevices()
 

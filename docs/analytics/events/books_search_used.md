@@ -21,5 +21,5 @@ User types in the Books search field. `OnSearchQueryChange` fires on every keyst
 ## Notes
 
 - The raw query is deliberately not sent — book names are not sensitive, but `query_length` answers the analytical question without free-text params.
-- `OnClearSearch` is not tracked (UI bookkeeping, see README "Explicitly not tracked").
+- Clearing the search field is a separate event: [books_search_cleared](books_search_cleared.md).
 - Related: [books_filter_toggled](books_filter_toggled.md), [testament_switched](testament_switched.md).

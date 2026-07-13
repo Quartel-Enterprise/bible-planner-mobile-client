@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Menu
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.main.generated.resources.Res
@@ -12,12 +11,14 @@ import bibleplanner.feature.main.generated.resources.books
 import bibleplanner.feature.main.generated.resources.more
 import bibleplanner.feature.main.generated.resources.plans
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemPresentationModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,7 +28,8 @@ import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
     getAppLanguageFlow: GetAppLanguageFlow,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<MainScreenUiEvent>(trackEvent) {
     val languageState: StateFlow<Language> = getAppLanguageFlow().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -44,7 +46,7 @@ class MainScreenViewModel(
             MainNavRouteDestination.More,
         ).map(::mapToMainNavigationItemModel)
 
-    fun dispatchUiEvent(event: MainScreenUiEvent) {
+    override fun handleEvent(event: MainScreenUiEvent) {
         when (event) {
             is MainScreenUiEvent.BottomNavItemClicked -> {
                 emitAction(

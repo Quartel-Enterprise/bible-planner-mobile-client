@@ -1,13 +1,42 @@
 package com.quare.bibleplanner.feature.loginsyncnudge.presentation.model
 
-sealed interface LoginSyncNudgeUiEvent {
-    data object OnLoginClick : LoginSyncNudgeUiEvent
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
+import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-    data object OnNotNow : LoginSyncNudgeUiEvent
+sealed interface LoginSyncNudgeUiEvent : UiEvent {
+    data object OnLoginClick : LoginSyncNudgeUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.LOGIN_NUDGE_ACCEPTED,
+            params = emptyMap(),
+        )
+    }
 
-    data object OnDismiss : LoginSyncNudgeUiEvent
+    data object OnNotNow : LoginSyncNudgeUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.LOGIN_NUDGE_DISABLED,
+                AnalyticsEventNames.LOGIN_NUDGE_SNOOZED,
+            ),
+        )
+    }
+
+    data object OnDismiss : LoginSyncNudgeUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.LOGIN_NUDGE_DISABLED,
+                AnalyticsEventNames.LOGIN_NUDGE_SNOOZED,
+            ),
+        )
+    }
 
     data class OnDontShowAgainToggled(
         val isChecked: Boolean,
-    ) : LoginSyncNudgeUiEvent
+    ) : LoginSyncNudgeUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.LOGIN_NUDGE_DONT_SHOW_AGAIN_TOGGLED,
+            params = mapOf(AnalyticsParams.IS_ENABLED to isChecked),
+        )
+    }
 }

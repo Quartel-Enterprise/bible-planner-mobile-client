@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.logout.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.logout.generated.resources.Res
 import bibleplanner.feature.logout.generated.resources.logout_pending_favorites
@@ -16,6 +15,7 @@ import com.quare.bibleplanner.feature.logout.presentation.model.LogoutError
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiAction
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiEvent
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiState
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,26 +29,18 @@ import kotlinx.coroutines.launch
 internal class LogoutViewModel(
     private val logout: Logout,
     private val logoutErrorMapper: LogoutErrorMapper,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<LogoutUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<LogoutUiState> = MutableStateFlow(LogoutUiState.Idle)
     val uiState: StateFlow<LogoutUiState> = _uiState.asStateFlow()
 
     private val _uiAction: MutableSharedFlow<LogoutUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<LogoutUiAction> = _uiAction
 
-    fun onEvent(event: LogoutUiEvent) {
+    override fun handleEvent(event: LogoutUiEvent) {
         when (event) {
-            is LogoutUiEvent.ConfirmLogoutClick -> {
-                trackEvent(
-                    name = AnalyticsEventNames.LOGOUT_CONFIRMED,
-                    params = mapOf(AnalyticsParams.IS_FORCED to !event.shouldFlushPending),
-                )
-                performLogout(shouldFlushPending = event.shouldFlushPending)
-            }
-
+            is LogoutUiEvent.ConfirmLogoutClick -> performLogout(shouldFlushPending = event.shouldFlushPending)
             LogoutUiEvent.OnCancel -> navigateBack()
-
             LogoutUiEvent.OnDismiss -> if (_uiState.value !is LogoutUiState.Loading) navigateBack()
         }
     }

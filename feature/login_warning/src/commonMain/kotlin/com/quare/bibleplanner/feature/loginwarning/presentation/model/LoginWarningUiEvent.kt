@@ -1,7 +1,19 @@
 package com.quare.bibleplanner.feature.loginwarning.presentation.model
 
-sealed interface LoginWarningUiEvent {
-    data object OnLoginClick : LoginWarningUiEvent
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
+import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-    data object OnDismiss : LoginWarningUiEvent
+sealed interface LoginWarningUiEvent : UiEvent {
+    data object OnLoginClick : LoginWarningUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.LOGIN_WARNING_ACCEPTED,
+        )
+    }
+
+    data object OnDismiss : LoginWarningUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.LOGIN_WARNING_DISMISSED,
+        )
+    }
 }

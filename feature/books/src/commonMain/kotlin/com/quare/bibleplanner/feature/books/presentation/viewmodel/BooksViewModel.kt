@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.books.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.favorites
@@ -29,6 +28,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.utils.observe
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import com.quare.bibleplanner.ui.utils.removeAccents
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -50,9 +50,9 @@ class BooksViewModel(
     private val bookGroupMapper: BookGroupMapper,
     private val bookCategorizationMapper: BookCategorizationMapper,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
-    private val trackEvent: TrackEvent,
+    trackEvent: TrackEvent,
     getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
-) : ViewModel() {
+) : TrackedViewModel<BooksUiEvent>(trackEvent) {
     private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
     val uiState: StateFlow<BooksUiState> = _uiState
 
@@ -98,7 +98,7 @@ class BooksViewModel(
     private var layoutFormat: BookLayoutFormat = BookLayoutFormat.List
     private var persistedTestamentValue: BookTestament? = null
 
-    fun onEvent(event: BooksUiEvent) {
+    override fun handleEvent(event: BooksUiEvent) {
         when (event) {
             is BooksUiEvent.OnSearchQueryChange -> {
                 updateState(searchQuery = event.query)
@@ -111,10 +111,6 @@ class BooksViewModel(
             is BooksUiEvent.OnTestamentSelect -> {
                 persistedTestamentValue = event.testament
                 updateState(selectedTestament = event.testament)
-                trackEvent(
-                    name = AnalyticsEventNames.TESTAMENT_SWITCHED,
-                    params = mapOf(AnalyticsParams.TESTAMENT to event.testament.toAnalyticsValue()),
-                )
                 viewModelScope.launch {
                     booksRepository.setSelectedTestament(event.testament.name)
                     _uiAction.emit(BooksUiAction.ScrollToTop)
@@ -184,10 +180,6 @@ class BooksViewModel(
             is BooksUiEvent.OnLayoutFormatSelect -> {
                 layoutFormat = event.layoutFormat
                 updateState()
-                trackEvent(
-                    name = AnalyticsEventNames.BOOKS_LAYOUT_CHANGED,
-                    params = mapOf(AnalyticsParams.LAYOUT to event.layoutFormat.toAnalyticsValue()),
-                )
                 viewModelScope.launch {
                     booksRepository.setBookLayoutFormat(event.layoutFormat.name)
                     _uiAction.emit(BooksUiAction.ScrollToTop)
@@ -195,10 +187,6 @@ class BooksViewModel(
             }
 
             BooksUiEvent.OnWebAppLinkClick -> {
-                trackEvent(
-                    name = AnalyticsEventNames.WEB_APP_LINK_OPENED,
-                    params = emptyMap(),
-                )
                 viewModelScope.launch {
                     _uiAction.emit(BooksUiAction.OpenWebAppLink(getWebAppUrl()))
                 }
@@ -234,11 +222,6 @@ class BooksViewModel(
         }
     }
 
-    private fun BookTestament.toAnalyticsValue(): String = when (this) {
-        BookTestament.OldTestament -> "old"
-        BookTestament.NewTestament -> "new"
-    }
-
     private fun BookFilterType.toAnalyticsValue(): String = when (this) {
         BookFilterType.OnlyRead -> "only_read"
         BookFilterType.OnlyUnread -> "only_unread"
@@ -248,11 +231,6 @@ class BooksViewModel(
     private fun BookSortOrder.toAnalyticsValue(): String = when (this) {
         BookSortOrder.AlphabeticalAscending -> "alphabetical_ascending"
         BookSortOrder.AlphabeticalDescending -> "alphabetical_descending"
-    }
-
-    private fun BookLayoutFormat.toAnalyticsValue(): String = when (this) {
-        BookLayoutFormat.List -> "list"
-        BookLayoutFormat.Grid -> "grid"
     }
 
     private fun getActiveFilterTypes(filterType: BookFilterType): Set<BookFilterType> = when (filterType) {

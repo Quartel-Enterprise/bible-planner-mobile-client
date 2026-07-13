@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.more.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.more.generated.resources.Res
@@ -40,7 +39,7 @@ import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiAction.OpenLink
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiState
-import com.quare.bibleplanner.feature.more.presentation.model.toAnalyticsOption
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -61,8 +60,8 @@ internal class MoreViewModel(
     private val requestInAppReview: RequestInAppReview,
     private val isConnected: IsConnected,
     private val checkForUpdate: CheckForUpdate,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<MoreUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<MoreUiAction>()
     val uiAction: SharedFlow<MoreUiAction> = _uiAction
     private val isCheckingForUpdate = MutableStateFlow(false)
@@ -77,13 +76,9 @@ internal class MoreViewModel(
         initialValue = uiStateFactory.initialState(),
     )
 
-    fun onEvent(event: MoreUiEvent) {
+    override fun handleEvent(event: MoreUiEvent) {
         when (event) {
             is MoreUiEvent.OnItemClick -> {
-                trackEvent(
-                    name = AnalyticsEventNames.MORE_OPTION_CLICKED,
-                    params = mapOf(AnalyticsParams.OPTION to event.type.toAnalyticsOption()),
-                )
                 when (event.type) {
                     MoreOptionItemType.THEME -> goToRoute(ThemeNavRoute)
 

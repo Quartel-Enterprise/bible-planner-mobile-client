@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_error
@@ -34,6 +33,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenera
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiAction
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiState
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -60,8 +60,8 @@ internal class DayStudyViewModel(
     private val observeIsProUser: ObserveIsProUser,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val cardUiModelFactory: DayStudyCardUiModelFactory,
-    private val trackEvent: TrackEvent,
-) : ViewModel() {
+    trackEvent: TrackEvent,
+) : TrackedViewModel<DayStudyUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<DayStudyUiState> = MutableStateFlow(
         DayStudyUiState(
             card = Loadable.Loading,
@@ -85,7 +85,7 @@ internal class DayStudyViewModel(
     private var observeCardJob: Job? = null
     private var observeJobJob: Job? = null
 
-    fun onEvent(event: DayStudyUiEvent) {
+    override fun handleEvent(event: DayStudyUiEvent) {
         when (event) {
             is DayStudyUiEvent.OnStart -> onStart(event.passages, event.dayRoute, event.label)
             DayStudyUiEvent.OnCardClick -> onCardClick()

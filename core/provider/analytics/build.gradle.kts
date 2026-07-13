@@ -1,4 +1,5 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.gradle.api.tasks.PathSensitivity
 import java.util.Properties
 
 plugins {
@@ -56,6 +57,23 @@ kotlin {
         val iosSimulatorArm64Main by getting {
             dependsOn(iosMain)
         }
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    if (name == "jvmTest") {
+        inputs
+            .files(
+                fileTree(rootProject.layout.projectDirectory.dir("feature")) {
+                    include("**/*.kt")
+                    exclude("**/build/**")
+                },
+            ).withPropertyName("featureUiEventSources")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+        inputs
+            .dir(rootProject.layout.projectDirectory.dir("docs/analytics/events"))
+            .withPropertyName("analyticsEventsCatalog")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     }
 }
 

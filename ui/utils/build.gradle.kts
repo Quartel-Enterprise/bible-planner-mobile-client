@@ -15,6 +15,9 @@ kotlin {
             // Core
             implementation(projects.core.date)
 
+            // Analytics
+            api(projects.core.provider.analytics)
+
             // View Model
             implementation(libs.androidx.lifecycle.viewmodelCompose)
 

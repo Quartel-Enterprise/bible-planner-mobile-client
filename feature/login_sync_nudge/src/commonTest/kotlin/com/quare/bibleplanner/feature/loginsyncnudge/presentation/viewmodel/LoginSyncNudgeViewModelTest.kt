@@ -58,6 +58,7 @@ internal class LoginSyncNudgeViewModelTest {
         // Then
         assertEquals(
             listOf(
+                AnalyticsEventNames.LOGIN_NUDGE_DONT_SHOW_AGAIN_TOGGLED,
                 AnalyticsEventNames.LOGIN_NUDGE_ACCEPTED,
                 AnalyticsEventNames.LOGIN_NUDGE_DISABLED,
             ),
@@ -86,7 +87,13 @@ internal class LoginSyncNudgeViewModelTest {
             viewModel.onEvent(LoginSyncNudgeUiEvent.OnDismiss)
 
             // Then
-            assertEquals(listOf(AnalyticsEventNames.LOGIN_NUDGE_DISABLED), trackedEvents)
+            assertEquals(
+                listOf(
+                    AnalyticsEventNames.LOGIN_NUDGE_DONT_SHOW_AGAIN_TOGGLED,
+                    AnalyticsEventNames.LOGIN_NUDGE_DISABLED,
+                ),
+                trackedEvents,
+            )
             assertEquals(0, snoozeCount)
             assertEquals(1, dismissPermanentlyCount)
         }
@@ -101,7 +108,14 @@ internal class LoginSyncNudgeViewModelTest {
         viewModel.onEvent(LoginSyncNudgeUiEvent.OnDismiss)
 
         // Then
-        assertEquals(listOf(AnalyticsEventNames.LOGIN_NUDGE_SNOOZED), trackedEvents)
+        assertEquals(
+            listOf(
+                AnalyticsEventNames.LOGIN_NUDGE_DONT_SHOW_AGAIN_TOGGLED,
+                AnalyticsEventNames.LOGIN_NUDGE_DONT_SHOW_AGAIN_TOGGLED,
+                AnalyticsEventNames.LOGIN_NUDGE_SNOOZED,
+            ),
+            trackedEvents,
+        )
         assertEquals(1, snoozeCount)
         assertEquals(0, dismissPermanentlyCount)
     }

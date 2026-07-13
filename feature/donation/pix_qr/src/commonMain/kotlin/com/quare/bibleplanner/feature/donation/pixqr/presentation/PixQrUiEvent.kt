@@ -1,7 +1,21 @@
 package com.quare.bibleplanner.feature.donation.pixqr.presentation
 
-sealed interface PixQrUiEvent {
-    data object Dismiss : PixQrUiEvent
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
+import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-    data object Share : PixQrUiEvent
+sealed interface PixQrUiEvent : UiEvent {
+    data object Dismiss : PixQrUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PIX_QR_DISMISSED,
+            params = emptyMap(),
+        )
+    }
+
+    data object Share : PixQrUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PIX_QR_SHARED,
+            params = emptyMap(),
+        )
+    }
 }
