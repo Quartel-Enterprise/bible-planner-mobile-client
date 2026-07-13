@@ -1,6 +1,10 @@
 # Bible Planner
 
-A Kotlin Multiplatform application for planning and tracking your Bible reading progress. Bible Planner helps you stay organized with structured reading plans, progress tracking, and a beautiful, customizable interface.
+A Kotlin Multiplatform application for planning and tracking your Bible reading progress. [Bible Planner](https://www.bibleplanner.app/) helps you stay organized with structured reading plans, progress tracking, and a beautiful, customizable interface.
+
+Android | iOS |
+| -- | -- |
+| [Google Play Store](https://play.google.com/store/apps/details?id=com.quare.bibleplanner&hl=en) | [App Store](https://apps.apple.com/us/app/bible-planner-reading-plans/id6756151777) |
 
 ## 🚀 Getting Started
 
