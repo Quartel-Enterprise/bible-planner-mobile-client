@@ -1,21 +1,26 @@
 package com.quare.bibleplanner.domain.usecase.impl
 
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveCurrentDeviceRevoked
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDeviceRegistration
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.MigratePlanPreferencesToSyncStoreUseCase
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.ObserveTesterUserProperty
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
 import com.quare.bibleplanner.core.sync.domain.usecase.ObserveSync
+import com.quare.bibleplanner.domain.model.CurrentDeviceRevokedException
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveAppLocale
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveLanguageSync
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelectedVersionUseCase
 import com.quare.bibleplanner.feature.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
 import com.quare.bibleplanner.feature.logout.domain.usecase.EndSession
+import com.quare.bibleplanner.feature.logout.domain.usecase.ObserveSessionLoss
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.ObserveDynamicColorsSync
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.CoroutineScope
@@ -37,11 +42,15 @@ internal class InitializeAppContentUseCase(
     private val observeTesterUserProperty: ObserveTesterUserProperty,
     private val observeDeviceRegistration: ObserveDeviceRegistration,
     private val observeCurrentDeviceRevoked: ObserveCurrentDeviceRevoked,
+    private val observeSessionLoss: ObserveSessionLoss,
+    private val trackEvent: TrackEvent,
     private val endSession: EndSession,
     private val syncBillingUserId: SyncBillingUserId,
     private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val remoteConfig: RemoteConfigService, // Don't delete it, it is necessary to initialize remote config
 ) : InitializeAppContent {
+    private val logger = Logger.withTag(LOG_TAG)
+
     override operator fun invoke(coroutineScope: CoroutineScope) {
         coroutineScope.launch {
             // Move legacy DataStore plan preferences into the synced store before anything reads them.
@@ -61,12 +70,26 @@ internal class InitializeAppContentUseCase(
             launch { observeTesterUserProperty() }
             launch { observeDeviceRegistration() }
             // A remote sign-out deletes this device's row; end the local session as soon as we see it.
-            launch { observeCurrentDeviceRevoked().collect { endSession() } }
+            launch { observeCurrentDeviceRevoked().collect(::onCurrentDeviceRevoked) }
+            launch { observeSessionLoss() }
             launch { syncBillingUserId() }
             launch { requestUpdatePromptIfNeeded() }
             // Launched after book rows exist so remote favorites can be applied to them.
             launch { observeSync() }
             observeSelectedVersion()
         }
+    }
+
+    private suspend fun onCurrentDeviceRevoked(unused: Unit) {
+        trackEvent(
+            name = AnalyticsEventNames.CURRENT_DEVICE_REVOKED,
+            params = emptyMap(),
+        )
+        logger.e(CurrentDeviceRevokedException()) { "Current device revoked; ending local session" }
+        endSession()
+    }
+
+    private companion object {
+        const val LOG_TAG = "DeviceRevoked"
     }
 }

@@ -23,6 +23,7 @@ object AnalyticsParams {
     const val IS_CACHED = "is_cached"
     const val IS_FIRST_TIME = "is_first_time"
     const val IS_LOGGED_IN = "is_logged_in"
+    const val IS_ACCESS_TOKEN_EXPIRED = "is_access_token_expired"
     const val CAN_ASK_AGAIN = "can_ask_again"
     const val VERSION_ID = "version_id"
     const val VERSION = "version"

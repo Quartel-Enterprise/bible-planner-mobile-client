@@ -90,6 +90,9 @@ kotlin {
             api(projects.core.utils)
             implementation(projects.core.devices)
 
+            // Logging
+            implementation(libs.kermit)
+
             // UI
             api(projects.ui.theme)
             api(projects.ui.utils)
