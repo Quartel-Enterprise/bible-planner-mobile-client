@@ -1,4 +1,7 @@
 {
+  "2.0.1": [
+    "Fixed an issue where the app could keep retrying to sync in the background, using extra battery and data."
+  ],
   "2.0.0": [
     "New: AI Daily Study — generate an analysis of each day's readings, with an overview, historical context, and questions for reflection.",
     "Redesigned the Pro screen, theme picker, language picker, and Bible version picker for a cleaner, more consistent look.",

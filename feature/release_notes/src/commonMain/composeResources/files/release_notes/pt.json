@@ -1,4 +1,7 @@
 {
+  "2.0.1": [
+    "Corrigido um problema em que o app podia continuar tentando sincronizar em segundo plano, gastando bateria e dados a mais."
+  ],
   "2.0.0": [
     "Novo: Estudo do dia com IA — gere uma análise das leituras de cada dia, com visão geral, contexto histórico e perguntas para reflexão.",
     "A tela Pro, o seletor de tema, o seletor de idioma e o seletor de versão da Bíblia foram redesenhados para uma experiência mais limpa e consistente.",

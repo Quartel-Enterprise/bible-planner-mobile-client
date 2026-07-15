@@ -50,9 +50,13 @@ class OfflineFirstSynchronizer<E, D>(
      * moment the network returns — the upsert is a plain REST call and doesn't need the websocket. The
      * bounded backoff only handles transient failures that happen while online; each new pending change
      * or reconnection re-triggers this block (via [collectLatest]) with a fresh backoff.
+     *
+     * The session is re-read at the start of every attempt (not captured once): if it is gone the loop
+     * stops instead of pushing, since the Supabase client would otherwise fall back to the anonymous key
+     * and the write would fail the row-level security policy — a permanent error the backoff would retry
+     * forever.
      */
     override suspend fun runPushLoop() {
-        val userId = getAuthenticatedUserId() ?: return
         combine(
             localStore.pendingFlow(),
             networkConnectivityObserver.observe(),
@@ -61,6 +65,7 @@ class OfflineFirstSynchronizer<E, D>(
                 if (pending.isEmpty() || !isOnline) return@collectLatest
                 var backoff = initialBackoff
                 while (true) {
+                    val userId = getAuthenticatedUserId() ?: return@collectLatest
                     suspendRunCatching { push(userId, pending) }
                         .onSuccess { return@collectLatest }
                         .onFailure { error ->
