@@ -1,6 +1,7 @@
 {
   "2.0.1": [
     "Corrigido um problema em que o app podia continuar tentando sincronizar em segundo plano, gastando bateria e dados a mais.",
+    "Corrigido o scroll do estudo do dia com IA em tablets no modo paisagem: agora ele rola ao arrastar em qualquer parte do painel, inclusive nas laterais.",
     "Corrigido um problema em que os ícones da barra de status não atualizavam corretamente ao trocar o tema do app, dificultando a visualização deles."
   ],
   "2.0.0": [

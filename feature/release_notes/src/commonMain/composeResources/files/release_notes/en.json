@@ -1,6 +1,7 @@
 {
   "2.0.1": [
     "Fixed an issue where the app could keep retrying to sync in the background, using extra battery and data.",
+    "Fixed scrolling in the AI daily study on tablets in landscape: it now scrolls when you drag anywhere on the panel, including the side edges.",
     "Fixed an issue where the status bar icons didn't update correctly when changing the app theme, making them hard to see."
   ],
   "2.0.0": [
