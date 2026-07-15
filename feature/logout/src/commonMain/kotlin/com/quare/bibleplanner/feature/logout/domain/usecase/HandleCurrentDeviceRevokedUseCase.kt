@@ -18,15 +18,23 @@ internal class HandleCurrentDeviceRevokedUseCase(
 
     override suspend fun invoke() {
         intentionalLogoutMarker.mark()
-        val serverSessionState = checkRemoteSessionState().toAnalyticsValue()
+        val remoteSessionState = checkRemoteSessionState()
         trackEvent(
             name = AnalyticsEventNames.CURRENT_DEVICE_REVOKED,
-            params = mapOf(AnalyticsParams.SERVER_SESSION_STATE to serverSessionState),
+            params = mapOf(AnalyticsParams.SERVER_SESSION_STATE to remoteSessionState.toAnalyticsValue()),
         )
-        logger.e(CurrentDeviceRevokedException(serverSessionState)) {
-            "Current device revoked; ending local session"
+        when (remoteSessionState) {
+            RemoteSessionState.REVOKED -> endSession()
+
+            RemoteSessionState.ACTIVE -> {
+                intentionalLogoutMarker.unmark()
+                logger.e(FalsePositiveDeviceRevocationException()) {
+                    "Skipped ending session: server session still active"
+                }
+            }
+
+            RemoteSessionState.UNKNOWN -> intentionalLogoutMarker.unmark()
         }
-        endSession()
     }
 
     private fun RemoteSessionState.toAnalyticsValue(): String = when (this) {
