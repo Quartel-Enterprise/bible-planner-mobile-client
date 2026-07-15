@@ -15,6 +15,14 @@ kotlin {
     jvm()
     sourceSets {
         commonMain.dependencies {
+            // Core
+            implementation(projects.core.date)
+            implementation(projects.core.utils)
+
+            // DataStore
+            implementation(libs.dataStore)
+            implementation(libs.dataStore.preferences)
+
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)
@@ -37,6 +45,11 @@ kotlin {
 
             // Logging
             implementation(libs.kermit)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
 
         androidMain.dependencies {
