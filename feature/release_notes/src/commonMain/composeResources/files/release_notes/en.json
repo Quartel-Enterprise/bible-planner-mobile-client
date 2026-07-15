@@ -1,4 +1,7 @@
 {
+  "2.0.2": [
+    "Fixed an issue that could sign you out of your account on its own in some cases."
+  ],
   "2.0.1": [
     "Fixed an issue where the app could keep retrying to sync in the background, using extra battery and data.",
     "Fixed scrolling in the AI daily study on tablets in landscape: it now scrolls when you drag anywhere on the panel, including the side edges.",

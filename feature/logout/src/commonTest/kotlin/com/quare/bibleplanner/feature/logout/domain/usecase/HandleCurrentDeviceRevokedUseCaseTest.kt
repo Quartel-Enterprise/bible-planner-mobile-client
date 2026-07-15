@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class HandleCurrentDeviceRevokedUseCaseTest {
@@ -37,7 +38,54 @@ class HandleCurrentDeviceRevokedUseCaseTest {
     }
 
     @Test
-    fun `GIVEN the server reports the session revoked WHEN invoked THEN tracks state revoked`() = runTest {
+    fun `GIVEN the server confirms the session revoked WHEN invoked THEN ends the session`() = runTest {
+        // Given
+        remoteState = RemoteSessionState.REVOKED
+
+        // When
+        useCase()
+
+        // Then
+        assertEquals(
+            expected = listOf("mark", "endSession"),
+            actual = order,
+        )
+    }
+
+    @Test
+    fun `GIVEN the server reports the session still active WHEN invoked THEN keeps the user signed in`() = runTest {
+        // Given
+        remoteState = RemoteSessionState.ACTIVE
+
+        // When
+        useCase()
+
+        // Then
+        assertFalse(order.contains("endSession"))
+        assertEquals(
+            expected = listOf("mark", "unmark"),
+            actual = order,
+        )
+    }
+
+    @Test
+    fun `GIVEN an inconclusive probe WHEN invoked THEN keeps the user signed in`() = runTest {
+        // Given
+        remoteState = RemoteSessionState.UNKNOWN
+
+        // When
+        useCase()
+
+        // Then
+        assertFalse(order.contains("endSession"))
+        assertEquals(
+            expected = listOf("mark", "unmark"),
+            actual = order,
+        )
+    }
+
+    @Test
+    fun `GIVEN a revoked session WHEN invoked THEN tracks the event with state revoked`() = runTest {
         // Given
         remoteState = RemoteSessionState.REVOKED
 
@@ -54,7 +102,7 @@ class HandleCurrentDeviceRevokedUseCaseTest {
     }
 
     @Test
-    fun `GIVEN the server reports the session still active WHEN invoked THEN tracks state active`() = runTest {
+    fun `GIVEN an active session WHEN invoked THEN tracks the event with state active`() = runTest {
         // Given
         remoteState = RemoteSessionState.ACTIVE
 
@@ -69,7 +117,7 @@ class HandleCurrentDeviceRevokedUseCaseTest {
     }
 
     @Test
-    fun `GIVEN an inconclusive probe WHEN invoked THEN tracks state unknown`() = runTest {
+    fun `GIVEN an unknown probe WHEN invoked THEN tracks the event with state unknown`() = runTest {
         // Given
         remoteState = RemoteSessionState.UNKNOWN
 
@@ -84,25 +132,17 @@ class HandleCurrentDeviceRevokedUseCaseTest {
     }
 
     @Test
-    fun `WHEN invoked THEN marks the logout as intentional before ending the session`() = runTest {
-        // When
-        useCase()
+    fun `WHEN invoked THEN marks the intent before probing so a probe-driven clear is never a spontaneous loss`() =
+        runTest {
+            // Given
+            remoteState = RemoteSessionState.REVOKED
 
-        // Then
-        assertEquals(
-            expected = listOf("mark", "endSession"),
-            actual = order,
-        )
-    }
+            // When
+            useCase()
 
-    @Test
-    fun `WHEN invoked THEN ends the local session`() = runTest {
-        // When
-        useCase()
-
-        // Then
-        assertTrue(order.contains("endSession"))
-    }
+            // Then
+            assertTrue(order.first() == "mark")
+        }
 
     private class RecordingIntentionalLogoutMarker(
         private val order: MutableList<String>,
@@ -111,7 +151,9 @@ class HandleCurrentDeviceRevokedUseCaseTest {
             order += "mark"
         }
 
-        override fun unmark() = Unit
+        override fun unmark() {
+            order += "unmark"
+        }
 
         override fun consume(): Boolean = false
     }
