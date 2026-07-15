@@ -1,6 +1,7 @@
 {
   "2.0.1": [
-    "Se corrigió un problema por el que la app podía seguir reintentando la sincronización en segundo plano, gastando batería y datos de más."
+    "Se corrigió un problema por el que la app podía seguir reintentando la sincronización en segundo plano, gastando batería y datos de más.",
+    "Se corrigió el desplazamiento del estudio del día con IA en tablets en modo horizontal: ahora se desplaza al arrastrar en cualquier parte del panel, incluidos los bordes laterales."
   ],
   "2.0.0": [
     "Nuevo: Estudio del día con IA — genera un análisis de las lecturas de cada día, con una visión general, contexto histórico y preguntas para reflexionar.",

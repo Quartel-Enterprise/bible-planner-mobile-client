@@ -36,10 +36,15 @@ internal fun DayScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isLandscape = maxWidth > landscapeMinWidth
+        val scaffoldNestedScrollModifier = if (isLandscape) {
+            Modifier
+        } else {
+            Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        }
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
+                .then(scaffoldNestedScrollModifier),
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             },
