@@ -36,7 +36,6 @@ internal class DevicesSynchronizer(
     override suspend fun seed(now: Long) = Unit
 
     override suspend fun runPushLoop() {
-        getAuthenticatedUserId() ?: return
         combine(
             localStore.pendingFlow(),
             networkConnectivityObserver.observe(),
@@ -45,6 +44,7 @@ internal class DevicesSynchronizer(
                 if (pending.isEmpty() || !isOnline) return@collectLatest
                 var backoff = initialBackoff
                 while (true) {
+                    getAuthenticatedUserId() ?: return@collectLatest
                     suspendRunCatching { push(pending) }
                         .onSuccess { return@collectLatest }
                         .onFailure { error ->

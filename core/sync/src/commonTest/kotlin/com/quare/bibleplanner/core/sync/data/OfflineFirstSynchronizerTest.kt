@@ -9,16 +9,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class OfflineFirstSynchronizerTest {
     private lateinit var local: FakeLocalStore
     private lateinit var remote: FakeRemoteStore
+    private lateinit var userId: MutableStateFlow<String?>
 
     @Test
     fun `GIVEN pending and online WHEN syncing THEN pushes mapped dtos and marks them synced`() = runTest {
@@ -34,6 +37,40 @@ internal class OfflineFirstSynchronizerTest {
         assertEquals(listOf(listOf("user-1:GEN")), remote.upsertCalls)
         assertEquals(listOf("GEN"), local.markSyncedCalls)
     }
+
+    @Test
+    fun `GIVEN no authenticated session WHEN pending and online THEN does not push`() = runTest {
+        // Given
+        val sync = prepareScenario(online = true)
+        userId.value = null
+        runPushLoop(sync)
+
+        // When
+        local.pending.value = listOf("GEN")
+        runCurrent()
+
+        // Then
+        assertTrue(remote.upsertCalls.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the session is lost after a failed push WHEN retrying THEN stops instead of pushing anonymously`() =
+        runTest {
+            // Given
+            val sync = prepareScenario(online = true)
+            remote.upsertShouldFail = true
+            runPushLoop(sync)
+            local.pending.value = listOf("GEN")
+            runCurrent()
+
+            // When
+            userId.value = null
+            advanceTimeBy(5.seconds)
+            runCurrent()
+
+            // Then
+            assertEquals(1, remote.upsertCalls.size)
+        }
 
     @Test
     fun `GIVEN pending and offline WHEN syncing THEN does not push`() = runTest {
@@ -99,11 +136,12 @@ internal class OfflineFirstSynchronizerTest {
     private fun prepareScenario(online: Boolean): OfflineFirstSynchronizer<String, String> {
         local = FakeLocalStore()
         remote = FakeRemoteStore()
+        userId = MutableStateFlow("user-1")
         return OfflineFirstSynchronizer(
             localStore = local,
             remoteStore = remote,
             networkConnectivityObserver = { flowOf(online) },
-            getAuthenticatedUserId = { "user-1" },
+            getAuthenticatedUserId = { userId.value },
             logTag = "Test",
         )
     }
@@ -138,9 +176,11 @@ private class FakeRemoteStore : SyncRemoteStore<String> {
     val upsertCalls = mutableListOf<List<String>>()
     val remoteChanges = MutableSharedFlow<String>()
     var snapshot = emptyList<String>()
+    var upsertShouldFail = false
 
     override suspend fun upsert(dtos: List<String>) {
         upsertCalls += dtos
+        if (upsertShouldFail) error("upsert failed")
     }
 
     override suspend fun fetch(userId: String): List<String> = snapshot
