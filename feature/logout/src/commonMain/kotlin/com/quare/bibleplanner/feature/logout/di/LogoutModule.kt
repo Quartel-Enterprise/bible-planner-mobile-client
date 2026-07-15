@@ -3,6 +3,8 @@ package com.quare.bibleplanner.feature.logout.di
 import com.quare.bibleplanner.feature.logout.domain.usecase.EndSession
 import com.quare.bibleplanner.feature.logout.domain.usecase.EndSessionUseCase
 import com.quare.bibleplanner.feature.logout.domain.usecase.FlushPendingChangesUseCase
+import com.quare.bibleplanner.feature.logout.domain.usecase.HandleCurrentDeviceRevoked
+import com.quare.bibleplanner.feature.logout.domain.usecase.HandleCurrentDeviceRevokedUseCase
 import com.quare.bibleplanner.feature.logout.domain.usecase.Logout
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutUseCase
 import com.quare.bibleplanner.feature.logout.domain.usecase.ObserveSessionLoss
@@ -25,6 +27,7 @@ val logoutModule = module {
     factoryOf(::EndSessionUseCase).bind<EndSession>()
     factoryOf(::LogoutUseCase).bind<Logout>()
     factoryOf(::ObserveSessionLossUseCase).bind<ObserveSessionLoss>()
+    factoryOf(::HandleCurrentDeviceRevokedUseCase).bind<HandleCurrentDeviceRevoked>()
     factoryOf(::LogoutErrorMapper)
     viewModelOf(::LogoutViewModel)
 }
