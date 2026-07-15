@@ -1,5 +1,9 @@
 package com.quare.bibleplanner.core.provider.supabase
 
+import com.quare.bibleplanner.core.provider.supabase.session.DataStoreSessionAuditStore
+import com.quare.bibleplanner.core.provider.supabase.session.MonitoredSessionManager
+import com.quare.bibleplanner.core.provider.supabase.session.SessionAuditStore
+import com.quare.bibleplanner.core.provider.supabase.session.createPlatformSessionManager
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.SessionManager

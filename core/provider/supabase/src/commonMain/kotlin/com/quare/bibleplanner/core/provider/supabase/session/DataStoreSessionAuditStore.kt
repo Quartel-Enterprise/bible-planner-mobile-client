@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.provider.supabase
+package com.quare.bibleplanner.core.provider.supabase.session
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

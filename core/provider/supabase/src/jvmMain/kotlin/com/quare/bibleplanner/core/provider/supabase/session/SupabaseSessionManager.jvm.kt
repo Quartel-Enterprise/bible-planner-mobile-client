@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.provider.supabase
+package com.quare.bibleplanner.core.provider.supabase.session
 
 import io.github.jan.supabase.auth.SessionManager
 import io.github.jan.supabase.auth.SettingsSessionManager

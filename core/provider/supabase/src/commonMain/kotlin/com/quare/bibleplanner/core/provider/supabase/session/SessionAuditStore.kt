@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.provider.supabase
+package com.quare.bibleplanner.core.provider.supabase.session
 
 internal interface SessionAuditStore {
     suspend fun recordSaved()

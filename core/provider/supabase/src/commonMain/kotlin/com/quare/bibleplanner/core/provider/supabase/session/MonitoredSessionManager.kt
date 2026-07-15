@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.provider.supabase
+package com.quare.bibleplanner.core.provider.supabase.session
 
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.utils.suspendRunCatching
