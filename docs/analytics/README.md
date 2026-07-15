@@ -281,6 +281,8 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [login_warning_dismissed](events/login_warning_dismissed.md) | P2 | Auth |
 | [sync_completed](events/sync_completed.md) | P2 | Auth |
 | [sync_failed](events/sync_failed.md) | P2 | Auth |
+| [session_lost](events/session_lost.md) | P1 | Auth |
+| [current_device_revoked](events/current_device_revoked.md) | P1 | Auth |
 | [rename_device_clicked](events/rename_device_clicked.md) | P2 | Auth |
 
 ### Settings & shell

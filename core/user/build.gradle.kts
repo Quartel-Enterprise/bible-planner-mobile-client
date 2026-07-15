@@ -12,6 +12,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.utils)
 
             // Json
             implementation(libs.kotlin.serialization.json)

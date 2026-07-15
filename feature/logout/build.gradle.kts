@@ -16,9 +16,14 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.sync)
             implementation(projects.core.clear)
+            implementation(projects.core.date)
             implementation(projects.core.devices)
+            implementation(projects.core.user)
             implementation(projects.core.utils)
             implementation(projects.core.provider.analytics)
+
+            // Logging
+            implementation(libs.kermit)
 
             // UI
             implementation(projects.ui.utils)

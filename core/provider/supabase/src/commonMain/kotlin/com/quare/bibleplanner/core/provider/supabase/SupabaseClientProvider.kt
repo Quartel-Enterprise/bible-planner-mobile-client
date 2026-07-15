@@ -23,6 +23,7 @@ internal fun getSupabaseClient(): SupabaseClient = createSupabaseClient(
     supabaseKey = SupabaseBuildKonfig.SUPABASE_API_KEY,
 ) {
     httpEngine = createPlatformHttpEngine()
+    defaultLoggingFactory = ::KermitSupabaseLoggingProcessor
     install(Auth) {
         platformConfig()
     }
