@@ -56,11 +56,13 @@ class MainActivity : ComponentActivity() {
             val isDynamicColorsOn by viewModel.isDynamicColorsEnabledFlow.collectAsState(true)
             App(
                 getSpecificColors = { isAppInDarkTheme ->
-                    enableEdgeToEdge(statusBarStyle = getStatusBarStyle(isAppInDarkTheme))
                     getAndroidSpecificColorScheme(
                         isDynamicColorsOn = isDynamicColorsOn,
                         isAppInDarkTheme = isAppInDarkTheme,
                     )
+                },
+                onThemeResolved = { isAppInDarkTheme ->
+                    enableEdgeToEdge(statusBarStyle = getStatusBarStyle(isAppInDarkTheme))
                 },
             )
         }
