@@ -19,6 +19,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
@@ -91,6 +92,7 @@ private fun LoadedSheetContent(
         )
         DayStudyTabbedContent(
             study = study,
+            contentMaxWidth = Dp.Unspecified,
             modifier = Modifier.weight(1f),
             contentPadding = PaddingValues(
                 start = 20.dp,

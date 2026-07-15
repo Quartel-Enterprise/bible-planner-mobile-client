@@ -1,4 +1,9 @@
 {
+  "2.0.1": [
+    "Se corrigió un problema por el que la app podía seguir reintentando la sincronización en segundo plano, gastando batería y datos de más.",
+    "Se corrigió el desplazamiento del estudio del día con IA en tablets en modo horizontal: ahora se desplaza al arrastrar en cualquier parte del panel, incluidos los bordes laterales.",
+    "Se corrigió un problema por el que los íconos de la barra de estado no se actualizaban correctamente al cambiar el tema de la app, dificultando su visualización."
+  ],
   "2.0.0": [
     "Nuevo: Estudio del día con IA — genera un análisis de las lecturas de cada día, con una visión general, contexto histórico y preguntas para reflexionar.",
     "La pantalla Pro, el selector de tema, el selector de idioma y el selector de la versión de la Biblia fueron rediseñados para una experiencia más limpia y consistente.",
