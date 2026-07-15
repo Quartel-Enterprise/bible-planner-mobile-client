@@ -1,4 +1,7 @@
 {
+  "2.0.2": [
+    "Corrigido um problema que podia deslogar sua conta sozinha em alguns casos."
+  ],
   "2.0.1": [
     "Corrigido um problema em que o app podia continuar tentando sincronizar em segundo plano, gastando bateria e dados a mais.",
     "Corrigido o scroll do estudo do dia com IA em tablets no modo paisagem: agora ele rola ao arrastar em qualquer parte do painel, inclusive nas laterais.",
