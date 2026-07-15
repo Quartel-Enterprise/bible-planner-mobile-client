@@ -22,3 +22,11 @@ Investigated 2026-07-14: users (Pierre's SM-S948B 3x in 36h, plus real users SM-
 **Collateral bugs found**: (1) sync push loop keeps retrying as ANON after session loss → Crashlytics issue 504627f2 (42501 RLS verse_reads, firstSeen 2.0.0, ~60s maxBackoff loop in background); (2) edge auth-middleware gets publishable key (sb_..., len 46) as Bearer when clients have no session → all-day GET /user 403 "token malformed" noise in auth logs; (3) orphaned auth.sessions accumulate (some since January).
 
 Next steps agreed direction: instrument first (pipe supabase-kt logger into kermit to capture "Clearing session (Status code X)"; track endSession-by-revoked), server-confirm before endSession, gate sync pushes on session presence.
+
+**PR #263 (branch enhancement/instrument-session-loss)** implements the instrumentation:
+- `session_lost` event + `SessionLostException` non-fatal via `ObserveSessionLossUseCase` (feature/logout); `IntentionalLogoutMarker` (core/user singleton) set by EndSession so app-initiated logouts are excluded. Params: `source`, `is_access_token_expired`.
+- `current_device_revoked` event + `CurrentDeviceRevokedException` non-fatal via `HandleCurrentDeviceRevokedUseCase` (feature/logout), replacing the inline endSession in InitializeAppContentUseCase.
+- **`server_session_state` param** (revoked/active/unknown) on current_device_revoked: `CheckRemoteSessionState` (core/user) probes via `auth.refreshCurrentSession()` — the refresh token is the session-bound credential (access-token JWT stays valid ~1h post-revocation, so only refresh reveals revocation). 4xx→revoked (legit remote sign-out), success→active (FALSE POSITIVE, the bug signal), else→unknown. Marker is set BEFORE the probe so the probe's rare async clearSession can't misfire session_lost. Still endSessions regardless (instrumentation-only).
+- Forwarded supabase-kt logs to Crashlytics via `KermitSupabaseLoggingProcessor` (core/provider/supabase, `defaultLoggingFactory`), wrapping message-only errors in `SupabaseLogException`, so "Clearing session (Status code X)" surfaces as a non-fatal.
+
+Deferred to a follow-up (not in #263): gate the endSession on server_session_state==revoked (the actual false-positive-logout fix); gate sync push loop on session presence to stop the anon 42501 retry loop.
