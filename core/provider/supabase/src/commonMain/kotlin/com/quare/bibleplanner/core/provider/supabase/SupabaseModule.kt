@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.provider.supabase
 
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.auth.SessionManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.functions.Functions
@@ -22,7 +23,19 @@ import org.koin.dsl.module
 private const val SUPABASE_BUCKET_NAME = "content"
 
 val supabaseModule = module {
-    single<SupabaseClient> { getSupabaseClient() }
+    single<SessionAuditStore> {
+        DataStoreSessionAuditStore(
+            dataStore = get(),
+            currentTimestampProvider = get(),
+        )
+    }
+    single<SessionManager> {
+        MonitoredSessionManager(
+            delegate = createPlatformSessionManager(),
+            auditStore = get(),
+        )
+    }
+    single<SupabaseClient> { getSupabaseClient(get()) }
     single<Auth> { get<SupabaseClient>().auth }
     single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.ignoringTransientInitializing() }
     single<Realtime> { get<SupabaseClient>().realtime }

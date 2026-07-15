@@ -16,6 +16,10 @@ internal class KermitSupabaseLoggingProcessor(
         message: String,
     ) {
         val logger = Logger.withTag(tag)
+        if (level == LogLevel.ERROR && throwable.isMissingStoredSession()) {
+            logger.d(throwable) { message }
+            return
+        }
         when (level) {
             LogLevel.DEBUG -> logger.d(throwable) { message }
             LogLevel.INFO -> logger.i(throwable) { message }
@@ -23,5 +27,12 @@ internal class KermitSupabaseLoggingProcessor(
             LogLevel.ERROR -> logger.e(throwable ?: SupabaseLogException(message)) { message }
             LogLevel.NONE -> Unit
         }
+    }
+
+    private fun Throwable?.isMissingStoredSession(): Boolean =
+        this is IllegalStateException && message?.startsWith(MISSING_SESSION_MESSAGE_PREFIX) == true
+
+    private companion object {
+        const val MISSING_SESSION_MESSAGE_PREFIX = "No entry with the key"
     }
 }
