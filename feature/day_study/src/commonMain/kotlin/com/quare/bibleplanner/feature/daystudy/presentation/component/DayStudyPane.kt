@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Lock
@@ -64,7 +66,9 @@ internal fun DayStudyPane(
     Box(modifier = modifier.fillMaxSize()) {
         when {
             generation != null -> Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center,
             ) {
                 DayStudyGeneratingContent(
@@ -104,10 +108,12 @@ private fun DayStudyPaneHero(
 ) {
     val isLocked = card.mode == DayStudyCardMode.LOCKED
     Column(
-        modifier = modifier.padding(
-            horizontal = 38.dp,
-            vertical = 40.dp,
-        ),
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(
+                horizontal = 38.dp,
+                vertical = 40.dp,
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
