@@ -121,7 +121,7 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Upload the AAB as a build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-aab
           path: androidApp/build/outputs/bundle/release/
@@ -159,7 +159,7 @@ jobs:
         run: printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
 
       - name: Download the AAB build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: android-aab
           path: androidApp/build/outputs/bundle/release/
@@ -229,7 +229,7 @@ jobs:
           GIT_SSH_COMMAND: ssh -i ${{ runner.temp }}/match_ci_ssh -o IdentitiesOnly=yes
 
       - name: Upload the IPA as a build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-ipa
           path: build/ios/
@@ -262,7 +262,7 @@ jobs:
         run: gem install fastlane --no-document
 
       - name: Download the IPA build artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ios-ipa
           path: build/ios/
