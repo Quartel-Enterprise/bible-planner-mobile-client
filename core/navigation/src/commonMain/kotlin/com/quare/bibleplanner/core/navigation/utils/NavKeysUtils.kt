@@ -18,10 +18,9 @@ internal fun rememberDisplayBackStack(
 ): List<NavKey> {
     var wasWide by remember { mutableStateOf(isWide) }
     val isCollapsingCompanion = !isWide && wasWide && backStack.hasDayStudyCompanionOnTop()
-    LaunchedEffect(isWide) {
-        if (wasWide != isWide) {
-            backStack.syncDayStudyPanelCompanion(isWide)
-        }
+    val topRoute = backStack.lastOrNull()
+    LaunchedEffect(isWide, topRoute) {
+        backStack.syncDayStudyPanelCompanion(isWide)
         wasWide = isWide
     }
     return if (isCollapsingCompanion) backStack.dropLast(1) else backStack
