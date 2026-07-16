@@ -9,13 +9,17 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isBackPressed
+import androidx.compose.ui.input.pointer.isForwardPressed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -23,12 +27,16 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
+import androidx.navigationevent.compose.NavigationForwardHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrategy
 import com.quare.bibleplanner.core.navigation.utils.back
-import com.quare.bibleplanner.core.navigation.utils.hasDayStudyCompanionOnTop
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
@@ -46,15 +54,26 @@ private val dayStudyPanelMinWidth = 700.dp
 @Composable
 fun RootAppNavDisplay() {
     val backStack = rememberNavBackStack(navigationSavedStateConfiguration, MainNavRoute)
+    val forwardStack = remember { mutableStateListOf<List<NavKey>>() }
     val onNavigate: (NavKey) -> Unit = { route ->
         if (backStack.lastOrNull() != route) {
             backStack.add(route)
+            forwardStack.clear()
         }
     }
-    val onNavigateBack: () -> Unit = backStack::back
+    val onNavigateBack: () -> Unit = {
+        val removed = backStack.back()
+        if (removed.isNotEmpty()) {
+            forwardStack.add(removed)
+        }
+    }
+    val onNavigateForward: () -> Unit = {
+        forwardStack.removeLastOrNull()?.asReversed()?.forEach(backStack::add)
+    }
     val onNavigateReplacingTop: (NavKey) -> Unit = { route ->
         backStack.removeLastOrNull()
         backStack.add(route)
+        forwardStack.clear()
     }
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -65,6 +84,11 @@ fun RootAppNavDisplay() {
         currentNavKey?.let(trackDestination::invoke)
     }
     EventBusNavigationListener(onNavigate)
+    NavigationForwardHandler(
+        state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
+        isForwardEnabled = forwardStack.isNotEmpty(),
+        onForwardCompleted = onNavigateForward,
+    )
     ActionCollector(appSnackbarController.messages) { message ->
         message.run {
             appSnackbarHostState.showSnackbar(
@@ -73,7 +97,11 @@ fun RootAppNavDisplay() {
             )
         }
     }
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .mouseBackForwardNavigation(),
+    ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
         CompositionLocalProvider(
@@ -123,5 +151,31 @@ private fun EventBusNavigationListener(onNavigate: (NavKey) -> Unit) {
     ActionCollector(navigationEventBus.events) { route ->
         onNavigate(route)
         navigationEventBus.reset()
+    }
+}
+
+@Composable
+private fun Modifier.mouseBackForwardNavigation(): Modifier {
+    val dispatcherOwner = LocalNavigationEventDispatcherOwner.current
+    val navigationInput = remember { DirectNavigationEventInput() }
+    DisposableEffect(dispatcherOwner, navigationInput) {
+        val dispatcher = dispatcherOwner?.navigationEventDispatcher
+        dispatcher?.addInput(navigationInput)
+        onDispose { dispatcher?.removeInput(navigationInput) }
+    }
+    return pointerInput(dispatcherOwner) {
+        if (dispatcherOwner == null) return@pointerInput
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent(PointerEventPass.Initial)
+                if (event.type == PointerEventType.Press) {
+                    if (event.buttons.isBackPressed) {
+                        navigationInput.backCompleted()
+                    } else if (event.buttons.isForwardPressed) {
+                        navigationInput.forwardCompleted()
+                    }
+                }
+            }
+        }
     }
 }

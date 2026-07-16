@@ -1,4 +1,7 @@
 {
+  "2.1.0": [
+    "No desktop e no Android com um mouse conectado, agora você pode usar os botões laterais de voltar e avançar do mouse para navegar entre as telas."
+  ],
   "2.0.2": [
     "Corrigido um problema que podia deslogar sua conta sozinha em alguns casos."
   ],

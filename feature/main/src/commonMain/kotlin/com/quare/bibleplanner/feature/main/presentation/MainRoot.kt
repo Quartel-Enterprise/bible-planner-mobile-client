@@ -19,6 +19,9 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationForwardHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
@@ -76,6 +79,11 @@ private fun MainRootContent(
     val language by mainViewModel.languageState.collectAsState()
     val mainNavigationModels = mainViewModel.mainNavigationItemModels
     val onEvent = mainViewModel::onEvent
+    NavigationForwardHandler(
+        state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
+        isForwardEnabled = tabState.canGoForward,
+        onForwardCompleted = tabState::goForward,
+    )
     NavDisplay(
         entries = tabState.toDecoratedEntries(
             entryProvider {
