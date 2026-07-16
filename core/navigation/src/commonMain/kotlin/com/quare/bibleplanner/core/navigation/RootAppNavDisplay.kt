@@ -28,7 +28,10 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
+import androidx.navigationevent.compose.NavigationForwardHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
@@ -81,6 +84,11 @@ fun RootAppNavDisplay() {
         currentNavKey?.let(trackDestination::invoke)
     }
     EventBusNavigationListener(onNavigate)
+    NavigationForwardHandler(
+        state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
+        isForwardEnabled = forwardStack.isNotEmpty(),
+        onForwardCompleted = onNavigateForward,
+    )
     ActionCollector(appSnackbarController.messages) { message ->
         message.run {
             appSnackbarHostState.showSnackbar(
@@ -92,7 +100,7 @@ fun RootAppNavDisplay() {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .mouseBackForwardNavigation(onNavigateForward = onNavigateForward),
+            .mouseBackForwardNavigation(),
     ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
@@ -147,13 +155,13 @@ private fun EventBusNavigationListener(onNavigate: (NavKey) -> Unit) {
 }
 
 @Composable
-private fun Modifier.mouseBackForwardNavigation(onNavigateForward: () -> Unit): Modifier {
+private fun Modifier.mouseBackForwardNavigation(): Modifier {
     val dispatcherOwner = LocalNavigationEventDispatcherOwner.current
-    val backInput = remember { DirectNavigationEventInput() }
-    DisposableEffect(dispatcherOwner, backInput) {
+    val navigationInput = remember { DirectNavigationEventInput() }
+    DisposableEffect(dispatcherOwner, navigationInput) {
         val dispatcher = dispatcherOwner?.navigationEventDispatcher
-        dispatcher?.addInput(backInput)
-        onDispose { dispatcher?.removeInput(backInput) }
+        dispatcher?.addInput(navigationInput)
+        onDispose { dispatcher?.removeInput(navigationInput) }
     }
     return pointerInput(dispatcherOwner) {
         if (dispatcherOwner == null) return@pointerInput
@@ -162,9 +170,9 @@ private fun Modifier.mouseBackForwardNavigation(onNavigateForward: () -> Unit): 
                 val event = awaitPointerEvent(PointerEventPass.Initial)
                 if (event.type == PointerEventType.Press) {
                     if (event.buttons.isBackPressed) {
-                        backInput.backCompleted()
+                        navigationInput.backCompleted()
                     } else if (event.buttons.isForwardPressed) {
-                        onNavigateForward()
+                        navigationInput.forwardCompleted()
                     }
                 }
             }

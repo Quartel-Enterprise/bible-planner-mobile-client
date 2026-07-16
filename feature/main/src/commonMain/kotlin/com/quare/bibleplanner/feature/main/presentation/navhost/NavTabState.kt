@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.main.presentation.navhost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
@@ -18,18 +19,33 @@ internal class NavTabState(
 ) {
     private var selectedIndex by selectedIndexState
     private val startTab = tabs.first()
+    private val forwardStack = mutableStateListOf<TabBackStep>()
     val selectedTab: MainNavRouteDestination get() = tabs[selectedIndex]
+    val canGoForward: Boolean get() = forwardStack.isNotEmpty()
 
     fun switchTo(tab: MainNavRouteDestination) {
         selectedIndex = tabs.indexOf(tab)
+        forwardStack.clear()
     }
 
     fun goBack() {
         val currentStack = backStacks.getValue(selectedTab)
         if (currentStack.size > 1) {
-            currentStack.removeLastOrNull()
+            currentStack.removeLastOrNull()?.let { route ->
+                forwardStack.add(TabBackStep(tab = selectedTab, poppedRoute = route))
+            }
         } else if (selectedTab != startTab) {
+            forwardStack.add(TabBackStep(tab = selectedTab, poppedRoute = null))
             selectedIndex = tabs.indexOf(startTab)
+        }
+    }
+
+    fun goForward() {
+        val step = forwardStack.removeLastOrNull() ?: return
+        if (step.poppedRoute != null) {
+            backStacks.getValue(step.tab).add(step.poppedRoute)
+        } else {
+            selectedIndex = tabs.indexOf(step.tab)
         }
     }
 
