@@ -27,6 +27,8 @@ import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrategy
+import com.quare.bibleplanner.core.navigation.utils.back
+import com.quare.bibleplanner.core.navigation.utils.hasDayStudyCompanionOnTop
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
@@ -49,7 +51,7 @@ fun RootAppNavDisplay() {
             backStack.add(route)
         }
     }
-    val onNavigateBack: () -> Unit = { backStack.removeLastOrNull() }
+    val onNavigateBack: () -> Unit = backStack::back
     val onNavigateReplacingTop: (NavKey) -> Unit = { route ->
         backStack.removeLastOrNull()
         backStack.add(route)

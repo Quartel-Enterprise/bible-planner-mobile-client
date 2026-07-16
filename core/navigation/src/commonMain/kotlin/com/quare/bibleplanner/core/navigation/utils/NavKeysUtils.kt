@@ -38,7 +38,7 @@ private fun MutableList<NavKey>.syncDayStudyPanelCompanion(isWide: Boolean) {
     }
 }
 
-private fun List<NavKey>.hasDayStudyCompanionOnTop(): Boolean {
+internal fun List<NavKey>.hasDayStudyCompanionOnTop(): Boolean {
     val top = lastOrNull()
     val mainPane = getOrNull(lastIndex - 1)
     return top is DayStudyNavRoute && mainPane is DayNavRoute && mainPane.toDayStudyNavRoute() == top
