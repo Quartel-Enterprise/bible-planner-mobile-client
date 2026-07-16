@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.model.route.toDayStudyNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -28,6 +29,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiAction
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
+import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +56,7 @@ internal class DayViewModel(
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val applicationScope: ApplicationScope,
+    private val generationCoordinator: DayStudyGenerationCoordinator,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<DayUiEvent>(trackEvent) {
@@ -69,6 +72,8 @@ internal class DayViewModel(
 
     private var notesSaveJob: Job? = null
     private val notesDebounceDelay: Duration = 2.seconds
+    private var isWide: Boolean? = null
+    private var isStudyRoutePushedByUs = false
 
     init {
         loadDayDetails()
@@ -84,7 +89,43 @@ internal class DayViewModel(
             ),
         ) { state ->
             _uiState.update { state }
+            reconcileStudyCompanion()
+            checkPendingStudyReopen()
         }
+    }
+
+    private fun onWidthClassChanged(isWide: Boolean) {
+        this.isWide = isWide
+        if (!isWide) {
+            isStudyRoutePushedByUs = false
+        }
+        reconcileStudyCompanion()
+    }
+
+    private fun reconcileStudyCompanion() {
+        val loaded = safeLoadedState ?: return
+        val wide = isWide ?: return
+        if (wide && !isStudyRoutePushedByUs) {
+            pushStudyRoute(loaded.dayRoute)
+        }
+    }
+
+    private fun checkPendingStudyReopen() {
+        val loaded = safeLoadedState ?: return
+        val key = generationCoordinator.keyOf(loaded.dayRoute)
+        if (generationCoordinator.pendingOpenKey.value != key) return
+        generationCoordinator.consumePendingOpen(key)
+        pushStudyRoute(loaded.dayRoute)
+    }
+
+    private fun navigateToStudy() {
+        val loaded = safeLoadedState ?: return
+        pushStudyRoute(loaded.dayRoute)
+    }
+
+    private fun pushStudyRoute(route: DayNavRoute) {
+        isStudyRoutePushedByUs = true
+        viewModelScope.launch { _uiAction.emit(DayUiAction.NavigateToRoute(route.toDayStudyNavRoute())) }
     }
 
     private fun updateDatePickerState(transform: (DatePickerUiState) -> DatePickerUiState) {
@@ -112,6 +153,8 @@ internal class DayViewModel(
             is DayUiEvent.OnDayStudySubscribeClick -> navigateToPaywall()
             is DayUiEvent.OnDayStudyLoginRequired -> navigateToDayStudyLoginWarning()
             is DayUiEvent.OnDayStudyMessage -> showSnackBarText(event.message)
+            is DayUiEvent.OnDayStudyNavigate -> navigateToStudy()
+            is DayUiEvent.OnWidthClassChanged -> onWidthClassChanged(event.isWide)
         }
     }
 

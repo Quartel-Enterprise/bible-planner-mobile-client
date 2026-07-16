@@ -15,10 +15,12 @@ import com.quare.bibleplanner.feature.daystudy.domain.mapper.BookIdWireNameMappe
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.ClearDayStudyLocalDataUseCase
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
+import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyRouteViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -43,9 +45,11 @@ val dayStudyModule = module {
 
     factoryOf(::GetDayStudyUseCase)
     factoryOf(::GetDayStudyQuotaUseCase)
+    factoryOf(::GetDayPassagesForDayStudyUseCase)
     factoryOf(::HasCachedStudyUseCase)
     factoryOf(::ClearDayStudyLocalDataUseCase).bind<ClearDayStudyLocalData>()
 
     factoryOf(::DayStudyCardUiModelFactory)
     viewModelOf(::DayStudyViewModel)
+    viewModelOf(::DayStudyRouteViewModel)
 }

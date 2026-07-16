@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.day.presentation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -14,14 +13,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.component.DayScreenTopBarComponent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.DayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
-
-private val landscapeMinWidth = 700.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -31,47 +27,45 @@ internal fun DayScreen(
     snackbarHostState: SnackbarHostState,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    isLandscape: Boolean,
     onEvent: (DayUiEvent) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val isLandscape = maxWidth > landscapeMinWidth
-        val scaffoldNestedScrollModifier = if (isLandscape) {
-            Modifier
-        } else {
-            Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-        }
-        Scaffold(
+    val scaffoldNestedScrollModifier = if (isLandscape) {
+        Modifier
+    } else {
+        Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    }
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .then(scaffoldNestedScrollModifier),
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        topBar = {
+            if (!isLandscape) {
+                DayScreenTopBarComponent(
+                    platform = platform,
+                    uiState = uiState,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope,
+                    scrollBehavior = scrollBehavior,
+                    onEvent = onEvent,
+                )
+            }
+        },
+    ) { paddingValues ->
+        DayContent(
             modifier = Modifier
                 .fillMaxSize()
-                .then(scaffoldNestedScrollModifier),
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
-            },
-            topBar = {
-                if (!isLandscape) {
-                    DayScreenTopBarComponent(
-                        platform = platform,
-                        uiState = uiState,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedContentScope = animatedContentScope,
-                        scrollBehavior = scrollBehavior,
-                        onEvent = onEvent,
-                    )
-                }
-            },
-        ) { paddingValues ->
-            DayContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                uiState = uiState,
-                onEvent = onEvent,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedContentScope = animatedContentScope,
-                platform = platform,
-                isLandscape = isLandscape,
-            )
-        }
+                .padding(paddingValues),
+            uiState = uiState,
+            onEvent = onEvent,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope,
+            platform = platform,
+            isLandscape = isLandscape,
+        )
     }
 }

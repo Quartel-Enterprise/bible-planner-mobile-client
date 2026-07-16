@@ -2,33 +2,48 @@ package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_study.generated.resources.Res
+import bibleplanner.feature.day_study.generated.resources.ai_study_error
+import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
+import com.quare.bibleplanner.core.books.util.getReadingLabel
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.toDayNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
+import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationPhase
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
-import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiAction
-import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiEvent
-import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiState
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiAction
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiEvent
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -37,69 +52,87 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
-internal class DayStudyViewModel(
+internal class DayStudyRouteViewModel(
+    route: DayStudyNavRoute,
+    private val getDayPassages: GetDayPassagesForDayStudyUseCase,
+    private val getDayStudy: GetDayStudyUseCase,
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,
+    private val hasCachedStudy: HasCachedStudyUseCase,
     private val isConnected: IsConnected,
     private val generationCoordinator: DayStudyGenerationCoordinator,
     private val observeIsProUser: ObserveIsProUser,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val cardUiModelFactory: DayStudyCardUiModelFactory,
+    platform: Platform,
     trackEvent: TrackEvent,
-) : TrackedViewModel<DayStudyUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<DayStudyUiState> = MutableStateFlow(
-        DayStudyUiState(
+) : TrackedViewModel<DayStudyRouteUiEvent>(trackEvent) {
+    private val _uiState: MutableStateFlow<DayStudyRouteUiState> = MutableStateFlow(
+        DayStudyRouteUiState(
             card = Loadable.Loading,
             generation = null,
+            openStudy = null,
             isOpeningStudy = false,
+            passageLabel = null,
+            platform = platform,
         ),
     )
-    val uiState: StateFlow<DayStudyUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DayStudyRouteUiState> = _uiState.asStateFlow()
 
-    private val _uiAction: MutableSharedFlow<DayStudyUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<DayStudyUiAction> = _uiAction
+    private val _uiAction: MutableSharedFlow<DayStudyRouteUiAction> = MutableSharedFlow()
+    val uiAction: SharedFlow<DayStudyRouteUiAction> = _uiAction
 
+    private val completionPause = 700.milliseconds
+
+    private val dayRoute: DayNavRoute = route.toDayNavRoute()
+    private val jobKey: String = generationCoordinator.keyOf(dayRoute)
     private var passages: List<PassageModel> = emptyList()
-    private var dayRoute: DayNavRoute? = null
     private var label: String = ""
-    private var jobKey: String? = null
     private var isPro: Boolean = false
-    private var observeCardJob: Job? = null
-    private var observeJobJob: Job? = null
+    private var isStarted = false
 
-    override fun handleEvent(event: DayStudyUiEvent) {
+    init {
+        generationCoordinator.setActive(jobKey)
+        observePassages()
+    }
+
+    override fun handleEvent(event: DayStudyRouteUiEvent) {
         when (event) {
-            is DayStudyUiEvent.OnStart -> onStart(event.passages, event.dayRoute, event.label)
-            DayStudyUiEvent.OnCardClick -> onCardClick()
+            DayStudyRouteUiEvent.OnCardClick -> onCardClick()
         }
     }
 
-    private fun onStart(
-        startPassages: List<PassageModel>,
-        route: DayNavRoute,
-        studyLabel: String,
-    ) {
-        val routeChanged = dayRoute != route
-        passages = startPassages
-        dayRoute = route
-        label = studyLabel
-        val key = generationCoordinator.keyOf(route)
-        jobKey = key
-        generationCoordinator.setActive(key)
-        if (routeChanged) {
-            _uiState.update { it.copy(generation = null, isOpeningStudy = false) }
-        }
+    private fun observePassages() {
+        getDayPassages(
+            weekNumber = dayRoute.weekNumber,
+            dayNumber = dayRoute.dayNumber,
+            readingPlanType = ReadingPlanType.valueOf(dayRoute.readingPlanType),
+        ).filterNotNull()
+            .onEach(::onPassagesLoaded)
+            .launchIn(viewModelScope)
+    }
+
+    private suspend fun onPassagesLoaded(loaded: List<PassageModel>) {
+        passages = loaded
+        label = loaded.getReadingLabel()
+        _uiState.update { it.copy(passageLabel = label) }
+        if (isStarted) return
+        isStarted = true
         observeCard()
         observeJob()
     }
 
     private fun observeCard() {
-        observeCardJob?.cancel()
-        observeCardJob = viewModelScope.launch {
+        viewModelScope.launch {
             combine(
                 observeAuthenticatedUserId(),
                 observeIsProUser(),
@@ -113,42 +146,44 @@ internal class DayStudyViewModel(
     }
 
     private fun observeJob() {
-        val key = jobKey ?: return
-        observeJobJob?.cancel()
-        observeJobJob = viewModelScope.launch {
-            generationCoordinator.jobs
-                .map { jobs -> jobs.firstOrNull { it.key == key } }
-                .distinctUntilChanged()
-                .collect(::onJobUpdate)
-        }
+        generationCoordinator.jobs
+            .map { jobs -> jobs.firstOrNull { it.key == jobKey } }
+            .distinctUntilChanged()
+            .onEach(::onJobUpdate)
+            .launchIn(viewModelScope)
     }
 
     private suspend fun onJobUpdate(job: DayStudyGenerationJob?) {
         when (val status = job?.status) {
-            null -> _uiState.update { it.copy(generation = null) }
+            null -> Unit
 
             DayStudyGenerationStatus.Generating -> _uiState.update {
                 it.copy(generation = DayStudyGenerationUiModel(job.phase?.toPhaseIndex() ?: 0))
             }
 
-            is DayStudyGenerationStatus.Done -> onJobDone()
+            is DayStudyGenerationStatus.Done -> onJobDone(status.study)
 
             is DayStudyGenerationStatus.Failed -> onJobFailed(status.isLimitReached)
         }
     }
 
-    private suspend fun onJobDone() {
-        val key = jobKey ?: return
+    private suspend fun onJobDone(study: DayStudyModel) {
+        if (_uiState.value.generation != null) completeGenerationPhases()
+        _uiState.update { it.copy(generation = null, openStudy = study) }
+        trackStudyOpened(isCached = false)
         refreshCard(isPro)
-        _uiState.update { it.copy(generation = null) }
-        generationCoordinator.acknowledge(key)
+        generationCoordinator.acknowledge(jobKey)
     }
 
     private suspend fun onJobFailed(isLimitReached: Boolean) {
-        val key = jobKey ?: return
         _uiState.update { it.copy(generation = null) }
         if (isLimitReached) lockCard()
-        generationCoordinator.acknowledge(key)
+        _uiAction.emit(
+            DayStudyRouteUiAction.ShowSnackBar(
+                if (isLimitReached) Res.string.ai_study_limit_reached_message else Res.string.ai_study_error,
+            ),
+        )
+        generationCoordinator.acknowledge(jobKey)
     }
 
     private suspend fun refreshCard(pro: Boolean) {
@@ -167,21 +202,11 @@ internal class DayStudyViewModel(
 
     private fun onCardClick() {
         val card = _uiState.value.card.valueOrNull() ?: return
-        trackEvent(
-            name = AnalyticsEventNames.DAY_STUDY_CARD_CLICKED,
-            params = mapOf(
-                AnalyticsParams.CARD_MODE to card.mode.name.lowercase(),
-                AnalyticsParams.IS_PRO to card.isPro,
-            ),
-        )
-        if (_uiState.value.generation != null) {
-            emitAction(DayStudyUiAction.NavigateToStudy)
-            return
-        }
+        if (_uiState.value.openStudy != null || _uiState.value.generation != null) return
         when (card.mode) {
-            DayStudyCardMode.LOCKED -> emitAction(DayStudyUiAction.NavigateToPaywall)
+            DayStudyCardMode.LOCKED -> emitAction(DayStudyRouteUiAction.NavigateToRoute(PaywallNavRoute))
             DayStudyCardMode.GENERATE -> generateIfLoggedIn()
-            DayStudyCardMode.VIEW -> emitAction(DayStudyUiAction.NavigateToStudy)
+            DayStudyCardMode.VIEW -> generateOrOpen()
         }
     }
 
@@ -189,12 +214,20 @@ internal class DayStudyViewModel(
         viewModelScope.launch {
             withOpeningIndicator {
                 if (observeAuthenticatedUserId().first() == null) {
-                    _uiAction.emit(DayStudyUiAction.NavigateToLoginWarning)
+                    _uiAction.emit(
+                        DayStudyRouteUiAction.NavigateToRoute(
+                            LoginWarningNavRoute(LoginWarningReason.DayStudy.key),
+                        ),
+                    )
                 } else {
-                    startGeneration()
+                    startGenerationOrCachedOpen()
                 }
             }
         }
+    }
+
+    private fun generateOrOpen() {
+        viewModelScope.launch { withOpeningIndicator { startGenerationOrCachedOpen() } }
     }
 
     private suspend fun withOpeningIndicator(block: suspend () -> Unit) {
@@ -206,31 +239,33 @@ internal class DayStudyViewModel(
         }
     }
 
-    private suspend fun startGeneration() {
-        val route = dayRoute ?: return
+    private suspend fun startGenerationOrCachedOpen() {
+        if (hasCachedStudy(passages)) {
+            openCachedStudy()
+            return
+        }
         if (!isConnected()) {
             trackEvent(
                 name = AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
-                params = dayParams(route) + mapOf(
+                params = dayParams() + mapOf(
                     AnalyticsParams.REASON to OFFLINE_REASON,
                     AnalyticsParams.IS_PRO to isPro,
                 ),
             )
-            _uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
+            _uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
             return
         }
         val quota = getDayStudyQuota(passages)
         if (!canStartFreeGeneration(quota)) return
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED,
-            params = dayParams(route) + mapOf(
+            params = dayParams() + mapOf(
                 AnalyticsParams.IS_PRO to isPro,
                 AnalyticsParams.REMAINING_FREE to quota.remainingFree,
             ),
         )
-        jobKey = generationCoordinator.start(passages, route, label)
+        generationCoordinator.start(passages, dayRoute, label)
         _uiState.update { it.copy(generation = DayStudyGenerationUiModel(currentPhaseIndex = 0)) }
-        _uiAction.emit(DayStudyUiAction.NavigateToStudy)
     }
 
     private suspend fun canStartFreeGeneration(quota: DayStudyQuotaModel): Boolean {
@@ -238,12 +273,31 @@ internal class DayStudyViewModel(
         val inFlight = generationCoordinator.generatingCount(excludingKey = jobKey)
         if (inFlight < quota.remainingFree) return true
         _uiAction.emit(
-            DayStudyUiAction.ShowSnackBarPlural(
+            DayStudyRouteUiAction.ShowSnackBarPlural(
                 resource = Res.plurals.ai_study_wait_for_generations,
                 count = inFlight,
             ),
         )
         return false
+    }
+
+    private suspend fun openCachedStudy() {
+        val study = getDayStudy(passages)
+            .mapNotNull { (it as? DayStudyGenerationEventModel.Completed)?.study }
+            .first()
+        _uiState.update { it.copy(openStudy = study) }
+        trackStudyOpened(isCached = true)
+    }
+
+    private suspend fun completeGenerationPhases() {
+        _uiState.update { state ->
+            state.copy(
+                generation = state.generation?.copy(
+                    currentPhaseIndex = DayStudyGenerationPhase.entries.size,
+                ),
+            )
+        }
+        delay(completionPause)
     }
 
     private fun lockCard() {
@@ -260,13 +314,20 @@ internal class DayStudyViewModel(
         }
     }
 
-    private fun dayParams(route: DayNavRoute): Map<String, Any> = mapOf(
-        AnalyticsParams.PLAN_TYPE to route.readingPlanType,
-        AnalyticsParams.WEEK_NUMBER to route.weekNumber,
-        AnalyticsParams.DAY_NUMBER to route.dayNumber,
+    private fun trackStudyOpened(isCached: Boolean) {
+        trackEvent(
+            name = AnalyticsEventNames.DAY_STUDY_OPENED,
+            params = mapOf(AnalyticsParams.IS_CACHED to isCached),
+        )
+    }
+
+    private fun dayParams(): Map<String, Any> = mapOf(
+        AnalyticsParams.PLAN_TYPE to dayRoute.readingPlanType,
+        AnalyticsParams.WEEK_NUMBER to dayRoute.weekNumber,
+        AnalyticsParams.DAY_NUMBER to dayRoute.dayNumber,
     )
 
-    private fun emitAction(action: DayStudyUiAction) {
+    private fun emitAction(action: DayStudyRouteUiAction) {
         viewModelScope.launch {
             _uiAction.emit(action)
         }
@@ -274,7 +335,7 @@ internal class DayStudyViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        jobKey?.let(generationCoordinator::clearActive)
+        generationCoordinator.clearActive(jobKey)
     }
 
     private companion object {

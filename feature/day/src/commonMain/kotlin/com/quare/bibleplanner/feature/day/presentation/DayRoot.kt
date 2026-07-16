@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -11,10 +12,13 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.dayStudyMainPane
 import com.quare.bibleplanner.feature.day.presentation.component.TimeEditionDialog
+import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.feature.day.presentation.util.DayUiActionCollector
 import com.quare.bibleplanner.feature.day.presentation.viewmodel.DayViewModel
+import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -24,7 +28,7 @@ fun EntryProviderScope<NavKey>.day(
     onNavigateBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
-    entry<DayNavRoute> { route ->
+    entry<DayNavRoute>(metadata = dayStudyMainPane()) { route ->
         DayRootContent(
             route = route,
             onNavigate = onNavigate,
@@ -46,7 +50,11 @@ private fun DayRootContent(
     val uiState by viewModel.uiState.collectAsState()
     val onEvent = viewModel::onEvent
     val snackbarHostState = remember { SnackbarHostState() }
+    val isWide = LocalIsWideLayout.current
 
+    LaunchedEffect(isWide) {
+        onEvent(DayUiEvent.OnWidthClassChanged(isWide))
+    }
     DayUiActionCollector(
         uiActionFlow = viewModel.uiAction,
         snackbarHostState = snackbarHostState,
@@ -69,5 +77,6 @@ private fun DayRootContent(
         onEvent = viewModel::onEvent,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = LocalNavAnimatedContentScope.current,
+        isLandscape = isWide,
     )
 }

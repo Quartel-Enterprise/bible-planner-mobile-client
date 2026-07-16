@@ -24,8 +24,8 @@ fun DayStudySection(
     onOpenPaywall: () -> Unit,
     onOpenLoginWarning: () -> Unit,
     onShowSnackBar: (String) -> Unit,
+    onNavigateToStudy: () -> Unit,
     modifier: Modifier = Modifier,
-    inline: Boolean = false,
 ) {
     val viewModel = koinViewModel<DayStudyViewModel>()
     val uiState by viewModel.uiState.collectAsState()
@@ -37,6 +37,8 @@ fun DayStudySection(
 
     ActionCollector(viewModel.uiAction) { action ->
         when (action) {
+            DayStudyUiAction.NavigateToStudy -> onNavigateToStudy()
+
             DayStudyUiAction.NavigateToPaywall -> onOpenPaywall()
 
             DayStudyUiAction.NavigateToLoginWarning -> onOpenLoginWarning()
@@ -48,18 +50,6 @@ fun DayStudySection(
         }
     }
 
-    if (inline) {
-        DayStudyPane(
-            cardState = uiState.card,
-            openStudy = uiState.openStudy,
-            generation = uiState.generation,
-            isOpeningStudy = uiState.isOpeningStudy,
-            onCardClick = { viewModel.onEvent(DayStudyUiEvent.OnCardClick) },
-            modifier = modifier,
-        )
-        return
-    }
-
     when (val card = uiState.card) {
         is Loadable.Loading -> AiStudyEntryCardSkeleton(modifier = modifier)
 
@@ -69,15 +59,6 @@ fun DayStudySection(
             isOpening = uiState.isOpeningStudy,
             onClick = { viewModel.onEvent(DayStudyUiEvent.OnCardClick) },
             modifier = modifier,
-        )
-    }
-
-    val isSheetVisible = uiState.isStudyOpen && (uiState.generation != null || uiState.openStudy != null)
-    if (isSheetVisible) {
-        DayStudySheet(
-            study = uiState.openStudy,
-            generation = uiState.generation,
-            onDismiss = { viewModel.onEvent(DayStudyUiEvent.OnStudyDismiss) },
         )
     }
 }

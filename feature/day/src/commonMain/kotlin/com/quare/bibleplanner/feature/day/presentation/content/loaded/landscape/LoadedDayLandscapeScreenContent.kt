@@ -5,7 +5,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,12 +21,9 @@ import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.component.DayHeaderTitle
 import com.quare.bibleplanner.feature.day.presentation.component.DayLandscapeHeader
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.side.LoadedDayLandscapeScreenLeftContent
-import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.side.LoadedDayLandscapeScreenRightContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
-private const val READING_WEIGHT = 2f
-private const val STUDY_WEIGHT = 3f
 private val readingContentMaxWidth = 560.dp
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -42,57 +37,44 @@ internal fun LoadedDayLandscapeContent(
     animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier = modifier.fillMaxSize()) {
-        Box(
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Column(
             modifier = Modifier
-                .weight(READING_WEIGHT)
+                .widthIn(max = readingContentMaxWidth)
                 .fillMaxHeight(),
-            contentAlignment = Alignment.TopCenter,
         ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = readingContentMaxWidth)
-                    .fillMaxHeight(),
+            DayLandscapeHeader(
+                platform = platform,
+                onBackClick = { onEvent(DayUiEvent.OnBackClick) },
+                modifier = Modifier.padding(top = 4.dp),
             ) {
-                DayLandscapeHeader(
-                    platform = platform,
-                    onBackClick = { onEvent(DayUiEvent.OnBackClick) },
-                    modifier = Modifier.padding(top = 4.dp),
-                ) {
-                    DayHeaderTitle(
-                        state = uiState,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedContentScope = animatedContentScope,
-                        horizontalAlignment = Alignment.Start,
-                    )
-                }
-                LoadedDayLandscapeScreenLeftContent(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
-                        .padding(
-                            start = 16.dp,
-                            end = 8.dp,
-                            top = 8.dp,
-                            bottom = 24.dp,
-                        ),
-                    day = day,
-                    uiState = uiState,
-                    onEvent = onEvent,
+                DayHeaderTitle(
+                    state = uiState,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,
+                    horizontalAlignment = Alignment.Start,
                 )
             }
+            LoadedDayLandscapeScreenLeftContent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = 16.dp,
+                        end = 8.dp,
+                        top = 8.dp,
+                        bottom = 24.dp,
+                    ),
+                day = day,
+                uiState = uiState,
+                onEvent = onEvent,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope,
+            )
         }
-        VerticalDivider()
-        LoadedDayLandscapeScreenRightContent(
-            modifier = Modifier
-                .weight(STUDY_WEIGHT)
-                .fillMaxHeight(),
-            day = day,
-            dayRoute = uiState.dayRoute,
-            onEvent = onEvent,
-        )
     }
 }

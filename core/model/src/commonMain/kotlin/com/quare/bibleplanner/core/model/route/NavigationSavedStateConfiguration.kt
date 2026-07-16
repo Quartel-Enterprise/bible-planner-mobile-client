@@ -20,6 +20,7 @@ val navigationSavedStateConfiguration = SavedStateConfiguration {
             subclass(CongratsNavRoute::class, CongratsNavRoute.serializer())
             subclass(ContactSupportNavRoute::class, ContactSupportNavRoute.serializer())
             subclass(DayNavRoute::class, DayNavRoute.serializer())
+            subclass(DayStudyNavRoute::class, DayStudyNavRoute.serializer())
             subclass(DeleteAllProgressNavRoute::class, DeleteAllProgressNavRoute.serializer())
             subclass(DeleteNotesRoute::class, DeleteNotesRoute.serializer())
             subclass(DeleteVersionNavRoute::class, DeleteVersionNavRoute.serializer())

@@ -42,7 +42,6 @@ object AnalyticsEventNames {
     const val DAY_STUDY_GENERATION_COMPLETED = "day_study_generation_completed"
     const val DAY_STUDY_GENERATION_FAILED = "day_study_generation_failed"
     const val DAY_STUDY_OPENED = "day_study_opened"
-    const val DAY_STUDY_DISMISSED = "day_study_dismissed"
     const val DAY_STUDY_LOGIN_REQUIRED_CLICKED = "day_study_login_required_clicked"
 
     const val BIBLE_VERSION_SELECTED = "bible_version_selected"

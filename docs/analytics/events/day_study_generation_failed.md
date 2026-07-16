@@ -15,7 +15,8 @@ Either a running generation fails, or a start attempt is blocked pre-flight:
 ## Trigger source
 
 - `feature/day_study/.../domain/coordinator/DayStudyGenerationCoordinator.kt` — `start(...)`, `onFailure` branch (`limit_reached` / `error`)
-- `feature/day_study/.../presentation/viewmodel/DayStudyViewModel.kt` — `startGenerationOrCachedOpen()`, the `!isConnected()` branch (`offline`)
+- `feature/day_study/.../presentation/viewmodel/DayStudyViewModel.kt` — `startGeneration()`, the `!isConnected()` branch (`offline`, portrait entry-card tap)
+- `feature/day_study/.../presentation/viewmodel/DayStudyRouteViewModel.kt` — `startGenerationOrCachedOpen()`, the `!isConnected()` branch (`offline`, day-study route/panel hero button)
 
 ## Parameters
 

@@ -113,6 +113,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `CongratsNavRoute` | `congrats` | `bottom_sheet` | — |
 | `ContactSupportNavRoute` | `contact_support` | `responsive` | — |
 | `DayNavRoute` | `day` | `screen` | `plan_type`, `week_number`, `day_number` |
+| `DayStudyNavRoute` | `day_study` | `screen` | `plan_type`, `week_number`, `day_number` |
 | `DeleteAllProgressNavRoute` | `delete_all_progress` | `dialog` | — |
 | `DeleteNotesRoute` | `delete_notes` | `dialog` | `plan_type`, `week_number`, `day_number` |
 | `DeleteVersionNavRoute` | `delete_version` | `dialog` | `version_id` |
@@ -216,7 +217,6 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_study_generation_completed](events/day_study_generation_completed.md) | P1 | DayStudy |
 | [day_study_generation_failed](events/day_study_generation_failed.md) | P1 | DayStudy |
 | [day_study_opened](events/day_study_opened.md) | P2 | DayStudy |
-| [day_study_dismissed](events/day_study_dismissed.md) | P2 | DayStudy |
 | [day_study_login_required_clicked](events/day_study_login_required_clicked.md) | P2 | DayStudy |
 
 ### Bible versions
