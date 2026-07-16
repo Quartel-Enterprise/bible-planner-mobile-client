@@ -9,13 +9,15 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isBackPressed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -23,12 +25,13 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrategy
 import com.quare.bibleplanner.core.navigation.utils.back
-import com.quare.bibleplanner.core.navigation.utils.hasDayStudyCompanionOnTop
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
@@ -73,7 +76,11 @@ fun RootAppNavDisplay() {
             )
         }
     }
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .mouseBackNavigation(),
+    ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
         CompositionLocalProvider(
@@ -123,5 +130,27 @@ private fun EventBusNavigationListener(onNavigate: (NavKey) -> Unit) {
     ActionCollector(navigationEventBus.events) { route ->
         onNavigate(route)
         navigationEventBus.reset()
+    }
+}
+
+@Composable
+private fun Modifier.mouseBackNavigation(): Modifier {
+    val dispatcherOwner = LocalNavigationEventDispatcherOwner.current
+    val backInput = remember { DirectNavigationEventInput() }
+    DisposableEffect(dispatcherOwner, backInput) {
+        val dispatcher = dispatcherOwner?.navigationEventDispatcher
+        dispatcher?.addInput(backInput)
+        onDispose { dispatcher?.removeInput(backInput) }
+    }
+    return pointerInput(dispatcherOwner) {
+        if (dispatcherOwner == null) return@pointerInput
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent(PointerEventPass.Initial)
+                if (event.type == PointerEventType.Press && event.buttons.isBackPressed) {
+                    backInput.backCompleted()
+                }
+            }
+        }
     }
 }
