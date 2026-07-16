@@ -118,6 +118,16 @@ internal sealed interface DayUiEvent : UiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
 
+    data object OnDayStudyNavigate : DayUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
+
+    data class OnWidthClassChanged(
+        val isWide: Boolean,
+    ) : DayUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
+
     companion object {
         private const val SOURCE_DAY_STUDY = "day_study"
     }

@@ -55,6 +55,7 @@ internal fun DayStudyPane(
     generation: DayStudyGenerationUiModel?,
     isOpeningStudy: Boolean,
     onCardClick: () -> Unit,
+    showStudyHeader: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val mode = cardState.valueOrNull()?.mode
@@ -79,6 +80,7 @@ internal fun DayStudyPane(
 
             openStudy != null -> DayStudyInlinePane(
                 study = openStudy,
+                showHeader = showStudyHeader,
                 modifier = Modifier.fillMaxSize(),
             )
 

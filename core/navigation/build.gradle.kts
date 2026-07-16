@@ -55,6 +55,7 @@ kotlin {
 
             // Compose
             implementation(libs.runtime)
+            implementation(libs.foundation)
             implementation(libs.material3)
             implementation(libs.ui)
             implementation(libs.components.resources)

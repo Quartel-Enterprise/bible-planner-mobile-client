@@ -17,24 +17,27 @@ private val contentMaxWidth = 560.dp
 @Composable
 internal fun DayStudyInlinePane(
     study: DayStudyModel,
+    showHeader: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        DayStudyHeader(
-            passageLabel = study.passageLabel,
-            modifier = Modifier
-                .widthIn(max = contentMaxWidth)
-                .fillMaxWidth()
-                .padding(
-                    start = 20.dp,
-                    top = 16.dp,
-                    end = 12.dp,
-                    bottom = 4.dp,
-                ),
-        )
+        if (showHeader) {
+            DayStudyHeader(
+                passageLabel = study.passageLabel,
+                modifier = Modifier
+                    .widthIn(max = contentMaxWidth)
+                    .fillMaxWidth()
+                    .padding(
+                        start = 20.dp,
+                        top = 16.dp,
+                        end = 12.dp,
+                        bottom = 4.dp,
+                    ),
+            )
+        }
         DayStudyTabbedContent(
             study = study,
             contentMaxWidth = contentMaxWidth,

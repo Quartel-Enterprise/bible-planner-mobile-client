@@ -10,7 +10,8 @@ All pre-flight checks pass (no cached study, device online, free quota allows it
 
 ## Trigger source
 
-`feature/day_study/.../presentation/viewmodel/DayStudyViewModel.kt` — `DayStudyUiEvent.OnCardClick` → `startGenerationOrCachedOpen()` at the `generationCoordinator.start(...)` call
+- `feature/day_study/.../presentation/viewmodel/DayStudyViewModel.kt` — `DayStudyUiEvent.OnCardClick` → `startGeneration()` (portrait entry-card tap, GENERATE mode), at the `generationCoordinator.start(...)` call
+- `feature/day_study/.../presentation/viewmodel/DayStudyRouteViewModel.kt` — `DayStudyRouteUiEvent.OnCardClick` → `startGenerationOrCachedOpen()` (day-study route/panel hero button), at the `generationCoordinator.start(...)` call
 
 ## Parameters
 

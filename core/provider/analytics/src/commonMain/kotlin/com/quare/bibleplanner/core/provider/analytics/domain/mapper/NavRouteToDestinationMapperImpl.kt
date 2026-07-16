@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
@@ -67,6 +68,15 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
 
         is DayNavRoute -> screen(
             name = "day",
+            params = mapOf(
+                AnalyticsParams.PLAN_TYPE to route.readingPlanType,
+                AnalyticsParams.WEEK_NUMBER to route.weekNumber,
+                AnalyticsParams.DAY_NUMBER to route.dayNumber,
+            ),
+        )
+
+        is DayStudyNavRoute -> screen(
+            name = "day_study",
             params = mapOf(
                 AnalyticsParams.PLAN_TYPE to route.readingPlanType,
                 AnalyticsParams.WEEK_NUMBER to route.weekNumber,

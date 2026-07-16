@@ -13,7 +13,6 @@ internal fun DayStudySectionForDay(
     dayRoute: DayNavRoute,
     onEvent: (DayUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    inline: Boolean = false,
 ) {
     DayStudySection(
         passages = passages,
@@ -21,7 +20,7 @@ internal fun DayStudySectionForDay(
         onOpenPaywall = { onEvent(DayUiEvent.OnDayStudySubscribeClick) },
         onOpenLoginWarning = { onEvent(DayUiEvent.OnDayStudyLoginRequired) },
         onShowSnackBar = { message -> onEvent(DayUiEvent.OnDayStudyMessage(message)) },
+        onNavigateToStudy = { onEvent(DayUiEvent.OnDayStudyNavigate) },
         modifier = modifier,
-        inline = inline,
     )
 }

@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.utils)
             implementation(projects.core.books)
+            implementation(projects.core.plan)
             implementation(projects.core.user)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.room)
@@ -25,6 +26,7 @@ kotlin {
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.connectivity)
             implementation(projects.core.provider.analytics)
+            implementation(projects.core.provider.platform)
             implementation(projects.core.remoteConfig)
 
             // UI

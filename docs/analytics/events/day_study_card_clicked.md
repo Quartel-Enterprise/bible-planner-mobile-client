@@ -21,7 +21,7 @@ The user taps the AI study card on the day screen, in any of its modes.
 
 ## Notes
 
-- What follows depends on the mode: `locked` → paywall ([paywall_viewed](paywall_viewed.md) with `source=day_study`); `generate` → login check then generation or cached open; `view` → open cached study or regenerate.
-- If a study is already open in memory or a generation is in flight, the tap just reopens the sheet (early return before the mode branch) — still log the click with the current `card_mode`.
+- What follows depends on the mode: `locked` → paywall ([paywall_viewed](paywall_viewed.md) with `source=day_study`); `generate` → login check then generation, navigating to the day-study route either way; `view` → navigate to the day-study route, which opens the cached study or regenerates.
+- If a generation is already in flight, the tap just navigates to the day-study route (early return before the mode branch) — still log the click with the current `card_mode`.
 - `generate` taps by anonymous users route to the login warning (covered by [destination_view](destination_view.md) with `reason=day_study`) without starting a generation.
 - Funnel: `day_study_card_clicked` → [day_study_generation_started](day_study_generation_started.md) → [day_study_generation_completed](day_study_generation_completed.md) / [day_study_generation_failed](day_study_generation_failed.md) → [day_study_opened](day_study_opened.md).

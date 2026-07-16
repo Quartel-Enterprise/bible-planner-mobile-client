@@ -6,15 +6,14 @@ Captures the AI study sheet actually being opened with content — the consumpti
 
 ## When it fires
 
-The study sheet opens showing a study: a cached study is opened directly, a fresh generation finishes while the sheet is open, or the user reopens an already-loaded study by tapping the card.
+The day-study route shows a study: a cached study is opened on entering the route, or a fresh generation finishes while the route is open.
 
 ## Trigger source
 
-`feature/day_study/.../presentation/viewmodel/DayStudyViewModel.kt` — three paths:
+`feature/day_study/.../presentation/viewmodel/DayStudyRouteViewModel.kt` — two paths:
 
-- `openCachedStudy()` (cached study opened via `DayStudyUiEvent.OnCardClick`) — `is_cached=true`
-- `onJobDone(...)` when `isStudyOpen` is true (fresh generation completing into the open sheet) — `is_cached=false`
-- `DayStudyUiEvent.OnCardClick` early-return reopen when `openStudy != null` — `is_cached=true`
+- `openCachedStudy()` (cached study opened via `DayStudyRouteUiEvent.OnCardClick`) — `is_cached=true`
+- `onJobDone(...)` (fresh generation completing while the route is open) — `is_cached=false`
 
 ## Parameters
 
@@ -25,5 +24,4 @@ The study sheet opens showing a study: a cached study is opened directly, a fres
 ## Notes
 
 - This carries the "cached vs fresh" split the planning doc originally placed on [day_study_generation_completed](day_study_generation_completed.md); it lives here because generations are always fresh.
-- Reopening the sheet repeatedly in one session logs multiple events; dedupe per day-route in analysis if needed.
-- Sheet dismissals (`OnStudyDismiss`) are deliberately not tracked (UI bookkeeping).
+- Reopening the day-study route repeatedly in one session logs multiple events; dedupe per day-route in analysis if needed.
