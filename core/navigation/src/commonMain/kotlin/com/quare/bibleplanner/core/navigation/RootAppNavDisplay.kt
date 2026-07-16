@@ -11,12 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isBackPressed
+import androidx.compose.ui.input.pointer.isForwardPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -49,15 +51,26 @@ private val dayStudyPanelMinWidth = 700.dp
 @Composable
 fun RootAppNavDisplay() {
     val backStack = rememberNavBackStack(navigationSavedStateConfiguration, MainNavRoute)
+    val forwardStack = remember { mutableStateListOf<List<NavKey>>() }
     val onNavigate: (NavKey) -> Unit = { route ->
         if (backStack.lastOrNull() != route) {
             backStack.add(route)
+            forwardStack.clear()
         }
     }
-    val onNavigateBack: () -> Unit = backStack::back
+    val onNavigateBack: () -> Unit = {
+        val removed = backStack.back()
+        if (removed.isNotEmpty()) {
+            forwardStack.add(removed)
+        }
+    }
+    val onNavigateForward: () -> Unit = {
+        forwardStack.removeLastOrNull()?.asReversed()?.forEach(backStack::add)
+    }
     val onNavigateReplacingTop: (NavKey) -> Unit = { route ->
         backStack.removeLastOrNull()
         backStack.add(route)
+        forwardStack.clear()
     }
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -79,7 +92,7 @@ fun RootAppNavDisplay() {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .mouseBackNavigation(),
+            .mouseBackForwardNavigation(onNavigateForward = onNavigateForward),
     ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
@@ -134,7 +147,7 @@ private fun EventBusNavigationListener(onNavigate: (NavKey) -> Unit) {
 }
 
 @Composable
-private fun Modifier.mouseBackNavigation(): Modifier {
+private fun Modifier.mouseBackForwardNavigation(onNavigateForward: () -> Unit): Modifier {
     val dispatcherOwner = LocalNavigationEventDispatcherOwner.current
     val backInput = remember { DirectNavigationEventInput() }
     DisposableEffect(dispatcherOwner, backInput) {
@@ -147,8 +160,12 @@ private fun Modifier.mouseBackNavigation(): Modifier {
         awaitPointerEventScope {
             while (true) {
                 val event = awaitPointerEvent(PointerEventPass.Initial)
-                if (event.type == PointerEventType.Press && event.buttons.isBackPressed) {
-                    backInput.backCompleted()
+                if (event.type == PointerEventType.Press) {
+                    if (event.buttons.isBackPressed) {
+                        backInput.backCompleted()
+                    } else if (event.buttons.isForwardPressed) {
+                        onNavigateForward()
+                    }
                 }
             }
         }

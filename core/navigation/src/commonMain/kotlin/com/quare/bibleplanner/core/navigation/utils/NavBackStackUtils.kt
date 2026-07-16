@@ -3,9 +3,11 @@ package com.quare.bibleplanner.core.navigation.utils
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
-internal fun NavBackStack<NavKey>.back() {
+internal fun NavBackStack<NavKey>.back(): List<NavKey> {
+    val removed = mutableListOf<NavKey>()
     if (hasDayStudyCompanionOnTop()) {
-        removeLastOrNull()
+        removeLastOrNull()?.let(removed::add)
     }
-    removeLastOrNull()
+    removeLastOrNull()?.let(removed::add)
+    return removed
 }
