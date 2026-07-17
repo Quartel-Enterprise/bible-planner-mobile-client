@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -29,6 +30,7 @@ import bibleplanner.ui.component.generated.resources.Res
 import bibleplanner.ui.component.generated.resources.close
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.utils.LocalNavigationBarInsets
 import org.jetbrains.compose.resources.stringResource
 
 private val wideLayoutMinWidth = 600.dp
@@ -40,7 +42,6 @@ fun ResponsiveDialogSheet(
     modifier: Modifier = Modifier,
     title: String? = null,
     subtitle: String? = null,
-    skipPartiallyExpanded: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     DialogWindowDimEffect()
@@ -55,7 +56,7 @@ fun ResponsiveDialogSheet(
                 )
             }
         } else {
-            val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
+            val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
             ModalBottomSheet(
                 onDismissRequest = { onCloseClick?.invoke() },
                 sheetState = sheetState,
@@ -78,7 +79,7 @@ private fun CloseableContent(
     subtitle: String?,
     content: @Composable () -> Unit,
 ) {
-    Box {
+    Box(modifier = Modifier.windowInsetsPadding(LocalNavigationBarInsets.current)) {
         Column {
             if (title != null) {
                 DialogHeader(title = title, subtitle = subtitle)

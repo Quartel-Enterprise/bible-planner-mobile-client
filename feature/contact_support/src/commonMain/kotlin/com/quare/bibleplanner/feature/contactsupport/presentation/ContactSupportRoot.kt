@@ -37,7 +37,6 @@ fun EntryProviderScope<NavKey>.contactSupport(onNavigateBack: () -> Unit) {
         )
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(ContactSupportUiEvent.OnDismiss) },
-            skipPartiallyExpanded = true,
         ) {
             Box {
                 ContactSupportDialogContent(state = uiState, onEvent = onEvent)
