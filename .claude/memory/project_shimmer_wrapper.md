@@ -1,6 +1,6 @@
 ---
 name: project_shimmer_wrapper
-description: Shimmer is a ui/component wrapper (Modifier.shimmer()/ShimmerBox) delegating to valentinilk compose-shimmer beta; why the beta and when PR
+description: Shimmer is a ui/component wrapper (Modifier.shimmer()/ShimmerBox) delegating to valentinilk compose-shimmer 1.5.0 stable
 metadata: 
   node_type: memory
   type: project
@@ -9,8 +9,6 @@ metadata:
 
 Shimmer effect is exposed app-wide via a wrapper in `ui/component` (`ui/component/.../component/shimmer/Shimmer.kt`): `Modifier.shimmer()` and `ShimmerBox`, delegating to `com.valentinilk.shimmer:compose-shimmer`. The lib dependency lives ONLY in `ui/component` so a future break is a one-file swap — the rest of the app consumes our own `shimmer()`, never the lib directly.
 
-Pinned to **1.5.0-beta02** (catalog: `composeShimmer`). 
+Pinned to **1.5.0 stable** (catalog: `composeShimmer`), bumped from the 1.5.0-beta02 pre-release.
 
-**Why the beta, not stable:** Compose Multiplatform 1.11 (we're on 1.11.1) changed non-Android `Shader` from a Skia typealias to a Compose wrapper, crashing the lib's stable releases (≤1.4.0) on **iOS**. 1.5.0-beta02 has a Skiko-internals workaround that fixes 1.11.x.
-
-**How to apply / watch:** When bumping Compose Multiplatform to **1.12+**, the beta02 workaround breaks again — you then need [valentinilk/compose-shimmer PR #64](https://github.com/valentinilk/compose-shimmer/pull/64) (delegates to public `ShaderBrush.transform`), so wait for it to merge + release, or swap the wrapper internals to a hand-rolled shimmer (public `Brush.linearGradient` API, immune to the Skiko churn). Android is unaffected by all this.
+**History:** Compose Multiplatform 1.11 changed non-Android `Shader` from a Skia typealias to a Compose wrapper, crashing the lib's older stable releases (≤1.4.0) on **iOS** with a `ClassCastException` in `ShimmerEffect.draw`. 1.5.0-beta02 shipped a Skiko-internals workaround for 1.11.x. The **1.5.0 stable release (2026-07-09) fixes this properly for both Compose Multiplatform 1.11 and 1.12** — confirmed by maintainer comment on [valentinilk/compose-shimmer#62](https://github.com/valentinilk/compose-shimmer/issues/62) ("Is fixed with release 1.5.0"). No PR #64 dependency needed; the CMP-1.12 workaround it describes turned out unnecessary once 1.5.0 landed.
