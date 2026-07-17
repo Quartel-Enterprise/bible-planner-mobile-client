@@ -15,6 +15,9 @@ kotlin {
             // Core
             implementation(projects.core.provider.platform)
 
+            // UI
+            implementation(projects.ui.utils)
+
             implementation(libs.runtime)
             implementation(libs.foundation)
             implementation(libs.material3)

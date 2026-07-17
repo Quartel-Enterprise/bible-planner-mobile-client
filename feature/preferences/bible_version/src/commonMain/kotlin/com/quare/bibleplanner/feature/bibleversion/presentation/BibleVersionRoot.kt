@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
@@ -54,8 +53,7 @@ fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot(
                 BibleVersionsContent(
                     modifier = Modifier
                         .padding(bottom = 32.dp)
-                        .padding(horizontal = 16.dp)
-                        .navigationBarsPadding(),
+                        .padding(horizontal = 16.dp),
                     uiState = uiState,
                     onEvent = onEvent,
                 )

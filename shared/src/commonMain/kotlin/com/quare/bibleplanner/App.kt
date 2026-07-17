@@ -1,6 +1,8 @@
 package com.quare.bibleplanner
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -14,6 +16,7 @@ import com.quare.bibleplanner.feature.applanguage.presentation.ApplyAppLocaleEff
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
 import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.ui.utils.LocalNavigationBarInsets
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -48,6 +51,7 @@ private fun ProvideCompositionLocals(
 ) {
     CompositionLocalProvider(
         LocalTheme provides theme,
+        LocalNavigationBarInsets provides WindowInsets.navigationBars,
         content = content,
     )
 }

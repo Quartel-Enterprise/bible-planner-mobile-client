@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.applanguage.presentation
 
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.collectAsState
@@ -42,9 +41,7 @@ fun EntryProviderScope<NavKey>.appLanguage(
             title = stringResource(Res.string.app_language_title),
         ) {
             AppLanguageContent(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .navigationBarsPadding(),
+                modifier = Modifier.padding(horizontal = 16.dp),
                 uiState = uiState,
                 onEvent = onEvent,
             )

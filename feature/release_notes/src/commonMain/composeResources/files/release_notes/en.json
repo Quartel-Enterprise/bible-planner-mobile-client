@@ -1,6 +1,7 @@
 {
   "2.1.0": [
-    "On desktop and on Android with a mouse connected, you can now use your mouse's back and forward side buttons to navigate between screens."
+    "On desktop and on Android with a mouse connected, you can now use your mouse's back and forward side buttons to navigate between screens.",
+    "Fixed an issue where the last option in panels like Account details and Theme could be hidden behind Android's navigation bar; panels now open fully visible."
   ],
   "2.0.2": [
     "Fixed an issue that could sign you out of your account on its own in some cases."
