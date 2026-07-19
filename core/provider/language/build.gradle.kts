@@ -12,6 +12,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.utils)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.room)
             implementation(projects.core.date)
 

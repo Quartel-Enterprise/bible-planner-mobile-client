@@ -2,8 +2,8 @@ package com.quare.bibleplanner.core.provider.language.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.quare.bibleplanner.core.datastore.write
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.provider.language.data.mapper.AppLanguageMapper
 import com.quare.bibleplanner.core.provider.language.domain.repository.AppLanguageRepository
@@ -67,11 +67,10 @@ internal class AppLanguageRepositoryImpl(
 
     override suspend fun applySyncedLanguage(language: Language) = writeLanguage(language)
 
-    private suspend fun writeLanguage(language: Language) {
-        dataStore.edit {
-            it[stringPreferencesKey(APP_LANGUAGE)] = mapper.mapModelToPreference(language)
-        }
-    }
+    private suspend fun writeLanguage(language: Language) = dataStore.write(
+        key = stringPreferencesKey(APP_LANGUAGE),
+        value = mapper.mapModelToPreference(language),
+    )
 
     companion object {
         private const val APP_LANGUAGE = "app_language"

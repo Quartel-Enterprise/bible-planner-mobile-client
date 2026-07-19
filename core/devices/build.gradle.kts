@@ -13,6 +13,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.user)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.utils)
             implementation(projects.core.date)
             implementation(projects.core.sync)

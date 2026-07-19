@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.date)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
+            implementation(projects.core.provider.dataStore)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
