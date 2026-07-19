@@ -7,13 +7,15 @@ struct ComposeView: UIViewControllerRepresentable {
     let analyticsService: AnalyticsService
     let crashReporter: CrashReporter
     let downloadSession: BibleVersionDownloadSession
+    let reviewRequester: StoreKitReviewRequester
 
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewControllerKt.MainViewController(
             remoteConfigService: remoteConfigService,
             analyticsService: analyticsService,
             crashReporter: crashReporter,
-            downloadSession: downloadSession
+            downloadSession: downloadSession,
+            reviewRequester: reviewRequester
         )
     }
 
@@ -25,13 +27,15 @@ struct ContentView: View {
     let analyticsService: AnalyticsService
     let crashReporter: CrashReporter
     let downloadSession: BibleVersionDownloadSession
+    let reviewRequester: StoreKitReviewRequester
 
     var body: some View {
         ComposeView(
             remoteConfigService: remoteConfigService,
             analyticsService: analyticsService,
             crashReporter: crashReporter,
-            downloadSession: downloadSession
+            downloadSession: downloadSession,
+            reviewRequester: reviewRequester
         )
         .ignoresSafeArea()
     }

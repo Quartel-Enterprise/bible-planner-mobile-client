@@ -14,6 +14,8 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
+import com.quare.bibleplanner.core.review.domain.usecase.RequestReviewIfNeeded
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiAction
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
@@ -34,6 +36,7 @@ class BookDetailsViewModel(
     private val bookGroupMapper: BookGroupMapper,
     private val markBookRead: UpdateBookReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val requestReviewIfNeeded: RequestReviewIfNeeded,
     trackEvent: TrackEvent,
     getBookByIdFlow: GetBookByIdFlowUseCase,
     val platform: Platform,
@@ -48,12 +51,17 @@ class BookDetailsViewModel(
 
     private val successState get() = uiState.value as? BookDetailsUiState.Success
 
+    private var previousAllChaptersRead: Boolean? = null
+
     init {
         observe(getBookByIdFlow(bookId)) { fetchedBook ->
             val book = fetchedBook ?: return@observe
             val totalChapters = book.chapters.size
             val readChapters = book.chapters.count { it.isRead }
             val progress = if (totalChapters > 0) readChapters.toFloat() / totalChapters else 0f
+            val areAllChaptersRead = totalChapters > 0 && readChapters == totalChapters
+            val justCompletedBook = previousAllChaptersRead == false && areAllChaptersRead
+            previousAllChaptersRead = areAllChaptersRead
 
             val bookGroup = bookGroupMapper.fromBookId(book.id)
             val bookCategoryName = getString(bookGroup.titleRes)
@@ -68,12 +76,16 @@ class BookDetailsViewModel(
                     progress = progress,
                     readChaptersCount = readChapters,
                     totalChaptersCount = totalChapters,
-                    areAllChaptersRead = readChapters == totalChapters,
+                    areAllChaptersRead = areAllChaptersRead,
                     isFavorite = book.isFavorite,
                     bookGroup = bookGroup,
                     bookCategoryName = bookCategoryName,
                     isSynopsisExpanded = isSynopsisExpanded,
                 )
+            }
+
+            if (justCompletedBook) {
+                requestReviewIfNeeded(ReviewTrigger.BOOK_COMPLETED)
             }
         }
     }

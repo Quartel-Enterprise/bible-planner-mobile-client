@@ -33,6 +33,7 @@ kotlin {
             implementation(projects.core.devices)
             implementation(projects.core.model)
             implementation(projects.core.loginNudge)
+            implementation(projects.core.review)
 
             // Features
             implementation(projects.feature.books)

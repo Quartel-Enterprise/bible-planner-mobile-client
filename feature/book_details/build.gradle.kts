@@ -19,6 +19,7 @@ kotlin {
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
             implementation(projects.core.loginNudge)
+            implementation(projects.core.review)
 
             // UI
             implementation(projects.ui.component)

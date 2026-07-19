@@ -12,6 +12,7 @@ struct iOSApp: App {
     let analyticsService: AnalyticsService
     let crashReporter: CrashReporter
     let downloadSession: BibleVersionDownloadSession
+    let reviewRequester: StoreKitReviewRequester
 
     init() {
         let downloadSession = BibleVersionDownloadSession()
@@ -21,6 +22,7 @@ struct iOSApp: App {
         remoteConfigService = IosRemoteConfigService(remoteConfig: RemoteConfig.remoteConfig())
         analyticsService = IosAnalyticsService()
         crashReporter = IosCrashReporter()
+        reviewRequester = StoreKitReviewRequester()
 
         // Initialize Koin early so background URLSession events can access the Koin graph
         // even when the app is launched solely to process background download events.
@@ -28,7 +30,8 @@ struct iOSApp: App {
             remoteConfigService: remoteConfigService,
             analyticsService: analyticsService,
             crashReporter: crashReporter,
-            downloadSession: downloadSession
+            downloadSession: downloadSession,
+            reviewRequester: reviewRequester
         )
 
         dlog("Koin initialized", tag: "INIT")
@@ -50,7 +53,8 @@ struct iOSApp: App {
                 remoteConfigService: remoteConfigService,
                 analyticsService: analyticsService,
                 crashReporter: crashReporter,
-                downloadSession: downloadSession
+                downloadSession: downloadSession,
+                reviewRequester: reviewRequester
             )
             .onOpenURL { url in
                 guard url.scheme == "bibleplanner" else { return }

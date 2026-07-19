@@ -107,7 +107,7 @@ object AnalyticsEventNames {
     const val MORE_OPTION_CLICKED = "more_option_clicked"
     const val PRO_CARD_CLICKED = "pro_card_clicked"
     const val ACCOUNT_CARD_CLICKED = "account_card_clicked"
-    const val RATE_APP_REVIEW_REQUESTED = "rate_app_review_requested"
+    const val IN_APP_REVIEW_REQUESTED = "in_app_review_requested"
     const val THEME_CHANGED = "theme_changed"
     const val CONTRAST_CHANGED = "contrast_changed"
     const val DYNAMIC_COLORS_TOGGLED = "dynamic_colors_toggled"

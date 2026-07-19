@@ -27,7 +27,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
-import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestInAppReview
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
@@ -57,7 +56,6 @@ internal class MoreViewModel(
     private val getWebAppUrl: GetWebAppUrl,
     private val getInstagramUrl: GetInstagramUrlUseCase,
     private val getAppStoreLink: GetAppStoreLinkUseCase,
-    private val requestInAppReview: RequestInAppReview,
     private val isConnected: IsConnected,
     private val checkForUpdate: CheckForUpdate,
     trackEvent: TrackEvent,
@@ -144,16 +142,7 @@ internal class MoreViewModel(
 
     private fun rateAppClick() {
         viewModelScope.launch {
-            val reviewLaunched = requestInAppReview()
-            trackEvent(
-                name = AnalyticsEventNames.RATE_APP_REVIEW_REQUESTED,
-                params = mapOf(
-                    AnalyticsParams.METHOD to if (reviewLaunched) METHOD_IN_APP_REVIEW else METHOD_STORE_REDIRECT,
-                ),
-            )
-            if (!reviewLaunched) {
-                emitAction(OpenLink(getAppStoreLink()))
-            }
+            emitAction(OpenLink(getAppStoreLink()))
         }
     }
 
@@ -219,7 +208,5 @@ internal class MoreViewModel(
     private companion object {
         const val PAYWALL_SOURCE = "more_menu"
         const val STOP_TIMEOUT_MILLIS = 5_000L
-        const val METHOD_IN_APP_REVIEW = "in_app_review"
-        const val METHOD_STORE_REDIRECT = "store_redirect"
     }
 }

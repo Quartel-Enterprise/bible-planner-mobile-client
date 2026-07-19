@@ -17,6 +17,7 @@ import com.quare.bibleplanner.core.provider.platform.di.platformModule
 import com.quare.bibleplanner.core.provider.room.di.roomModule
 import com.quare.bibleplanner.core.provider.supabase.supabaseModule
 import com.quare.bibleplanner.core.remoteconfig.di.remoteConfigModule
+import com.quare.bibleplanner.core.review.di.reviewModule
 import com.quare.bibleplanner.core.sync.di.syncModule
 import com.quare.bibleplanner.core.user.di.userModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
@@ -97,6 +98,7 @@ object CommonKoinUtils {
         loginWarningModule,
         loginSyncNudgeModule,
         loginNudgeModule,
+        reviewModule,
         logoutModule,
         supabaseModule,
         userModule,

@@ -20,6 +20,7 @@ kotlin {
             implementation(projects.core.provider.dataStore)
             implementation(projects.core.utils)
             implementation(projects.core.loginNudge)
+            implementation(projects.core.review)
 
             // Features
 
