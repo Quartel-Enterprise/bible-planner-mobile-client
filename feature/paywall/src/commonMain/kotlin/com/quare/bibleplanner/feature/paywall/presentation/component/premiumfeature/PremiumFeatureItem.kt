@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.paywall.presentation.component.premiumicon.PremiumCheckIcon
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
@@ -21,6 +22,7 @@ internal fun PremiumFeatureItem(
     text: String,
     titleColor: Color,
     subtitleColor: Color,
+    iconSize: Dp,
     modifier: Modifier = Modifier,
     subtext: String? = null,
 ) {
@@ -29,7 +31,7 @@ internal fun PremiumFeatureItem(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        PremiumCheckIcon(modifier = Modifier.size(30.dp))
+        PremiumCheckIcon(modifier = Modifier.size(iconSize))
         Column(
             modifier = Modifier.weight(1f),
         ) {

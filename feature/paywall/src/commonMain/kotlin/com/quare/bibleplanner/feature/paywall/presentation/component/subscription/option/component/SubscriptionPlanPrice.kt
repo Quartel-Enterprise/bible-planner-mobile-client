@@ -23,11 +23,15 @@ internal fun SubscriptionPlanPrice(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            softWrap = false,
         )
         Text(
             text = period,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            softWrap = false,
         )
     }
 }
