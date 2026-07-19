@@ -10,21 +10,23 @@ internal class BibleProgressMilestoneTracker(
     private val thresholds = listOf(25, 50, 75, 100)
     private var highestReachedThreshold: Int? = null
 
-    fun onProgress(percent: Float) {
+    fun onProgress(percent: Float): Boolean {
         val reached = thresholds.lastOrNull { percent >= it } ?: 0
         val previous = highestReachedThreshold
+        var crossedMilestone = false
         highestReachedThreshold = when {
             previous == null || percent == 0f -> reached
 
             reached > previous -> {
-                thresholds
-                    .filter { it > previous && it <= reached }
-                    .forEach(::trackMilestone)
+                val crossed = thresholds.filter { it in (previous + 1)..reached }
+                crossed.forEach(::trackMilestone)
+                crossedMilestone = crossed.isNotEmpty()
                 reached
             }
 
             else -> previous
         }
+        return crossedMilestone
     }
 
     private fun trackMilestone(percent: Int) {

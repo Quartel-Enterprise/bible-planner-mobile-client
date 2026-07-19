@@ -11,6 +11,8 @@ import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCas
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
+import com.quare.bibleplanner.core.review.domain.usecase.RequestReviewIfNeeded
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanDayRef
 import com.quare.bibleplanner.feature.readingplan.domain.tracker.BibleProgressMilestoneTracker
 import com.quare.bibleplanner.feature.readingplan.domain.tracker.ReadingStreakMilestoneTracker
@@ -50,6 +52,7 @@ internal class ReadingPlanViewModel(
     private val deleteProgressMapper: DeleteProgressMapper,
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val requestReviewIfNeeded: RequestReviewIfNeeded,
     trackEvent: TrackEvent,
     private val bibleProgressMilestoneTracker: BibleProgressMilestoneTracker,
     private val readingStreakMilestoneTracker: ReadingStreakMilestoneTracker,
@@ -69,7 +72,9 @@ internal class ReadingPlanViewModel(
 
     init {
         observe(calculateBibleProgress()) { progress ->
-            bibleProgressMilestoneTracker.onProgress(progress)
+            if (bibleProgressMilestoneTracker.onProgress(progress)) {
+                requestReviewIfNeeded(ReviewTrigger.PROGRESS_MILESTONE)
+            }
             currentBibleProgress = progress
             _uiState.update { currentState ->
                 when (currentState) {
@@ -143,7 +148,11 @@ internal class ReadingPlanViewModel(
             (state as? ReadingPlanUiState.Loaded)
                 ?.planStatus
                 ?.streakDays
-                ?.let(readingStreakMilestoneTracker::onStreak)
+                ?.let { streakDays ->
+                    if (readingStreakMilestoneTracker.onStreak(streakDays)) {
+                        requestReviewIfNeeded(ReviewTrigger.STREAK_MILESTONE)
+                    }
+                }
         }
     }
 

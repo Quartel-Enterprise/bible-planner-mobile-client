@@ -1,7 +1,9 @@
 {
   "2.1.0": [
     "En el escritorio y en Android con un mouse conectado, ahora puedes usar los botones laterales de retroceder y avanzar del mouse para navegar entre las pantallas.",
-    "Se corrigió un problema por el que la última opción de paneles como Detalles de la cuenta y Tema podía quedar oculta detrás de la barra de navegación de Android; ahora los paneles se abren totalmente visibles."
+    "Se corrigió un problema por el que la última opción de paneles como Detalles de la cuenta y Tema podía quedar oculta detrás de la barra de navegación de Android; ahora los paneles se abren totalmente visibles.",
+    "Al tocar 'Calificar la app', ahora siempre se abre la página de la aplicación en la tienda. Antes parecía que no pasaba nada si ya la habías calificado.",
+    "Después de un logro de lectura, la app puede invitarte a calificarla: al alcanzar una racha de días de lectura, superar una marca de progreso en la Biblia o terminar un libro. La invitación aparece pocas veces y, como máximo, una vez por versión."
   ],
   "2.0.2": [
     "Se corrigió un problema que podía cerrar tu sesión por sí solo en algunos casos."

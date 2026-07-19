@@ -10,12 +10,14 @@ import com.quare.bibleplanner.core.provider.crashlytics.configure
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
 import com.quare.bibleplanner.core.provider.language.di.iosLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
+import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestInAppReview
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigDataSource
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.iosAppLanguageModule
 import com.quare.bibleplanner.feature.login.di.iosLoginModule
 import com.quare.bibleplanner.notification.IosBibleVersionDownloadNotifier
+import com.quare.bibleplanner.review.IosReviewRequester
 import com.quare.bibleplanner.worker.IosBackgroundDownloadBridge
 import com.quare.bibleplanner.worker.IosBibleVersionDownloaderFacade
 import com.quare.bibleplanner.worker.IosDownloadSession
@@ -23,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -42,6 +45,7 @@ fun initializeKoinForIos(
     analyticsService: AnalyticsService,
     crashReporter: CrashReporter,
     downloadSession: IosDownloadSession,
+    reviewRequester: IosReviewRequester,
 ) {
     if (isInitialized) return
     try {
@@ -57,6 +61,11 @@ fun initializeKoinForIos(
                     single { analyticsService }
                     single { crashReporter }
                     single { downloadSession }.bind<IosDownloadSession>()
+                    factory<RequestInAppReview> {
+                        RequestInAppReview {
+                            withContext(Dispatchers.Main) { reviewRequester.requestReview() }
+                        }
+                    }
                     single { IosBibleVersionDownloadNotifier(get()) }.bind<BibleVersionDownloadNotifier>()
                     singleOf(::IosBackgroundDownloadBridge)
                     singleOf(::IosBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
@@ -80,6 +89,7 @@ fun MainViewController(
     analyticsService: AnalyticsService,
     crashReporter: CrashReporter,
     downloadSession: IosDownloadSession,
+    reviewRequester: IosReviewRequester,
 ) = ComposeUIViewController(
     configure = {
         initializeKoinForIos(
@@ -87,6 +97,7 @@ fun MainViewController(
             analyticsService = analyticsService,
             crashReporter = crashReporter,
             downloadSession = downloadSession,
+            reviewRequester = reviewRequester,
         )
     },
 ) { App() }

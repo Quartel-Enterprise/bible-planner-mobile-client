@@ -54,4 +54,5 @@ object AnalyticsParams {
     const val GROUP = "group"
     const val SHORTCUT = "shortcut"
     const val DIRECTION = "direction"
+    const val TRIGGER = "trigger"
 }

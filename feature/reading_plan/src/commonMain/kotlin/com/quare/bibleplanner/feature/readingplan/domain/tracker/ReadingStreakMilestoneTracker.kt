@@ -11,21 +11,21 @@ internal class ReadingStreakMilestoneTracker(
     private var previousStreak: Int? = null
     private var highestFiredThreshold = 0
 
-    fun onStreak(streakDays: Int) {
+    fun onStreak(streakDays: Int): Boolean {
         val previous = previousStreak
         previousStreak = streakDays
         if (previous == null || streakDays < previous) {
             highestFiredThreshold = thresholds.lastOrNull { streakDays >= it } ?: 0
-            return
+            return false
         }
-        thresholds
-            .filter { it > highestFiredThreshold && streakDays >= it }
-            .forEach { threshold ->
-                trackEvent(
-                    name = AnalyticsEventNames.READING_STREAK_MILESTONE,
-                    params = mapOf(AnalyticsParams.STREAK_DAYS to threshold),
-                )
-                highestFiredThreshold = threshold
-            }
+        val crossed = thresholds.filter { it > highestFiredThreshold && streakDays >= it }
+        crossed.forEach { threshold ->
+            trackEvent(
+                name = AnalyticsEventNames.READING_STREAK_MILESTONE,
+                params = mapOf(AnalyticsParams.STREAK_DAYS to threshold),
+            )
+            highestFiredThreshold = threshold
+        }
+        return crossed.isNotEmpty()
     }
 }
