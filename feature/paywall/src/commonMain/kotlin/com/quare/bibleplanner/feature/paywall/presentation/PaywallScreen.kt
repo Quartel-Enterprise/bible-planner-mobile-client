@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -38,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import bibleplanner.feature.paywall.generated.resources.Res
@@ -48,6 +48,7 @@ import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallActi
 import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallHero
 import com.quare.bibleplanner.feature.paywall.presentation.component.premiumfeature.PremiumFeaturesList
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.SubscriptionPlans
+import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallLandscapeDimensions
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
@@ -55,7 +56,13 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
 private val landscapeMinWidth = 600.dp
-private val valuePanelWidth = 400.dp
+private val compactLandscapeMaxHeight = 480.dp
+private val valuePanelMaxWidth = 400.dp
+private val portraitFeatureSpacing = 20.dp
+private val portraitFeatureIconSize = 30.dp
+private val portraitPlansSpacing = 12.dp
+private val portraitActionButtonHeight = 56.dp
+private const val VALUE_PANEL_WIDTH_FRACTION = 0.44f
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -75,6 +82,11 @@ fun PaywallScreen(
                 onEvent = onEvent,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope,
+                dimensions = if (maxHeight < compactLandscapeMaxHeight) {
+                    PaywallLandscapeDimensions.Compact
+                } else {
+                    PaywallLandscapeDimensions.Regular
+                },
             )
         } else {
             PaywallPortraitContent(
@@ -117,6 +129,7 @@ private fun PaywallPortraitContent(
                 PaywallActionSectionComponent(
                     uiState = uiState,
                     onEvent = onEvent,
+                    buttonHeight = portraitActionButtonHeight,
                     modifier = Modifier
                         .fillMaxWidth()
                         .navigationBarsPadding()
@@ -154,12 +167,17 @@ private fun PaywallPortraitContent(
                 iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             VerticalSpacer(26)
-            PremiumFeaturesList(maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes)
+            PremiumFeaturesList(
+                maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
+                itemSpacing = portraitFeatureSpacing,
+                iconSize = portraitFeatureIconSize,
+            )
             VerticalSpacer(28)
             if (uiState is PaywallUiState.Success) {
                 SubscriptionPlans(
                     subscriptionPlans = uiState.subscriptionPlans,
                     onEvent = onEvent,
+                    itemSpacing = portraitPlansSpacing,
                 )
             }
             VerticalSpacer(8)
@@ -175,6 +193,7 @@ private fun PaywallLandscapeContent(
     onEvent: (PaywallUiEvent) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    dimensions: PaywallLandscapeDimensions,
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -186,72 +205,107 @@ private fun PaywallLandscapeContent(
         ) {
             Column(
                 modifier = Modifier
-                    .width(valuePanelWidth)
+                    .fillMaxWidth(VALUE_PANEL_WIDTH_FRACTION)
+                    .widthIn(max = valuePanelMaxWidth)
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 44.dp, vertical = 52.dp),
+                    .padding(
+                        horizontal = dimensions.panelPaddingHorizontal,
+                        vertical = dimensions.panelPaddingVertical,
+                    ),
             ) {
                 PaywallHero(
                     modifier = Modifier.fillMaxWidth(),
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope,
-                    titleFontSize = 36.sp,
+                    titleFontSize = dimensions.heroTitleFontSize,
                     titleColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     proColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     subtitleColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    iconBoxSize = 60.dp,
-                    iconBoxCornerRadius = 18.dp,
+                    iconBoxSize = dimensions.heroIconBoxSize,
+                    iconBoxCornerRadius = dimensions.heroIconBoxCornerRadius,
                     iconBoxColor = MaterialTheme.colorScheme.surface,
-                    iconSize = 32.dp,
+                    iconSize = dimensions.heroIconSize,
                     iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
                     horizontalAlignment = Alignment.Start,
                     textAlign = TextAlign.Start,
                 )
-                VerticalSpacer(34)
+                VerticalSpacer(dimensions.heroBottomSpacing)
                 PremiumFeaturesList(
                     maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
                     titleColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     subtitleColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    itemSpacing = dimensions.featureSpacing,
+                    iconSize = dimensions.featureIconSize,
                 )
             }
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
-                    .padding(
-                        start = 44.dp,
-                        end = 44.dp,
-                        top = 40.dp,
-                        bottom = 30.dp,
-                    ),
+                    .fillMaxHeight(),
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = dimensions.contentPaddingHorizontal,
+                            end = dimensions.contentPaddingHorizontal,
+                            top = dimensions.contentPaddingTop,
+                            bottom = 12.dp,
+                        ),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = stringResource(Res.string.choose_your_plan),
                         style = MaterialTheme.typography.titleLarge,
+                        fontSize = dimensions.headerTitleFontSize,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
-                    PaywallCloseButton(onClick = { onEvent(PaywallUiEvent.OnBackClick) })
-                }
-                VerticalSpacer(22)
-                if (uiState is PaywallUiState.Success) {
-                    SubscriptionPlans(
-                        subscriptionPlans = uiState.subscriptionPlans,
-                        onEvent = onEvent,
+                    PaywallCloseButton(
+                        buttonSize = dimensions.closeButtonSize,
+                        iconSize = dimensions.closeIconSize,
+                        onClick = { onEvent(PaywallUiEvent.OnBackClick) },
                     )
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                VerticalSpacer(20)
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            start = dimensions.contentPaddingHorizontal,
+                            end = dimensions.contentPaddingHorizontal,
+                            top = 14.dp,
+                            bottom = 6.dp,
+                        ),
+                ) {
+                    if (uiState is PaywallUiState.Success) {
+                        SubscriptionPlans(
+                            subscriptionPlans = uiState.subscriptionPlans,
+                            onEvent = onEvent,
+                            itemSpacing = dimensions.plansSpacing,
+                        )
+                    }
+                }
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                )
                 PaywallActionSectionComponent(
                     uiState = uiState,
                     onEvent = onEvent,
-                    modifier = Modifier.fillMaxWidth(),
+                    buttonHeight = dimensions.actionButtonHeight,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(
+                            start = dimensions.contentPaddingHorizontal,
+                            end = dimensions.contentPaddingHorizontal,
+                            top = 12.dp,
+                            bottom = dimensions.contentPaddingBottom,
+                        ),
                 )
             }
         }
@@ -259,17 +313,21 @@ private fun PaywallLandscapeContent(
 }
 
 @Composable
-private fun PaywallCloseButton(onClick: () -> Unit) {
+private fun PaywallCloseButton(
+    buttonSize: Dp,
+    iconSize: Dp,
+    onClick: () -> Unit,
+) {
     Box(
         modifier = Modifier
-            .size(40.dp)
+            .size(buttonSize)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.size(iconSize),
             imageVector = Icons.Rounded.Close,
             contentDescription = stringResource(Res.string.close),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,

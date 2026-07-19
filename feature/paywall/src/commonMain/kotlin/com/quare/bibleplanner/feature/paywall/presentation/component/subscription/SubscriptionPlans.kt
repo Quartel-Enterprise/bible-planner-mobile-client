@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.option.SubscriptionPlanCard
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.option.component.SubscriptionPlanDiscountBadge
@@ -18,11 +19,12 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SubscriptionPlans(
     subscriptionPlans: List<SubscriptionPlanPresentationModel>,
     onEvent: (PaywallUiEvent) -> Unit,
+    itemSpacing: Dp,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(itemSpacing),
     ) {
         subscriptionPlans.forEach { plan ->
             Box {

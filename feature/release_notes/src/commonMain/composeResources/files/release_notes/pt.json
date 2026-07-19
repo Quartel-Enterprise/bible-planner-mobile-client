@@ -3,7 +3,8 @@
     "No desktop e no Android com um mouse conectado, agora você pode usar os botões laterais de voltar e avançar do mouse para navegar entre as telas.",
     "Corrigido um problema em que a última opção de painéis como Detalhes da conta e Tema podia ficar escondida atrás da barra de navegação do Android; agora os painéis abrem totalmente visíveis.",
     "Ao tocar em 'Avaliar o app', a página do aplicativo na loja agora sempre abre. Antes parecia que nada acontecia se você já tivesse avaliado.",
-    "Depois de uma conquista de leitura, o app pode convidar você a avaliá-lo: ao atingir uma sequência de dias de leitura, passar de uma marca de progresso na Bíblia ou terminar um livro. O convite aparece raramente e, no máximo, uma vez por versão."
+    "Depois de uma conquista de leitura, o app pode convidar você a avaliá-lo: ao atingir uma sequência de dias de leitura, passar de uma marca de progresso na Bíblia ou terminar um livro. O convite aparece raramente e, no máximo, uma vez por versão.",
+    "Corrigida a tela Pro com o celular deitado: o preço dos planos aparecia quebrado letra por letra e parte do conteúdo ficava cortada. Agora a tela tem um layout próprio para essa posição, a lista de planos rola normalmente e o botão de assinar fica sempre visível."
   ],
   "2.0.2": [
     "Corrigido um problema que podia deslogar sua conta sozinha em alguns casos."

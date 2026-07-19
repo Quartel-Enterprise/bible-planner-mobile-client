@@ -18,15 +18,17 @@ internal fun SubscriptionPlanContent(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
+            modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SubscriptionPlanIcon(isSelected = isSelected)
             SubscriptionPlanInformation(
+                modifier = Modifier.weight(1f),
                 title = title,
                 description = description,
             )

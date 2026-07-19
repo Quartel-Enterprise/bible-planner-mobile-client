@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.paywall.presentation.component.description.SecurePaymentDescription
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.StartProButton
@@ -15,6 +16,7 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 @Composable
 internal fun PaywallFooter(
     storeName: String,
+    buttonHeight: Dp,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     onEvent: (PaywallUiEvent) -> Unit,
@@ -26,7 +28,7 @@ internal fun PaywallFooter(
         StartProButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(buttonHeight),
             isLoading = isLoading,
             onClick = { onEvent(PaywallUiEvent.OnStartProJourneyClick) },
         )
