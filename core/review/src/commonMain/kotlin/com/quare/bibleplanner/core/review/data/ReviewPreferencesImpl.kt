@@ -2,39 +2,35 @@ package com.quare.bibleplanner.core.review.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.quare.bibleplanner.core.datastore.read
+import com.quare.bibleplanner.core.datastore.write
 import com.quare.bibleplanner.core.review.domain.ReviewPreferences
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
 internal class ReviewPreferencesImpl(
     private val dataStore: DataStore<Preferences>,
 ) : ReviewPreferences {
-    override suspend fun getFirstEligibleAt(): Long? = dataStore.data
-        .map { it[firstEligibleAtKey] }
-        .first()
+    override suspend fun getFirstEligibleAt(): Long? = dataStore.read(firstEligibleAtKey)
 
-    override suspend fun setFirstEligibleAt(timestamp: Long) {
-        dataStore.edit { it[firstEligibleAtKey] = timestamp }
-    }
+    override suspend fun setFirstEligibleAt(timestamp: Long) = dataStore.write(
+        key = firstEligibleAtKey,
+        value = timestamp,
+    )
 
-    override suspend fun getLastPromptedAt(): Long? = dataStore.data
-        .map { it[lastPromptedAtKey] }
-        .first()
+    override suspend fun getLastPromptedAt(): Long? = dataStore.read(lastPromptedAtKey)
 
-    override suspend fun setLastPromptedAt(timestamp: Long) {
-        dataStore.edit { it[lastPromptedAtKey] = timestamp }
-    }
+    override suspend fun setLastPromptedAt(timestamp: Long) = dataStore.write(
+        key = lastPromptedAtKey,
+        value = timestamp,
+    )
 
-    override suspend fun getLastPromptedVersion(): String? = dataStore.data
-        .map { it[lastPromptedVersionKey] }
-        .first()
+    override suspend fun getLastPromptedVersion(): String? = dataStore.read(lastPromptedVersionKey)
 
-    override suspend fun setLastPromptedVersion(version: String) {
-        dataStore.edit { it[lastPromptedVersionKey] = version }
-    }
+    override suspend fun setLastPromptedVersion(version: String) = dataStore.write(
+        key = lastPromptedVersionKey,
+        value = version,
+    )
 
     private companion object {
         val firstEligibleAtKey = longPreferencesKey("review_first_eligible_at")

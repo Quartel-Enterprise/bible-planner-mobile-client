@@ -2,8 +2,8 @@ package com.quare.bibleplanner.core.provider.supabase.session
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import com.quare.bibleplanner.core.datastore.write
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -12,15 +12,15 @@ internal class DataStoreSessionAuditStore(
     private val dataStore: DataStore<Preferences>,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : SessionAuditStore {
-    override suspend fun recordSaved() {
-        val now = currentTimestampProvider.getCurrentTimestamp()
-        dataStore.edit { it[lastSavedAtKey] = now }
-    }
+    override suspend fun recordSaved() = dataStore.write(
+        key = lastSavedAtKey,
+        value = currentTimestampProvider.getCurrentTimestamp(),
+    )
 
-    override suspend fun recordDeleted() {
-        val now = currentTimestampProvider.getCurrentTimestamp()
-        dataStore.edit { it[lastDeletedAtKey] = now }
-    }
+    override suspend fun recordDeleted() = dataStore.write(
+        key = lastDeletedAtKey,
+        value = currentTimestampProvider.getCurrentTimestamp(),
+    )
 
     override suspend fun getAudit(): SessionAudit = dataStore.data
         .map { preferences ->

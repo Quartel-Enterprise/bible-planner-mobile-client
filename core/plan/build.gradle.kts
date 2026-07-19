@@ -15,6 +15,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.books)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.model)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.utils)

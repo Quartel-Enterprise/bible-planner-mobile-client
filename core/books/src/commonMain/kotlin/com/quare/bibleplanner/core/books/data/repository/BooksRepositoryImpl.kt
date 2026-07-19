@@ -2,11 +2,11 @@ package com.quare.bibleplanner.core.books.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
 import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.datastore.write
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
@@ -107,21 +107,19 @@ class BooksRepositoryImpl(
         preferences[stringPreferencesKey(BOOK_LAYOUT_FORMAT)]
     }
 
-    override suspend fun setBookLayoutFormat(layoutFormat: String) {
-        dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(BOOK_LAYOUT_FORMAT)] = layoutFormat
-        }
-    }
+    override suspend fun setBookLayoutFormat(layoutFormat: String) = dataStore.write(
+        key = stringPreferencesKey(BOOK_LAYOUT_FORMAT),
+        value = layoutFormat,
+    )
 
     override fun getSelectedTestamentFlow(): Flow<String?> = dataStore.data.map { preferences ->
         preferences[stringPreferencesKey(SELECTED_TESTAMENT)]
     }
 
-    override suspend fun setSelectedTestament(testament: String) {
-        dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(SELECTED_TESTAMENT)] = testament
-        }
-    }
+    override suspend fun setSelectedTestament(testament: String) = dataStore.write(
+        key = stringPreferencesKey(SELECTED_TESTAMENT),
+        value = testament,
+    )
 
     companion object {
         private const val BOOK_LAYOUT_FORMAT = "book_layout_format"

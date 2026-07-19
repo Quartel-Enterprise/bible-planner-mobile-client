@@ -11,8 +11,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // DataStore (multiplatform)
-            implementation(libs.dataStore)
-            implementation(libs.dataStore.preferences)
+            api(libs.dataStore)
+            api(libs.dataStore.preferences)
+
+            // Coroutines
+            implementation(libs.kotlinx.coroutines.core)
 
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))

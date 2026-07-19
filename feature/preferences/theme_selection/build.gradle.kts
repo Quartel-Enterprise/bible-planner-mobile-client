@@ -17,6 +17,7 @@ kotlin {
 
             // Core
             implementation(projects.core.provider.analytics)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
             implementation(projects.core.date)

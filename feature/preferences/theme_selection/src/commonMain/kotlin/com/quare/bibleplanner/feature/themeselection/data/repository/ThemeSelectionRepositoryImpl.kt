@@ -2,8 +2,8 @@ package com.quare.bibleplanner.feature.themeselection.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.quare.bibleplanner.core.datastore.write
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
@@ -89,17 +89,15 @@ internal class ThemeSelectionRepositoryImpl(
 
     override suspend fun applySyncedContrast(contrastType: ContrastType) = writeContrast(contrastType)
 
-    private suspend fun writeTheme(theme: Theme) {
-        dataStore.edit {
-            it[stringPreferencesKey(THEME)] = mapper.mapModelToPreference(theme)
-        }
-    }
+    private suspend fun writeTheme(theme: Theme) = dataStore.write(
+        key = stringPreferencesKey(THEME),
+        value = mapper.mapModelToPreference(theme),
+    )
 
-    private suspend fun writeContrast(contrastType: ContrastType) {
-        dataStore.edit {
-            it[stringPreferencesKey(CONTRAST)] = mapper.mapModelToContrastPreference(contrastType)
-        }
-    }
+    private suspend fun writeContrast(contrastType: ContrastType) = dataStore.write(
+        key = stringPreferencesKey(CONTRAST),
+        value = mapper.mapModelToContrastPreference(contrastType),
+    )
 
     private suspend fun mirrorIfSyncEnabled(
         key: String,

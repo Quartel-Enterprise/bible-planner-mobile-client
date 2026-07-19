@@ -17,6 +17,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.date)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.utils)
 
             // DataStore

@@ -8,13 +8,13 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import bibleplanner.core.plan.generated.resources.Res
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.datastore.read
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.data.dto.WeekPlanDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -34,11 +34,11 @@ class PlanLocalDataSource(
     private val selectedReadingPlanKey = stringPreferencesKey(SELECTED_READING_PLAN_KEY)
     private val migratedKey = booleanPreferencesKey(PLAN_PREFERENCES_MIGRATED_KEY)
 
-    suspend fun hasMigratedPlanPreferences(): Boolean = dataStore.data.first()[migratedKey] ?: false
+    suspend fun hasMigratedPlanPreferences(): Boolean = dataStore.read(migratedKey) ?: false
 
-    suspend fun getLegacyPlanStartTimestamp(): Long? = dataStore.data.first()[startDateKey]
+    suspend fun getLegacyPlanStartTimestamp(): Long? = dataStore.read(startDateKey)
 
-    suspend fun getLegacySelectedReadingPlan(): String? = dataStore.data.first()[selectedReadingPlanKey]
+    suspend fun getLegacySelectedReadingPlan(): String? = dataStore.read(selectedReadingPlanKey)
 
     /** Drops the legacy keys and records that the migration ran, so it never repeats. */
     suspend fun finishPlanPreferencesMigration() {
