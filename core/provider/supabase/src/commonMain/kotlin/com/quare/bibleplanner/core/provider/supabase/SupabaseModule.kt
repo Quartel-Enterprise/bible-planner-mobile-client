@@ -22,9 +22,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.runningReduce
 import kotlinx.coroutines.flow.stateIn
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-private const val SUPABASE_BUCKET_NAME = "content"
+const val CONTENT_BUCKET = "content"
+const val AVATARS_BUCKET = "avatars"
 
 val supabaseModule = module {
     single<SessionAuditStore> {
@@ -44,8 +46,11 @@ val supabaseModule = module {
     single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.ignoringTransientInitializing() }
     single<Realtime> { get<SupabaseClient>().realtime }
     single<Functions> { get<SupabaseClient>().functions }
-    single<BucketApi> {
-        get<SupabaseClient>().storage.from(SUPABASE_BUCKET_NAME)
+    single<BucketApi>(named(CONTENT_BUCKET)) {
+        get<SupabaseClient>().storage.from(CONTENT_BUCKET)
+    }
+    single<BucketApi>(named(AVATARS_BUCKET)) {
+        get<SupabaseClient>().storage.from(AVATARS_BUCKET)
     }
 }
 

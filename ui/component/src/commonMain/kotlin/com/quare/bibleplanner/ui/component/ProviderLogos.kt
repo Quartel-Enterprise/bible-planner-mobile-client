@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.accountdetails.presentation.content
+package com.quare.bibleplanner.ui.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -29,7 +29,7 @@ private const val APPLE_PATH = "M16.36 12.9c.02 2.6 2.28 3.46 2.3 3.47-.02.06-.3
     "1.68-.92 2.67.97.08 1.96-.49 2.56-1.22z"
 
 @Composable
-internal fun googleLogo(): ImageVector = remember {
+fun googleLogo(): ImageVector = remember {
     logoBuilder(name = "GoogleLogo")
         .apply {
             addColoredPath(color = Color(0xFF4285F4), pathData = GOOGLE_BLUE_PATH)
@@ -40,7 +40,7 @@ internal fun googleLogo(): ImageVector = remember {
 }
 
 @Composable
-internal fun appleLogo(): ImageVector = remember {
+fun appleLogo(): ImageVector = remember {
     logoBuilder(name = "AppleLogo")
         .apply {
             addColoredPath(color = Color.Black, pathData = APPLE_PATH)

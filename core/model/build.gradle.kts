@@ -16,6 +16,9 @@ kotlin {
             // DateTime
             implementation(libs.kotlinx.datetime)
 
+            // File picker
+            api(libs.filekit.core)
+
             // Serialization
             implementation(libs.kotlin.serialization.json)
 

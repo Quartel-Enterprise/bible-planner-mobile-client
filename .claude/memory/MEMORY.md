@@ -14,6 +14,7 @@
 - [Use suspendRunCatching](feedback_use_suspendruncatching.md) — prefer core/utils suspendRunCatching over manual try/catch(CancellationException)+catch(Exception); handle with onSuccess/onFailure.
 - [Duration in class scope](feedback_duration_class_scope.md) — kotlin.time.Duration constants go as a private val in the class (camelCase), never inside a companion object.
 - [Prefer method references](feedback_prefer_method_references.md) — use ::fn instead of a forwarding lambda (caveat: suspend refs can't go to non-suspend lambda params like map/let/forEach).
+- [if/else para duas cláusulas](feedback_if_else_two_branches.md) — use if/else em vez de `when` quando só há condição + else; `when` fica para 3+ ramos ou dispatch exaustivo de sealed.
 - [Named args, one per line](feedback_named_args_multiline.md) — calls with >1 argument use named arguments each on its own line; single-arg calls stay inline.
 - [No constant-value params](feedback_no_constant_value_params.md) — if every caller passes the same literal, hoist it to a companion-object `const val UPPER_SNAKE` at the end of the class instead of a parameter; delete the inlined string.
 - [Parameterless setup → @BeforeTest](feedback_parameterless_setup_beforetest.md) — a prepareScenario with no params becomes a @BeforeTest setUp(); drop the per-test call and the // Given comment.

@@ -1,0 +1,34 @@
+<resources>
+    <string name="edit_profile_title">Editar perfil</string>
+    <string name="edit_profile_change_name">Cambiar nombre</string>
+    <string name="edit_profile_change_image">Cambiar imagen</string>
+
+    <string name="edit_profile_name_title">Tu nombre</string>
+    <string name="edit_profile_name_subtitle">Cómo quieres que te llamemos en la app.</string>
+    <string name="edit_profile_name_placeholder">Escribe tu nombre</string>
+    <string name="edit_profile_cancel">Cancelar</string>
+    <string name="edit_profile_save">Guardar</string>
+
+    <string name="edit_profile_photo_title">Foto de perfil</string>
+    <string name="edit_profile_photo_use_provider">Usar foto de tu cuenta de Google</string>
+    <string name="edit_profile_photo_gallery">Elegir de la galería</string>
+    <string name="edit_profile_photo_camera">Tomar una foto</string>
+    <string name="edit_profile_photo_remove">Quitar foto actual</string>
+
+    <string name="edit_profile_photo_short_provider">Google</string>
+    <string name="edit_profile_photo_short_camera">Cámara</string>
+    <string name="edit_profile_photo_short_gallery">Galería</string>
+    <string name="edit_profile_photo_short_remove">Quitar</string>
+
+    <string name="edit_profile_name_updated">Nombre actualizado</string>
+    <string name="edit_profile_photo_synced">Foto sincronizada de tu cuenta de Google</string>
+    <string name="edit_profile_photo_removed">Foto quitada</string>
+    <string name="edit_profile_photo_updated">Foto de perfil actualizada</string>
+    <string name="edit_profile_photo_too_large">Esa imagen es demasiado grande. Elige una de menos de 15 MB.</string>
+    <string name="edit_profile_photo_unreadable">No se pudo leer ese archivo como imagen.</string>
+    <string name="edit_profile_crop_title">Ajustar foto</string>
+    <string name="edit_profile_crop_hint">Arrastra y usa el zoom para encuadrar</string>
+    <string name="edit_profile_crop_confirm">Listo</string>
+    <string name="edit_profile_name_counter">%1$d/%2$d</string>
+    <string name="edit_profile_close">Cerrar</string>
+</resources>

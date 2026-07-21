@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseC
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
+import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
@@ -21,7 +22,6 @@ import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLangua
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveMoreWebAppEnabled
-import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -59,7 +60,7 @@ internal class MoreUiStateFactory(
     private val isMoreWebAppEnabled: ObserveMoreWebAppEnabled,
     private val isDynamicColorSupported: IsDynamicColorSupported,
     private val sessionStatus: StateFlow<SessionStatus>,
-    private val sessionUserMapper: SessionUserMapper,
+    private val observeUserProfile: ObserveUserProfile,
     private val bibleVersionDao: BibleVersionDao,
     private val getSelectedVersionDownloadedChapters: GetSelectedVersionDownloadedChaptersFlowUseCase,
     private val getSelectedBible: GetSelectedBibleFlowUseCase,
@@ -114,8 +115,8 @@ internal class MoreUiStateFactory(
         subscriptionStatusFlow().map { subscriptionStatus ->
             { state: MoreUiState -> state.copy(subscriptionStatus = Loadable.Loaded(subscriptionStatus)) }
         },
-        sessionStatus.map { status ->
-            { state: MoreUiState -> state.copy(accountStatusModel = status.toAccountStatusModel()) }
+        accountStatusFlow().map { accountStatusModel ->
+            { state: MoreUiState -> state.copy(accountStatusModel = accountStatusModel) }
         },
         getBibleRowFlow().map { bibleRow ->
             { state: MoreUiState ->
@@ -170,18 +171,18 @@ internal class MoreUiStateFactory(
         .toLocalDateTime(TimeZone.currentSystemDefault())
         .date
 
-    private fun SessionStatus.toAccountStatusModel(): AccountStatusModel = when (this) {
-        is SessionStatus.Authenticated -> {
-            session.user
-                ?.let(sessionUserMapper::map)
-                ?.let(AccountStatusModel::LoggedIn) ?: AccountStatusModel.Error
+    private fun accountStatusFlow(): Flow<AccountStatusModel> = sessionStatus.flatMapLatest { status ->
+        when (status) {
+            is SessionStatus.Authenticated -> observeUserProfile().map { profile ->
+                profile?.let(AccountStatusModel::LoggedIn) ?: AccountStatusModel.Error
+            }
+
+            SessionStatus.Initializing -> flowOf(AccountStatusModel.Loading)
+
+            is SessionStatus.NotAuthenticated -> flowOf(AccountStatusModel.LoggedOut)
+
+            is SessionStatus.RefreshFailure -> flowOf(AccountStatusModel.Error)
         }
-
-        SessionStatus.Initializing -> AccountStatusModel.Loading
-
-        is SessionStatus.NotAuthenticated -> AccountStatusModel.LoggedOut
-
-        is SessionStatus.RefreshFailure -> AccountStatusModel.Error
     }
 
     private fun RemoteConfigs.toHeaderRes(): StringResource = when {

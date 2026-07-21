@@ -36,6 +36,7 @@ materialIconsExtended = "1.7.3"
 composeMultiplatform = "1.11.1"
 supabase = "3.6.0"
 coil = "3.5.0"
+filekit = "0.14.2"
 composeShimmer = "1.5.0"
 
 # Android versions
@@ -122,6 +123,8 @@ supabase-functions = { group = "io.github.jan-tennert.supabase", name = "functio
 
 # Coil
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+filekit-core = { group = "io.github.vinceglb", name = "filekit-core", version.ref = "filekit" }
+filekit-dialogs-compose = { group = "io.github.vinceglb", name = "filekit-dialogs-compose", version.ref = "filekit" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 
 # Ktor

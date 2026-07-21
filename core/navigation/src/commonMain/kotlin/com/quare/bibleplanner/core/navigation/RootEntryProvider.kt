@@ -22,6 +22,11 @@ import com.quare.bibleplanner.feature.deleteversion.presentation.deleteVersion
 import com.quare.bibleplanner.feature.donation.pixqr.presentation.pixQr
 import com.quare.bibleplanner.feature.donation.presentation.donation
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.editPlanStartDate
+import com.quare.bibleplanner.feature.editprofile.presentation.cropPhoto
+import com.quare.bibleplanner.feature.editprofile.presentation.editName
+import com.quare.bibleplanner.feature.editprofile.presentation.editPhotoSource
+import com.quare.bibleplanner.feature.editprofile.presentation.editProfile
+import com.quare.bibleplanner.feature.editprofile.presentation.expandedPhoto
 import com.quare.bibleplanner.feature.inappupdate.presentation.inAppUpdate
 import com.quare.bibleplanner.feature.inappupdate.presentation.updateDownloaded
 import com.quare.bibleplanner.feature.login.presentation.loginRoot
@@ -119,6 +124,20 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
     )
     renameDevice(onNavigateBack)
+    editProfile(
+        onNavigateReplacingTop = onNavigateReplacingTop,
+        onNavigateBack = onNavigateBack,
+    )
+    editName(onNavigateBack)
+    editPhotoSource(
+        onNavigateReplacingTop = onNavigateReplacingTop,
+        onNavigateBack = onNavigateBack,
+    )
+    expandedPhoto(
+        onNavigate = onNavigate,
+        onNavigateBack = onNavigateBack,
+    )
+    cropPhoto(onNavigateBack)
     contactSupport(onNavigateBack)
     read(
         onNavigate = onNavigate,

@@ -4,7 +4,9 @@
     "Se corrigió un problema por el que la última opción de paneles como Detalles de la cuenta y Tema podía quedar oculta detrás de la barra de navegación de Android; ahora los paneles se abren totalmente visibles.",
     "Al tocar 'Calificar la app', ahora siempre se abre la página de la aplicación en la tienda. Antes parecía que no pasaba nada si ya la habías calificado.",
     "Después de un logro de lectura, la app puede invitarte a calificarla: al alcanzar una racha de días de lectura, superar una marca de progreso en la Biblia o terminar un libro. La invitación aparece pocas veces y, como máximo, una vez por versión.",
-    "Se corrigió la pantalla Pro con el teléfono acostado: el precio de los planes se veía cortado letra por letra y parte del contenido quedaba fuera de la pantalla. Ahora esa posición tiene su propio diseño, la lista de planes se desplaza con normalidad y el botón de suscribirse siempre queda visible."
+    "Se corrigió la pantalla Pro con el teléfono acostado: el precio de los planes se veía cortado letra por letra y parte del contenido quedaba fuera de la pantalla. Ahora esa posición tiene su propio diseño, la lista de planes se desplaza con normalidad y el botón de suscribirse siempre queda visible.",
+    "Ahora puedes editar tu perfil: toca 'Editar perfil' en la pantalla Más para cambiar tu nombre y tu foto, eligiéndola de la galería o la cámara y ajustando el encuadre.",
+    "También puedes quitar la foto o volver a usar la de Google. Todo aparece al instante, incluso sin conexión, y se sincroniza entre tus dispositivos."
   ],
   "2.0.2": [
     "Se corrigió un problema que podía cerrar tu sesión por sí solo en algunos casos."

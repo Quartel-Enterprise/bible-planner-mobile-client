@@ -13,8 +13,7 @@ class SessionUserMapper {
             // avatar_url while Apple does not, and Apple uses full_name alongside name.
             photo = metadata.stringOrNull(KEY_AVATAR_URL),
             name = metadata.stringOrNull(KEY_NAME)
-                ?: metadata.stringOrNull(KEY_FULL_NAME)
-                ?: return@let null,
+                ?: metadata.stringOrNull(KEY_FULL_NAME),
             id = sessionUser.id,
             email = sessionUser.email ?: return@let null,
             provider = sessionUser.appMetadata?.stringOrNull(KEY_PROVIDER),

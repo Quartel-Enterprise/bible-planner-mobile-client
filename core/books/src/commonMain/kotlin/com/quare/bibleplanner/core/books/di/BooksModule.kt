@@ -48,6 +48,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.UpdateSpecificRangeChapt
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateWholeBookReadStatusIfNeededUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
+import com.quare.bibleplanner.core.provider.supabase.CONTENT_BUCKET
 import com.quare.bibleplanner.core.sync.data.OfflineFirstSynchronizer
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import org.koin.core.module.dsl.factoryOf
@@ -59,7 +60,12 @@ import org.koin.dsl.module
 val booksModule = module {
     // Data sources
     singleOf(::BooksLocalDataSource)
-    factoryOf(::BibleVersionsRemoteDataSource)
+    factory {
+        BibleVersionsRemoteDataSource(
+            bucketApi = get(named(CONTENT_BUCKET)),
+            json = get(),
+        )
+    }
     factoryOf(::BibleVersionsLocalDataSource)
     factoryOf(::VersionMapper)
     factoryOf(::BookFavoriteMapper)

@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.more.domain.model
 
-import com.quare.bibleplanner.core.user.domain.model.UserModel
+import com.quare.bibleplanner.core.profile.domain.model.UserProfile
 
 sealed interface AccountStatusModel {
     data object Loading : AccountStatusModel
@@ -10,6 +10,6 @@ sealed interface AccountStatusModel {
     data object Error : AccountStatusModel
 
     data class LoggedIn(
-        val user: UserModel,
+        val profile: UserProfile,
     ) : AccountStatusModel
 }

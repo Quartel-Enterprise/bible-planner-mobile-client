@@ -32,6 +32,8 @@ import com.quare.bibleplanner.core.date.toDateRepresentation
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountInfo
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.LoginMethod
+import com.quare.bibleplanner.ui.component.appleLogo
+import com.quare.bibleplanner.ui.component.googleLogo
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer

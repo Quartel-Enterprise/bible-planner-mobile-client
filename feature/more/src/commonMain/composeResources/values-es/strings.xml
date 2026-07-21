@@ -52,6 +52,10 @@
 
     <string name="login_card_title">No has iniciado sesión</string>
     <string name="login_card_subtitle">Inicie sesión para disfrutar de una mejor experiencia.</string>
+    <string name="login_card_no_name">Usuario</string>
+    <string name="edit_profile_action">Editar perfil</string>
+    <string name="login_card_error_title">Error</string>
+    <string name="login_card_error_subtitle">Se produjo un error al iniciar sesión.</string>
     <string name="login_card_button">Iniciar sesión</string>
     <string name="logout_button">Cerrar sesión</string>
     <string name="login_requires_internet">Necesitas conexión a internet para iniciar sesión</string>

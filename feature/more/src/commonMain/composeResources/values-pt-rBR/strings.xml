@@ -51,6 +51,10 @@
 
     <string name="login_card_title">Você não está logado</string>
     <string name="login_card_subtitle">Faça login para ter uma melhor experiência.</string>
+    <string name="login_card_no_name">Usuário</string>
+    <string name="edit_profile_action">Editar perfil</string>
+    <string name="login_card_error_title">Erro</string>
+    <string name="login_card_error_subtitle">Ocorreu um erro ao entrar na sua conta.</string>
     <string name="login_card_button">Entrar</string>
     <string name="logout_button">Sair</string>
     <string name="login_requires_internet">Você precisa de internet para entrar</string>

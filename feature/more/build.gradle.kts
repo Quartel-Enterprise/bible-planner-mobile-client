@@ -27,6 +27,7 @@ kotlin {
             implementation(projects.core.remoteConfig)
             implementation(projects.core.plan)
             implementation(projects.core.user)
+            implementation(projects.core.profile)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.room)
             implementation(libs.androidx.room.runtime)

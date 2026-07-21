@@ -29,6 +29,20 @@ internal sealed interface MoreUiEvent : UiEvent {
         )
     }
 
+    data object OnEditProfileClick : MoreUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.EDIT_PROFILE_CLICKED,
+            params = emptyMap(),
+        )
+    }
+
+    data object OnAvatarClick : MoreUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PROFILE_AVATAR_CLICKED,
+            params = emptyMap(),
+        )
+    }
+
     data object OnLoginClick : MoreUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.LOGIN_ROW_CLICKED,

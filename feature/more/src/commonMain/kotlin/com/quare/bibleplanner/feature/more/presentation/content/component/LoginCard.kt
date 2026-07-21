@@ -28,13 +28,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.more.generated.resources.Res
 import bibleplanner.feature.more.generated.resources.login_card_button
+import bibleplanner.feature.more.generated.resources.login_card_error_subtitle
+import bibleplanner.feature.more.generated.resources.login_card_error_title
+import bibleplanner.feature.more.generated.resources.login_card_no_name
 import bibleplanner.feature.more.generated.resources.login_card_subtitle
 import bibleplanner.feature.more.generated.resources.login_card_title
-import coil3.compose.SubcomposeAsyncImage
+import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
 import com.quare.bibleplanner.feature.more.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.more.presentation.model.MoreUiEvent
+import com.quare.bibleplanner.ui.component.ProfileAvatar
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import org.jetbrains.compose.resources.stringResource
+
+private val avatarSize = 48.dp
 
 @Composable
 internal fun LoginCard(
@@ -42,18 +48,10 @@ internal fun LoginCard(
     onEvent: (MoreUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val cardModifier = modifier
-        .fillMaxWidth()
-        .then(
-            if (accountStatusModel is AccountStatusModel.LoggedIn) {
-                Modifier.clickable { onEvent(MoreUiEvent.OnAccountCardClick) }
-            } else {
-                Modifier
-            },
-        )
-    ElevatedCard(
-        modifier = cardModifier,
-        shape = MaterialTheme.shapes.large,
+    ElevatedCardContainer(
+        isClickable = accountStatusModel is AccountStatusModel.LoggedIn,
+        onClick = { onEvent(MoreUiEvent.OnAccountCardClick) },
+        modifier = modifier.fillMaxWidth(),
     ) {
         Column {
             ListItem(
@@ -79,32 +77,14 @@ internal fun LoginCard(
                         }
 
                         is AccountStatusModel.LoggedIn -> {
-                            val photo = accountStatusModel.user.photo
-                            if (photo != null) {
-                                SubcomposeAsyncImage(
-                                    model = photo,
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(CircleShape),
-                                    loading = {
-                                        ShimmerBox(
-                                            modifier = Modifier.fillMaxSize(),
-                                            shape = CircleShape,
-                                        )
-                                    },
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.AccountCircle,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(CircleShape),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
+                            val profile = accountStatusModel.profile
+                            ProfileAvatar(
+                                photoUrl = (profile.avatar as? AvatarSource.Remote)?.url,
+                                photoBytes = (profile.avatar as? AvatarSource.Pending)?.bytes,
+                                displayName = profile.displayName,
+                                size = avatarSize,
+                                onClick = { onEvent(MoreUiEvent.OnAvatarClick) },
+                            )
                         }
 
                         AccountStatusModel.LoggedOut -> {
@@ -124,9 +104,14 @@ internal fun LoginCard(
                         ShimmerBox(modifier = Modifier.fillMaxWidth(0.5f).height(18.dp))
                     } else {
                         val text = when (accountStatusModel) {
-                            AccountStatusModel.Error -> "Error"
+                            AccountStatusModel.Error -> stringResource(Res.string.login_card_error_title)
+
                             AccountStatusModel.Loading -> ""
-                            is AccountStatusModel.LoggedIn -> accountStatusModel.user.name
+
+                            is AccountStatusModel.LoggedIn ->
+                                accountStatusModel.profile.displayName
+                                    ?: stringResource(Res.string.login_card_no_name)
+
                             AccountStatusModel.LoggedOut -> stringResource(Res.string.login_card_title)
                         }
                         Text(
@@ -149,9 +134,9 @@ internal fun LoginCard(
                         )
                     } else {
                         val supportingText = when (accountStatusModel) {
-                            AccountStatusModel.Error -> "There was an error while logging in."
+                            AccountStatusModel.Error -> stringResource(Res.string.login_card_error_subtitle)
                             AccountStatusModel.Loading -> ""
-                            is AccountStatusModel.LoggedIn -> accountStatusModel.user.email
+                            is AccountStatusModel.LoggedIn -> accountStatusModel.profile.email
                             AccountStatusModel.LoggedOut -> stringResource(Res.string.login_card_subtitle)
                         }
                         Text(
@@ -161,6 +146,11 @@ internal fun LoginCard(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
+                    }
+                },
+                trailingContent = {
+                    if (accountStatusModel is AccountStatusModel.LoggedIn) {
+                        EditProfileButton(onClick = { onEvent(MoreUiEvent.OnEditProfileClick) })
                     }
                 },
             )

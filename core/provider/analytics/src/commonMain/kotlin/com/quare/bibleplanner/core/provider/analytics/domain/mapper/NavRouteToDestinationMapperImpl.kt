@@ -7,13 +7,18 @@ import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
+import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
+import com.quare.bibleplanner.core.model.route.EditNameNavRoute
+import com.quare.bibleplanner.core.model.route.EditPhotoSourceNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.EditProfileNavRoute
+import com.quare.bibleplanner.core.model.route.ExpandedPhotoNavRoute
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
@@ -47,6 +52,16 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is MainNavRouteDestination.More -> screen("more")
 
         is AccountDetailsNavRoute -> responsive("account_details")
+
+        is EditProfileNavRoute -> responsive("edit_profile")
+
+        is CropPhotoNavRoute -> screen("crop_profile_photo")
+
+        is EditPhotoSourceNavRoute -> responsive("edit_profile_photo_source")
+
+        is EditNameNavRoute -> dialog("edit_profile_name")
+
+        is ExpandedPhotoNavRoute -> dialog("profile_photo_expanded")
 
         is AddNotesFreeWarningNavRoute -> dialog(
             name = "add_notes_free_warning",

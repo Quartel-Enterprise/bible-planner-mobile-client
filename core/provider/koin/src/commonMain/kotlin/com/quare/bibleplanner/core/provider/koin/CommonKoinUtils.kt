@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.di.modelModule
 import com.quare.bibleplanner.core.loginnudge.di.loginNudgeModule
 import com.quare.bibleplanner.core.network.data.di.networkModule
 import com.quare.bibleplanner.core.plan.di.planModule
+import com.quare.bibleplanner.core.profile.di.profileModule
 import com.quare.bibleplanner.core.provider.analytics.di.analyticsModule
 import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
 import com.quare.bibleplanner.core.provider.connectivity.di.connectivityModule
@@ -38,6 +39,7 @@ import com.quare.bibleplanner.feature.deleteversion.di.deleteVersionModule
 import com.quare.bibleplanner.feature.donation.di.donationModule
 import com.quare.bibleplanner.feature.donation.pixqr.di.pixQrModule
 import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModule
+import com.quare.bibleplanner.feature.editprofile.di.editProfileModule
 import com.quare.bibleplanner.feature.inappupdate.di.inAppUpdateModule
 import com.quare.bibleplanner.feature.login.di.loginModule
 import com.quare.bibleplanner.feature.loginsyncnudge.di.loginSyncNudgeModule
@@ -88,6 +90,8 @@ object CommonKoinUtils {
         subscriptionDetailsModule,
         accountDetailsModule,
         devicesModule,
+        profileModule,
+        editProfileModule,
         contactSupportModule,
         releaseNotesModule,
         donationModule,

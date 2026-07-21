@@ -41,6 +41,7 @@ kotlin {
             implementation(projects.feature.dayStudy)
             implementation(projects.feature.subscriptionDetails)
             implementation(projects.feature.accountDetails)
+            implementation(projects.feature.editProfile)
             implementation(projects.feature.contactSupport)
 
             // Core

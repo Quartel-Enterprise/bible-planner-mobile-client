@@ -1,0 +1,34 @@
+<resources>
+    <string name="edit_profile_title">Editar perfil</string>
+    <string name="edit_profile_change_name">Alterar nome</string>
+    <string name="edit_profile_change_image">Alterar imagem</string>
+
+    <string name="edit_profile_name_title">Seu nome</string>
+    <string name="edit_profile_name_subtitle">Como você quer ser chamado no app.</string>
+    <string name="edit_profile_name_placeholder">Digite seu nome</string>
+    <string name="edit_profile_cancel">Cancelar</string>
+    <string name="edit_profile_save">Salvar</string>
+
+    <string name="edit_profile_photo_title">Foto do perfil</string>
+    <string name="edit_profile_photo_use_provider">Usar foto da conta Google</string>
+    <string name="edit_profile_photo_gallery">Escolher da galeria</string>
+    <string name="edit_profile_photo_camera">Tirar foto</string>
+    <string name="edit_profile_photo_remove">Remover foto atual</string>
+
+    <string name="edit_profile_photo_short_provider">Google</string>
+    <string name="edit_profile_photo_short_camera">Câmera</string>
+    <string name="edit_profile_photo_short_gallery">Galeria</string>
+    <string name="edit_profile_photo_short_remove">Remover</string>
+
+    <string name="edit_profile_name_updated">Nome atualizado</string>
+    <string name="edit_profile_photo_synced">Foto sincronizada da conta Google</string>
+    <string name="edit_profile_photo_removed">Foto removida</string>
+    <string name="edit_profile_photo_updated">Foto de perfil atualizada</string>
+    <string name="edit_profile_photo_too_large">Essa imagem é muito grande. Escolha uma com menos de 15 MB.</string>
+    <string name="edit_profile_photo_unreadable">Não foi possível ler esse arquivo como imagem.</string>
+    <string name="edit_profile_crop_title">Ajustar foto</string>
+    <string name="edit_profile_crop_hint">Arraste e use o zoom para enquadrar</string>
+    <string name="edit_profile_crop_confirm">Concluir</string>
+    <string name="edit_profile_name_counter">%1$d/%2$d</string>
+    <string name="edit_profile_close">Fechar</string>
+</resources>

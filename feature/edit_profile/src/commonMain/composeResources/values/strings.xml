@@ -1,0 +1,34 @@
+<resources>
+    <string name="edit_profile_title">Edit profile</string>
+    <string name="edit_profile_change_name">Change name</string>
+    <string name="edit_profile_change_image">Change image</string>
+
+    <string name="edit_profile_name_title">Your name</string>
+    <string name="edit_profile_name_subtitle">How you want to be called in the app.</string>
+    <string name="edit_profile_name_placeholder">Type your name</string>
+    <string name="edit_profile_cancel">Cancel</string>
+    <string name="edit_profile_save">Save</string>
+
+    <string name="edit_profile_photo_title">Profile photo</string>
+    <string name="edit_profile_photo_use_provider">Use photo from your Google account</string>
+    <string name="edit_profile_photo_gallery">Choose from gallery</string>
+    <string name="edit_profile_photo_camera">Take a photo</string>
+    <string name="edit_profile_photo_remove">Remove current photo</string>
+
+    <string name="edit_profile_photo_short_provider">Google</string>
+    <string name="edit_profile_photo_short_camera">Camera</string>
+    <string name="edit_profile_photo_short_gallery">Gallery</string>
+    <string name="edit_profile_photo_short_remove">Remove</string>
+
+    <string name="edit_profile_name_updated">Name updated</string>
+    <string name="edit_profile_photo_synced">Photo synced from your Google account</string>
+    <string name="edit_profile_photo_removed">Photo removed</string>
+    <string name="edit_profile_photo_updated">Profile photo updated</string>
+    <string name="edit_profile_photo_too_large">That image is too large. Pick one under 15 MB.</string>
+    <string name="edit_profile_photo_unreadable">That file could not be read as an image.</string>
+    <string name="edit_profile_crop_title">Adjust photo</string>
+    <string name="edit_profile_crop_hint">Drag and zoom to frame</string>
+    <string name="edit_profile_crop_confirm">Done</string>
+    <string name="edit_profile_name_counter">%1$d/%2$d</string>
+    <string name="edit_profile_close">Close</string>
+</resources>
