@@ -61,12 +61,6 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             forwardStack.clear()
         }
     }
-    val onNavigateBack: () -> Unit = {
-        val removed = backStack.back()
-        if (removed.isNotEmpty()) {
-            forwardStack.add(removed)
-        }
-    }
     val onNavigateForward: () -> Unit = {
         forwardStack.removeLastOrNull()?.asReversed()?.forEach(backStack::add)
     }
@@ -104,6 +98,12 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
+        val onNavigateBack: () -> Unit = {
+            val removed = backStack.back(isWide = isWide)
+            if (removed.isNotEmpty()) {
+                forwardStack.add(removed)
+            }
+        }
         CompositionLocalProvider(
             LocalSnackbarHostState provides snackbarHostState,
             LocalIsWideLayout provides isWide,

@@ -31,7 +31,6 @@ internal fun DayStudyTabbedContent(
     study: DayStudyModel,
     contentMaxWidth: Dp,
     modifier: Modifier = Modifier,
-    tabRowModifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val pagerState = rememberPagerState(pageCount = { DayStudyTab.entries.size })
@@ -50,8 +49,7 @@ internal fun DayStudyTabbedContent(
             },
             modifier = Modifier
                 .widthIn(max = contentMaxWidth)
-                .fillMaxWidth()
-                .then(tabRowModifier),
+                .fillMaxWidth(),
         )
         HorizontalPager(
             state = pagerState,

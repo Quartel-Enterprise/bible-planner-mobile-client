@@ -1,4 +1,9 @@
 {
+  "2.1.1": [
+    "Fixed an issue on phones where tapping 'View' on the Daily study card did not open the study screen.",
+    "The Daily study screen looks tidier on phones: the title and passages stand out at the top, and the line under the tabs now spans the full width.",
+    "The historical context text is now the same size as the summary text, making it easier to read."
+  ],
   "2.1.0": [
     "On desktop and on Android with a mouse connected, you can now use your mouse's back and forward side buttons to navigate between screens.",
     "Fixed an issue where the last option in panels like Account details and Theme could be hidden behind Android's navigation bar; panels now open fully visible.",

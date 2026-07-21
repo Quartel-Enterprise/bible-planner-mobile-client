@@ -1,4 +1,9 @@
 {
+  "2.1.1": [
+    "Se corrigió un problema en el celular por el que tocar 'Ver' en la tarjeta de Estudio del día no abría la pantalla del estudio.",
+    "La pantalla de Estudio del día se ve más prolija en el celular: el título y los pasajes se destacan arriba, y la línea de las pestañas ahora ocupa todo el ancho.",
+    "El texto del contexto histórico ahora tiene el mismo tamaño que el del resumen, para leerlo con más comodidad."
+  ],
   "2.1.0": [
     "En el escritorio y en Android con un mouse conectado, ahora puedes usar los botones laterales de retroceder y avanzar del mouse para navegar entre las pantallas.",
     "Se corrigió un problema por el que la última opción de paneles como Detalles de la cuenta y Tema podía quedar oculta detrás de la barra de navegación de Android; ahora los paneles se abren totalmente visibles.",
