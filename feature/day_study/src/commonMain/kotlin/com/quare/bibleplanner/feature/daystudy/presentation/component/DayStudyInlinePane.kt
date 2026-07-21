@@ -27,14 +27,15 @@ internal fun DayStudyInlinePane(
         if (showHeader) {
             DayStudyHeader(
                 passageLabel = study.passageLabel,
+                showIcon = true,
                 modifier = Modifier
                     .widthIn(max = contentMaxWidth)
                     .fillMaxWidth()
                     .padding(
                         start = 20.dp,
                         top = 16.dp,
-                        end = 12.dp,
-                        bottom = 4.dp,
+                        end = 20.dp,
+                        bottom = 12.dp,
                     ),
             )
         }
@@ -44,10 +45,6 @@ internal fun DayStudyInlinePane(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            tabRowModifier = Modifier.padding(
-                horizontal = 20.dp,
-                vertical = 8.dp,
-            ),
             contentPadding = PaddingValues(
                 start = 20.dp,
                 top = 10.dp,

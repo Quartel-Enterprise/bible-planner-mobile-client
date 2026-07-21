@@ -49,7 +49,7 @@ internal fun ContextTabContent(context: HistoricalContextModel) {
         VerticalSpacer(12)
         ExpandableText(
             text = context.body,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
         )
         VerticalSpacer(16)
         FactsBlock(facts = context.facts)

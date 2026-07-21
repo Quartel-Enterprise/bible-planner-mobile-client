@@ -20,19 +20,25 @@ internal fun rememberDisplayBackStack(
     val isCollapsingCompanion = !isWide && wasWide && backStack.hasDayStudyCompanionOnTop()
     val topRoute = backStack.lastOrNull()
     LaunchedEffect(isWide, topRoute) {
-        backStack.syncDayStudyPanelCompanion(isWide)
+        backStack.syncDayStudyPanelCompanion(
+            isWide = isWide,
+            isCollapsingCompanion = isCollapsingCompanion,
+        )
         wasWide = isWide
     }
     return if (isCollapsingCompanion) backStack.dropLast(1) else backStack
 }
 
-private fun MutableList<NavKey>.syncDayStudyPanelCompanion(isWide: Boolean) {
+private fun MutableList<NavKey>.syncDayStudyPanelCompanion(
+    isWide: Boolean,
+    isCollapsingCompanion: Boolean,
+) {
     val top = lastOrNull()
     if (isWide) {
         if (top is DayNavRoute) {
             add(top.toDayStudyNavRoute())
         }
-    } else if (hasDayStudyCompanionOnTop()) {
+    } else if (isCollapsingCompanion) {
         removeLastOrNull()
     }
 }
