@@ -21,6 +21,6 @@ sealed interface MainScreenUiEvent : UiEvent {
 private fun NavKey.toTabName(): String = when (this) {
     MainNavRouteDestination.Plans -> "plans"
     MainNavRouteDestination.Books -> "books"
-    MainNavRouteDestination.More -> "more"
+    MainNavRouteDestination.Profile -> "profile"
     else -> "unknown"
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="plans">Planos</string>
-    <string name="more">Mais</string>
+    <string name="profile">Perfil</string>
     <string name="books">Livros</string>
 </resources>

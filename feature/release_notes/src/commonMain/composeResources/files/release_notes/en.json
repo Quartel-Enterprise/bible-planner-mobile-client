@@ -5,8 +5,9 @@
     "Tapping 'Rate the app' now always opens the app's page on the store. Before, it could look like nothing happened if you had already rated it.",
     "After a reading achievement, the app may now invite you to rate it: when you reach a reading streak, pass a Bible progress milestone, or finish a book. The invitation shows up rarely, and at most once per version.",
     "Fixed the Pro screen when holding your phone sideways: plan prices appeared broken up one letter per line and part of the content was cut off. The screen now has a layout of its own for that position, the plan list scrolls properly, and the subscribe button stays visible.",
-    "You can now edit your profile: tap 'Edit profile' on the More screen to change your name and photo, picking it from your gallery or camera and adjusting the framing.",
-    "You can also remove the photo or go back to your Google one. Everything shows up right away, even offline, and syncs across your devices."
+    "You can now edit your profile: tap 'Edit profile' on the Profile screen to change your name and photo, picking it from your gallery or camera and adjusting the framing.",
+    "You can also remove the photo or go back to your Google one. Everything shows up right away, even offline, and syncs across your devices.",
+    "The 'More' tab is now called 'Profile' and shows your photo in the navigation bar — or your initials, or a person icon, when you don't have a photo yet."
   ],
   "2.0.2": [
     "Fixed an issue that could sign you out of your account on its own in some cases."

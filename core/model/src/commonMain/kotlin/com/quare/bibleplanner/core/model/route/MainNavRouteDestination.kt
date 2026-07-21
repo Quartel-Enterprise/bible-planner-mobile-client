@@ -7,7 +7,7 @@ sealed interface MainNavRouteDestination : NavRoute {
     data object Plans : MainNavRouteDestination
 
     @Serializable
-    data object More : MainNavRouteDestination
+    data object Profile : MainNavRouteDestination
 
     @Serializable
     data object Books : MainNavRouteDestination

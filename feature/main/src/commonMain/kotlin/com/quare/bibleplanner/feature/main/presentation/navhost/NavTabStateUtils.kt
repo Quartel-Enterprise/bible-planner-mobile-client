@@ -15,7 +15,7 @@ internal fun rememberNavTabState(): NavTabState {
     val tabs: List<MainNavRouteDestination> = listOf(
         MainNavRouteDestination.Plans,
         MainNavRouteDestination.Books,
-        MainNavRouteDestination.More,
+        MainNavRouteDestination.Profile,
     )
     val backStacks: Map<MainNavRouteDestination, NavBackStack<NavKey>> = tabs.associateWith { tab ->
         rememberNavBackStack(navigationSavedStateConfiguration, tab)

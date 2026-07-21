@@ -39,8 +39,9 @@ import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_short_gallery
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_short_provider
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_short_remove
-import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
 import com.quare.bibleplanner.core.profile.domain.model.UserProfile
+import com.quare.bibleplanner.core.profile.domain.model.photoBytes
+import com.quare.bibleplanner.core.profile.domain.model.photoUrl
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.bibleplanner.ui.component.DialogWindowBlurEffect
 import com.quare.bibleplanner.ui.component.ProfileAvatar
@@ -85,8 +86,8 @@ internal fun ExpandedPhotoOverlay(
             verticalArrangement = Arrangement.spacedBy(28.dp),
         ) {
             ProfileAvatar(
-                photoUrl = (profile?.avatar as? AvatarSource.Remote)?.url,
-                photoBytes = (profile?.avatar as? AvatarSource.Pending)?.bytes,
+                photoUrl = profile?.avatar?.photoUrl,
+                photoBytes = profile?.avatar?.photoBytes,
                 displayName = profile?.displayName,
                 size = avatarSize,
                 modifier = Modifier.shadow(

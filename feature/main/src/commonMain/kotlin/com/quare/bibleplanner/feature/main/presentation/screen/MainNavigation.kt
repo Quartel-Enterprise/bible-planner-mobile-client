@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.main.presentation.screen
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -10,11 +12,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
+import com.quare.bibleplanner.core.profile.domain.model.photoBytes
+import com.quare.bibleplanner.core.profile.domain.model.photoUrl
 import com.quare.bibleplanner.core.utils.locale.Language
+import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationIcon
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
+import com.quare.bibleplanner.ui.component.ProfileAvatar
 import org.jetbrains.compose.resources.stringResource
+
+private val profileIconSize = 24.dp
 
 @Composable
 internal fun MainNavigationBar(
@@ -87,8 +96,8 @@ private fun MainNavigationItemsComponent(
                 )
             },
             {
-                Icon(
-                    imageVector = presentationItem.icon,
+                MainNavigationItemIcon(
+                    icon = presentationItem.icon,
                     contentDescription = stringResource(presentationItem.title),
                 )
             },
@@ -99,5 +108,30 @@ private fun MainNavigationItemsComponent(
                 )
             },
         )
+    }
+}
+
+@Composable
+private fun MainNavigationItemIcon(
+    icon: MainNavigationIcon,
+    contentDescription: String,
+) {
+    when (icon) {
+        is MainNavigationIcon.Vector -> {
+            Icon(
+                imageVector = icon.imageVector,
+                contentDescription = contentDescription,
+            )
+        }
+
+        is MainNavigationIcon.Profile -> {
+            ProfileAvatar(
+                photoUrl = icon.avatar.photoUrl,
+                photoBytes = icon.avatar.photoBytes,
+                displayName = icon.displayName,
+                size = profileIconSize,
+                fallbackIcon = Icons.Default.Person,
+            )
+        }
     }
 }

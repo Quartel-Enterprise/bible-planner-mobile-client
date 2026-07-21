@@ -2,7 +2,7 @@
 
 **Tier:** P1 | **Domain:** Monetization
 
-Captures every paywall impression together with the surface that drove the user there. This is the top of the purchase funnel: conversion rate per entry point (`more_menu` vs `day_study` vs `notes_limit`) tells which feature gate actually sells Pro.
+Captures every paywall impression together with the surface that drove the user there. This is the top of the purchase funnel: conversion rate per entry point (`profile_menu` vs `day_study` vs `notes_limit`) tells which feature gate actually sells Pro.
 
 ## When it fires
 
@@ -12,7 +12,7 @@ The paywall screen is shown, regardless of which flow navigated to it.
 
 `PaywallNavRoute` carries no arguments today, so the `source` cannot be read on the paywall side. Either add a `source` param to the route or log the event caller-side at each navigation point:
 
-- `feature/more/.../viewmodel/MoreViewModel.kt` — `MoreUiEvent.OnItemClick` with `MoreOptionItemType.BECOME_PRO` (`source=more_menu`)
+- `feature/profile/.../viewmodel/ProfileViewModel.kt` — `ProfileUiEvent.OnItemClick` with `ProfileOptionItemType.BECOME_PRO` (`source=profile_menu`)
 - `feature/day/.../viewmodel/DayViewModel.kt` — `DayUiEvent.OnDayStudySubscribeClick` → `navigateToPaywall()` (`source=day_study`; originates from `DayStudyUiAction.NavigateToPaywall` when the locked card is clicked)
 - `feature/add_notes_free_warning/.../utils/AddNotesFreeWarningUiActionCollector.kt` — `AddNotesFreeWarningUiAction.NavigateToPro` (`source=notes_limit`)
 
@@ -20,7 +20,7 @@ The paywall screen is shown, regardless of which flow navigated to it.
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `source` | string | `day_study` | Entry point: `more_menu` \| `day_study` \| `notes_limit` |
+| `source` | string | `day_study` | Entry point: `profile_menu` \| `day_study` \| `notes_limit` |
 
 ## Notes
 

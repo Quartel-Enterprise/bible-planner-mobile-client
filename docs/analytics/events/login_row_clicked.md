@@ -2,15 +2,15 @@
 
 **Tier:** P2 | **Domain:** Settings
 
-Captures the user tapping the login row on the More screen, the entry point into the login flow from the settings hub.
+Captures the user tapping the login row on the Profile screen, the entry point into the login flow from the settings hub.
 
 ## When it fires
 
-User taps the login row on the More screen (shown when the user is signed out).
+User taps the login row on the Profile screen (shown when the user is signed out).
 
 ## Trigger source
 
-`feature/more/src/commonMain/kotlin/com/quare/bibleplanner/feature/more/presentation/viewmodel/MoreViewModel.kt` — `MoreUiEvent.OnLoginClick`
+`feature/profile/src/commonMain/kotlin/com/quare/bibleplanner/feature/profile/presentation/viewmodel/ProfileViewModel.kt` — `ProfileUiEvent.OnLoginClick`
 
 ## Parameters
 

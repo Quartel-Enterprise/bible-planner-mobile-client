@@ -49,7 +49,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
 
         is MainNavRouteDestination.Books -> screen("books")
 
-        is MainNavRouteDestination.More -> screen("more")
+        is MainNavRouteDestination.Profile -> screen("profile")
 
         is AccountDetailsNavRoute -> responsive("account_details")
 

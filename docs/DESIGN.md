@@ -537,9 +537,11 @@ migrates to Expressive.
 ### Navigation bar
 
 Three items for this app: `Planos` (calendar icon), `Livros` (menu_book icon),
-`Mais` (more_horiz icon). Selected indicator is a `full`-radius
-`secondary-container` pill behind the active icon. Labels always shown, never
-hidden.
+`Perfil` (the user's avatar). The avatar has three states: the profile photo
+when there is one, the initials over `primary-container` when the user only
+has a name, and the `person` icon when there is neither (including signed
+out). Selected indicator is a `full`-radius `secondary-container` pill behind
+the active icon. Labels always shown, never hidden.
 
 ### Chip "Hoje"
 

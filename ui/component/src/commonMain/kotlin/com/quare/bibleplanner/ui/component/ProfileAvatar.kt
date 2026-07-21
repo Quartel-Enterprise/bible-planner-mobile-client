@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.decodeToImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -42,6 +43,7 @@ fun ProfileAvatar(
     displayName: String?,
     size: Dp,
     modifier: Modifier = Modifier,
+    fallbackIcon: ImageVector = Icons.Default.AccountCircle,
     onClick: (() -> Unit)? = null,
 ) {
     val avatarModifier = modifier
@@ -90,7 +92,7 @@ fun ProfileAvatar(
             val initials = remember(displayName) { displayName.toInitials() }
             if (initials == null) {
                 Icon(
-                    imageVector = Icons.Default.AccountCircle,
+                    imageVector = fallbackIcon,
                     contentDescription = null,
                     modifier = avatarModifier,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -2,15 +2,15 @@
 
 **Tier:** P2 | **Domain:** Settings
 
-Captures the user tapping the edit button on the profile card in the More screen, the entry point into editing their display name and profile photo.
+Captures the user tapping the edit button on the profile card in the Profile screen, the entry point into editing their display name and profile photo.
 
 ## When it fires
 
-User taps the edit (pencil) button on the profile card in the More screen. On desktop the same control renders as an "Edit profile" pill.
+User taps the edit (pencil) button on the profile card in the Profile screen. On desktop the same control renders as an "Edit profile" pill.
 
 ## Trigger source
 
-`feature/more/src/commonMain/kotlin/com/quare/bibleplanner/feature/more/presentation/viewmodel/MoreViewModel.kt` — `MoreUiEvent.OnEditProfileClick`
+`feature/profile/src/commonMain/kotlin/com/quare/bibleplanner/feature/profile/presentation/viewmodel/ProfileViewModel.kt` — `ProfileUiEvent.OnEditProfileClick`
 
 ## Parameters
 

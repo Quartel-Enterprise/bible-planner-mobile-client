@@ -1,0 +1,40 @@
+package com.quare.bibleplanner.feature.profile.presentation.content.component
+
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import bibleplanner.feature.profile.generated.resources.Res
+import bibleplanner.feature.profile.generated.resources.web_section
+import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileMenuOptionsFactory
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
+import org.jetbrains.compose.resources.stringResource
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+internal fun WebSection(
+    modifier: Modifier = Modifier,
+    onEvent: (ProfileUiEvent) -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeaderText(title = stringResource(Res.string.web_section))
+        SectionCard {
+            ProfileMenuItem(
+                itemModel = ProfileMenuOptionsFactory.webApp,
+                onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.WEB_APP)) },
+                trailingContent = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = null,
+                    )
+                },
+            )
+        }
+    }
+}

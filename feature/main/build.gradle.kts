@@ -14,13 +14,14 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.profile)
             implementation(projects.core.utils)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.language)
 
             // Features
             implementation(projects.feature.readingPlan)
-            implementation(projects.feature.more)
+            implementation(projects.feature.profile)
             implementation(projects.feature.books)
             implementation(projects.feature.notificationPermission)
             implementation(projects.feature.preferences.appLanguage)

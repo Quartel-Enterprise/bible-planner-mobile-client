@@ -48,7 +48,7 @@ class NavRouteToDestinationMapperImplTest {
         val expectations: List<Pair<NavRoute, Pair<String, DestinationType>>> = listOf(
             MainNavRouteDestination.Plans to ("plans" to DestinationType.SCREEN),
             MainNavRouteDestination.Books to ("books" to DestinationType.SCREEN),
-            MainNavRouteDestination.More to ("more" to DestinationType.SCREEN),
+            MainNavRouteDestination.Profile to ("profile" to DestinationType.SCREEN),
             AddNotesFreeWarningNavRoute(maxFreeNotesAmount = 3) to
                 ("add_notes_free_warning" to DestinationType.DIALOG),
             AppLanguageNavRoute to ("app_language" to DestinationType.RESPONSIVE),

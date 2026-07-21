@@ -104,7 +104,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `MainNavRoute` | *(not logged — shell container; tabs log instead)* | — | — |
 | `MainNavRouteDestination.Plans` | `plans` | `screen` | — |
 | `MainNavRouteDestination.Books` | `books` | `screen` | — |
-| `MainNavRouteDestination.More` | `more` | `screen` | — |
+| `MainNavRouteDestination.Profile` | `profile` | `screen` | — |
 | `AccountDetailsNavRoute` | `account_details` | `responsive` | — |
 | `AddNotesFreeWarningNavRoute` | `add_notes_free_warning` | `dialog` | `max_free_notes` |
 | `AppLanguageNavRoute` | `app_language` | `responsive` | — |
@@ -295,7 +295,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 
 | Event | Tier | Domain |
 |---|---|---|
-| [more_option_clicked](events/more_option_clicked.md) | P1 | Settings |
+| [profile_option_clicked](events/profile_option_clicked.md) | P1 | Settings |
 | [edit_profile_clicked](events/edit_profile_clicked.md) | P2 | Settings |
 | [profile_avatar_clicked](events/profile_avatar_clicked.md) | P2 | Settings |
 | [edit_profile_name_clicked](events/edit_profile_name_clicked.md) | P2 | Settings |

@@ -18,4 +18,4 @@ None.
 
 ## Notes
 
-- The web app is also reachable from the More tab — that path is captured by [more_option_clicked](more_option_clicked.md) with `option=web_app`, not by this event. Sum both to get total web-app referrals.
+- The web app is also reachable from the Profile tab — that path is captured by [profile_option_clicked](profile_option_clicked.md) with `option=web_app`, not by this event. Sum both to get total web-app referrals.

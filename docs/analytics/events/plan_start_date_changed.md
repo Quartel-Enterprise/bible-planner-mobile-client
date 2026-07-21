@@ -15,13 +15,13 @@ User confirms a new date in the edit-plan-start-date dialog.
 The dialog is opened from two places:
 
 - `feature/reading_plan/.../presentation/viewmodel/ReadingPlanViewModel.kt` — `ReadingPlanUiEvent.OnEditPlanClick` and `ReadingPlanUiEvent.OnOverflowOptionClick` (`OverflowOption.EDIT_START_DAY`) → `source=plan_screen`
-- `feature/more/.../presentation/viewmodel/MoreViewModel.kt` — more-menu item → `source=more_menu`
+- `feature/profile/.../presentation/viewmodel/ProfileViewModel.kt` — profile-menu item → `source=profile_menu`
 
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `source` | string | `plan_screen` \| `more_menu` | Where the edit dialog was opened from |
+| `source` | string | `plan_screen` \| `profile_menu` | Where the edit dialog was opened from |
 
 ## Notes
 
