@@ -112,13 +112,18 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `BookDetailsNavRoute` | `book_details` | `screen` | `book_id` |
 | `CongratsNavRoute` | `congrats` | `bottom_sheet` | — |
 | `ContactSupportNavRoute` | `contact_support` | `responsive` | — |
+| `CropPhotoNavRoute` | `crop_profile_photo` | `screen` | — |
 | `DayNavRoute` | `day` | `screen` | `plan_type`, `week_number`, `day_number` |
 | `DayStudyNavRoute` | `day_study` | `screen` | `plan_type`, `week_number`, `day_number` |
 | `DeleteAllProgressNavRoute` | `delete_all_progress` | `dialog` | — |
 | `DeleteNotesRoute` | `delete_notes` | `dialog` | `plan_type`, `week_number`, `day_number` |
 | `DeleteVersionNavRoute` | `delete_version` | `dialog` | `version_id` |
 | `DonationNavRoute` | `donation` | `bottom_sheet` | — |
+| `EditNameNavRoute` | `edit_profile_name` | `dialog` | — |
+| `EditPhotoSourceNavRoute` | `edit_profile_photo_source` | `responsive` | — |
 | `EditPlanStartDateNavRoute` | `edit_plan_start_date` | `dialog` | — |
+| `EditProfileNavRoute` | `edit_profile` | `responsive` | — |
+| `ExpandedPhotoNavRoute` | `profile_photo_expanded` | `dialog` | — |
 | `InAppUpdateNavRoute` | `in_app_update` | `responsive` | — |
 | `LoginNavRoute` | `login` | `bottom_sheet` | — |
 | `LoginSyncNudgeNavRoute` | `login_sync_nudge` | `dialog` | — |
@@ -291,6 +296,15 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | Event | Tier | Domain |
 |---|---|---|
 | [more_option_clicked](events/more_option_clicked.md) | P1 | Settings |
+| [edit_profile_clicked](events/edit_profile_clicked.md) | P2 | Settings |
+| [profile_avatar_clicked](events/profile_avatar_clicked.md) | P2 | Settings |
+| [edit_profile_name_clicked](events/edit_profile_name_clicked.md) | P2 | Settings |
+| [edit_profile_photo_clicked](events/edit_profile_photo_clicked.md) | P2 | Settings |
+| [profile_name_updated](events/profile_name_updated.md) | P1 | Settings |
+| [profile_photo_source_selected](events/profile_photo_source_selected.md) | P1 | Settings |
+| [profile_photo_removed](events/profile_photo_removed.md) | P2 | Settings |
+| [profile_photo_updated](events/profile_photo_updated.md) | P1 | Settings |
+| [profile_photo_crop_cancelled](events/profile_photo_crop_cancelled.md) | P2 | Settings |
 | [theme_changed](events/theme_changed.md) | P1 | Settings |
 | [contrast_changed](events/contrast_changed.md) | P2 | Settings |
 | [dynamic_colors_toggled](events/dynamic_colors_toggled.md) | P2 | Settings |

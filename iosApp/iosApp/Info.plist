@@ -12,6 +12,8 @@
 	<string>Bible Planner</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>This app needs access to the network to load dynamic configurations.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to your camera so you can take a new profile photo.</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>com.quare.bibleplanner.bible_initialization</string>

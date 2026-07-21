@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.bibleversion.di
 
+import com.quare.bibleplanner.core.provider.supabase.CONTENT_BUCKET
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVersionDownloadUseCase
@@ -17,6 +18,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val bibleVersionModule = module {
@@ -35,7 +37,14 @@ val bibleVersionModule = module {
     factoryOf(::GetNewTestamentIdsUseCase)
     factoryOf(::GetPentateuchIdsUseCase)
     factoryOf(::GetPrioritizedBookIdsUseCase)
-    factoryOf(::DownloadChaptersUseCase)
+    factory {
+        DownloadChaptersUseCase(
+            supabaseBookAbbreviationMapper = get(),
+            chapterDao = get(),
+            verseDao = get(),
+            bucketApi = get(named(CONTENT_BUCKET)),
+        )
+    }
     factoryOf(::DownloadBooksInParallelUseCase)
     factoryOf(::PauseBibleVersionDownloadUseCase)
     factoryOf(::DeleteBibleVersionDownloadUseCase)

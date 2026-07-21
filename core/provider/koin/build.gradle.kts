@@ -31,6 +31,8 @@ kotlin {
             implementation(projects.core.network)
             implementation(projects.core.user)
             implementation(projects.core.devices)
+            implementation(projects.core.profile)
+            implementation(projects.feature.editProfile)
             implementation(projects.core.model)
             implementation(projects.core.loginNudge)
             implementation(projects.core.review)

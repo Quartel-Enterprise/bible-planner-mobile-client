@@ -27,6 +27,10 @@ kotlin {
 
             // Shimmer
             implementation(libs.compose.shimmer)
+
+            // Coil (image loading)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network)
         }
     }
 }

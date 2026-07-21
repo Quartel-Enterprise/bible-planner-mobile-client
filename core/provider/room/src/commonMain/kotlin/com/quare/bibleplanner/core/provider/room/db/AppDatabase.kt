@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
 import com.quare.bibleplanner.core.provider.room.dao.DayStudyDao
+import com.quare.bibleplanner.core.provider.room.dao.ProfileDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.UserDeviceDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
@@ -23,6 +24,7 @@ import com.quare.bibleplanner.core.provider.room.entity.DayStudyEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyFactEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyQuestionEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyTakeawayEntity
+import com.quare.bibleplanner.core.provider.room.entity.ProfileEntity
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import com.quare.bibleplanner.core.provider.room.entity.UserDeviceEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
@@ -43,8 +45,9 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         DayStudyFactEntity::class,
         DayStudyQuestionEntity::class,
         UserDeviceEntity::class,
+        ProfileEntity::class,
     ],
-    version = 11,
+    version = 12,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
@@ -52,6 +55,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         AutoMigration(from = 8, to = 9, spec = Migration8To9Spec::class),
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11),
+        AutoMigration(from = 11, to = 12),
     ],
     exportSchema = true,
 )
@@ -73,4 +77,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun dayStudyDao(): DayStudyDao
 
     abstract fun userDeviceDao(): UserDeviceDao
+
+    abstract fun profileDao(): ProfileDao
 }

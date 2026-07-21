@@ -52,6 +52,10 @@
 
     <string name="login_card_title">You're not logged in</string>
     <string name="login_card_subtitle">Log in for a better experience.</string>
+    <string name="login_card_no_name">User</string>
+    <string name="edit_profile_action">Edit profile</string>
+    <string name="login_card_error_title">Error</string>
+    <string name="login_card_error_subtitle">There was an error while logging in.</string>
     <string name="login_card_button">Sign in</string>
     <string name="logout_button">Sign out</string>
     <string name="login_requires_internet">You need an internet connection to sign in</string>
