@@ -52,7 +52,7 @@ private val dayStudyPanelMinWidth = 700.dp
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun RootAppNavDisplay() {
+fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     val backStack = rememberNavBackStack(navigationSavedStateConfiguration, MainNavRoute)
     val forwardStack = remember { mutableStateListOf<List<NavKey>>() }
     val onNavigate: (NavKey) -> Unit = { route ->
@@ -98,7 +98,7 @@ fun RootAppNavDisplay() {
         }
     }
     BoxWithConstraints(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .mouseBackForwardNavigation(),
     ) {
