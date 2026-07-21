@@ -21,6 +21,6 @@ Right after a reading achievement crosses a milestone and the review policy allo
 ## Notes
 
 - Only fires when the native review flow actually launches; if the platform cannot show it (no in-app review on iOS/Desktop, no activity, or an API error on Android) nothing is recorded and the prompt can be retried at the next milestone.
-- This is an automatic, contextual prompt — not the explicit "Rate the app" settings row. That row always opens the store listing and is tracked only by [more_option_clicked](more_option_clicked.md) with `option=rate_app`.
+- This is an automatic, contextual prompt — not the explicit "Rate the app" settings row. That row always opens the store listing and is tracked only by [profile_option_clicked](profile_option_clicked.md) with `option=rate_app`.
 - Reaching the review flow does **not** mean the user left a review — the OS review APIs never report whether the dialog was shown or acted upon.
 - The achievements that trigger it are themselves tracked by [reading_streak_milestone](reading_streak_milestone.md), [bible_progress_milestone](bible_progress_milestone.md) and [book_completed](book_completed.md).

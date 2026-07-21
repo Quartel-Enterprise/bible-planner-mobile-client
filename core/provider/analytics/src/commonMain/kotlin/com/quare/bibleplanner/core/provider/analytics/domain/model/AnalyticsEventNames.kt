@@ -104,7 +104,7 @@ object AnalyticsEventNames {
     const val DEVICE_RENAME_CANCELLED = "device_rename_cancelled"
     const val RENAME_DEVICE_CLICKED = "rename_device_clicked"
 
-    const val MORE_OPTION_CLICKED = "more_option_clicked"
+    const val PROFILE_OPTION_CLICKED = "profile_option_clicked"
     const val PRO_CARD_CLICKED = "pro_card_clicked"
     const val ACCOUNT_CARD_CLICKED = "account_card_clicked"
 

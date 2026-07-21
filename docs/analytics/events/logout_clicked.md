@@ -6,18 +6,18 @@ Captures the user tapping the logout row/button, the entry point into the logout
 
 ## When it fires
 
-User taps the logout row on the More screen, or the logout action on the Account Details screen.
+User taps the logout row on the Profile screen, or the logout action on the Account Details screen.
 
 ## Trigger source
 
-- `feature/more/src/commonMain/kotlin/com/quare/bibleplanner/feature/more/presentation/viewmodel/MoreViewModel.kt` — `MoreUiEvent.OnLogoutClick` (`source = "more_menu"`)
+- `feature/profile/src/commonMain/kotlin/com/quare/bibleplanner/feature/profile/presentation/viewmodel/ProfileViewModel.kt` — `ProfileUiEvent.OnLogoutClick` (`source = "profile_menu"`)
 - `feature/account_details/src/commonMain/kotlin/com/quare/bibleplanner/feature/accountdetails/presentation/viewmodel/AccountDetailsViewModel.kt` — `AccountDetailsUiEvent.OnLogoutClick` (`source = "account_details"`)
 
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `source` | string | `more_menu` | Which screen the logout was triggered from: `more_menu` \| `account_details` |
+| `source` | string | `profile_menu` | Which screen the logout was triggered from: `profile_menu` \| `account_details` |
 
 ## Notes
 

@@ -30,3 +30,4 @@
 - [Ktlint custom enforcement preference](feedback_ktlint_custom_enforcement.md) — user prefers repo-wide rename + real enforcement (custom ktlint rule module) over docs-only convention changes.
 - [Dialog sheet insets](project_dialog_sheet_insets.md) — nav-bar insets are 0 inside nested Dialogs on Android; ResponsiveDialogSheet uses LocalNavigationBarInsets (provided in App root) + hardcoded skipPartiallyExpanded=true.
 - [Spontaneous logout 2.0.0](project_spontaneous_logout_2_0_0.md) — logout is client-local (orphaned valid sessions server-side); supabase-kt clears session on 4xx refresh / signOut 401-403-404 / session_not_found; endSession-by-ObserveCurrentDeviceRevoked is the uninstrumented suspect; anon push-loop + malformed-token 403s are collateral.
+- [More → Profile rename](project_more_to_profile_rename.md) — the "More" tab became "Profile" (module/route/GA4 events/RC keys); old Firebase RC keys kept as deprecated for shipped app versions.

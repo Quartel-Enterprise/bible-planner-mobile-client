@@ -60,7 +60,7 @@ kotlin {
             implementation(projects.feature.subscriptionDetails)
             implementation(projects.feature.accountDetails)
             implementation(projects.feature.contactSupport)
-            implementation(projects.feature.more)
+            implementation(projects.feature.profile)
             implementation(projects.feature.releaseNotes)
             implementation(projects.feature.donation)
             implementation(projects.feature.donation.pixQr)

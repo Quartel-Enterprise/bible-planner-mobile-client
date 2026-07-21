@@ -32,8 +32,8 @@ import com.quare.bibleplanner.feature.main.presentation.navhost.rememberNavTabSt
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationBar
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationRail
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
-import com.quare.bibleplanner.feature.more.presentation.more
 import com.quare.bibleplanner.feature.notificationpermission.presentation.NotificationPermissionStartEffect
+import com.quare.bibleplanner.feature.profile.presentation.profile
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.koinInject
@@ -77,7 +77,7 @@ private fun MainRootContent(
         }
     }
     val language by mainViewModel.languageState.collectAsState()
-    val mainNavigationModels = mainViewModel.mainNavigationItemModels
+    val mainNavigationModels by mainViewModel.mainNavigationItemModels.collectAsState()
     val onEvent = mainViewModel::onEvent
     NavigationForwardHandler(
         state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
@@ -140,7 +140,7 @@ private fun EntryProviderScope<NavKey>.toMainEntries(
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedContentScope,
     )
-    more(
+    profile(
         onNavigate = onNavigate,
         navigationBar = navigationBar,
         navigationRail = navigationRail,

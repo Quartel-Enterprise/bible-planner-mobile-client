@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="plans">Planes</string>
-    <string name="more">Más</string>
+    <string name="profile">Perfil</string>
     <string name="books">Libros</string>
 </resources>

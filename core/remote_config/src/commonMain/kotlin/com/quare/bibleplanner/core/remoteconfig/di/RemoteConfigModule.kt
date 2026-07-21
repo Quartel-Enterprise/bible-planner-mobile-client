@@ -15,9 +15,9 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.impl.Observe
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.impl.ObserveIntRemoteConfigUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.impl.ObserveStringRemoteConfigUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveMoreWebAppEnabled
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveProfileWebAppEnabled
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.impl.GetWebAppUrlUseCase
-import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.impl.ObserveMoreWebAppEnabledUseCase
+import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.impl.ObserveProfileWebAppEnabledUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -33,7 +33,7 @@ val remoteConfigModule = module {
     factoryOf(::ObserveBooleanRemoteConfigUseCase).bind<ObserveBooleanRemoteConfig>()
     factoryOf(::ObserveIntRemoteConfigUseCase).bind<ObserveIntRemoteConfig>()
     factoryOf(::ObserveStringRemoteConfigUseCase).bind<ObserveStringRemoteConfig>()
-    factoryOf(::ObserveMoreWebAppEnabledUseCase).bind<ObserveMoreWebAppEnabled>()
+    factoryOf(::ObserveProfileWebAppEnabledUseCase).bind<ObserveProfileWebAppEnabled>()
     factoryOf(::GetWebAppUrlUseCase).bind<GetWebAppUrl>()
 }
 
