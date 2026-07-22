@@ -195,6 +195,32 @@ internal class DayStudyGenerationCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN reported phases WHEN generation completes THEN generation_time carries per-phase durations`() = runTest {
+        // Given
+        val coordinator = coordinator(
+            FakeDayStudyRepository(
+                events = listOf(
+                    DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING),
+                    DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.CHAPTERS),
+                    DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.CONTEXT),
+                    DayStudyGenerationEventModel.Completed(study),
+                ),
+            ),
+        )
+
+        // When
+        coordinator.start(passages, dayRoute, LABEL)
+        advanceUntilIdle()
+
+        // Then
+        val (_, params) = trackedEvents.single { it.first == "day_study_generation_time" }
+        assertTrue(params["reading_ms"] is Long)
+        assertTrue(params["chapters_ms"] is Long)
+        assertTrue(params["context_ms"] is Long)
+        assertTrue("questions_ms" !in params)
+    }
+
+    @Test
     fun `GIVEN a limit reached failure WHEN start THEN tracks day_study_generation_time with limit_reached`() =
         runTest {
             // Given

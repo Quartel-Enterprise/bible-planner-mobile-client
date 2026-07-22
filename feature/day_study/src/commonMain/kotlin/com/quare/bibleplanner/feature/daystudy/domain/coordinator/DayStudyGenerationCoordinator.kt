@@ -13,6 +13,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.exception.LimitReachedExce
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
+import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +55,7 @@ class DayStudyGenerationCoordinator(
     val dismissedKeys: StateFlow<Set<String>> = _dismissedKeys.asStateFlow()
 
     private val generationStartMarks: MutableMap<String, TimeMark> = mutableMapOf()
+    private val phaseEntriesByKey: MutableMap<String, MutableMap<DayStudyPhaseModel, Long>> = mutableMapOf()
     private val logger = Logger.withTag(PERF_LOG_TAG)
 
     fun keyOf(dayRoute: DayNavRoute): String = listOf(
@@ -84,7 +86,13 @@ class DayStudyGenerationCoordinator(
             suspendRunCatching {
                 getDayStudy(passages).collect { event ->
                     when (event) {
-                        is DayStudyGenerationEventModel.PhaseChanged -> updateJob(key) { it.copy(phase = event.phase) }
+                        is DayStudyGenerationEventModel.PhaseChanged -> {
+                            recordPhaseEntry(
+                                key = key,
+                                phase = event.phase,
+                            )
+                            updateJob(key) { it.copy(phase = event.phase) }
+                        }
 
                         is DayStudyGenerationEventModel.Completed -> {
                             updateJob(key) { it.copy(status = DayStudyGenerationStatus.Done(event.study)) }
@@ -165,14 +173,29 @@ class DayStudyGenerationCoordinator(
         _jobs.update { jobs -> jobs.map { job -> if (job.key == key) transform(job) else job } }
     }
 
+    private fun recordPhaseEntry(
+        key: String,
+        phase: DayStudyPhaseModel,
+    ) {
+        val mark = generationStartMarks[key] ?: return
+        phaseEntriesByKey
+            .getOrPut(key, ::mutableMapOf)
+            .getOrPut(phase) { mark.elapsedNow().inWholeMilliseconds }
+    }
+
     private suspend fun trackGenerationTime(
         key: String,
         reason: String?,
     ) {
         val mark = generationStartMarks.remove(key) ?: return
         val durationMs = mark.elapsedNow().inWholeMilliseconds
+        val phaseDurations = phaseDurations(
+            entries = phaseEntriesByKey.remove(key).orEmpty(),
+            totalMs = durationMs,
+        )
         logger.d {
-            "day_study_generation_time key=$key durationMs=$durationMs success=${reason == null} reason=$reason"
+            "day_study_generation_time key=$key durationMs=$durationMs success=${reason == null} " +
+                "reason=$reason phases=$phaseDurations"
         }
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_GENERATION_TIME,
@@ -181,8 +204,21 @@ class DayStudyGenerationCoordinator(
                 put(AnalyticsParams.SUCCESS, reason == null)
                 put(AnalyticsParams.IS_PRO, observeIsProUser().first())
                 reason?.let { put(AnalyticsParams.REASON, it) }
+                putAll(phaseDurations)
             },
         )
+    }
+
+    private fun phaseDurations(
+        entries: Map<DayStudyPhaseModel, Long>,
+        totalMs: Long,
+    ): Map<String, Long> {
+        val ordered = entries.entries.sortedBy { it.value }
+        return ordered
+            .mapIndexed { index, entry ->
+                val end = ordered.getOrNull(index + 1)?.value ?: totalMs
+                entry.key.toDurationParam() to (end - entry.value)
+            }.toMap()
     }
 
     private suspend fun trackGenerationEnd(
@@ -207,4 +243,11 @@ class DayStudyGenerationCoordinator(
         const val ERROR_REASON = "error"
         const val PERF_LOG_TAG = "DayStudyPerf"
     }
+}
+
+private fun DayStudyPhaseModel.toDurationParam(): String = when (this) {
+    DayStudyPhaseModel.READING -> AnalyticsParams.READING_MS
+    DayStudyPhaseModel.CHAPTERS -> AnalyticsParams.CHAPTERS_MS
+    DayStudyPhaseModel.CONTEXT -> AnalyticsParams.CONTEXT_MS
+    DayStudyPhaseModel.QUESTIONS -> AnalyticsParams.QUESTIONS_MS
 }

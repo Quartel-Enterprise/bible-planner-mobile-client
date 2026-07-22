@@ -23,8 +23,13 @@ Once per generation job, when it reaches a terminal state:
 | `success` | boolean | `true` | Whether the generation produced a study |
 | `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
 | `reason` | string | `limit_reached` | Only on `success=false`: `limit_reached` or `error` |
+| `reading_ms` | int | `2100` | Time spent in the `READING` phase (chapter aggregation before the model streams) |
+| `chapters_ms` | int | `9400` | Time from the `CHAPTERS` phase starting until the next phase |
+| `context_ms` | int | `5300` | Time from the `CONTEXT` phase starting until the next phase |
+| `questions_ms` | int | `7800` | Time from the `QUESTIONS` phase starting until the terminal state |
 
 ## Notes
 
 - Measured in the app-scoped coordinator, so the duration survives the user leaving the day screen mid-generation and fires exactly once regardless of how many ViewModels observe the job.
+- Phase segments are derived from the SSE `PhaseChanged` events: each `*_ms` param covers the span from that phase's first report until the next phase (or the terminal state for the last one). A phase param is absent when the phase was never reported (e.g. failures before streaming started).
 - `duration_ms` here is dominated by the backend SSE stream (chapter aggregation + Gemini generation), unlike [day_study_load](day_study_load.md) which measures surface readiness.
