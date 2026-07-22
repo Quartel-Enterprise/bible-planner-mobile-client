@@ -6,7 +6,7 @@ Captures the user choosing to update from the "Atualização disponível" sheet.
 
 ## When it fires
 
-The user taps the primary call-to-action on the update sheet — "Atualizar" on Android (starts the Google Play flexible update flow) or "Abrir na App Store" on iOS (opens the store).
+The user taps "Abrir na App Store" on the update sheet, which opens the store. **iOS only** — Android never shows the sheet (it goes straight to the Google Play flexible update flow), so the accept/decline step there happens inside Play's own dialog and is not observable.
 
 ## Trigger source
 
@@ -20,6 +20,6 @@ The user taps the primary call-to-action on the update sheet — "Atualizar" on 
 
 ## Notes
 
-- Platform is not a parameter (Firebase segments by platform automatically): on Android this precedes the in-app download; on iOS it hands off to the App Store.
-- On Android, a successful download that follows arrives as the [update_downloaded](destination_view.md) impression (`destination_name=update_downloaded`); a failed one as [update_download_failed](update_download_failed.md).
+- Platform is not a parameter (Firebase segments by platform automatically), but in practice every event comes from iOS.
+- On Android, a successful download arrives as the [update_downloaded](destination_view.md) impression (`destination_name=update_downloaded`) with no preceding `update_accepted`; a failed one as [update_download_failed](update_download_failed.md).
 - The final successful install is covered by Firebase's auto-collected `app_update` event on next launch, so it is not logged manually.

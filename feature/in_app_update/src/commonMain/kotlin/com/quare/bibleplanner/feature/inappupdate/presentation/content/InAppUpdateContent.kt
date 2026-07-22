@@ -18,11 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.in_app_update.generated.resources.Res
-import bibleplanner.feature.in_app_update.generated.resources.update_action_android
 import bibleplanner.feature.in_app_update.generated.resources.update_action_store
 import bibleplanner.feature.in_app_update.generated.resources.update_available_title
 import bibleplanner.feature.in_app_update.generated.resources.update_available_version
-import bibleplanner.feature.in_app_update.generated.resources.update_description_android
 import bibleplanner.feature.in_app_update.generated.resources.update_description_store
 import bibleplanner.feature.in_app_update.generated.resources.update_dismiss
 import com.quare.bibleplanner.feature.inappupdate.presentation.component.UpdateIconBadge
@@ -60,9 +58,7 @@ internal fun InAppUpdateContent(
         }
         VerticalSpacer(10.dp)
         Text(
-            text = stringResource(
-                if (state.isAndroid) Res.string.update_description_android else Res.string.update_description_store,
-            ),
+            text = stringResource(Res.string.update_description_store),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -79,9 +75,7 @@ internal fun InAppUpdateContent(
             )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = stringResource(
-                    if (state.isAndroid) Res.string.update_action_android else Res.string.update_action_store,
-                ),
+                text = stringResource(Res.string.update_action_store),
             )
         }
         VerticalSpacer(4.dp)

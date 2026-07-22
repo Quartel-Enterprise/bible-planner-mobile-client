@@ -5,7 +5,8 @@
     "O texto do contexto histórico agora tem o mesmo tamanho do texto do resumo, ficando mais confortável de ler.",
     "O card no topo da tela do plano de leitura ficou com um espaçamento mais equilibrado, deixando a leitura, as informações do dia e o botão mais fáceis de distinguir.",
     "O card do Estudo do dia agora aparece na hora quando o estudo já foi gerado antes, até mesmo sem internet.",
-    "Se a geração do Estudo do dia falhar, a tela agora mostra o que aconteceu e um botão para tentar novamente."
+    "Se a geração do Estudo do dia falhar, a tela agora mostra o que aconteceu e um botão para tentar novamente.",
+    "O app agora também avisa sobre uma nova versão quando você volta para ele, e não só ao abrir. No Android, a atualização começa direto pela Google Play, e o aviso aparece no máximo uma vez por hora para não atrapalhar."
   ],
   "2.1.0": [
     "No desktop e no Android com um mouse conectado, agora você pode usar os botões laterais de voltar e avançar do mouse para navegar entre as telas.",

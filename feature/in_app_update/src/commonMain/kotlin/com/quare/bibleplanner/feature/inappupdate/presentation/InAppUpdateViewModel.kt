@@ -5,8 +5,6 @@ import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.core.provider.platform.isAndroid
 import com.quare.bibleplanner.feature.inappupdate.domain.usecase.StartUpdate
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiAction
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiEvent
@@ -20,7 +18,6 @@ import kotlinx.coroutines.launch
 
 internal class InAppUpdateViewModel(
     route: InAppUpdateNavRoute,
-    platform: Platform,
     private val startUpdate: StartUpdate,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<InAppUpdateUiEvent>(trackEvent) {
@@ -29,12 +26,7 @@ internal class InAppUpdateViewModel(
     private val _uiAction = MutableSharedFlow<InAppUpdateUiAction>()
     val uiAction: SharedFlow<InAppUpdateUiAction> = _uiAction
 
-    private val _uiState = MutableStateFlow(
-        InAppUpdateUiState(
-            versionName = route.versionName,
-            isAndroid = platform.isAndroid(),
-        ),
-    )
+    private val _uiState = MutableStateFlow(InAppUpdateUiState(versionName = route.versionName))
     val uiState: StateFlow<InAppUpdateUiState> = _uiState
 
     init {

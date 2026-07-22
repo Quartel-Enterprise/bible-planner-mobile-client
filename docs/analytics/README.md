@@ -140,7 +140,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `ThemeNavRoute` | `theme_selection` | `responsive` | — |
 | `UpdateDownloadedNavRoute` | `update_downloaded` | `dialog` | — |
 
-`InAppUpdateNavRoute` carries `version_name` and `source` args, but — like `LoginNavRoute` — they are not mapped onto `destination_view`; the richer funnel parameters live on the dedicated [update_prompt_shown](events/update_prompt_shown.md) event instead.
+`InAppUpdateNavRoute` carries `version_name` and `source` args, but — like `LoginNavRoute` — they are not mapped onto `destination_view`; the richer funnel parameters live on the dedicated [update_prompt_shown](events/update_prompt_shown.md) event instead. The route is only reached on iOS: Android hands straight over to the Google Play in-app update flow, so it produces `update_prompt_shown` without a matching `destination_view`.
 
 `MaterialYouBottomSheetNavRoute` is named after an earlier bottom-sheet implementation but currently renders as a centered `Dialog` (`feature/material_you/.../MaterialYouDialog.kt`) — classified by actual rendering, not by route name.
 

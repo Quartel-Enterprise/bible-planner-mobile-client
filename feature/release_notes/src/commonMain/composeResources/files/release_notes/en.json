@@ -5,7 +5,8 @@
     "The historical context text is now the same size as the summary text, making it easier to read.",
     "The card at the top of the reading plan screen has more balanced spacing, making the reading, the day details, and the button easier to tell apart.",
     "The Daily study card now shows up instantly when the study was already generated before, even without an internet connection.",
-    "If the Daily study generation fails, the screen now shows what happened and a button to try again."
+    "If the Daily study generation fails, the screen now shows what happened and a button to try again.",
+    "The app now also tells you about a new version when you come back to it, not just when you open it. On Android the update starts straight from Google Play, and the notice shows at most once an hour so it stays out of your way."
   ],
   "2.1.0": [
     "On desktop and on Android with a mouse connected, you can now use your mouse's back and forward side buttons to navigate between screens.",

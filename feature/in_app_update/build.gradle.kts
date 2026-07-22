@@ -17,10 +17,12 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.date)
             implementation(projects.core.model)
             implementation(projects.core.network)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.analytics)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.utils)
 
             // UI
@@ -47,6 +49,10 @@ kotlin {
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
+
+            // DataStore
+            implementation(libs.dataStore)
+            implementation(libs.dataStore.preferences)
 
             // Serialization
             implementation(libs.kotlin.serialization.json)

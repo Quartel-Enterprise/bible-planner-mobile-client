@@ -2,9 +2,7 @@
 <resources>
     <string name="update_available_title">Update available</string>
     <string name="update_available_version">Version %1$s</string>
-    <string name="update_description_android">Google Play installs the update without leaving the app.</string>
     <string name="update_description_store">You'll be taken to the App Store to install the new version.</string>
-    <string name="update_action_android">Update</string>
     <string name="update_action_store">Open in the App Store</string>
     <string name="update_dismiss">Not now</string>
     <string name="update_downloading">Downloading update…</string>

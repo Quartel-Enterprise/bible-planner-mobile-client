@@ -14,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.quare.bibleplanner.core.navigation.RootAppNavDisplay
 import com.quare.bibleplanner.feature.applanguage.presentation.ApplyAppLocaleEffect
 import com.quare.bibleplanner.ui.theme.AppTheme
@@ -33,6 +35,10 @@ fun App(
     val theme by viewModel.themeState.collectAsState()
     val contrast by viewModel.contrastState.collectAsState()
     val windowBlurController = remember { WindowBlurController() }
+    LifecycleEventEffect(
+        event = Lifecycle.Event.ON_START,
+        onEvent = viewModel::onAppForegrounded,
+    )
     ApplyAppLocaleEffect()
     ProvideCompositionLocals(
         theme = theme,
