@@ -207,7 +207,7 @@ internal class DayStudyRouteViewModel(
         _uiState.update { it.copy(generation = null, openStudy = study) }
         trackStudyOpened(isCached = false)
         refreshCard(isPro)
-        generationCoordinator.acknowledge(jobKey)
+        acknowledgeIfActive()
     }
 
     private suspend fun onJobFailed(
@@ -224,7 +224,13 @@ internal class DayStudyRouteViewModel(
             lockCard()
             _uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message))
         }
-        generationCoordinator.acknowledge(jobKey)
+        acknowledgeIfActive()
+    }
+
+    private fun acknowledgeIfActive() {
+        if (generationCoordinator.activeKey.value == jobKey) {
+            generationCoordinator.acknowledge(jobKey)
+        }
     }
 
     private suspend fun refreshCard(pro: Boolean) {
