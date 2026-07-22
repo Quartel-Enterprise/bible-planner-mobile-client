@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 /**
  * App-scoped owner of in-flight day-study generations, so a generation survives leaving the day
@@ -50,6 +52,8 @@ class DayStudyGenerationCoordinator(
     private val _dismissedKeys: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
     val dismissedKeys: StateFlow<Set<String>> = _dismissedKeys.asStateFlow()
 
+    private val generationStartMarks: MutableMap<String, TimeMark> = mutableMapOf()
+
     fun keyOf(dayRoute: DayNavRoute): String = listOf(
         dayRoute.readingPlanType,
         dayRoute.weekNumber.toString(),
@@ -64,6 +68,7 @@ class DayStudyGenerationCoordinator(
         val key = keyOf(dayRoute)
         if (isGenerating(key)) return key
         _dismissedKeys.update { it - key }
+        generationStartMarks[key] = TimeSource.Monotonic.markNow()
         putJob(
             DayStudyGenerationJob(
                 key = key,
@@ -85,6 +90,10 @@ class DayStudyGenerationCoordinator(
                                 name = AnalyticsEventNames.DAY_STUDY_GENERATION_COMPLETED,
                                 dayRoute = dayRoute,
                             )
+                            trackGenerationTime(
+                                key = key,
+                                reason = null,
+                            )
                         }
                     }
                 }
@@ -101,6 +110,10 @@ class DayStudyGenerationCoordinator(
                     extraParams = mapOf(
                         AnalyticsParams.REASON to if (isLimitReached) LIMIT_REACHED_REASON else ERROR_REASON,
                     ),
+                )
+                trackGenerationTime(
+                    key = key,
+                    reason = if (isLimitReached) LIMIT_REACHED_REASON else ERROR_REASON,
                 )
             }
         }
@@ -148,6 +161,22 @@ class DayStudyGenerationCoordinator(
         transform: (DayStudyGenerationJob) -> DayStudyGenerationJob,
     ) {
         _jobs.update { jobs -> jobs.map { job -> if (job.key == key) transform(job) else job } }
+    }
+
+    private suspend fun trackGenerationTime(
+        key: String,
+        reason: String?,
+    ) {
+        val mark = generationStartMarks.remove(key) ?: return
+        trackEvent(
+            name = AnalyticsEventNames.DAY_STUDY_GENERATION_TIME,
+            params = buildMap {
+                put(AnalyticsParams.DURATION_MS, mark.elapsedNow().inWholeMilliseconds)
+                put(AnalyticsParams.SUCCESS, reason == null)
+                put(AnalyticsParams.IS_PRO, observeIsProUser().first())
+                reason?.let { put(AnalyticsParams.REASON, it) }
+            },
+        )
     }
 
     private suspend fun trackGenerationEnd(

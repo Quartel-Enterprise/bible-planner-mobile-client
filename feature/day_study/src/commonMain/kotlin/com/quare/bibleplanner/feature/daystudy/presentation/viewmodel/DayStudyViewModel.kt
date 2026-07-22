@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
@@ -41,6 +42,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 internal class DayStudyViewModel(
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,
@@ -70,6 +73,7 @@ internal class DayStudyViewModel(
     private var isPro: Boolean = false
     private var observeCardJob: Job? = null
     private var observeJobJob: Job? = null
+    private var loadStartMark: TimeMark? = null
 
     override fun handleEvent(event: DayStudyUiEvent) {
         when (event) {
@@ -91,6 +95,7 @@ internal class DayStudyViewModel(
         jobKey = key
         generationCoordinator.setActive(key)
         if (routeChanged) {
+            loadStartMark = TimeSource.Monotonic.markNow()
             _uiState.update { it.copy(generation = null, isOpeningStudy = false) }
         }
         observeCard()
@@ -152,17 +157,50 @@ internal class DayStudyViewModel(
     }
 
     private suspend fun refreshCard(pro: Boolean) {
-        val quota = getDayStudyQuota(passages)
-        _uiState.update { state ->
-            state.copy(
-                card = Loadable.Loaded(
-                    cardUiModelFactory.create(
-                        isPro = pro,
-                        quota = quota,
-                    ),
-                ),
-            )
-        }
+        suspendRunCatching { getDayStudyQuota(passages) }
+            .onSuccess { quota ->
+                _uiState.update { state ->
+                    state.copy(
+                        card = Loadable.Loaded(
+                            cardUiModelFactory.create(
+                                isPro = pro,
+                                quota = quota,
+                            ),
+                        ),
+                    )
+                }
+                trackLoad(
+                    pro = pro,
+                    isCached = quota.hasLocalStudy,
+                    reason = null,
+                )
+            }.onFailure { throwable ->
+                trackLoad(
+                    pro = pro,
+                    isCached = false,
+                    reason = throwable::class.simpleName ?: UNKNOWN_REASON,
+                )
+            }
+    }
+
+    private fun trackLoad(
+        pro: Boolean,
+        isCached: Boolean,
+        reason: String?,
+    ) {
+        val mark = loadStartMark ?: return
+        loadStartMark = null
+        trackEvent(
+            name = AnalyticsEventNames.DAY_STUDY_LOAD,
+            params = buildMap {
+                put(AnalyticsParams.TARGET, LOAD_TARGET)
+                put(AnalyticsParams.DURATION_MS, mark.elapsedNow().inWholeMilliseconds)
+                put(AnalyticsParams.SUCCESS, reason == null)
+                put(AnalyticsParams.IS_CACHED, isCached)
+                put(AnalyticsParams.IS_PRO, pro)
+                reason?.let { put(AnalyticsParams.REASON, it) }
+            },
+        )
     }
 
     private fun onCardClick() {
@@ -279,6 +317,8 @@ internal class DayStudyViewModel(
 
     private companion object {
         const val OFFLINE_REASON = "offline"
+        const val UNKNOWN_REASON = "unknown"
+        const val LOAD_TARGET = "card"
     }
 }
 

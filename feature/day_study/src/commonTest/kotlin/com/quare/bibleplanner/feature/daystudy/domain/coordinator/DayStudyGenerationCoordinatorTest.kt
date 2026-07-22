@@ -168,12 +168,48 @@ internal class DayStudyGenerationCoordinatorTest {
             advanceUntilIdle()
 
             // Then
-            val (name, params) = trackedEvents.single()
-            assertEquals("day_study_generation_completed", name)
+            val (_, params) = trackedEvents.single { it.first == "day_study_generation_completed" }
             assertEquals(dayRoute.readingPlanType, params["plan_type"])
             assertEquals(dayRoute.weekNumber, params["week_number"])
             assertEquals(dayRoute.dayNumber, params["day_number"])
             assertEquals(false, params["is_pro"])
+        }
+
+    @Test
+    fun `GIVEN a completing stream WHEN start THEN tracks day_study_generation_time as success`() = runTest {
+        // Given
+        val coordinator = coordinator(
+            FakeDayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
+        )
+
+        // When
+        coordinator.start(passages, dayRoute, LABEL)
+        advanceUntilIdle()
+
+        // Then
+        val (_, params) = trackedEvents.single { it.first == "day_study_generation_time" }
+        assertEquals(true, params["success"])
+        assertEquals(false, params["is_pro"])
+        assertTrue(params["duration_ms"] is Long)
+        assertTrue("reason" !in params)
+    }
+
+    @Test
+    fun `GIVEN a limit reached failure WHEN start THEN tracks day_study_generation_time with limit_reached`() =
+        runTest {
+            // Given
+            val coordinator = coordinator(
+                FakeDayStudyRepository(events = emptyList(), error = LimitReachedException()),
+            )
+
+            // When
+            coordinator.start(passages, dayRoute, LABEL)
+            advanceUntilIdle()
+
+            // Then
+            val (_, params) = trackedEvents.single { it.first == "day_study_generation_time" }
+            assertEquals(false, params["success"])
+            assertEquals("limit_reached", params["reason"])
         }
 
     @Test
@@ -189,8 +225,7 @@ internal class DayStudyGenerationCoordinatorTest {
             advanceUntilIdle()
 
             // Then
-            val (name, params) = trackedEvents.single()
-            assertEquals("day_study_generation_failed", name)
+            val (_, params) = trackedEvents.single { it.first == "day_study_generation_failed" }
             assertEquals("limit_reached", params["reason"])
         }
 
@@ -206,8 +241,7 @@ internal class DayStudyGenerationCoordinatorTest {
         advanceUntilIdle()
 
         // Then
-        val (name, params) = trackedEvents.single()
-        assertEquals("day_study_generation_failed", name)
+        val (_, params) = trackedEvents.single { it.first == "day_study_generation_failed" }
         assertEquals("error", params["reason"])
     }
 

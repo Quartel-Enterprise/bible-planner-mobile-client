@@ -107,5 +107,6 @@ internal class DayStudyCardUiModelFactoryTest {
         freeLimit = 3,
         remainingFree = remainingFree,
         isUnlockedForDay = isUnlockedForDay,
+        hasLocalStudy = isUnlockedForDay,
     )
 }
