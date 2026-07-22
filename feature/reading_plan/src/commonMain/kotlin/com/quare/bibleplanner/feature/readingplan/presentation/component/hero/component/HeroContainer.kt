@@ -24,7 +24,7 @@ internal fun HeroContainer(
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = horizontalAlignment,
         ) {
             content()

@@ -2,7 +2,8 @@
   "2.1.1": [
     "Corrigido um problema no celular em que tocar em 'Ver' no card do Estudo do dia não abria a tela do estudo.",
     "A tela do Estudo do dia ficou mais caprichada no celular: o título e as passagens aparecem em destaque no topo e a linha das abas agora vai de ponta a ponta.",
-    "O texto do contexto histórico agora tem o mesmo tamanho do texto do resumo, ficando mais confortável de ler."
+    "O texto do contexto histórico agora tem o mesmo tamanho do texto do resumo, ficando mais confortável de ler.",
+    "O card no topo da tela do plano de leitura ficou com um espaçamento mais equilibrado, deixando a leitura, as informações do dia e o botão mais fáceis de distinguir."
   ],
   "2.1.0": [
     "No desktop e no Android com um mouse conectado, agora você pode usar os botões laterais de voltar e avançar do mouse para navegar entre as telas.",
