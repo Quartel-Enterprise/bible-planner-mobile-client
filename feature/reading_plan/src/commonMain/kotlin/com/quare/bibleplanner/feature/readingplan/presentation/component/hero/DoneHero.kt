@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.component.hero
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MilitaryTech
@@ -34,6 +35,7 @@ internal fun DoneHero(
             tint = MaterialTheme.colorScheme.primary,
         )
         Text(
+            modifier = Modifier.padding(top = 4.dp),
             text = stringResource(Res.string.plan_done_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,

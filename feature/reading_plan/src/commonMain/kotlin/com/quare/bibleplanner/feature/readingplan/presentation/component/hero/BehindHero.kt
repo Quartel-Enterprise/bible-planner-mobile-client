@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.readingplan.presentation.component.hero
 
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.PlayArrow
@@ -12,6 +13,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.days_behind_reassure
 import bibleplanner.feature.reading_plan.generated.resources.hero_behind_day
@@ -44,7 +46,10 @@ internal fun BehindHero(
             icon = Icons.Default.History,
             text = stringResource(Res.string.hero_kicker_behind),
         )
-        HeroPassage(text = next.passages.toReadingLabel())
+        HeroPassage(
+            modifier = Modifier.padding(top = 4.dp),
+            text = next.passages.toReadingLabel(),
+        )
         Text(
             text = stringResource(
                 Res.string.hero_behind_day,
@@ -64,7 +69,9 @@ internal fun BehindHero(
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
         HeroPrimaryButton(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
             text = stringResource(Res.string.hero_primary_resume),
             icon = Icons.Default.PlayArrow,
             trailingIcon = true,

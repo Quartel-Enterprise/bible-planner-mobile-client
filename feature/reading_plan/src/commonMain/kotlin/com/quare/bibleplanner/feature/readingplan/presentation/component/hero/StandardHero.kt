@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bolt
@@ -77,7 +78,10 @@ internal fun StandardHero(
                 }
             }
         }
-        HeroPassage(text = next.passages.toReadingLabel())
+        HeroPassage(
+            modifier = Modifier.padding(top = 4.dp),
+            text = next.passages.toReadingLabel(),
+        )
         Text(
             text = when (mode) {
                 PlanMode.Ahead -> stringResource(Res.string.hero_next_day, animatedDayIndex)
@@ -95,7 +99,9 @@ internal fun StandardHero(
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

@@ -28,13 +28,16 @@ internal fun PlanHeroShimmer(modifier: Modifier = Modifier) {
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             ShimmerBox(
                 modifier = Modifier.width(110.dp).height(14.dp),
                 color = placeholderColor,
             )
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(
+                modifier = Modifier.padding(top = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
                 ShimmerBox(
                     modifier = Modifier.fillMaxWidth(0.85f).height(26.dp),
                     color = placeholderColor,
@@ -55,7 +58,7 @@ internal fun PlanHeroShimmer(modifier: Modifier = Modifier) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp),
+                    .padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 ShimmerBox(
