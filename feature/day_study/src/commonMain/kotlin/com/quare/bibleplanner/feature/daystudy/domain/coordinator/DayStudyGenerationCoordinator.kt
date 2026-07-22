@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.daystudy.domain.coordinator
 
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -53,6 +54,7 @@ class DayStudyGenerationCoordinator(
     val dismissedKeys: StateFlow<Set<String>> = _dismissedKeys.asStateFlow()
 
     private val generationStartMarks: MutableMap<String, TimeMark> = mutableMapOf()
+    private val logger = Logger.withTag(PERF_LOG_TAG)
 
     fun keyOf(dayRoute: DayNavRoute): String = listOf(
         dayRoute.readingPlanType,
@@ -168,10 +170,14 @@ class DayStudyGenerationCoordinator(
         reason: String?,
     ) {
         val mark = generationStartMarks.remove(key) ?: return
+        val durationMs = mark.elapsedNow().inWholeMilliseconds
+        logger.d {
+            "day_study_generation_time key=$key durationMs=$durationMs success=${reason == null} reason=$reason"
+        }
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_GENERATION_TIME,
             params = buildMap {
-                put(AnalyticsParams.DURATION_MS, mark.elapsedNow().inWholeMilliseconds)
+                put(AnalyticsParams.DURATION_MS, durationMs)
                 put(AnalyticsParams.SUCCESS, reason == null)
                 put(AnalyticsParams.IS_PRO, observeIsProUser().first())
                 reason?.let { put(AnalyticsParams.REASON, it) }
@@ -199,5 +205,6 @@ class DayStudyGenerationCoordinator(
         const val KEY_SEPARATOR = "|"
         const val LIMIT_REACHED_REASON = "limit_reached"
         const val ERROR_REASON = "error"
+        const val PERF_LOG_TAG = "DayStudyPerf"
     }
 }

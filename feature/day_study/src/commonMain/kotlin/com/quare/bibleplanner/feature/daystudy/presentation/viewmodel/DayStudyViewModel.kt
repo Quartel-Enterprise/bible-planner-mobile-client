@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.PassageModel
@@ -77,6 +78,7 @@ internal class DayStudyViewModel(
     private var observeCardJob: Job? = null
     private var observeJobJob: Job? = null
     private var loadStartMark: TimeMark? = null
+    private val logger = Logger.withTag(PERF_LOG_TAG)
 
     override fun handleEvent(event: DayStudyUiEvent) {
         when (event) {
@@ -207,11 +209,16 @@ internal class DayStudyViewModel(
     ) {
         val mark = loadStartMark ?: return
         loadStartMark = null
+        val durationMs = mark.elapsedNow().inWholeMilliseconds
+        logger.d {
+            "day_study_load target=$LOAD_TARGET durationMs=$durationMs success=${reason == null} " +
+                "isCached=$isCached isPro=$pro reason=$reason"
+        }
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_LOAD,
             params = buildMap {
                 put(AnalyticsParams.TARGET, LOAD_TARGET)
-                put(AnalyticsParams.DURATION_MS, mark.elapsedNow().inWholeMilliseconds)
+                put(AnalyticsParams.DURATION_MS, durationMs)
                 put(AnalyticsParams.SUCCESS, reason == null)
                 put(AnalyticsParams.IS_CACHED, isCached)
                 put(AnalyticsParams.IS_PRO, pro)
@@ -341,6 +348,7 @@ internal class DayStudyViewModel(
         const val OFFLINE_REASON = "offline"
         const val UNKNOWN_REASON = "unknown"
         const val LOAD_TARGET = "card"
+        const val PERF_LOG_TAG = "DayStudyPerf"
     }
 }
 
