@@ -46,6 +46,8 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_subscribe
 import bibleplanner.feature.day_study.generated.resources.ai_study_title
 import bibleplanner.feature.day_study.generated.resources.ai_study_view
 import bibleplanner.feature.day_study.generated.resources.ai_study_view_hint
+import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
@@ -288,10 +290,19 @@ private fun CardIcon(
 internal fun CardBadge(card: DayStudyCardUiModel) {
     val isGenerated = card.mode == DayStudyCardMode.VIEW
     val isProBadge = card.isPro || card.mode == DayStudyCardMode.LOCKED
+    if (!isGenerated && !isProBadge && card.quota is Loadable.Loading) {
+        SkeletonBox(
+            modifier = Modifier
+                .width(44.dp)
+                .height(18.dp),
+        )
+        return
+    }
+    val remainingFree = card.quota.valueOrNull()?.remainingFree ?: 0
     val text = when {
         isGenerated -> stringResource(Res.string.ai_study_generated)
         isProBadge -> stringResource(Res.string.ai_study_pro_badge)
-        card.remainingFree > 0 -> stringResource(Res.string.ai_study_quota_free, card.remainingFree)
+        remainingFree > 0 -> stringResource(Res.string.ai_study_quota_free, remainingFree)
         else -> return
     }
     val useAccentStyle = isGenerated || isProBadge
@@ -366,6 +377,6 @@ internal fun dayStudyCardSubtitle(card: DayStudyCardUiModel): String = when (car
 
     DayStudyCardMode.LOCKED -> stringResource(
         Res.string.ai_study_exhausted_subtitle,
-        card.freeLimit,
+        card.quota.valueOrNull()?.freeLimit ?: 0,
     )
 }

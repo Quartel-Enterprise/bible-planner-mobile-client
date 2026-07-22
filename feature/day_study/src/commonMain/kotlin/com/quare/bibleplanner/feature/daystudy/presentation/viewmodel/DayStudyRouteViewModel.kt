@@ -38,6 +38,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationPhase
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiAction
@@ -137,6 +138,7 @@ internal class DayStudyRouteViewModel(
 
     private fun observeCard() {
         viewModelScope.launch {
+            showCachedCard()
             combine(
                 observeAuthenticatedUserId(),
                 observeIsProUser(),
@@ -147,6 +149,19 @@ internal class DayStudyRouteViewModel(
                     refreshCard(pro)
                 }
         }
+    }
+
+    private suspend fun showCachedCard() {
+        if (_uiState.value.card !is Loadable.Loading) return
+        if (!hasCachedStudy(passages)) return
+        _uiState.update { state ->
+            state.copy(card = Loadable.Loaded(cardUiModelFactory.createFromCache(isPro = isPro)))
+        }
+        trackLoad(
+            pro = isPro,
+            isCached = true,
+            reason = null,
+        )
     }
 
     private fun observeJob() {
@@ -344,7 +359,12 @@ internal class DayStudyRouteViewModel(
                 card = Loadable.Loaded(
                     card.copy(
                         mode = DayStudyCardMode.LOCKED,
-                        remainingFree = 0,
+                        quota = Loadable.Loaded(
+                            DayStudyCardQuotaUiModel(
+                                remainingFree = 0,
+                                freeLimit = card.quota.valueOrNull()?.freeLimit ?: 0,
+                            ),
+                        ),
                     ),
                 ),
             )
