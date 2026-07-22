@@ -21,8 +21,10 @@ import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationSt
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationPhase
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiAction
@@ -47,6 +49,7 @@ import kotlin.time.TimeSource
 
 internal class DayStudyViewModel(
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,
+    private val hasCachedStudy: HasCachedStudyUseCase,
     private val isConnected: IsConnected,
     private val generationCoordinator: DayStudyGenerationCoordinator,
     private val observeIsProUser: ObserveIsProUser,
@@ -96,7 +99,7 @@ internal class DayStudyViewModel(
         generationCoordinator.setActive(key)
         if (routeChanged) {
             loadStartMark = TimeSource.Monotonic.markNow()
-            _uiState.update { it.copy(generation = null, isOpeningStudy = false) }
+            _uiState.update { it.copy(card = Loadable.Loading, generation = null, isOpeningStudy = false) }
         }
         observeCard()
         observeJob()
@@ -105,6 +108,7 @@ internal class DayStudyViewModel(
     private fun observeCard() {
         observeCardJob?.cancel()
         observeCardJob = viewModelScope.launch {
+            showCachedCard()
             combine(
                 observeAuthenticatedUserId(),
                 observeIsProUser(),
@@ -115,6 +119,19 @@ internal class DayStudyViewModel(
                     refreshCard(pro)
                 }
         }
+    }
+
+    private suspend fun showCachedCard() {
+        if (_uiState.value.card !is Loadable.Loading) return
+        if (!hasCachedStudy(passages)) return
+        _uiState.update { state ->
+            state.copy(card = Loadable.Loaded(cardUiModelFactory.createFromCache(isPro = isPro)))
+        }
+        trackLoad(
+            pro = isPro,
+            isCached = true,
+            reason = null,
+        )
     }
 
     private fun observeJob() {
@@ -291,7 +308,12 @@ internal class DayStudyViewModel(
                 card = Loadable.Loaded(
                     card.copy(
                         mode = DayStudyCardMode.LOCKED,
-                        remainingFree = 0,
+                        quota = Loadable.Loaded(
+                            DayStudyCardQuotaUiModel(
+                                remainingFree = 0,
+                                freeLimit = card.quota.valueOrNull()?.freeLimit ?: 0,
+                            ),
+                        ),
                     ),
                 ),
             )

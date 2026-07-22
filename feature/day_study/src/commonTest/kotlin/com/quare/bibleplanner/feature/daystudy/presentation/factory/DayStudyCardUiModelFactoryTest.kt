@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.factory
 
+import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import kotlin.test.Test
@@ -24,7 +26,28 @@ internal class DayStudyCardUiModelFactoryTest {
 
         // Then
         assertEquals(DayStudyCardMode.GENERATE, card.mode)
-        assertEquals(3, card.remainingFree)
+        assertEquals(3, card.quota.valueOrNull()?.remainingFree)
+    }
+
+    @Test
+    fun `GIVEN a locally cached study WHEN creating from cache THEN mode is view with loading quota`() {
+        // When
+        val card = factory.createFromCache(isPro = false)
+
+        // Then
+        assertEquals(DayStudyCardMode.VIEW, card.mode)
+        assertEquals(Loadable.Loading, card.quota)
+        assertEquals(false, card.isPro)
+    }
+
+    @Test
+    fun `GIVEN a pro user with a locally cached study WHEN creating from cache THEN pro flag is kept`() {
+        // When
+        val card = factory.createFromCache(isPro = true)
+
+        // Then
+        assertEquals(DayStudyCardMode.VIEW, card.mode)
+        assertEquals(true, card.isPro)
     }
 
     @Test
