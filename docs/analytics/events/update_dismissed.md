@@ -6,7 +6,7 @@ Captures the user declining the "Atualização disponível" sheet. It is the dro
 
 ## When it fires
 
-The user dismisses the update sheet without updating — tapping "Agora não" or the close control.
+The user dismisses the update sheet without updating — tapping "Agora não" or the close control. **iOS only** — Android never shows the sheet, so declining happens inside Google Play's own dialog and is not observable.
 
 ## Trigger source
 
@@ -21,4 +21,4 @@ The user dismisses the update sheet without updating — tapping "Agora não" or
 ## Notes
 
 - Both the "Agora não" button and the sheet's close/scrim dismissal route through the same `OnDismiss` event, so they are not distinguished.
-- Dismissing does not disable future prompts permanently — the startup prompt is only throttled for the current session, so the same user can produce a `startup` `update_dismissed` again on a later launch while the update is still pending.
+- Dismissing does not disable future prompts permanently — the automatic prompt is throttled to one per hour, so the same user can produce a `startup` `update_dismissed` again an hour later while the update is still pending.

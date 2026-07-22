@@ -17,7 +17,6 @@ import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.core.model.route.EditProfileNavRoute
 import com.quare.bibleplanner.core.model.route.ExpandedPhotoNavRoute
-import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
@@ -33,6 +32,7 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
 import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.feature.inappupdate.domain.usecase.CheckForUpdate
+import com.quare.bibleplanner.feature.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileUiStateFactory
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
@@ -60,6 +60,7 @@ internal class ProfileViewModel(
     private val getAppStoreLink: GetAppStoreLinkUseCase,
     private val isConnected: IsConnected,
     private val checkForUpdate: CheckForUpdate,
+    private val showUpdatePrompt: ShowUpdatePrompt,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<ProfileUiAction>()
@@ -158,19 +159,15 @@ internal class ProfileViewModel(
         viewModelScope.launch {
             val availability = checkForUpdate()
             isCheckingForUpdate.value = false
-            val action = when (availability) {
-                is UpdateAvailability.Available ->
-                    ProfileUiAction.GoToRoute(
-                        InAppUpdateNavRoute(
-                            versionName = availability.versionName,
-                            source = UpdatePromptSource.MANUAL,
-                        ),
-                    )
+            when (availability) {
+                is UpdateAvailability.Available -> showUpdatePrompt(
+                    availability = availability,
+                    source = UpdatePromptSource.MANUAL,
+                )
 
                 UpdateAvailability.NotAvailable ->
-                    ProfileUiAction.ShowSnackbar(Res.string.up_to_date_message)
+                    _uiAction.emit(ProfileUiAction.ShowSnackbar(Res.string.up_to_date_message))
             }
-            _uiAction.emit(action)
         }
     }
 

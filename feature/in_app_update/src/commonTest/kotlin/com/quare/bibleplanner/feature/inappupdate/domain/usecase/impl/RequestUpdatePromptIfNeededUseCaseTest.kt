@@ -1,80 +1,91 @@
 package com.quare.bibleplanner.feature.inappupdate.domain.usecase.impl
 
-import com.quare.bibleplanner.core.model.NavigationEventBus
-import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
-import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSessionGuard
 import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
-import kotlinx.coroutines.flow.first
+import com.quare.bibleplanner.feature.inappupdate.fake.FakeUpdatePromptPreferences
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 internal class RequestUpdatePromptIfNeededUseCaseTest {
-    private val navigationEventBus = NavigationEventBus()
+    private var shownAvailability: UpdateAvailability.Available? = null
+    private var shownSource: String? = null
+    private var checked = false
 
     @Test
-    fun `GIVEN an available update WHEN requesting THEN sends the update route with its version`() = runTest {
-        val useCase = prepareScenario(availability = UpdateAvailability.Available(versionName = "2.0.0"))
+    fun `GIVEN no previous prompt AND an available update WHEN requesting THEN shows it with the startup source`() =
+        runTest {
+            val useCase = prepareScenario(
+                availability = UpdateAvailability.Available(versionName = "2.0.0"),
+                lastPromptedAt = null,
+            )
 
-        useCase()
+            useCase()
 
-        assertEquals(
-            InAppUpdateNavRoute(versionName = "2.0.0", source = UpdatePromptSource.STARTUP),
-            navigationEventBus.events.first(),
-        )
-    }
-
-    @Test
-    fun `GIVEN an available update WHEN requesting THEN marks the session guard as shown`() = runTest {
-        val guard = UpdatePromptSessionGuard()
-        val useCase = prepareScenario(
-            availability = UpdateAvailability.Available(versionName = "2.0.0"),
-            guard = guard,
-        )
-
-        useCase()
-
-        assertTrue(guard.hasShownThisSession)
-    }
+            assertEquals(UpdateAvailability.Available(versionName = "2.0.0"), shownAvailability)
+            assertEquals(UpdatePromptSource.STARTUP, shownSource)
+        }
 
     @Test
-    fun `GIVEN no available update WHEN requesting THEN sends nothing`() = runTest {
+    fun `GIVEN no available update WHEN requesting THEN shows nothing`() = runTest {
         val useCase = prepareScenario(availability = UpdateAvailability.NotAvailable)
 
         useCase()
 
-        assertNull(navigationEventBus.events.replayCache.firstOrNull())
+        assertNull(shownAvailability)
     }
 
     @Test
-    fun `GIVEN the prompt was already shown this session WHEN requesting THEN does not check again`() = runTest {
-        val guard = UpdatePromptSessionGuard().apply { hasShownThisSession = true }
-        var checked = false
-        val useCase = RequestUpdatePromptIfNeededUseCase(
-            checkForUpdate = {
-                checked = true
-                UpdateAvailability.Available(versionName = "2.0.0")
-            },
-            sessionGuard = guard,
-            navigationEventBus = navigationEventBus,
+    fun `GIVEN the last prompt was less than an hour ago WHEN requesting THEN does not check again`() = runTest {
+        val useCase = prepareScenario(
+            availability = UpdateAvailability.Available(versionName = "2.0.0"),
+            lastPromptedAt = NOW - 59.minutes.inWholeMilliseconds,
         )
 
         useCase()
 
         assertFalse(checked)
-        assertNull(navigationEventBus.events.replayCache.firstOrNull())
+        assertNull(shownAvailability)
+    }
+
+    @Test
+    fun `GIVEN the last prompt was over an hour ago WHEN requesting THEN shows the prompt again`() = runTest {
+        val useCase = prepareScenario(
+            availability = UpdateAvailability.Available(versionName = "2.0.0"),
+            lastPromptedAt = NOW - 1.hours.inWholeMilliseconds,
+        )
+
+        useCase()
+
+        assertEquals(UpdateAvailability.Available(versionName = "2.0.0"), shownAvailability)
+    }
+
+    private fun onShowUpdatePrompt(
+        availability: UpdateAvailability.Available,
+        source: String,
+    ) {
+        shownAvailability = availability
+        shownSource = source
     }
 
     private fun prepareScenario(
         availability: UpdateAvailability,
-        guard: UpdatePromptSessionGuard = UpdatePromptSessionGuard(),
+        lastPromptedAt: Long? = null,
     ): RequestUpdatePromptIfNeededUseCase = RequestUpdatePromptIfNeededUseCase(
-        checkForUpdate = { availability },
-        sessionGuard = guard,
-        navigationEventBus = navigationEventBus,
+        checkForUpdate = {
+            checked = true
+            availability
+        },
+        updatePromptPreferences = FakeUpdatePromptPreferences(lastPromptedAt = lastPromptedAt),
+        currentTimestampProvider = { NOW },
+        showUpdatePrompt = ::onShowUpdatePrompt,
     )
+
+    private companion object {
+        const val NOW = 1_700_000_000_000L
+    }
 }

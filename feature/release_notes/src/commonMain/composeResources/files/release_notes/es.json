@@ -5,7 +5,8 @@
     "El texto del contexto histórico ahora tiene el mismo tamaño que el del resumen, para leerlo con más comodidad.",
     "La tarjeta en la parte superior de la pantalla del plan de lectura ahora tiene un espaciado más equilibrado, para distinguir mejor la lectura, la información del día y el botón.",
     "La tarjeta de Estudio del día ahora aparece al instante cuando el estudio ya se generó antes, incluso sin conexión a internet.",
-    "Si la generación del Estudio del día falla, la pantalla ahora muestra qué pasó y un botón para intentarlo de nuevo."
+    "Si la generación del Estudio del día falla, la pantalla ahora muestra qué pasó y un botón para intentarlo de nuevo.",
+    "La app ahora también te avisa de una nueva versión cuando vuelves a ella, y no solo al abrirla. En Android la actualización empieza directo desde Google Play, y el aviso aparece como máximo una vez por hora para no molestar."
   ],
   "2.1.0": [
     "En el escritorio y en Android con un mouse conectado, ahora puedes usar los botones laterales de retroceder y avanzar del mouse para navegar entre las pantallas.",
