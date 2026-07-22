@@ -165,27 +165,19 @@ internal class DayStudyViewModel(
     }
 
     private suspend fun onJobDone() {
-        val key = jobKey ?: return
+        jobKey ?: return
         refreshCard(isPro)
         _uiState.update { it.copy(generation = null) }
-        acknowledgeIfActive(key)
     }
 
     private suspend fun onJobFailed(
         isLimitReached: Boolean,
         isOffline: Boolean,
     ) {
-        val key = jobKey ?: return
+        jobKey ?: return
         _uiState.update { it.copy(generation = null) }
         if (isLimitReached) lockCard()
         if (isOffline) _uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
-        acknowledgeIfActive(key)
-    }
-
-    private fun acknowledgeIfActive(key: String) {
-        if (generationCoordinator.activeKey.value == key) {
-            generationCoordinator.acknowledge(key)
-        }
     }
 
     private suspend fun refreshCard(pro: Boolean) {
