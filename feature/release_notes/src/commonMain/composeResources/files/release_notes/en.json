@@ -3,7 +3,8 @@
     "Fixed an issue on phones where tapping 'View' on the Daily study card did not open the study screen.",
     "The Daily study screen looks tidier on phones: the title and passages stand out at the top, and the line under the tabs now spans the full width.",
     "The historical context text is now the same size as the summary text, making it easier to read.",
-    "The card at the top of the reading plan screen has more balanced spacing, making the reading, the day details, and the button easier to tell apart."
+    "The card at the top of the reading plan screen has more balanced spacing, making the reading, the day details, and the button easier to tell apart.",
+    "The Daily study card now shows up instantly when the study was already generated before, even without an internet connection."
   ],
   "2.1.0": [
     "On desktop and on Android with a mouse connected, you can now use your mouse's back and forward side buttons to navigate between screens.",
