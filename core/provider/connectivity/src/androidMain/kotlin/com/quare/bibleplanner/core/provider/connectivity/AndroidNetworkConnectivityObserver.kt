@@ -20,10 +20,7 @@ internal class AndroidNetworkConnectivityObserver(
 
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     override fun observe(): Flow<Boolean> = callbackFlow {
-        val callback = ConnectivityCallback(
-            connectivityManager = connectivityManager,
-            onConnectivityChange = ::trySend,
-        )
+        val callback = ConnectivityCallback(onConnectivityChange = ::trySend)
         trySend(connectivityManager.isCurrentlyConnected())
         connectivityManager.registerNetworkCallback(networkRequest, callback)
         awaitClose { connectivityManager.unregisterNetworkCallback(callback) }

@@ -200,6 +200,7 @@ internal class DayStudyViewModelTest {
                 ),
                 observeIsProUser = observeIsProUser,
                 networkConnectivityObserver = { MutableStateFlow(true) },
+                isConnected = { true },
                 trackEvent = { name, params -> trackedEvents += name to params },
             ),
             observeIsProUser = observeIsProUser,

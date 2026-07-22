@@ -1,32 +1,30 @@
 package com.quare.bibleplanner.core.provider.connectivity
 
-import android.Manifest
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import androidx.annotation.RequiresPermission
 
 /**
- * Bridges [ConnectivityManager] network events to a simple is-online callback. On loss it re-checks
- * the active network (another network may still provide connectivity).
+ * Bridges [ConnectivityManager] network events to a simple is-online callback by tracking the set
+ * of networks that currently advertise validated internet. Working from the event's own payload
+ * avoids re-querying the active network during teardown, which can still report the dying network
+ * as connected.
  */
 internal class ConnectivityCallback(
-    private val connectivityManager: ConnectivityManager,
     private val onConnectivityChange: (isConnected: Boolean) -> Unit,
 ) : ConnectivityManager.NetworkCallback() {
-    override fun onAvailable(network: Network) {
-        onConnectivityChange(true)
-    }
-
-    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
-    override fun onLost(network: Network) {
-        onConnectivityChange(connectivityManager.isCurrentlyConnected())
-    }
+    private val connectedNetworks = mutableSetOf<Network>()
 
     override fun onCapabilitiesChanged(
         network: Network,
         networkCapabilities: NetworkCapabilities,
     ) {
-        onConnectivityChange(networkCapabilities.hasInternet())
+        if (networkCapabilities.hasInternet()) connectedNetworks += network else connectedNetworks -= network
+        onConnectivityChange(connectedNetworks.isNotEmpty())
+    }
+
+    override fun onLost(network: Network) {
+        connectedNetworks -= network
+        onConnectivityChange(connectedNetworks.isNotEmpty())
     }
 }

@@ -321,6 +321,7 @@ internal class DayStudyGenerationCoordinatorTest {
             ),
             observeIsProUser = { flowOf(false) },
             networkConnectivityObserver = { isConnectedFlow },
+            isConnected = { isConnectedFlow.value },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
 

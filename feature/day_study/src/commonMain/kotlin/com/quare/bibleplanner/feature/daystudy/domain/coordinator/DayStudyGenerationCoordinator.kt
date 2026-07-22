@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
+import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.daystudy.domain.exception.LimitReachedException
@@ -17,13 +18,19 @@ import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationSt
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
@@ -40,6 +47,7 @@ class DayStudyGenerationCoordinator(
     private val getDayStudy: GetDayStudyUseCase,
     private val observeIsProUser: ObserveIsProUser,
     private val networkConnectivityObserver: NetworkConnectivityObserver,
+    private val isConnected: IsConnected,
     private val trackEvent: TrackEvent,
 ) {
     private val _jobs: MutableStateFlow<List<DayStudyGenerationJob>> = MutableStateFlow(emptyList())
@@ -58,6 +66,7 @@ class DayStudyGenerationCoordinator(
     private val _dismissedKeys: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
     val dismissedKeys: StateFlow<Set<String>> = _dismissedKeys.asStateFlow()
 
+    private val connectivityPollInterval: Duration = 3.seconds
     private val generationStartMarks: MutableMap<String, TimeMark> = mutableMapOf()
     private val phaseEntriesByKey: MutableMap<String, MutableMap<DayStudyPhaseModel, Long>> = mutableMapOf()
     private val logger = Logger.withTag(PERF_LOG_TAG)
@@ -89,7 +98,7 @@ class DayStudyGenerationCoordinator(
         applicationScope.launch {
             val streamJob = launch { runGeneration(key = key, passages = passages, dayRoute = dayRoute) }
             val connectivityWatcher = launch {
-                networkConnectivityObserver.observe().firstOrNull { isConnected -> !isConnected } ?: return@launch
+                connectivitySignals().firstOrNull { isOnline -> !isOnline } ?: return@launch
                 streamJob.cancel()
                 failGeneration(
                     key = key,
@@ -103,6 +112,16 @@ class DayStudyGenerationCoordinator(
         }
         return key
     }
+
+    private fun connectivitySignals(): Flow<Boolean> = merge(
+        networkConnectivityObserver.observe(),
+        flow {
+            while (true) {
+                delay(connectivityPollInterval)
+                emit(isConnected())
+            }
+        },
+    )
 
     private suspend fun runGeneration(
         key: String,
