@@ -12,6 +12,8 @@
     <string name="ai_study_pro_badge">PRO</string>
     <string name="ai_study_generated">Gerado</string>
     <string name="ai_study_error">Não foi possível carregar o estudo. Tente novamente.</string>
+    <string name="ai_study_generation_error_title">A geração falhou</string>
+    <string name="ai_study_retry">Tentar novamente</string>
     <string name="ai_study_limit_reached_message">Você já usou todas as suas análises grátis.</string>
     <string name="ai_study_offline_message">Você está sem internet no momento, por isso não é possível gerar o estudo.</string>
     <string name="ai_study_generating_title">Preparando seu estudo</string>

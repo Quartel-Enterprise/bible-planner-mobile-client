@@ -43,6 +43,7 @@ object AnalyticsEventNames {
     const val DAY_STUDY_GENERATION_FAILED = "day_study_generation_failed"
     const val DAY_STUDY_OPENED = "day_study_opened"
     const val DAY_STUDY_LOGIN_REQUIRED_CLICKED = "day_study_login_required_clicked"
+    const val DAY_STUDY_RETRY_CLICKED = "day_study_retry_clicked"
     const val DAY_STUDY_LOAD = "day_study_load"
     const val DAY_STUDY_GENERATION_TIME = "day_study_generation_time"
 

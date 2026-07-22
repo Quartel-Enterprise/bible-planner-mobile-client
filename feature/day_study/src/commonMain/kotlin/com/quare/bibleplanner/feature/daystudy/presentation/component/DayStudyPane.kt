@@ -15,8 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,7 +34,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
+import bibleplanner.feature.day_study.generated.resources.ai_study_error
 import bibleplanner.feature.day_study.generated.resources.ai_study_generate
+import bibleplanner.feature.day_study.generated.resources.ai_study_generation_error_title
+import bibleplanner.feature.day_study.generated.resources.ai_study_retry
 import bibleplanner.feature.day_study.generated.resources.ai_study_subscribe
 import bibleplanner.feature.day_study.generated.resources.ai_study_title
 import bibleplanner.feature.day_study.generated.resources.ai_study_view
@@ -53,14 +58,16 @@ internal fun DayStudyPane(
     cardState: Loadable<DayStudyCardUiModel>,
     openStudy: DayStudyModel?,
     generation: DayStudyGenerationUiModel?,
+    generationError: Boolean,
     isOpeningStudy: Boolean,
     onCardClick: () -> Unit,
+    onRetryClick: () -> Unit,
     showStudyHeader: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val mode = cardState.valueOrNull()?.mode
-    LaunchedEffect(mode, openStudy != null, generation != null) {
-        if (openStudy == null && generation == null && mode == DayStudyCardMode.VIEW) {
+    LaunchedEffect(mode, openStudy != null, generation != null, generationError) {
+        if (openStudy == null && generation == null && !generationError && mode == DayStudyCardMode.VIEW) {
             onCardClick()
         }
     }
@@ -84,6 +91,11 @@ internal fun DayStudyPane(
                 modifier = Modifier.fillMaxSize(),
             )
 
+            generationError -> DayStudyErrorContent(
+                onRetryClick = onRetryClick,
+                modifier = Modifier.fillMaxSize(),
+            )
+
             cardState is Loadable.Loaded -> DayStudyPaneHero(
                 card = cardState.value,
                 isOpening = isOpeningStudy,
@@ -97,6 +109,53 @@ internal fun DayStudyPane(
             ) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
+        }
+    }
+}
+
+@Composable
+private fun DayStudyErrorContent(
+    onRetryClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(
+                horizontal = 38.dp,
+                vertical = 40.dp,
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        HeroIcon(icon = Icons.Rounded.CloudOff)
+        VerticalSpacer(20)
+        Text(
+            text = stringResource(Res.string.ai_study_generation_error_title),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+        )
+        VerticalSpacer(10)
+        Text(
+            text = stringResource(Res.string.ai_study_error),
+            modifier = Modifier.widthIn(max = descriptionMaxWidth),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        VerticalSpacer(24)
+        Button(
+            onClick = onRetryClick,
+            modifier = Modifier.height(50.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Refresh,
+                contentDescription = null,
+                modifier = Modifier.size(ButtonDefaults.IconSize),
+            )
+            HorizontalSpacer(ButtonDefaults.IconSpacing)
+            Text(text = stringResource(Res.string.ai_study_retry))
         }
     }
 }

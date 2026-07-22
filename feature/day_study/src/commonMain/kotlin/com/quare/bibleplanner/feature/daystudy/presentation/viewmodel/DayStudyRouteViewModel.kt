@@ -85,6 +85,7 @@ internal class DayStudyRouteViewModel(
         DayStudyRouteUiState(
             card = Loadable.Loading,
             generation = null,
+            generationError = false,
             openStudy = null,
             isOpeningStudy = false,
             passageLabel = null,
@@ -115,7 +116,13 @@ internal class DayStudyRouteViewModel(
     override fun handleEvent(event: DayStudyRouteUiEvent) {
         when (event) {
             DayStudyRouteUiEvent.OnCardClick -> onCardClick()
+            DayStudyRouteUiEvent.OnRetryClick -> onRetryClick()
         }
+    }
+
+    private fun onRetryClick() {
+        _uiState.update { it.copy(generationError = false) }
+        viewModelScope.launch { withOpeningIndicator { startGenerationOrCachedOpen() } }
     }
 
     private fun observePassages() {
@@ -179,7 +186,10 @@ internal class DayStudyRouteViewModel(
             null -> Unit
 
             DayStudyGenerationStatus.Generating -> _uiState.update {
-                it.copy(generation = DayStudyGenerationUiModel(job.phase?.toPhaseIndex() ?: 0))
+                it.copy(
+                    generation = DayStudyGenerationUiModel(job.phase?.toPhaseIndex() ?: 0),
+                    generationError = false,
+                )
             }
 
             is DayStudyGenerationStatus.Done -> onJobDone(status.study)
@@ -197,13 +207,11 @@ internal class DayStudyRouteViewModel(
     }
 
     private suspend fun onJobFailed(isLimitReached: Boolean) {
-        _uiState.update { it.copy(generation = null) }
-        if (isLimitReached) lockCard()
-        _uiAction.emit(
-            DayStudyRouteUiAction.ShowSnackBar(
-                if (isLimitReached) Res.string.ai_study_limit_reached_message else Res.string.ai_study_error,
-            ),
-        )
+        _uiState.update { it.copy(generation = null, generationError = !isLimitReached) }
+        if (isLimitReached) {
+            lockCard()
+            _uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message))
+        }
         generationCoordinator.acknowledge(jobKey)
     }
 
