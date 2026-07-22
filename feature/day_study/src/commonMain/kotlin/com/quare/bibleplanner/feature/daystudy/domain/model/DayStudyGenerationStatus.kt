@@ -9,5 +9,6 @@ sealed interface DayStudyGenerationStatus {
 
     data class Failed(
         val isLimitReached: Boolean,
+        val isOffline: Boolean,
     ) : DayStudyGenerationStatus
 }

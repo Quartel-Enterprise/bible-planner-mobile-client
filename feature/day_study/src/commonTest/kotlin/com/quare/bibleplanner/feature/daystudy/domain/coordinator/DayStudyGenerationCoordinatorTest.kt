@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.domain.exception.LimitReachedException
@@ -18,7 +19,9 @@ import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.HistoricalContextModel
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
@@ -108,7 +111,10 @@ internal class DayStudyGenerationCoordinatorTest {
 
         // Then
         assertEquals(
-            DayStudyGenerationStatus.Failed(isLimitReached = false),
+            DayStudyGenerationStatus.Failed(
+                isLimitReached = false,
+                isOffline = false,
+            ),
             coordinator.jobs.value
                 .single()
                 .status,
@@ -221,6 +227,36 @@ internal class DayStudyGenerationCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a connection drop mid generation THEN the job fails as offline`() = runTest {
+        // Given
+        val coordinator = coordinator(
+            FakeDayStudyRepository(
+                events = listOf(DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING)),
+                neverCompletes = true,
+            ),
+        )
+        coordinator.start(passages, dayRoute, LABEL)
+
+        // When
+        isConnectedFlow.value = false
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(
+            DayStudyGenerationStatus.Failed(
+                isLimitReached = false,
+                isOffline = true,
+            ),
+            coordinator.jobs.value
+                .single()
+                .status,
+        )
+        val (_, params) = trackedEvents.single { it.first == "day_study_generation_time" }
+        assertEquals(false, params["success"])
+        assertEquals("offline", params["reason"])
+    }
+
+    @Test
     fun `GIVEN a limit reached failure WHEN start THEN tracks day_study_generation_time with limit_reached`() =
         runTest {
             // Given
@@ -272,6 +308,7 @@ internal class DayStudyGenerationCoordinatorTest {
     }
 
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val isConnectedFlow = MutableStateFlow(true)
 
     private fun TestScope.coordinator(repository: FakeDayStudyRepository): DayStudyGenerationCoordinator =
         DayStudyGenerationCoordinator(
@@ -283,6 +320,7 @@ internal class DayStudyGenerationCoordinatorTest {
                 languageCodeMapper = LanguageCodeMapper(),
             ),
             observeIsProUser = { flowOf(false) },
+            networkConnectivityObserver = { isConnectedFlow },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
 
@@ -312,6 +350,7 @@ internal class DayStudyGenerationCoordinatorTest {
     private class FakeDayStudyRepository(
         private val events: List<DayStudyGenerationEventModel>,
         private val error: Throwable? = null,
+        private val neverCompletes: Boolean = false,
     ) : DayStudyRepository {
         override fun getDayStudy(
             passages: List<PassageModel>,
@@ -320,6 +359,7 @@ internal class DayStudyGenerationCoordinatorTest {
         ): Flow<DayStudyGenerationEventModel> = flow {
             events.forEach { emit(it) }
             error?.let { throw it }
+            if (neverCompletes) awaitCancellation()
         }
 
         override suspend fun getDayStudyStatus(

@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
+import bibleplanner.feature.day_study.generated.resources.ai_study_connection_error_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_error
 import bibleplanner.feature.day_study.generated.resources.ai_study_generate
 import bibleplanner.feature.day_study.generated.resources.ai_study_generation_error_title
@@ -46,6 +47,7 @@ import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationError
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
@@ -58,7 +60,7 @@ internal fun DayStudyPane(
     cardState: Loadable<DayStudyCardUiModel>,
     openStudy: DayStudyModel?,
     generation: DayStudyGenerationUiModel?,
-    generationError: Boolean,
+    generationError: DayStudyGenerationError?,
     isOpeningStudy: Boolean,
     onCardClick: () -> Unit,
     onRetryClick: () -> Unit,
@@ -67,7 +69,7 @@ internal fun DayStudyPane(
 ) {
     val mode = cardState.valueOrNull()?.mode
     LaunchedEffect(mode, openStudy != null, generation != null, generationError) {
-        if (openStudy == null && generation == null && !generationError && mode == DayStudyCardMode.VIEW) {
+        if (openStudy == null && generation == null && generationError == null && mode == DayStudyCardMode.VIEW) {
             onCardClick()
         }
     }
@@ -91,7 +93,8 @@ internal fun DayStudyPane(
                 modifier = Modifier.fillMaxSize(),
             )
 
-            generationError -> DayStudyErrorContent(
+            generationError != null -> DayStudyErrorContent(
+                error = generationError,
                 onRetryClick = onRetryClick,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -115,6 +118,7 @@ internal fun DayStudyPane(
 
 @Composable
 private fun DayStudyErrorContent(
+    error: DayStudyGenerationError,
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -137,7 +141,12 @@ private fun DayStudyErrorContent(
         )
         VerticalSpacer(10)
         Text(
-            text = stringResource(Res.string.ai_study_error),
+            text = stringResource(
+                when (error) {
+                    DayStudyGenerationError.GENERIC -> Res.string.ai_study_error
+                    DayStudyGenerationError.OFFLINE -> Res.string.ai_study_connection_error_message
+                },
+            ),
             modifier = Modifier.widthIn(max = descriptionMaxWidth),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

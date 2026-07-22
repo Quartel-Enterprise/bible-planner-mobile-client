@@ -157,7 +157,10 @@ internal class DayStudyViewModel(
 
             is DayStudyGenerationStatus.Done -> onJobDone()
 
-            is DayStudyGenerationStatus.Failed -> onJobFailed(status.isLimitReached)
+            is DayStudyGenerationStatus.Failed -> onJobFailed(
+                isLimitReached = status.isLimitReached,
+                isOffline = status.isOffline,
+            )
         }
     }
 
@@ -168,10 +171,14 @@ internal class DayStudyViewModel(
         generationCoordinator.acknowledge(key)
     }
 
-    private suspend fun onJobFailed(isLimitReached: Boolean) {
+    private suspend fun onJobFailed(
+        isLimitReached: Boolean,
+        isOffline: Boolean,
+    ) {
         val key = jobKey ?: return
         _uiState.update { it.copy(generation = null) }
         if (isLimitReached) lockCard()
+        if (isOffline) _uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
         generationCoordinator.acknowledge(key)
     }
 

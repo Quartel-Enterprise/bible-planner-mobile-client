@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
+import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.daystudy.domain.exception.LimitReachedException
@@ -15,10 +16,12 @@ import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJo
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.TimeMark
@@ -36,6 +39,7 @@ class DayStudyGenerationCoordinator(
     private val applicationScope: ApplicationScope,
     private val getDayStudy: GetDayStudyUseCase,
     private val observeIsProUser: ObserveIsProUser,
+    private val networkConnectivityObserver: NetworkConnectivityObserver,
     private val trackEvent: TrackEvent,
 ) {
     private val _jobs: MutableStateFlow<List<DayStudyGenerationJob>> = MutableStateFlow(emptyList())
@@ -83,51 +87,106 @@ class DayStudyGenerationCoordinator(
             ),
         )
         applicationScope.launch {
-            suspendRunCatching {
-                getDayStudy(passages).collect { event ->
-                    when (event) {
-                        is DayStudyGenerationEventModel.PhaseChanged -> {
-                            recordPhaseEntry(
-                                key = key,
-                                phase = event.phase,
-                            )
-                            updateJob(key) { it.copy(phase = event.phase) }
-                        }
-
-                        is DayStudyGenerationEventModel.Completed -> {
-                            updateJob(key) { it.copy(status = DayStudyGenerationStatus.Done(event.study)) }
-                            trackGenerationEnd(
-                                name = AnalyticsEventNames.DAY_STUDY_GENERATION_COMPLETED,
-                                dayRoute = dayRoute,
-                            )
-                            trackGenerationTime(
-                                key = key,
-                                reason = null,
-                            )
-                        }
-                    }
-                }
-            }.onFailure { throwable ->
-                val isLimitReached = throwable is LimitReachedException
-                updateJob(key) {
-                    it.copy(
-                        status = DayStudyGenerationStatus.Failed(isLimitReached = isLimitReached),
-                    )
-                }
-                trackGenerationEnd(
-                    name = AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
-                    dayRoute = dayRoute,
-                    extraParams = mapOf(
-                        AnalyticsParams.REASON to if (isLimitReached) LIMIT_REACHED_REASON else ERROR_REASON,
-                    ),
-                )
-                trackGenerationTime(
+            val streamJob = launch { runGeneration(key = key, passages = passages, dayRoute = dayRoute) }
+            val connectivityWatcher = launch {
+                networkConnectivityObserver.observe().firstOrNull { isConnected -> !isConnected } ?: return@launch
+                streamJob.cancel()
+                failGeneration(
                     key = key,
-                    reason = if (isLimitReached) LIMIT_REACHED_REASON else ERROR_REASON,
+                    dayRoute = dayRoute,
+                    isLimitReached = false,
+                    isOffline = true,
                 )
             }
+            streamJob.join()
+            connectivityWatcher.cancel()
         }
         return key
+    }
+
+    private suspend fun runGeneration(
+        key: String,
+        passages: List<PassageModel>,
+        dayRoute: DayNavRoute,
+    ) {
+        suspendRunCatching {
+            collectGeneration(
+                key = key,
+                dayRoute = dayRoute,
+                passages = passages,
+            )
+        }.onFailure { throwable ->
+            failGeneration(
+                key = key,
+                dayRoute = dayRoute,
+                isLimitReached = throwable is LimitReachedException,
+                isOffline = false,
+            )
+        }
+    }
+
+    private suspend fun collectGeneration(
+        key: String,
+        dayRoute: DayNavRoute,
+        passages: List<PassageModel>,
+    ) {
+        try {
+            getDayStudy(passages).collect { event ->
+                when (event) {
+                    is DayStudyGenerationEventModel.PhaseChanged -> {
+                        recordPhaseEntry(
+                            key = key,
+                            phase = event.phase,
+                        )
+                        updateJob(key) { it.copy(phase = event.phase) }
+                    }
+
+                    is DayStudyGenerationEventModel.Completed -> {
+                        updateJob(key) { it.copy(status = DayStudyGenerationStatus.Done(event.study)) }
+                        trackGenerationEnd(
+                            name = AnalyticsEventNames.DAY_STUDY_GENERATION_COMPLETED,
+                            dayRoute = dayRoute,
+                        )
+                        trackGenerationTime(
+                            key = key,
+                            reason = null,
+                        )
+                    }
+                }
+            }
+        } catch (timeout: TimeoutCancellationException) {
+            throw IllegalStateException("Day study stream stalled without events", timeout)
+        }
+    }
+
+    private suspend fun failGeneration(
+        key: String,
+        dayRoute: DayNavRoute,
+        isLimitReached: Boolean,
+        isOffline: Boolean,
+    ) {
+        val reason = when {
+            isLimitReached -> LIMIT_REACHED_REASON
+            isOffline -> OFFLINE_REASON
+            else -> ERROR_REASON
+        }
+        updateJob(key) {
+            it.copy(
+                status = DayStudyGenerationStatus.Failed(
+                    isLimitReached = isLimitReached,
+                    isOffline = isOffline,
+                ),
+            )
+        }
+        trackGenerationEnd(
+            name = AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
+            dayRoute = dayRoute,
+            extraParams = mapOf(AnalyticsParams.REASON to reason),
+        )
+        trackGenerationTime(
+            key = key,
+            reason = reason,
+        )
     }
 
     fun setActive(key: String) {
@@ -241,6 +300,7 @@ class DayStudyGenerationCoordinator(
         const val KEY_SEPARATOR = "|"
         const val LIMIT_REACHED_REASON = "limit_reached"
         const val ERROR_REASON = "error"
+        const val OFFLINE_REASON = "offline"
         const val PERF_LOG_TAG = "DayStudyPerf"
     }
 }

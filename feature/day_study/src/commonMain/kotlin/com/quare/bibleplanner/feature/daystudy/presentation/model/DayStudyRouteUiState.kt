@@ -7,7 +7,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
 internal data class DayStudyRouteUiState(
     val card: Loadable<DayStudyCardUiModel>,
     val generation: DayStudyGenerationUiModel?,
-    val generationError: Boolean,
+    val generationError: DayStudyGenerationError?,
     val openStudy: DayStudyModel?,
     val isOpeningStudy: Boolean,
     val passageLabel: String?,

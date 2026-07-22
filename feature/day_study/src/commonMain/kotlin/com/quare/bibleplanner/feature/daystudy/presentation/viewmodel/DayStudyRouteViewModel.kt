@@ -40,6 +40,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseC
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationError
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationPhase
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiAction
@@ -85,7 +86,7 @@ internal class DayStudyRouteViewModel(
         DayStudyRouteUiState(
             card = Loadable.Loading,
             generation = null,
-            generationError = false,
+            generationError = null,
             openStudy = null,
             isOpeningStudy = false,
             passageLabel = null,
@@ -121,7 +122,7 @@ internal class DayStudyRouteViewModel(
     }
 
     private fun onRetryClick() {
-        _uiState.update { it.copy(generationError = false) }
+        _uiState.update { it.copy(generationError = null) }
         viewModelScope.launch { withOpeningIndicator { startGenerationOrCachedOpen() } }
     }
 
@@ -188,13 +189,16 @@ internal class DayStudyRouteViewModel(
             DayStudyGenerationStatus.Generating -> _uiState.update {
                 it.copy(
                     generation = DayStudyGenerationUiModel(job.phase?.toPhaseIndex() ?: 0),
-                    generationError = false,
+                    generationError = null,
                 )
             }
 
             is DayStudyGenerationStatus.Done -> onJobDone(status.study)
 
-            is DayStudyGenerationStatus.Failed -> onJobFailed(status.isLimitReached)
+            is DayStudyGenerationStatus.Failed -> onJobFailed(
+                isLimitReached = status.isLimitReached,
+                isOffline = status.isOffline,
+            )
         }
     }
 
@@ -206,8 +210,16 @@ internal class DayStudyRouteViewModel(
         generationCoordinator.acknowledge(jobKey)
     }
 
-    private suspend fun onJobFailed(isLimitReached: Boolean) {
-        _uiState.update { it.copy(generation = null, generationError = !isLimitReached) }
+    private suspend fun onJobFailed(
+        isLimitReached: Boolean,
+        isOffline: Boolean,
+    ) {
+        val error = when {
+            isLimitReached -> null
+            isOffline -> DayStudyGenerationError.OFFLINE
+            else -> DayStudyGenerationError.GENERIC
+        }
+        _uiState.update { it.copy(generation = null, generationError = error) }
         if (isLimitReached) {
             lockCard()
             _uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message))
@@ -319,7 +331,7 @@ internal class DayStudyRouteViewModel(
                     AnalyticsParams.IS_PRO to isPro,
                 ),
             )
-            _uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
+            _uiState.update { it.copy(generationError = DayStudyGenerationError.OFFLINE) }
             return
         }
         val quota = getDayStudyQuota(passages)

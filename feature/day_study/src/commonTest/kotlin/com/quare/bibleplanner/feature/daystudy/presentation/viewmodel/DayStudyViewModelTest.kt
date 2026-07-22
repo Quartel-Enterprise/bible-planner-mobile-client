@@ -29,6 +29,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiEven
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
@@ -198,6 +199,7 @@ internal class DayStudyViewModelTest {
                     languageCodeMapper = languageCodeMapper,
                 ),
                 observeIsProUser = observeIsProUser,
+                networkConnectivityObserver = { MutableStateFlow(true) },
                 trackEvent = { name, params -> trackedEvents += name to params },
             ),
             observeIsProUser = observeIsProUser,
