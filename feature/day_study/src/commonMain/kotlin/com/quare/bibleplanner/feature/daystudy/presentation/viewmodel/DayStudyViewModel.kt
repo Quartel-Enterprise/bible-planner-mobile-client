@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.PassageModel
@@ -14,14 +15,17 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationPhase
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiAction
@@ -41,9 +45,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 internal class DayStudyViewModel(
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,
+    private val hasCachedStudy: HasCachedStudyUseCase,
     private val isConnected: IsConnected,
     private val generationCoordinator: DayStudyGenerationCoordinator,
     private val observeIsProUser: ObserveIsProUser,
@@ -70,6 +77,8 @@ internal class DayStudyViewModel(
     private var isPro: Boolean = false
     private var observeCardJob: Job? = null
     private var observeJobJob: Job? = null
+    private var loadStartMark: TimeMark? = null
+    private val logger = Logger.withTag(PERF_LOG_TAG)
 
     override fun handleEvent(event: DayStudyUiEvent) {
         when (event) {
@@ -91,7 +100,8 @@ internal class DayStudyViewModel(
         jobKey = key
         generationCoordinator.setActive(key)
         if (routeChanged) {
-            _uiState.update { it.copy(generation = null, isOpeningStudy = false) }
+            loadStartMark = TimeSource.Monotonic.markNow()
+            _uiState.update { it.copy(card = Loadable.Loading, generation = null, isOpeningStudy = false) }
         }
         observeCard()
         observeJob()
@@ -100,6 +110,7 @@ internal class DayStudyViewModel(
     private fun observeCard() {
         observeCardJob?.cancel()
         observeCardJob = viewModelScope.launch {
+            showCachedCard()
             combine(
                 observeAuthenticatedUserId(),
                 observeIsProUser(),
@@ -110,6 +121,19 @@ internal class DayStudyViewModel(
                     refreshCard(pro)
                 }
         }
+    }
+
+    private suspend fun showCachedCard() {
+        if (_uiState.value.card !is Loadable.Loading) return
+        if (!hasCachedStudy(passages)) return
+        _uiState.update { state ->
+            state.copy(card = Loadable.Loaded(cardUiModelFactory.createFromCache(isPro = isPro)))
+        }
+        trackLoad(
+            pro = isPro,
+            isCached = true,
+            reason = null,
+        )
     }
 
     private fun observeJob() {
@@ -133,36 +157,79 @@ internal class DayStudyViewModel(
 
             is DayStudyGenerationStatus.Done -> onJobDone()
 
-            is DayStudyGenerationStatus.Failed -> onJobFailed(status.isLimitReached)
+            is DayStudyGenerationStatus.Failed -> onJobFailed(
+                isLimitReached = status.isLimitReached,
+                isOffline = status.isOffline,
+            )
         }
     }
 
     private suspend fun onJobDone() {
-        val key = jobKey ?: return
+        jobKey ?: return
         refreshCard(isPro)
         _uiState.update { it.copy(generation = null) }
-        generationCoordinator.acknowledge(key)
     }
 
-    private suspend fun onJobFailed(isLimitReached: Boolean) {
-        val key = jobKey ?: return
+    private suspend fun onJobFailed(
+        isLimitReached: Boolean,
+        isOffline: Boolean,
+    ) {
+        jobKey ?: return
         _uiState.update { it.copy(generation = null) }
         if (isLimitReached) lockCard()
-        generationCoordinator.acknowledge(key)
+        if (isOffline) _uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
     }
 
     private suspend fun refreshCard(pro: Boolean) {
-        val quota = getDayStudyQuota(passages)
-        _uiState.update { state ->
-            state.copy(
-                card = Loadable.Loaded(
-                    cardUiModelFactory.create(
-                        isPro = pro,
-                        quota = quota,
-                    ),
-                ),
-            )
+        suspendRunCatching { getDayStudyQuota(passages) }
+            .onSuccess { quota ->
+                _uiState.update { state ->
+                    state.copy(
+                        card = Loadable.Loaded(
+                            cardUiModelFactory.create(
+                                isPro = pro,
+                                quota = quota,
+                            ),
+                        ),
+                    )
+                }
+                trackLoad(
+                    pro = pro,
+                    isCached = quota.hasLocalStudy,
+                    reason = null,
+                )
+            }.onFailure { throwable ->
+                trackLoad(
+                    pro = pro,
+                    isCached = false,
+                    reason = throwable::class.simpleName ?: UNKNOWN_REASON,
+                )
+            }
+    }
+
+    private fun trackLoad(
+        pro: Boolean,
+        isCached: Boolean,
+        reason: String?,
+    ) {
+        val mark = loadStartMark ?: return
+        loadStartMark = null
+        val durationMs = mark.elapsedNow().inWholeMilliseconds
+        logger.d {
+            "day_study_load target=$LOAD_TARGET durationMs=$durationMs success=${reason == null} " +
+                "isCached=$isCached isPro=$pro reason=$reason"
         }
+        trackEvent(
+            name = AnalyticsEventNames.DAY_STUDY_LOAD,
+            params = buildMap {
+                put(AnalyticsParams.TARGET, LOAD_TARGET)
+                put(AnalyticsParams.DURATION_MS, durationMs)
+                put(AnalyticsParams.SUCCESS, reason == null)
+                put(AnalyticsParams.IS_CACHED, isCached)
+                put(AnalyticsParams.IS_PRO, pro)
+                reason?.let { put(AnalyticsParams.REASON, it) }
+            },
+        )
     }
 
     private fun onCardClick() {
@@ -253,7 +320,12 @@ internal class DayStudyViewModel(
                 card = Loadable.Loaded(
                     card.copy(
                         mode = DayStudyCardMode.LOCKED,
-                        remainingFree = 0,
+                        quota = Loadable.Loaded(
+                            DayStudyCardQuotaUiModel(
+                                remainingFree = 0,
+                                freeLimit = card.quota.valueOrNull()?.freeLimit ?: 0,
+                            ),
+                        ),
                     ),
                 ),
             )
@@ -279,6 +351,9 @@ internal class DayStudyViewModel(
 
     private companion object {
         const val OFFLINE_REASON = "offline"
+        const val UNKNOWN_REASON = "unknown"
+        const val LOAD_TARGET = "card"
+        const val PERF_LOG_TAG = "DayStudyPerf"
     }
 }
 

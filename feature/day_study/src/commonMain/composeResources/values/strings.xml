@@ -12,6 +12,9 @@
     <string name="ai_study_pro_badge">PRO</string>
     <string name="ai_study_generated">Generated</string>
     <string name="ai_study_error">Could not load the study. Try again.</string>
+    <string name="ai_study_generation_error_title">Generation failed</string>
+    <string name="ai_study_connection_error_message">The connection was lost while generating the study. Check your internet and try again.</string>
+    <string name="ai_study_retry">Try again</string>
     <string name="ai_study_limit_reached_message">You've used all your free analyses.</string>
     <string name="ai_study_offline_message">You're offline right now, so the study can't be generated.</string>
     <string name="ai_study_generating_title">Preparing your study</string>

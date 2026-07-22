@@ -59,6 +59,7 @@ private fun DayStudyRootContent(
         isWide = isWide,
         snackbarHostState = snackbarHostState,
         onCardClick = { viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick) },
+        onRetryClick = { viewModel.onEvent(DayStudyRouteUiEvent.OnRetryClick) },
         onNavigateBack = onNavigateBack,
     )
 }

@@ -7,6 +7,8 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemote
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 
 class GetDayStudyQuotaUseCase(
@@ -16,24 +18,28 @@ class GetDayStudyQuotaUseCase(
     private val languageCodeMapper: LanguageCodeMapper,
     private val getIntRemoteConfig: GetIntRemoteConfig,
 ) {
-    suspend operator fun invoke(passages: List<PassageModel>): DayStudyQuotaModel {
+    suspend operator fun invoke(passages: List<PassageModel>): DayStudyQuotaModel = coroutineScope {
         val version = bibleRepository.getSelectedVersionIdFlow().first()
         val languageCode = languageCodeMapper.map(getAppLanguageFlow().first())
-        val hasLocalStudy = repository.hasCachedStudy(
-            passages = passages,
-            version = version,
-            languageCode = languageCode,
-        )
+        val hasLocalStudyDeferred = async {
+            repository.hasCachedStudy(
+                passages = passages,
+                version = version,
+                languageCode = languageCode,
+            )
+        }
         val status = repository.getDayStudyStatus(
             passages = passages,
             version = version,
             languageCode = languageCode,
         )
-        return if (status != null) {
+        val hasLocalStudy = hasLocalStudyDeferred.await()
+        if (status != null) {
             DayStudyQuotaModel(
                 freeLimit = status.freeLimit,
                 remainingFree = (status.freeLimit - status.usedCount).coerceAtLeast(0),
                 isUnlockedForDay = status.isUnlocked || hasLocalStudy,
+                hasLocalStudy = hasLocalStudy,
             )
         } else {
             val freeLimit = getIntRemoteConfig(
@@ -44,6 +50,7 @@ class GetDayStudyQuotaUseCase(
                 freeLimit = freeLimit,
                 remainingFree = freeLimit,
                 isUnlockedForDay = hasLocalStudy,
+                hasLocalStudy = hasLocalStudy,
             )
         }
     }

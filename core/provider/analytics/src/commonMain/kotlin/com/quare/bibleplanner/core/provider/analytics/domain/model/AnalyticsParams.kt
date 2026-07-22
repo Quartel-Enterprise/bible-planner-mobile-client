@@ -55,4 +55,11 @@ object AnalyticsParams {
     const val SHORTCUT = "shortcut"
     const val DIRECTION = "direction"
     const val TRIGGER = "trigger"
+    const val DURATION_MS = "duration_ms"
+    const val TARGET = "target"
+    const val SUCCESS = "success"
+    const val READING_MS = "reading_ms"
+    const val CHAPTERS_MS = "chapters_ms"
+    const val CONTEXT_MS = "context_ms"
+    const val QUESTIONS_MS = "questions_ms"
 }
