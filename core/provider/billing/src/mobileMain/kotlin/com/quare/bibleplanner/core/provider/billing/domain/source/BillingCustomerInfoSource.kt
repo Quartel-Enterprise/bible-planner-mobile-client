@@ -18,11 +18,16 @@ internal class BillingCustomerInfoSource(
     private val purchases: Purchases,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val seedPolicies = listOf(
+        CacheFetchPolicy.CACHED_OR_FETCHED,
+        CacheFetchPolicy.FETCH_CURRENT,
+    )
 
     val customerInfo: Flow<CustomerInfo> = callbackFlow {
         purchases.delegate = SubscriptionPurchasesDelegate { trySend(this) }
-        purchases.awaitCustomerInfoResult(CacheFetchPolicy.CACHED_OR_FETCHED).getOrNull()?.let { trySend(it) }
-        purchases.awaitCustomerInfoResult(CacheFetchPolicy.FETCH_CURRENT).getOrNull()?.let { trySend(it) }
+        seedPolicies.forEach { policy ->
+            purchases.awaitCustomerInfoResult(policy).getOrNull()?.let(::trySend)
+        }
         awaitClose { purchases.delegate = null }
     }.shareIn(
         scope = scope,
