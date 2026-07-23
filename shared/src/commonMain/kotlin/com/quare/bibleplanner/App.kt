@@ -1,8 +1,11 @@
 package com.quare.bibleplanner
 
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,8 +24,10 @@ import com.quare.bibleplanner.feature.applanguage.presentation.ApplyAppLocaleEff
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
 import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.ui.utils.LocalMainBottomBarState
 import com.quare.bibleplanner.ui.utils.LocalNavigationBarInsets
 import com.quare.bibleplanner.ui.utils.LocalWindowBlurController
+import com.quare.bibleplanner.ui.utils.MainBottomBarState
 import com.quare.bibleplanner.ui.utils.WindowBlurController
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -35,6 +40,7 @@ fun App(
     val theme by viewModel.themeState.collectAsState()
     val contrast by viewModel.contrastState.collectAsState()
     val windowBlurController = remember { WindowBlurController() }
+    val mainBottomBarState = remember { MainBottomBarState() }
     LifecycleEventEffect(
         event = Lifecycle.Event.ON_START,
         onEvent = viewModel::onAppForegrounded,
@@ -43,6 +49,7 @@ fun App(
     ProvideCompositionLocals(
         theme = theme,
         windowBlurController = windowBlurController,
+        mainBottomBarState = mainBottomBarState,
     ) {
         AppTheme(
             getSpecificColors = getSpecificColors,
@@ -55,7 +62,9 @@ fun App(
             ) {
                 val blurRadius = windowBlurController.radius
                 RootAppNavDisplay(
-                    modifier = if (blurRadius > 0.dp) Modifier.blur(blurRadius) else Modifier,
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
+                        .then(if (blurRadius > 0.dp) Modifier.blur(blurRadius) else Modifier),
                 )
             }
         }
@@ -66,12 +75,14 @@ fun App(
 private fun ProvideCompositionLocals(
     theme: Theme,
     windowBlurController: WindowBlurController,
+    mainBottomBarState: MainBottomBarState,
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
         LocalTheme provides theme,
         LocalNavigationBarInsets provides WindowInsets.navigationBars,
         LocalWindowBlurController provides windowBlurController,
+        LocalMainBottomBarState provides mainBottomBarState,
         content = content,
     )
 }

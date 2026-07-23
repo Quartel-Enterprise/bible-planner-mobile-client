@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,6 +60,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenera
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
+import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -107,8 +107,7 @@ fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
                 .align(cardAlignment)
                 .fillMaxWidth()
                 .padding(horizontal = mobileHorizontalPadding)
-                .padding(bottom = mobileBottomPadding)
-                .navigationBarsPadding()
+                .padding(bottom = mainContentBottomInset() + mobileBottomPadding)
         }
         BackgroundCard(
             jobs = visibleJobs,

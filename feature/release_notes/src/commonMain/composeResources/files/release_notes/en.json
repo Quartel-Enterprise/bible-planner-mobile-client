@@ -1,7 +1,10 @@
 {
   "2.1.2": [
     "Fixed an issue that could close the app on its own when tapping back too quickly.",
-    "Fixed an issue that could close the app when reopening the Daily study with the device in landscape."
+    "Fixed an issue that could close the app when reopening the Daily study with the device in landscape.",
+    "Fixed content being hidden behind Android's on-screen navigation buttons when using the app sideways, so book lists and the Daily study panel now stay fully visible.",
+    "Removed extra empty space that appeared on the side of centered pop-up panels, like the theme picker on larger screens.",
+    "The 'Generating study' card and app notifications no longer overlap the bottom navigation bar: they now rest just above it and slide down to the screen edge as the bar hides while you scroll."
   ],
   "2.1.1": [
     "Fixed an issue on phones where tapping 'View' on the Daily study card did not open the study screen.",

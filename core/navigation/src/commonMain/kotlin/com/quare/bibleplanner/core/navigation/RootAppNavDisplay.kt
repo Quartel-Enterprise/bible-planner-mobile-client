@@ -4,7 +4,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -45,6 +45,7 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
+import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 
@@ -134,13 +135,13 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
             hostState = appSnackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .navigationBarsPadding(),
+                .padding(bottom = mainContentBottomInset()),
         )
         InAppUpdateDownloadOverlay(
             onNavigate = onNavigate,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .navigationBarsPadding(),
+                .padding(bottom = mainContentBottomInset()),
         )
     }
 }
