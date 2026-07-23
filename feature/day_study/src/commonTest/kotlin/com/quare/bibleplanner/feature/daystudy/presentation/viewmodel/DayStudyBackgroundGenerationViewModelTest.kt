@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.FakeDayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
@@ -25,10 +24,16 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DayStudyBackgroundGenerationViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val coordinator = FakeDayStudyGenerationCoordinator()
+    private lateinit var viewModel: DayStudyBackgroundGenerationViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        viewModel = DayStudyBackgroundGenerationViewModel(
+            generationCoordinator = coordinator,
+            trackEvent = { _, _ -> },
+        )
     }
 
     @AfterTest
@@ -39,8 +44,6 @@ internal class DayStudyBackgroundGenerationViewModelTest {
     @Test
     fun `GIVEN a backgrounded job WHEN observing THEN it is shown`() = runTest(testDispatcher) {
         // Given
-        val coordinator = FakeDayStudyGenerationCoordinator()
-        val viewModel = viewModel(coordinator)
         val job = generatingJob(dayRoute)
 
         // When
@@ -56,8 +59,6 @@ internal class DayStudyBackgroundGenerationViewModelTest {
     @Test
     fun `GIVEN the active day's job WHEN observing THEN it is suppressed`() = runTest(testDispatcher) {
         // Given
-        val coordinator = FakeDayStudyGenerationCoordinator()
-        val viewModel = viewModel(coordinator)
         val job = generatingJob(dayRoute)
 
         // When
@@ -72,8 +73,6 @@ internal class DayStudyBackgroundGenerationViewModelTest {
     @Test
     fun `GIVEN a dismissed job WHEN observing THEN it is suppressed`() = runTest(testDispatcher) {
         // Given
-        val coordinator = FakeDayStudyGenerationCoordinator()
-        val viewModel = viewModel(coordinator)
         val job = generatingJob(dayRoute)
 
         // When
@@ -88,8 +87,6 @@ internal class DayStudyBackgroundGenerationViewModelTest {
     @Test
     fun `GIVEN a failed job WHEN observing THEN it is suppressed`() = runTest(testDispatcher) {
         // Given
-        val coordinator = FakeDayStudyGenerationCoordinator()
-        val viewModel = viewModel(coordinator)
         val failedJob = generatingJob(dayRoute).copy(
             status = DayStudyGenerationStatus.Failed(
                 isLimitReached = false,
@@ -109,8 +106,6 @@ internal class DayStudyBackgroundGenerationViewModelTest {
     fun `GIVEN a shown job WHEN it goes away THEN it hides but keeps the last jobs for the exit animation`() =
         runTest(testDispatcher) {
             // Given
-            val coordinator = FakeDayStudyGenerationCoordinator()
-            val viewModel = viewModel(coordinator)
             val job = generatingJob(dayRoute)
             coordinator.jobsFlow.value = listOf(job)
             advanceUntilIdle()
@@ -128,8 +123,6 @@ internal class DayStudyBackgroundGenerationViewModelTest {
     @Test
     fun `WHEN open is clicked THEN requests open and navigates to the day route`() = runTest(testDispatcher) {
         // Given
-        val coordinator = FakeDayStudyGenerationCoordinator()
-        val viewModel = viewModel(coordinator)
         val job = generatingJob(dayRoute)
         val actions = mutableListOf<DayStudyBackgroundGenerationUiAction>()
         backgroundScope.launch { viewModel.uiAction.collect { actions += it } }
@@ -150,22 +143,12 @@ internal class DayStudyBackgroundGenerationViewModelTest {
 
     @Test
     fun `WHEN dismiss is clicked THEN dismisses each key from the card`() = runTest(testDispatcher) {
-        // Given
-        val coordinator = FakeDayStudyGenerationCoordinator()
-        val viewModel = viewModel(coordinator)
-
         // When
         viewModel.onEvent(DayStudyBackgroundGenerationUiEvent.OnDismissClick(listOf("key-a", "key-b")))
 
         // Then
         assertEquals(listOf("key-a", "key-b"), coordinator.dismissedFromCardKeys)
     }
-
-    private fun viewModel(coordinator: DayStudyGenerationCoordinator): DayStudyBackgroundGenerationViewModel =
-        DayStudyBackgroundGenerationViewModel(
-            generationCoordinator = coordinator,
-            trackEvent = { _, _ -> },
-        )
 
     private fun generatingJob(route: DayNavRoute): DayStudyGenerationJob = DayStudyGenerationJob(
         key = "${route.readingPlanType}|${route.weekNumber}|${route.dayNumber}",
