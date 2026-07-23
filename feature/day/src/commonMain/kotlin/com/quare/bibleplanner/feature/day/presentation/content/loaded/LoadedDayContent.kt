@@ -3,8 +3,10 @@ package com.quare.bibleplanner.feature.day.presentation.content.loaded
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.LoadedDayLandscapeContent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.portrait.loadedDayPortraitScreenContent
@@ -37,6 +39,7 @@ internal fun LoadedDayContent(
     } else {
         ResponsiveColumn(
             modifier = modifier,
+            contentPadding = PaddingValues(bottom = 16.dp),
             portraitContent = {
                 loadedDayPortraitScreenContent(
                     day = day,
