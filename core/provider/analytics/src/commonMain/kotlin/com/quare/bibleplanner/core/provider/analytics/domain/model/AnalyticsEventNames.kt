@@ -46,6 +46,8 @@ object AnalyticsEventNames {
     const val DAY_STUDY_RETRY_CLICKED = "day_study_retry_clicked"
     const val DAY_STUDY_LOAD = "day_study_load"
     const val DAY_STUDY_GENERATION_TIME = "day_study_generation_time"
+    const val DAY_STUDY_BG_CARD_OPENED = "day_study_bg_card_opened"
+    const val DAY_STUDY_BG_CARD_DISMISSED = "day_study_bg_card_dismissed"
 
     const val BIBLE_VERSION_SELECTED = "bible_version_selected"
     const val BIBLE_VERSION_MANAGE_CLICKED = "bible_version_manage_clicked"

@@ -66,6 +66,7 @@ fun ResponsiveDialogSheet(
                     title = title,
                     subtitle = subtitle,
                     content = content,
+                    modifier = Modifier.windowInsetsPadding(LocalNavigationBarInsets.current),
                 )
             }
         }
@@ -78,8 +79,9 @@ private fun CloseableContent(
     title: String?,
     subtitle: String?,
     content: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Box(modifier = Modifier.windowInsetsPadding(LocalNavigationBarInsets.current)) {
+    Box(modifier = modifier) {
         Column {
             if (title != null) {
                 DialogHeader(title = title, subtitle = subtitle)

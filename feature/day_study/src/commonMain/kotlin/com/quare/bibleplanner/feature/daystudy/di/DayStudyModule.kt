@@ -11,6 +11,7 @@ import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyRequestMapper
 import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyStatusMapper
 import com.quare.bibleplanner.feature.daystudy.data.repository.DayStudyRepositoryImpl
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinatorImpl
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
@@ -20,6 +21,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUs
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
+import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyRouteViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyViewModel
 import org.koin.core.module.dsl.factoryOf
@@ -41,7 +43,7 @@ val dayStudyModule = module {
     singleOf(::DayStudyRemoteDataSource)
     singleOf(::DayStudyLocalDataSource)
     singleOf(::DayStudyRepositoryImpl).bind<DayStudyRepository>()
-    singleOf(::DayStudyGenerationCoordinator)
+    singleOf(::DayStudyGenerationCoordinatorImpl).bind<DayStudyGenerationCoordinator>()
 
     factoryOf(::GetDayStudyUseCase)
     factoryOf(::GetDayStudyQuotaUseCase)
@@ -52,4 +54,5 @@ val dayStudyModule = module {
     factoryOf(::DayStudyCardUiModelFactory)
     viewModelOf(::DayStudyViewModel)
     viewModelOf(::DayStudyRouteViewModel)
+    viewModelOf(::DayStudyBackgroundGenerationViewModel)
 }
