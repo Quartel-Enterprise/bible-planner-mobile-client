@@ -1,4 +1,8 @@
 {
+  "2.1.2": [
+    "Fixed an issue that could close the app on its own when tapping back too quickly.",
+    "Fixed an issue that could close the app when reopening the Daily study with the device in landscape."
+  ],
   "2.1.1": [
     "Fixed an issue on phones where tapping 'View' on the Daily study card did not open the study screen.",
     "The Daily study screen looks tidier on phones: the title and passages stand out at the top, and the line under the tabs now spans the full width.",

@@ -1,4 +1,8 @@
 {
+  "2.1.2": [
+    "Corrigido um problema que podia fechar o app sozinho ao tocar em voltar rápido demais.",
+    "Corrigido um problema que podia fechar o app ao abrir de novo o Estudo do dia com o aparelho na horizontal."
+  ],
   "2.1.1": [
     "Corrigido um problema no celular em que tocar em 'Ver' no card do Estudo do dia não abria a tela do estudo.",
     "A tela do Estudo do dia ficou mais caprichada no celular: o título e as passagens aparecem em destaque no topo e a linha das abas agora vai de ponta a ponta.",

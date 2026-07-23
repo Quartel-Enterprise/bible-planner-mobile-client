@@ -56,7 +56,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     val backStack = rememberNavBackStack(navigationSavedStateConfiguration, MainNavRoute)
     val forwardStack = remember { mutableStateListOf<List<NavKey>>() }
     val onNavigate: (NavKey) -> Unit = { route ->
-        if (backStack.lastOrNull() != route) {
+        if (route !in backStack) {
             backStack.add(route)
             forwardStack.clear()
         }
