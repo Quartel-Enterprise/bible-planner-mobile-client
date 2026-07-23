@@ -31,7 +31,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-internal class DayStudyGenerationCoordinatorTest {
+internal class DayStudyGenerationCoordinatorImplTest {
     @Test
     fun `GIVEN a stream WHEN start THEN a generating job appears then completes as done`() = runTest {
         // Given

@@ -12,15 +12,13 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
-import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinatorImpl
+import com.quare.bibleplanner.feature.daystudy.domain.coordinator.FakeDayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
-import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
@@ -29,10 +27,8 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyUiEven
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -162,7 +158,7 @@ internal class DayStudyViewModelTest {
         )
     }
 
-    private fun TestScope.viewModel(
+    private fun viewModel(
         repository: FakeDayStudyRepository,
         observeIsProUser: ObserveIsProUser,
     ): DayStudyViewModel {
@@ -190,19 +186,7 @@ internal class DayStudyViewModelTest {
                 languageCodeMapper = languageCodeMapper,
             ),
             isConnected = { true },
-            generationCoordinator = DayStudyGenerationCoordinatorImpl(
-                applicationScope = ApplicationScope(this),
-                getDayStudy = GetDayStudyUseCase(
-                    repository = repository,
-                    bibleRepository = bibleRepository,
-                    getAppLanguageFlow = getAppLanguageFlow,
-                    languageCodeMapper = languageCodeMapper,
-                ),
-                observeIsProUser = observeIsProUser,
-                networkConnectivityObserver = { MutableStateFlow(true) },
-                isConnected = { true },
-                trackEvent = { name, params -> trackedEvents += name to params },
-            ),
+            generationCoordinator = FakeDayStudyGenerationCoordinator(),
             observeIsProUser = observeIsProUser,
             observeAuthenticatedUserId = { flowOf("user-id") },
             cardUiModelFactory = DayStudyCardUiModelFactory(),

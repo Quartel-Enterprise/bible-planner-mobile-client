@@ -1,16 +1,14 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
-import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.feature.daystudy.domain.coordinator.FakeDayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiAction
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -178,44 +176,4 @@ internal class DayStudyBackgroundGenerationViewModelTest {
     )
 
     private val dayRoute = DayNavRoute(dayNumber = 1, weekNumber = 1, readingPlanType = "ONE_YEAR")
-
-    private class FakeDayStudyGenerationCoordinator : DayStudyGenerationCoordinator {
-        val jobsFlow = MutableStateFlow<List<DayStudyGenerationJob>>(emptyList())
-        val activeKeyFlow = MutableStateFlow<String?>(null)
-        val dismissedKeysFlow = MutableStateFlow<Set<String>>(emptySet())
-        val requestedOpenKeys = mutableListOf<String>()
-        val dismissedFromCardKeys = mutableListOf<String>()
-
-        override val jobs: StateFlow<List<DayStudyGenerationJob>> = jobsFlow
-        override val activeKey: StateFlow<String?> = activeKeyFlow
-        override val pendingOpenKey: StateFlow<String?> = MutableStateFlow(null)
-        override val dismissedKeys: StateFlow<Set<String>> = dismissedKeysFlow
-
-        override fun keyOf(dayRoute: DayNavRoute): String =
-            "${dayRoute.readingPlanType}|${dayRoute.weekNumber}|${dayRoute.dayNumber}"
-
-        override fun start(
-            passages: List<PassageModel>,
-            dayRoute: DayNavRoute,
-            label: String,
-        ): String = keyOf(dayRoute)
-
-        override fun setActive(key: String) = Unit
-
-        override fun clearActive(key: String) = Unit
-
-        override fun requestOpen(key: String) {
-            requestedOpenKeys += key
-        }
-
-        override fun consumePendingOpen(key: String) = Unit
-
-        override fun dismissFromCard(key: String) {
-            dismissedFromCardKeys += key
-        }
-
-        override fun acknowledge(key: String) = Unit
-
-        override fun generatingCount(excludingKey: String?): Int = 0
-    }
 }
