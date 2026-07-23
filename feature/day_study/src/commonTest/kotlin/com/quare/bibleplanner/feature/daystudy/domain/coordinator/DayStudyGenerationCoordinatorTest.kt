@@ -311,7 +311,7 @@ internal class DayStudyGenerationCoordinatorTest {
     private val isConnectedFlow = MutableStateFlow(true)
 
     private fun TestScope.coordinator(repository: FakeDayStudyRepository): DayStudyGenerationCoordinator =
-        DayStudyGenerationCoordinator(
+        DayStudyGenerationCoordinatorImpl(
             applicationScope = ApplicationScope(this),
             getDayStudy = GetDayStudyUseCase(
                 repository = repository,

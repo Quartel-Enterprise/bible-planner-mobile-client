@@ -11,6 +11,7 @@ import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyRequestMapper
 import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyStatusMapper
 import com.quare.bibleplanner.feature.daystudy.data.repository.DayStudyRepositoryImpl
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinatorImpl
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
@@ -42,7 +43,7 @@ val dayStudyModule = module {
     singleOf(::DayStudyRemoteDataSource)
     singleOf(::DayStudyLocalDataSource)
     singleOf(::DayStudyRepositoryImpl).bind<DayStudyRepository>()
-    singleOf(::DayStudyGenerationCoordinator)
+    singleOf(::DayStudyGenerationCoordinatorImpl).bind<DayStudyGenerationCoordinator>()
 
     factoryOf(::GetDayStudyUseCase)
     factoryOf(::GetDayStudyQuotaUseCase)

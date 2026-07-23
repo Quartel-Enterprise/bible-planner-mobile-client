@@ -14,7 +14,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProU
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinatorImpl
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyStatusModel
@@ -190,7 +190,7 @@ internal class DayStudyViewModelTest {
                 languageCodeMapper = languageCodeMapper,
             ),
             isConnected = { true },
-            generationCoordinator = DayStudyGenerationCoordinator(
+            generationCoordinator = DayStudyGenerationCoordinatorImpl(
                 applicationScope = ApplicationScope(this),
                 getDayStudy = GetDayStudyUseCase(
                     repository = repository,
