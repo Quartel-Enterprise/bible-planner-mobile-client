@@ -39,9 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +47,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_bg_done_subtitle
 import bibleplanner.feature.day_study.generated.resources.ai_study_bg_done_title
@@ -63,15 +61,17 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_phase_chapter
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_context
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_questions
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_reading
-import com.quare.bibleplanner.core.model.NavigationEventBus
-import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiAction
+import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiEvent
+import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
+import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 private val wideMinWidth = 700.dp
 private val desktopCardWidth = 392.dp
@@ -88,28 +88,24 @@ private const val PULSE_HALF_CYCLE_MILLIS = 950
  * currently shown in a foreground sheet/pane on the day). Rendered once at the root over any screen.
  */
 @Composable
-fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
-    val coordinator = koinInject<DayStudyGenerationCoordinator>()
-    val navigationEventBus = koinInject<NavigationEventBus>()
-    val jobs by coordinator.jobs.collectAsState()
-    val activeKey by coordinator.activeKey.collectAsState()
-    val dismissedKeys by coordinator.dismissedKeys.collectAsState()
+fun DayStudyBackgroundGenerationOverlay(
+    onNavigate: (NavKey) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val viewModel = koinViewModel<DayStudyBackgroundGenerationViewModel>()
+    val uiState by viewModel.uiState.collectAsState()
 
-    val visibleJobs = jobs.filter { job ->
-        job.key != activeKey &&
-            job.key !in dismissedKeys &&
-            job.status !is DayStudyGenerationStatus.Failed
-    }
-    var renderedJobs by remember { mutableStateOf(emptyList<DayStudyGenerationJob>()) }
-    if (visibleJobs.isNotEmpty()) {
-        renderedJobs = visibleJobs
+    ActionCollector(viewModel.uiAction) { action ->
+        when (action) {
+            is DayStudyBackgroundGenerationUiAction.NavigateToRoute -> onNavigate(action.route)
+        }
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val isWide = maxWidth > wideMinWidth
         val cardAlignment = if (isWide) Alignment.BottomEnd else Alignment.BottomCenter
         AnimatedVisibility(
-            visible = visibleJobs.isNotEmpty(),
+            visible = uiState.isVisible,
             modifier = Modifier.align(cardAlignment),
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
@@ -125,13 +121,10 @@ fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
                     .padding(bottom = mainContentBottomInset() + mobileBottomPadding)
             }
             BackgroundCard(
-                jobs = renderedJobs,
+                jobs = uiState.jobs,
                 modifier = cardModifier,
-                onOpen = { job ->
-                    coordinator.requestOpen(job.key)
-                    navigationEventBus.send(job.dayRoute)
-                },
-                onDismiss = { keys -> keys.forEach(coordinator::dismissFromCard) },
+                onOpen = { job -> viewModel.onEvent(DayStudyBackgroundGenerationUiEvent.OnOpenClick(job)) },
+                onDismiss = { keys -> viewModel.onEvent(DayStudyBackgroundGenerationUiEvent.OnDismissClick(keys)) },
             )
         }
     }

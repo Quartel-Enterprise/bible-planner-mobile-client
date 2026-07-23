@@ -20,6 +20,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUs
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
+import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyRouteViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyViewModel
 import org.koin.core.module.dsl.factoryOf
@@ -52,4 +53,5 @@ val dayStudyModule = module {
     factoryOf(::DayStudyCardUiModelFactory)
     viewModelOf(::DayStudyViewModel)
     viewModelOf(::DayStudyRouteViewModel)
+    viewModelOf(::DayStudyBackgroundGenerationViewModel)
 }
