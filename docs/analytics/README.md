@@ -227,6 +227,8 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_study_retry_clicked](events/day_study_retry_clicked.md) | P2 | DayStudy |
 | [day_study_load](events/day_study_load.md) | P1 | DayStudy |
 | [day_study_generation_time](events/day_study_generation_time.md) | P1 | DayStudy |
+| [day_study_bg_card_opened](events/day_study_bg_card_opened.md) | P2 | DayStudy |
+| [day_study_bg_card_dismissed](events/day_study_bg_card_dismissed.md) | P2 | DayStudy |
 
 ### Bible versions
 
