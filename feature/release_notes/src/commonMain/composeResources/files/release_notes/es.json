@@ -4,7 +4,8 @@
     "Se corrigió un problema que podía cerrar la app al volver a abrir el Estudio del día con el dispositivo en horizontal.",
     "Se corrigió un problema en el que, con el dispositivo en horizontal, parte del contenido (como la lista de libros y el panel del Estudio del día) quedaba oculto detrás de los botones de navegación de Android; ahora el contenido se ve por completo.",
     "Se eliminó un espacio vacío que aparecía en un lado de los paneles emergentes centrados, como el selector de tema en pantallas más grandes.",
-    "La tarjeta de 'Generando estudio' y las notificaciones de la app ya no se superponen a la barra de navegación inferior: ahora quedan justo encima de ella y bajan hasta el borde de la pantalla cuando la barra se oculta al desplazarte."
+    "La tarjeta de 'Generando estudio' y las notificaciones de la app ya no se superponen a la barra de navegación inferior: ahora quedan justo encima de ella y bajan hasta el borde de la pantalla cuando la barra se oculta al desplazarte.",
+    "Ahora puedes descartar la tarjeta de 'Estudio del día listo' con una 'X', sin tener que abrir el estudio."
   ],
   "2.1.1": [
     "Se corrigió un problema en el celular por el que tocar 'Ver' en la tarjeta de Estudio del día no abría la pantalla del estudio.",

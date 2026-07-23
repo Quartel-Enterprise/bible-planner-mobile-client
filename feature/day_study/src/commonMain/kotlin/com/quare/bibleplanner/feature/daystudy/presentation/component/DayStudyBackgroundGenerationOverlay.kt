@@ -230,7 +230,14 @@ private fun JobRow(
             }
         }
         when {
-            isDone -> OpenButton(onClick = onOpen)
+            isDone -> Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                OpenButton(onClick = onOpen)
+                CloseButton(onClick = onDismiss)
+            }
+
             !isMulti -> CloseButton(onClick = onDismiss)
         }
     }
