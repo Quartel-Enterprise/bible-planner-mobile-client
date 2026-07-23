@@ -1,10 +1,15 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +39,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -92,32 +100,40 @@ fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
             job.key !in dismissedKeys &&
             job.status !is DayStudyGenerationStatus.Failed
     }
-    if (visibleJobs.isEmpty()) return
+    var renderedJobs by remember { mutableStateOf(emptyList<DayStudyGenerationJob>()) }
+    if (visibleJobs.isNotEmpty()) {
+        renderedJobs = visibleJobs
+    }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val isWide = maxWidth > wideMinWidth
         val cardAlignment = if (isWide) Alignment.BottomEnd else Alignment.BottomCenter
-        val cardModifier = if (isWide) {
-            Modifier
-                .align(cardAlignment)
-                .padding(desktopEdgePadding)
-                .width(desktopCardWidth)
-        } else {
-            Modifier
-                .align(cardAlignment)
-                .fillMaxWidth()
-                .padding(horizontal = mobileHorizontalPadding)
-                .padding(bottom = mainContentBottomInset() + mobileBottomPadding)
+        AnimatedVisibility(
+            visible = visibleJobs.isNotEmpty(),
+            modifier = Modifier.align(cardAlignment),
+            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+        ) {
+            val cardModifier = if (isWide) {
+                Modifier
+                    .padding(desktopEdgePadding)
+                    .width(desktopCardWidth)
+            } else {
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = mobileHorizontalPadding)
+                    .padding(bottom = mainContentBottomInset() + mobileBottomPadding)
+            }
+            BackgroundCard(
+                jobs = renderedJobs,
+                modifier = cardModifier,
+                onOpen = { job ->
+                    coordinator.requestOpen(job.key)
+                    navigationEventBus.send(job.dayRoute)
+                },
+                onDismiss = { keys -> keys.forEach(coordinator::dismissFromCard) },
+            )
         }
-        BackgroundCard(
-            jobs = visibleJobs,
-            modifier = cardModifier,
-            onOpen = { job ->
-                coordinator.requestOpen(job.key)
-                navigationEventBus.send(job.dayRoute)
-            },
-            onDismiss = { keys -> keys.forEach(coordinator::dismissFromCard) },
-        )
     }
 }
 
