@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.login.presentation
 
-import com.quare.bibleplanner.feature.login.domain.usecase.ApplySupabaseRedirectHtmlUseCase
+import io.github.jan.supabase.auth.Auth
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.onEach
  * during the OAuth flow are reported through [onError] too, but do not abort the block.
  */
 internal class DesktopAuthRedirectHtmlSynchronizer(
-    private val applySupabaseRedirectHtmlUseCase: ApplySupabaseRedirectHtmlUseCase,
+    private val auth: Auth,
     private val getDesktopAuthSuccessHtmlFlow: GetDesktopAuthSuccessHtmlFlow,
 ) {
     suspend fun withSyncedRedirectHtml(
@@ -29,7 +29,7 @@ internal class DesktopAuthRedirectHtmlSynchronizer(
                 .onEach { result ->
                     result
                         .onSuccess { html ->
-                            applySupabaseRedirectHtmlUseCase(html)
+                            auth.config.httpCallbackConfig.redirectHtml = html
                             firstResult.complete(Result.success(Unit))
                         }.onFailure { throwable ->
                             onError(throwable)
