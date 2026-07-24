@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +42,7 @@ import com.quare.bibleplanner.core.navigation.utils.back
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
+import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyPanelViewModel
 import com.quare.bibleplanner.feature.inappupdate.presentation.InAppUpdateDownloadOverlay
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
@@ -48,6 +51,7 @@ import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 private val dayStudyPanelMinWidth = 700.dp
 
@@ -74,6 +78,8 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarController = koinInject<AppSnackbarController>()
     val trackDestination = koinInject<TrackDestination>()
+    val dayStudyPanelViewModel = koinViewModel<DayStudyPanelViewModel>()
+    val dayStudyReadingFraction by dayStudyPanelViewModel.readingFraction.collectAsState()
     val currentNavKey = backStack.lastOrNull()
     LaunchedEffect(currentNavKey) {
         currentNavKey?.let(trackDestination::invoke)
@@ -115,7 +121,13 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                     onBack = onNavigateBack,
                     sceneStrategies = listOf(
                         DialogSceneStrategy(),
-                        remember(isWide) { DayStudyPanelSceneStrategy(isWide) },
+                        remember(isWide, dayStudyReadingFraction) {
+                            DayStudyPanelSceneStrategy(
+                                isWide = isWide,
+                                readingFraction = dayStudyReadingFraction,
+                                onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,
+                            )
+                        },
                     ),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     entryDecorators = listOf(

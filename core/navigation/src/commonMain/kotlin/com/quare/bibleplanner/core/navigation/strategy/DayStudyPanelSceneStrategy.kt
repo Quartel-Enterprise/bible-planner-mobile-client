@@ -12,6 +12,8 @@ import com.quare.bibleplanner.core.navigation.scene.DayStudyPanelScene
 
 class DayStudyPanelSceneStrategy(
     private val isWide: Boolean,
+    private val readingFraction: Float,
+    private val onReadingFractionCommit: (Float) -> Unit,
 ) : SceneStrategy<NavKey> {
     override fun SceneStrategyScope<NavKey>.calculateScene(entries: List<NavEntry<NavKey>>): Scene<NavKey>? {
         if (!isWide) return null
@@ -24,6 +26,8 @@ class DayStudyPanelSceneStrategy(
             mainEntry = mainEntry,
             detailEntry = detailEntry,
             previousEntries = entries.dropLast(1),
+            initialReadingFraction = readingFraction,
+            onReadingFractionCommit = onReadingFractionCommit,
         )
     }
 }

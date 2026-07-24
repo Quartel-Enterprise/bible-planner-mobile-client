@@ -20,6 +20,7 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.user)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)

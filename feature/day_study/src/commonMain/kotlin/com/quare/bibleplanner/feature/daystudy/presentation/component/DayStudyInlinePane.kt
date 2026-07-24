@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
 
-private val contentMaxWidth = 560.dp
+private val contentMaxWidth = 720.dp
 
 @Composable
 internal fun DayStudyInlinePane(

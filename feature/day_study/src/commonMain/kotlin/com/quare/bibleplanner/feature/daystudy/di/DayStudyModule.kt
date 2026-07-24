@@ -9,19 +9,24 @@ import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyEntityMapper
 import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyPhaseMapper
 import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyRequestMapper
 import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyStatusMapper
+import com.quare.bibleplanner.feature.daystudy.data.repository.DayStudyPanelRatioRepositoryImpl
 import com.quare.bibleplanner.feature.daystudy.data.repository.DayStudyRepositoryImpl
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinatorImpl
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
+import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyPanelRatioRepository
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.ClearDayStudyLocalDataUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.ObserveDayStudyPanelReadingFractionUseCase
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.SetDayStudyPanelReadingFractionUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
+import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyPanelViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyRouteViewModel
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyViewModel
 import org.koin.core.module.dsl.factoryOf
@@ -43,6 +48,7 @@ val dayStudyModule = module {
     singleOf(::DayStudyRemoteDataSource)
     singleOf(::DayStudyLocalDataSource)
     singleOf(::DayStudyRepositoryImpl).bind<DayStudyRepository>()
+    singleOf(::DayStudyPanelRatioRepositoryImpl).bind<DayStudyPanelRatioRepository>()
     singleOf(::DayStudyGenerationCoordinatorImpl).bind<DayStudyGenerationCoordinator>()
 
     factoryOf(::GetDayStudyUseCase)
@@ -50,9 +56,12 @@ val dayStudyModule = module {
     factoryOf(::GetDayPassagesForDayStudyUseCase)
     factoryOf(::HasCachedStudyUseCase)
     factoryOf(::ClearDayStudyLocalDataUseCase).bind<ClearDayStudyLocalData>()
+    factoryOf(::ObserveDayStudyPanelReadingFractionUseCase)
+    factoryOf(::SetDayStudyPanelReadingFractionUseCase)
 
     factoryOf(::DayStudyCardUiModelFactory)
     viewModelOf(::DayStudyViewModel)
     viewModelOf(::DayStudyRouteViewModel)
     viewModelOf(::DayStudyBackgroundGenerationViewModel)
+    viewModelOf(::DayStudyPanelViewModel)
 }
