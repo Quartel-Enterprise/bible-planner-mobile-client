@@ -1,7 +1,8 @@
 {
   "2.2.0": [
     "Em telas maiores (tablet e desktop), agora você pode arrastar a divisória entre a leitura e o Estudo do dia para redimensionar os dois painéis do jeito que preferir.",
-    "O conteúdo do Estudo do dia ficou mais largo em telas maiores, aproveitando melhor o espaço disponível."
+    "O conteúdo do Estudo do dia ficou mais largo em telas maiores, aproveitando melhor o espaço disponível.",
+    "Corrigido um problema que podia fechar o app sozinho em telas maiores na horizontal, ao abrir a leitura e o Estudo do dia lado a lado ou ao voltar dessa tela."
   ],
   "2.1.2": [
     "Corrigido um problema que podia fechar o app sozinho ao tocar em voltar rápido demais.",
