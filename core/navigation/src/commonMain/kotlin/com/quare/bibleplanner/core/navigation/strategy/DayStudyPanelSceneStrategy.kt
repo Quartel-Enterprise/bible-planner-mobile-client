@@ -25,7 +25,7 @@ class DayStudyPanelSceneStrategy(
             key = mainEntry.contentKey,
             mainEntry = mainEntry,
             detailEntry = detailEntry,
-            previousEntries = entries.dropLast(1),
+            previousEntries = entries.dropLast(2),
             initialReadingFraction = readingFraction,
             onReadingFractionCommit = onReadingFractionCommit,
         )
