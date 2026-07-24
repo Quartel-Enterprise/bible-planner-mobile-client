@@ -13,6 +13,13 @@ kotlin {
     }
 }
 
+// Only the local dev run tasks are flagged as debug, so a packaged distribution defaults to
+// crash reporting enabled. Flagging production instead would silently disable it if the flag
+// were ever missed while packaging.
+tasks.withType<JavaExec>().matching { it.name in setOf("run", "hotRun") }.configureEach {
+    systemProperty("bibleplanner.debug", true)
+}
+
 dependencies {
     implementation(projects.shared)
 

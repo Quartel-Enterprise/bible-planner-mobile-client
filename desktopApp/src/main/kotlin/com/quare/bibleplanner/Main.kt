@@ -6,6 +6,8 @@ import bibleplanner.shared.generated.resources.Res
 import bibleplanner.shared.generated.resources.app_title
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
+import com.quare.bibleplanner.core.provider.crashlytics.configure
+import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
 import com.quare.bibleplanner.core.provider.language.di.jvmLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
@@ -23,6 +25,11 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+private const val DEBUG_SYSTEM_PROPERTY = "bibleplanner.debug"
+
+private val isDebug: Boolean
+    get() = System.getProperty(DEBUG_SYSTEM_PROPERTY).toBoolean()
+
 fun main() = application {
     initializeKoin(
         platformModules = listOf(
@@ -38,8 +45,9 @@ fun main() = application {
             },
         ),
     )
+    val koin = GlobalContext.get()
+    koin.get<CrashReporter>().configure(isDebug = isDebug)
     runBlocking {
-        val koin = GlobalContext.get()
         initAppLocale(
             getAppLanguageFlow = koin.get(),
             applyLocale = koin.get(),
