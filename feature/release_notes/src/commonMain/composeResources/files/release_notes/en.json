@@ -1,4 +1,8 @@
 {
+  "2.2.0": [
+    "On larger screens (tablet and desktop), you can now drag the divider between the reading panel and Daily study to resize both panels to your liking.",
+    "The Daily study content is wider on larger screens, making better use of the available space."
+  ],
   "2.1.2": [
     "Fixed an issue that could close the app on its own when tapping back too quickly.",
     "Fixed an issue that could close the app when reopening the Daily study with the device in landscape.",

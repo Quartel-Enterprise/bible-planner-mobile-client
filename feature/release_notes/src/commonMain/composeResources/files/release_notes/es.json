@@ -1,4 +1,8 @@
 {
+  "2.2.0": [
+    "En pantallas más grandes (tablet y escritorio), ahora puedes arrastrar el divisor entre el panel de lectura y el Estudio del día para cambiar el tamaño de ambos paneles a tu gusto.",
+    "El contenido del Estudio del día es más ancho en pantallas más grandes, aprovechando mejor el espacio disponible."
+  ],
   "2.1.2": [
     "Se corrigió un problema que podía cerrar la app por sí sola al tocar 'atrás' demasiado rápido.",
     "Se corrigió un problema que podía cerrar la app al volver a abrir el Estudio del día con el dispositivo en horizontal.",

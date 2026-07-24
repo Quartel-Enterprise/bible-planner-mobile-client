@@ -53,6 +53,7 @@ kotlin {
             // Koin
             implementation(project.dependencies.platform(libs.koinBom))
             implementation(libs.koinCompose)
+            implementation(libs.koinComposeViewModel)
 
             // Compose
             implementation(libs.runtime)
