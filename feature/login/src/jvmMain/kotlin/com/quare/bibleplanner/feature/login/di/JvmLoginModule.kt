@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.login.di
 
-import com.quare.bibleplanner.feature.login.domain.usecase.ApplySupabaseRedirectHtmlUseCase
 import com.quare.bibleplanner.feature.login.presentation.AddGoogleAccountLauncher
 import com.quare.bibleplanner.feature.login.presentation.DesktopAuthRedirectHtmlSynchronizer
 import com.quare.bibleplanner.feature.login.presentation.GetDesktopAuthSuccessHtmlFlow
@@ -19,7 +18,6 @@ val jvmLoginModule = module {
     factoryOf(::LanguageToDesktopAuthSuccessStringsMapper)
     factoryOf(::DesktopAuthSuccessHtmlFactory)
     factoryOf(::GetDesktopAuthSuccessHtmlFlow)
-    factoryOf(::ApplySupabaseRedirectHtmlUseCase)
     factoryOf(::DesktopAuthRedirectHtmlSynchronizer)
     factoryOf(::JvmSignInStarter).bind<SignInStarter>()
     factory<NoGoogleAccountClassifier> { NoGoogleAccountClassifier { false } }
