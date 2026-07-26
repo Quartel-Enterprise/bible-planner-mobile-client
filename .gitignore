@@ -31,7 +31,8 @@ captures
 node_modules/
 setup-java.sh
 
-/desktopApp/prefs.preferences_pb
+prefs.preferences_pb
+prefs.preferences_pb.tmp
 /desktopApp/release/
 /.vscode
 /build-logic/convention/bin/
