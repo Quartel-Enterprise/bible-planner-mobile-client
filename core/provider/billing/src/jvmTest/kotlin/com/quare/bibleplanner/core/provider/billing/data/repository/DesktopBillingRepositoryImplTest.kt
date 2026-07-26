@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.provider.billing.data.repository
 
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
-import com.quare.bibleplanner.core.provider.billing.data.config.DesktopBillingConfig
+import com.quare.bibleplanner.core.provider.billing.data.config.desktopBillingConfig
 import com.quare.bibleplanner.core.provider.billing.data.datasource.RevenueCatRestDataSource
 import com.quare.bibleplanner.core.provider.billing.data.dto.OfferingDto
 import com.quare.bibleplanner.core.provider.billing.data.dto.OfferingsResponseDto
@@ -205,7 +205,7 @@ internal class DesktopBillingRepositoryImplTest {
         purchaseLink: String = PURCHASE_LINK,
         subscriber: SubscriberResponseDto? = freeSubscriberResponse(),
     ) {
-        val config = DesktopBillingConfig(
+        val config = desktopBillingConfig(
             apiKey = apiKey,
             purchaseLink = purchaseLink,
         )

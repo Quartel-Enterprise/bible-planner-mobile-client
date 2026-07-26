@@ -22,6 +22,8 @@ buildkonfig {
             "REVENUECAT_PLAY_STORE_API_KEY",
             "REVENUECAT_WEB_BILLING_API_KEY",
             "REVENUECAT_WEB_PURCHASE_LINK",
+            "REVENUECAT_WEB_BILLING_SANDBOX_API_KEY",
+            "REVENUECAT_WEB_PURCHASE_LINK_SANDBOX",
         )
         revenueKeys.forEach { name ->
             buildConfigField(
@@ -112,6 +114,7 @@ kotlin {
             implementation(libs.kotlin.serialization.json)
             implementation(libs.kermit)
             implementation(projects.core.utils)
+            implementation(projects.core.provider.platform)
         }
     }
 }

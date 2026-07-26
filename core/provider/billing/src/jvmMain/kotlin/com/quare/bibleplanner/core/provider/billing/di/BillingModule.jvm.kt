@@ -43,6 +43,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.OpenUrl
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserIdUseCase
 import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanNameMapper
+import com.quare.bibleplanner.core.provider.platform.isDebugBuild
 import kotlinx.coroutines.flow.flowOf
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -52,8 +53,11 @@ import org.koin.dsl.module
 actual val billingProviderModule = module {
     single {
         DesktopBillingConfig(
-            apiKey = BuildKonfig.REVENUECAT_WEB_BILLING_API_KEY,
-            purchaseLink = BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK,
+            productionApiKey = BuildKonfig.REVENUECAT_WEB_BILLING_API_KEY,
+            productionPurchaseLink = BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK,
+            sandboxApiKey = BuildKonfig.REVENUECAT_WEB_BILLING_SANDBOX_API_KEY,
+            sandboxPurchaseLink = BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK_SANDBOX,
+            isDebugBuild = isDebugBuild(),
         )
     }
     singleOf(::AnonymousAppUserIdProvider).bind<GetAnonymousAppUserId>()

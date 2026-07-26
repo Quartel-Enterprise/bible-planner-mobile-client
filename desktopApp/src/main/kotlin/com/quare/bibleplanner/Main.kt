@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.provider.crashlytics.configure
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
 import com.quare.bibleplanner.core.provider.language.di.jvmLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
+import com.quare.bibleplanner.core.provider.platform.isDebugBuild
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.di.jvmAppLanguageModule
@@ -24,11 +25,6 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-
-private const val PACKAGED_APP_PATH_PROPERTY = "jpackage.app-path"
-
-private val isDebug: Boolean
-    get() = System.getProperty(PACKAGED_APP_PATH_PROPERTY) == null
 
 fun main() = application {
     initializeKoin(
@@ -46,7 +42,7 @@ fun main() = application {
         ),
     )
     val koin = GlobalContext.get()
-    koin.get<CrashReporter>().configure(isDebug = isDebug)
+    koin.get<CrashReporter>().configure(isDebug = isDebugBuild())
     runBlocking {
         initAppLocale(
             getAppLanguageFlow = koin.get(),

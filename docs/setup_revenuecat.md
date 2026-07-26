@@ -20,6 +20,8 @@ REVENUECAT_PLAY_STORE_API_KEY=your_play_store_key_here
 REVENUECAT_APP_STORE_API_KEY=your_app_store_key_here
 REVENUECAT_WEB_BILLING_API_KEY=your_web_billing_key_here
 REVENUECAT_WEB_PURCHASE_LINK=https://pay.rev.cat/your_web_purchase_link_token
+REVENUECAT_WEB_BILLING_SANDBOX_API_KEY=your_web_billing_sandbox_key_here
+REVENUECAT_WEB_PURCHASE_LINK_SANDBOX=https://pay.rev.cat/sandbox/your_sandbox_token
 ```
 
 3.  Save the file.
@@ -57,9 +59,14 @@ Where the values come from:
 - `REVENUECAT_WEB_BILLING_API_KEY`: **Project Settings > API Keys**, the public key of the *Web Billing*
   app (`rcb_…` for production, `rcb_sb_…` for sandbox).
 - `REVENUECAT_WEB_PURCHASE_LINK`: **Funnels > Purchase Links**, "Share URL" of the link created for the
-  `default` offering — copy only the part before the app user id (e.g. `https://pay.rev.cat/abc123`). The
-  same dialog has a sandbox URL (`https://pay.rev.cat/sandbox/<token>`); pair it with the `rcb_sb_…` key
-  to test checkout with Stripe test cards instead of real charges.
+  `default` offering — copy only the part before the app user id (e.g. `https://pay.rev.cat/abc123`).
+- `REVENUECAT_WEB_BILLING_SANDBOX_API_KEY` / `REVENUECAT_WEB_PURCHASE_LINK_SANDBOX`: the sandbox
+  counterparts, from the same two screens ("Show Sandbox URL" in the share dialog).
+
+**The app picks the pair for you:** a build run from Gradle uses the sandbox pair, and the packaged
+app (`.dmg`/`.msi`/`.deb`) uses the production one — same `isDebugBuild()` signal the crash reporter
+uses, so a local run can never charge a real card and a shipped build never points at sandbox. To try
+the production checkout from a dev machine, package the app instead of editing `local.properties`.
 
 The app appends `?package_id=` with the package **lookup key** (`$rc_monthly` / `$rc_annual`) so the plan
 picked on the desktop paywall opens straight at checkout — the internal `pkge…` id does *not* work there.
