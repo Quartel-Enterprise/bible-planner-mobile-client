@@ -7,8 +7,9 @@ This document explains how Bible Planner is released to the **Google Play Store*
 ## Overview
 
 A release is a single manual action: you run the **release** workflow from the GitHub Actions
-tab. The pipeline resolves the version, pauses for your approval, builds and uploads both apps,
-and then tags the release and merges the version bump back into `main`.
+tab. The pipeline resolves the version, pauses for your approval, builds and uploads the mobile
+apps, packages the desktop installers, and then tags the release and merges the version bump
+back into `main`.
 
 Nothing is created or published before you approve the run, and all credentials live in the
 `Production` GitHub Environment — only jobs that pass the approval gate can read them.
@@ -22,11 +23,13 @@ flowchart TD
     G -->|rejected| X([Run stops — nothing built])
     G -->|approved| D[android<br/>build AAB + upload to Play]
     G -->|approved| E[ios<br/>build IPA + submit to App Store]
+    G -->|approved| H[desktop<br/>build dmg + msi + deb]
     D --> F[finalize]
     E --> F
+    H --> F
     F --> F1[Create release/X.Y.Z branch + version bump]
     F1 --> F2[Open + squash-merge the merge-back PR into main]
-    F2 --> F3([Publish GitHub Release vX.Y.Z])
+    F2 --> F3([Publish GitHub Release vX.Y.Z<br/>with the installers attached])
 ```
 
 | Job | Runner | Gated | What it does |
@@ -36,10 +39,13 @@ flowchart TD
 | `android-upload` | ubuntu | yes | Uploads the AAB to Google Play |
 | `ios-build` | macOS | yes | Builds the signed IPA and saves it as a build artifact |
 | `ios-upload` | macOS | yes | Uploads the IPA to App Store Connect and submits it for review |
-| `finalize` | ubuntu | no | Branch + version bump, merge-back PR, GitHub Release |
+| `desktop-build` | macOS + windows + ubuntu | yes | Builds the `.dmg`, `.msi` and `.deb` installers, one runner per OS |
+| `finalize` | ubuntu | no | Branch + version bump, merge-back PR, GitHub Release with the installers attached |
 
-Both platforms split build and upload into separate jobs, so a failed upload can be retried
-(re-run just the `*-upload` job) without paying for another build.
+Android and iOS split build and upload into separate jobs, so a failed upload can be retried
+(re-run just the `*-upload` job) without paying for another build. Desktop has no store to
+upload to: the installers are attached to the GitHub release by `finalize`. They are unsigned,
+so macOS Gatekeeper and Windows SmartScreen warn on first launch.
 
 ## Triggering a release
 
@@ -48,7 +54,7 @@ Both platforms split build and upload into separate jobs, so a failed upload can
 2. Open **GitHub → Actions → release → Run workflow**.
 3. Fill in the inputs (all optional):
    - **version** — leave blank to auto-resolve, or type an explicit `X.Y.Z`.
-   - **platforms** — `both` (default), `android`, or `ios`.
+   - **platforms** — `all` (default), `android`, `ios`, or `desktop`.
    - **track** — Android Play Store track: `production` (default), `beta`, `alpha`, `internal`.
    - **complete_android_release** — `true` (default) rolls the Android release out; `false`
      uploads it to the track as a draft you release manually from the Play Console.
@@ -57,7 +63,7 @@ Both platforms split build and upload into separate jobs, so a failed upload can
 
 Alternatively, run `./scripts/release/release.sh` from the terminal — it asks for the same inputs
 as a menu (with the same defaults) and prints the link to the dispatched run. For a full
-production release on both stores with no prompts, run `./scripts/release/release-prod.sh`.
+production release on every platform with no prompts, run `./scripts/release/release-prod.sh`.
 4. Click **Run workflow**.
 5. The `plan` job runs and prints the resolved version in the run summary. The run then pauses
    on the **Production** environment.
@@ -68,7 +74,7 @@ production release on both stores with no prompts, run `./scripts/release/releas
 
 ```text
 version:                  (blank — auto-resolved to 1.14.0 from the release notes JSON)
-platforms:                both
+platforms:                all
 track:                    production
 complete_android_release: true
 submit_ios_for_review:    true
@@ -78,7 +84,7 @@ submit_ios_for_review:    true
 
 ```text
 version:                  (blank)
-platforms:                both
+platforms:                all
 track:                    internal
 complete_android_release: false
 submit_ios_for_review:    false
@@ -86,7 +92,7 @@ submit_ios_for_review:    false
 
 Android uploads to the internal testing track as a draft and iOS lands in App Store Connect /
 TestFlight without being submitted for review. The `finalize` job only runs for
-`platforms = both` **and** `track = production`, so a test run creates no tag, GitHub Release or
+`platforms = all` **and** `track = production`, so a test run creates no tag, GitHub Release or
 merge-back PR.
 
 ## How the version is resolved
@@ -148,12 +154,13 @@ the `version` input set.
 
 ## After a release
 
-Once both store uploads succeed, `finalize`:
+Once the store uploads and the desktop builds succeed, `finalize`:
 
 1. Creates the `release/X.Y.Z` branch with the version bump commit (Android, iOS and Desktop —
    see [`scripts/bump-version.sh`](../scripts/bump-version.sh)).
 2. Opens a `chore: merge back X.Y.Z into main` pull request and squash-merges it into `main`.
-3. Publishes a **GitHub Release** `vX.Y.Z` with auto-generated notes.
+3. Publishes a **GitHub Release** `vX.Y.Z` with auto-generated notes and the `.dmg`, `.msi` and
+   `.deb` installers attached as assets.
 
 ## If a store rejects the build
 
