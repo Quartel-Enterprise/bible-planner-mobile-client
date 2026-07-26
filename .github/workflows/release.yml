@@ -107,10 +107,12 @@ jobs:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
           echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
           printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
+          printf 'SENTRY_DSN=%s\n' "$SENTRY_DSN" >> local.properties
 
       - name: Build the signed AAB
         run: fastlane android build
@@ -215,9 +217,11 @@ jobs:
         env:
           GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
           echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist
           printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
+          printf 'SENTRY_DSN=%s\n' "$SENTRY_DSN" >> local.properties
 
       - name: Build the signed IPA
         run: fastlane ios build
