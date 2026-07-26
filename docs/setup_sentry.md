@@ -37,8 +37,20 @@ After updating `local.properties`, sync Gradle to regenerate `CrashlyticsBuildKo
 
 ## 4. Configure CI
 
-The release workflow writes `local.properties` from the `LOCAL_PROPERTIES` GitHub secret, so add the
-`SENTRY_DSN=...` line to that secret as well. Without it, packaged builds produced by CI report nothing.
+`SENTRY_DSN` is its **own** secret on the `Production` environment, alongside the other build secrets — it
+does not live inside the `LOCAL_PROPERTIES` blob. The release workflow appends it to `local.properties`
+right after writing that blob:
+
+```bash
+gh secret set SENTRY_DSN --env Production --repo Quartel-Enterprise/bible-planner-mobile-client
+```
+
+Keeping it separate is what makes rotation cheap. GitHub secrets are write-only — the current value cannot
+be read back — so folding the DSN into `LOCAL_PROPERTIES` would mean reconstructing every key in that blob
+from scratch on every change, with no way to diff against what is already there.
+
+If the secret is unset, the workflow appends a blank value, which disables reporting instead of failing the
+build.
 
 ## Debug vs production
 
