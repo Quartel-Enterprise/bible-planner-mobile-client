@@ -12,6 +12,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetRestorePur
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.isApple
+import com.quare.bibleplanner.core.provider.platform.isDesktop
 import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
 import com.quare.bibleplanner.feature.paywall.domain.model.SubscriptionPlanType
 import com.quare.bibleplanner.feature.paywall.presentation.factory.PaywallUiStateFactory
@@ -48,9 +49,17 @@ internal class PaywallViewModel(
     private val _uiAction: MutableSharedFlow<PaywallUiAction> = MutableSharedFlow()
     val uiAction: SharedFlow<PaywallUiAction> = _uiAction
 
-    private val storeName: String = if (platform.isApple()) "App Store" else "Google Play Store"
+    private val storeName: String = when {
+        platform.isDesktop() -> WEB_STORE_NAME
+        platform.isApple() -> APP_STORE_NAME
+        else -> PLAY_STORE_NAME
+    }
 
-    private val store: String = if (platform.isApple()) APP_STORE else PLAY_STORE
+    private val store: String = when {
+        platform.isDesktop() -> WEB_BILLING
+        platform.isApple() -> APP_STORE
+        else -> PLAY_STORE
+    }
 
     private var storePackages: List<StorePackage> = emptyList()
 
@@ -244,5 +253,9 @@ internal class PaywallViewModel(
     private companion object {
         const val APP_STORE = "app_store"
         const val PLAY_STORE = "play_store"
+        const val WEB_BILLING = "web_billing"
+        const val APP_STORE_NAME = "App Store"
+        const val PLAY_STORE_NAME = "Google Play Store"
+        const val WEB_STORE_NAME = "Web Store"
     }
 }

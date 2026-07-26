@@ -13,8 +13,8 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscripti
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCaseImpl
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBillingMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.InitializeBillingUseCase
-import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsFreeUserUseCaseImpl
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.IsProUserUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
@@ -26,6 +26,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreS
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserIdUseCase
 import com.quare.bibleplanner.core.provider.billing.mapper.PackageMapper
+import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanNameMapper
 import com.revenuecat.purchases.kmp.Purchases
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -36,10 +37,11 @@ actual val billingProviderModule = module {
     single<Purchases> { Purchases.sharedInstance }
     singleOf(::BillingCustomerInfoSource)
     factoryOf(::PackageMapper)
+    factoryOf(::ProPlanNameMapper)
     factoryOf(::GetPurchaseResultMobileUseCase).bind<GetPurchaseResultUseCase>()
     factoryOf(::GetOfferingsResultMobileUseCase).bind<GetOfferingsResultUseCase>()
     factoryOf(::GetRestorePurchaseResultMobileUseCase).bind<GetRestorePurchaseResultUseCase>()
-    factoryOf(::IsFreeUserMobileUseCase).bind<IsFreeUserUseCase>()
+    factoryOf(::IsFreeUserUseCaseImpl).bind<IsFreeUserUseCase>()
     factoryOf(::InitializeBillingMobileUseCase).bind<InitializeBillingUseCase>()
     factoryOf(::IsProUserMobileUseCase).bind<IsProUserUseCase>()
     factoryOf(::ObserveInstagramLinkVisibleInMobileUseCase).bind<ObserveInstagramLinkVisible>()

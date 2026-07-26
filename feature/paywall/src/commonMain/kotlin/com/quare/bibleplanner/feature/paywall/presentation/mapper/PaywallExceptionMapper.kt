@@ -6,6 +6,7 @@ import bibleplanner.feature.paywall.generated.resources.error_payment_pending
 import bibleplanner.feature.paywall.generated.resources.error_purchase_cancelled
 import bibleplanner.feature.paywall.generated.resources.error_restore_purchase
 import bibleplanner.feature.paywall.generated.resources.error_unknown
+import bibleplanner.feature.paywall.generated.resources.error_web_checkout_not_confirmed
 import com.quare.bibleplanner.core.provider.billing.domain.model.BillingException
 import org.jetbrains.compose.resources.StringResource
 
@@ -15,6 +16,7 @@ class PaywallExceptionMapper {
         is BillingException.NetworkError -> Res.string.error_network
         is BillingException.PaymentPending -> Res.string.error_payment_pending
         is BillingException.RestorePurchaseFailed -> Res.string.error_restore_purchase
+        is BillingException.WebCheckoutNotConfirmed -> Res.string.error_web_checkout_not_confirmed
         else -> Res.string.error_unknown
     }
 }
