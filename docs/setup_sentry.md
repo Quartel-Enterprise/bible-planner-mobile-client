@@ -42,13 +42,17 @@ The release workflow writes `local.properties` from the `LOCAL_PROPERTIES` GitHu
 
 ## Debug vs production
 
-Collection is disabled in development. The `run` and `hotRun` Gradle tasks pass
-`-Dbibleplanner.debug=true`, which makes `CrashReporter.configure(isDebug = true)` skip `Sentry.init`.
-Anything else — `runDistributable`, `runRelease` and the packaged `.dmg`/`.msi`/`.deb` launchers — has no
-such flag and therefore reports normally.
+Collection is enabled only when the app runs from a packaged distribution. `Main.kt` treats the presence
+of the `jpackage.app-path` system property as the signal: the jpackage launcher inside the
+`.dmg`/`.msi`/`.deb` sets it to its own executable path, and nothing else does.
 
-The flag deliberately marks *development* rather than production: if it were ever missed, the failure mode
-is extra noise in Sentry, not crash reporting silently switched off in a shipped build.
+So the packaged app (and `runDistributable`, which launches it) reports, while **every** development entry
+point stays silent — `./gradlew run`, `hotRun`, the IDE's Run button, and test tasks alike. Keying off the
+artifact rather than off specific Gradle tasks is what makes the IDE case work: a run started from the IDE
+never goes through the Gradle `run` task, so a task-based flag would have left it reporting to production.
+
+This property is not mentioned in the jpackage documentation, so it was verified empirically against a real
+`createDistributable` build: the packaged launcher reports the path, `./gradlew run` reports `null`.
 
 ## What gets reported
 

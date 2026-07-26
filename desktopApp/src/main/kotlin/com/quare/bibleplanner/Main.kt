@@ -25,10 +25,10 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-private const val DEBUG_SYSTEM_PROPERTY = "bibleplanner.debug"
+private const val PACKAGED_APP_PATH_PROPERTY = "jpackage.app-path"
 
 private val isDebug: Boolean
-    get() = System.getProperty(DEBUG_SYSTEM_PROPERTY).toBoolean()
+    get() = System.getProperty(PACKAGED_APP_PATH_PROPERTY) == null
 
 fun main() = application {
     initializeKoin(
