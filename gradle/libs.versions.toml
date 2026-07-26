@@ -38,6 +38,7 @@ supabase = "3.7.0"
 coil = "3.5.0"
 filekit = "0.14.2"
 composeShimmer = "1.5.0"
+sentry = "8.50.1"
 
 # Android versions
 android-minSdk = "26"
@@ -99,6 +100,9 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+
+# Sentry (desktop crash reporting)
+sentry = { group = "io.sentry", name = "sentry", version.ref = "sentry" }
 
 # Google Play Services
 play-services-time = { group = "com.google.android.gms", name = "play-services-time", version.ref = "playServicesTime" }
