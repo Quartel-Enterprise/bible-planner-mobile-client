@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.provider.billing.data.mapper
 
-import com.quare.bibleplanner.core.provider.billing.data.config.desktopBillingConfig
+import com.quare.bibleplanner.core.provider.billing.data.config.DesktopBillingConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -63,7 +63,7 @@ internal class WebPurchaseLinkBuilderTest {
 
     private fun prepareScenario(purchaseLink: String) {
         builder = WebPurchaseLinkBuilder(
-            desktopBillingConfig(
+            DesktopBillingConfig(
                 apiKey = "rcb_test",
                 purchaseLink = purchaseLink,
             ),
