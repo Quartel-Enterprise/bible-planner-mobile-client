@@ -50,13 +50,13 @@ internal class PaywallViewModel(
     val uiAction: SharedFlow<PaywallUiAction> = _uiAction
 
     private val storeName: String = when {
-        platform.isDesktop() -> WEB_STORE_NAME
+        platform.isDesktop() -> DESKTOP_STORE_NAME
         platform.isApple() -> APP_STORE_NAME
         else -> PLAY_STORE_NAME
     }
 
     private val store: String = when {
-        platform.isDesktop() -> WEB_BILLING
+        platform.isDesktop() -> DESKTOP
         platform.isApple() -> APP_STORE
         else -> PLAY_STORE
     }
@@ -253,9 +253,9 @@ internal class PaywallViewModel(
     private companion object {
         const val APP_STORE = "app_store"
         const val PLAY_STORE = "play_store"
-        const val WEB_BILLING = "web_billing"
+        const val DESKTOP = "desktop"
         const val APP_STORE_NAME = "App Store"
         const val PLAY_STORE_NAME = "Google Play Store"
-        const val WEB_STORE_NAME = "Web Store"
+        const val DESKTOP_STORE_NAME = "Stripe"
     }
 }

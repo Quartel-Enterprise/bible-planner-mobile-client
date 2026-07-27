@@ -19,7 +19,7 @@ Captures a successful Pro subscription purchase. This is the primary monetizatio
 | `subscription_plan` | string | `annual` | Purchased plan: `monthly` \| `annual` |
 | `package_id` | string | `$rc_annual` | `StorePackage.identifier` (RevenueCat package id) |
 | `price` | string | `R$ 84,90` | `StorePackage.priceString`, localized display price |
-| `store` | string | `play_store` | `app_store` \| `play_store` \| `web_billing` (desktop) |
+| `store` | string | `play_store` | `app_store` \| `play_store` \| `desktop` |
 
 ## Notes
 

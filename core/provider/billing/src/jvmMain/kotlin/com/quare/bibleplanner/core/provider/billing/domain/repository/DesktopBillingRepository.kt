@@ -13,7 +13,7 @@ internal interface DesktopBillingRepository {
 
     suspend fun getStorePackages(): List<StorePackage>
 
-    fun getWebCheckoutUrl(
+    fun getCheckoutUrl(
         appUserId: String,
         packageIdentifier: String,
     ): String

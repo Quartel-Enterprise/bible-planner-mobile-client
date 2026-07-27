@@ -38,7 +38,7 @@ internal class FakeDesktopBillingRepository(
 
     override suspend fun getStorePackages(): List<StorePackage> = error("unused")
 
-    override fun getWebCheckoutUrl(
+    override fun getCheckoutUrl(
         appUserId: String,
         packageIdentifier: String,
     ): String = checkoutUrl?.let { url -> "$url/$appUserId?package_id=$packageIdentifier" }

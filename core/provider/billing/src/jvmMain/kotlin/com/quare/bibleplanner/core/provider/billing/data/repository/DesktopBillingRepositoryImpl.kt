@@ -59,7 +59,7 @@ internal class DesktopBillingRepositoryImpl(
         }
     }
 
-    override fun getWebCheckoutUrl(
+    override fun getCheckoutUrl(
         appUserId: String,
         packageIdentifier: String,
     ): String {

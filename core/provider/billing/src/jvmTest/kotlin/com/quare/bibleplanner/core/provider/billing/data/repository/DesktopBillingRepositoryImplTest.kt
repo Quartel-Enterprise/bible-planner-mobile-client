@@ -105,12 +105,12 @@ internal class DesktopBillingRepositoryImplTest {
     }
 
     @Test
-    fun `should build the web checkout url for the given app user id`() = runTest {
+    fun `should build the checkout url for the given app user id`() = runTest {
         // Given
         prepareScenario()
 
         // When
-        val url = repository.getWebCheckoutUrl(
+        val url = repository.getCheckoutUrl(
             appUserId = TEST_APP_USER_ID,
             packageIdentifier = MONTHLY_PACKAGE_IDENTIFIER,
         )

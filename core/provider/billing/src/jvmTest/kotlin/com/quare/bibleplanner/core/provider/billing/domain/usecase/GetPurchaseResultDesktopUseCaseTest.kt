@@ -19,7 +19,7 @@ internal class GetPurchaseResultDesktopUseCaseTest {
     private lateinit var openedUrls: MutableList<String>
 
     @Test
-    fun `should open the web checkout and succeed once the entitlement becomes active`() = runTest {
+    fun `should open the browser checkout and succeed once the entitlement becomes active`() = runTest {
         // Given
         prepareScenario(refreshesBeforePro = 2)
 
@@ -43,7 +43,7 @@ internal class GetPurchaseResultDesktopUseCaseTest {
         val result = useCase(storePackage())
 
         // Then
-        assertIs<BillingException.WebCheckoutNotConfirmed>(result.exceptionOrNull())
+        assertIs<BillingException.BrowserCheckoutNotConfirmed>(result.exceptionOrNull())
     }
 
     @Test

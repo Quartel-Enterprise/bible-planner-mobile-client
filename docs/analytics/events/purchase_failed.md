@@ -18,7 +18,7 @@ Captures a purchase attempt that did not convert, split by reason. Distinguishin
 |---|---|---|---|
 | `reason` | string | `user_cancelled` | `user_cancelled` \| `network` \| `payment_pending` \| `unknown`, derived from the `BillingException` subtype the same way `PaywallExceptionMapper` maps it |
 | `subscription_plan` | string | `annual` | Plan that was being purchased: `monthly` \| `annual` |
-| `store` | string | `play_store` | `app_store` \| `play_store` \| `web_billing` (desktop) |
+| `store` | string | `play_store` | `app_store` \| `play_store` \| `desktop` |
 
 ## Notes
 

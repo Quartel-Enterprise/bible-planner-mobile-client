@@ -16,11 +16,11 @@ internal class GetPurchaseResultDesktopUseCase(
     override suspend fun invoke(storePackage: StorePackage): Result<Unit> = suspendRunCatching {
         val appUserId = getAuthenticatedUserId() ?: throw BillingUnavailableException()
         openUrl(
-            repository.getWebCheckoutUrl(
+            repository.getCheckoutUrl(
                 appUserId = appUserId,
                 packageIdentifier = storePackage.identifier,
             ),
         )
-        if (!awaitProEntitlement()) throw BillingException.WebCheckoutNotConfirmed()
+        if (!awaitProEntitlement()) throw BillingException.BrowserCheckoutNotConfirmed()
     }
 }
