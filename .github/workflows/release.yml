@@ -9,11 +9,16 @@ name: release
 #   2. The run pauses on the `Production` environment. Review the planned
 #      version in the summary, then approve to continue (or reject and start a
 #      new run with the `version` input to override).
-#   3. Android and iOS are built and uploaded to the stores.
+#   3. Android and iOS are built and uploaded to the stores, and the desktop
+#      installers are built on one runner per OS.
 #   4. `finalize` bumps the version on a release branch, opens and squash-merges
-#      the merge-back PR into main, and publishes the GitHub release.
+#      the merge-back PR into main, and publishes the GitHub release with the
+#      desktop installers attached as assets.
 #
 # Secrets live exclusively in the `Production` environment.
+#
+# The desktop installers are unsigned: macOS Gatekeeper and Windows SmartScreen
+# will warn on first launch until code signing and notarization are set up.
 
 on:
   workflow_dispatch:
@@ -23,13 +28,15 @@ on:
         type: string
         required: false
       platforms:
-        description: "Platforms to release"
+        description: "Platforms to release (mobile = android + ios)"
         type: choice
         options:
-          - both
+          - all
+          - mobile
           - android
           - ios
-        default: both
+          - desktop
+        default: all
       track:
         description: "Android Play Store track"
         type: choice
@@ -78,7 +85,7 @@ jobs:
   android-build:
     name: Android — build the AAB
     needs: plan
-    if: ${{ inputs.platforms == 'both' || inputs.platforms == 'android' }}
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'android' }}
     runs-on: ubuntu-latest
     environment: Production
     steps:
@@ -107,12 +114,10 @@ jobs:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
           echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
           printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
-          printf 'SENTRY_DSN=%s\n' "$SENTRY_DSN" >> local.properties
 
       - name: Build the signed AAB
         run: fastlane android build
@@ -134,7 +139,7 @@ jobs:
   android-upload:
     name: Android — upload to Google Play
     needs: [plan, android-build]
-    if: ${{ inputs.platforms == 'both' || inputs.platforms == 'android' }}
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'android' }}
     runs-on: ubuntu-latest
     environment: Production
     steps:
@@ -175,7 +180,7 @@ jobs:
   ios-build:
     name: iOS — build the IPA
     needs: plan
-    if: ${{ inputs.platforms == 'both' || inputs.platforms == 'ios' }}
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'ios' }}
     runs-on: macos-latest
     environment: Production
     steps:
@@ -217,11 +222,9 @@ jobs:
         env:
           GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: |
           echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > iosApp/iosApp/GoogleService-Info.plist
           printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
-          printf 'SENTRY_DSN=%s\n' "$SENTRY_DSN" >> local.properties
 
       - name: Build the signed IPA
         run: fastlane ios build
@@ -244,7 +247,7 @@ jobs:
   ios-upload:
     name: iOS — upload to App Store Connect
     needs: [plan, ios-build]
-    if: ${{ inputs.platforms == 'both' || inputs.platforms == 'ios' }}
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'ios' }}
     runs-on: macos-latest
     environment: Production
     steps:
@@ -279,10 +282,110 @@ jobs:
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           SUBMIT_FOR_REVIEW: ${{ inputs.submit_ios_for_review }}
 
+  desktop-build:
+    name: Desktop — build the ${{ matrix.formats }}
+    needs: plan
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'desktop' }}
+    runs-on: ${{ matrix.os }}
+    environment: Production
+    strategy:
+      # One runner per OS: jpackage only builds the installers of the host system.
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            label: macos
+            formats: dmg
+          - os: windows-latest
+            label: windows
+            formats: msi
+          - os: ubuntu-latest
+            label: linux
+            formats: deb and rpm
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Bump version
+        shell: bash
+        run: ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+
+      # jpackage shells out to these to lay out the .deb and the .rpm; none are
+      # preinstalled. Debian ships rpmbuild inside the `rpm` package.
+      - name: Install the Linux packaging tools
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get update && sudo apt-get install --yes fakeroot binutils rpm
+
+      - name: Decode local properties
+        shell: bash
+        env:
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
+          printf 'SENTRY_DSN=%s\n' "$SENTRY_DSN" >> local.properties
+
+      # No checkJdkVendor bypass here: the runner JDK is Temurin, and the guard
+      # only ever fires on Homebrew's distribution.
+      - name: Build the installers
+        shell: bash
+        run: ./gradlew :desktopApp:packageDistributionForCurrentOS
+
+      # Guards the packaged runtime against a silently trimmed jlink image: a
+      # missing jdk.unsupported cost us the sun.misc.Unsafe crash in 2.2.0.
+      # Only macOS leaves an unpacked app image under binaries/; the jlink output
+      # every OS embeds is compose/tmp/main/runtime, so search from compose/ and
+      # check every image found.
+      - name: Verify the runtime image carries the declared modules
+        shell: bash
+        run: |
+          release_files=$(find desktopApp/build/compose -name release -path '*runtime*')
+          if [ -z "$release_files" ]; then
+            echo "::error::no runtime release file found in the build output"
+            exit 1
+          fi
+          while IFS= read -r release_file; do
+            echo "Runtime image: $release_file"
+            for module in java.instrument java.management java.prefs jdk.security.auth jdk.unsupported; do
+              grep -q "\b${module}\b" "$release_file" || {
+                echo "::error::${module} is missing from ${release_file}"
+                exit 1
+              }
+            done
+          done <<EOF
+          $release_files
+          EOF
+
+      # Each format lands in its own directory, so uploading them directly would
+      # root the Linux artifact at `main/` and nest the files under deb/ and rpm/.
+      # finalize globs the download for files, so collect them flat instead.
+      - name: Collect the installers
+        shell: bash
+        run: |
+          mkdir -p installers
+          find desktopApp/build/compose/binaries/main -type f \
+            \( -name '*.dmg' -o -name '*.msi' -o -name '*.deb' -o -name '*.rpm' \) \
+            -exec cp {} installers/ \;
+          ls -lh installers
+
+      - name: Upload the installers as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-${{ matrix.label }}
+          path: installers/
+          retention-days: 1
+          if-no-files-found: error
+
   finalize:
     name: Tag, release notes and merge-back
-    needs: [plan, android-upload, ios-upload]
-    if: ${{ inputs.platforms == 'both' && inputs.track == 'production' }}
+    needs: [plan, android-upload, ios-upload, desktop-build]
+    if: ${{ inputs.platforms == 'all' && inputs.track == 'production' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -316,6 +419,13 @@ jobs:
             --assignee "${{ github.actor }}"
           gh pr merge "${{ needs.plan.outputs.branch }}" --squash --delete-branch
 
+      - name: Download the desktop installers
+        uses: actions/download-artifact@v8
+        with:
+          pattern: desktop-*
+          merge-multiple: true
+          path: desktop-installers
+
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -323,4 +433,5 @@ jobs:
           gh release create "${{ needs.plan.outputs.version }}" \
             --target main \
             --title "${{ needs.plan.outputs.version }}" \
-            --generate-notes
+            --generate-notes \
+            desktop-installers/*

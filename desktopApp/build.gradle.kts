@@ -37,9 +37,14 @@ compose.desktop {
         jvmArgs += listOf("-Xdock:icon=${project.file("../icons/bible_planner_logo.icns").absolutePath}")
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "com.quare.bibleplanner"
             packageVersion = "2.2.0"
+
+            // Output of `./gradlew :desktopApp:suggestRuntimeModules` (jdeps). Without
+            // jdk.unsupported the jlink image has no sun.misc.Unsafe, and DataStore's
+            // bundled protobuf dies with NoClassDefFoundError on the first write.
+            modules("java.instrument", "java.management", "java.prefs", "jdk.security.auth", "jdk.unsupported")
 
             macOS {
                 iconFile.set(project.file("../icons/bible_planner_logo.icns"))

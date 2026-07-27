@@ -38,8 +38,10 @@ After updating `local.properties`, sync Gradle to regenerate `CrashlyticsBuildKo
 ## 4. Configure CI
 
 `SENTRY_DSN` is its **own** secret on the `Production` environment, alongside the other build secrets — it
-does not live inside the `LOCAL_PROPERTIES` blob. The release workflow appends it to `local.properties`
-right after writing that blob:
+does not live inside the `LOCAL_PROPERTIES` blob. The `desktop-build` job of the release workflow appends
+it to `local.properties` right after writing that blob. Only that job needs it: the generated
+`CrashlyticsBuildKonfig` lives in `commonMain`, so handing the DSN to the Android and iOS jobs would bake
+it into the AAB and the IPA, where nothing reads it.
 
 ```bash
 gh secret set SENTRY_DSN --env Production --repo Quartel-Enterprise/bible-planner-mobile-client
