@@ -283,22 +283,25 @@ jobs:
           SUBMIT_FOR_REVIEW: ${{ inputs.submit_ios_for_review }}
 
   desktop-build:
-    name: Desktop — build the ${{ matrix.format }}
+    name: Desktop — build the ${{ matrix.formats }}
     needs: plan
     if: ${{ inputs.platforms == 'all' || inputs.platforms == 'desktop' }}
     runs-on: ${{ matrix.os }}
     environment: Production
     strategy:
-      # One runner per OS: jpackage only builds the installer of the host system.
+      # One runner per OS: jpackage only builds the installers of the host system.
       fail-fast: false
       matrix:
         include:
           - os: macos-latest
-            format: dmg
+            label: macos
+            formats: dmg
           - os: windows-latest
-            format: msi
+            label: windows
+            formats: msi
           - os: ubuntu-latest
-            format: deb
+            label: linux
+            formats: deb and rpm
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -313,10 +316,11 @@ jobs:
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
 
-      # jpackage shells out to these to lay out the .deb; they are not preinstalled.
+      # jpackage shells out to these to lay out the .deb and the .rpm; none are
+      # preinstalled. Debian ships rpmbuild inside the `rpm` package.
       - name: Install the Linux packaging tools
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get update && sudo apt-get install --yes fakeroot binutils
+        run: sudo apt-get update && sudo apt-get install --yes fakeroot binutils rpm
 
       - name: Decode local properties
         shell: bash
@@ -329,7 +333,7 @@ jobs:
 
       # No checkJdkVendor bypass here: the runner JDK is Temurin, and the guard
       # only ever fires on Homebrew's distribution.
-      - name: Build the installer
+      - name: Build the installers
         shell: bash
         run: ./gradlew :desktopApp:packageDistributionForCurrentOS
 
@@ -353,11 +357,23 @@ jobs:
             }
           done
 
-      - name: Upload the installer as a build artifact
+      # Each format lands in its own directory, so uploading them directly would
+      # root the Linux artifact at `main/` and nest the files under deb/ and rpm/.
+      # finalize globs the download for files, so collect them flat instead.
+      - name: Collect the installers
+        shell: bash
+        run: |
+          mkdir -p installers
+          find desktopApp/build/compose/binaries/main -type f \
+            \( -name '*.dmg' -o -name '*.msi' -o -name '*.deb' -o -name '*.rpm' \) \
+            -exec cp {} installers/ \;
+          ls -lh installers
+
+      - name: Upload the installers as a build artifact
         uses: actions/upload-artifact@v7
         with:
-          name: desktop-${{ matrix.format }}
-          path: desktopApp/build/compose/binaries/main/${{ matrix.format }}/*.${{ matrix.format }}
+          name: desktop-${{ matrix.label }}
+          path: installers/
           retention-days: 1
           if-no-files-found: error
 

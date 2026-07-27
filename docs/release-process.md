@@ -23,7 +23,7 @@ flowchart TD
     G -->|rejected| X([Run stops — nothing built])
     G -->|approved| D[android<br/>build AAB + upload to Play]
     G -->|approved| E[ios<br/>build IPA + submit to App Store]
-    G -->|approved| H[desktop<br/>build dmg + msi + deb]
+    G -->|approved| H[desktop<br/>build dmg + msi + deb + rpm]
     D --> F[finalize]
     E --> F
     H --> F
@@ -39,7 +39,7 @@ flowchart TD
 | `android-upload` | ubuntu | yes | Uploads the AAB to Google Play |
 | `ios-build` | macOS | yes | Builds the signed IPA and saves it as a build artifact |
 | `ios-upload` | macOS | yes | Uploads the IPA to App Store Connect and submits it for review |
-| `desktop-build` | macOS + windows + ubuntu | yes | Builds the `.dmg`, `.msi` and `.deb` installers, one runner per OS |
+| `desktop-build` | macOS + windows + ubuntu | yes | Builds the `.dmg`, `.msi`, `.deb` and `.rpm` installers, one runner per OS |
 | `finalize` | ubuntu | no | Branch + version bump, merge-back PR, GitHub Release with the installers attached |
 
 Android and iOS split build and upload into separate jobs, so a failed upload can be retried
@@ -159,8 +159,8 @@ Once the store uploads and the desktop builds succeed, `finalize`:
 1. Creates the `release/X.Y.Z` branch with the version bump commit (Android, iOS and Desktop —
    see [`scripts/bump-version.sh`](../scripts/bump-version.sh)).
 2. Opens a `chore: merge back X.Y.Z into main` pull request and squash-merges it into `main`.
-3. Publishes a **GitHub Release** `vX.Y.Z` with auto-generated notes and the `.dmg`, `.msi` and
-   `.deb` installers attached as assets.
+3. Publishes a **GitHub Release** `vX.Y.Z` with auto-generated notes and the `.dmg`, `.msi`,
+   `.deb` and `.rpm` installers attached as assets.
 
 ## If a store rejects the build
 
