@@ -1,8 +1,7 @@
 package com.quare.bibleplanner.core.provider.billing.di
 
-import com.quare.bibleplanner.core.provider.billing.BuildKonfig
 import com.quare.bibleplanner.core.provider.billing.data.browser.SystemBrowserUrlOpener
-import com.quare.bibleplanner.core.provider.billing.data.config.DesktopBillingConfig
+import com.quare.bibleplanner.core.provider.billing.data.config.DesktopBillingConfigProvider
 import com.quare.bibleplanner.core.provider.billing.data.datasource.AnonymousAppUserIdProvider
 import com.quare.bibleplanner.core.provider.billing.data.datasource.AppUserIdProvider
 import com.quare.bibleplanner.core.provider.billing.data.datasource.GetAnonymousAppUserId
@@ -51,27 +50,14 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 actual val billingProviderModule = module {
-    single {
-        val isDebug = isDebugBuild()
-        val apiKey = if (isDebug) {
-            BuildKonfig.REVENUECAT_WEB_BILLING_SANDBOX_API_KEY
-        } else {
-            BuildKonfig.REVENUECAT_WEB_BILLING_API_KEY
-        }
-        val purchaseLink = if (isDebug) {
-            BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK_SANDBOX
-        } else {
-            BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK
-        }
-        DesktopBillingConfig(
-            apiKey = apiKey,
-            purchaseLink = purchaseLink,
-        )
-    }
+    single { DesktopBillingConfigProvider(isDebugBuild = isDebugBuild()).getConfig() }
     singleOf(::AnonymousAppUserIdProvider).bind<GetAnonymousAppUserId>()
     singleOf(::AppUserIdProvider).bind<GetAppUserId>()
     single<RevenueCatRestDataSource> {
-        RevenueCatRestDataSourceImpl(createRevenueCatHttpClient(config = get()))
+        RevenueCatRestDataSourceImpl(
+            httpClient = createRevenueCatHttpClient(config = get()),
+            getAppUserId = get(),
+        )
     }
     singleOf(::DesktopBillingRepositoryImpl).bind<DesktopBillingRepository>()
     factoryOf(::EpochMillisMapper)
