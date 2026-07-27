@@ -41,7 +41,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreS
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.OpenUrl
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserIdUseCase
-import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanNameMapper
+import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import com.quare.bibleplanner.core.provider.platform.isDebugBuild
 import kotlinx.coroutines.flow.flowOf
 import org.koin.core.module.dsl.factoryOf
@@ -64,7 +64,7 @@ actual val billingProviderModule = module {
     factoryOf(::PriceFormatter)
     factoryOf(::ProEntitlementMapper)
     factoryOf(::StorePackageMapper)
-    factoryOf(::ProPlanNameMapper)
+    factoryOf(::ProPlanTypeMapper)
     factoryOf(::SubscriptionStatusMapper)
     factoryOf(::WebPurchaseLinkBuilder)
     factoryOf(::SystemBrowserUrlOpener).bind<OpenUrl>()

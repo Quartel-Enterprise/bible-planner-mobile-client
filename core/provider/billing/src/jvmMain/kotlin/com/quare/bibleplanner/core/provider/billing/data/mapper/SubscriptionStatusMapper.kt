@@ -3,12 +3,12 @@ package com.quare.bibleplanner.core.provider.billing.data.mapper
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.provider.billing.data.dto.SubscriberResponseDto
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
-import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanNameMapper
+import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import kotlinx.datetime.LocalDateTime
 
 internal class SubscriptionStatusMapper(
     private val localDateTimeProvider: LocalDateTimeProvider,
-    private val proPlanNameMapper: ProPlanNameMapper,
+    private val proPlanTypeMapper: ProPlanTypeMapper,
     private val proEntitlementMapper: ProEntitlementMapper,
     private val epochMillisMapper: EpochMillisMapper,
 ) {
@@ -17,7 +17,7 @@ internal class SubscriptionStatusMapper(
             ?.let(proEntitlementMapper::mapActiveEntitlement)
             ?: return SubscriptionStatus.Free
         return SubscriptionStatus.Pro(
-            planName = proPlanNameMapper.map(entitlement.productIdentifier),
+            planType = proPlanTypeMapper.map(entitlement.productIdentifier),
             purchaseDate = entitlement.purchaseDate?.toLocalDateTime(),
             expirationDate = entitlement.expiresDate?.toLocalDateTime(),
             willRenew = proEntitlementMapper.mapWillRenew(

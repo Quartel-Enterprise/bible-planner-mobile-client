@@ -31,12 +31,12 @@ import bibleplanner.feature.subscription_details.generated.resources.active_stat
 import bibleplanner.feature.subscription_details.generated.resources.expires_label
 import bibleplanner.feature.subscription_details.generated.resources.origin_label
 import bibleplanner.feature.subscription_details.generated.resources.plan_label
-import bibleplanner.feature.subscription_details.generated.resources.plan_value_pro
 import bibleplanner.feature.subscription_details.generated.resources.purchase_date_label
 import bibleplanner.feature.subscription_details.generated.resources.purchase_details_title
 import bibleplanner.feature.subscription_details.generated.resources.renews_label
 import bibleplanner.feature.subscription_details.generated.resources.store_name_ios
 import bibleplanner.feature.subscription_details.generated.resources.subscription_status_title
+import com.quare.bibleplanner.feature.subscriptiondetails.presentation.mapper.toStringResource
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.model.SubscriptionDetailsUiState
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.viewmodel.SubscriptionDetailsViewModel
 import com.quare.bibleplanner.ui.theme.success
@@ -88,7 +88,7 @@ fun SubscriptionDetailsDialog(
                     ListItem(
                         headlineContent = {
                             Text(
-                                text = loadedState.planName ?: stringResource(Res.string.plan_value_pro),
+                                text = stringResource(loadedState.planType.toStringResource()),
                                 style = MaterialTheme.typography.labelMedium,
                             )
                         },

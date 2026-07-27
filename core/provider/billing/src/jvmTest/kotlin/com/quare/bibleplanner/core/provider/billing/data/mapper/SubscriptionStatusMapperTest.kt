@@ -3,8 +3,9 @@ package com.quare.bibleplanner.core.provider.billing.data.mapper
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.provider.billing.data.dto.freeSubscriberResponse
 import com.quare.bibleplanner.core.provider.billing.data.dto.proSubscriberResponse
+import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
-import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanNameMapper
+import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -25,8 +26,8 @@ internal class SubscriptionStatusMapperTest {
         // Then
         val pro = assertIs<SubscriptionStatus.Pro>(status)
         assertEquals(
-            expected = "Pro / Monthly Plan",
-            actual = pro.planName,
+            expected = ProPlanType.MONTHLY,
+            actual = pro.planType,
         )
         assertEquals(
             expected = true,
@@ -125,7 +126,7 @@ internal class SubscriptionStatusMapperTest {
             localDateTimeProvider = LocalDateTimeProvider { timestamp ->
                 Instant.fromEpochMilliseconds(timestamp).toLocalDateTime(TimeZone.UTC)
             },
-            proPlanNameMapper = ProPlanNameMapper(),
+            proPlanTypeMapper = ProPlanTypeMapper(),
             proEntitlementMapper = ProEntitlementMapper(EpochMillisMapper()),
             epochMillisMapper = EpochMillisMapper(),
         )

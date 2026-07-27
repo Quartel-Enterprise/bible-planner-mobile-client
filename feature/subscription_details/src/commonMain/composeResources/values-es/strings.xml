@@ -3,6 +3,8 @@
     <string name="active_status">Activo</string>
     <string name="plan_label">Plan</string>
     <string name="plan_value_pro">Plan Pro</string>
+    <string name="plan_value_pro_monthly">Pro / Plan Mensual</string>
+    <string name="plan_value_pro_annual">Pro / Plan Anual</string>
     <string name="purchase_details_title">Detalles de la Compra</string>
     <string name="purchase_date_label">Fecha de Compra</string>
     <string name="renews_label">Renueva el</string>

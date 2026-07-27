@@ -26,7 +26,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreS
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserIdUseCase
 import com.quare.bibleplanner.core.provider.billing.mapper.PackageMapper
-import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanNameMapper
+import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import com.revenuecat.purchases.kmp.Purchases
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -37,7 +37,7 @@ actual val billingProviderModule = module {
     single<Purchases> { Purchases.sharedInstance }
     singleOf(::BillingCustomerInfoSource)
     factoryOf(::PackageMapper)
-    factoryOf(::ProPlanNameMapper)
+    factoryOf(::ProPlanTypeMapper)
     factoryOf(::GetPurchaseResultMobileUseCase).bind<GetPurchaseResultUseCase>()
     factoryOf(::GetOfferingsResultMobileUseCase).bind<GetOfferingsResultUseCase>()
     factoryOf(::GetRestorePurchaseResultMobileUseCase).bind<GetRestorePurchaseResultUseCase>()

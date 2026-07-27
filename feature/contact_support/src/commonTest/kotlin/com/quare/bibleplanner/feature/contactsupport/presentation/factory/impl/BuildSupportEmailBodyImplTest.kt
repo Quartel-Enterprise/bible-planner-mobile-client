@@ -13,6 +13,7 @@ import bibleplanner.feature.contact_support.generated.resources.platform_android
 import bibleplanner.feature.contact_support.generated.resources.platform_ios
 import bibleplanner.feature.preferences.app_language.generated.resources.language_english
 import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.user.domain.model.UserModel
@@ -45,7 +46,12 @@ internal class BuildSupportEmailBodyImplTest {
                 ),
             ),
             subscriptionStatus = Loadable.Loaded(
-                SubscriptionStatus.Pro(planName = "Pro", purchaseDate = null, expirationDate = null, willRenew = true),
+                SubscriptionStatus.Pro(
+                    planType = ProPlanType.MONTHLY,
+                    purchaseDate = null,
+                    expirationDate = null,
+                    willRenew = true,
+                ),
             ),
             selectedLanguage = Loadable.Loaded(Language.ENGLISH),
             appVersion = "1.19.1",

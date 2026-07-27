@@ -21,7 +21,7 @@ import com.quare.bibleplanner.core.provider.billing.data.mapper.SubscriptionStat
 import com.quare.bibleplanner.core.provider.billing.data.mapper.WebPurchaseLinkBuilder
 import com.quare.bibleplanner.core.provider.billing.domain.model.BillingUnavailableException
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
-import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanNameMapper
+import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -220,7 +220,7 @@ internal class DesktopBillingRepositoryImplTest {
                 localDateTimeProvider = LocalDateTimeProvider { timestamp ->
                     Instant.fromEpochMilliseconds(timestamp).toLocalDateTime(TimeZone.UTC)
                 },
-                proPlanNameMapper = ProPlanNameMapper(),
+                proPlanTypeMapper = ProPlanTypeMapper(),
                 proEntitlementMapper = ProEntitlementMapper(EpochMillisMapper()),
                 epochMillisMapper = EpochMillisMapper(),
             ),

@@ -6,7 +6,7 @@ sealed interface SubscriptionStatus {
     data object Free : SubscriptionStatus
 
     data class Pro(
-        val planName: String?,
+        val planType: ProPlanType,
         val purchaseDate: LocalDateTime?,
         val expirationDate: LocalDateTime?,
         val willRenew: Boolean = true,

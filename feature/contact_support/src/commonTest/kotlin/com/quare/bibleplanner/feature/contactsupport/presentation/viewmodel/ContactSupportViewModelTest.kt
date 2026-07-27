@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.contactsupport.presentation.viewmodel
 
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.user.data.mapper.SessionUserMapper
@@ -92,7 +93,7 @@ internal class ContactSupportViewModelTest {
                 sessionStatus = authenticated(),
                 subscriptionStatusFlow = flowOf(
                     SubscriptionStatus.Pro(
-                        planName = null,
+                        planType = ProPlanType.UNKNOWN,
                         purchaseDate = null,
                         expirationDate = null,
                     ),

@@ -18,7 +18,7 @@ class SubscriptionDetailsViewModel(
         .map { status ->
             if (status is SubscriptionStatus.Pro) {
                 SubscriptionDetailsUiState.Loaded(
-                    planName = status.planName,
+                    planType = status.planType,
                     purchaseDate = status.purchaseDate,
                     expirationDate = status.expirationDate,
                     willRenew = status.willRenew,

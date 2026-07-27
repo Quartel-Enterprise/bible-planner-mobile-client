@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.provider.billing.domain.repository
 
 import com.quare.bibleplanner.core.provider.billing.domain.model.BillingUnavailableException
+import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ internal class FakeDesktopBillingRepository(
     override suspend fun refreshSubscriptionStatus(): SubscriptionStatus {
         val status = if (refreshCount >= refreshesBeforePro) {
             SubscriptionStatus.Pro(
-                planName = "Pro / Monthly Plan",
+                planType = ProPlanType.MONTHLY,
                 purchaseDate = null,
                 expirationDate = null,
             )
