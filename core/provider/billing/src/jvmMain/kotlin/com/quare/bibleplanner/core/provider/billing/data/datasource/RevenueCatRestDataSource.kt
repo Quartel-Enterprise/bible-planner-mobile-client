@@ -5,12 +5,9 @@ import com.quare.bibleplanner.core.provider.billing.data.dto.ProductsResponseDto
 import com.quare.bibleplanner.core.provider.billing.data.dto.SubscriberResponseDto
 
 internal interface RevenueCatRestDataSource {
-    suspend fun getSubscriber(appUserId: String): SubscriberResponseDto
+    suspend fun getSubscriber(): SubscriberResponseDto
 
-    suspend fun getOfferings(appUserId: String): OfferingsResponseDto
+    suspend fun getOfferings(): OfferingsResponseDto
 
-    suspend fun getProducts(
-        appUserId: String,
-        productIds: List<String>,
-    ): ProductsResponseDto
+    suspend fun getProducts(productIds: List<String>): ProductsResponseDto
 }

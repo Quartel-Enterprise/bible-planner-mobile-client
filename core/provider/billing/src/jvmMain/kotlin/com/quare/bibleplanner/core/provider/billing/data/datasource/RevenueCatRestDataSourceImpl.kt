@@ -10,47 +10,54 @@ import io.ktor.http.appendPathSegments
 
 internal class RevenueCatRestDataSourceImpl(
     private val httpClient: HttpClient,
+    private val getAppUserId: GetAppUserId,
 ) : RevenueCatRestDataSource {
-    override suspend fun getSubscriber(appUserId: String): SubscriberResponseDto = httpClient
-        .get {
-            url {
-                appendPathSegments(
-                    SUBSCRIBERS_PATH,
-                    appUserId,
-                )
-            }
-        }.body()
-
-    override suspend fun getOfferings(appUserId: String): OfferingsResponseDto = httpClient
-        .get {
-            url {
-                appendPathSegments(
-                    SUBSCRIBERS_PATH,
-                    appUserId,
-                    OFFERINGS_SEGMENT,
-                )
-            }
-        }.body()
-
-    override suspend fun getProducts(
-        appUserId: String,
-        productIds: List<String>,
-    ): ProductsResponseDto = httpClient
-        .get {
-            url {
-                appendPathSegments(
-                    WEB_BILLING_SUBSCRIBERS_PATH,
-                    appUserId,
-                    PRODUCTS_SEGMENT,
-                )
-                productIds.forEach { productId ->
-                    parameters.append(
-                        name = PRODUCT_ID_PARAM,
-                        value = productId,
+    override suspend fun getSubscriber(): SubscriberResponseDto {
+        val appUserId = getAppUserId()
+        return httpClient
+            .get {
+                url {
+                    appendPathSegments(
+                        SUBSCRIBERS_PATH,
+                        appUserId,
                     )
                 }
-            }
-        }.body()
+            }.body()
+    }
+
+    override suspend fun getOfferings(): OfferingsResponseDto {
+        val appUserId = getAppUserId()
+        return httpClient
+            .get {
+                url {
+                    appendPathSegments(
+                        SUBSCRIBERS_PATH,
+                        appUserId,
+                        OFFERINGS_SEGMENT,
+                    )
+                }
+            }.body()
+    }
+
+    override suspend fun getProducts(productIds: List<String>): ProductsResponseDto {
+        val appUserId = getAppUserId()
+        return httpClient
+            .get {
+                url {
+                    appendPathSegments(
+                        WEB_BILLING_SUBSCRIBERS_PATH,
+                        appUserId,
+                        PRODUCTS_SEGMENT,
+                    )
+                    productIds.forEach { productId ->
+                        parameters.append(
+                            name = PRODUCT_ID_PARAM,
+                            value = productId,
+                        )
+                    }
+                }
+            }.body()
+    }
 
     private companion object {
         const val SUBSCRIBERS_PATH = "v1/subscribers"

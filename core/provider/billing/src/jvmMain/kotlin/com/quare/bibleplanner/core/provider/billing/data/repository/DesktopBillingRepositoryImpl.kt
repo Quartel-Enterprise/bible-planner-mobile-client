@@ -2,7 +2,6 @@ package com.quare.bibleplanner.core.provider.billing.data.repository
 
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.provider.billing.data.config.DesktopBillingConfig
-import com.quare.bibleplanner.core.provider.billing.data.datasource.GetAppUserId
 import com.quare.bibleplanner.core.provider.billing.data.datasource.RevenueCatRestDataSource
 import com.quare.bibleplanner.core.provider.billing.data.dto.PackageDto
 import com.quare.bibleplanner.core.provider.billing.data.mapper.StorePackageMapper
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.asStateFlow
 
 internal class DesktopBillingRepositoryImpl(
     private val revenueCatRestDataSource: RevenueCatRestDataSource,
-    private val getAppUserId: GetAppUserId,
     private val subscriptionStatusMapper: SubscriptionStatusMapper,
     private val storePackageMapper: StorePackageMapper,
     private val webPurchaseLinkBuilder: WebPurchaseLinkBuilder,
@@ -31,7 +29,7 @@ internal class DesktopBillingRepositoryImpl(
     override suspend fun refreshSubscriptionStatus(): SubscriptionStatus {
         if (!config.isEntitlementReadEnabled) return SubscriptionStatus.Free
         val status = suspendRunCatching {
-            subscriptionStatusMapper.map(revenueCatRestDataSource.getSubscriber(getAppUserId()))
+            subscriptionStatusMapper.map(revenueCatRestDataSource.getSubscriber())
         }.onFailure { throwable ->
             Logger.e(throwable) { "Failed to fetch the RevenueCat subscriber" }
         }.getOrElse { _subscriptionStatus.value ?: SubscriptionStatus.Free }
@@ -45,14 +43,11 @@ internal class DesktopBillingRepositoryImpl(
 
     override suspend fun getStorePackages(): List<StorePackage> {
         if (!config.isPurchaseEnabled) throw BillingUnavailableException()
-        val appUserId = getAppUserId()
-        val currentPackages = getCurrentPackages(appUserId)
+        val currentPackages = getCurrentPackages()
         if (currentPackages.isEmpty()) return emptyList()
         val products = revenueCatRestDataSource
-            .getProducts(
-                appUserId = appUserId,
-                productIds = currentPackages.map(PackageDto::platformProductIdentifier),
-            ).productDetails
+            .getProducts(currentPackages.map(PackageDto::platformProductIdentifier))
+            .productDetails
             .associateBy { product -> product.identifier }
         return currentPackages.mapNotNull { packageDto ->
             products[packageDto.platformProductIdentifier]?.let { product ->
@@ -75,8 +70,8 @@ internal class DesktopBillingRepositoryImpl(
         )
     }
 
-    private suspend fun getCurrentPackages(appUserId: String): List<PackageDto> {
-        val offerings = revenueCatRestDataSource.getOfferings(appUserId)
+    private suspend fun getCurrentPackages(): List<PackageDto> {
+        val offerings = revenueCatRestDataSource.getOfferings()
         return offerings.offerings
             .firstOrNull { offering -> offering.identifier == offerings.currentOfferingId }
             ?.packages

@@ -216,7 +216,6 @@ internal class DesktopBillingRepositoryImplTest {
         )
         repository = DesktopBillingRepositoryImpl(
             revenueCatRestDataSource = revenueCatRestDataSource,
-            getAppUserId = { TEST_APP_USER_ID },
             subscriptionStatusMapper = SubscriptionStatusMapper(
                 localDateTimeProvider = LocalDateTimeProvider { timestamp ->
                     Instant.fromEpochMilliseconds(timestamp).toLocalDateTime(TimeZone.UTC)
@@ -237,10 +236,10 @@ private class FakeRevenueCatRestDataSource(
     private val availableProductIds: List<String>,
     var subscriber: SubscriberResponseDto?,
 ) : RevenueCatRestDataSource {
-    override suspend fun getSubscriber(appUserId: String): SubscriberResponseDto = subscriber
+    override suspend fun getSubscriber(): SubscriberResponseDto = subscriber
         ?: error("subscriber unavailable")
 
-    override suspend fun getOfferings(appUserId: String): OfferingsResponseDto = OfferingsResponseDto(
+    override suspend fun getOfferings(): OfferingsResponseDto = OfferingsResponseDto(
         currentOfferingId = currentOfferingId,
         offerings = listOf(
             OfferingDto(
@@ -259,10 +258,7 @@ private class FakeRevenueCatRestDataSource(
         ),
     )
 
-    override suspend fun getProducts(
-        appUserId: String,
-        productIds: List<String>,
-    ): ProductsResponseDto = ProductsResponseDto(
+    override suspend fun getProducts(productIds: List<String>): ProductsResponseDto = ProductsResponseDto(
         productDetails = productIds
             .filter { productId -> productId in availableProductIds }
             .map { productId ->
