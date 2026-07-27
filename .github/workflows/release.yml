@@ -338,24 +338,29 @@ jobs:
         run: ./gradlew :desktopApp:packageDistributionForCurrentOS
 
       # Guards the packaged runtime against a silently trimmed jlink image: a
-      # missing jdk.unsupported cost us the sun.misc.Unsafe crash in 2.2.0. The
-      # image layout differs per OS, so the release file is located rather than
-      # hardcoded.
+      # missing jdk.unsupported cost us the sun.misc.Unsafe crash in 2.2.0.
+      # Only macOS leaves an unpacked app image under binaries/; the jlink output
+      # every OS embeds is compose/tmp/main/runtime, so search from compose/ and
+      # check every image found.
       - name: Verify the runtime image carries the declared modules
         shell: bash
         run: |
-          release_file=$(find desktopApp/build/compose/binaries/main/app -name release -path '*runtime*' | head -1)
-          if [ -z "$release_file" ]; then
-            echo "::error::no runtime release file found in the packaged app image"
+          release_files=$(find desktopApp/build/compose -name release -path '*runtime*')
+          if [ -z "$release_files" ]; then
+            echo "::error::no runtime release file found in the build output"
             exit 1
           fi
-          echo "Runtime image: $release_file"
-          for module in java.instrument java.management java.prefs jdk.security.auth jdk.unsupported; do
-            grep -q "\b${module}\b" "$release_file" || {
-              echo "::error::${module} is missing from the packaged runtime image"
-              exit 1
-            }
-          done
+          while IFS= read -r release_file; do
+            echo "Runtime image: $release_file"
+            for module in java.instrument java.management java.prefs jdk.security.auth jdk.unsupported; do
+              grep -q "\b${module}\b" "$release_file" || {
+                echo "::error::${module} is missing from ${release_file}"
+                exit 1
+              }
+            done
+          done <<EOF
+          $release_files
+          EOF
 
       # Each format lands in its own directory, so uploading them directly would
       # root the Linux artifact at `main/` and nest the files under deb/ and rpm/.
