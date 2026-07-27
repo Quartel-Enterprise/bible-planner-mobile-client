@@ -9,6 +9,8 @@ sealed class BillingException : Exception() {
 
     class RestorePurchaseFailed : BillingException()
 
+    class BrowserCheckoutNotConfirmed : BillingException()
+
     data class Unknown(
         override val message: String? = null,
     ) : BillingException()

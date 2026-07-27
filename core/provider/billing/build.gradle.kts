@@ -4,6 +4,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.bibleplanner.kotlinMultiplatform)
     alias(libs.plugins.buildkonfig)
+    alias(libs.plugins.serialization)
 }
 
 buildkonfig {
@@ -19,6 +20,10 @@ buildkonfig {
             "REVENUECAT_TEST_API_KEY",
             "REVENUECAT_APP_STORE_API_KEY",
             "REVENUECAT_PLAY_STORE_API_KEY",
+            "REVENUECAT_WEB_BILLING_API_KEY",
+            "REVENUECAT_WEB_PURCHASE_LINK",
+            "REVENUECAT_WEB_BILLING_SANDBOX_API_KEY",
+            "REVENUECAT_WEB_PURCHASE_LINK_SANDBOX",
         )
         revenueKeys.forEach { name ->
             buildConfigField(
@@ -101,6 +106,15 @@ kotlin {
             dependsOn(iosMain)
         }
 
-        val jvmMain by getting
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.content.serialization.json)
+            implementation(libs.kotlin.serialization.json)
+            implementation(libs.kermit)
+            implementation(projects.core.utils)
+            implementation(projects.core.provider.platform)
+        }
     }
 }

@@ -17,7 +17,7 @@ Captures a failed "restore purchases" attempt. A spike here means legitimate sub
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `reason` | string | `network` | `user_cancelled` \| `network` \| `payment_pending` \| `restore_failed` \| `unknown`, derived from the `BillingException` subtype |
-| `store` | string | `app_store` | `app_store` \| `play_store` |
+| `store` | string | `app_store` | `app_store` \| `play_store` \| `desktop` |
 
 ## Notes
 

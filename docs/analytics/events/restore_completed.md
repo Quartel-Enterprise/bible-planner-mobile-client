@@ -16,7 +16,7 @@ Captures a successful "restore purchases" on the paywall — an existing subscri
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `store` | string | `app_store` | `app_store` \| `play_store` |
+| `store` | string | `app_store` | `app_store` \| `play_store` \| `desktop` |
 
 ## Notes
 

@@ -31,4 +31,5 @@
     <string name="error_purchase_cancelled">La compra fue cancelada.</string>
     <string name="error_network">Error de red. Por favor, inténtalo de nuevo.</string>
     <string name="error_payment_pending">El pago está pendiente de aprobación.</string>
+    <string name="error_browser_checkout_not_confirmed">La compra aún no fue confirmada. Termina el pago en tu navegador — el Pro se activa automáticamente.</string>
 </resources>

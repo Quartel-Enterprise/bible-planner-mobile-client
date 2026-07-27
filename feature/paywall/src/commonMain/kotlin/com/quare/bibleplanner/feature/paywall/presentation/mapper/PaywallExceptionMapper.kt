@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.paywall.presentation.mapper
 
 import bibleplanner.feature.paywall.generated.resources.Res
+import bibleplanner.feature.paywall.generated.resources.error_browser_checkout_not_confirmed
 import bibleplanner.feature.paywall.generated.resources.error_network
 import bibleplanner.feature.paywall.generated.resources.error_payment_pending
 import bibleplanner.feature.paywall.generated.resources.error_purchase_cancelled
@@ -15,6 +16,7 @@ class PaywallExceptionMapper {
         is BillingException.NetworkError -> Res.string.error_network
         is BillingException.PaymentPending -> Res.string.error_payment_pending
         is BillingException.RestorePurchaseFailed -> Res.string.error_restore_purchase
+        is BillingException.BrowserCheckoutNotConfirmed -> Res.string.error_browser_checkout_not_confirmed
         else -> Res.string.error_unknown
     }
 }

@@ -30,5 +30,6 @@
     <string name="error_purchase_cancelled">Purchase was cancelled.</string>
     <string name="error_network">Network error. Please try again.</string>
     <string name="error_payment_pending">Payment is pending approval.</string>
+    <string name="error_browser_checkout_not_confirmed">Purchase not confirmed yet. Finish the checkout in your browser — Pro unlocks automatically.</string>
     <string name="error_restore_purchase">No active subscription found in the %1$s.</string>
 </resources>

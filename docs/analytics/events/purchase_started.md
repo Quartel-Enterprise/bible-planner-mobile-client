@@ -19,7 +19,7 @@ The user taps the "start Pro journey" button, the login check passes, a matching
 | `subscription_plan` | string | `annual` | Plan being purchased: `monthly` \| `annual` |
 | `package_id` | string | `$rc_annual` | `StorePackage.identifier` (RevenueCat package id) |
 | `price` | string | `R$ 84,90` | `StorePackage.priceString`, localized display price |
-| `store` | string | `play_store` | `app_store` \| `play_store` (from `Platform.isApple()`) |
+| `store` | string | `play_store` | `app_store` \| `play_store` \| `desktop` |
 
 ## Notes
 
