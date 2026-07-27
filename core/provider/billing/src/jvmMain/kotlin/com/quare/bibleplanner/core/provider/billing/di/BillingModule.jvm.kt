@@ -52,17 +52,21 @@ import org.koin.dsl.module
 
 actual val billingProviderModule = module {
     single {
-        if (isDebugBuild()) {
-            DesktopBillingConfig(
-                apiKey = BuildKonfig.REVENUECAT_WEB_BILLING_SANDBOX_API_KEY,
-                purchaseLink = BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK_SANDBOX,
-            )
+        val isDebug = isDebugBuild()
+        val apiKey = if (isDebug) {
+            BuildKonfig.REVENUECAT_WEB_BILLING_SANDBOX_API_KEY
         } else {
-            DesktopBillingConfig(
-                apiKey = BuildKonfig.REVENUECAT_WEB_BILLING_API_KEY,
-                purchaseLink = BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK,
-            )
+            BuildKonfig.REVENUECAT_WEB_BILLING_API_KEY
         }
+        val purchaseLink = if (isDebug) {
+            BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK_SANDBOX
+        } else {
+            BuildKonfig.REVENUECAT_WEB_PURCHASE_LINK
+        }
+        DesktopBillingConfig(
+            apiKey = apiKey,
+            purchaseLink = purchaseLink,
+        )
     }
     singleOf(::AnonymousAppUserIdProvider).bind<GetAnonymousAppUserId>()
     singleOf(::AppUserIdProvider).bind<GetAppUserId>()
