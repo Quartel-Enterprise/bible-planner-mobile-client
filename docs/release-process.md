@@ -54,7 +54,7 @@ so macOS Gatekeeper and Windows SmartScreen warn on first launch.
 2. Open **GitHub → Actions → release → Run workflow**.
 3. Fill in the inputs (all optional):
    - **version** — leave blank to auto-resolve, or type an explicit `X.Y.Z`.
-   - **platforms** — `all` (default), `android`, `ios`, or `desktop`.
+   - **platforms** — `all` (default), `mobile` (android + ios), `android`, `ios`, or `desktop`.
    - **track** — Android Play Store track: `production` (default), `beta`, `alpha`, `internal`.
    - **complete_android_release** — `true` (default) rolls the Android release out; `false`
      uploads it to the track as a draft you release manually from the Play Console.

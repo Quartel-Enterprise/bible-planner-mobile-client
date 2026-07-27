@@ -28,10 +28,11 @@ on:
         type: string
         required: false
       platforms:
-        description: "Platforms to release"
+        description: "Platforms to release (mobile = android + ios)"
         type: choice
         options:
           - all
+          - mobile
           - android
           - ios
           - desktop
@@ -84,7 +85,7 @@ jobs:
   android-build:
     name: Android — build the AAB
     needs: plan
-    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'android' }}
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'android' }}
     runs-on: ubuntu-latest
     environment: Production
     steps:
@@ -138,7 +139,7 @@ jobs:
   android-upload:
     name: Android — upload to Google Play
     needs: [plan, android-build]
-    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'android' }}
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'android' }}
     runs-on: ubuntu-latest
     environment: Production
     steps:
@@ -179,7 +180,7 @@ jobs:
   ios-build:
     name: iOS — build the IPA
     needs: plan
-    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'ios' }}
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'ios' }}
     runs-on: macos-latest
     environment: Production
     steps:
@@ -246,7 +247,7 @@ jobs:
   ios-upload:
     name: iOS — upload to App Store Connect
     needs: [plan, ios-build]
-    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'ios' }}
+    if: ${{ inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'ios' }}
     runs-on: macos-latest
     environment: Production
     steps:

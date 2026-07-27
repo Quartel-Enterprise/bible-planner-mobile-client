@@ -40,14 +40,16 @@ echo
 # --- platforms ------------------------------------------------------------
 echo "Platforms to release:"
 echo "  1) all      (default)"
-echo "  2) android"
-echo "  3) ios"
-echo "  4) desktop"
+echo "  2) mobile   (android + ios)"
+echo "  3) android"
+echo "  4) ios"
+echo "  5) desktop"
 case "$(ask 'choose [1]: ')" in
   ""|1) platforms="all" ;;
-  2)    platforms="android" ;;
-  3)    platforms="ios" ;;
-  4)    platforms="desktop" ;;
+  2)    platforms="mobile" ;;
+  3)    platforms="android" ;;
+  4)    platforms="ios" ;;
+  5)    platforms="desktop" ;;
   *)    echo "Invalid option." >&2; exit 1 ;;
 esac
 echo
