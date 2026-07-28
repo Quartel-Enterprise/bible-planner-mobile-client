@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -25,6 +26,20 @@ kotlin {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.config)
             implementation(libs.koin.android)
+        }
+
+        jvmMain.dependencies {
+            implementation(projects.core.utils)
+            implementation(project.dependencies.platform(libs.supabase.bom))
+            implementation(libs.supabase.functions)
+            implementation(libs.ktor.client.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kermit)
+        }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
 
         val iosMain by creating {
