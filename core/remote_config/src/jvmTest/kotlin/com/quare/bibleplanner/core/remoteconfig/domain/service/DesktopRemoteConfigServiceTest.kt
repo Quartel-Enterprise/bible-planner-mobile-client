@@ -40,6 +40,30 @@ internal class DesktopRemoteConfigServiceTest {
     }
 
     @Test
+    fun `GIVEN a padded boolean WHEN reading it as a boolean THEN trims it like the Firebase SDK`() = runTest {
+        // Given
+        prepareScenario(mapOf(SHOW_DONATE_KEY to " on "))
+
+        // When
+        val value = service.getBoolean(SHOW_DONATE_KEY)
+
+        // Then
+        assertEquals(expected = true, actual = value)
+    }
+
+    @Test
+    fun `GIVEN an empty value WHEN reading it as a boolean THEN reads it as false like the Firebase SDK`() = runTest {
+        // Given
+        prepareScenario(mapOf(SHOW_DONATE_KEY to ""))
+
+        // When
+        val value = service.getBoolean(SHOW_DONATE_KEY)
+
+        // Then
+        assertEquals(expected = false, actual = value)
+    }
+
+    @Test
     fun `GIVEN a non-boolean value WHEN reading it as a boolean THEN returns null`() = runTest {
         // Given
         prepareScenario(mapOf(SHOW_DONATE_KEY to "maybe"))

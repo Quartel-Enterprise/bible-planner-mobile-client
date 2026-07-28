@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.seconds
 
 private val trueValues = setOf("1", "true", "t", "yes", "y", "on")
 
-private val falseValues = setOf("0", "false", "f", "no", "n", "off")
+private val falseValues = setOf("0", "false", "f", "no", "n", "off", "")
 
 internal class DesktopRemoteConfigService(
     private val proxyClient: RemoteConfigProxyClient,
@@ -55,7 +55,7 @@ internal class DesktopRemoteConfigService(
     }
 }
 
-private fun String.toRemoteConfigBoolean(): Boolean? = when (lowercase()) {
+private fun String.toRemoteConfigBoolean(): Boolean? = when (trim().lowercase()) {
     in trueValues -> true
     in falseValues -> false
     else -> null
