@@ -2,9 +2,9 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.bibleplanner.composeMultiplatform)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.buildkonfig)
 }
 
@@ -21,14 +21,14 @@ kotlin {
             implementation(projects.core.utils)
 
             // DataStore
-            implementation(libs.dataStore)
-            implementation(libs.dataStore.preferences)
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
 
             // Supabase
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)
             implementation(libs.supabase.compose.auth)
-            implementation(libs.supabase.compose.auth.ui)
+            implementation(libs.supabase.compose.authUi)
             implementation(libs.supabase.storage)
             implementation(libs.supabase.postgrest)
             implementation(libs.supabase.realtime)
@@ -38,11 +38,11 @@ kotlin {
             implementation(libs.ktor.client.core)
 
             // Serialization
-            implementation(libs.kotlin.serialization.json)
+            implementation(libs.kotlinx.serialization.json)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
 
             // Logging
             implementation(libs.kermit)

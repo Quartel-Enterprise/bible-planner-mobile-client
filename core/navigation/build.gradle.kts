@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.bibleplanner.composeMultiplatform)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -51,22 +51,22 @@ kotlin {
             implementation(projects.core.provider.room)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCompose)
-            implementation(libs.koinComposeViewModel)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
 
             // Compose
-            implementation(libs.runtime)
-            implementation(libs.foundation)
-            implementation(libs.material3)
-            implementation(libs.ui)
-            implementation(libs.components.resources)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
 
             // UI
             implementation(projects.ui.utils)
 
             // Navigation 3
-            implementation(libs.compose.navigation3.ui)
+            implementation(libs.navigation3.ui)
             implementation(libs.androidx.lifecycle.viewmodelNavigation3)
         }
     }

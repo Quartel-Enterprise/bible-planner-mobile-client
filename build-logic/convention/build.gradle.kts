@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(libs.android.gradle)
+    compileOnly(libs.android.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
 }
 

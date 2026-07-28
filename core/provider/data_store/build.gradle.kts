@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
 }
 
 kotlin {
@@ -11,15 +11,15 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // DataStore (multiplatform)
-            api(libs.dataStore)
-            api(libs.dataStore.preferences)
+            api(libs.datastore)
+            api(libs.datastore.preferences)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
     }
 }

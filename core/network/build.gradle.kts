@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
 }
 
 kotlin {
@@ -10,8 +10,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
 
             // Kotlin Coroutines
             implementation(libs.kotlinx.coroutines.core)
@@ -19,8 +19,8 @@ kotlin {
             // Ktor
             api(libs.ktor.client.core)
             implementation(libs.ktor.client.auth)
-            implementation(libs.ktor.client.content.serialization.json)
-            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinxJson)
+            implementation(libs.ktor.client.contentNegotiation)
 
             // Kermit (logger)
             implementation(libs.kermit)

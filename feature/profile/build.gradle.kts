@@ -1,8 +1,8 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.bibleplanner.composeMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
     alias(libs.plugins.buildkonfig)
 }
 
@@ -44,21 +44,21 @@ kotlin {
             implementation(projects.ui.theme)
 
             // Compose
-            implementation(libs.runtime)
-            implementation(libs.foundation)
-            implementation(libs.material3)
-            implementation(libs.ui)
-            implementation(libs.material.icons.extended)
-            implementation(libs.components.resources)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.materialIconsExtended)
+            implementation(libs.compose.components.resources)
 
             // Navigation 3
-            implementation(libs.compose.navigation3.ui)
+            implementation(libs.navigation3.ui)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
-            implementation(libs.koinCompose)
-            implementation(libs.koinComposeViewModel)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
 
             // Date
             implementation(libs.kotlinx.datetime)
@@ -67,11 +67,11 @@ kotlin {
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)
             implementation(libs.supabase.compose.auth)
-            implementation(libs.supabase.compose.auth.ui)
+            implementation(libs.supabase.compose.authUi)
 
             // Coil (image loading)
             implementation(libs.coil.compose)
-            implementation(libs.coil.network)
+            implementation(libs.coil.network.ktor)
 
             // Logging
             implementation(libs.kermit)

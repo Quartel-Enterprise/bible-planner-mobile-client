@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.bibleplanner.composeMultiplatform)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -36,28 +36,28 @@ kotlin {
             implementation(libs.supabase.realtime)
 
             // Compose
-            implementation(libs.runtime)
-            implementation(libs.foundation)
-            implementation(libs.material3)
-            implementation(libs.ui)
-            implementation(libs.components.resources)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.components.resources)
 
             // Serialization
-            implementation(libs.kotlin.serialization.json)
+            implementation(libs.kotlinx.serialization.json)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
 
             // Dates
             implementation(libs.kotlinx.datetime)
 
             // DataStore (multiplatform)
-            implementation(libs.dataStore)
-            implementation(libs.dataStore.preferences)
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
         }
 
         commonTest.dependencies {

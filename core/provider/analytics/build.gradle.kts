@@ -3,7 +3,7 @@ import org.gradle.api.tasks.PathSensitivity
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.buildkonfig)
 }
 
@@ -21,19 +21,19 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)
             implementation(projects.core.model)
             implementation(projects.core.user)
             implementation(projects.core.remoteConfig)
-            implementation(libs.kotlin.serialization.json)
+            implementation(libs.kotlinx.serialization.json)
         }
 
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.analytics)
-            implementation(libs.koinAndroid)
+            implementation(libs.koin.android)
         }
 
         jvmMain.dependencies {

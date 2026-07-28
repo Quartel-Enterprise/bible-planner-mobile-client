@@ -2,7 +2,7 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.buildkonfig)
 }
 
@@ -28,8 +28,8 @@ kotlin {
             implementation(libs.ktor.client.core)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
 
         commonTest.dependencies {
@@ -38,7 +38,7 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.koinAndroid)
+            implementation(libs.koin.android)
             implementation(libs.play.services.time)
         }
     }

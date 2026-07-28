@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.bibleplanner.composeMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
 }
 
 kotlin {
@@ -26,21 +26,21 @@ kotlin {
             implementation(projects.ui.theme)
 
             // Compose
-            implementation(libs.runtime)
-            implementation(libs.foundation)
-            implementation(libs.material3)
-            implementation(libs.ui)
-            implementation(libs.material.icons.extended)
-            implementation(libs.components.resources)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.materialIconsExtended)
+            implementation(libs.compose.components.resources)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
-            implementation(libs.koinCompose)
-            implementation(libs.koinComposeViewModel)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
 
             // Navigation
-            implementation(libs.compose.navigation3.ui)
+            implementation(libs.navigation3.ui)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
