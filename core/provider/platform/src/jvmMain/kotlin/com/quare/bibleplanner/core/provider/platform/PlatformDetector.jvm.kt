@@ -1,11 +1,9 @@
 package com.quare.bibleplanner.core.provider.platform
 
-internal actual fun getPlatform(): Platform {
-    val osName = System.getProperty("os.name", "").lowercase()
-    return when {
-        osName.contains("mac") -> Platform.Desktop.MacOs
-        osName.contains("linux") -> Platform.Desktop.Linux
-        osName.contains("windows") -> Platform.Desktop.Windows
-        else -> Platform.Desktop.Linux
-    }
+import com.quare.bibleplanner.core.utils.DesktopOs
+
+internal actual fun getPlatform(): Platform = when (DesktopOs.detect()) {
+    DesktopOs.MAC -> Platform.Desktop.MacOs
+    DesktopOs.WINDOWS -> Platform.Desktop.Windows
+    DesktopOs.LINUX -> Platform.Desktop.Linux
 }

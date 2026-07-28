@@ -6,23 +6,13 @@ private const val APP_DATA_DIRECTORY_NAME = "com.quare.bibleplanner"
 
 fun resolveAppDataDirectory(): File {
     val userHome = System.getProperty("user.home")
-    val osName = System.getProperty("os.name").lowercase()
-    val dataDirectory = when {
-        osName.contains("mac") -> File(userHome, "Library/Application Support/$APP_DATA_DIRECTORY_NAME")
-        osName.contains("win") -> File(windowsAppDataRoot(userHome), APP_DATA_DIRECTORY_NAME)
-        else -> File(linuxDataRoot(userHome), APP_DATA_DIRECTORY_NAME)
+    val dataDirectory = when (DesktopOs.detect()) {
+        DesktopOs.MAC -> File(userHome, "Library/Application Support/$APP_DATA_DIRECTORY_NAME")
+        DesktopOs.WINDOWS -> File(windowsAppDataRoot(userHome), APP_DATA_DIRECTORY_NAME)
+        DesktopOs.LINUX -> File(linuxDataRoot(userHome), APP_DATA_DIRECTORY_NAME)
     }
     dataDirectory.mkdirs()
     return dataDirectory
-}
-
-fun migrateLegacyFileIfPresent(
-    legacyFile: File,
-    targetFile: File,
-) {
-    if (!legacyFile.exists() || targetFile.exists()) return
-    legacyFile.copyTo(targetFile)
-    legacyFile.delete()
 }
 
 private fun windowsAppDataRoot(userHome: String): String = System.getenv("APPDATA")?.takeIf(String::isNotBlank)
