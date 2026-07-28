@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
 }
 
 kotlin {

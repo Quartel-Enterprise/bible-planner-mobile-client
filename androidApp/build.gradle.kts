@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
 }
@@ -100,15 +100,15 @@ dependencies {
     implementation(libs.androidx.room.runtime)
 
     // Koin
-    implementation(project.dependencies.platform(libs.koinBom))
-    implementation(libs.koinAndroid)
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.android)
 
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
     // Compose
-    implementation(libs.material3)
-    implementation(libs.ui)
-    implementation(libs.components.resources)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.components.resources)
     implementation(libs.androidx.activity.compose)
 }

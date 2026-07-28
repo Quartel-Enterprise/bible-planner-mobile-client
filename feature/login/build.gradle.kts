@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.bibleplanner.composeMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
 }
 
 kotlin {
@@ -45,7 +45,7 @@ kotlin {
             implementation(compose.components.resources)
 
             // Navigation 3
-            implementation(libs.compose.navigation3.ui)
+            implementation(libs.navigation3.ui)
 
             // Ktor (HttpRequestTimeoutException, used to map login failures to a friendly message)
             implementation(libs.ktor.client.core)
@@ -56,10 +56,10 @@ kotlin {
             implementation(libs.supabase.compose.auth)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
-            implementation(libs.koinCompose)
-            implementation(libs.koinComposeViewModel)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
         }
     }
 }

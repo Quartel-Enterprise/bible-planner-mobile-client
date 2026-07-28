@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.serialization)
-    alias(libs.plugins.bibleplanner.composeMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
 }
 
 kotlin {
@@ -38,21 +38,21 @@ kotlin {
             implementation(libs.supabase.realtime)
 
             // Compose
-            implementation(libs.runtime)
-            implementation(libs.components.resources)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.components.resources)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
 
             // DataStore
-            implementation(libs.dataStore.preferences)
+            implementation(libs.datastore.preferences)
 
             // Serialization
-            implementation(libs.kotlin.serialization.json)
+            implementation(libs.kotlinx.serialization.json)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
 
             // Logging
             implementation(libs.kermit)

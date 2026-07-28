@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
 }
 
 kotlin {
@@ -27,8 +27,8 @@ kotlin {
             implementation(libs.supabase.realtime)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
 
             // Logging
             implementation(libs.kermit)

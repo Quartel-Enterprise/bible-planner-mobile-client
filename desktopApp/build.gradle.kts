@@ -2,9 +2,9 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.bibleplanner.composeMultiplatform)
-    alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
+    alias(libs.plugins.compose.hotReload)
 }
 
 kotlin {
@@ -18,12 +18,12 @@ dependencies {
 
     // Compose
     implementation(compose.desktop.currentOs)
-    implementation(libs.components.resources)
+    implementation(libs.compose.components.resources)
     implementation(libs.kotlinx.coroutines.swing)
 
     // Koin
-    implementation(project.dependencies.platform(libs.koinBom))
-    implementation(libs.koinCore)
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.core)
 
     // Room — getDatabaseBuilder() exposes RoomDatabase.Builder in its signature
     implementation(libs.androidx.room.runtime)

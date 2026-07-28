@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
 }
@@ -22,8 +22,8 @@ kotlin {
             implementation(libs.androidx.room.runtime)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
 
         androidMain.dependencies {

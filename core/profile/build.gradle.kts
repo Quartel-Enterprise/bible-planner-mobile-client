@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -28,7 +28,7 @@ kotlin {
             implementation(libs.supabase.storage)
 
             // Serialization
-            implementation(libs.kotlin.serialization.json)
+            implementation(libs.kotlinx.serialization.json)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
@@ -37,8 +37,8 @@ kotlin {
             implementation(libs.kermit)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
 
         commonTest.dependencies {

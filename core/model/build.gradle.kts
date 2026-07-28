@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -20,14 +20,14 @@ kotlin {
             api(libs.filekit.core)
 
             // Serialization
-            implementation(libs.kotlin.serialization.json)
+            implementation(libs.kotlinx.serialization.json)
 
             // Navigation 3 (NavKey)
-            api(libs.compose.navigation3.runtime)
+            api(libs.navigation3.runtime)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

@@ -2,9 +2,9 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.buildkonfig)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 buildkonfig {
@@ -62,8 +62,8 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                implementation(project.dependencies.platform(libs.koinBom))
-                implementation(libs.koinCore)
+                implementation(project.dependencies.platform(libs.koin.bom))
+                implementation(libs.koin.core)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(projects.core.remoteConfig)
                 implementation(projects.core.user)
@@ -109,9 +109,9 @@ kotlin {
         jvmMain.dependencies {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.client.content.serialization.json)
-            implementation(libs.kotlin.serialization.json)
+            implementation(libs.ktor.client.contentNegotiation)
+            implementation(libs.ktor.serialization.kotlinxJson)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.kermit)
             implementation(projects.core.utils)
             implementation(projects.core.provider.platform)

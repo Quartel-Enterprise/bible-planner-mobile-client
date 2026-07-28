@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.bibleplanner.kotlinMultiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
 }
 
 kotlin {
@@ -22,12 +22,12 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
 
             // DataStore
-            implementation(libs.dataStore)
-            implementation(libs.dataStore.preferences)
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
 
             // Koin
-            implementation(project.dependencies.platform(libs.koinBom))
-            implementation(libs.koinCore)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
