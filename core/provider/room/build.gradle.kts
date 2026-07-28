@@ -40,6 +40,7 @@ kotlin {
         val desktopMain by getting {
             dependencies {
                 implementation(libs.androidx.sqlite.bundled)
+                implementation(projects.core.utils)
             }
         }
 
