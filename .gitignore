@@ -57,6 +57,12 @@ fastlane/test_output
 fastlane/README.md
 fastlane/metadata/
 **/*.mobileprovision
+**/*.provisionprofile
+# `fastlane cert`/`sigh` drop these in the working directory. The .p12 holds the signing
+# certificate's PRIVATE KEY — it belongs in the encrypted certs repo, never here.
+**/*.p12
+**/*.cer
+**/*.certSigningRequest
 
 # Supabase local secrets
 supabase/.apple_client_secret
