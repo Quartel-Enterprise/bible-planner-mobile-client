@@ -1,7 +1,12 @@
+// Single source of truth for the app version, shared with Gradle. Its `KEY=value` lines are
+// valid in both xcconfig and Java properties syntax, so Android, iOS and desktop all read the
+// same file — see scripts/bump-version.sh.
+#include "../../version.xcconfig"
+
 TEAM_ID=
 
 PRODUCT_NAME=BiblePlanner
 PRODUCT_BUNDLE_IDENTIFIER=com.quare.bibleplanner.BiblePlanner$(TEAM_ID)
 
-CURRENT_PROJECT_VERSION=38
-MARKETING_VERSION=2.2.0
+CURRENT_PROJECT_VERSION=$(versionCode)
+MARKETING_VERSION=$(versionName)
