@@ -16,6 +16,24 @@ plugins {
     alias(libs.plugins.firebase.crashlytics) apply false
 }
 
+// version.xcconfig is the single source of truth for the app version: iOS reads it through
+// `#include` in Config.xcconfig, and the lines below expose the same values to every Gradle
+// module as `versionName`/`versionCode` project properties.
+val appVersion: Map<String, String> = providers
+    .fileContents(layout.projectDirectory.file("version.xcconfig"))
+    .asText
+    .get()
+    .lineSequence()
+    .filter { line -> '=' in line && !line.trimStart().startsWith("//") }
+    .associate { line ->
+        val (key, value) = line.split('=', limit = 2)
+        key.trim() to value.trim()
+    }
+
+allprojects {
+    appVersion.forEach { (key, value) -> extra[key] = value }
+}
+
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 

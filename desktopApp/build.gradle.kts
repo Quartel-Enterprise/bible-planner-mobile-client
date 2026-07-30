@@ -39,7 +39,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "com.quare.bibleplanner"
-            packageVersion = "2.2.0"
+            packageVersion = project.property("versionName").toString()
 
             // Output of `./gradlew :desktopApp:suggestRuntimeModules` (jdeps). Without
             // jdk.unsupported the jlink image has no sun.misc.Unsafe, and DataStore's
@@ -48,6 +48,9 @@ compose.desktop {
 
             macOS {
                 iconFile.set(project.file("../icons/bible_planner_logo.icns"))
+                // CFBundleVersion, kept in step with the iOS CURRENT_PROJECT_VERSION so both
+                // platforms ship the same build number from version.xcconfig.
+                packageBuildVersion = project.property("versionCode").toString()
             }
 
             windows {
