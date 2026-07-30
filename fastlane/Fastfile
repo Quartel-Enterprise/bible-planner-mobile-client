@@ -335,3 +335,52 @@ platform :ios do
     )
   end
 end
+
+# The jpackage runtime is a nested bundle with its own identifier, derived from the
+# app bundle ID (verified in Contents/runtime/Contents/Info.plist of a `-Pmas` build).
+MAC_RUNTIME_BUNDLE_ID = "com.oracle.java.#{APP_BUNDLE_ID}".freeze
+
+desc "Create/fetch Mac App Store certificates and provisioning profiles into the certs repo. " \
+     "Run locally by an admin; `produce` authenticates interactively with an Apple ID, and " \
+     "`match` reuses the App Store Connect API key when the APP_STORE_CONNECT_API_KEY_* " \
+     "variables are set."
+lane :mac_certs do
+  # Registers the App IDs on the developer portal if they don't exist yet. The
+  # runtime bundle needs its own App ID so it can get a provisioning profile.
+  # `produce` only supports Apple ID authentication, so it prompts on first run.
+  [APP_BUNDLE_ID, MAC_RUNTIME_BUNDLE_ID].each do |identifier|
+    produce(
+      app_identifier: identifier,
+      app_name: identifier == APP_BUNDLE_ID ? "Bible Planner" : "Bible Planner JVM Runtime",
+      skip_itc: true,
+      platform: "osx",
+      team_id: APPLE_TEAM_ID,
+    )
+  end
+
+  api_key = if ENV["APP_STORE_CONNECT_API_KEY_ID"]
+    app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_P8"),
+      is_key_content_base64: true,
+      set_spaceship_token: true,
+    )
+  end
+
+  # Mac App Store distribution needs the application certificate (signs the .app) plus the
+  # Mac Installer Distribution certificate (signs the uploaded .pkg). generate_apple_certs
+  # is off so the app certificate is created as the classic "3rd Party Mac Developer
+  # Application" kind — the Compose Gradle plugin (MacSigner, checked against 1.11.1) only
+  # recognizes that prefix and "Developer ID Application", not the newer "Apple Distribution".
+  match(
+    type: "appstore",
+    platform: "macos",
+    additional_cert_types: ["mac_installer_distribution"],
+    app_identifier: [APP_BUNDLE_ID, MAC_RUNTIME_BUNDLE_ID],
+    api_key: api_key,
+    readonly: false,
+    generate_apple_certs: false,
+    force_for_new_certificates: true,
+  )
+end

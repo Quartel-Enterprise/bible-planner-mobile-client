@@ -3,3 +3,4 @@
 
 app_identifier("com.quare.bibleplanner.BiblePlanner") # iOS bundle identifier
 package_name("com.quare.bibleplanner")                # Android applicationId
+apple_id("quare.software@gmail.com")                  # Apple Developer account (interactive lanes only; CI uses the API key)
