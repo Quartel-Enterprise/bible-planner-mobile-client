@@ -31,6 +31,8 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
+private val segmentedButtonsBreathingRoom = 32.dp
+
 @Composable
 internal fun ReadingPlanHeaderRow(
     selectedReadingPlan: ReadingPlanType,
@@ -64,15 +66,19 @@ private fun AdaptiveOrderSelector(
     SubcomposeLayout(modifier = modifier) { constraints ->
         val labelConstraints = constraints.copy(minWidth = 0)
         val segmentedFits = if (constraints.hasBoundedWidth) {
+            val probeMaxWidth = constraints.maxWidth - segmentedButtonsBreathingRoom.roundToPx()
+            val probeConstraints = labelConstraints.copy(maxWidth = probeMaxWidth.coerceAtLeast(0))
             var overflowed = false
-            subcompose(OrderSelectorSlot.Probe) {
-                PlanTypesSegmentedButtons(
-                    modifier = Modifier.fillMaxWidth(),
-                    selectedReadingPlan = selectedReadingPlan,
-                    onPlanClick = onPlanClick,
-                    onLabelOverflow = { overflowed = true },
-                )
-            }.forEach { it.measure(labelConstraints) }
+            ReadingPlanType.entries.forEach { probedPlan ->
+                subcompose(OrderSelectorSlot.Probe to probedPlan) {
+                    PlanTypesSegmentedButtons(
+                        modifier = Modifier.fillMaxWidth(),
+                        selectedReadingPlan = probedPlan,
+                        onPlanClick = onPlanClick,
+                        onLabelOverflow = { overflowed = true },
+                    )
+                }.forEach { it.measure(probeConstraints) }
+            }
             !overflowed
         } else {
             true

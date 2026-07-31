@@ -1,4 +1,7 @@
 {
+  "2.2.1": [
+    "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short."
+  ],
   "2.2.0": [
     "On larger screens (tablet and desktop), you can now drag the divider between the reading panel and Daily study to resize both panels to your liking.",
     "The Daily study content is wider on larger screens, making better use of the available space.",
