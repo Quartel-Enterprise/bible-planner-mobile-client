@@ -91,10 +91,15 @@ private fun AdaptiveOrderSelector(
                     onPlanClick = onPlanClick,
                 )
             } else {
-                OrderChip(
-                    selectedReadingPlan = selectedReadingPlan,
-                    onClick = { onPlanClick(selectedReadingPlan.toggled()) },
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd,
+                ) {
+                    OrderChip(
+                        selectedReadingPlan = selectedReadingPlan,
+                        onClick = { onPlanClick(selectedReadingPlan.toggled()) },
+                    )
+                }
             }
         }.map { it.measure(labelConstraints) }
         val width = if (constraints.hasBoundedWidth) {
