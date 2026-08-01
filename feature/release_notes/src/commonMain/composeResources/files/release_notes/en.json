@@ -1,5 +1,5 @@
 {
-  "2.2.1": [
+  "2.3.0": [
     "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short and sits next to the options button.",
     "In the compact format, the order selector now opens a list with both reading orders and marks the one in use, instead of switching straight away on tap."
   ],
