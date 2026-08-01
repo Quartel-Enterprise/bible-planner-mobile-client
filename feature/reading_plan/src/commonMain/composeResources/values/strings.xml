@@ -43,6 +43,7 @@
     <string name="day_number">Day %1$d</string>
     <string name="today_badge">Today</string>
     <string name="more_options">More options</string>
+    <string name="selected">Selected</string>
 
     <string name="delete_progress_option">Delete progress</string>
     <string name="go_to_unread">Go to unread</string>

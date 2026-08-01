@@ -123,6 +123,7 @@ private fun ResponsiveContentScope.sidePanelItems(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             selectedReadingPlan = uiState.selectedReadingPlan,
             isShowingMenu = uiState.isShowingMenu,
+            isShowingOrderMenu = uiState.isShowingOrderMenu,
             onEvent = onEvent,
         )
     }

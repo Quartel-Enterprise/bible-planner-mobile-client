@@ -7,6 +7,7 @@ import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
 internal sealed interface ReadingPlanUiState {
     val selectedReadingPlan: ReadingPlanType
     val isShowingMenu: Boolean
+    val isShowingOrderMenu: Boolean
     val scrollToWeekNumber: Int
     val scrollToWeekIsAutomatic: Boolean
     val scrollToTop: Boolean
@@ -23,6 +24,7 @@ internal sealed interface ReadingPlanUiState {
         val flashTargetGlobalIndex: Int,
         override val selectedReadingPlan: ReadingPlanType,
         override val isShowingMenu: Boolean,
+        override val isShowingOrderMenu: Boolean,
         override val scrollToWeekNumber: Int,
         override val scrollToWeekIsAutomatic: Boolean,
         override val scrollToTop: Boolean,
@@ -36,6 +38,7 @@ internal sealed interface ReadingPlanUiState {
     data class Loading(
         override val selectedReadingPlan: ReadingPlanType,
         override val isShowingMenu: Boolean,
+        override val isShowingOrderMenu: Boolean,
         override val scrollToWeekNumber: Int,
         override val scrollToWeekIsAutomatic: Boolean,
         override val scrollToTop: Boolean,

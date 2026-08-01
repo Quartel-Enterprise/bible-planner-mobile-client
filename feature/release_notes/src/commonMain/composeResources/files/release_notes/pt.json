@@ -1,6 +1,7 @@
 {
-  "2.2.1": [
-    "Corrigido o seletor de ordem no topo do plano de leitura, que em alguns aparelhos aparecia com o texto colado nas bordas; agora ele muda para o formato compacto quando falta espaço e fica ao lado do botão de opções."
+  "2.3.0": [
+    "Corrigido o seletor de ordem no topo do plano de leitura, que em alguns aparelhos aparecia com o texto colado nas bordas; agora ele muda para o formato compacto quando falta espaço e fica ao lado do botão de opções.",
+    "No formato compacto, o seletor de ordem agora abre uma lista com as duas ordens de leitura e marca a que está em uso, em vez de alternar direto ao toque."
   ],
   "2.2.0": [
     "Em telas maiores (tablet e desktop), agora você pode arrastar a divisória entre a leitura e o Estudo do dia para redimensionar os dois painéis do jeito que preferir.",

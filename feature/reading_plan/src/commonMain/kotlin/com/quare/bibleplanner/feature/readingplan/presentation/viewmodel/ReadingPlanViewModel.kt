@@ -165,6 +165,7 @@ internal class ReadingPlanViewModel(
                         params = mapOf(AnalyticsParams.PLAN_TYPE to event.type.name.lowercase()),
                     )
                 }
+                changeOrderMenuVisibility(false)
                 viewModelScope.launch {
                     setSelectedReadingPlan(event.type)
                 }
@@ -187,6 +188,10 @@ internal class ReadingPlanViewModel(
             ReadingPlanUiEvent.OnOverflowClick -> changeMenuVisibility(true)
 
             ReadingPlanUiEvent.OnOverflowDismiss -> changeMenuVisibility(false)
+
+            ReadingPlanUiEvent.OnOrderMenuClick -> changeOrderMenuVisibility(true)
+
+            ReadingPlanUiEvent.OnOrderMenuDismiss -> changeOrderMenuVisibility(false)
 
             is ReadingPlanUiEvent.OnOverflowOptionClick -> {
                 changeMenuVisibility(false)
@@ -467,6 +472,15 @@ internal class ReadingPlanViewModel(
         }
     }
 
+    private fun changeOrderMenuVisibility(isShowing: Boolean) {
+        updateState { state ->
+            when (state) {
+                is ReadingPlanUiState.Loaded -> state.copy(isShowingOrderMenu = isShowing)
+                is ReadingPlanUiState.Loading -> state.copy(isShowingOrderMenu = isShowing)
+            }
+        }
+    }
+
     private fun buildLoadedState(
         selectedPlan: ReadingPlanType,
         selectedWeeks: List<WeekPlanModel>,
@@ -485,6 +499,7 @@ internal class ReadingPlanViewModel(
             flashTargetGlobalIndex = loadedBase?.flashTargetGlobalIndex ?: 0,
             selectedReadingPlan = selectedPlan,
             isShowingMenu = base.isShowingMenu,
+            isShowingOrderMenu = base.isShowingOrderMenu,
             scrollToWeekNumber = scrollToWeekNumber,
             scrollToWeekIsAutomatic = scrollToWeekIsAutomatic,
             scrollToTop = base.scrollToTop,

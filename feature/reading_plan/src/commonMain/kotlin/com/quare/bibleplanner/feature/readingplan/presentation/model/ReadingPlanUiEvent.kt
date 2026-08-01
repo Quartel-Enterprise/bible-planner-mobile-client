@@ -68,6 +68,20 @@ internal sealed interface ReadingPlanUiEvent : UiEvent {
         )
     }
 
+    data object OnOrderMenuClick : ReadingPlanUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PLAN_ORDER_MENU_CLICKED,
+            params = emptyMap(),
+        )
+    }
+
+    data object OnOrderMenuDismiss : ReadingPlanUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PLAN_ORDER_MENU_DISMISSED,
+            params = emptyMap(),
+        )
+    }
+
     data object OnToggleUpcomingExpanded : ReadingPlanUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.PLAN_GROUP_TOGGLED,

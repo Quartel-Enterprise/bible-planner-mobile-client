@@ -173,4 +173,6 @@ object AnalyticsEventNames {
     const val PLAN_EDIT_CLICKED = "plan_edit_clicked"
     const val PLAN_OVERFLOW_CLICKED = "plan_overflow_clicked"
     const val PLAN_OVERFLOW_DISMISSED = "plan_overflow_dismissed"
+    const val PLAN_ORDER_MENU_CLICKED = "plan_order_menu_clicked"
+    const val PLAN_ORDER_MENU_DISMISSED = "plan_order_menu_dismissed"
 }
