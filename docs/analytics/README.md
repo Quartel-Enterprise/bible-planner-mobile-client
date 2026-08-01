@@ -372,6 +372,8 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [plan_edit_clicked](events/plan_edit_clicked.md) | P2 | Books |
 | [plan_overflow_clicked](events/plan_overflow_clicked.md) | P2 | Books |
 | [plan_overflow_dismissed](events/plan_overflow_dismissed.md) | P2 | Books |
+| [plan_order_menu_clicked](events/plan_order_menu_clicked.md) | P2 | Books |
+| [plan_order_menu_dismissed](events/plan_order_menu_dismissed.md) | P2 | Books |
 
 ## Explicitly not tracked
 

@@ -9,8 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +30,7 @@ import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.book_order
 import bibleplanner.feature.reading_plan.generated.resources.chronological_order
 import bibleplanner.feature.reading_plan.generated.resources.more_options
+import bibleplanner.feature.reading_plan.generated.resources.selected
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import org.jetbrains.compose.resources.StringResource
@@ -37,6 +42,7 @@ private val segmentedButtonsBreathingRoom = 32.dp
 internal fun ReadingPlanHeaderRow(
     selectedReadingPlan: ReadingPlanType,
     isShowingMenu: Boolean,
+    isShowingOrderMenu: Boolean,
     onEvent: (ReadingPlanUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -48,7 +54,8 @@ internal fun ReadingPlanHeaderRow(
         AdaptiveOrderSelector(
             modifier = Modifier.weight(1f),
             selectedReadingPlan = selectedReadingPlan,
-            onPlanClick = { onEvent(ReadingPlanUiEvent.OnPlanClick(it)) },
+            isShowingOrderMenu = isShowingOrderMenu,
+            onEvent = onEvent,
         )
         OverflowMenuButton(
             isShowingMenu = isShowingMenu,
@@ -60,9 +67,11 @@ internal fun ReadingPlanHeaderRow(
 @Composable
 private fun AdaptiveOrderSelector(
     selectedReadingPlan: ReadingPlanType,
-    onPlanClick: (ReadingPlanType) -> Unit,
+    isShowingOrderMenu: Boolean,
+    onEvent: (ReadingPlanUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val onPlanClick: (ReadingPlanType) -> Unit = { onEvent(ReadingPlanUiEvent.OnPlanClick(it)) }
     SubcomposeLayout(modifier = modifier) { constraints ->
         val labelConstraints = constraints.copy(minWidth = 0)
         val segmentedFits = if (constraints.hasBoundedWidth) {
@@ -97,7 +106,8 @@ private fun AdaptiveOrderSelector(
                 ) {
                     OrderChip(
                         selectedReadingPlan = selectedReadingPlan,
-                        onClick = { onPlanClick(selectedReadingPlan.toggled()) },
+                        isShowingOrderMenu = isShowingOrderMenu,
+                        onEvent = onEvent,
                     )
                 }
             }
@@ -117,32 +127,71 @@ private fun AdaptiveOrderSelector(
 @Composable
 private fun OrderChip(
     selectedReadingPlan: ReadingPlanType,
-    onClick: () -> Unit,
+    isShowingOrderMenu: Boolean,
+    onEvent: (ReadingPlanUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = modifier,
-        onClick = onClick,
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+    Box(modifier = modifier) {
+        Surface(
+            onClick = { onEvent(ReadingPlanUiEvent.OnOrderMenuClick) },
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline),
         ) {
-            Icon(
-                modifier = Modifier.size(18.dp),
-                imageVector = Icons.Default.SwapHoriz,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = stringResource(selectedReadingPlan.labelResource()),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = stringResource(selectedReadingPlan.labelResource()),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                )
+                Icon(
+                    modifier = Modifier.size(18.dp),
+                    imageVector = if (isShowingOrderMenu) {
+                        Icons.Default.KeyboardArrowUp
+                    } else {
+                        Icons.Default.KeyboardArrowDown
+                    },
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        OrderDropdownMenu(
+            selectedReadingPlan = selectedReadingPlan,
+            isShowingOrderMenu = isShowingOrderMenu,
+            onEvent = onEvent,
+        )
+    }
+}
+
+@Composable
+private fun OrderDropdownMenu(
+    selectedReadingPlan: ReadingPlanType,
+    isShowingOrderMenu: Boolean,
+    onEvent: (ReadingPlanUiEvent) -> Unit,
+) {
+    DropdownMenu(
+        expanded = isShowingOrderMenu,
+        onDismissRequest = { onEvent(ReadingPlanUiEvent.OnOrderMenuDismiss) },
+    ) {
+        ReadingPlanType.entries.forEach { type ->
+            DropdownMenuItem(
+                text = { Text(text = stringResource(type.labelResource())) },
+                onClick = { onEvent(ReadingPlanUiEvent.OnPlanClick(type)) },
+                trailingIcon = {
+                    if (type == selectedReadingPlan) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = stringResource(Res.string.selected),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                },
             )
         }
     }
@@ -172,11 +221,6 @@ private fun OverflowMenuButton(
 private enum class OrderSelectorSlot {
     Probe,
     Content,
-}
-
-private fun ReadingPlanType.toggled(): ReadingPlanType = when (this) {
-    ReadingPlanType.CHRONOLOGICAL -> ReadingPlanType.BOOKS
-    ReadingPlanType.BOOKS -> ReadingPlanType.CHRONOLOGICAL
 }
 
 private fun ReadingPlanType.labelResource(): StringResource = when (this) {
