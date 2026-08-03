@@ -1,7 +1,8 @@
 {
   "2.3.0": [
     "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short and sits next to the options button.",
-    "In the compact format, the order selector now opens a list with both reading orders and marks the one in use, instead of switching straight away on tap."
+    "In the compact format, the order selector now opens a list with both reading orders and marks the one in use, instead of switching straight away on tap.",
+    "On the reading screen, the word next to the checkbox that marks a chapter as read always appeared in English; it now follows the app language."
   ],
   "2.2.0": [
     "On larger screens (tablet and desktop), you can now drag the divider between the reading panel and Daily study to resize both panels to your liking.",

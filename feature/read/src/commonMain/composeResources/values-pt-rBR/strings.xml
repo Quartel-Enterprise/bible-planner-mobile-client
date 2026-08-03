@@ -7,4 +7,5 @@
     <string name="change_bible_version">Mudar Versão da Bíblia</string>
     <string name="mark_as_unread">Marcar como Não Lido</string>
     <string name="mark_as_read">Marcar como Lido</string>
+    <string name="read_label">Lido</string>
 </resources>
