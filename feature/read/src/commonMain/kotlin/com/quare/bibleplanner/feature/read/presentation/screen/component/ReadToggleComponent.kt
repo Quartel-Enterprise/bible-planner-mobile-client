@@ -7,6 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import bibleplanner.feature.read.generated.resources.Res
+import bibleplanner.feature.read.generated.resources.read_label
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ReadToggleComponent(
@@ -18,7 +21,7 @@ internal fun ReadToggleComponent(
         modifier = modifier.clickable { toggleReadStatus() },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text("Read")
+        Text(stringResource(Res.string.read_label))
         Checkbox(
             checked = isChecked,
             onCheckedChange = { toggleReadStatus() },
