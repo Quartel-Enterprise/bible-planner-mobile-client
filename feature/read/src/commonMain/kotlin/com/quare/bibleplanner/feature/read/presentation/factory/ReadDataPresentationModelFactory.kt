@@ -85,10 +85,11 @@ class ReadDataPresentationModelFactory(
             chapterNotFoundState
         } else {
             val verseUiModels = versesWithTexts.map { verseWithTexts ->
-                verseWithTexts.texts.find { it.bibleVersionId == versionId }?.text?.let { safeText ->
+                verseWithTexts.texts.find { it.bibleVersionId == versionId }?.let { verseText ->
                     VerseUiModel(
                         number = verseWithTexts.verse.number,
-                        text = safeText,
+                        heading = verseText.heading,
+                        text = verseText.text,
                         isSelected = false, // TODO: will be used in the future for the copy/share feature
                     )
                 } ?: return@combine chapterNotFoundState

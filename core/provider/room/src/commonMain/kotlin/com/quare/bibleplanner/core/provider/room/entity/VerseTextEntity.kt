@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.provider.room.entity
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.ForeignKey
 import androidx.room3.Index
@@ -33,4 +34,5 @@ data class VerseTextEntity(
     val verseId: Long,
     val bibleVersionId: String,
     val text: String,
+    @ColumnInfo(defaultValue = "NULL") val heading: String? = null,
 )

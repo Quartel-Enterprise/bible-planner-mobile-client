@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class SyncVerseDto(
     val number: Int,
     val text: String,
+    val heading: String?,
 )
