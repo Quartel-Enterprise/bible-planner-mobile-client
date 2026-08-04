@@ -69,4 +69,4 @@ supabase/.apple_client_secret
 supabase/.temp/
 
 # Store listings
-store_listings
+store_listings/
