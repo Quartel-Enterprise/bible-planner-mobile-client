@@ -20,6 +20,7 @@
 - [Parameterless setup → @BeforeTest](feedback_parameterless_setup_beforetest.md) — a prepareScenario with no params becomes a @BeforeTest setUp(); drop the per-test call and the // Given comment.
 - [KDoc simple-name links](feedback_kdoc_simple_name_links.md) — KDoc [links] use simple names + an import (never fully-qualified); qualify members like [BookEntity.favoriteUpdatedAt].
 - [No comments in production code](feedback_no_comments.md) — don't add comments (inline //, block /* */, or KDoc) to production Kotlin; allowed in gradle scripts, the version catalog, and tests (Given/When/Then).
+- [Worktree gradle cwd trap](project_worktree_gradle_cwd_trap.md) — background `cd` doesn't persist, so bare `./gradlew` builds the main repo, not the worktree; always `gradlew -p <worktree>` / `git -C <worktree>`.
 - [Worktree → remote branch only](feedback_worktree_remote_only.md) — after a worktree task, push then delete the local worktree, keeping only the remote branch; fetch/inspect before any force-push so you don't clobber the user's PR-branch updates.
 - [GitHub commit timezone grouping](project_github_commit_timezone.md) — GitHub groups commit-list by stale account tz (+0200), not commit offset; fixed via TZ in cloud env (claude.ai/code), bug reported as discussion #199224 (monitored daily). Don't force-push to fix — ineffective.
 - [Compose Resources apostrophes](feedback_compose_resources_apostrophe.md) — in composeResources strings.xml write apostrophes literally (doesn't), never escape with `\'` — Compose renders the backslash literally.
