@@ -7,7 +7,8 @@
     "La lista de versiones de la Biblia ahora muestra el tamaño de cada versión, y las descargas en curso o en pausa muestran cuánto se descargó y una barra de progreso.",
     "El aviso de actualización de las versiones de la Biblia quedó más claro, con el tamaño de cada versión junto al nombre.",
     "La app ya no descarga una versión de la Biblia por su cuenta la primera vez que la abres: ahora tú eliges cuándo descargarla, con un botón directo en la pantalla de lectura (que muestra el tamaño y el progreso) o en la pantalla de versiones — una descarga a medias se sigue reanudando.",
-    "Cuando la versión de la Biblia incluye títulos de sección (como \"La Creación\" antes de Génesis 1:1), ahora aparecen en la pantalla de lectura."
+    "Cuando la versión de la Biblia incluye títulos de sección (como \"La Creación\" antes de Génesis 1:1), ahora aparecen en la pantalla de lectura.",
+    "Se corrigió un problema que podía impedir que la app te avisara que una versión de la Biblia que ya descargaste tiene texto nuevo, como los títulos de sección."
   ],
   "2.3.0": [
     "Se corrigió el selector de orden en la parte superior del plan de lectura, que en algunos dispositivos mostraba el texto pegado a los bordes; ahora cambia al formato compacto cuando falta espacio y queda junto al botón de opciones.",

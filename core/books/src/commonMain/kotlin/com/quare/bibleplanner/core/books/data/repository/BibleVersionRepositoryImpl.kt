@@ -5,33 +5,36 @@ import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteData
 import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
-import kotlin.Result
-import kotlin.collections.List
-import kotlin.collections.isNotEmpty
-import kotlin.collections.map
-import kotlin.collections.orEmpty
-import kotlin.map
-import kotlin.recover
-import kotlin.time.Clock
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
 internal class BibleVersionRepositoryImpl(
     private val remoteDataSource: BibleVersionsRemoteDataSource,
     private val localDataSource: BibleVersionsLocalDataSource,
     private val versionMapper: VersionMapper,
+    private val currentTimestampProvider: CurrentTimestampProvider,
 ) : BibleVersionRepository {
-    override suspend fun getVersions(): Result<List<VersionModel>> {
+    private val cacheDuration: Duration = 15.minutes
+
+    override suspend fun getVersions(forceRefresh: Boolean): Result<List<VersionModel>> {
         val cachedVersions = localDataSource.getCachedVersions()
         val timestamp = localDataSource.getCacheTimestamp() ?: 0L
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = currentTimestampProvider.getCurrentTimestamp()
+        val isCacheFresh = (now - timestamp).milliseconds < cacheDuration
 
-        return if (cachedVersions != null && (now - timestamp) < CACHE_DURATION_MS) {
+        return if (!forceRefresh && cachedVersions != null && isCacheFresh) {
             Result.success(cachedVersions.map(versionMapper::map))
         } else {
             remoteDataSource
                 .getVersions()
                 .map { remoteVersions ->
                     if (remoteVersions.isNotEmpty()) {
-                        localDataSource.saveToCache(remoteVersions, now)
+                        localDataSource.saveToCache(
+                            versions = remoteVersions,
+                            timestamp = now,
+                        )
                         remoteVersions.map(versionMapper::map)
                     } else {
                         cachedVersions.orEmpty().map(versionMapper::map)
@@ -40,9 +43,5 @@ internal class BibleVersionRepositoryImpl(
                     cachedVersions?.map(versionMapper::map) ?: throw error
                 }
         }
-    }
-
-    companion object {
-        private const val CACHE_DURATION_MS = 4 * 60 * 60 * 1000L // 4 hours
     }
 }

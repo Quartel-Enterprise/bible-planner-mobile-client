@@ -30,7 +30,9 @@ internal class BibleRepositoryImpl(
     private val bibleVersionKey = stringPreferencesKey(BIBLE_VERSION_KEY)
 
     override fun getBiblesFlow(): Flow<List<BibleModel>> = flow {
-        val supportedVersions = bibleVersionRepository.getVersions().getOrDefault(emptyList())
+        val supportedVersions = bibleVersionRepository
+            .getVersions(forceRefresh = false)
+            .getOrDefault(emptyList())
         emitAll(
             combine(
                 getSelectedVersionIdFlow(),

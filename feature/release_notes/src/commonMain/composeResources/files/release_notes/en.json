@@ -7,7 +7,8 @@
     "The Bible versions list now shows the size of each version, and downloads in progress or paused show how much has been downloaded plus a progress bar.",
     "The Bible version update notice is now clearer, showing the size of each version next to its name.",
     "The app no longer downloads a Bible version on its own the first time you open it: you now choose when to download it, with a button right on the reading screen (showing size and progress) or on the versions screen — a download left halfway is still resumed.",
-    "When the Bible version includes section headings (like \"The Creation\" before Genesis 1:1), they now show up on the reading screen."
+    "When the Bible version includes section headings (like \"The Creation\" before Genesis 1:1), they now show up on the reading screen.",
+    "Fixed a problem that could stop the app from letting you know that a Bible version you already downloaded has new text, such as the section headings."
   ],
   "2.3.0": [
     "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short and sits next to the options button.",

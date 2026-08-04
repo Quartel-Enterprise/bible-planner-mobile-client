@@ -6,7 +6,7 @@ class GetRemoteContentVersionUseCase(
     private val bibleVersionRepository: BibleVersionRepository,
 ) {
     suspend operator fun invoke(versionId: String): String = bibleVersionRepository
-        .getVersions()
+        .getVersions(forceRefresh = true)
         .getOrNull()
         ?.find { it.id.equals(versionId, ignoreCase = true) }
         ?.version
