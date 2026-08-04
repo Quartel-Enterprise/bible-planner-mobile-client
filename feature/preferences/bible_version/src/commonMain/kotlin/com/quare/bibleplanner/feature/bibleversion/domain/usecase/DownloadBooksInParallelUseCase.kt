@@ -9,11 +9,21 @@ class DownloadBooksInParallelUseCase(
     private val getPrioritizedBookIds: GetPrioritizedBookIdsUseCase,
     private val downloadChapters: DownloadChaptersUseCase,
 ) {
-    suspend operator fun invoke(versionId: String): Result<Unit> = suspendRunCatching {
+    suspend operator fun invoke(
+        versionId: String,
+        force: Boolean,
+    ): Result<Unit> = suspendRunCatching {
         val results = supervisorScope {
             getPrioritizedBookIds()
-                .map { bookId -> async { downloadChapters(versionId, bookId) } }
-                .awaitAll()
+                .map { bookId ->
+                    async {
+                        downloadChapters(
+                            versionId = versionId,
+                            bookId = bookId,
+                            force = force,
+                        )
+                    }
+                }.awaitAll()
         }
         results.firstOrNull { it.isFailure }?.getOrThrow()
     }

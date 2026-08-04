@@ -17,14 +17,13 @@ import kotlin.test.assertTrue
 internal class InitializeBibleVersionsUseCaseImplTest {
     private lateinit var useCase: InitializeBibleVersionsUseCaseImpl
     private lateinit var bibleVersionDao: RecordingBibleVersionDao
-    private lateinit var verseDao: RecordingVerseDao
     private lateinit var downloaderFacade: RecordingDownloaderFacade
 
     @Test
     fun `inserts an unknown version with its remote content version`() = runTest {
         // Given
         prepareScenario(
-            remoteVersions = Result.success(listOf(acfModel(version = "1.2.0"))),
+            remoteVersions = Result.success(listOf(versionModel(id = "ACF", version = "1.2.0"))),
         )
 
         // When
@@ -39,11 +38,12 @@ internal class InitializeBibleVersionsUseCaseImplTest {
     }
 
     @Test
-    fun `keeps an existing version untouched when the content version matches`() = runTest {
+    fun `keeps a complete up-to-date version untouched`() = runTest {
         // Given
         prepareScenario(
-            remoteVersions = Result.success(listOf(acfModel(version = "1.2.0"))),
-            existingVersions = listOf(acfEntity(contentVersion = "1.2.0")),
+            remoteVersions = Result.success(listOf(versionModel(id = "ACF", version = "1.2.0"))),
+            existingVersions = listOf(versionEntity(id = "ACF", contentVersion = "1.2.0")),
+            downloadedChaptersCount = 1189,
         )
 
         // When
@@ -52,16 +52,15 @@ internal class InitializeBibleVersionsUseCaseImplTest {
         // Then
         assertTrue(bibleVersionDao.insertedVersions.isEmpty())
         assertTrue(bibleVersionDao.updatedVersions.isEmpty())
-        assertTrue(verseDao.deletedVersionIds.isEmpty())
         assertTrue(downloaderFacade.downloadedVersionIds.isEmpty())
     }
 
     @Test
-    fun `updates the stored content version without redownload when nothing was downloaded`() = runTest {
+    fun `adopts the remote content version without downloading when nothing was downloaded`() = runTest {
         // Given
         prepareScenario(
-            remoteVersions = Result.success(listOf(acfModel(version = "1.2.0"))),
-            existingVersions = listOf(acfEntity(contentVersion = "1.1.0")),
+            remoteVersions = Result.success(listOf(versionModel(id = "ACF", version = "1.2.0"))),
+            existingVersions = listOf(versionEntity(id = "ACF", contentVersion = "1.1.0")),
             downloadedChaptersCount = 0,
         )
 
@@ -70,16 +69,33 @@ internal class InitializeBibleVersionsUseCaseImplTest {
 
         // Then
         assertEquals("1.2.0", bibleVersionDao.updatedVersions.single().contentVersion)
-        assertTrue(verseDao.deletedVersionIds.isEmpty())
         assertTrue(downloaderFacade.downloadedVersionIds.isEmpty())
     }
 
     @Test
-    fun `wipes stale verse texts and redownloads when the content version changes`() = runTest {
+    fun `schedules a refresh download without touching the stored content version when content is outdated`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteVersions = Result.success(listOf(versionModel(id = "ACF", version = "1.2.0"))),
+                existingVersions = listOf(versionEntity(id = "ACF", contentVersion = "1.1.0")),
+                downloadedChaptersCount = 1189,
+            )
+
+            // When
+            useCase()
+
+            // Then
+            assertTrue(bibleVersionDao.updatedVersions.isEmpty())
+            assertEquals(listOf("ACF"), downloaderFacade.downloadedVersionIds)
+        }
+
+    @Test
+    fun `schedules a refresh for a version stored before content versions were tracked`() = runTest {
         // Given
         prepareScenario(
-            remoteVersions = Result.success(listOf(acfModel(version = "1.2.0"))),
-            existingVersions = listOf(acfEntity(contentVersion = "1.1.0")),
+            remoteVersions = Result.success(listOf(versionModel(id = "ACF", version = "1.2.0"))),
+            existingVersions = listOf(versionEntity(id = "ACF", contentVersion = "")),
             downloadedChaptersCount = 1189,
         )
 
@@ -87,17 +103,39 @@ internal class InitializeBibleVersionsUseCaseImplTest {
         useCase()
 
         // Then
-        assertEquals("1.2.0", bibleVersionDao.updatedVersions.single().contentVersion)
-        assertEquals(listOf("ACF"), verseDao.deletedVersionIds)
         assertEquals(listOf("ACF"), downloaderFacade.downloadedVersionIds)
     }
 
     @Test
-    fun `redownloads a version stored before content versions were tracked`() = runTest {
+    fun `schedules a healing download when a done version misses chapters`() = runTest {
         // Given
         prepareScenario(
-            remoteVersions = Result.success(listOf(acfModel(version = "1.2.0"))),
-            existingVersions = listOf(acfEntity(contentVersion = "")),
+            remoteVersions = Result.success(listOf(versionModel(id = "ACF", version = "1.2.0"))),
+            existingVersions = listOf(versionEntity(id = "ACF", contentVersion = "1.2.0")),
+            downloadedChaptersCount = 1180,
+        )
+
+        // When
+        useCase()
+
+        // Then
+        assertEquals(listOf("ACF"), downloaderFacade.downloadedVersionIds)
+    }
+
+    @Test
+    fun `schedules at most one download per run when several versions are outdated`() = runTest {
+        // Given
+        prepareScenario(
+            remoteVersions = Result.success(
+                listOf(
+                    versionModel(id = "ACF", version = "1.2.0"),
+                    versionModel(id = "WEB", version = "1.1.0"),
+                ),
+            ),
+            existingVersions = listOf(
+                versionEntity(id = "ACF", contentVersion = ""),
+                versionEntity(id = "WEB", contentVersion = ""),
+            ),
             downloadedChaptersCount = 1189,
         )
 
@@ -105,8 +143,24 @@ internal class InitializeBibleVersionsUseCaseImplTest {
         useCase()
 
         // Then
-        assertEquals(listOf("ACF"), verseDao.deletedVersionIds)
         assertEquals(listOf("ACF"), downloaderFacade.downloadedVersionIds)
+    }
+
+    @Test
+    fun `does not schedule a refresh when the remote content version is blank`() = runTest {
+        // Given
+        prepareScenario(
+            remoteVersions = Result.success(listOf(versionModel(id = "ACF", version = ""))),
+            existingVersions = listOf(versionEntity(id = "ACF", contentVersion = "1.1.0")),
+            downloadedChaptersCount = 1189,
+        )
+
+        // When
+        useCase()
+
+        // Then
+        assertTrue(bibleVersionDao.updatedVersions.isEmpty())
+        assertTrue(downloaderFacade.downloadedVersionIds.isEmpty())
     }
 
     @Test
@@ -122,18 +176,25 @@ internal class InitializeBibleVersionsUseCaseImplTest {
         // Then
         assertTrue(bibleVersionDao.insertedVersions.isEmpty())
         assertTrue(bibleVersionDao.updatedVersions.isEmpty())
+        assertTrue(downloaderFacade.downloadedVersionIds.isEmpty())
     }
 
-    private fun acfModel(version: String): VersionModel = VersionModel(
-        id = "ACF",
-        name = "Almeida Corrigida Fiel",
+    private fun versionModel(
+        id: String,
+        version: String,
+    ): VersionModel = VersionModel(
+        id = id,
+        name = "Version $id",
         version = version,
         language = Language.PORTUGUESE_BRAZIL,
         chapters = 1189,
     )
 
-    private fun acfEntity(contentVersion: String): BibleVersionEntity = BibleVersionEntity(
-        id = "ACF",
+    private fun versionEntity(
+        id: String,
+        contentVersion: String,
+    ): BibleVersionEntity = BibleVersionEntity(
+        id = id,
         status = DownloadStatus.DONE,
         totalChapters = 1189,
         contentVersion = contentVersion,
@@ -145,11 +206,10 @@ internal class InitializeBibleVersionsUseCaseImplTest {
         downloadedChaptersCount: Int = 0,
     ) {
         bibleVersionDao = RecordingBibleVersionDao(existingVersions)
-        verseDao = RecordingVerseDao(downloadedChaptersCount)
         downloaderFacade = RecordingDownloaderFacade()
         useCase = InitializeBibleVersionsUseCaseImpl(
             bibleVersionDao = bibleVersionDao,
-            verseDao = verseDao,
+            verseDao = CountingVerseDao(downloadedChaptersCount),
             metadataRepository = { remoteVersions },
             downloaderFacade = downloaderFacade,
         )
@@ -181,19 +241,18 @@ private class RecordingBibleVersionDao(
         status: DownloadStatus,
     ) = error("Unexpected call")
 
+    override suspend fun updateContentVersion(
+        id: String,
+        contentVersion: String,
+    ) = error("Unexpected call")
+
     override suspend fun deleteVersion(id: String) = error("Unexpected call")
 }
 
-private class RecordingVerseDao(
+private class CountingVerseDao(
     private val downloadedChaptersCount: Int,
 ) : ThrowingVerseDao() {
-    val deletedVersionIds = mutableListOf<String>()
-
     override suspend fun countChaptersWithVersesByVersion(versionId: String): Int = downloadedChaptersCount
-
-    override suspend fun deleteVerseTextsByVersion(versionId: String) {
-        deletedVersionIds += versionId
-    }
 }
 
 private class RecordingDownloaderFacade : BibleVersionDownloaderFacade {

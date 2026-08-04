@@ -15,20 +15,21 @@ internal class InitializeBibleVersionsUseCaseImpl(
     private val downloaderFacade: BibleVersionDownloaderFacade,
 ) : InitializeBibleVersionsUseCase {
     override suspend fun invoke() {
-        metadataRepository
-            .getVersions()
-            .getOrNull()
-            ?.forEach { versionModel ->
-                val existingVersion = bibleVersionDao.getVersionById(versionModel.id)
-                if (existingVersion == null) {
-                    insertVersion(versionModel)
-                } else if (existingVersion.contentVersion != versionModel.version) {
-                    refreshOutdatedVersion(
-                        existingVersion = existingVersion,
-                        remoteVersion = versionModel,
-                    )
-                }
+        val versions = metadataRepository.getVersions().getOrNull() ?: return
+        var hasScheduledDownload = false
+        versions.forEach { versionModel ->
+            val existingVersion = bibleVersionDao.getVersionById(versionModel.id)
+            if (existingVersion == null) {
+                insertVersion(versionModel)
+            } else {
+                val hasScheduledNow = reconcileVersion(
+                    existingVersion = existingVersion,
+                    remoteVersion = versionModel,
+                    canScheduleDownload = !hasScheduledDownload,
+                )
+                hasScheduledDownload = hasScheduledDownload || hasScheduledNow
             }
+        }
     }
 
     private suspend fun insertVersion(versionModel: VersionModel) {
@@ -42,20 +43,29 @@ internal class InitializeBibleVersionsUseCaseImpl(
         )
     }
 
-    private suspend fun refreshOutdatedVersion(
+    private suspend fun reconcileVersion(
         existingVersion: BibleVersionEntity,
         remoteVersion: VersionModel,
-    ) {
-        bibleVersionDao.updateVersion(
-            existingVersion.copy(
-                totalChapters = remoteVersion.chapters,
-                contentVersion = remoteVersion.version,
-            ),
-        )
-        val hasDownloadedContent = verseDao.countChaptersWithVersesByVersion(existingVersion.id) > 0
-        if (hasDownloadedContent) {
-            verseDao.deleteVerseTextsByVersion(existingVersion.id)
-            downloaderFacade.downloadVersion(existingVersion.id)
+        canScheduleDownload: Boolean,
+    ): Boolean {
+        val isContentOutdated = remoteVersion.version.isNotEmpty() &&
+            existingVersion.contentVersion != remoteVersion.version
+        val downloadedChapters = verseDao.countChaptersWithVersesByVersion(existingVersion.id)
+        if (isContentOutdated && downloadedChapters == 0) {
+            bibleVersionDao.updateVersion(
+                existingVersion.copy(
+                    totalChapters = remoteVersion.chapters,
+                    contentVersion = remoteVersion.version,
+                ),
+            )
+            return false
         }
+        val hasMissingChapters = existingVersion.status == DownloadStatus.DONE &&
+            downloadedChapters < existingVersion.totalChapters
+        if (canScheduleDownload && (isContentOutdated || hasMissingChapters)) {
+            downloaderFacade.downloadVersion(existingVersion.id)
+            return true
+        }
+        return false
     }
 }

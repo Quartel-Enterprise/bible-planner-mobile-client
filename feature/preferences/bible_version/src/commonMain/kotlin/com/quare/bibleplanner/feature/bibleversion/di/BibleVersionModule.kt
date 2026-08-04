@@ -10,6 +10,7 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersio
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamentIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPrioritizedBookIdsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.PauseBibleVersionDownloadUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.BibleVersionViewModel
@@ -46,6 +47,7 @@ val bibleVersionModule = module {
         )
     }
     factoryOf(::DownloadBooksInParallelUseCase)
+    factoryOf(::GetRemoteContentVersionUseCase)
     factoryOf(::PauseBibleVersionDownloadUseCase)
     factoryOf(::DeleteBibleVersionDownloadUseCase)
     factoryOf(::BibleVersionsUiStateFactory)

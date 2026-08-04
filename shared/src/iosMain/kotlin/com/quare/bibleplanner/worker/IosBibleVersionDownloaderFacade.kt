@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVersionDownloadUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.PauseBibleVersionDownloadUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,7 @@ internal class IosBibleVersionDownloaderFacade(
     private val bibleVersionDao: BibleVersionDao,
     private val notifier: BibleVersionDownloadNotifier,
     private val bibleRepository: BibleRepository,
+    private val getRemoteContentVersion: GetRemoteContentVersionUseCase,
     private val pauseBibleVersion: PauseBibleVersionDownloadUseCase,
     private val deleteBibleVersion: DeleteBibleVersionDownloadUseCase,
 ) : BibleVersionDownloaderFacade {
@@ -32,11 +34,18 @@ internal class IosBibleVersionDownloaderFacade(
 
     override fun downloadVersion(versionId: String) {
         scope.launch {
-            val previousStatus = bibleVersionDao.getVersionById(versionId)?.status
+            val previousVersion = bibleVersionDao.getVersionById(versionId)
+            val previousStatus = previousVersion?.status
+            val remoteContentVersion = getRemoteContentVersion(versionId)
+            val isContentOutdated = remoteContentVersion.isNotEmpty() &&
+                previousVersion?.contentVersion != remoteContentVersion
             bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.IN_PROGRESS)
             val versionName = resolveVersionName(versionId)
             notifier.showProgress(versionId, versionName, 0f)
-            val tasks = bridge.getPendingDownloads(versionId)
+            val tasks = bridge.getPendingDownloads(
+                versionId = versionId,
+                force = isContentOutdated,
+            )
             if (tasks.isEmpty()) {
                 bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.DONE)
                 notifier.showComplete(versionId = versionId, versionName = versionName)
