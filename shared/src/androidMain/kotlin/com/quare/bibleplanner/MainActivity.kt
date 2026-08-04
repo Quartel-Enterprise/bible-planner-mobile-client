@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         handleNotificationIntent(intent)
 
         setContent {
-            val isDynamicColorsOn by viewModel.isDynamicColorsEnabledFlow.collectAsState(true)
+            val isDynamicColorsOn by viewModel.isDynamicColorsEnabled.collectAsState()
             App(
                 getSpecificColors = { isAppInDarkTheme ->
                     getAndroidSpecificColorScheme(
