@@ -11,7 +11,8 @@
 #   3. Otherwise inferred from Conventional Commit prefixes since the last
 #      release: any feature/feat commit -> minor bump, otherwise patch.
 #
-# versionCode is always the current value + 1.
+# The current version is read from version.xcconfig, the single source of truth
+# shared by Android, iOS and desktop. versionCode is always its value + 1.
 #
 # Inside GitHub Actions, writes `version`, `version_code` and `branch` to
 # $GITHUB_OUTPUT and a human-readable plan to $GITHUB_STEP_SUMMARY.
@@ -20,6 +21,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 EN_JSON="feature/release_notes/src/commonMain/composeResources/files/release_notes/en.json"
+VERSION_FILE="version.xcconfig"
 
 input_version="${1:-}"
 
@@ -28,8 +30,14 @@ if [[ -n "$input_version" && ! "$input_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; 
   exit 1
 fi
 
-current_version="$(grep -E '^versionName=' gradle.properties | cut -d= -f2)"
-current_code="$(grep -E '^versionCode=' gradle.properties | cut -d= -f2)"
+current_version="$(grep -E '^versionName=' "$VERSION_FILE" | cut -d= -f2 || true)"
+current_code="$(grep -E '^versionCode=' "$VERSION_FILE" | cut -d= -f2 || true)"
+
+if [[ -z "$current_version" || -z "$current_code" ]]; then
+  echo "Error: could not read versionName/versionCode from ${VERSION_FILE}" >&2
+  exit 1
+fi
+
 next_code=$(( current_code + 1 ))
 
 # Highest X.Y.Z key declared in the release notes JSON ("" if none/unavailable).
