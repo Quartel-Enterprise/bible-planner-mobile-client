@@ -6,4 +6,5 @@ data class BibleModel(
     val version: VersionModel,
     val downloadStatus: DownloadStatusModel,
     val isSelected: Boolean,
+    val hasPendingUpdate: Boolean,
 )

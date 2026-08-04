@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
@@ -24,6 +25,7 @@ class BibleVersionViewModel(
     private val setSelectedVersion: SetSelectedVersionUseCase,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val initializeBibleVersions: InitializeBibleVersionsUseCase,
+    private val updateBibleVersion: UpdateBibleVersionUseCase,
     trackEvent: TrackEvent,
     uiStateFactory: BibleVersionsUiStateFactory,
 ) : TrackedViewModel<BibleVersionUiEvent>(trackEvent) {
@@ -45,6 +47,8 @@ class BibleVersionViewModel(
             is BibleVersionUiEvent.OnPause -> pauseDownload(event.id)
 
             is BibleVersionUiEvent.OnResume -> resumeDownload(event.id)
+
+            is BibleVersionUiEvent.OnUpdate -> updateVersion(event.id)
 
             is BibleVersionUiEvent.OnDelete -> deleteVersion(event.id)
 
@@ -76,6 +80,12 @@ class BibleVersionViewModel(
     private fun resumeDownload(id: String) {
         viewModelScope.launch {
             downloaderFacade.downloadVersion(id)
+        }
+    }
+
+    private fun updateVersion(id: String) {
+        viewModelScope.launch {
+            updateBibleVersion(id)
         }
     }
 

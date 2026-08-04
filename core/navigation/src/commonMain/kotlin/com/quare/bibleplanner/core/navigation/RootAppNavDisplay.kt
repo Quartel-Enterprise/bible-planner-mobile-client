@@ -41,6 +41,7 @@ import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrateg
 import com.quare.bibleplanner.core.navigation.utils.back
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
+import com.quare.bibleplanner.feature.bibleversion.presentation.PendingBibleUpdatesPromptOverlay
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyPanelViewModel
 import com.quare.bibleplanner.feature.inappupdate.presentation.InAppUpdateDownloadOverlay
@@ -155,6 +156,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                 .align(Alignment.BottomCenter)
                 .padding(bottom = mainContentBottomInset()),
         )
+        PendingBibleUpdatesPromptOverlay(onNavigate = onNavigate)
     }
 }
 

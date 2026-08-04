@@ -30,6 +30,7 @@ import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.model.route.NavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.PendingBibleUpdatesNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
@@ -147,6 +148,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
                 AnalyticsParams.CHAPTER_NUMBER to route.chapterNumber,
             ),
         )
+
+        is PendingBibleUpdatesNavRoute -> dialog("pending_bible_updates")
 
         is ReleaseNotesNavRoute -> screen("release_notes")
 

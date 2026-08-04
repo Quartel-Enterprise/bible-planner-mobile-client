@@ -28,7 +28,6 @@ class DownloadChaptersUseCase(
     suspend operator fun invoke(
         versionId: String,
         bookId: BookId,
-        force: Boolean,
     ): Result<Unit> = suspendRunCatching {
         val supabaseBookDir = supabaseBookAbbreviationMapper.map(bookId)
         val chapters = chapterDao.getChaptersByBookId(bookId.name)
@@ -40,7 +39,7 @@ class DownloadChaptersUseCase(
                         async {
                             suspendRunCatching {
                                 val exists = verseDao.countVersesByChapterAndVersion(chapter.id, versionId) > 0
-                                if (force || !exists) {
+                                if (!exists) {
                                     val fileName =
                                         "bible/${versionId.uppercase()}/$supabaseBookDir/${chapter.number}.json"
                                     val bytes = downloadSemaphore.withPermit {

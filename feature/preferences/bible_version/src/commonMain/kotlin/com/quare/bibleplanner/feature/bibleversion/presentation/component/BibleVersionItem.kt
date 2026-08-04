@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
@@ -56,10 +58,20 @@ internal fun BibleVersionItem(
         },
         supportingContent = { BibleVersionItemSupportingContent(model.downloadStatus) },
         trailingContent = {
-            BibleVersionItemDownloadStatusComponent(
-                status = model.downloadStatus,
-                onEvent = { onEvent(it(versionId)) },
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (model.hasPendingUpdate) {
+                    BibleVersionUpdatePill(
+                        onClick = { onEvent(BibleVersionUiEvent.OnUpdate(versionId)) },
+                    )
+                }
+                BibleVersionItemDownloadStatusComponent(
+                    status = model.downloadStatus,
+                    onEvent = { onEvent(it(versionId)) },
+                )
+            }
         },
     )
 }

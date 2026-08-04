@@ -39,6 +39,7 @@ val navigationSavedStateConfiguration = SavedStateConfiguration {
             subclass(MaterialYouBottomSheetNavRoute::class, MaterialYouBottomSheetNavRoute.serializer())
             subclass(NotificationPermissionNavRoute::class, NotificationPermissionNavRoute.serializer())
             subclass(PaywallNavRoute::class, PaywallNavRoute.serializer())
+            subclass(PendingBibleUpdatesNavRoute::class, PendingBibleUpdatesNavRoute.serializer())
             subclass(PixQrNavRoute::class, PixQrNavRoute.serializer())
             subclass(ReadNavRoute::class, ReadNavRoute.serializer())
             subclass(RenameDeviceNavRoute::class, RenameDeviceNavRoute.serializer())

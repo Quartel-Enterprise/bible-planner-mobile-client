@@ -1,7 +1,7 @@
 {
   "2.3.1": [
     "Fixed a problem that could show an error on the Bible versions screen even with a working internet connection.",
-    "The automatic update of Bible version texts now happens without removing the current text: it stays available for reading while the new version is downloaded."
+    "When a Bible version you downloaded receives text corrections, the app now lets you know on launch and shows an update button in the versions list — you choose when to download the new text."
   ],
   "2.3.0": [
     "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short and sits next to the options button.",

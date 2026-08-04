@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.date.di
 
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
+import com.quare.bibleplanner.core.date.HasCooldownElapsedUseCase
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.date.LocalDateTimeProviderImpl
 import org.koin.core.module.Module
@@ -12,6 +13,7 @@ val dateModule = module {
     includes(trustedTimeModule)
     factoryOf(::LocalDateTimeProviderImpl).bind<LocalDateTimeProvider>()
     factoryOf(::GetFinalTimestampAfterEditionUseCase)
+    factoryOf(::HasCooldownElapsedUseCase)
 }
 
 internal expect val trustedTimeModule: Module

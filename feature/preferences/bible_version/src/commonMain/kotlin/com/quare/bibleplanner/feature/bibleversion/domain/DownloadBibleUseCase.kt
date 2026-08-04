@@ -24,36 +24,30 @@ class DownloadBibleUseCase(
                 throwable = IllegalStateException("Version not found"),
             )
 
-        val remoteContentVersion = getRemoteContentVersion(versionId)
-        val isContentOutdated = remoteContentVersion.isNotEmpty() &&
-            version.contentVersion != remoteContentVersion
         val isComplete =
             verseDao.countChaptersWithVersesByVersion(versionId) >= version.totalChapters
-        if (version.status == DownloadStatus.DONE && !isContentOutdated && isComplete) {
-            return Result.success(Unit)
-        }
+        if (version.status == DownloadStatus.DONE && isComplete) return Result.success(Unit)
 
-        downloadBooksInParallel(
-            versionId = versionId,
-            force = isContentOutdated,
-        ).onSuccess {
-            bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
-            if (remoteContentVersion.isNotEmpty()) {
-                bibleVersionDao.updateContentVersion(
-                    id = versionId,
-                    contentVersion = remoteContentVersion,
+        val remoteContentVersion = getRemoteContentVersion(versionId)
+        downloadBooksInParallel(versionId)
+            .onSuccess {
+                bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
+                if (remoteContentVersion.isNotEmpty()) {
+                    bibleVersionDao.updateContentVersion(
+                        id = versionId,
+                        contentVersion = remoteContentVersion,
+                    )
+                }
+                trackEvent(
+                    name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED,
+                    params = mapOf(AnalyticsParams.VERSION_ID to versionId),
                 )
-            }
-            trackEvent(
-                name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED,
-                params = mapOf(AnalyticsParams.VERSION_ID to versionId),
-            )
-        }.onFailure { throwable ->
-            trackDownloadFailed(
-                versionId = versionId,
-                throwable = throwable,
-            )
-        }.getOrThrow()
+            }.onFailure { throwable ->
+                trackDownloadFailed(
+                    versionId = versionId,
+                    throwable = throwable,
+                )
+            }.getOrThrow()
     }
 
     private fun trackedFailure(
