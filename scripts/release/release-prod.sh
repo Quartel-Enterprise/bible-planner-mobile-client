@@ -20,4 +20,4 @@ source "$SCRIPT_DIR/_common.sh"
 echo "Bible Planner — production release (android + ios + desktop)"
 echo "============================================================"
 
-dispatch_release "" "all" "production" "true" "true"
+dispatch_release "" "all" "production" "true" "true" "false"

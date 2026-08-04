@@ -14,8 +14,13 @@
 # The current version is read from version.xcconfig, the single source of truth
 # shared by Android, iOS and desktop. versionCode is always its value + 1.
 #
-# Inside GitHub Actions, writes `version`, `version_code` and `branch` to
-# $GITHUB_OUTPUT and a human-readable plan to $GITHUB_STEP_SUMMARY.
+# When PRERELEASE=true, also computes `display_version` as X.Y.Z-beta-N where N
+# is the next number after the existing X.Y.Z-beta-* tags. Otherwise
+# display_version equals version.
+#
+# Inside GitHub Actions, writes `version`, `display_version`, `version_code`,
+# `branch` and `prerelease` to $GITHUB_OUTPUT and a human-readable plan to
+# $GITHUB_STEP_SUMMARY.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -56,7 +61,7 @@ elif [[ -n "$json_version" ]] && is_higher "$json_version" "$current_version"; t
   source_desc="taken from the release notes JSON (the team's declared next version)"
 else
   # Anchor = last X.Y.Z tag, falling back to the last "merge back" commit.
-  anchor="$(git describe --tags --abbrev=0 --match '[0-9]*' 2>/dev/null || true)"
+  anchor="$(git describe --tags --abbrev=0 --match '[0-9]*' --exclude '*-beta-*' 2>/dev/null || true)"
   if [[ -z "$anchor" ]]; then
     anchor="$(git log --grep='merge back' --format='%H' -n 1 2>/dev/null || true)"
   fi
@@ -79,15 +84,26 @@ else
   source_desc="inferred (${bump} bump from commits — the release notes JSON has no newer version yet)"
 fi
 
-branch="release/${version}"
+prerelease="${PRERELEASE:-false}"
+display_version="$version"
+if [[ "$prerelease" == "true" ]]; then
+  last_beta="$(git tag --list "${version}-beta-*" | sed "s/^${version}-beta-//" | grep -E '^[0-9]+$' | sort -n | tail -1 || true)"
+  display_version="${version}-beta-$(( ${last_beta:-0} + 1 ))"
+else
+  prerelease="false"
+fi
 
-echo "Resolved version: ${version} (versionCode ${next_code}) — ${source_desc}"
+branch="release/${display_version}"
+
+echo "Resolved version: ${display_version} (versionCode ${next_code}) — ${source_desc}"
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
     echo "version=${version}"
+    echo "display_version=${display_version}"
     echo "version_code=${next_code}"
     echo "branch=${branch}"
+    echo "prerelease=${prerelease}"
   } >> "$GITHUB_OUTPUT"
 fi
 
@@ -97,7 +113,8 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo ""
     echo "| Field | Value |"
     echo "|---|---|"
-    echo "| Version name | \`${version}\` |"
+    echo "| Release type | $([[ "$prerelease" == "true" ]] && echo "pre-release (beta)" || echo "stable") |"
+    echo "| Version name | \`${display_version}\` |"
     echo "| Version code | \`${next_code}\` |"
     echo "| Release branch | \`${branch}\` |"
     echo "| Source | ${source_desc} |"

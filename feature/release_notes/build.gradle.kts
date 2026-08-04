@@ -59,6 +59,10 @@ kotlin {
             // Ktor
             implementation(libs.ktor.client.core)
         }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }
 
