@@ -3,7 +3,8 @@
     "Se corrigió el selector de orden en la parte superior del plan de lectura, que en algunos dispositivos mostraba el texto pegado a los bordes; ahora cambia al formato compacto cuando falta espacio y queda junto al botón de opciones.",
     "En el formato compacto, el selector de orden ahora abre una lista con los dos órdenes de lectura y marca el que está en uso, en lugar de cambiar de inmediato al tocarlo.",
     "En la pantalla de lectura, la palabra junto a la casilla que marca el capítulo como leído siempre aparecía en inglés; ahora aparece en el idioma de la app.",
-    "En capítulos cortos, los botones de capítulo anterior y siguiente y la marca de leído aparecían dos veces en la pantalla de lectura; ahora aparecen solo una vez."
+    "En capítulos cortos, los botones de capítulo anterior y siguiente y la marca de leído aparecían dos veces en la pantalla de lectura; ahora aparecen solo una vez.",
+    "El texto de las versiones de la Biblia ahora se mantiene al día solo: cuando una versión que descargaste recibe una corrección, la app descarga el texto nuevo automáticamente."
   ],
   "2.2.0": [
     "En pantallas más grandes (tablet y escritorio), ahora puedes arrastrar el divisor entre el panel de lectura y el Estudio del día para cambiar el tamaño de ambos paneles a tu gusto.",
