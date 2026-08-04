@@ -14,7 +14,7 @@ internal class InitializeBibleVersionsUseCaseImpl(
 ) : InitializeBibleVersionsUseCase {
     override suspend fun invoke() {
         metadataRepository
-            .getVersions()
+            .getVersions(forceRefresh = false)
             .getOrNull()
             ?.forEach { versionModel ->
                 val existingVersion = bibleVersionDao.getVersionById(versionModel.id)

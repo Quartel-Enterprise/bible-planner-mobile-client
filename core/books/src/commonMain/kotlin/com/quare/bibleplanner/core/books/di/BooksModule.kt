@@ -1,7 +1,9 @@
 package com.quare.bibleplanner.core.books.di
 
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataSource
+import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataSourceImpl
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
+import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSourceImpl
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.data.mapper.BookFavoriteMapper
@@ -61,13 +63,13 @@ import org.koin.dsl.module
 val booksModule = module {
     // Data sources
     singleOf(::BooksLocalDataSource)
-    factory {
-        BibleVersionsRemoteDataSource(
+    factory<BibleVersionsRemoteDataSource> {
+        BibleVersionsRemoteDataSourceImpl(
             bucketApi = get(named(CONTENT_BUCKET)),
             json = get(),
         )
     }
-    factoryOf(::BibleVersionsLocalDataSource)
+    factoryOf(::BibleVersionsLocalDataSourceImpl).bind<BibleVersionsLocalDataSource>()
     factoryOf(::CachedVersionsJsonMapper)
     factoryOf(::VersionMapper)
     factoryOf(::BookFavoriteMapper)

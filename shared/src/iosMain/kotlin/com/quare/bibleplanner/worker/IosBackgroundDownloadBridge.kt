@@ -16,9 +16,11 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteConte
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.milliseconds
 
 class IosBackgroundDownloadBridge(
     private val supabaseBookAbbreviationMapper: SupabaseBookAbbreviationMapper,
@@ -103,7 +105,7 @@ class IosBackgroundDownloadBridge(
                 // may briefly observe a stale snapshot. If we're within 1 chapter of the total,
                 // retry once after a short delay before deciding the version isn't fully done.
                 if (downloaded == entity.totalChapters - 1) {
-                    kotlinx.coroutines.delay(300)
+                    delay(300.milliseconds)
                     downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
                 }
                 val name = resolveVersionName(versionId)
