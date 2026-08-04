@@ -44,7 +44,7 @@ internal fun BibleVersionItem(
                 )
                 HorizontalSpacer(8)
                 BibleVersionAbbreviationChip(
-                    abbreviation = model.version.name.toAbbreviation(),
+                    abbreviation = model.version.id.uppercase(),
                     isSelected = model.isSelected,
                 )
             }
@@ -56,27 +56,18 @@ internal fun BibleVersionItem(
                 fontWeight = if (model.isSelected) FontWeight.SemiBold else FontWeight.Normal,
             )
         },
-        supportingContent = { BibleVersionItemSupportingContent(model.downloadStatus) },
+        supportingContent = {
+            BibleVersionItemSupportingContent(
+                downloadStatus = model.downloadStatus,
+                hasPendingUpdate = model.hasPendingUpdate,
+            )
+        },
         trailingContent = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                if (model.hasPendingUpdate) {
-                    BibleVersionUpdatePill(
-                        onClick = { onEvent(BibleVersionUiEvent.OnUpdate(versionId)) },
-                    )
-                }
-                BibleVersionItemDownloadStatusComponent(
-                    status = model.downloadStatus,
-                    onEvent = { onEvent(it(versionId)) },
-                )
-            }
+            BibleVersionItemDownloadStatusComponent(
+                status = model.downloadStatus,
+                hasPendingUpdate = model.hasPendingUpdate,
+                onEvent = { onEvent(it(versionId)) },
+            )
         },
     )
 }
-
-private fun String.toAbbreviation(): String = split(" ")
-    .filter { it.isNotEmpty() }
-    .joinToString("") { it.first().uppercase() }
-    .take(4)

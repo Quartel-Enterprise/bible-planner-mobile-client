@@ -4,14 +4,14 @@
     <string name="pause">Pausar</string>
     <string name="resume">Reanudar</string>
     <string name="delete">Eliminar</string>
-    <string name="bible_versions">Versiones de la Biblia</string>
-    <string name="manage_bible_versions_description">Administra tus versiones de la Biblia descargadas y selecciona una para leer.</string>
+    <string name="bible_versions">Versión de la Biblia</string>
+    <string name="manage_bible_versions_description">Descarga para leer sin conexión y elige tu versión predeterminada.</string>
     <string name="english">Inglés</string>
     <string name="portuguese_brazil">Portugués (Brasil)</string>
     <string name="spanish">Español</string>
     <string name="downloaded">Descargado</string>
-    <string name="downloading_progress">Descargando: %1$s%</string>
-    <string name="paused_progress">Descarga pausada al %1$s%</string>
+    <string name="downloading_progress">Descargando %1$s%</string>
+    <string name="paused_progress">Pausado %1$s%</string>
     <string name="download_bible_versions_error">No pudimos descargar las versiones de la Biblia a su dispositivo. Verifique su conexión a Internet e intente nuevamente.</string>
     <string name="try_again">Intentar Nuevamente</string>
     <string name="download_tip_keep_app_open">Mantén la app abierta para optimizar la descarga.</string>
@@ -20,4 +20,6 @@
     <string name="update_available_description">Las siguientes versiones de la Biblia recibieron correcciones de texto y pueden actualizarse:</string>
     <string name="update_all">Actualizar</string>
     <string name="update_later">Ahora no</string>
+    <string name="tap_to_download">Toca para descargar</string>
+    <string name="update_available">Actualización disponible</string>
 </resources>
