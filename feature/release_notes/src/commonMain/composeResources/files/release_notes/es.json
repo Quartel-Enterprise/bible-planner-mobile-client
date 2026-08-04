@@ -1,4 +1,8 @@
 {
+  "2.3.1": [
+    "Se corrigió un problema que podía mostrar un error en la pantalla de versiones de la Biblia incluso con internet funcionando.",
+    "La actualización automática del texto de las versiones de la Biblia ahora ocurre sin borrar el texto actual: sigue disponible para leer mientras se descarga la versión nueva."
+  ],
   "2.3.0": [
     "Se corrigió el selector de orden en la parte superior del plan de lectura, que en algunos dispositivos mostraba el texto pegado a los bordes; ahora cambia al formato compacto cuando falta espacio y queda junto al botón de opciones.",
     "En el formato compacto, el selector de orden ahora abre una lista con los dos órdenes de lectura y marca el que está en uso, en lugar de cambiar de inmediato al tocarlo.",
