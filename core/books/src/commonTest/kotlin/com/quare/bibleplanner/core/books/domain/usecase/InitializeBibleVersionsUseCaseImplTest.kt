@@ -121,6 +121,7 @@ internal class InitializeBibleVersionsUseCaseImplTest {
         version = version,
         language = Language.PORTUGUESE_BRAZIL,
         chapters = 1189,
+        size = 8245560,
     )
 
     private fun versionEntity(contentVersion: String): BibleVersionEntity = BibleVersionEntity(

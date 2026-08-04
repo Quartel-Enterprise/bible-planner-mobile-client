@@ -8,4 +8,11 @@
     <string name="mark_as_unread">Marcar como No Leído</string>
     <string name="mark_as_read">Marcar como Leído</string>
     <string name="read_label">Leído</string>
+    <string name="download_version">Descargar</string>
+    <string name="download_version_with_size">Descargar (%1$s)</string>
+    <string name="resume_download">Reanudar descarga</string>
+    <string name="downloading_progress">Descargando %1$s%</string>
+    <string name="paused_progress">Pausado %1$s%</string>
+    <string name="status_with_size">%1$s · %2$s</string>
+    <string name="size_progress">%1$s de %2$s</string>
 </resources>

@@ -36,6 +36,7 @@ internal class PendingBibleUpdatesViewModel(
                 PendingBibleUpdateItem(
                     id = bible.version.id,
                     name = bible.version.name,
+                    size = bible.version.size,
                     isSelected = true,
                 )
             }

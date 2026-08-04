@@ -3,7 +3,10 @@
     "Fixed a problem that could show an error on the Bible versions screen even with a working internet connection.",
     "When a Bible version you downloaded receives text corrections, the app now lets you know on launch and shows an update button in the versions list — you choose when to download the new text.",
     "On Android, dynamic colors, which tint the app with the colors of your wallpaper, now come turned off — if you like them, just turn them on in the theme screen.",
-    "On Android, the app icon now follows the system icon theme: if you choose icons with a custom color, the Bible Planner icon changes color too."
+    "On Android, the app icon now follows the system icon theme: if you choose icons with a custom color, the Bible Planner icon changes color too.",
+    "The Bible versions list now shows the size of each version, and downloads in progress or paused show how much has been downloaded plus a progress bar.",
+    "The Bible version update notice is now clearer, showing the size of each version next to its name.",
+    "The app no longer downloads a Bible version on its own the first time you open it: you now choose when to download it, with a button right on the reading screen (showing size and progress) or on the versions screen — a download left halfway is still resumed."
   ],
   "2.3.0": [
     "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short and sits next to the options button.",

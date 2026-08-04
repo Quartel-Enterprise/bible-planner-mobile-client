@@ -13,13 +13,10 @@ class ObserveSelectedVersionUseCase(
     suspend operator fun invoke() {
         getSelectedVersionAbbreviationFlow().collect { abbreviation ->
             bibleVersionDao.getVersionById(abbreviation)?.let { version ->
-                if (shouldDownloadAfterLaunchApp(version.status)) {
+                if (version.status == DownloadStatus.IN_PROGRESS) {
                     bibleVersionDownloaderFacade.downloadVersion(version.id)
                 }
             }
         }
     }
-
-    private fun shouldDownloadAfterLaunchApp(status: DownloadStatus): Boolean =
-        status == DownloadStatus.NOT_STARTED || status == DownloadStatus.IN_PROGRESS
 }

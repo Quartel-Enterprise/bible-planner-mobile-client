@@ -96,6 +96,7 @@ private class FakeBibleRepository(
                     version = "1.2.0",
                     language = Language.PORTUGUESE_BRAZIL,
                     chapters = 1189,
+                    size = 8245560,
                 ),
                 downloadStatus = DownloadStatusModel.Downloaded,
                 isSelected = false,

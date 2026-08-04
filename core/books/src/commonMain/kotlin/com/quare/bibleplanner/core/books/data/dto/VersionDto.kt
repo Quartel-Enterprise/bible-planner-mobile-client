@@ -11,4 +11,5 @@ internal data class VersionDto(
     @SerialName("language") val language: String,
     @SerialName("country") val country: String,
     @SerialName("chapters") val chapters: Int,
+    @SerialName("size") val size: Long?,
 )

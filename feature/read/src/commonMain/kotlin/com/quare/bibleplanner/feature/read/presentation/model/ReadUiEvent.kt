@@ -40,6 +40,16 @@ sealed interface ReadUiEvent : UiEvent {
     }
 
     /**
+     * Event triggered to download (or resume downloading) the selected Bible version
+     * directly from the chapter-not-downloaded state.
+     */
+    data object OnDownloadSelectedVersionClick : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_STARTED,
+        )
+    }
+
+    /**
      * Event triggered when the user wants to change the Bible version.
      */
     data object ManageBibleVersions : ReadUiEvent {
