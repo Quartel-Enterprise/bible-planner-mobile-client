@@ -22,7 +22,10 @@ class DownloadChaptersUseCase(
     private val verseDao: VerseDao,
     private val bucketApi: BucketApi,
 ) {
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
     private val downloadSemaphore = Semaphore(permits = MAX_CONCURRENT_DOWNLOADS)
 
     suspend operator fun invoke(
@@ -81,6 +84,7 @@ class DownloadChaptersUseCase(
                     verseId = verseEntity.id,
                     bibleVersionId = versionId,
                     text = verseDto.text,
+                    heading = verseDto.heading,
                 )
             }
         }

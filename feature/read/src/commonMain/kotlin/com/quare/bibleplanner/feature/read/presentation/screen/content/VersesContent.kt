@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.content
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
@@ -9,6 +10,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 
@@ -17,19 +19,29 @@ internal fun LazyListScope.versesContent(state: ReadUiState.Success) {
         items = state.verses,
         key = { "verse-${it.number}" },
     ) { verse ->
-        SelectionContainer {
-            Row(
-                modifier = Modifier.padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
+        Column {
+            verse.heading?.let { heading ->
                 Text(
-                    text = verse.number.toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    text = heading,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
                 )
-                Text(
-                    text = verse.text,
-                )
+            }
+            SelectionContainer {
+                Row(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        text = verse.number.toString(),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    )
+                    Text(
+                        text = verse.text,
+                    )
+                }
             }
         }
     }

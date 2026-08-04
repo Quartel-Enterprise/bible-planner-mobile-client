@@ -28,9 +28,12 @@ class IosBackgroundDownloadBridge(
     private val notifier: BibleVersionDownloadNotifier,
     private val bibleRepository: BibleRepository,
     private val getRemoteContentVersion: GetRemoteContentVersionUseCase,
-    private val json: Json,
 ) {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
 
     val supabaseStorageBaseUrl: String =
         "${SupabaseBuildKonfig.SUPABASE_URL}/storage/v1/object/public/content"
@@ -69,6 +72,7 @@ class IosBackgroundDownloadBridge(
                             verseId = verseEntity.id,
                             bibleVersionId = versionId,
                             text = verseDto.text,
+                            heading = verseDto.heading,
                         )
                     }
                 }

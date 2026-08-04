@@ -5,6 +5,7 @@ package com.quare.bibleplanner.feature.read.presentation.model
  */
 data class VerseUiModel(
     val number: Int,
+    val heading: String?,
     val text: String,
     val isSelected: Boolean,
 )

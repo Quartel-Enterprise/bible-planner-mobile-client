@@ -6,7 +6,8 @@
     "No Android, o ícone do app agora acompanha o tema de ícones do sistema: se você escolher ícones com cor personalizada, o ícone do Planner Bíblico também muda de cor.",
     "A lista de versões da Bíblia agora mostra o tamanho de cada versão, e quem está baixando ou pausado vê quanto já foi baixado e uma barra de progresso.",
     "O aviso de atualização das versões da Bíblia ficou mais claro, com o tamanho de cada versão ao lado do nome.",
-    "O app não baixa mais a versão da Bíblia sozinho ao abrir pela primeira vez: agora você escolhe quando baixar, com um botão direto na tela de leitura (mostrando o tamanho e o progresso) ou na tela de versões — um download que ficou pela metade continua sendo retomado."
+    "O app não baixa mais a versão da Bíblia sozinho ao abrir pela primeira vez: agora você escolhe quando baixar, com um botão direto na tela de leitura (mostrando o tamanho e o progresso) ou na tela de versões — um download que ficou pela metade continua sendo retomado.",
+    "Quando a versão da Bíblia traz títulos de seção (como \"A criação do mundo\" antes de Gênesis 1:1), eles agora aparecem na tela de leitura."
   ],
   "2.3.0": [
     "Corrigido o seletor de ordem no topo do plano de leitura, que em alguns aparelhos aparecia com o texto colado nas bordas; agora ele muda para o formato compacto quando falta espaço e fica ao lado do botão de opções.",
