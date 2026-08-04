@@ -13,10 +13,12 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUi
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiState
 
 /**
- * Placeholder study text for 1 Kings 10-12 — the same reading the plan and day screenshots land on.
- * It is written by hand, not produced by the model, so it stands in for the shape of a study rather
- * than for what the app actually generates. Replace it with a captured real generation before any
- * of these images go to a store listing.
+ * Study text for 1 Kings 10-12 — the same reading the plan and day screenshots land on.
+ *
+ * Written by hand rather than captured from the model, which the team accepted for the store
+ * listing on the grounds that it is representative. If the generated studies ever change shape —
+ * more chapter summaries, a different tone, extra sections — this is what has to follow, since the
+ * images promise this layout.
  */
 private val studyByLocale = mapOf(
     "en-US" to DayStudyModel(

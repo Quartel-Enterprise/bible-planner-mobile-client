@@ -100,7 +100,7 @@ internal class Tablet7ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor
 
 internal class Tablet10ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.Tablet10)
 
-internal class IPhoneReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPhone67)
+internal class IPhoneReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPhone65)
 
 internal class IPadReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPad13)
 

@@ -13,11 +13,11 @@ private const val LAST_CHAPTER_OF_PREVIOUS_BOOK = 22
 /**
  * 1 Kings 10:1-12, the chapter the plan, day and study screenshots all point at.
  *
- * The app downloads its Bible versions, so no verse text ships in this repo and none of this came
- * from the app's own data — it is transcribed from public-domain translations (World English Bible,
- * Almeida 1911, Reina-Valera 1909) and has not been checked word by word. The app's default version
- * for Portuguese is ACF, which is licensed rather than public domain. Capture these verses from a
- * real device running the version you actually ship before any of this reaches a store listing.
+ * The app downloads its Bible versions, so no verse text ships in this repo: these verses are
+ * transcribed from public-domain translations (World English Bible, Almeida 1911, Reina-Valera
+ * 1909) rather than from the app's own data, which the team accepted for the store listing. Note
+ * that the shipped default for Portuguese is ACF, so the wording here is not the wording a
+ * Portuguese user reads — only the layout is representative.
  */
 private val versesByLocale = mapOf(
     "en-US" to listOf(

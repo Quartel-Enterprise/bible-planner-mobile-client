@@ -184,6 +184,28 @@ platform :android do
       skip_upload_screenshots: true,
     )
   end
+
+  desc "Upload only the store listing screenshots to Google Play — no build, no release."
+  desc "Regenerates them first, so what is uploaded always matches the current app."
+  lane :upload_screenshots do
+    repo_root = File.expand_path("..")
+
+    gradle(task: "stageStoreScreenshots", project_dir: repo_root)
+
+    upload_to_play_store(
+      package_name: ANDROID_PACKAGE,
+      json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
+      metadata_path: File.join(repo_root, "fastlane/metadata/android"),
+      # Listing assets only: no artifact, no track, nothing else about the listing.
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: false,
+      validate_only: ENV.fetch("VALIDATE_ONLY", "false").strip.downcase == "true",
+    )
+  end
 end
 
 # ---------------------------------------------------------------------------
@@ -332,6 +354,36 @@ platform :ios do
       automatic_release: submit,
       force: true,
       precheck_include_in_app_purchases: false,
+    )
+  end
+
+  desc "Upload only the store listing screenshots to App Store Connect — no build, no submission."
+  desc "Regenerates them first, so what is uploaded always matches the current app."
+  lane :upload_screenshots do
+    repo_root = File.expand_path("..")
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_P8"),
+      is_key_content_base64: true,
+      set_spaceship_token: true,
+    )
+
+    gradle(task: "stageStoreScreenshots", project_dir: repo_root)
+
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: APP_BUNDLE_ID,
+      screenshots_path: File.join(repo_root, "fastlane/screenshots"),
+      # Listing assets only: no binary, no metadata, no review submission.
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      submit_for_review: false,
+      force: true,
+      precheck_include_in_app_purchases: false,
+      overwrite_screenshots: true,
     )
   end
 end
