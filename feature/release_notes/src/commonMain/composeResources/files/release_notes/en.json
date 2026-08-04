@@ -1,5 +1,5 @@
 {
-  "2.3.1": [
+  "2.4.0": [
     "Fixed a problem that could show an error on the Bible versions screen even with a working internet connection.",
     "When a Bible version you downloaded receives text corrections, the app now lets you know on launch and shows an update button in the versions list — you choose when to download the new text."
   ],

@@ -13,7 +13,9 @@ name: release
 #      installers are built on one runner per OS.
 #   4. `finalize` bumps the version on a release branch, opens and squash-merges
 #      the merge-back PR into main, and publishes the GitHub release with the
-#      desktop installers attached as assets.
+#      desktop installers attached as assets. It runs for the `all` and `mobile`
+#      platform selections — the store release is what the tag and the version
+#      bump record, so a mobile-only run must still finalize.
 #
 # Secrets live exclusively in the `Production` environment.
 #
@@ -385,7 +387,17 @@ jobs:
   finalize:
     name: Tag, release notes and merge-back
     needs: [plan, android-upload, ios-upload, desktop-build]
-    if: ${{ inputs.platforms == 'all' && inputs.track == 'production' }}
+    # `mobile` skips desktop-build, and a skipped dependency skips this job too
+    # unless the condition carries a status check function — hence !cancelled(),
+    # which replaces the implicit success() and forces the explicit result
+    # checks below. Without them a failed upload would still be finalized.
+    if: >-
+      ${{ !cancelled()
+      && inputs.track == 'production'
+      && (inputs.platforms == 'all' || inputs.platforms == 'mobile')
+      && needs.plan.result == 'success'
+      && !contains(needs.*.result, 'failure')
+      && !contains(needs.*.result, 'cancelled') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -419,7 +431,10 @@ jobs:
             --assignee "${{ github.actor }}"
           gh pr merge "${{ needs.plan.outputs.branch }}" --squash --delete-branch
 
+      # Nothing to download on a mobile-only run: the step would fail on the
+      # missing artifacts, and the release goes out without desktop assets.
       - name: Download the desktop installers
+        if: ${{ needs.desktop-build.result == 'success' }}
         uses: actions/download-artifact@v8
         with:
           pattern: desktop-*
@@ -430,8 +445,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # nullglob keeps the unmatched glob from reaching gh as a literal path.
+          shopt -s nullglob
+          installers=(desktop-installers/*)
           gh release create "${{ needs.plan.outputs.version }}" \
             --target main \
             --title "${{ needs.plan.outputs.version }}" \
             --generate-notes \
-            desktop-installers/*
+            "${installers[@]}"
