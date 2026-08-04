@@ -4,7 +4,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     includeBuild("build-logic")
     repositories {
-        mavenLocal()
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
@@ -19,7 +18,23 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-        mavenLocal()
+        // The screenshot library is a patched build of store-screenshots carrying two fixes that
+        // have not landed upstream yet (lucianosantosdev/store-screenshots#11 and #12). It is
+        // published into this repository's own package registry so CI reads it with the built-in
+        // GITHUB_TOKEN; mavenLocal comes first so a locally published build wins while iterating.
+        // Both are scoped to the one group, so nothing else resolves through them.
+        mavenLocal {
+            content { includeGroup("io.github.lucianosantosdev") }
+        }
+        maven {
+            name = "storeScreenshots"
+            url = uri("https://maven.pkg.github.com/Quartel-Enterprise/bible-planner-mobile-client")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR") ?: providers.gradleProperty("gpr.user").orNull
+                password = System.getenv("GITHUB_TOKEN") ?: providers.gradleProperty("gpr.token").orNull
+            }
+            content { includeGroup("io.github.lucianosantosdev") }
+        }
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")

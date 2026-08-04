@@ -282,6 +282,32 @@ jobs:
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           SUBMIT_FOR_REVIEW: ${{ inputs.submit_ios_for_review }}
 
+      # Screenshots are read-only on a live App Store version, so they can only be replaced while a
+      # new version is editable — which is exactly now, right after the build reached it. Rendering
+      # them needs Gradle, which the upload job does not otherwise use.
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+
+      - name: Decode build secrets
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        run: |
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+          printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
+
+      # Listing assets only: no binary, no metadata, no review submission. A failure here must not
+      # fail a release whose build already landed.
+      - name: Upload the screenshots to App Store Connect
+        continue-on-error: true
+        run: fastlane ios upload_screenshots
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   desktop-build:
     name: Desktop — build the ${{ matrix.formats }}
     needs: plan

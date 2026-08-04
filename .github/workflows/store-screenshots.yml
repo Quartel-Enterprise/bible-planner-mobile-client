@@ -1,0 +1,71 @@
+name: store screenshots
+
+# Play keeps the store listing separate from the release, so its screenshots can be replaced at any
+# time without shipping a build. The App Store does not: a live version's screenshots are read-only,
+# so those are uploaded from the release workflow instead, once the new version exists.
+on:
+  workflow_dispatch:
+    inputs:
+      validate_only:
+        description: 'Validate against Play without publishing'
+        type: boolean
+        default: true
+
+jobs:
+  android:
+    name: Android — upload the store listing screenshots
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      # The generators render the real screens, so the app has to build: Robolectric needs the
+      # google-services file and local.properties the same way a debug build does.
+      - name: Decode build secrets
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        run: |
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+          printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
+
+      - name: Decode the Play Store service account
+        env:
+          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+        run: printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
+
+      # Regenerates every screenshot and uploads only the listing assets — no artifact, no track,
+      # no metadata. The lane runs `stageStoreScreenshots` itself.
+      - name: Upload the screenshots to Google Play
+        run: fastlane android upload_screenshots
+        env:
+          PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
+          VALIDATE_ONLY: ${{ inputs.validate_only }}
+          # The patched screenshot library lives in this repository's own package registry.
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Kept so a failed upload can be diagnosed from what was actually rendered, and so the images
+      # can be eyeballed after a validate-only run.
+      - name: Upload the rendered screenshots as a build artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: store-screenshots
+          path: store_listings/
+          retention-days: 7
+          if-no-files-found: warn

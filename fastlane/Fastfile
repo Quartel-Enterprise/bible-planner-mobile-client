@@ -187,6 +187,7 @@ platform :android do
 
   desc "Upload only the store listing screenshots to Google Play — no build, no release."
   desc "Regenerates them first, so what is uploaded always matches the current app."
+  desc "Runs whenever: Play keeps the listing separate from the release, so this needs no version."
   lane :upload_screenshots do
     repo_root = File.expand_path("..")
 
@@ -359,6 +360,8 @@ platform :ios do
 
   desc "Upload only the store listing screenshots to App Store Connect — no build, no submission."
   desc "Regenerates them first, so what is uploaded always matches the current app."
+  desc "Only runs while a version is editable: a live version's screenshots are read-only, so this"
+  desc "belongs right after a new build reaches App Store Connect, not on its own."
   lane :upload_screenshots do
     repo_root = File.expand_path("..")
 
