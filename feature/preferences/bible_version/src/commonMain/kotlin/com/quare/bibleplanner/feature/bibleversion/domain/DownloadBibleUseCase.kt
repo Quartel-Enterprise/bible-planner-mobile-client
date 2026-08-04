@@ -5,11 +5,15 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadBooksInParallelUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
 
 class DownloadBibleUseCase(
     private val bibleVersionDao: BibleVersionDao,
+    private val verseDao: VerseDao,
+    private val getRemoteContentVersion: GetRemoteContentVersionUseCase,
     private val downloadBooksInParallel: DownloadBooksInParallelUseCase,
     private val trackEvent: TrackEvent,
 ) {
@@ -20,11 +24,20 @@ class DownloadBibleUseCase(
                 throwable = IllegalStateException("Version not found"),
             )
 
-        if (version.status == DownloadStatus.DONE) return Result.success(Unit)
+        val isComplete =
+            verseDao.countChaptersWithVersesByVersion(versionId) >= version.totalChapters
+        if (version.status == DownloadStatus.DONE && isComplete) return Result.success(Unit)
 
+        val remoteContentVersion = getRemoteContentVersion(versionId)
         downloadBooksInParallel(versionId)
             .onSuccess {
                 bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
+                if (remoteContentVersion.isNotEmpty()) {
+                    bibleVersionDao.updateContentVersion(
+                        id = versionId,
+                        contentVersion = remoteContentVersion,
+                    )
+                }
                 trackEvent(
                     name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED,
                     params = mapOf(AnalyticsParams.VERSION_ID to versionId),

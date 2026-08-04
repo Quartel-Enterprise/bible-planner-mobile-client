@@ -23,6 +23,7 @@ import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.model.route.NavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.PendingBibleUpdatesNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
@@ -73,6 +74,7 @@ class NavRouteToDestinationMapperImplTest {
             MaterialYouBottomSheetNavRoute to ("material_you" to DestinationType.DIALOG),
             NotificationPermissionNavRoute to ("notification_permission" to DestinationType.DIALOG),
             PaywallNavRoute to ("paywall" to DestinationType.SCREEN),
+            PendingBibleUpdatesNavRoute to ("pending_bible_updates" to DestinationType.DIALOG),
             PixQrNavRoute to ("pix_qr" to DestinationType.DIALOG),
             ReadNavRoute(bookId = "exodus", chapterNumber = 4, isChapterRead = true, isFromBookDetails = false) to
                 ("read" to DestinationType.SCREEN),

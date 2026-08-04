@@ -9,8 +9,8 @@ import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncChapterDto
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
 import io.github.jan.supabase.storage.BucketApi
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -31,11 +31,12 @@ class DownloadChaptersUseCase(
     ): Result<Unit> = suspendRunCatching {
         val supabaseBookDir = supabaseBookAbbreviationMapper.map(bookId)
         val chapters = chapterDao.getChaptersByBookId(bookId.name)
+        var failedChapters = 0
         chapters.chunked(DOWNLOAD_CHAPTERS_CHUNK_SIZE).forEach { chunk ->
             supervisorScope {
-                chunk
+                val results = chunk
                     .map { chapter ->
-                        launch {
+                        async {
                             suspendRunCatching {
                                 val exists = verseDao.countVersesByChapterAndVersion(chapter.id, versionId) > 0
                                 if (!exists) {
@@ -52,9 +53,11 @@ class DownloadChaptersUseCase(
                                 }
                             }.onFailure { Logger.e(it) { "Error syncing $bookId:${chapter.number}" } }
                         }
-                    }.joinAll()
+                    }.awaitAll()
+                failedChapters += results.count { it.isFailure }
             }
         }
+        check(failedChapters == 0) { "$failedChapters chapters of $bookId failed to download" }
     }.onFailure { Logger.e(it) { "Error downloading chapters for $bookId" } }
 
     private suspend fun saveChapterToDatabase(

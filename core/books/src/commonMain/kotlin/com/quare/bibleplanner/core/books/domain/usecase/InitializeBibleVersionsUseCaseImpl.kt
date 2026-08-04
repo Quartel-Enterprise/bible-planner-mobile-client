@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
@@ -12,7 +11,6 @@ internal class InitializeBibleVersionsUseCaseImpl(
     private val bibleVersionDao: BibleVersionDao,
     private val verseDao: VerseDao,
     private val metadataRepository: BibleVersionRepository,
-    private val downloaderFacade: BibleVersionDownloaderFacade,
 ) : InitializeBibleVersionsUseCase {
     override suspend fun invoke() {
         metadataRepository
@@ -22,8 +20,8 @@ internal class InitializeBibleVersionsUseCaseImpl(
                 val existingVersion = bibleVersionDao.getVersionById(versionModel.id)
                 if (existingVersion == null) {
                     insertVersion(versionModel)
-                } else if (existingVersion.contentVersion != versionModel.version) {
-                    refreshOutdatedVersion(
+                } else {
+                    adoptRemoteVersionIfNothingDownloaded(
                         existingVersion = existingVersion,
                         remoteVersion = versionModel,
                     )
@@ -42,20 +40,21 @@ internal class InitializeBibleVersionsUseCaseImpl(
         )
     }
 
-    private suspend fun refreshOutdatedVersion(
+    private suspend fun adoptRemoteVersionIfNothingDownloaded(
         existingVersion: BibleVersionEntity,
         remoteVersion: VersionModel,
     ) {
-        bibleVersionDao.updateVersion(
-            existingVersion.copy(
-                totalChapters = remoteVersion.chapters,
-                contentVersion = remoteVersion.version,
-            ),
-        )
-        val hasDownloadedContent = verseDao.countChaptersWithVersesByVersion(existingVersion.id) > 0
-        if (hasDownloadedContent) {
-            verseDao.deleteVerseTextsByVersion(existingVersion.id)
-            downloaderFacade.downloadVersion(existingVersion.id)
+        val isContentOutdated = remoteVersion.version.isNotEmpty() &&
+            existingVersion.contentVersion != remoteVersion.version
+        if (!isContentOutdated) return
+        val downloadedChapters = verseDao.countChaptersWithVersesByVersion(existingVersion.id)
+        if (downloadedChapters == 0) {
+            bibleVersionDao.updateVersion(
+                existingVersion.copy(
+                    totalChapters = remoteVersion.chapters,
+                    contentVersion = remoteVersion.version,
+                ),
+            )
         }
     }
 }

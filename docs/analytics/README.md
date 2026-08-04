@@ -132,6 +132,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `MaterialYouBottomSheetNavRoute` | `material_you` | `dialog` | — |
 | `NotificationPermissionNavRoute` | `notification_permission` | `dialog` | — |
 | `PaywallNavRoute` | `paywall` | `screen` | — |
+| `PendingBibleUpdatesNavRoute` | `pending_bible_updates` | `dialog` | — |
 | `PixQrNavRoute` | `pix_qr` | `dialog` | — |
 | `ReadNavRoute` | `read` | `screen` | `book_id`, `chapter_number` |
 | `ReleaseNotesNavRoute` | `release_notes` | `screen` | — |
@@ -245,6 +246,10 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [bible_version_delete_clicked](events/bible_version_delete_clicked.md) | P2 | BibleVersions |
 | [bible_version_manager_dismissed](events/bible_version_manager_dismissed.md) | P2 | BibleVersions |
 | [bible_version_download_retry_clicked](events/bible_version_download_retry_clicked.md) | P2 | BibleVersions |
+| [bible_version_update_clicked](events/bible_version_update_clicked.md) | P1 | BibleVersions |
+| [bible_update_prompt_update_clicked](events/bible_update_prompt_update_clicked.md) | P1 | BibleVersions |
+| [bible_update_prompt_dismissed](events/bible_update_prompt_dismissed.md) | P2 | BibleVersions |
+| [bible_update_prompt_version_toggled](events/bible_update_prompt_version_toggled.md) | P2 | BibleVersions |
 
 ### Monetization
 

@@ -12,6 +12,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.core.provider.supabase.generated.SupabaseBuildKonfig
 import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncChapterDto
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,6 +27,7 @@ class IosBackgroundDownloadBridge(
     private val bibleVersionDao: BibleVersionDao,
     private val notifier: BibleVersionDownloadNotifier,
     private val bibleRepository: BibleRepository,
+    private val getRemoteContentVersion: GetRemoteContentVersionUseCase,
     private val json: Json,
 ) {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -103,6 +105,13 @@ class IosBackgroundDownloadBridge(
                 val name = resolveVersionName(versionId)
                 if (downloaded >= entity.totalChapters) {
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
+                    val remoteContentVersion = getRemoteContentVersion(versionId)
+                    if (remoteContentVersion.isNotEmpty()) {
+                        bibleVersionDao.updateContentVersion(
+                            id = versionId,
+                            contentVersion = remoteContentVersion,
+                        )
+                    }
                     notifier.showComplete(versionId, name)
                 } else {
                     // Some tasks failed permanently after exhausting retries on the iOS side.

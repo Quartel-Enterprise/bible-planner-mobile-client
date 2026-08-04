@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.data.mapper.BookFavoriteMapper
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
+import com.quare.bibleplanner.core.books.data.mapper.CachedVersionsJsonMapper
 import com.quare.bibleplanner.core.books.data.mapper.ChapterReadMapper
 import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
 import com.quare.bibleplanner.core.books.data.mapper.VerseReadMapper
@@ -67,6 +68,7 @@ val booksModule = module {
         )
     }
     factoryOf(::BibleVersionsLocalDataSource)
+    factoryOf(::CachedVersionsJsonMapper)
     factoryOf(::VersionMapper)
     factoryOf(::BookFavoriteMapper)
     factoryOf(::FavoritesLocalStore)

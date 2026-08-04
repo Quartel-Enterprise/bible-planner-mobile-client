@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
@@ -42,7 +44,7 @@ internal fun BibleVersionItem(
                 )
                 HorizontalSpacer(8)
                 BibleVersionAbbreviationChip(
-                    abbreviation = model.version.name.toAbbreviation(),
+                    abbreviation = model.version.id.uppercase(),
                     isSelected = model.isSelected,
                 )
             }
@@ -54,17 +56,18 @@ internal fun BibleVersionItem(
                 fontWeight = if (model.isSelected) FontWeight.SemiBold else FontWeight.Normal,
             )
         },
-        supportingContent = { BibleVersionItemSupportingContent(model.downloadStatus) },
+        supportingContent = {
+            BibleVersionItemSupportingContent(
+                downloadStatus = model.downloadStatus,
+                hasPendingUpdate = model.hasPendingUpdate,
+            )
+        },
         trailingContent = {
             BibleVersionItemDownloadStatusComponent(
                 status = model.downloadStatus,
+                hasPendingUpdate = model.hasPendingUpdate,
                 onEvent = { onEvent(it(versionId)) },
             )
         },
     )
 }
-
-private fun String.toAbbreviation(): String = split(" ")
-    .filter { it.isNotEmpty() }
-    .joinToString("") { it.first().uppercase() }
-    .take(4)

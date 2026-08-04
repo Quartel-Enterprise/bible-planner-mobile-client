@@ -60,6 +60,10 @@ object AnalyticsEventNames {
     const val BIBLE_VERSION_DELETE_CANCELLED = "bible_version_delete_cancelled"
     const val BIBLE_VERSION_MANAGER_DISMISSED = "bible_version_manager_dismissed"
     const val BIBLE_VERSION_DOWNLOAD_RETRY_CLICKED = "bible_version_download_retry_clicked"
+    const val BIBLE_VERSION_UPDATE_CLICKED = "bible_version_update_clicked"
+    const val BIBLE_VERSION_UPDATE_PROMPT_UPDATE_CLICKED = "bible_update_prompt_update_clicked"
+    const val BIBLE_VERSION_UPDATE_PROMPT_DISMISSED = "bible_update_prompt_dismissed"
+    const val BIBLE_VERSION_UPDATE_PROMPT_VERSION_TOGGLED = "bible_update_prompt_version_toggled"
 
     const val PAYWALL_VIEWED = "paywall_viewed"
     const val PAYWALL_PLAN_SELECTED = "paywall_plan_selected"

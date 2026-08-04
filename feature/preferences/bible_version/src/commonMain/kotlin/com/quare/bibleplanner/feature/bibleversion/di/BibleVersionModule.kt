@@ -1,24 +1,34 @@
 package com.quare.bibleplanner.feature.bibleversion.di
 
 import com.quare.bibleplanner.core.provider.supabase.CONTENT_BUCKET
+import com.quare.bibleplanner.feature.bibleversion.data.BibleUpdatePromptPreferencesImpl
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
+import com.quare.bibleplanner.feature.bibleversion.domain.BibleUpdatePromptPreferences
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVersionDownloadUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DismissBibleUpdatePromptUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadBooksInParallelUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DownloadChaptersUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamentIdsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPendingBibleUpdatesUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPrioritizedBookIdsUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.PauseBibleVersionDownloadUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ShouldShowBibleUpdatePromptUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.BibleVersionViewModel
+import com.quare.bibleplanner.feature.bibleversion.presentation.PendingBibleUpdatesPromptViewModel
+import com.quare.bibleplanner.feature.bibleversion.presentation.PendingBibleUpdatesViewModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val bibleVersionModule = module {
@@ -46,10 +56,18 @@ val bibleVersionModule = module {
         )
     }
     factoryOf(::DownloadBooksInParallelUseCase)
+    factoryOf(::GetRemoteContentVersionUseCase)
+    factoryOf(::UpdateBibleVersionUseCase)
+    factoryOf(::GetPendingBibleUpdatesUseCase)
+    factoryOf(::ShouldShowBibleUpdatePromptUseCase)
+    factoryOf(::DismissBibleUpdatePromptUseCase)
+    singleOf(::BibleUpdatePromptPreferencesImpl).bind<BibleUpdatePromptPreferences>()
     factoryOf(::PauseBibleVersionDownloadUseCase)
     factoryOf(::DeleteBibleVersionDownloadUseCase)
     factoryOf(::BibleVersionsUiStateFactory)
 
     // Presentation
     viewModelOf(::BibleVersionViewModel)
+    viewModelOf(::PendingBibleUpdatesViewModel)
+    viewModelOf(::PendingBibleUpdatesPromptViewModel)
 }
