@@ -5,12 +5,14 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.plan.DayModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
+import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatusButton
 import com.quare.bibleplanner.feature.day.presentation.component.DayReadSection
-import com.quare.bibleplanner.feature.day.presentation.component.DayStudySectionForDay
 import com.quare.bibleplanner.feature.day.presentation.component.notes.NotesSection
 import com.quare.bibleplanner.feature.day.presentation.component.portraitPassageList
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedReadDateComponent
@@ -25,14 +27,14 @@ internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
     uiState: DayUiState.Loaded,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    dayStudySection: @Composable (List<PassageModel>, DayNavRoute, Modifier) -> Unit,
 ) {
     val isDayRead = day.isRead
     responsiveItem {
-        DayStudySectionForDay(
-            passages = day.passages,
-            dayRoute = uiState.dayRoute,
-            onEvent = onEvent,
-            modifier = Modifier.padding(
+        dayStudySection(
+            day.passages,
+            uiState.dayRoute,
+            Modifier.padding(
                 horizontal = 16.dp,
                 vertical = 8.dp,
             ),

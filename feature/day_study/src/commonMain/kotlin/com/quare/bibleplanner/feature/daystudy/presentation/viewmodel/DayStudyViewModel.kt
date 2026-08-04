@@ -237,7 +237,10 @@ internal class DayStudyViewModel(
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_CARD_CLICKED,
             params = mapOf(
-                AnalyticsParams.CARD_MODE to card.mode.name.lowercase(),
+                AnalyticsParams.CARD_MODE to card.mode
+                    ?.name
+                    ?.lowercase()
+                    .orEmpty(),
                 AnalyticsParams.IS_PRO to card.isPro,
             ),
         )
@@ -247,7 +250,7 @@ internal class DayStudyViewModel(
         }
         when (card.mode) {
             DayStudyCardMode.LOCKED -> emitAction(DayStudyUiAction.NavigateToPaywall)
-            DayStudyCardMode.GENERATE -> generateIfLoggedIn()
+            null, DayStudyCardMode.GENERATE -> generateIfLoggedIn()
             DayStudyCardMode.VIEW -> emitAction(DayStudyUiAction.NavigateToStudy)
         }
     }

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.model.plan.PassageModel
+import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.LoadedDayLandscapeContent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.portrait.loadedDayPortraitScreenContent
@@ -23,6 +25,7 @@ internal fun LoadedDayContent(
     isLandscape: Boolean,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
+    dayStudySection: @Composable (List<PassageModel>, DayNavRoute, Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val day = uiState.day
@@ -47,6 +50,7 @@ internal fun LoadedDayContent(
                     uiState = uiState,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,
+                    dayStudySection = dayStudySection,
                 )
             },
         )

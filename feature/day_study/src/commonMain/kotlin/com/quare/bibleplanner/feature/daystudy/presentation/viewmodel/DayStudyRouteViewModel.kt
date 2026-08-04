@@ -284,7 +284,7 @@ internal class DayStudyRouteViewModel(
         if (_uiState.value.openStudy != null || _uiState.value.generation != null) return
         when (card.mode) {
             DayStudyCardMode.LOCKED -> emitAction(DayStudyRouteUiAction.NavigateToRoute(PaywallNavRoute))
-            DayStudyCardMode.GENERATE -> generateIfLoggedIn()
+            null, DayStudyCardMode.GENERATE -> generateIfLoggedIn()
             DayStudyCardMode.VIEW -> generateOrOpen()
         }
     }

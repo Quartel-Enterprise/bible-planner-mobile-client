@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.model
 
-internal data class DayStudyGenerationUiModel(
+data class DayStudyGenerationUiModel(
     val currentPhaseIndex: Int,
 ) {
     val activePhase: DayStudyGenerationPhase
