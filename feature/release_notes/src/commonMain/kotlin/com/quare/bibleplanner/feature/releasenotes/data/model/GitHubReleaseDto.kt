@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class GitHubReleaseDto(
     @SerialName("tag_name")
     val tagName: String,
+    @SerialName("prerelease")
+    val isPrerelease: Boolean,
     @SerialName("published_at")
     val publishedAt: String? = null,
     @SerialName("body")

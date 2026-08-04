@@ -9,13 +9,14 @@ WORKFLOW="release.yml"
 # Dispatches the release workflow with the given inputs, then waits for the
 # new run to appear and prints its URL.
 #
-# Args: version platforms track complete_android_release submit_ios_for_review
+# Args: version platforms track complete_android_release submit_ios_for_review prerelease
 dispatch_release() {
   local version="$1"
   local platforms="$2"
   local track="$3"
   local complete_android="$4"
   local submit_ios="$5"
+  local prerelease="$6"
 
   local before
   before="$(gh run list --workflow="$WORKFLOW" --repo "$REPO" --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
@@ -25,7 +26,8 @@ dispatch_release() {
     -f platforms="$platforms" \
     -f track="$track" \
     -f complete_android_release="$complete_android" \
-    -f submit_ios_for_review="$submit_ios"
+    -f submit_ios_for_review="$submit_ios" \
+    -f prerelease="$prerelease"
 
   echo
   echo "Workflow dispatched. Locating the run..."

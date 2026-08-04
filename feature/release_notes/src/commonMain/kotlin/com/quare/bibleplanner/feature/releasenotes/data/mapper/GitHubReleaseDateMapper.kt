@@ -10,6 +10,7 @@ import kotlin.time.Instant
 
 class GitHubReleaseDateMapper {
     fun mapToReleaseDates(releases: List<GitHubReleaseDto>): Map<String, LocalDate> = releases
+        .filterNot(GitHubReleaseDto::isPrerelease)
         .mapNotNull { release ->
             val date = try {
                 release.publishedAt
