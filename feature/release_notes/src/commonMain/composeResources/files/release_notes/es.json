@@ -1,5 +1,5 @@
 {
-  "2.3.1": [
+  "2.4.0": [
     "Se corrigió un problema que podía mostrar un error en la pantalla de versiones de la Biblia incluso con internet funcionando.",
     "Cuando una versión de la Biblia que descargaste recibe correcciones de texto, la app ahora te avisa al abrirla y muestra un botón de actualizar en la lista de versiones — tú eliges cuándo descargar el texto nuevo."
   ],
