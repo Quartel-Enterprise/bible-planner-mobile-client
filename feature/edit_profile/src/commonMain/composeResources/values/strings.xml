@@ -29,6 +29,9 @@
     <string name="edit_profile_crop_title">Adjust photo</string>
     <string name="edit_profile_crop_hint">Drag and zoom to frame</string>
     <string name="edit_profile_crop_confirm">Done</string>
+    <string name="edit_profile_crop_flip_horizontal">Horizontal</string>
+    <string name="edit_profile_crop_flip_vertical">Vertical</string>
+    <string name="edit_profile_crop_rotate">Rotate</string>
     <string name="edit_profile_name_counter">%1$d/%2$d</string>
     <string name="edit_profile_close">Close</string>
 </resources>

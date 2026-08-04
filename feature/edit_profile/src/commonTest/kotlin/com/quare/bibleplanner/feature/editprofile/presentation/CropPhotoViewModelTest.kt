@@ -49,6 +49,31 @@ class CropPhotoViewModelTest {
     }
 
     @Test
+    fun `mirrors the photo when the user flips it`() = runTest {
+        // Given
+        val viewModel = viewModel()
+
+        // When
+        viewModel.onEvent(CropPhotoUiEvent.OnFlipHorizontalClick)
+
+        // Then
+        assertTrue(viewModel.uiState.value.orientation.isFlippedHorizontally)
+    }
+
+    @Test
+    fun `turns the photo a quarter clockwise on each rotate tap`() = runTest {
+        // Given
+        val viewModel = viewModel()
+
+        // When
+        viewModel.onEvent(CropPhotoUiEvent.OnRotateClick)
+        viewModel.onEvent(CropPhotoUiEvent.OnRotateClick)
+
+        // Then
+        assertEquals(180, viewModel.uiState.value.orientation.rotationDegrees)
+    }
+
+    @Test
     fun `ignores confirm until the image has loaded`() = runTest {
         // Given — the decoder never completes, so no image is ready
         val viewModel = viewModel()

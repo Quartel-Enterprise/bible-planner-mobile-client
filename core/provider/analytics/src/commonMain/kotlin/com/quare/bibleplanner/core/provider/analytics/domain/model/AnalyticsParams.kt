@@ -48,6 +48,7 @@ object AnalyticsParams {
     const val SETTING = "setting"
     const val LANGUAGE = "language"
     const val TYPE = "type"
+    const val TRANSFORM = "transform"
     const val TAB = "tab"
     const val QUERY_LENGTH = "query_length"
     const val FILTER_TYPE = "filter_type"

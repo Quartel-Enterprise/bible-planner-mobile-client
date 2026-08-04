@@ -7,4 +7,11 @@ data class CropParams(
     val zoom: Float,
     val offsetX: Float,
     val offsetY: Float,
-)
+    val orientation: PhotoOrientation,
+) {
+    val orientedWidth: Int
+        get() = if (orientation.isQuarterTurned) imageHeight else imageWidth
+
+    val orientedHeight: Int
+        get() = if (orientation.isQuarterTurned) imageWidth else imageHeight
+}
