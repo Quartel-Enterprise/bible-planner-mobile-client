@@ -21,4 +21,6 @@
     <string name="tap_to_download">Tap to download</string>
     <string name="update_available">Update available</string>
     <string name="update_count">Update (%1$d)</string>
+    <string name="status_with_size">%1$s · %2$s</string>
+    <string name="size_progress">%1$s of %2$s</string>
 </resources>

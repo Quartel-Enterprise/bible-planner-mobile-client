@@ -1,10 +1,11 @@
 package com.quare.bibleplanner.feature.read.presentation.factory
 
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
-import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleNameFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetReadNavigationSuggestionsModelUseCase
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
@@ -20,7 +21,7 @@ class ReadDataPresentationModelFactory(
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
     private val getChapterId: GetChapterIdUseCase,
     private val getVersesWithTextsByChapterIdFlow: GetVersesWithTextsByChapterIdFlowUseCase,
-    private val getSelectedBibleNameFlow: GetSelectedBibleNameFlowUseCase,
+    private val getSelectedBibleFlow: GetSelectedBibleFlowUseCase,
     private val getReadNavigationSuggestionsModelFlow: GetReadNavigationSuggestionsModelUseCase,
 ) {
     fun create(
@@ -67,16 +68,18 @@ class ReadDataPresentationModelFactory(
     ): Flow<ReadUiState> = combine(
         getSelectedVersionIdFlow(),
         getVersesWithTextsByChapterIdFlow(chapterId),
-        getSelectedBibleNameFlow(),
-    ) { versionId, versesWithTexts, selectedBibleName ->
+        getSelectedBibleFlow(),
+    ) { versionId, versesWithTexts, selectedBible ->
         val isChapterRead = versesWithTexts.all { it.verse.isRead }
         val chapterNotFoundState = ReadUiState.Error.ChapterNotFound(
             bookStringResource = bookStringResource,
             chapterNumber = chapterNumber,
             isChapterRead = isChapterRead,
-            selectedBibleVersionName = selectedBibleName,
+            selectedBibleVersionName = selectedBible?.version?.name.orEmpty(),
             errorUiEvent = ReadUiEvent.ManageBibleVersions,
             navigationSuggestions = navigationSuggestions,
+            downloadStatus = selectedBible?.downloadStatus ?: DownloadStatusModel.NotStarted,
+            versionSizeInBytes = selectedBible?.version?.size,
         )
         if (versesWithTexts.isEmpty()) {
             chapterNotFoundState

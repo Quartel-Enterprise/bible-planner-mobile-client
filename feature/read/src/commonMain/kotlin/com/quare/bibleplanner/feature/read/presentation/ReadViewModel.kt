@@ -1,10 +1,13 @@
 package com.quare.bibleplanner.feature.read.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -31,6 +35,8 @@ class ReadViewModel(
     private val readDataPresentationModelFactory: ReadDataPresentationModelFactory,
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val downloaderFacade: BibleVersionDownloaderFacade,
+    private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<ReadUiEvent>(trackEvent) {
@@ -75,6 +81,8 @@ class ReadViewModel(
                 }
             }
 
+            ReadUiEvent.OnDownloadSelectedVersionClick -> downloadSelectedVersion()
+
             ReadUiEvent.ManageBibleVersions -> {
                 viewModelScope.launch {
                     _uiAction.emit(
@@ -110,6 +118,23 @@ class ReadViewModel(
                     )
                 }
             }
+        }
+    }
+
+    private fun downloadSelectedVersion() {
+        viewModelScope.launch {
+            val versionId = getSelectedVersionIdFlow().first()
+            val isResume = (uiState.value as? ReadUiState.Error.ChapterNotFound)
+                ?.downloadStatus is DownloadStatusModel.InProgress.Paused
+            downloaderFacade.downloadVersion(versionId)
+            trackEvent(
+                name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_STARTED,
+                params = mapOf(
+                    AnalyticsParams.VERSION_ID to versionId,
+                    AnalyticsParams.IS_RESUME to isResume,
+                    AnalyticsParams.SOURCE to SOURCE_READER,
+                ),
+            )
         }
     }
 

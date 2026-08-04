@@ -17,6 +17,8 @@ import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersi
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
+private val dividerStartInset = 104.dp
+
 internal fun LazyListScope.bibleVersionsListComponent(
     selectionMap: Map<Language, List<BibleModel>>,
     onEvent: (BibleVersionUiEvent) -> Unit,
@@ -40,7 +42,13 @@ internal fun LazyListScope.bibleVersionsListComponent(
             item {
                 BibleVersionGroupCard {
                     versions.forEachIndexed { versionIndex, version ->
-                        if (versionIndex > 0) HorizontalDivider()
+                        val previous = versions.getOrNull(versionIndex - 1)
+                        if (previous != null && !previous.isSelected && !version.isSelected) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(start = dividerStartInset),
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                            )
+                        }
                         BibleVersionItem(
                             model = version,
                             onEvent = onEvent,

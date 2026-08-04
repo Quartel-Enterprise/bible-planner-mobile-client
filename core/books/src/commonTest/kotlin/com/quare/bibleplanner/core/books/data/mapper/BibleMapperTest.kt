@@ -151,6 +151,7 @@ internal class BibleMapperTest {
                     version = remoteContentVersion,
                     language = Language.PORTUGUESE_BRAZIL,
                     chapters = 1189,
+                    size = 8245560,
                 ),
             ),
             downloadedChaptersMap = mapOf("ACF" to downloadedChapters),
