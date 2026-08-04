@@ -1,7 +1,8 @@
 {
   "2.4.0": [
     "Fixed a problem that could show an error on the Bible versions screen even with a working internet connection.",
-    "When a Bible version you downloaded receives text corrections, the app now lets you know on launch and shows an update button in the versions list — you choose when to download the new text."
+    "When a Bible version you downloaded receives text corrections, the app now lets you know on launch and shows an update button in the versions list — you choose when to download the new text.",
+    "On Android, dynamic colors, which tint the app with the colors of your wallpaper, now come turned off — if you like them, just turn them on in the theme screen."
   ],
   "2.3.0": [
     "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short and sits next to the options button.",
