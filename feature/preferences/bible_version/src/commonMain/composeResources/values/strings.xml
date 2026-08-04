@@ -17,9 +17,8 @@
     <string name="download_tip_keep_app_open">Keep the app open to speed up the download.</string>
     <string name="update">Update</string>
     <string name="update_available_title">Updates available</string>
-    <string name="update_available_description">The following Bible versions received text corrections and can be updated:</string>
-    <string name="update_all">Update</string>
-    <string name="update_later">Not now</string>
+    <string name="update_available_description">New revisions for versions you downloaded. Choose which to update.</string>
     <string name="tap_to_download">Tap to download</string>
     <string name="update_available">Update available</string>
+    <string name="update_count">Update (%1$d)</string>
 </resources>

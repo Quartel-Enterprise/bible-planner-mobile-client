@@ -1,8 +1,8 @@
-# bible_version_update_prompt_dismissed
+# bible_update_prompt_dismissed
 
 **Tier:** P2 | **Domain:** BibleVersions
 
-Captures the user declining the startup prompt that lists Bible versions with pending content updates. High dismissal volume relative to [bible_version_update_prompt_update_clicked](bible_version_update_prompt_update_clicked.md) signals the prompt is annoying or badly timed.
+Captures the user declining the startup prompt that lists Bible versions with pending content updates. High dismissal volume relative to [bible_update_prompt_update_clicked](bible_update_prompt_update_clicked.md) signals the prompt is annoying or badly timed.
 
 ## When it fires
 

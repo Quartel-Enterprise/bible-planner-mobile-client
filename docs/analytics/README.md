@@ -247,8 +247,9 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [bible_version_manager_dismissed](events/bible_version_manager_dismissed.md) | P2 | BibleVersions |
 | [bible_version_download_retry_clicked](events/bible_version_download_retry_clicked.md) | P2 | BibleVersions |
 | [bible_version_update_clicked](events/bible_version_update_clicked.md) | P1 | BibleVersions |
-| [bible_version_update_prompt_update_clicked](events/bible_version_update_prompt_update_clicked.md) | P1 | BibleVersions |
-| [bible_version_update_prompt_dismissed](events/bible_version_update_prompt_dismissed.md) | P2 | BibleVersions |
+| [bible_update_prompt_update_clicked](events/bible_update_prompt_update_clicked.md) | P1 | BibleVersions |
+| [bible_update_prompt_dismissed](events/bible_update_prompt_dismissed.md) | P2 | BibleVersions |
+| [bible_update_prompt_version_toggled](events/bible_update_prompt_version_toggled.md) | P2 | BibleVersions |
 
 ### Monetization
 

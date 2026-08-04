@@ -21,4 +21,4 @@ A downloaded version has a pending content update, so its row in the Bible versi
 ## Notes
 
 - The re-download itself reports through [bible_version_download_completed](bible_version_download_completed.md) / [bible_version_download_failed](bible_version_download_failed.md), like any download.
-- Updating from the startup prompt fires [bible_version_update_prompt_update_clicked](bible_version_update_prompt_update_clicked.md) instead.
+- Updating from the startup prompt fires [bible_update_prompt_update_clicked](bible_update_prompt_update_clicked.md) instead.

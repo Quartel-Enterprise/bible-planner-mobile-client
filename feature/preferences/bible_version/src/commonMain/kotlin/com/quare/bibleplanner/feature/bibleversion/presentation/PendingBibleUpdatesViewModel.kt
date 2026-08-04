@@ -1,10 +1,13 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DismissBibleUpdatePromptUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPendingBibleUpdatesUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
+import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdateItem
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -12,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class PendingBibleUpdatesViewModel(
@@ -23,31 +27,52 @@ internal class PendingBibleUpdatesViewModel(
     private val _uiAction = MutableSharedFlow<PendingBibleUpdatesUiAction>()
     val uiAction: SharedFlow<PendingBibleUpdatesUiAction> = _uiAction
 
-    private val _pendingVersionNames = MutableStateFlow<List<String>>(emptyList())
-    val pendingVersionNames: StateFlow<List<String>> = _pendingVersionNames
-
-    private var pendingVersionIds: List<String> = emptyList()
+    private val _pendingUpdates = MutableStateFlow<List<PendingBibleUpdateItem>>(emptyList())
+    val pendingUpdates: StateFlow<List<PendingBibleUpdateItem>> = _pendingUpdates
 
     init {
         viewModelScope.launch {
-            val pendingVersions = getPendingBibleUpdates()
-            pendingVersionIds = pendingVersions.map { it.version.id }
-            _pendingVersionNames.value = pendingVersions.map { it.version.name }
+            _pendingUpdates.value = getPendingBibleUpdates().map { bible ->
+                PendingBibleUpdateItem(
+                    id = bible.version.id,
+                    name = bible.version.name,
+                    isSelected = true,
+                )
+            }
         }
     }
 
     override fun handleEvent(event: PendingBibleUpdatesUiEvent) {
         when (event) {
-            PendingBibleUpdatesUiEvent.OnUpdateClick -> updatePendingVersions()
+            is PendingBibleUpdatesUiEvent.OnToggleVersion -> toggleVersion(event.id)
+            PendingBibleUpdatesUiEvent.OnUpdateClick -> updateSelectedVersions()
             PendingBibleUpdatesUiEvent.OnDismissClick -> dismiss()
         }
     }
 
-    private fun updatePendingVersions() {
-        viewModelScope.launch {
-            pendingVersionIds.forEach { versionId ->
-                updateBibleVersion(versionId)
+    private fun toggleVersion(id: String) {
+        _pendingUpdates.update { items ->
+            items.map { item ->
+                if (item.id == id) item.copy(isSelected = !item.isSelected) else item
             }
+        }
+        val isSelected = _pendingUpdates.value.first { it.id == id }.isSelected
+        trackEvent(
+            name = AnalyticsEventNames.BIBLE_VERSION_UPDATE_PROMPT_VERSION_TOGGLED,
+            params = mapOf(
+                AnalyticsParams.VERSION_ID to id,
+                AnalyticsParams.IS_SELECTED to isSelected,
+            ),
+        )
+    }
+
+    private fun updateSelectedVersions() {
+        viewModelScope.launch {
+            _pendingUpdates.value
+                .filter { it.isSelected }
+                .forEach { item ->
+                    updateBibleVersion(item.id)
+                }
             _uiAction.emit(PendingBibleUpdatesUiAction.NavigateBack)
         }
     }

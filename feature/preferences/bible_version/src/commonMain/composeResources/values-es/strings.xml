@@ -17,9 +17,8 @@
     <string name="download_tip_keep_app_open">Mantén la app abierta para optimizar la descarga.</string>
     <string name="update">Actualizar</string>
     <string name="update_available_title">Actualizaciones disponibles</string>
-    <string name="update_available_description">Las siguientes versiones de la Biblia recibieron correcciones de texto y pueden actualizarse:</string>
-    <string name="update_all">Actualizar</string>
-    <string name="update_later">Ahora no</string>
+    <string name="update_available_description">Nuevas revisiones para versiones que descargaste. Elige cuáles actualizar.</string>
     <string name="tap_to_download">Toca para descargar</string>
     <string name="update_available">Actualización disponible</string>
+    <string name="update_count">Actualizar (%1$d)</string>
 </resources>

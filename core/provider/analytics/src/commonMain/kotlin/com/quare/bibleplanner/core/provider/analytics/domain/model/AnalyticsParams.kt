@@ -19,6 +19,7 @@ object AnalyticsParams {
     const val IS_ENABLED = "is_enabled"
     const val IS_GRANTED = "is_granted"
     const val IS_RESUME = "is_resume"
+    const val IS_SELECTED = "is_selected"
     const val IS_FORCED = "is_forced"
     const val IS_CACHED = "is_cached"
     const val IS_FIRST_TIME = "is_first_time"
