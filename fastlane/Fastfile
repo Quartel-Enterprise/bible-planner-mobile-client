@@ -17,7 +17,7 @@ WIDGET_BUNDLE_ID = "com.quare.bibleplanner.BiblePlanner.BibleDownloadWidget".fre
 ANDROID_PACKAGE  = "com.quare.bibleplanner".freeze
 APPLE_TEAM_ID    = "TTV2A365LG".freeze
 XCODE_PROJECT    = "iosApp/iosApp.xcodeproj".freeze
-XCCONFIG         = "iosApp/Configuration/Config.xcconfig".freeze
+VERSION_XCCONFIG = "version.xcconfig".freeze
 RELEASE_NOTES_DIR = "feature/release_notes/src/commonMain/composeResources/files/release_notes".freeze
 
 # Per-store character limits for release notes. Google Play hard-fails the
@@ -31,6 +31,19 @@ TRUNCATION_SUFFIX = {
   "pt" => "…e mais",
   "es" => "…y más",
 }.freeze
+
+# Reads the app version from version.xcconfig — the single source of truth every
+# platform shares, see scripts/bump-version.sh — as [versionName, versionCode].
+# Config.xcconfig only aliases it, so its MARKETING_VERSION/CURRENT_PROJECT_VERSION
+# read back as literal `$(versionName)`/`$(versionCode)` and must not be used here.
+def app_version(repo_root)
+  props = File.read(File.join(repo_root, VERSION_XCCONFIG))
+  version = props[/^versionName=(.+)$/, 1]&.strip
+  version_code = props[/^versionCode=(.+)$/, 1]&.strip
+  UI.user_error!("Could not read versionName/versionCode from #{VERSION_XCCONFIG}") if version.nil? || version_code.nil?
+
+  [version, version_code]
+end
 
 # Reads the in-app release notes JSON files and returns the notes for the given
 # version as { "en" => [items], "pt" => [items], "es" => [items] }.
@@ -83,9 +96,9 @@ end
 # Writes <repo>/fastlane/metadata/<locale>/release_notes.txt for every App Store
 # locale that has matching in-app release notes. Returns true if any file was
 # written. "What's New" comes from the in-app release notes JSON, keyed by the
-# version currently set in Config.xcconfig.
+# version currently set in version.xcconfig.
 def stage_release_notes(repo_root)
-  version = File.read(File.join(repo_root, XCCONFIG))[/^MARKETING_VERSION=(.+)$/, 1]&.strip
+  version, = app_version(repo_root)
   notes = release_notes_for_version(version, repo_root)
   if notes.empty?
     UI.important("No in-app release notes found for #{version} — App Store 'What's New' will be left unchanged.")
@@ -156,10 +169,8 @@ platform :android do
     track = options[:track] || "production"
 
     # Build the Play "What's new" from the in-app release notes JSON, keyed by
-    # the version currently set in gradle.properties. Non-fatal on failure.
-    props = File.read(File.join(repo_root, "gradle.properties"))
-    version = props[/^versionName=(.+)$/, 1]&.strip
-    version_code = props[/^versionCode=(.+)$/, 1]&.strip
+    # the version currently set in version.xcconfig. Non-fatal on failure.
+    version, version_code = app_version(repo_root)
     has_changelogs = false
     begin
       has_changelogs = stage_play_changelogs(version, version_code, repo_root)
