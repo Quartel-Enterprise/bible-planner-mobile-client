@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 internal data class VersionDto(
     @SerialName("id") val id: String,
     @SerialName("name") val name: String,
+    @SerialName("version") val version: String,
     @SerialName("language") val language: String,
     @SerialName("country") val country: String,
     @SerialName("chapters") val chapters: Int,

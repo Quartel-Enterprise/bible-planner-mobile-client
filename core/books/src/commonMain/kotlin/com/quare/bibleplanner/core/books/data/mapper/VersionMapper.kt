@@ -8,6 +8,7 @@ internal class VersionMapper {
     fun map(dto: VersionDto): VersionModel = VersionModel(
         id = dto.id,
         name = dto.name,
+        version = dto.version,
         language = when (dto.language) {
             "pt" -> Language.PORTUGUESE_BRAZIL
             "es" -> Language.SPANISH
