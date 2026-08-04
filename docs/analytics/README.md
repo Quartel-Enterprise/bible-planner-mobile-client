@@ -315,6 +315,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [profile_photo_removed](events/profile_photo_removed.md) | P2 | Settings |
 | [profile_photo_updated](events/profile_photo_updated.md) | P1 | Settings |
 | [profile_photo_crop_cancelled](events/profile_photo_crop_cancelled.md) | P2 | Settings |
+| [profile_photo_crop_transformed](events/profile_photo_crop_transformed.md) | P2 | Settings |
 | [theme_changed](events/theme_changed.md) | P1 | Settings |
 | [contrast_changed](events/contrast_changed.md) | P2 | Settings |
 | [dynamic_colors_toggled](events/dynamic_colors_toggled.md) | P2 | Settings |

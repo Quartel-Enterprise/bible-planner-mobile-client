@@ -126,6 +126,7 @@ object AnalyticsEventNames {
     const val PROFILE_PHOTO_REMOVED = "profile_photo_removed"
     const val PROFILE_PHOTO_UPDATED = "profile_photo_updated"
     const val PROFILE_PHOTO_CROP_CANCELLED = "profile_photo_crop_cancelled"
+    const val PROFILE_PHOTO_CROP_TRANSFORMED = "profile_photo_crop_transformed"
     const val IN_APP_REVIEW_REQUESTED = "in_app_review_requested"
     const val THEME_CHANGED = "theme_changed"
     const val CONTRAST_CHANGED = "contrast_changed"
