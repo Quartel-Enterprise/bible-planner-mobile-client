@@ -110,3 +110,73 @@ subprojects {
         }
     }
 }
+
+// Store listing assets are versioned under store_listings/, which is why they are collected out of
+// the generators' Fastlane-shaped output into one folder per platform and language. Screens are
+// produced by the `testAndroidHostTest` task of whichever feature module owns the screen.
+private val storeScreenshotLocales = mapOf(
+    "pt-BR" to "pt_br",
+    "en-US" to "en",
+    "es" to "es",
+)
+
+private val storeScreenshotDevices = mapOf(
+    "images/phoneScreenshots" to ("android" to "phone"),
+    "images/sevenInchScreenshots" to ("android" to "tablet_7"),
+    "images/tenInchScreenshots" to ("android" to "tablet_10"),
+    "iphone67" to ("ios" to "iphone_6_7"),
+    "ipad13" to ("ios" to "ipad_13"),
+)
+
+
+private val storeScreenshotModules = listOf(
+    ":feature:reading_plan",
+    ":feature:day",
+    ":feature:day_study",
+    ":feature:books",
+    ":feature:read",
+)
+
+// The generators all write into one shared directory and never clean it, so a screen that gets
+// renamed would otherwise leave its old file there and be collected forever.
+private val clearGeneratedStoreScreenshots = tasks.register<Delete>("clearGeneratedStoreScreenshots") {
+    delete(layout.buildDirectory.dir("outputs/store-screenshots"))
+}
+
+storeScreenshotModules.forEach { modulePath ->
+    project(modulePath).tasks.matching { task -> task.name == "testAndroidHostTest" }.configureEach {
+        dependsOn(clearGeneratedStoreScreenshots)
+    }
+}
+
+tasks.register("collectStoreScreenshots") {
+    group = "store-screenshots"
+    description = "Regenerates every store screenshot and collects it into store_listings/."
+    dependsOn(storeScreenshotModules.map { modulePath -> "$modulePath:testAndroidHostTest" })
+    val generatedDir = layout.buildDirectory.dir("outputs/store-screenshots")
+    val listingsDir = layout.projectDirectory.dir("store_listings")
+    val locales = storeScreenshotLocales
+    val devices = storeScreenshotDevices
+    doLast {
+        // Wiped first so a screen that was renamed or dropped cannot leave a stale image behind.
+        listingsDir.asFile.deleteRecursively()
+        var collected = 0
+        val modules = generatedDir.get().asFile.list().orEmpty()
+        locales.forEach { (locale, language) ->
+            devices.forEach { (sourcePath, target) ->
+                val (platform, device) = target
+                // store_listings/<platform>/<language>/<device>/<screen>.png
+                val destination = listingsDir.asFile.resolve("$platform/$language/$device")
+                destination.mkdirs()
+                modules.forEach { module ->
+                    val source = generatedDir.get().asFile.resolve("$module/$locale/$sourcePath")
+                    source.listFiles { file -> file.extension == "png" }?.forEach { png ->
+                        png.copyTo(destination.resolve(png.name), overwrite = true)
+                        collected++
+                    }
+                }
+            }
+        }
+        logger.lifecycle("collectStoreScreenshots: collected $collected screenshot(s) into store_listings/")
+    }
+}

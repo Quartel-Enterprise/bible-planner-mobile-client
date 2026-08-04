@@ -67,3 +67,6 @@ fastlane/metadata/
 # Supabase local secrets
 supabase/.apple_client_secret
 supabase/.temp/
+
+# Generated store listing assets (./gradlew collectStoreScreenshots)
+store_listings/

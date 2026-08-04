@@ -8,6 +8,7 @@ ktlint = "1.8.0"
 ktlint-gradle = "14.2.0"
 google-services = "4.5.0"
 firebase-crashlytics-plugin = "3.0.7"
+store-screenshots = "1.5.4-fixes-SNAPSHOT"
 
 # Android SDK levels
 android-minSdk = "26"
@@ -17,6 +18,7 @@ android-targetSdk = "37"
 # AndroidX
 androidx-activity = "1.13.0"
 androidx-annotation = "1.10.0"
+androidx-compose-ui = "1.11.2"
 androidx-core = "1.19.0"
 androidx-credentials = "1.6.0"
 androidx-lifecycle = "2.11.0"
@@ -61,6 +63,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 # AndroidX
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-compose-ui-testManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-ui" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "androidx-credentials" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
@@ -126,6 +129,9 @@ supabase-functions = { module = "io.github.jan-tennert.supabase:functions-kt" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
 supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
+
+# Store screenshots
+storeScreenshots-library = { module = "io.github.lucianosantosdev:storescreenshots-library", version.ref = "store-screenshots" }
 
 # Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
