@@ -189,9 +189,15 @@ internal class Tablet10DayStudyScreenshots :
         isWide = true,
     )
 
-internal class IPhoneDayStudyScreenshots :
+internal class IPhone65DayStudyScreenshots :
     DayStudyScreenshots(
         formFactor = FormFactor.AppleIPhone65,
+        isWide = false,
+    )
+
+internal class IPhone67DayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.AppleIPhone67,
         isWide = false,
     )
 

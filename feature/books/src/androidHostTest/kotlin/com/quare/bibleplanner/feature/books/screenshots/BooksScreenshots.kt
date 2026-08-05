@@ -142,7 +142,9 @@ internal class Tablet7BooksScreenshots : BooksScreenshots(FormFactor.Tablet7)
 
 internal class Tablet10BooksScreenshots : BooksScreenshots(FormFactor.Tablet10)
 
-internal class IPhoneBooksScreenshots : BooksScreenshots(FormFactor.AppleIPhone65)
+internal class IPhone65BooksScreenshots : BooksScreenshots(FormFactor.AppleIPhone65)
+
+internal class IPhone67BooksScreenshots : BooksScreenshots(FormFactor.AppleIPhone67)
 
 internal class IPadBooksScreenshots : BooksScreenshots(FormFactor.AppleIPad13)
 

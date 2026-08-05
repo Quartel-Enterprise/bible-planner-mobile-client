@@ -63,7 +63,9 @@ internal class Tablet7DayScreenshots : DayScreenshots(FormFactor.Tablet7)
 
 internal class Tablet10DayScreenshots : DayScreenshots(FormFactor.Tablet10)
 
-internal class IPhoneDayScreenshots : DayScreenshots(FormFactor.AppleIPhone65)
+internal class IPhone65DayScreenshots : DayScreenshots(FormFactor.AppleIPhone65)
+
+internal class IPhone67DayScreenshots : DayScreenshots(FormFactor.AppleIPhone67)
 
 internal class IPadDayScreenshots : DayScreenshots(FormFactor.AppleIPad13)
 

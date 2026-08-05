@@ -125,6 +125,7 @@ private val storeScreenshotDevices = mapOf(
     "images/sevenInchScreenshots" to ("android" to "tablet_7"),
     "images/tenInchScreenshots" to ("android" to "tablet_10"),
     "iphone65" to ("ios" to "iphone_6_5"),
+    "iphone67" to ("ios" to "iphone_6_7"),
     "ipad13" to ("ios" to "ipad_13"),
 )
 
@@ -206,6 +207,7 @@ private val playStoreDevices = mapOf(
 // so the suffix only keeps one screen's iPhone and iPad shots from colliding.
 private val appStoreDevices = mapOf(
     "iphone65" to "iphone_6_5",
+    "iphone67" to "iphone_6_7",
     "ipad13" to "ipad_13",
 )
 

@@ -69,6 +69,8 @@ internal class Tablet7ReadScreenshots : ReadScreenshots(FormFactor.Tablet7)
 
 internal class Tablet10ReadScreenshots : ReadScreenshots(FormFactor.Tablet10)
 
-internal class IPhoneReadScreenshots : ReadScreenshots(FormFactor.AppleIPhone65)
+internal class IPhone65ReadScreenshots : ReadScreenshots(FormFactor.AppleIPhone65)
+
+internal class IPhone67ReadScreenshots : ReadScreenshots(FormFactor.AppleIPhone67)
 
 internal class IPadReadScreenshots : ReadScreenshots(FormFactor.AppleIPad13)
