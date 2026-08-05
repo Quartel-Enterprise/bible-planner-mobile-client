@@ -5,6 +5,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 
 internal class CachedVersionsJsonMapperTest {
     private lateinit var mapper: CachedVersionsJsonMapper
@@ -44,6 +45,19 @@ internal class CachedVersionsJsonMapperTest {
 
         // Then
         assertEquals("1.1.0", versions.single().version)
+    }
+
+    @Test
+    fun `maps a cache entry with an explicit null size`() {
+        // Given
+        val cachedJson =
+            """[{"id":"ACF","name":"Almeida Corrigida Fiel","language":"pt","country":"br","chapters":1189,"size":null}]"""
+
+        // When
+        val versions = mapper.map(cachedJson)
+
+        // Then
+        assertNull(versions.single().size)
     }
 
     @Test

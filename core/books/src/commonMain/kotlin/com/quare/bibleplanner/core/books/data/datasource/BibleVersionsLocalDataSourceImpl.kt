@@ -9,6 +9,8 @@ import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.data.dto.VersionDto
 import com.quare.bibleplanner.core.books.data.mapper.CachedVersionsJsonMapper
 import com.quare.bibleplanner.core.datastore.read
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
 internal class BibleVersionsLocalDataSourceImpl(
@@ -18,10 +20,11 @@ internal class BibleVersionsLocalDataSourceImpl(
 ) : BibleVersionsLocalDataSource {
     override suspend fun getCachedVersions(): List<VersionDto>? {
         val cachedData = dataStore.read(stringPreferencesKey(CACHE_KEY)) ?: return null
-        return runCatching {
-            cachedVersionsJsonMapper.map(cachedData)
-        }.onFailure { Logger.e(it) { "Failed to parse cached Bible versions" } }
-            .getOrNull()
+        return parseVersions(cachedData)
+    }
+
+    override fun observeCachedVersions(): Flow<List<VersionDto>?> = dataStore.data.map { preferences ->
+        preferences[stringPreferencesKey(CACHE_KEY)]?.let(::parseVersions)
     }
 
     override suspend fun getCacheTimestamp(): Long? = dataStore.read(longPreferencesKey(TIMESTAMP_KEY))
@@ -35,6 +38,11 @@ internal class BibleVersionsLocalDataSourceImpl(
             preferences[longPreferencesKey(TIMESTAMP_KEY)] = timestamp
         }
     }
+
+    private fun parseVersions(cachedData: String): List<VersionDto>? = runCatching {
+        cachedVersionsJsonMapper.map(cachedData)
+    }.onFailure { Logger.e(it) { "Failed to parse cached Bible versions" } }
+        .getOrNull()
 
     companion object {
         private const val CACHE_KEY = "bible_versions_cache"
