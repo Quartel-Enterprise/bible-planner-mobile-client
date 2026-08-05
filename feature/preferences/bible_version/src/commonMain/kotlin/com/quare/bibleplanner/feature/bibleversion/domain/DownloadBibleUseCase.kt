@@ -31,13 +31,13 @@ class DownloadBibleUseCase(
         val remoteContentVersion = getRemoteContentVersion(versionId)
         downloadBooksInParallel(versionId)
             .onSuccess {
-                bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
                 if (remoteContentVersion.isNotEmpty()) {
                     bibleVersionDao.updateContentVersion(
                         id = versionId,
                         contentVersion = remoteContentVersion,
                     )
                 }
+                bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
                 trackEvent(
                     name = AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_COMPLETED,
                     params = mapOf(AnalyticsParams.VERSION_ID to versionId),

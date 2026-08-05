@@ -4,6 +4,11 @@ import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataS
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
 import com.quare.bibleplanner.core.books.data.dto.VersionDto
 import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,6 +19,7 @@ private const val NOW = 1_000_000_000L
 private const val CACHED_CONTENT_VERSION = "1.2.0"
 private const val REMOTE_CONTENT_VERSION = "1.3.0"
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class BibleVersionRepositoryImplTest {
     private val freshCacheAge: Duration = 5.minutes
     private val staleCacheAge: Duration = 20.minutes
@@ -103,6 +109,72 @@ internal class BibleVersionRepositoryImplTest {
         )
     }
 
+    @Test
+    fun `should observe the cached versions without hitting remote when the cache is fresh`() = runTest {
+        // Given
+        prepareScenario(cacheAge = freshCacheAge)
+
+        // When
+        val emissions = mutableListOf<List<String>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeVersions().collect { versions ->
+                emissions.add(versions.map { it.version })
+            }
+        }
+
+        // Then
+        assertEquals(expected = 0, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = listOf(listOf(CACHED_CONTENT_VERSION)),
+            actual = emissions,
+        )
+    }
+
+    @Test
+    fun `should re-emit the observed versions when the cache is updated`() = runTest {
+        // Given
+        prepareScenario(cacheAge = freshCacheAge)
+        val emissions = mutableListOf<List<String>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeVersions().collect { versions ->
+                emissions.add(versions.map { it.version })
+            }
+        }
+
+        // When
+        localDataSource.updateCache(listOf(versionDto(REMOTE_CONTENT_VERSION)))
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                listOf(CACHED_CONTENT_VERSION),
+                listOf(REMOTE_CONTENT_VERSION),
+            ),
+            actual = emissions,
+        )
+    }
+
+    @Test
+    fun `should observe the refreshed versions when the cache is stale`() = runTest {
+        // Given
+        prepareScenario(cacheAge = staleCacheAge)
+
+        // When
+        val emissions = mutableListOf<List<String>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeVersions().collect { versions ->
+                emissions.add(versions.map { it.version })
+            }
+        }
+
+        // Then
+        assertEquals(expected = 1, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = listOf(listOf(REMOTE_CONTENT_VERSION)),
+            actual = emissions,
+        )
+    }
+
     private fun prepareScenario(
         cacheAge: Duration,
         remoteResult: Result<List<VersionDto>> = Result.success(listOf(versionDto(REMOTE_CONTENT_VERSION))),
@@ -144,15 +216,22 @@ private class FakeBibleVersionsRemoteDataSource(
 }
 
 private class FakeBibleVersionsLocalDataSource(
-    private val cachedVersions: List<VersionDto>?,
+    cachedVersions: List<VersionDto>?,
     private val cacheTimestamp: Long?,
 ) : BibleVersionsLocalDataSource {
+    private val cachedVersionsFlow = MutableStateFlow(cachedVersions)
     var savedVersions: List<VersionDto>? = null
         private set
     var savedTimestamp: Long? = null
         private set
 
-    override suspend fun getCachedVersions(): List<VersionDto>? = cachedVersions
+    fun updateCache(versions: List<VersionDto>) {
+        cachedVersionsFlow.value = versions
+    }
+
+    override suspend fun getCachedVersions(): List<VersionDto>? = cachedVersionsFlow.value
+
+    override fun observeCachedVersions(): Flow<List<VersionDto>?> = cachedVersionsFlow
 
     override suspend fun getCacheTimestamp(): Long? = cacheTimestamp
 
@@ -162,5 +241,6 @@ private class FakeBibleVersionsLocalDataSource(
     ) {
         savedVersions = versions
         savedTimestamp = timestamp
+        cachedVersionsFlow.value = versions
     }
 }

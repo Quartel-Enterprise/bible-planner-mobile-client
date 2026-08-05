@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
+import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.fake.ThrowingVerseDao
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
@@ -140,9 +141,17 @@ internal class InitializeBibleVersionsUseCaseImplTest {
         useCase = InitializeBibleVersionsUseCaseImpl(
             bibleVersionDao = bibleVersionDao,
             verseDao = CountingVerseDao(downloadedChaptersCount),
-            metadataRepository = { remoteVersions },
+            metadataRepository = FakeBibleVersionRepository(remoteVersions),
         )
     }
+}
+
+private class FakeBibleVersionRepository(
+    private val remoteVersions: Result<List<VersionModel>>,
+) : BibleVersionRepository {
+    override suspend fun getVersions(forceRefresh: Boolean): Result<List<VersionModel>> = remoteVersions
+
+    override fun observeVersions(): Flow<List<VersionModel>> = error("unused")
 }
 
 private class RecordingBibleVersionDao(

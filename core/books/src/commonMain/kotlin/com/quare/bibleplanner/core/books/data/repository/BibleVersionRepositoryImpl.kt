@@ -6,6 +6,12 @@ import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -44,4 +50,14 @@ internal class BibleVersionRepositoryImpl(
                 }
         }
     }
+
+    override fun observeVersions(): Flow<List<VersionModel>> = flow {
+        emit(getVersions(forceRefresh = false).getOrDefault(emptyList()))
+        emitAll(
+            localDataSource
+                .observeCachedVersions()
+                .filterNotNull()
+                .map { versions -> versions.map(versionMapper::map) },
+        )
+    }.distinctUntilChanged()
 }
