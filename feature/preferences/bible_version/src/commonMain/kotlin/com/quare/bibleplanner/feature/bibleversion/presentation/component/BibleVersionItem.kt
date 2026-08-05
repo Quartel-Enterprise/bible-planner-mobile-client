@@ -51,7 +51,7 @@ internal fun BibleVersionItem(
                 )
                 HorizontalSpacer(12)
                 BibleVersionAbbreviationChip(
-                    abbreviation = model.version.id.uppercase(),
+                    versionId = model.version.id,
                     isSelected = model.isSelected,
                 )
             }

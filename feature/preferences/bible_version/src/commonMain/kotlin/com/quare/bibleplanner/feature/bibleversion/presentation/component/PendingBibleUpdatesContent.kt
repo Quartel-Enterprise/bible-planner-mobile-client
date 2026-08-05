@@ -115,7 +115,7 @@ private fun PendingBibleUpdateRow(
             modifier = Modifier.size(checkboxSize),
         )
         BibleVersionAbbreviationChip(
-            abbreviation = item.id.uppercase(),
+            versionId = item.id,
             isSelected = false,
         )
         Column {

@@ -11,7 +11,7 @@ class HasCooldownElapsedUseCase(
         cooldown: Duration,
     ): Boolean {
         if (lastOccurredAt == null) return true
-        val elapsed = currentTimestampProvider.getCurrentTimestamp() - lastOccurredAt
-        return elapsed.milliseconds >= cooldown
+        val elapsed = (currentTimestampProvider.getCurrentTimestamp() - lastOccurredAt).milliseconds
+        return elapsed < Duration.ZERO || elapsed >= cooldown
     }
 }

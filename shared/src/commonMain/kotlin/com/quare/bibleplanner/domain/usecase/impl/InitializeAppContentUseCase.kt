@@ -2,6 +2,7 @@ package com.quare.bibleplanner.domain.usecase.impl
 
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveCurrentDeviceRevoked
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDeviceRegistration
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 internal class InitializeAppContentUseCase(
     private val initializeBooksIfNeeded: InitializeBooksIfNeededUseCase,
     private val initializeBibleVersions: InitializeBibleVersionsUseCase,
+    private val observeBibleVersions: ObserveBibleVersionsUseCase,
     private val migratePlanPreferencesToSyncStore: MigratePlanPreferencesToSyncStoreUseCase,
     private val ensureDefaultPlanStartDate: EnsureDefaultPlanStartDateUseCase,
     private val observeSelectedVersion: ObserveSelectedVersionUseCase,
@@ -54,6 +56,7 @@ internal class InitializeAppContentUseCase(
                 initializeBibleVersionsDeferred,
                 ensureStartDateDeferred,
             ).joinAll()
+            launch { observeBibleVersions() }
             launch { observeAppLocale() }
             launch { observeThemeSync() }
             launch { observeDynamicColorsSync() }

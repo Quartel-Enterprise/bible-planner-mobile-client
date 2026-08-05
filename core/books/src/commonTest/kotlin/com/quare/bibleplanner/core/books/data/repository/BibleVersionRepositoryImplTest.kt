@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 private const val NOW = 1_000_000_000L
@@ -23,6 +24,7 @@ private const val REMOTE_CONTENT_VERSION = "1.3.0"
 internal class BibleVersionRepositoryImplTest {
     private val freshCacheAge: Duration = 5.minutes
     private val staleCacheAge: Duration = 20.minutes
+    private val clockRegression: Duration = (-26).hours
     private lateinit var repository: BibleVersionRepositoryImpl
     private lateinit var remoteDataSource: FakeBibleVersionsRemoteDataSource
     private lateinit var localDataSource: FakeBibleVersionsLocalDataSource
@@ -63,6 +65,22 @@ internal class BibleVersionRepositoryImplTest {
     fun `should refresh the content version stamped after the cache expires`() = runTest {
         // Given
         prepareScenario(cacheAge = staleCacheAge)
+
+        // When
+        val versions = repository.getVersions(forceRefresh = false)
+
+        // Then
+        assertEquals(expected = 1, actual = remoteDataSource.callCount)
+        assertEquals(
+            expected = listOf(REMOTE_CONTENT_VERSION),
+            actual = versions.getOrThrow().map { it.version },
+        )
+    }
+
+    @Test
+    fun `should refresh when the stored timestamp is in the future`() = runTest {
+        // Given
+        prepareScenario(cacheAge = clockRegression)
 
         // When
         val versions = repository.getVersions(forceRefresh = false)
