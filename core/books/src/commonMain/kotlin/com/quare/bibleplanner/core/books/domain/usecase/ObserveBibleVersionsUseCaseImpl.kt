@@ -2,14 +2,11 @@ package com.quare.bibleplanner.core.books.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 
-internal class InitializeBibleVersionsUseCaseImpl(
+internal class ObserveBibleVersionsUseCaseImpl(
     private val metadataRepository: BibleVersionRepository,
     private val syncBibleVersions: SyncBibleVersionsUseCase,
-) : InitializeBibleVersionsUseCase {
+) : ObserveBibleVersionsUseCase {
     override suspend fun invoke() {
-        metadataRepository
-            .getVersions(forceRefresh = false)
-            .getOrNull()
-            ?.let { versions -> syncBibleVersions(versions) }
+        metadataRepository.observeVersions().collect(syncBibleVersions::invoke)
     }
 }

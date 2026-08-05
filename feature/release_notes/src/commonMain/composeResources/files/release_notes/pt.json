@@ -11,7 +11,11 @@
     "No Android, as cores dinâmicas, que deixam o app com as cores do seu papel de parede, agora vêm desligadas — se você gosta delas, é só ligar na tela de tema.",
     "No Android, o ícone do app agora acompanha o tema de ícones do sistema: se você escolher ícones com cor personalizada, o ícone do Planner Bíblico também muda de cor.",
     "Corrigido um problema que fazia uma versão da Bíblia já baixada e atualizada voltar a mostrar o aviso de atualização disponível.",
-    "Corrigido um problema que fazia o download de uma versão da Bíblia parar no meio e só voltar a andar depois de pausar e retomar; downloads agora também tentam de novo sozinhos quando a conexão falha."
+    "Corrigido um problema que fazia o download de uma versão da Bíblia parar no meio e só voltar a andar depois de pausar e retomar; downloads agora também tentam de novo sozinhos quando a conexão falha.",
+    "Novas versões da Bíblia agora aparecem na lista assim que ficam disponíveis, sem precisar fechar e abrir o app.",
+    "Corrigido um problema que podia deixar a lista de versões da Bíblia parada e desatualizada quando o relógio do aparelho se acertava para trás.",
+    "O selo com a sigla da versão agora mostra até três letras e não quebra mais em duas linhas, como o RVR da Reina-Valera 1960.",
+    "Para quem usa o app em espanhol, a versão da Bíblia que já vem escolhida agora é a Reina-Valera 1960, em vez de uma versão em inglês."
   ],
   "2.3.0": [
     "Corrigido o seletor de ordem no topo do plano de leitura, que em alguns aparelhos aparecia com o texto colado nas bordas; agora ele muda para o formato compacto quando falta espaço e fica ao lado do botão de opções.",

@@ -6,20 +6,21 @@ import com.quare.bibleplanner.core.books.fake.RecordingBibleVersionDao
 import com.quare.bibleplanner.core.books.fake.ThrowingVerseDao
 import com.quare.bibleplanner.core.utils.locale.Language
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-internal class InitializeBibleVersionsUseCaseImplTest {
-    private lateinit var useCase: InitializeBibleVersionsUseCaseImpl
+internal class ObserveBibleVersionsUseCaseImplTest {
+    private lateinit var useCase: ObserveBibleVersionsUseCaseImpl
     private lateinit var bibleVersionDao: RecordingBibleVersionDao
 
     @Test
-    fun `syncs every fetched version`() = runTest {
+    fun `inserts a version published after the first emission`() = runTest {
         // Given
         prepareScenario(
-            remoteVersions = Result.success(
+            emissions = listOf(
+                listOf(versionModel(id = "ACF")),
                 listOf(
                     versionModel(id = "ACF"),
                     versionModel(id = "KJV"),
@@ -38,17 +39,23 @@ internal class InitializeBibleVersionsUseCaseImplTest {
     }
 
     @Test
-    fun `does nothing when fetching the remote versions fails`() = runTest {
+    fun `does not insert a version twice when the list is emitted again`() = runTest {
         // Given
         prepareScenario(
-            remoteVersions = Result.failure(IllegalStateException("offline")),
+            emissions = listOf(
+                listOf(versionModel(id = "ACF")),
+                listOf(versionModel(id = "ACF")),
+            ),
         )
 
         // When
         useCase()
 
         // Then
-        assertTrue(bibleVersionDao.insertedVersions.isEmpty())
+        assertEquals(
+            expected = listOf("ACF"),
+            actual = bibleVersionDao.insertedVersions.map { it.id },
+        )
     }
 
     private fun versionModel(id: String): VersionModel = VersionModel(
@@ -60,10 +67,10 @@ internal class InitializeBibleVersionsUseCaseImplTest {
         size = 8245560,
     )
 
-    private fun prepareScenario(remoteVersions: Result<List<VersionModel>>) {
+    private fun prepareScenario(emissions: List<List<VersionModel>>) {
         bibleVersionDao = RecordingBibleVersionDao(emptyList())
-        useCase = InitializeBibleVersionsUseCaseImpl(
-            metadataRepository = FakeBibleVersionRepository(remoteVersions),
+        useCase = ObserveBibleVersionsUseCaseImpl(
+            metadataRepository = FakeObservingBibleVersionRepository(flowOf(*emissions.toTypedArray())),
             syncBibleVersions = SyncBibleVersionsUseCase(
                 bibleVersionDao = bibleVersionDao,
                 verseDao = ThrowingVerseDao(),
@@ -72,10 +79,10 @@ internal class InitializeBibleVersionsUseCaseImplTest {
     }
 }
 
-private class FakeBibleVersionRepository(
-    private val remoteVersions: Result<List<VersionModel>>,
+private class FakeObservingBibleVersionRepository(
+    private val versions: Flow<List<VersionModel>>,
 ) : BibleVersionRepository {
-    override suspend fun getVersions(forceRefresh: Boolean): Result<List<VersionModel>> = remoteVersions
+    override suspend fun getVersions(forceRefresh: Boolean): Result<List<VersionModel>> = error("Unexpected call")
 
-    override fun observeVersions(): Flow<List<VersionModel>> = error("Unexpected call")
+    override fun observeVersions(): Flow<List<VersionModel>> = versions
 }

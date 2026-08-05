@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.loginnudge.domain.usecase.impl
 
+import com.quare.bibleplanner.core.date.HasCooldownElapsedUseCase
 import com.quare.bibleplanner.core.loginnudge.fake.FakeLoginNudgePreferences
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -36,6 +37,16 @@ internal class ShouldShowLoginNudgeUseCaseTest {
     @Test
     fun `returns true once the snooze window elapsed`() = runTest {
         assertTrue(useCase(snoozedAt = NOW - SNOOZE_MILLIS)())
+    }
+
+    @Test
+    fun `returns true when the snooze timestamp is in the future`() = runTest {
+        assertTrue(useCase(snoozedAt = NOW + SNOOZE_MILLIS)())
+    }
+
+    @Test
+    fun `returns true when the first action timestamp is in the future`() = runTest {
+        assertTrue(useCase(firstActionAt = NOW + GRACE_MILLIS)())
     }
 
     @Test
@@ -82,6 +93,7 @@ internal class ShouldShowLoginNudgeUseCaseTest {
         isConnected = { isOnline },
         loginNudgePreferences = preferences,
         currentTimestampProvider = { NOW },
+        hasCooldownElapsed = HasCooldownElapsedUseCase { NOW },
     )
 
     private companion object {

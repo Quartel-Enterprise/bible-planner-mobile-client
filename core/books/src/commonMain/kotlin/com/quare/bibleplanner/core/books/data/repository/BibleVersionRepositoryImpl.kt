@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.books.data.repository
 
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataSource
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
 import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
@@ -28,7 +29,8 @@ internal class BibleVersionRepositoryImpl(
         val cachedVersions = localDataSource.getCachedVersions()
         val timestamp = localDataSource.getCacheTimestamp() ?: 0L
         val now = currentTimestampProvider.getCurrentTimestamp()
-        val isCacheFresh = (now - timestamp).milliseconds < cacheDuration
+        val cacheAge = (now - timestamp).milliseconds
+        val isCacheFresh = cacheAge >= Duration.ZERO && cacheAge < cacheDuration
 
         return if (!forceRefresh && cachedVersions != null && isCacheFresh) {
             Result.success(cachedVersions.map(versionMapper::map))
@@ -43,6 +45,7 @@ internal class BibleVersionRepositoryImpl(
                         )
                         remoteVersions.map(versionMapper::map)
                     } else {
+                        Logger.w { "The remote listing returned no Bible versions; keeping the cached ones" }
                         cachedVersions.orEmpty().map(versionMapper::map)
                     }
                 }.recoverCatching { error ->

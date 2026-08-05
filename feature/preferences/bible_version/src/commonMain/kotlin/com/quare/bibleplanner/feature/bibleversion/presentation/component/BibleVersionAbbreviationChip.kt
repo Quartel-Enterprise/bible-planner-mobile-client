@@ -13,9 +13,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+private const val MAX_ABBREVIATION_LENGTH = 3
+
 @Composable
 internal fun BibleVersionAbbreviationChip(
-    abbreviation: String,
+    versionId: String,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -33,7 +35,7 @@ internal fun BibleVersionAbbreviationChip(
             ),
     ) {
         Text(
-            text = abbreviation,
+            text = versionId.take(MAX_ABBREVIATION_LENGTH).uppercase(),
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.SemiBold,
             color = if (isSelected) {

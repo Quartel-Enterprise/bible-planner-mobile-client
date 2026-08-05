@@ -29,5 +29,5 @@ internal class BibleVersionsRemoteDataSourceImpl(
                 }.awaitAll()
                 .filterNotNull()
         }
-    }
+    }.onFailure { Logger.e(it) { "Failed to list the remote Bible versions" } }
 }

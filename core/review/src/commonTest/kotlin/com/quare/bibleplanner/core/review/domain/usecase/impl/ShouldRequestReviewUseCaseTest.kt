@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.review.domain.usecase.impl
 
+import com.quare.bibleplanner.core.date.HasCooldownElapsedUseCase
 import com.quare.bibleplanner.core.review.fake.FakeReviewPreferences
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -16,6 +17,21 @@ internal class ShouldRequestReviewUseCaseTest {
     @Test
     fun `returns true once the grace period elapsed and never prompted`() = runTest {
         assertTrue(useCase(firstEligibleAt = NOW - GRACE_MILLIS)())
+    }
+
+    @Test
+    fun `returns true when the first eligible timestamp is in the future`() = runTest {
+        assertTrue(useCase(firstEligibleAt = NOW + GRACE_MILLIS)())
+    }
+
+    @Test
+    fun `returns true when the last prompt timestamp is in the future`() = runTest {
+        assertTrue(
+            useCase(
+                lastPromptedVersion = "0.9.0",
+                lastPromptedAt = NOW + COOLDOWN_MILLIS,
+            )(),
+        )
     }
 
     @Test
@@ -72,6 +88,7 @@ internal class ShouldRequestReviewUseCaseTest {
     private fun useCase(preferences: FakeReviewPreferences): ShouldRequestReviewUseCase = ShouldRequestReviewUseCase(
         reviewPreferences = preferences,
         currentTimestampProvider = { NOW },
+        hasCooldownElapsed = HasCooldownElapsedUseCase { NOW },
         appVersion = APP_VERSION,
     )
 

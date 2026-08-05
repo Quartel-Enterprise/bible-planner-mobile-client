@@ -11,7 +11,11 @@
     "On Android, dynamic colors, which tint the app with the colors of your wallpaper, now come turned off — if you like them, just turn them on in the theme screen.",
     "On Android, the app icon now follows the system icon theme: if you choose icons with a custom color, the Bible Planner icon changes color too.",
     "Fixed a problem that made an already downloaded and up-to-date Bible version show the update notice again.",
-    "Fixed a problem that made a Bible version download stall midway and only move again after pausing and resuming; downloads now also retry on their own when the connection fails."
+    "Fixed a problem that made a Bible version download stall midway and only move again after pausing and resuming; downloads now also retry on their own when the connection fails.",
+    "New Bible versions now show up in the list as soon as they become available, without having to close and reopen the app.",
+    "Fixed a problem that could leave the Bible versions list stuck and out of date when the device clock was set back.",
+    "The version tag now shows up to three letters and no longer breaks into two lines, like RVR for the Reina-Valera 1960.",
+    "For those using the app in Spanish, the Bible version that comes already selected is now the Reina-Valera 1960 instead of an English one."
   ],
   "2.3.0": [
     "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short and sits next to the options button.",

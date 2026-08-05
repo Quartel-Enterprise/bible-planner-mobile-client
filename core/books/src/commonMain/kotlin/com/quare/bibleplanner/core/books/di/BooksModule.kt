@@ -42,7 +42,10 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededU
 import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.SyncBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
@@ -130,7 +133,9 @@ val booksModule = module {
     factoryOf(::BookGroupMapper)
 
     // Use cases
+    factoryOf(::SyncBibleVersionsUseCase)
     factoryOf(::InitializeBibleVersionsUseCaseImpl).bind<InitializeBibleVersionsUseCase>()
+    factoryOf(::ObserveBibleVersionsUseCaseImpl).bind<ObserveBibleVersionsUseCase>()
     factoryOf(::InitializeBooksIfNeededUseCase)
     factoryOf(::AreAllPassagesReadUseCase)
     factoryOf(::UpdateSpecificRangeChapterReadStatusUseCase)

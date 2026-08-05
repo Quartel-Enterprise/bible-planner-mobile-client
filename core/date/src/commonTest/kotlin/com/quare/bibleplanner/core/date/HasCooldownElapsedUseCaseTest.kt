@@ -39,6 +39,18 @@ internal class HasCooldownElapsedUseCaseTest {
     }
 
     @Test
+    fun `elapses when the last occurrence is in the future`() {
+        // When
+        val hasElapsed = useCase(
+            lastOccurredAt = NOW + 26.hours.inWholeMilliseconds,
+            cooldown = 4.hours,
+        )
+
+        // Then
+        assertTrue(hasElapsed)
+    }
+
+    @Test
     fun `does not elapse within the cooldown window`() {
         // When
         val hasElapsed = useCase(
