@@ -42,6 +42,11 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
         let config = URLSessionConfiguration.background(withIdentifier: Self.sessionIdentifier)
         config.sessionSendsLaunchEvents = true
         config.isDiscretionary = false
+        // The default resource timeout is 7 days, which lets half-open connections
+        // occupy the per-host connection slots indefinitely and stall the whole
+        // queue. One hour is enough for any chapter task, including the time it
+        // spends queued behind the other tasks of a full-Bible download.
+        config.timeoutIntervalForResource = 3600
         return URLSession(configuration: config, delegate: self, delegateQueue: nil)
     }()
 
@@ -207,6 +212,9 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
         lock.lock()
         versionTaskCounts.removeValue(forKey: versionId)
         versionStartTimes.removeValue(forKey: versionId)
+        expectedTaskCounts.removeValue(forKey: versionId)
+        finalizedVersionIds.remove(versionId)
+        processedVersionIds.remove(versionId)
         lock.unlock()
 
         dlog("endLiveActivity — \(versionId)", tag: "SESSION")
@@ -224,9 +232,25 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
     ) {
         guard
             let description = downloadTask.taskDescription,
-            let (versionId, chapterId, _) = parseTaskDescription(description),
-            let jsonString = try? String(contentsOf: location, encoding: .utf8)
+            let (versionId, chapterId, retryCount) = parseTaskDescription(description)
         else { return }
+
+        // A transport-level success can still be an HTTP error (404, 429, 500…)
+        // whose body is not chapter JSON, or a temp file we fail to read. Neither
+        // reaches didCompleteWithError, so route them through the retry path here
+        // instead of silently dropping the task (which would leave the completed
+        // counter short of the expected total forever).
+        let statusCode = (downloadTask.response as? HTTPURLResponse)?.statusCode ?? 200
+        guard statusCode == 200, let jsonString = try? String(contentsOf: location, encoding: .utf8) else {
+            dlog("chapter \(chapterId) of \(versionId) finished with HTTP \(statusCode) or an unreadable body", tag: "SESSION")
+            retryOrFail(
+                versionId: versionId,
+                chapterId: chapterId,
+                retryCount: retryCount,
+                url: downloadTask.originalRequest?.url
+            )
+            return
+        }
 
         lock.lock()
         pendingProcessingCount += 1
@@ -294,16 +318,25 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
               let parsed = parseTaskDescription(description) else { return }
 
         let (versionId, chapterId, retryCount) = parsed
+        dlog("chapter \(chapterId) of \(versionId) failed — error code: \(error.code)", tag: "SESSION")
+        retryOrFail(
+            versionId: versionId,
+            chapterId: chapterId,
+            retryCount: retryCount,
+            url: task.originalRequest?.url
+        )
+    }
 
-        if retryCount < Self.maxRetries, let url = task.originalRequest?.url {
-            dlog("retrying chapter \(chapterId) of \(versionId) (attempt \(retryCount + 1)/\(Self.maxRetries)) — error code: \(error.code)", tag: "SESSION")
-            let retry = self.session.downloadTask(with: url)
+    private func retryOrFail(versionId: String, chapterId: Int64, retryCount: Int, url: URL?) {
+        if retryCount < Self.maxRetries, let url {
+            dlog("retrying chapter \(chapterId) of \(versionId) (attempt \(retryCount + 1)/\(Self.maxRetries))", tag: "SESSION")
+            let retry = session.downloadTask(with: url)
             retry.taskDescription = "\(versionId)|\(chapterId)|\(retryCount + 1)"
             retry.resume()
             return
         }
 
-        dlog("permanent failure for chapter \(chapterId) of \(versionId) after \(retryCount) retries — error code: \(error.code)", tag: "SESSION")
+        dlog("permanent failure for chapter \(chapterId) of \(versionId) after \(retryCount) retries", tag: "SESSION")
         handlePermanentTaskFailure(versionId: versionId)
     }
 
@@ -359,45 +392,68 @@ class BibleVersionDownloadSession: NSObject, URLSessionDownloadDelegate, IosDown
 
     /// Runs one finalization check per unique version (instead of per chapter),
     /// then calls the system backgroundCompletionHandler once all are done.
+    ///
+    /// urlSessionDidFinishEvents only means the events queued for delivery were
+    /// delivered — other tasks of the same version can still be downloading. A
+    /// version with live tasks must NOT be finalized: the Kotlin side would see
+    /// missing chapters, flip the version to PAUSED, and every chapter arriving
+    /// after that would be silently discarded (the mid-download stall). So the
+    /// session is asked which versions still have live tasks and those are kept
+    /// for a later flush instead of being finalized now.
     private func finalizeAndFlush() {
-        lock.lock()
-        let versionIds = processedVersionIds.subtracting(finalizedVersionIds)
-        processedVersionIds.removeAll()
-        finalizedVersionIds.removeAll()
-        lock.unlock()
+        session.getAllTasks { [weak self] tasks in
+            guard let self else { return }
 
-        dlog("finalizeAndFlush — versions not yet finalized: \(versionIds)", tag: "SESSION")
+            let activeVersionIds = Set(tasks.compactMap { task -> String? in
+                guard task.state == .running || task.state == .suspended,
+                      let description = task.taskDescription,
+                      let parsed = self.parseTaskDescription(description) else { return nil }
+                return parsed.versionId
+            })
 
-        guard !versionIds.isEmpty else {
-            dlog("finalizeAndFlush — all versions already finalized, calling backgroundCompletionHandler", tag: "SESSION")
-            callBackgroundCompletionHandler()
-            return
-        }
+            self.lock.lock()
+            let versionIds = self.processedVersionIds
+                .subtracting(self.finalizedVersionIds)
+                .subtracting(activeVersionIds)
+            self.processedVersionIds.formIntersection(activeVersionIds)
+            self.lock.unlock()
 
-        let group = DispatchGroup()
-        for versionId in versionIds {
-            group.enter()
-            dlog("finalizeVersionIfComplete — calling for \(versionId)", tag: "SESSION")
-            bridge?.finalizeVersionIfComplete(versionId: versionId) { [weak self] in
-                dlog("finalizeVersionIfComplete — callback received for \(versionId)", tag: "SESSION")
-                self?.endLiveActivity(versionId: versionId)
-                group.leave()
+            dlog("finalizeAndFlush — finalizing: \(versionIds), still active: \(activeVersionIds)", tag: "SESSION")
+
+            guard !versionIds.isEmpty else {
+                dlog("finalizeAndFlush — nothing to finalize, calling backgroundCompletionHandler", tag: "SESSION")
+                self.callBackgroundCompletionHandler()
+                return
             }
-        }
-        group.notify(queue: .main) { [weak self] in
-            dlog("finalizeAndFlush — all versions finalized, calling backgroundCompletionHandler", tag: "SESSION")
-            self?.callBackgroundCompletionHandler()
+
+            let group = DispatchGroup()
+            for versionId in versionIds {
+                group.enter()
+                dlog("finalizeVersionIfComplete — calling for \(versionId)", tag: "SESSION")
+                self.bridge?.finalizeVersionIfComplete(versionId: versionId) { [weak self] in
+                    dlog("finalizeVersionIfComplete — callback received for \(versionId)", tag: "SESSION")
+                    self?.endLiveActivity(versionId: versionId)
+                    group.leave()
+                }
+            }
+            group.notify(queue: .main) { [weak self] in
+                dlog("finalizeAndFlush — all versions finalized, calling backgroundCompletionHandler", tag: "SESSION")
+                self?.callBackgroundCompletionHandler()
+            }
         }
     }
 
+    // Only the per-wake flag is reset here. The per-version bookkeeping
+    // (expectedTaskCounts, finalizedVersionIds) must survive the background
+    // completion handler: versions with tasks still in flight need their
+    // expected totals to detect completion later, otherwise the download can
+    // never finalize within this process lifetime.
     private func callBackgroundCompletionHandler() {
         DispatchQueue.main.async {
             self.backgroundCompletionHandler?()
             self.backgroundCompletionHandler = nil
             self.lock.lock()
             self.sessionEventsFinished = false
-            self.expectedTaskCounts.removeAll()
-            self.finalizedVersionIds.removeAll()
             self.lock.unlock()
         }
     }

@@ -15,10 +15,13 @@ import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -71,10 +74,12 @@ internal class BibleVersionDownloadWorker(
                         verseDao.countChaptersWithVersesByVersionFlow(versionId),
                     ) { entity, count -> count.toFloat() / entity.totalChapters }
                         .distinctUntilChanged()
-                        .collect { progress ->
+                        .onEach { progress ->
                             lastProgress = progress
                             notifier.showProgress(versionId, versionName, progress)
-                        }
+                        }.catch { error ->
+                            Log.w(LOG_TAG, "Progress observation failed; download continues", error)
+                        }.collect()
                 }
                 val downloadResult = downloadBible(versionId)
                 progressObserver.cancel()
