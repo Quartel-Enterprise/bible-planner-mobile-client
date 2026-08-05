@@ -9,7 +9,8 @@
     "Corrigido um problema que podia impedir o app de avisar que uma versão da Bíblia já baixada tem texto novo, como os títulos de seção.",
     "Na tela de ajustar a foto do perfil, além de arrastar e dar zoom, agora você pode espelhar a foto na horizontal ou na vertical e girá-la um quarto de volta a cada toque.",
     "No Android, as cores dinâmicas, que deixam o app com as cores do seu papel de parede, agora vêm desligadas — se você gosta delas, é só ligar na tela de tema.",
-    "No Android, o ícone do app agora acompanha o tema de ícones do sistema: se você escolher ícones com cor personalizada, o ícone do Planner Bíblico também muda de cor."
+    "No Android, o ícone do app agora acompanha o tema de ícones do sistema: se você escolher ícones com cor personalizada, o ícone do Planner Bíblico também muda de cor.",
+    "Corrigido um problema que fazia o download de uma versão da Bíblia parar no meio e só voltar a andar depois de pausar e retomar; downloads agora também tentam de novo sozinhos quando a conexão falha."
   ],
   "2.3.0": [
     "Corrigido o seletor de ordem no topo do plano de leitura, que em alguns aparelhos aparecia com o texto colado nas bordas; agora ele muda para o formato compacto quando falta espaço e fica ao lado do botão de opções.",
