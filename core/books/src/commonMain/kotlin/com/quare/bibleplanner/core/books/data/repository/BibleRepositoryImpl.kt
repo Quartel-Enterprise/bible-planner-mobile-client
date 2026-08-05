@@ -15,8 +15,7 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.utils.locale.isPortugueseBrazil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 internal class BibleRepositoryImpl(
@@ -29,37 +28,31 @@ internal class BibleRepositoryImpl(
 ) : BibleRepository {
     private val bibleVersionKey = stringPreferencesKey(BIBLE_VERSION_KEY)
 
-    override fun getBiblesFlow(): Flow<List<BibleModel>> = flow {
-        val supportedVersions = bibleVersionRepository
-            .getVersions(forceRefresh = false)
-            .getOrDefault(emptyList())
-        emitAll(
-            combine(
-                getSelectedVersionIdFlow(),
-                bibleVersionDao.getAllVersionsFlow(),
-                verseDao.getDownloadedChaptersPerVersionFlow(),
-            ) { selectedVersionId, dbVersions, chapterCounts ->
-                val downloadedChaptersMap = chapterCounts.associate { it.bibleVersionId to it.downloadedChapters }
-                bibleMapper
-                    .map(
-                        dataBaseVersions = dbVersions,
-                        supportedVersions = supportedVersions,
-                        downloadedChaptersMap = downloadedChaptersMap,
-                    ).map { bible ->
-                        bible.copy(
-                            isSelected = bible.version.id.equals(
-                                other = selectedVersionId,
-                                ignoreCase = true,
-                            ),
-                        )
-                    }
-            },
-        )
+    override fun getBiblesFlow(): Flow<List<BibleModel>> = combine(
+        bibleVersionRepository.observeVersions(),
+        getSelectedVersionIdFlow(),
+        bibleVersionDao.getAllVersionsFlow(),
+        verseDao.getDownloadedChaptersPerVersionFlow(),
+    ) { supportedVersions, selectedVersionId, dbVersions, chapterCounts ->
+        val downloadedChaptersMap = chapterCounts.associate { it.bibleVersionId to it.downloadedChapters }
+        bibleMapper
+            .map(
+                dataBaseVersions = dbVersions,
+                supportedVersions = supportedVersions,
+                downloadedChaptersMap = downloadedChaptersMap,
+            ).map { bible ->
+                bible.copy(
+                    isSelected = bible.version.id.equals(
+                        other = selectedVersionId,
+                        ignoreCase = true,
+                    ),
+                )
+            }
     }
 
-    override fun getSelectedVersionIdFlow(): Flow<String> = dataStore.data.map { preferences ->
-        preferences[bibleVersionKey] ?: getDefaultVersion()
-    }
+    override fun getSelectedVersionIdFlow(): Flow<String> = dataStore.data
+        .map { preferences -> preferences[bibleVersionKey] ?: getDefaultVersion() }
+        .distinctUntilChanged()
 
     override suspend fun setSelectedVersionId(id: String) = dataStore.write(
         key = bibleVersionKey,

@@ -110,7 +110,6 @@ class IosBackgroundDownloadBridge(
                 }
                 val name = resolveVersionName(versionId)
                 if (downloaded >= entity.totalChapters) {
-                    bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
                     val remoteContentVersion = getRemoteContentVersion(versionId)
                     if (remoteContentVersion.isNotEmpty()) {
                         bibleVersionDao.updateContentVersion(
@@ -118,6 +117,7 @@ class IosBackgroundDownloadBridge(
                             contentVersion = remoteContentVersion,
                         )
                     }
+                    bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
                     notifier.showComplete(versionId, name)
                 } else {
                     // Some tasks failed permanently after exhausting retries on the iOS side.

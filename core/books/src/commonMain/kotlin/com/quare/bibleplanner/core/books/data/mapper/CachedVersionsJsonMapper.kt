@@ -6,7 +6,7 @@ import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.long
+import kotlinx.serialization.json.longOrNull
 
 internal class CachedVersionsJsonMapper(
     private val json: Json,
@@ -23,7 +23,7 @@ internal class CachedVersionsJsonMapper(
                 language = jsonObject.getValue("language").jsonPrimitive.content,
                 country = jsonObject.getValue("country").jsonPrimitive.content,
                 chapters = jsonObject.getValue("chapters").jsonPrimitive.int,
-                size = jsonObject["size"]?.jsonPrimitive?.long,
+                size = jsonObject["size"]?.jsonPrimitive?.longOrNull,
             )
         }
 }
