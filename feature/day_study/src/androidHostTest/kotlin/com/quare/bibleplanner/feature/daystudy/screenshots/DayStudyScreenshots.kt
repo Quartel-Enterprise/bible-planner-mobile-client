@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_tab_context
 import bibleplanner.feature.day_study.generated.resources.ai_tab_questions
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.daystudy.presentation.DayStudyScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
 import dev.lucianosantos.storescreenshots.FormFactor
@@ -67,8 +68,23 @@ private val questionsBannerCopy = mapOf(
 
 private const val BACKGROUND = 0xFF1B1B1F
 
+/**
+ * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
+ * everything here renders under Robolectric, which is Android whatever device the frame draws. So
+ * the platform has to follow the form factor, or the Apple shots ship Android chrome.
+ */
+private val FormFactor.platform: Platform
+    get() = when (this) {
+        FormFactor.AppleIPhone65,
+        FormFactor.AppleIPhone67,
+        FormFactor.AppleIPad13,
+        -> Platform.Ios
+
+        else -> Platform.Android
+    }
+
 internal abstract class DayStudyScreenshots(
-    formFactor: FormFactor,
+    private val formFactor: FormFactor,
     private val isWide: Boolean,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
@@ -92,7 +108,7 @@ internal abstract class DayStudyScreenshots(
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     DayStudyScreen(
-                        uiState = dayStudyUiState(locale),
+                        uiState = dayStudyUiState(locale, formFactor.platform),
                         isWide = isWide,
                         snackbarHostState = SnackbarHostState(),
                         onCardClick = {},
@@ -125,7 +141,7 @@ internal abstract class DayStudyScreenshots(
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     DayStudyScreen(
-                        uiState = dayStudyUiState(locale),
+                        uiState = dayStudyUiState(locale, formFactor.platform),
                         isWide = isWide,
                         snackbarHostState = SnackbarHostState(),
                         onCardClick = {},
@@ -158,7 +174,7 @@ internal abstract class DayStudyScreenshots(
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     DayStudyScreen(
-                        uiState = dayStudyUiState(locale),
+                        uiState = dayStudyUiState(locale, formFactor.platform),
                         isWide = isWide,
                         snackbarHostState = SnackbarHostState(),
                         onCardClick = {},

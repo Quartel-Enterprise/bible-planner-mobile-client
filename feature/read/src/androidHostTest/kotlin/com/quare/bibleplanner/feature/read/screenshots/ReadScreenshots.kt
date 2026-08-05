@@ -29,9 +29,24 @@ private val bannerCopy = mapOf(
 
 private const val BACKGROUND = 0xFF1B1B1F
 
+/**
+ * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
+ * everything here renders under Robolectric, which is Android whatever device the frame draws. So
+ * the platform has to follow the form factor, or the Apple shots ship Android chrome.
+ */
+private val FormFactor.platform: Platform
+    get() = when (this) {
+        FormFactor.AppleIPhone65,
+        FormFactor.AppleIPhone67,
+        FormFactor.AppleIPad13,
+        -> Platform.Ios
+
+        else -> Platform.Android
+    }
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal abstract class ReadScreenshots(
-    formFactor: FormFactor,
+    private val formFactor: FormFactor,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
         style = ScreenshotStyle(edgeToEdge = false),
@@ -50,7 +65,7 @@ internal abstract class ReadScreenshots(
                 SharedTransitionLayout {
                     AnimatedVisibility(visible = true) {
                         ReadPortraitScreen(
-                            platform = Platform.Android,
+                            platform = formFactor.platform,
                             state = readUiState(locale),
                             sharedTransitionScope = this@SharedTransitionLayout,
                             animatedVisibilityScope = this@AnimatedVisibility,

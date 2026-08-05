@@ -201,7 +201,10 @@ private val studyByLocale = mapOf(
 
 private const val FREE_LIMIT = 3
 
-internal fun dayStudyUiState(locale: String): DayStudyRouteUiState {
+internal fun dayStudyUiState(
+    locale: String,
+    platform: Platform,
+): DayStudyRouteUiState {
     val study = studyByLocale.getValue(locale)
     return DayStudyRouteUiState(
         card = Loadable.Loaded(
@@ -221,7 +224,7 @@ internal fun dayStudyUiState(locale: String): DayStudyRouteUiState {
         openStudy = study,
         isOpeningStudy = false,
         passageLabel = study.passageLabel,
-        platform = Platform.Android,
+        platform = platform,
     )
 }
 

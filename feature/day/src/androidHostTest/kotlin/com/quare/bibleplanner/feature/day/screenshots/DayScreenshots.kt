@@ -36,8 +36,23 @@ private val bannerCopy = mapOf(
 private const val BACKGROUND = 0xFF1B1B1F
 private const val FREE_LIMIT = 3
 
+/**
+ * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
+ * everything here renders under Robolectric, which is Android whatever device the frame draws. So
+ * the platform has to follow the form factor, or the Apple shots ship Android chrome.
+ */
+private val FormFactor.platform: Platform
+    get() = when (this) {
+        FormFactor.AppleIPhone65,
+        FormFactor.AppleIPhone67,
+        FormFactor.AppleIPad13,
+        -> Platform.Ios
+
+        else -> Platform.Android
+    }
+
 internal abstract class DayScreenshots(
-    formFactor: FormFactor,
+    private val formFactor: FormFactor,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
         style = ScreenshotStyle(edgeToEdge = false),
@@ -52,7 +67,7 @@ internal abstract class DayScreenshots(
             backgroundColor = Color(BACKGROUND),
             fileName = "03_day",
         ) {
-            AppTheme { DayContent(locale) }
+            AppTheme { DayContent(locale, formFactor.platform) }
         }
     }
 }
@@ -71,11 +86,14 @@ internal class IPadDayScreenshots : DayScreenshots(FormFactor.AppleIPad13)
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun DayContent(locale: String) {
+private fun DayContent(
+    locale: String,
+    platform: Platform,
+) {
     SharedTransitionLayout {
         AnimatedContent(targetState = Unit) {
             DayScreen(
-                platform = Platform.Android,
+                platform = platform,
                 uiState = dayUiState(locale),
                 snackbarHostState = SnackbarHostState(),
                 sharedTransitionScope = this@SharedTransitionLayout,
