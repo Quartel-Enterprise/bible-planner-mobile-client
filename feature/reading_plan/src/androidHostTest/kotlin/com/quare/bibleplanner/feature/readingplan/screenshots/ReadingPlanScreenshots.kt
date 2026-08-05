@@ -16,6 +16,7 @@ import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
 import com.quare.bibleplanner.ui.theme.model.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
+import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.junit.Test
@@ -55,8 +56,11 @@ private const val DARK_BACKGROUND = 0xFF5C5F70
 
 internal abstract class ReadingPlanScreenshots(
     formFactor: FormFactor,
+    private val outputSubdir: String? = null,
+    canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
+        canvas = canvas,
         // The screen renders without the app's window insets, so reserve the status bar height
         // instead of letting the header slide under the frame's clock.
         style = ScreenshotStyle(edgeToEdge = false),
@@ -69,6 +73,7 @@ internal abstract class ReadingPlanScreenshots(
             title = title,
             description = description,
             backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
             fileName = "01_reading_plan",
         ) {
             AppTheme { ReadingPlanContent() }
@@ -85,6 +90,7 @@ internal abstract class ReadingPlanScreenshots(
             // A lighter banner than the other shots so the dark device still reads as a device
             // instead of dissolving into the background.
             backgroundColor = Color(DARK_BACKGROUND),
+            subdir = outputSubdir,
             fileName = "02_reading_plan_dark",
         ) {
             CompositionLocalProvider(LocalTheme provides Theme.DARK) {
@@ -104,7 +110,15 @@ internal class IPhone65ReadingPlanScreenshots : ReadingPlanScreenshots(FormFacto
 
 internal class IPhone67ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPhone67)
 
-internal class IPadReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPad13)
+internal class IPad13ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPad13)
+
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+internal class IPad11ReadingPlanScreenshots :
+    ReadingPlanScreenshots(
+        formFactor = FormFactor.AppleIPad13,
+        outputSubdir = "ipad11",
+        canvas = ScreenshotCanvas.px(1668, 2388),
+    )
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

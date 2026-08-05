@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.daystudy.presentation.DayStudyScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
 import dev.lucianosantos.storescreenshots.FormFactor
+import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import kotlinx.coroutines.runBlocking
@@ -86,8 +87,11 @@ private val FormFactor.platform: Platform
 internal abstract class DayStudyScreenshots(
     private val formFactor: FormFactor,
     private val isWide: Boolean,
+    private val outputSubdir: String? = null,
+    canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
+        canvas = canvas,
         style = ScreenshotStyle(edgeToEdge = false),
     ) {
     @Test
@@ -98,6 +102,7 @@ internal abstract class DayStudyScreenshots(
             title = title,
             description = description,
             backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
             fileName = "04_day_study",
         ) {
             AppTheme {
@@ -128,6 +133,7 @@ internal abstract class DayStudyScreenshots(
             title = title,
             description = description,
             backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
             fileName = "07_day_study_context",
             // The tab label is resolved rather than hard-coded so the click keeps working in
             // every locale, and keeps working if the wording changes.
@@ -161,6 +167,7 @@ internal abstract class DayStudyScreenshots(
             title = title,
             description = description,
             backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
             fileName = "08_day_study_questions",
             // Opening the first question shows that the tab answers them, not just lists them.
             beforeCapture = { rule ->
@@ -217,8 +224,17 @@ internal class IPhone67DayStudyScreenshots :
         isWide = false,
     )
 
-internal class IPadDayStudyScreenshots :
+internal class IPad13DayStudyScreenshots :
     DayStudyScreenshots(
         formFactor = FormFactor.AppleIPad13,
         isWide = true,
+    )
+
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+internal class IPad11DayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.AppleIPad13,
+        isWide = true,
+        outputSubdir = "ipad11",
+        canvas = ScreenshotCanvas.px(1668, 2388),
     )

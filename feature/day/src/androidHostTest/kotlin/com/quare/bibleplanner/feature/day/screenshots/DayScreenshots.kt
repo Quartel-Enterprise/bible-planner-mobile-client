@@ -14,6 +14,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQu
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.ui.theme.AppTheme
 import dev.lucianosantos.storescreenshots.FormFactor
+import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.junit.Test
@@ -53,8 +54,11 @@ private val FormFactor.platform: Platform
 
 internal abstract class DayScreenshots(
     private val formFactor: FormFactor,
+    private val outputSubdir: String? = null,
+    canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
+        canvas = canvas,
         style = ScreenshotStyle(edgeToEdge = false),
     ) {
     @Test
@@ -65,6 +69,7 @@ internal abstract class DayScreenshots(
             title = title,
             description = description,
             backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
             fileName = "03_day",
         ) {
             AppTheme { DayContent(locale, formFactor.platform) }
@@ -82,7 +87,15 @@ internal class IPhone65DayScreenshots : DayScreenshots(FormFactor.AppleIPhone65)
 
 internal class IPhone67DayScreenshots : DayScreenshots(FormFactor.AppleIPhone67)
 
-internal class IPadDayScreenshots : DayScreenshots(FormFactor.AppleIPad13)
+internal class IPad13DayScreenshots : DayScreenshots(FormFactor.AppleIPad13)
+
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+internal class IPad11DayScreenshots :
+    DayScreenshots(
+        formFactor = FormFactor.AppleIPad13,
+        outputSubdir = "ipad11",
+        canvas = ScreenshotCanvas.px(1668, 2388),
+    )
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

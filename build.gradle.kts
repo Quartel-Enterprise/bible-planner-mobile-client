@@ -127,6 +127,7 @@ private val storeScreenshotDevices = mapOf(
     "iphone65" to ("ios" to "iphone_6_5"),
     "iphone67" to ("ios" to "iphone_6_7"),
     "ipad13" to ("ios" to "ipad_13"),
+    "ipad11" to ("ios" to "ipad_11"),
 )
 
 
@@ -209,6 +210,7 @@ private val appStoreDevices = mapOf(
     "iphone65" to "iphone_6_5",
     "iphone67" to "iphone_6_7",
     "ipad13" to "ipad_13",
+    "ipad11" to "ipad_11",
 )
 
 tasks.register("stageStoreScreenshots") {

@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.screen.ReadPortraitScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
 import dev.lucianosantos.storescreenshots.FormFactor
+import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.junit.Test
@@ -47,8 +48,11 @@ private val FormFactor.platform: Platform
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal abstract class ReadScreenshots(
     private val formFactor: FormFactor,
+    private val outputSubdir: String? = null,
+    canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
+        canvas = canvas,
         style = ScreenshotStyle(edgeToEdge = false),
     ) {
     @Test
@@ -59,6 +63,7 @@ internal abstract class ReadScreenshots(
             title = title,
             description = description,
             backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
             fileName = "06_read",
         ) {
             AppTheme {
@@ -88,4 +93,12 @@ internal class IPhone65ReadScreenshots : ReadScreenshots(FormFactor.AppleIPhone6
 
 internal class IPhone67ReadScreenshots : ReadScreenshots(FormFactor.AppleIPhone67)
 
-internal class IPadReadScreenshots : ReadScreenshots(FormFactor.AppleIPad13)
+internal class IPad13ReadScreenshots : ReadScreenshots(FormFactor.AppleIPad13)
+
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+internal class IPad11ReadScreenshots :
+    ReadScreenshots(
+        formFactor = FormFactor.AppleIPad13,
+        outputSubdir = "ipad11",
+        canvas = ScreenshotCanvas.px(1668, 2388),
+    )

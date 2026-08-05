@@ -17,6 +17,7 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationM
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.theme.AppTheme
 import dev.lucianosantos.storescreenshots.FormFactor
+import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.jetbrains.compose.resources.stringResource
@@ -97,8 +98,11 @@ private val historicalBooks = listOf(
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal abstract class BooksScreenshots(
     formFactor: FormFactor,
+    private val outputSubdir: String? = null,
+    canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
+        canvas = canvas,
         // The screen renders without the app's window insets, so reserve the status bar height
         // instead of letting the search field slide under the frame's clock.
         style = ScreenshotStyle(edgeToEdge = false),
@@ -111,6 +115,7 @@ internal abstract class BooksScreenshots(
             title = title,
             description = description,
             backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
             fileName = "05_books",
         ) {
             AppTheme {
@@ -146,7 +151,15 @@ internal class IPhone65BooksScreenshots : BooksScreenshots(FormFactor.AppleIPhon
 
 internal class IPhone67BooksScreenshots : BooksScreenshots(FormFactor.AppleIPhone67)
 
-internal class IPadBooksScreenshots : BooksScreenshots(FormFactor.AppleIPad13)
+internal class IPad13BooksScreenshots : BooksScreenshots(FormFactor.AppleIPad13)
+
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+internal class IPad11BooksScreenshots :
+    BooksScreenshots(
+        formFactor = FormFactor.AppleIPad13,
+        outputSubdir = "ipad11",
+        canvas = ScreenshotCanvas.px(1668, 2388),
+    )
 
 @Composable
 private fun rememberBooksUiState(): BooksUiState.Success {
