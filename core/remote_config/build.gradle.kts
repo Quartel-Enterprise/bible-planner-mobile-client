@@ -42,14 +42,14 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
 
-        val iosMain by creating {
+        iosMain {
             dependsOn(commonMain.get())
         }
-        val iosArm64Main by getting {
-            dependsOn(iosMain)
+        iosArm64Main {
+            dependsOn(iosMain.get())
         }
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
+        iosSimulatorArm64Main {
+            dependsOn(iosMain.get())
         }
     }
 }

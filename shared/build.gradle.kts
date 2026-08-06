@@ -52,10 +52,8 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
         }
 
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.androidx.sqlite.bundled)
-            }
+        jvmMain.dependencies {
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonMain.dependencies {
             // Feature
