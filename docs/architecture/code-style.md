@@ -145,6 +145,29 @@ private const val ANIMATION_MILLIS = 300
 
 This is enforced automatically by the custom ktlint rule `bible-planner-style:top-level-val-position` (same module as above).
 
+## Blank Lines Between File-Scoped Constants
+
+Consecutive top-level `private val` / `private const val` declarations are written as one block, with **no** blank line between them. The blank line goes only between the block and the first function/class that follows it.
+
+```kotlin
+// Correct
+private val consequenceSpacing = 10.dp
+private val progressIconSize = 44.dp
+private val progressSpacing = 18.dp
+
+@Composable
+internal fun MyDialog(...) { ... }
+
+// Wrong — blank lines scattering one block of constants
+private val consequenceSpacing = 10.dp
+
+private val progressIconSize = 44.dp
+
+private val progressSpacing = 18.dp
+```
+
+Enforced by the custom ktlint rule `bible-planner-style:top-level-val-blank-line`. It is scoped to *private* top-level properties — public top-level `val`s (e.g. the generated color palettes in `ui/theme`) may keep blank lines between groups.
+
 ## When-Entry Bodies
 
 A `when` entry whose body is a single statement that fits on one line **must not** be wrapped in `{ }` braces.

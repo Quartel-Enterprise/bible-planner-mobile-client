@@ -57,7 +57,6 @@ private val shortcutIconSize = 26.dp
 private val closeButtonSize = 44.dp
 private val expandedBreakpoint = 600.dp
 private val backdropBlurRadius = 18.dp
-
 private val backdropColor = Color(0xFF08080E).copy(alpha = 0.28f)
 private val closeButtonBackground = Color.Black.copy(alpha = 0.32f)
 private val neutralShortcutBackground = Color.White.copy(alpha = 0.16f)

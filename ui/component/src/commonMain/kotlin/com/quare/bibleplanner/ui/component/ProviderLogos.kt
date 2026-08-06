@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 
 private val logoSize = 24.dp
 private const val VIEWPORT = 24f
-
 private const val GOOGLE_BLUE_PATH = "M22.5 12.2c0-.7-.06-1.4-.18-2.06H12v3.9h5.9a5.04 5.04 0 0 1-2.19 " +
     "3.3v2.74h3.54c2.07-1.9 3.25-4.71 3.25-8.05z"
 private const val GOOGLE_GREEN_PATH = "M12 23c2.94 0 5.42-.97 7.22-2.63l-3.54-2.74c-.98.66-2.24 1.05-3.68 " +
