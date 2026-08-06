@@ -75,7 +75,6 @@ private const val CIRCLE_WIDTH_RATIO = 0.9f
 private const val HALF = 2f
 private const val NO_ICON_ROTATION = 0f
 private const val VERTICAL_FLIP_ICON_ROTATION = 90f
-
 private val screenBackground = Color(0xFF0B0B0F)
 private val cropScrim = Color(0xFF0B0B0F).copy(alpha = 0.72f)
 private val cropCircleBorder = Color.White.copy(alpha = 0.9f)
@@ -83,7 +82,6 @@ private val zoomIconColor = Color.White.copy(alpha = 0.7f)
 private val hintColor = Color.White.copy(alpha = 0.55f)
 private val outlinedBorderColor = Color.White.copy(alpha = 0.25f)
 private val orientationChipBackground = Color.White.copy(alpha = 0.12f)
-
 private val headerHeight = 56.dp
 private val headerButtonSize = 44.dp
 private val maxCircleDiameter = 360.dp
