@@ -60,50 +60,46 @@ kotlin {
             }
         }
 
-        val commonMain by getting {
-            dependencies {
-                implementation(project.dependencies.platform(libs.koin.bom))
-                implementation(libs.koin.core)
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(projects.core.remoteConfig)
-                implementation(projects.core.user)
-                implementation(libs.kotlinx.datetime)
-                implementation(projects.core.date)
-            }
+        commonMain.dependencies {
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(projects.core.remoteConfig)
+            implementation(projects.core.user)
+            implementation(libs.kotlinx.datetime)
+            implementation(projects.core.date)
         }
 
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.kotlinx.coroutines.test)
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
 
-        val mobileMain by creating {
-            dependsOn(commonMain)
+        val mobileMain = create("mobileMain") {
+            dependsOn(commonMain.get())
             dependencies {
                 api(libs.revenuecat.core)
                 api(libs.revenuecat.result)
             }
         }
 
-        val androidMain by getting {
+        androidMain {
             dependsOn(mobileMain)
             dependencies {
                 implementation(project.dependencies.platform(libs.firebase.bom))
             }
         }
 
-        val iosMain by creating {
+        iosMain {
             dependsOn(mobileMain)
         }
 
-        val iosArm64Main by getting {
-            dependsOn(iosMain)
+        iosArm64Main {
+            dependsOn(iosMain.get())
         }
 
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
+        iosSimulatorArm64Main {
+            dependsOn(iosMain.get())
         }
 
         jvmMain.dependencies {
