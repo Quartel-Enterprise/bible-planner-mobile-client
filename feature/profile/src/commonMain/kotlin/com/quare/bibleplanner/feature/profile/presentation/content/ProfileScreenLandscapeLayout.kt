@@ -13,9 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
+import com.quare.bibleplanner.feature.profile.presentation.content.component.AccountDataSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.CurrentAppVersionText
-import com.quare.bibleplanner.feature.profile.presentation.content.component.DeleteDataSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LegalSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LoginCard
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LogoutButton
@@ -87,7 +87,8 @@ internal fun ResponsiveContentScope.profileScreenLandscapeLayout(
                     sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,
                 )
-                DeleteDataSection(
+                AccountDataSection(
+                    isLoggedIn = state.accountStatusModel is AccountStatusModel.LoggedIn,
                     onEvent = onEvent,
                 )
                 Column(

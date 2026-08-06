@@ -16,7 +16,7 @@ User taps any list item on the Profile screen.
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `option` | string | `release_notes` | `ProfileOptionItemType` value lowercased to snake_case: `become_pro`, `theme`, `app_language`, `instagram`, `privacy_policy`, `terms`, `donate`, `web_app`, `delete_progress`, `edit_plan_start_day`, `release_notes`, `bible_version`, `contact_support`, `rate_app`, `check_for_update` |
+| `option` | string | `release_notes` | `ProfileOptionItemType` value lowercased to snake_case: `become_pro`, `theme`, `app_language`, `instagram`, `privacy_policy`, `terms`, `donate`, `web_app`, `delete_progress`, `delete_account`, `edit_plan_start_day`, `release_notes`, `bible_version`, `contact_support`, `rate_app`, `check_for_update` |
 
 ## Notes
 

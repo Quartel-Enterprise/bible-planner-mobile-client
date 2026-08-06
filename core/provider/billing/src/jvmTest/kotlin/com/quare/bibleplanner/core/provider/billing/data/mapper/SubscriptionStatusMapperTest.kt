@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.provider.billing.data.dto.freeSubscriberResponse
 import com.quare.bibleplanner.core.provider.billing.data.dto.proSubscriberResponse
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
+import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import kotlinx.datetime.LocalDateTime
@@ -13,6 +14,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.time.Instant
 
 internal class SubscriptionStatusMapperTest {
@@ -120,6 +122,36 @@ internal class SubscriptionStatusMapperTest {
         )
     }
 
+    @Test
+    fun `should map the store that granted the entitlement`() {
+        // When
+        val status = mapper.map(proSubscriberResponse(store = "play_store"))
+
+        // Then
+        val pro = assertIs<SubscriptionStatus.Pro>(status)
+        assertEquals(expected = PurchaseStore.PLAY_STORE, actual = pro.store)
+    }
+
+    @Test
+    fun `should map the web billing store as web`() {
+        // When
+        val status = mapper.map(proSubscriberResponse(store = "rc_billing"))
+
+        // Then
+        val pro = assertIs<SubscriptionStatus.Pro>(status)
+        assertEquals(expected = PurchaseStore.WEB, actual = pro.store)
+    }
+
+    @Test
+    fun `should map an entitlement without a purchase store as null`() {
+        // When
+        val status = mapper.map(proSubscriberResponse(store = "promotional"))
+
+        // Then
+        val pro = assertIs<SubscriptionStatus.Pro>(status)
+        assertNull(pro.store)
+    }
+
     @BeforeTest
     fun setUp() {
         mapper = SubscriptionStatusMapper(
@@ -129,6 +161,7 @@ internal class SubscriptionStatusMapperTest {
             proPlanTypeMapper = ProPlanTypeMapper(),
             proEntitlementMapper = ProEntitlementMapper(EpochMillisMapper()),
             epochMillisMapper = EpochMillisMapper(),
+            purchaseStoreMapper = PurchaseStoreMapper(),
         )
     }
 

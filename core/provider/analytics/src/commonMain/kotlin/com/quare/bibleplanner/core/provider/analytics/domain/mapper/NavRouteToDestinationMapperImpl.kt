@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteAccountNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
@@ -101,6 +102,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         )
 
         is DeleteAllProgressNavRoute -> dialog("delete_all_progress")
+
+        is DeleteAccountNavRoute -> dialog("delete_account")
 
         is DeleteNotesRoute -> dialog(
             name = "delete_notes",

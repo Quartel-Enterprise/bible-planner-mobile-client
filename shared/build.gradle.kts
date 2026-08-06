@@ -66,6 +66,7 @@ kotlin {
             api(projects.feature.readingPlan)
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
+            api(projects.feature.deleteAccount)
             api(projects.feature.login)
             api(projects.feature.logout)
             api(projects.feature.preferences.editPlanStartDate)

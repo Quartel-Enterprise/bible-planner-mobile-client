@@ -1,4 +1,8 @@
 {
+  "2.5.0": [
+    "You can now delete your account from within the app, in Profile › Account and data. Before you confirm, the app shows everything that will be erased and reminds you to cancel your subscription in the store where you subscribed.",
+    "The delete all progress screen is clearer now: it shows what gets removed and what stays with you, such as your account, your subscription and your preferences."
+  ],
   "2.4.0": [
     "Fixed a problem that could show an error on the Bible versions screen even with a working internet connection.",
     "When a Bible version you downloaded receives text corrections, the app now lets you know on launch and shows an update button in the versions list — you choose when to download the new text.",

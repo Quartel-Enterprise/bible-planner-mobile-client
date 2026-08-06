@@ -26,6 +26,7 @@ internal fun ProfileMenuItem(
     isSubtitleLoading: Boolean = false,
     onClick: () -> Unit,
     iconColor: Color = LocalContentColor.current.copy(alpha = 0.5f),
+    headlineColor: Color = Color.Unspecified,
     trailingContent: @Composable (() -> Unit)? = null,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedContentScope: AnimatedContentScope? = null,
@@ -41,6 +42,7 @@ internal fun ProfileMenuItem(
                 with(sharedTransitionScope) {
                     Text(
                         text = text,
+                        color = headlineColor,
                         modifier = Modifier.sharedElement(
                             rememberSharedContentState(key = sharedElementKey),
                             animatedVisibilityScope = animatedContentScope,
@@ -48,7 +50,10 @@ internal fun ProfileMenuItem(
                     )
                 }
             } else {
-                Text(text = text)
+                Text(
+                    text = text,
+                    color = headlineColor,
+                )
             }
         },
         supportingContent = when {

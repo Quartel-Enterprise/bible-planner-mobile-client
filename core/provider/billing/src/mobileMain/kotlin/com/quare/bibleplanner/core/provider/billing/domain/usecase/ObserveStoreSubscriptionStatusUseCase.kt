@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionSta
 import com.quare.bibleplanner.core.provider.billing.domain.source.BillingCustomerInfoSource
 import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import com.quare.bibleplanner.core.provider.billing.mapper.toProEntitlement
+import com.quare.bibleplanner.core.provider.billing.mapper.toPurchaseStore
 import com.revenuecat.purchases.kmp.models.CustomerInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -30,6 +31,7 @@ internal class ObserveStoreSubscriptionStatusUseCase(
                 purchaseDate = purchaseDate,
                 expirationDate = expirationDate,
                 willRenew = entitlement.willRenew,
+                store = entitlement.store.toPurchaseStore(),
             )
         } else {
             SubscriptionStatus.Free

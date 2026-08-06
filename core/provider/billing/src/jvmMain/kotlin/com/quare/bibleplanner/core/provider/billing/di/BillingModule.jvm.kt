@@ -12,6 +12,7 @@ import com.quare.bibleplanner.core.provider.billing.data.datasource.createRevenu
 import com.quare.bibleplanner.core.provider.billing.data.mapper.EpochMillisMapper
 import com.quare.bibleplanner.core.provider.billing.data.mapper.PriceFormatter
 import com.quare.bibleplanner.core.provider.billing.data.mapper.ProEntitlementMapper
+import com.quare.bibleplanner.core.provider.billing.data.mapper.PurchaseStoreMapper
 import com.quare.bibleplanner.core.provider.billing.data.mapper.StorePackageMapper
 import com.quare.bibleplanner.core.provider.billing.data.mapper.SubscriptionStatusMapper
 import com.quare.bibleplanner.core.provider.billing.data.mapper.WebPurchaseLinkBuilder
@@ -65,6 +66,7 @@ actual val billingProviderModule = module {
     factoryOf(::ProEntitlementMapper)
     factoryOf(::StorePackageMapper)
     factoryOf(::ProPlanTypeMapper)
+    factoryOf(::PurchaseStoreMapper)
     factoryOf(::SubscriptionStatusMapper)
     factoryOf(::WebPurchaseLinkBuilder)
     factoryOf(::SystemBrowserUrlOpener).bind<OpenUrl>()

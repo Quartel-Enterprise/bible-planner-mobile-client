@@ -21,6 +21,7 @@ fun EntryProviderScope<NavKey>.deleteProgress(onNavigateBack: () -> Unit) {
             onNavigateBack = onNavigateBack,
         )
         DeleteAllProgressScreen(
+            uiState = uiState,
             onEvent = viewModel::onEvent,
         )
     }

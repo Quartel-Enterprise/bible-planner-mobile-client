@@ -1,6 +1,11 @@
 <resources>
-    <string name="delete_all_progress_title">Delete All Progress</string>
-    <string name="delete_all_progress_message">Are you sure you want to delete all your reading progress? This will mark all passages as unread and clear all timestamps. This action cannot be undone.</string>
+    <string name="delete_all_progress_title">Delete all progress?</string>
+    <string name="delete_all_progress_message">This removes from all your devices and from the cloud:</string>
+    <string name="delete_all_progress_removes_chapters">Chapters you have read and your reading streak</string>
+    <string name="delete_all_progress_removes_plans">Plans in progress and completed ones</string>
+    <string name="delete_all_progress_keeps_account">Your account, subscription and preferences are kept</string>
+    <string name="delete_all_progress_deleting">Deleting your progress…</string>
+    <string name="delete_all_progress_deleted">Progress deleted</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
 </resources>
