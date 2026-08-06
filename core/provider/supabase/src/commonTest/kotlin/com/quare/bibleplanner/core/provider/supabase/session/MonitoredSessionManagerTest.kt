@@ -1,8 +1,13 @@
 package com.quare.bibleplanner.core.provider.supabase.session
 
+import co.touchlab.kermit.LogWriter
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.Severity
+import co.touchlab.kermit.platformLogWriter
 import io.github.jan.supabase.auth.SessionManager
 import io.github.jan.supabase.auth.user.UserSession
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -12,14 +17,73 @@ class MonitoredSessionManagerTest {
     private lateinit var delegate: FakeSessionManager
     private lateinit var auditStore: FakeSessionAuditStore
     private lateinit var manager: MonitoredSessionManager
+    private lateinit var expectedSessionDeletion: ExpectedSessionDeletion
+    private lateinit var logWriter: RecordingLogWriter
 
     @BeforeTest
     fun setUp() {
         delegate = FakeSessionManager()
         auditStore = FakeSessionAuditStore()
+        expectedSessionDeletion = ExpectedSessionDeletion()
+        logWriter = RecordingLogWriter()
+        Logger.setLogWriters(logWriter)
         manager = MonitoredSessionManager(
             delegate = delegate,
             auditStore = auditStore,
+            expectedSessionDeletion = expectedSessionDeletion,
+        )
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Logger.setLogWriters(platformLogWriter())
+    }
+
+    @Test
+    fun `GIVEN an expected deletion WHEN deleting THEN logs it without an exception`() = runTest {
+        // Given
+        manager.saveSession(session())
+        logWriter.entries.clear()
+
+        // When
+        expectedSessionDeletion.whileDeleting { manager.deleteSession() }
+
+        // Then
+        assertEquals(
+            expected = listOf<Pair<Severity, String?>>(Severity.Info to null),
+            actual = logWriter.entries,
+        )
+    }
+
+    @Test
+    fun `GIVEN an unexpected deletion WHEN deleting THEN reports the deletion as an error`() = runTest {
+        // Given
+        manager.saveSession(session())
+        logWriter.entries.clear()
+
+        // When
+        manager.deleteSession()
+
+        // Then
+        assertEquals(
+            expected = listOf(Severity.Error to SessionDeletedException::class.simpleName),
+            actual = logWriter.entries,
+        )
+    }
+
+    @Test
+    fun `GIVEN the deletion scope has ended WHEN deleting again THEN reports it as an error`() = runTest {
+        // Given
+        expectedSessionDeletion.whileDeleting { manager.deleteSession() }
+        logWriter.entries.clear()
+
+        // When
+        manager.deleteSession()
+
+        // Then
+        assertEquals(
+            expected = listOf(Severity.Error to SessionDeletedException::class.simpleName),
+            actual = logWriter.entries,
         )
     }
 
@@ -176,6 +240,19 @@ class MonitoredSessionManagerTest {
         tokenType = "bearer",
         user = null,
     )
+
+    private class RecordingLogWriter : LogWriter() {
+        val entries = mutableListOf<Pair<Severity, String?>>()
+
+        override fun log(
+            severity: Severity,
+            message: String,
+            tag: String,
+            throwable: Throwable?,
+        ) {
+            entries += severity to throwable?.let { it::class.simpleName }
+        }
+    }
 
     private inner class FakeSessionManager : SessionManager {
         var stored: UserSession? = null

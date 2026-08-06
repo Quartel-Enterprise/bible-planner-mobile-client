@@ -8,6 +8,7 @@ import io.github.jan.supabase.auth.user.UserSession
 internal class MonitoredSessionManager(
     private val delegate: SessionManager,
     private val auditStore: SessionAuditStore,
+    private val expectedSessionDeletion: ExpectedSessionDeletion,
 ) : SessionManager {
     private val logger = Logger.withTag(LOG_TAG)
 
@@ -25,7 +26,11 @@ internal class MonitoredSessionManager(
 
     override suspend fun deleteSession() {
         deletedInThisProcess = true
-        logger.e(SessionDeletedException()) { "Deleting stored Supabase session" }
+        if (expectedSessionDeletion.isExpected) {
+            logger.i { "Deleting stored Supabase session as part of an expected teardown" }
+        } else {
+            logger.e(SessionDeletedException()) { "Deleting stored Supabase session" }
+        }
         auditStore.recordDeleted()
         delegate.deleteSession()
     }

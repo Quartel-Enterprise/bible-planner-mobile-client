@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.provider.supabase
 
 import com.quare.bibleplanner.core.provider.supabase.session.DataStoreSessionAuditStore
+import com.quare.bibleplanner.core.provider.supabase.session.ExpectedSessionDeletion
 import com.quare.bibleplanner.core.provider.supabase.session.MonitoredSessionManager
 import com.quare.bibleplanner.core.provider.supabase.session.SessionAuditStore
 import com.quare.bibleplanner.core.provider.supabase.session.createPlatformSessionManager
@@ -35,10 +36,12 @@ val supabaseModule = module {
             currentTimestampProvider = get(),
         )
     }
+    single { ExpectedSessionDeletion() }
     single<SessionManager> {
         MonitoredSessionManager(
             delegate = createPlatformSessionManager(),
             auditStore = get(),
+            expectedSessionDeletion = get(),
         )
     }
     single<SupabaseClient> { getSupabaseClient(get()) }
