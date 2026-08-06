@@ -22,7 +22,11 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun QuestionsTabContent(questions: List<QaModel>) {
+internal fun QuestionsTabContent(
+    questions: List<QaModel>,
+    passageLabel: String,
+    onAskAiClick: () -> Unit,
+) {
     Column {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -52,5 +56,10 @@ internal fun QuestionsTabContent(questions: List<QaModel>) {
                 )
             }
         }
+        VerticalSpacer(20)
+        AskAboutReadingCard(
+            passageLabel = passageLabel,
+            onClick = onAskAiClick,
+        )
     }
 }

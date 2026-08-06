@@ -13,6 +13,8 @@ import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
@@ -118,6 +120,33 @@ internal class DayStudyRouteViewModel(
         when (event) {
             DayStudyRouteUiEvent.OnCardClick -> onCardClick()
             DayStudyRouteUiEvent.OnRetryClick -> onRetryClick()
+            DayStudyRouteUiEvent.OnAskAiClick -> onAskAiClick()
+        }
+    }
+
+    // Quota does not gate the entry: the chat opens either way and locks its own input when the
+    // free questions are over, so the paywall is reached with the conversation already in view.
+    private fun onAskAiClick() {
+        viewModelScope.launch {
+            val isLoggedIn = observeAuthenticatedUserId().first() != null
+            trackEvent(
+                name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+                params = mapOf(
+                    AnalyticsParams.SOURCE to ChatEntrySource.DAY_STUDY_QUESTIONS.key,
+                    AnalyticsParams.IS_LOGGED_IN to isLoggedIn,
+                ),
+            )
+            val route = if (isLoggedIn) {
+                ChatNavRoute(
+                    source = ChatEntrySource.DAY_STUDY_QUESTIONS,
+                    dayNumber = dayRoute.dayNumber,
+                    weekNumber = dayRoute.weekNumber,
+                    readingPlanType = dayRoute.readingPlanType,
+                )
+            } else {
+                LoginWarningNavRoute(LoginWarningReason.AiChat.key)
+            }
+            _uiAction.emit(DayStudyRouteUiAction.NavigateToRoute(route))
         }
     }
 

@@ -21,6 +21,7 @@ internal fun DayStudyScreen(
     snackbarHostState: SnackbarHostState,
     onCardClick: () -> Unit,
     onRetryClick: () -> Unit,
+    onAskAiClick: () -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     if (isWide) {
@@ -32,6 +33,7 @@ internal fun DayStudyScreen(
             isOpeningStudy = uiState.isOpeningStudy,
             onCardClick = onCardClick,
             onRetryClick = onRetryClick,
+            onAskAiClick = onAskAiClick,
             showStudyHeader = true,
         )
     } else {
@@ -59,6 +61,7 @@ internal fun DayStudyScreen(
                 isOpeningStudy = uiState.isOpeningStudy,
                 onCardClick = onCardClick,
                 onRetryClick = onRetryClick,
+                onAskAiClick = onAskAiClick,
                 modifier = Modifier.padding(paddingValues),
                 showStudyHeader = false,
             )

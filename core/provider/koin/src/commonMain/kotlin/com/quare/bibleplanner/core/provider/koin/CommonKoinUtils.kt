@@ -29,6 +29,7 @@ import com.quare.bibleplanner.feature.applanguage.di.appLanguageModule
 import com.quare.bibleplanner.feature.bibleversion.di.bibleVersionModule
 import com.quare.bibleplanner.feature.bookdetails.di.bookDetailsModule
 import com.quare.bibleplanner.feature.books.di.featureBooksModule
+import com.quare.bibleplanner.feature.chat.di.chatModule
 import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.contactsupport.di.contactSupportModule
 import com.quare.bibleplanner.feature.day.di.dayModule
@@ -70,6 +71,7 @@ object CommonKoinUtils {
         readingPlanModule,
         dayModule,
         dayStudyModule,
+        chatModule,
         deleteProgressModule,
         deleteAccountModule,
         deleteVersionModule,

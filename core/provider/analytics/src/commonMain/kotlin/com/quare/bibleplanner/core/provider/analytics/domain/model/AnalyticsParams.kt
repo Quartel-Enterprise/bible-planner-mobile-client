@@ -22,6 +22,8 @@ object AnalyticsParams {
     const val IS_SELECTED = "is_selected"
     const val IS_FORCED = "is_forced"
     const val IS_CACHED = "is_cached"
+    const val HAS_CONTEXT = "has_context"
+    const val IS_NEW_CONVERSATION = "is_new_conversation"
     const val IS_FIRST_TIME = "is_first_time"
     const val IS_LOGGED_IN = "is_logged_in"
     const val IS_ACCESS_TOKEN_EXPIRED = "is_access_token_expired"

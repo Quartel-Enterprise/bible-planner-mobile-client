@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
@@ -99,6 +100,16 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
                 AnalyticsParams.WEEK_NUMBER to route.weekNumber,
                 AnalyticsParams.DAY_NUMBER to route.dayNumber,
             ),
+        )
+
+        is ChatNavRoute -> screen(
+            name = "ai_chat",
+            params = buildMap {
+                put(AnalyticsParams.SOURCE, route.source.key)
+                route.readingPlanType?.let { put(AnalyticsParams.PLAN_TYPE, it) }
+                route.weekNumber?.let { put(AnalyticsParams.WEEK_NUMBER, it) }
+                route.dayNumber?.let { put(AnalyticsParams.DAY_NUMBER, it) }
+            },
         )
 
         is DeleteAllProgressNavRoute -> dialog("delete_all_progress")

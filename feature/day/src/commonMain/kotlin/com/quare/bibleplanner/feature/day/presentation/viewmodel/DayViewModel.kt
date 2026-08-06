@@ -9,6 +9,8 @@ import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
@@ -18,6 +20,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
@@ -57,6 +60,7 @@ internal class DayViewModel(
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val applicationScope: ApplicationScope,
     private val generationCoordinator: DayStudyGenerationCoordinator,
+    private val getAuthenticatedUserId: GetAuthenticatedUserId,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<DayUiEvent>(trackEvent) {
@@ -150,11 +154,38 @@ internal class DayViewModel(
             is DayUiEvent.OnNotesFocus -> onNotesFocus()
             is DayUiEvent.OnBackClick -> backToPreviousScreen()
             is DayUiEvent.OnChapterClick -> onChapterClick(event.strategy)
+            is DayUiEvent.OnAskAiClick -> onAskAiClick()
             is DayUiEvent.OnDayStudySubscribeClick -> navigateToPaywall()
             is DayUiEvent.OnDayStudyLoginRequired -> navigateToDayStudyLoginWarning()
             is DayUiEvent.OnDayStudyMessage -> showSnackBarText(event.message)
             is DayUiEvent.OnDayStudyNavigate -> navigateToStudy()
             is DayUiEvent.OnWidthClassChanged -> onWidthClassChanged(event.isWide)
+        }
+    }
+
+    // Quota does not gate the entry: the chat opens either way and locks its own input when the
+    // free questions are over, so the paywall is reached with the conversation already in view.
+    private fun onAskAiClick() {
+        viewModelScope.launch {
+            val isLoggedIn = getAuthenticatedUserId() != null
+            trackEvent(
+                name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+                params = mapOf(
+                    AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key,
+                    AnalyticsParams.IS_LOGGED_IN to isLoggedIn,
+                ),
+            )
+            val route = if (isLoggedIn) {
+                ChatNavRoute(
+                    source = ChatEntrySource.DAY_FAB,
+                    dayNumber = dayNumber,
+                    weekNumber = weekNumber,
+                    readingPlanType = readingPlanType.name,
+                )
+            } else {
+                LoginWarningNavRoute(LoginWarningReason.AiChat.key)
+            }
+            _uiAction.emit(DayUiAction.NavigateToRoute(route))
         }
     }
 
