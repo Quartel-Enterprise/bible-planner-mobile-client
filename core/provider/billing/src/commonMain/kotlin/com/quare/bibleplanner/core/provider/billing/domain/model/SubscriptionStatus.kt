@@ -9,6 +9,7 @@ sealed interface SubscriptionStatus {
         val planType: ProPlanType,
         val purchaseDate: LocalDateTime?,
         val expirationDate: LocalDateTime?,
-        val willRenew: Boolean = true,
+        val willRenew: Boolean,
+        val store: PurchaseStore?,
     ) : SubscriptionStatus
 }

@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.core.provider.platform)
 
             // UI
+            implementation(projects.ui.theme)
             implementation(projects.ui.utils)
 
             implementation(libs.compose.runtime)

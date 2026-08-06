@@ -1,4 +1,8 @@
 {
+  "2.5.0": [
+    "Ahora puedes eliminar tu cuenta desde la propia app, en Perfil › Cuenta y datos. Antes de confirmar, la app muestra todo lo que se borrará y te recuerda cancelar la suscripción en la tienda donde te suscribiste.",
+    "La pantalla para eliminar todo el progreso es más clara: ahora muestra qué se elimina y qué se mantiene, como tu cuenta, tu suscripción y tus preferencias."
+  ],
   "2.4.0": [
     "Se corrigió un problema que podía mostrar un error en la pantalla de versiones de la Biblia incluso con internet funcionando.",
     "Cuando una versión de la Biblia que descargaste recibe correcciones de texto, la app ahora te avisa al abrirla y muestra un botón de actualizar en la lista de versiones — tú eliges cuándo descargar el texto nuevo.",

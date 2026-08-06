@@ -1,4 +1,8 @@
 {
+  "2.5.0": [
+    "Agora você pode excluir sua conta pelo próprio app, em Perfil › Conta e dados. Antes de confirmar, o app mostra tudo o que será apagado e lembra que a assinatura precisa ser cancelada na loja onde você assinou.",
+    "A tela de apagar todo o progresso ficou mais clara: agora ela mostra o que é removido e o que continua com você, como sua conta, sua assinatura e suas preferências."
+  ],
   "2.4.0": [
     "Corrigido um problema que podia mostrar um erro na tela de versões da Bíblia mesmo com internet funcionando.",
     "Quando uma versão da Bíblia que você baixou recebe correções de texto, o app agora avisa na abertura e mostra um botão de atualizar na lista de versões — você escolhe quando baixar o texto novo.",

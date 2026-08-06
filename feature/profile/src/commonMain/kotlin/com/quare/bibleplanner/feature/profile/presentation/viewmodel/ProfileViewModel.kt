@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.profile.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.profile.generated.resources.Res
+import bibleplanner.feature.profile.generated.resources.delete_account_requires_internet
 import bibleplanner.feature.profile.generated.resources.login_requires_internet
 import bibleplanner.feature.profile.generated.resources.logout_requires_internet
 import bibleplanner.feature.profile.generated.resources.up_to_date_message
@@ -12,6 +13,7 @@ import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteAccountNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
@@ -102,6 +104,13 @@ internal class ProfileViewModel(
                     ProfileOptionItemType.EDIT_PLAN_START_DAY -> goToRoute(EditPlanStartDateNavRoute)
 
                     ProfileOptionItemType.DELETE_PROGRESS -> deleteProgressClick()
+
+                    ProfileOptionItemType.DELETE_ACCOUNT -> {
+                        navigateIfOnline(
+                            route = DeleteAccountNavRoute,
+                            offlineMessage = Res.string.delete_account_requires_internet,
+                        )
+                    }
 
                     ProfileOptionItemType.DONATE -> goToRoute(DonationNavRoute)
 

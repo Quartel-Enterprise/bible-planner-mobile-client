@@ -17,6 +17,7 @@ internal class ProfileOptionItemTypeAnalyticsTest {
             ProfileOptionItemType.DONATE to "donate",
             ProfileOptionItemType.WEB_APP to "web_app",
             ProfileOptionItemType.DELETE_PROGRESS to "delete_progress",
+            ProfileOptionItemType.DELETE_ACCOUNT to "delete_account",
             ProfileOptionItemType.EDIT_PLAN_START_DAY to "edit_plan_start_day",
             ProfileOptionItemType.RELEASE_NOTES to "release_notes",
             ProfileOptionItemType.BIBLE_VERSION to "bible_version",

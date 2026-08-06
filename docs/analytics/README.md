@@ -287,6 +287,9 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [logout_confirmed](events/logout_confirmed.md) | P1 | Auth |
 | [logout_cancelled](events/logout_cancelled.md) | P2 | Auth |
 | [logout_failed](events/logout_failed.md) | P1 | Auth |
+| [account_delete_confirmed](events/account_delete_confirmed.md) | P1 | Auth |
+| [account_delete_cancelled](events/account_delete_cancelled.md) | P2 | Auth |
+| [account_delete_failed](events/account_delete_failed.md) | P1 | Auth |
 | [login_nudge_shown](events/login_nudge_shown.md) | P1 | Auth |
 | [login_nudge_accepted](events/login_nudge_accepted.md) | P1 | Auth |
 | [login_nudge_snoozed](events/login_nudge_snoozed.md) | P2 | Auth |

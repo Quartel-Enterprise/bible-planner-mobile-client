@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -15,11 +16,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class DeleteAllProgressViewModel(
     private val resetAllProgress: ResetAllProgressUseCase,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteAllProgressUiEvent>(trackEvent) {
+    private val successFeedbackDuration: Duration = 700.milliseconds
+
     private val _uiState: MutableStateFlow<DeleteAllProgressUiState> =
         MutableStateFlow(DeleteAllProgressUiState.Idle)
     val uiState: StateFlow<DeleteAllProgressUiState> = _uiState.asStateFlow()
@@ -39,6 +44,7 @@ internal class DeleteAllProgressViewModel(
                                 params = emptyMap(),
                             )
                             _uiState.update { DeleteAllProgressUiState.Success }
+                            delay(successFeedbackDuration)
                             _backUiAction.emit(Unit)
                         }.onFailure {
                             _uiState.update { DeleteAllProgressUiState.Idle }

@@ -14,6 +14,7 @@ import bibleplanner.feature.contact_support.generated.resources.platform_ios
 import bibleplanner.feature.preferences.app_language.generated.resources.language_english
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
+import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.user.domain.model.UserModel
@@ -51,6 +52,7 @@ internal class BuildSupportEmailBodyImplTest {
                     purchaseDate = null,
                     expirationDate = null,
                     willRenew = true,
+                    store = PurchaseStore.PLAY_STORE,
                 ),
             ),
             selectedLanguage = Loadable.Loaded(Language.ENGLISH),

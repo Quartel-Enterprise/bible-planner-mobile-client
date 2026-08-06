@@ -1,6 +1,11 @@
 <resources>
-    <string name="delete_all_progress_title">Eliminar Todo el Progreso</string>
-    <string name="delete_all_progress_message">¿Estás seguro de que deseas eliminar todo tu progreso de lectura? Esto marcará todos los pasajes como no leídos y borrará todas las marcas de tiempo. Esta acción no se puede deshacer.</string>
+    <string name="delete_all_progress_title">¿Eliminar todo el progreso?</string>
+    <string name="delete_all_progress_message">Se elimina de todos tus dispositivos y de la nube:</string>
+    <string name="delete_all_progress_removes_chapters">Capítulos leídos y racha de lectura</string>
+    <string name="delete_all_progress_removes_plans">Planes en curso y completados</string>
+    <string name="delete_all_progress_keeps_account">Tu cuenta, suscripción y preferencias se mantienen</string>
+    <string name="delete_all_progress_deleting">Eliminando tu progreso…</string>
+    <string name="delete_all_progress_deleted">Progreso eliminado</string>
     <string name="cancel">Cancelar</string>
     <string name="delete">Eliminar</string>
 </resources>

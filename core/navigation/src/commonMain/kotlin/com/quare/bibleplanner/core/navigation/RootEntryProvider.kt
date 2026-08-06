@@ -17,6 +17,7 @@ import com.quare.bibleplanner.feature.congrats.presentation.congrats
 import com.quare.bibleplanner.feature.contactsupport.presentation.contactSupport
 import com.quare.bibleplanner.feature.day.presentation.day
 import com.quare.bibleplanner.feature.daystudy.presentation.dayStudy
+import com.quare.bibleplanner.feature.deleteaccount.presentation.deleteAccount
 import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
 import com.quare.bibleplanner.feature.deleteprogress.presentation.deleteProgress
 import com.quare.bibleplanner.feature.deleteversion.presentation.deleteVersion
@@ -82,6 +83,7 @@ internal fun SharedTransitionScope.toEntryProvider(
     )
     materialYou(onNavigateBack)
     deleteProgress(onNavigateBack)
+    deleteAccount(onNavigateBack)
     deleteNotes(onNavigateBack)
     addNotesFreeWarning(
         onNavigateBack = onNavigateBack,

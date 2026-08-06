@@ -20,7 +20,7 @@
     <string name="pro_section">Pro</string>
     <string name="support_section">Soporte</string>
     <string name="preferences">Preferencias</string>
-    <string name="data_section">Datos</string>
+    <string name="account_data_section">Cuenta y datos</string>
     <string name="legal_section">Legal</string>
     <string name="social_section">Social</string>
     <string name="support_comments_section">Soporte y comentarios</string>
@@ -59,4 +59,8 @@
     <string name="logout_button">Cerrar sesión</string>
     <string name="login_requires_internet">Necesitas conexión a internet para iniciar sesión</string>
     <string name="logout_requires_internet">Necesitas conexión a internet para cerrar sesión de forma segura</string>
+    <string name="delete_progress_option_subtitle">Tu cuenta y suscripción se mantienen</string>
+    <string name="delete_account_option">Eliminar cuenta</string>
+    <string name="delete_account_option_subtitle">Elimina permanentemente tu cuenta y todos los datos</string>
+    <string name="delete_account_requires_internet">Conéctate a internet para eliminar tu cuenta</string>
 </resources>

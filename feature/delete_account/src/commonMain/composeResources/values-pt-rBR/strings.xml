@@ -1,0 +1,21 @@
+<resources>
+    <string name="delete_account_title">Excluir sua conta?</string>
+    <string name="delete_account_message">Esta ação é permanente e não pode ser desfeita. Serão apagados:</string>
+    <string name="delete_account_removes_progress">Progresso, sequência e planos de leitura</string>
+    <string name="delete_account_removes_notes">Destaques, notas e conversas com a IA</string>
+    <string name="delete_account_removes_preferences">Preferências e dados sincronizados</string>
+    <string name="delete_account_subscription_warning">Sua assinatura Pro não é cancelada automaticamente. Cancele %1$s antes de excluir a conta.</string>
+    <string name="delete_account_store_google_play">na Google Play</string>
+    <string name="delete_account_store_app_store">na App Store</string>
+    <string name="delete_account_store_web">no site onde você assinou</string>
+    <string name="delete_account_servers_note">Seus dados são removidos permanentemente dos nossos servidores no momento da exclusão.</string>
+    <string name="delete_account_confirmation_label">Digite %1$s para confirmar</string>
+    <string name="delete_account_confirmation_keyword">EXCLUIR</string>
+    <string name="delete_account_deleting_data">Removendo seus dados…</string>
+    <string name="delete_account_closing">Encerrando sua conta…</string>
+    <string name="delete_account_deleted">Conta excluída</string>
+    <string name="delete_account_confirm">Excluir conta</string>
+    <string name="delete_account_cancel">Cancelar</string>
+    <string name="delete_account_success_message">Conta excluída. Sentiremos sua falta.</string>
+    <string name="delete_account_error_message">Não foi possível excluir sua conta. Tente novamente.</string>
+</resources>

@@ -47,6 +47,7 @@ kotlin {
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.readingPlan)
             implementation(projects.feature.deleteProgress)
+            implementation(projects.feature.deleteAccount)
             implementation(projects.feature.deleteVersion)
             implementation(projects.feature.preferences.themeSelection)
             implementation(projects.feature.materialYou)

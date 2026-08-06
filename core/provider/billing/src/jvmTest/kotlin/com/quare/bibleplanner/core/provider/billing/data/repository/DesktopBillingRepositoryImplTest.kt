@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.provider.billing.data.dto.proSubscriberRespon
 import com.quare.bibleplanner.core.provider.billing.data.mapper.EpochMillisMapper
 import com.quare.bibleplanner.core.provider.billing.data.mapper.PriceFormatter
 import com.quare.bibleplanner.core.provider.billing.data.mapper.ProEntitlementMapper
+import com.quare.bibleplanner.core.provider.billing.data.mapper.PurchaseStoreMapper
 import com.quare.bibleplanner.core.provider.billing.data.mapper.StorePackageMapper
 import com.quare.bibleplanner.core.provider.billing.data.mapper.SubscriptionStatusMapper
 import com.quare.bibleplanner.core.provider.billing.data.mapper.WebPurchaseLinkBuilder
@@ -223,6 +224,7 @@ internal class DesktopBillingRepositoryImplTest {
                 proPlanTypeMapper = ProPlanTypeMapper(),
                 proEntitlementMapper = ProEntitlementMapper(EpochMillisMapper()),
                 epochMillisMapper = EpochMillisMapper(),
+                purchaseStoreMapper = PurchaseStoreMapper(),
             ),
             storePackageMapper = StorePackageMapper(PriceFormatter()),
             webPurchaseLinkBuilder = WebPurchaseLinkBuilder(config),
