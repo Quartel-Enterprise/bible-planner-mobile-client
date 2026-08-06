@@ -11,8 +11,11 @@ internal class MonitoredSessionManager(
 ) : SessionManager {
     private val logger = Logger.withTag(LOG_TAG)
 
+    private var deletedInThisProcess = false
+
     override suspend fun saveSession(session: UserSession) {
         delegate.saveSession(session)
+        deletedInThisProcess = false
         auditStore.recordSaved()
     }
 
@@ -21,12 +24,14 @@ internal class MonitoredSessionManager(
         .getOrThrow()
 
     override suspend fun deleteSession() {
+        deletedInThisProcess = true
         logger.e(SessionDeletedException()) { "Deleting stored Supabase session" }
         auditStore.recordDeleted()
         delegate.deleteSession()
     }
 
     private suspend fun reportIfStorageLoss() {
+        if (deletedInThisProcess) return
         val audit = auditStore.getAudit()
         if (!audit.isSessionExpected) return
         logger.e(

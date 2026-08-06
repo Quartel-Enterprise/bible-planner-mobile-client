@@ -121,6 +121,43 @@ class MonitoredSessionManagerTest {
     }
 
     @Test
+    fun `GIVEN a delete whose audit write is not visible yet WHEN loading THEN does not report a loss`() = runTest {
+        // Given
+        manager.saveSession(session())
+        auditStore.ignoreDeletes = true
+        manager.deleteSession()
+        auditStore.order.clear()
+
+        // When
+        assertFailsWith<IllegalStateException> { manager.loadSession() }
+
+        // Then
+        assertEquals(
+            expected = emptyList(),
+            actual = auditStore.order,
+        )
+    }
+
+    @Test
+    fun `GIVEN a delete followed by a new session WHEN the stored session is missing THEN reports the loss`() =
+        runTest {
+            // Given
+            manager.deleteSession()
+            manager.saveSession(session())
+            delegate.stored = null
+            auditStore.order.clear()
+
+            // When
+            assertFailsWith<IllegalStateException> { manager.loadSession() }
+
+            // Then
+            assertEquals(
+                expected = listOf("audit.deleted"),
+                actual = auditStore.order,
+            )
+        }
+
+    @Test
     fun `GIVEN no session ever saved WHEN loading THEN does not report a loss`() = runTest {
         // When
         assertFailsWith<IllegalStateException> { manager.loadSession() }
@@ -158,6 +195,7 @@ class MonitoredSessionManagerTest {
 
     private class FakeSessionAuditStore : SessionAuditStore {
         val order = mutableListOf<String>()
+        var ignoreDeletes = false
         private var lastSavedAt: Long? = null
         private var lastDeletedAt: Long? = null
         private var clock = 0L
@@ -168,7 +206,7 @@ class MonitoredSessionManagerTest {
         }
 
         override suspend fun recordDeleted() {
-            lastDeletedAt = ++clock
+            if (!ignoreDeletes) lastDeletedAt = ++clock
             order += "audit.deleted"
         }
 
