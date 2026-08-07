@@ -18,6 +18,8 @@ internal class FakeChatRepository : ChatRepository {
     val renamed: MutableList<Pair<String, String>> = mutableListOf()
     val deleted: MutableList<String> = mutableListOf()
     val loadedConversationIds: MutableList<String> = mutableListOf()
+    var refreshedConversations: Int = 0
+    var refreshedQuota: Int = 0
 
     override fun observeConversations(): Flow<List<ChatConversationModel>> = conversations
 
@@ -28,13 +30,17 @@ internal class FakeChatRepository : ChatRepository {
 
     override suspend fun syncRemoteChanges() = Unit
 
-    override suspend fun refreshConversations() = Unit
+    override suspend fun refreshConversations() {
+        refreshedConversations++
+    }
 
     override suspend fun refreshMessages(conversationId: String) {
         loadedConversationIds += conversationId
     }
 
-    override suspend fun refreshQuota() = Unit
+    override suspend fun refreshQuota() {
+        refreshedQuota++
+    }
 
     override fun sendMessage(request: ChatSendRequestModel): Flow<ChatSendEventModel> = emptyFlow()
 

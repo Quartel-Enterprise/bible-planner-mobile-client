@@ -20,7 +20,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
@@ -60,7 +59,6 @@ internal class DayViewModel(
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val applicationScope: ApplicationScope,
     private val generationCoordinator: DayStudyGenerationCoordinator,
-    private val getAuthenticatedUserId: GetAuthenticatedUserId,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<DayUiEvent>(trackEvent) {
@@ -163,29 +161,25 @@ internal class DayViewModel(
         }
     }
 
-    // Quota does not gate the entry: the chat opens either way and locks its own input when the
-    // free questions are over, so the paywall is reached with the conversation already in view.
+    // Nothing gates the entry: the chat opens for anyone. Signing in is only asked for when the
+    // user actually sends a question, and the paywall only when the free ones are over — both
+    // with the conversation already in view.
     private fun onAskAiClick() {
+        trackEvent(
+            name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+            params = mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key),
+        )
         viewModelScope.launch {
-            val isLoggedIn = getAuthenticatedUserId() != null
-            trackEvent(
-                name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
-                params = mapOf(
-                    AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key,
-                    AnalyticsParams.IS_LOGGED_IN to isLoggedIn,
+            _uiAction.emit(
+                DayUiAction.NavigateToRoute(
+                    ChatNavRoute(
+                        source = ChatEntrySource.DAY_FAB,
+                        dayNumber = dayNumber,
+                        weekNumber = weekNumber,
+                        readingPlanType = readingPlanType.name,
+                    ),
                 ),
             )
-            val route = if (isLoggedIn) {
-                ChatNavRoute(
-                    source = ChatEntrySource.DAY_FAB,
-                    dayNumber = dayNumber,
-                    weekNumber = weekNumber,
-                    readingPlanType = readingPlanType.name,
-                )
-            } else {
-                LoginWarningNavRoute(LoginWarningReason.AiChat.key)
-            }
-            _uiAction.emit(DayUiAction.NavigateToRoute(route))
         }
     }
 

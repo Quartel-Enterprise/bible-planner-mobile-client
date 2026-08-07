@@ -1,12 +1,15 @@
 package com.quare.bibleplanner.feature.chat.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.toDayNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.chat.domain.coordinator.ChatStreamCoordinator
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
@@ -43,6 +46,7 @@ import kotlin.time.Duration.Companion.seconds
 internal class ChatViewModel(
     route: ChatNavRoute,
     private val useCases: ChatUseCases,
+    private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val coordinator: ChatStreamCoordinator,
     private val messageUiMapper: ChatMessageUiMapper,
     private val conversationGroupMapper: ChatConversationGroupMapper,
@@ -87,9 +91,11 @@ internal class ChatViewModel(
     private var context: ChatContextModel? = null
     private var usedSuggestions: Set<String> = emptySet()
     private var cooldownJob: Job? = null
+    private var isLoggedIn: Boolean = false
 
     init {
         loadContext()
+        observeAuthentication()
         observeConversations()
         observeMessages()
         observeQuota()
@@ -164,9 +170,21 @@ internal class ChatViewModel(
         }
     }
 
+    // Everything server-side needs an account, so the chat only reaches for it once there is one —
+    // which also means signing in from the send gate loads the history and quota straight away.
+    private fun observeAuthentication() {
+        viewModelScope.launch {
+            observeAuthenticatedUserId().collect { userId ->
+                isLoggedIn = userId != null
+                if (userId == null) return@collect
+                useCases.refreshConversations()
+                useCases.refreshQuota()
+            }
+        }
+    }
+
     private fun observeConversations() {
         viewModelScope.launch {
-            useCases.refreshConversations()
             useCases.observeConversations().collect { loaded ->
                 conversations = loaded
                 refreshHistoryGroups()
@@ -194,8 +212,7 @@ internal class ChatViewModel(
 
     private fun observeQuota() {
         viewModelScope.launch {
-            useCases.refreshQuota()
-            useCases.observeQuota().collect { quota -> onQuotaChanged(quota) }
+            useCases.observeQuota().collect(::onQuotaChanged)
         }
     }
 
@@ -252,18 +269,26 @@ internal class ChatViewModel(
             name = AnalyticsEventNames.AI_CHAT_SUGGESTION_CLICKED,
             params = emptyMap(),
         )
+        // The chip is only spent when the question actually goes out: a tap that hits the login or
+        // the cooldown gate leaves the suggestion on screen to be tapped again afterwards.
+        if (!send(suggestion)) return
         usedSuggestions = usedSuggestions + suggestion
         _uiState.update { state -> state.copy(suggestions = state.suggestions - suggestion) }
-        send(suggestion)
     }
 
-    private fun send(message: String) {
+    private fun send(message: String): Boolean {
         val trimmed = message.trim()
-        if (trimmed.isEmpty()) return
-        if (_uiState.value.inputMode != ChatInputMode.ENABLED) return
+        if (trimmed.isEmpty()) return false
+        // Asking is what needs an account (the conversation is saved to it), so the gate sits here
+        // rather than on the way in: a signed-out reader still gets the screen and the suggestions.
+        if (!isLoggedIn) {
+            emitAction(ChatUiAction.NavigateToRoute(LoginWarningNavRoute(LoginWarningReason.AiChat.key)))
+            return false
+        }
+        if (_uiState.value.inputMode != ChatInputMode.ENABLED) return false
         // One answer at a time: the coordinator owns a single stream, so a second question sent now
         // would be dropped. Keep the text in the field instead of swallowing it.
-        if (_uiState.value.isAnswering) return
+        if (_uiState.value.isAnswering) return false
         val conversationId = activeConversationId.value
         trackEvent(
             name = AnalyticsEventNames.AI_CHAT_MESSAGE_SENT,
@@ -285,6 +310,7 @@ internal class ChatViewModel(
                 context = context,
             ),
         )
+        return true
     }
 
     private fun onRetryClick() {

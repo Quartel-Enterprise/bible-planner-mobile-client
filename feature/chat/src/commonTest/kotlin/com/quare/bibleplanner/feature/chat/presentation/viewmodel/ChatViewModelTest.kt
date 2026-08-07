@@ -1,9 +1,12 @@
 package com.quare.bibleplanner.feature.chat.presentation.viewmodel
 
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.feature.chat.domain.coordinator.FakeChatStreamCoordinator
+import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
@@ -22,9 +25,12 @@ import com.quare.bibleplanner.feature.chat.domain.usecase.SyncChatRemoteChangesU
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapper
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatInputMode
+import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiAction
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -37,12 +43,17 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
+private const val SUGGESTION = "Por que Caim matou Abel?"
+
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChatViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val repository = FakeChatRepository()
     private val coordinator = FakeChatStreamCoordinator()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val authenticatedUserId = MutableStateFlow<String?>("user-1")
+    private var chatContext: ChatContextModel? = null
+    private var chatSuggestions: List<String> = emptyList()
 
     @BeforeTest
     fun setUp() {
@@ -67,6 +78,61 @@ internal class ChatViewModelTest {
             assertEquals("", viewModel.uiState.value.input)
             assertTrue(trackedEvents.any { it.first == AnalyticsEventNames.AI_CHAT_MESSAGE_SENT })
         }
+
+    @Test
+    fun `GIVEN a signed-out reader WHEN sending THEN login is asked`() = runTest(testDispatcher) {
+        authenticatedUserId.value = null
+        val viewModel = createViewModel()
+        val actions = mutableListOf<ChatUiAction>()
+        val collection = launch { viewModel.uiAction.collect(actions::add) }
+
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+        viewModel.onEvent(ChatUiEvent.OnSendClick)
+
+        assertTrue(coordinator.startedRequests.isEmpty())
+        assertEquals(
+            listOf(LoginWarningNavRoute(LoginWarningReason.AiChat.key)),
+            actions.filterIsInstance<ChatUiAction.NavigateToRoute>().map { it.route },
+        )
+        assertTrue(trackedEvents.none { it.first == AnalyticsEventNames.AI_CHAT_MESSAGE_SENT })
+        collection.cancel()
+    }
+
+    @Test
+    fun `GIVEN a signed-out reader WHEN they sign in THEN the history and quota load`() = runTest(testDispatcher) {
+        authenticatedUserId.value = null
+        createViewModel()
+        assertTrue(repository.refreshedConversations == 0)
+
+        authenticatedUserId.value = "user-1"
+
+        assertTrue(repository.refreshedConversations > 0)
+        assertTrue(repository.refreshedQuota > 0)
+    }
+
+    @Test
+    fun `GIVEN a signed-out reader WHEN tapping a suggestion THEN the chip is kept`() = runTest(testDispatcher) {
+        authenticatedUserId.value = null
+        val viewModel = createViewModelWithSuggestion()
+
+        viewModel.onEvent(ChatUiEvent.OnSuggestionClick(SUGGESTION))
+
+        assertTrue(coordinator.startedRequests.isEmpty())
+        assertEquals(listOf(SUGGESTION), viewModel.uiState.value.suggestions)
+    }
+
+    @Test
+    fun `GIVEN a signed-in reader WHEN tapping a suggestion THEN it is sent and spent`() = runTest(testDispatcher) {
+        val viewModel = createViewModelWithSuggestion()
+
+        viewModel.onEvent(ChatUiEvent.OnSuggestionClick(SUGGESTION))
+
+        assertEquals(SUGGESTION, coordinator.startedRequests.single().message)
+        assertTrue(
+            viewModel.uiState.value.suggestions
+                .isEmpty(),
+        )
+    }
 
     @Test
     fun `GIVEN blank text WHEN sending THEN nothing is sent`() = runTest(testDispatcher) {
@@ -248,6 +314,15 @@ internal class ChatViewModelTest {
             assertEquals(false, viewModel.uiState.value.history.isOpen)
         }
 
+    private fun createViewModelWithSuggestion(): ChatViewModel {
+        chatContext = ChatContextModel(
+            label = "Gênesis 4-7",
+            passages = emptyList(),
+        )
+        chatSuggestions = listOf(SUGGESTION)
+        return createViewModel()
+    }
+
     private fun createViewModel(): ChatViewModel = ChatViewModel(
         route = ChatNavRoute(
             source = ChatEntrySource.DAY_FAB,
@@ -255,6 +330,7 @@ internal class ChatViewModelTest {
             weekNumber = null,
             readingPlanType = null,
         ),
+        observeAuthenticatedUserId = { authenticatedUserId },
         useCases = ChatUseCases(
             observeConversations = ObserveChatConversationsUseCase(repository),
             observeMessages = ObserveChatMessagesUseCase(repository),
@@ -265,8 +341,8 @@ internal class ChatViewModelTest {
             refreshQuota = RefreshChatQuotaUseCase(repository),
             renameConversation = RenameChatConversationUseCase(repository),
             deleteConversation = DeleteChatConversationUseCase(repository),
-            getSuggestions = { emptyList() },
-            getContext = { null },
+            getSuggestions = { chatSuggestions },
+            getContext = { chatContext },
         ),
         coordinator = coordinator,
         messageUiMapper = ChatMessageUiMapper(),

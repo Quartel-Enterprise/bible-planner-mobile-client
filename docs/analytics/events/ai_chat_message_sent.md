@@ -21,5 +21,5 @@ The user taps send with non-empty text, or taps a suggestion chip. Fires when th
 
 ## Notes
 
-- A question blocked by the rate-limit cooldown or by the locked input never reaches this event.
+- A question blocked by the rate-limit cooldown, by the locked input, or by the reader not being signed in never reaches this event — the send is refused and, when signed out, the login warning opens instead.
 - Failures after this point are covered by [ai_chat_answer_failed](ai_chat_answer_failed.md); quota is only consumed on success.

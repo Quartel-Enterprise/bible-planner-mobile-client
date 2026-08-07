@@ -16,7 +16,6 @@ kotlin {
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.model)
-            implementation(projects.core.user)
             implementation(projects.feature.dayStudy)
             implementation(projects.core.utils)
             implementation(projects.core.date)

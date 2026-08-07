@@ -124,30 +124,24 @@ internal class DayStudyRouteViewModel(
         }
     }
 
-    // Quota does not gate the entry: the chat opens either way and locks its own input when the
-    // free questions are over, so the paywall is reached with the conversation already in view.
+    // Nothing gates the entry: the chat opens for anyone. Signing in is only asked for when the
+    // user actually sends a question, and the paywall only when the free ones are over — both
+    // with the conversation already in view.
     private fun onAskAiClick() {
-        viewModelScope.launch {
-            val isLoggedIn = observeAuthenticatedUserId().first() != null
-            trackEvent(
-                name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
-                params = mapOf(
-                    AnalyticsParams.SOURCE to ChatEntrySource.DAY_STUDY_QUESTIONS.key,
-                    AnalyticsParams.IS_LOGGED_IN to isLoggedIn,
-                ),
-            )
-            val route = if (isLoggedIn) {
+        trackEvent(
+            name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+            params = mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_STUDY_QUESTIONS.key),
+        )
+        emitAction(
+            DayStudyRouteUiAction.NavigateToRoute(
                 ChatNavRoute(
                     source = ChatEntrySource.DAY_STUDY_QUESTIONS,
                     dayNumber = dayRoute.dayNumber,
                     weekNumber = dayRoute.weekNumber,
                     readingPlanType = dayRoute.readingPlanType,
-                )
-            } else {
-                LoginWarningNavRoute(LoginWarningReason.AiChat.key)
-            }
-            _uiAction.emit(DayStudyRouteUiAction.NavigateToRoute(route))
-        }
+                ),
+            ),
+        )
     }
 
     private fun onRetryClick() {
