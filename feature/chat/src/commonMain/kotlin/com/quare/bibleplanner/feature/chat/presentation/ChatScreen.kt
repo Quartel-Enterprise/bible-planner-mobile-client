@@ -33,15 +33,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.chat.generated.resources.Res
 import bibleplanner.feature.chat.generated.resources.chat_context_chip
@@ -86,9 +84,9 @@ internal fun ChatScreen(
 ) {
     val isWide = LocalIsWideLayout.current
     val listState = rememberLazyListState()
-    var composerHeight by remember { mutableStateOf(0.dp) }
+    var composerHeightPx by remember { mutableFloatStateOf(0f) }
     // The composer owns the bottom edge here, so the app's snackbar has to clear it.
-    ReserveBottomOverlayHeight(composerHeight)
+    ReserveBottomOverlayHeight { composerHeightPx }
     ScrollToBottomEffect(
         requests = scrollToBottomRequests,
         listState = listState,
@@ -128,7 +126,7 @@ internal fun ChatScreen(
                 ChatComposer(
                     uiState = uiState,
                     onEvent = onEvent,
-                    onHeightChange = { height -> composerHeight = height },
+                    onHeightChange = { height -> composerHeightPx = height },
                 )
             }
         }
@@ -306,13 +304,12 @@ private fun ChatMessages(
 private fun ChatComposer(
     uiState: ChatUiState,
     onEvent: (ChatUiEvent) -> Unit,
-    onHeightChange: (Dp) -> Unit,
+    onHeightChange: (Float) -> Unit,
 ) {
-    val density = LocalDensity.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .onSizeChanged { size -> onHeightChange(with(density) { size.height.toDp() }) }
+            .onSizeChanged { size -> onHeightChange(size.height.toFloat()) }
             .padding(
                 horizontal = 12.dp,
                 vertical = 8.dp,
