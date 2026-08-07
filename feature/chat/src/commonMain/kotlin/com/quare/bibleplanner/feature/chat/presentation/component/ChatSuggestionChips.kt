@@ -3,8 +3,8 @@ package com.quare.bibleplanner.feature.chat.presentation.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,13 +25,14 @@ internal fun ChatSuggestionChips(
     ) {
         Text(
             text = stringResource(Res.string.chat_suggestions_label),
+            modifier = Modifier.padding(bottom = 2.dp),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.outline,
         )
         suggestions.forEach { suggestion ->
-            SuggestionChip(
+            ChatSuggestionChip(
+                suggestion = suggestion,
                 onClick = { onSuggestionClick(suggestion) },
-                label = { Text(suggestion) },
             )
         }
     }

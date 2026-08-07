@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -75,9 +74,9 @@ internal fun ChatSuggestionBar(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     suggestions.forEach { suggestion ->
-                        SuggestionChip(
+                        ChatSuggestionChip(
+                            suggestion = suggestion,
                             onClick = { onSuggestionClick(suggestion) },
-                            label = { Text(suggestion) },
                         )
                     }
                 }
