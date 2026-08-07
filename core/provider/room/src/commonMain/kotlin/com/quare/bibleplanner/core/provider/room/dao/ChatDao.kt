@@ -14,7 +14,10 @@ interface ChatDao {
     fun observeConversations(): Flow<List<ChatConversationEntity>>
 
     @Query(
-        "SELECT * FROM chat_messages WHERE conversationId = :conversationId ORDER BY createdAtEpochMillis ASC, id ASC",
+        // On identical timestamps the question comes before its answer (isFromUser first), so a
+        // tie can never read as the assistant replying before it was asked.
+        "SELECT * FROM chat_messages WHERE conversationId = :conversationId " +
+            "ORDER BY createdAtEpochMillis ASC, isFromUser DESC, id ASC",
     )
     fun observeMessages(conversationId: String): Flow<List<ChatMessageEntity>>
 

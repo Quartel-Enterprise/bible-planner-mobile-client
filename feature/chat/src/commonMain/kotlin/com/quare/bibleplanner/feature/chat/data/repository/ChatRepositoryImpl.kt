@@ -306,7 +306,6 @@ internal class ChatRepositoryImpl(
         messageId: String,
         content: String,
     ) {
-        val createdAt = streamingAnswer.value?.createdAt ?: Clock.System.now()
         streamingAnswer.value = null
         localDataSource.saveMessage(
             conversationId = conversationId,
@@ -315,7 +314,10 @@ internal class ChatRepositoryImpl(
                 role = ChatRoleModel.ASSISTANT,
                 content = content,
                 isStreaming = false,
-                createdAt = createdAt,
+                // Stamped now, not when the question was sent: an answer that carried the question's
+                // own instant left the two tied, and the thread then ordered them by their random
+                // ids — which is how an answer could end up above the question that asked for it.
+                createdAt = Clock.System.now(),
             ),
         )
         // Answering is what moves a conversation to the top of the history, so the mirror follows.
