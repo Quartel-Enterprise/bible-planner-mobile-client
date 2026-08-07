@@ -22,6 +22,7 @@ import com.quare.bibleplanner.feature.chat.data.mapper.ChatQuotaMapper
 import com.quare.bibleplanner.feature.chat.data.model.ChatRemoteChange
 import com.quare.bibleplanner.feature.chat.data.model.ChatStreamEvent
 import com.quare.bibleplanner.feature.chat.data.model.StreamingAnswer
+import com.quare.bibleplanner.feature.chat.data.model.withStreamingAnswer
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
@@ -86,11 +87,10 @@ internal class ChatRepositoryImpl(
         localDataSource.observeMessages(conversationId),
         streamingAnswer.asStateFlow(),
     ) { cached, streaming ->
-        if (streaming == null || streaming.conversationId != conversationId) {
-            cached
-        } else {
-            cached + streaming.toMessage()
-        }
+        cached.withStreamingAnswer(
+            streaming = streaming,
+            conversationId = conversationId,
+        )
     }
 
     override fun observeQuota(): Flow<ChatQuotaModel?> = quota.asStateFlow()

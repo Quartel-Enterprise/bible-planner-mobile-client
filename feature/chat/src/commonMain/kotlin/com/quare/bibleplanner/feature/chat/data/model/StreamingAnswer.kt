@@ -23,3 +23,19 @@ internal data class StreamingAnswer(
         createdAt = createdAt,
     )
 }
+
+/**
+ * The thread as the reader should see it: the cached messages, with the answer being written now
+ * standing in for its own cached row.
+ *
+ * That row can already be there — the server inserts the answer before the stream reports `done`,
+ * and Realtime often delivers it first — and appending the live one on top would put the same id in
+ * the list twice, which a lazy list refuses outright.
+ */
+internal fun List<ChatMessageModel>.withStreamingAnswer(
+    streaming: StreamingAnswer?,
+    conversationId: String,
+): List<ChatMessageModel> {
+    if (streaming == null || streaming.conversationId != conversationId) return this
+    return filterNot { message -> message.id == streaming.messageId } + streaming.toMessage()
+}

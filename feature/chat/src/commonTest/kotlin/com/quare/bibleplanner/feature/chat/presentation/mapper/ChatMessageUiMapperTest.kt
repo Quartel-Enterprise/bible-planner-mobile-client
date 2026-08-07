@@ -51,6 +51,25 @@ internal class ChatMessageUiMapperTest {
         assertFalse(mapper.isThinking(messages))
     }
 
+    @Test
+    fun `GIVEN a repeated id WHEN mapping THEN the list stays safe for a lazy list`() {
+        val messages = listOf(
+            message(
+                id = "answer",
+                role = ChatRoleModel.ASSISTANT,
+                content = "Caim matou Abel por inveja.",
+            ),
+            message(
+                id = "answer",
+                role = ChatRoleModel.ASSISTANT,
+                content = "Caim matou",
+                isStreaming = true,
+            ),
+        )
+
+        assertEquals(listOf("answer"), mapper.map(messages).map { it.id })
+    }
+
     private fun message(
         id: String,
         role: ChatRoleModel,
