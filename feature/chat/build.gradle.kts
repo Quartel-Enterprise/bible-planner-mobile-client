@@ -14,12 +14,14 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.clear)
             implementation(projects.core.model)
             implementation(projects.core.utils)
             implementation(projects.core.books)
             implementation(projects.core.date)
             implementation(projects.core.user)
             implementation(projects.core.provider.language)
+            implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.analytics)

@@ -12,7 +12,9 @@ import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 /**
@@ -24,6 +26,14 @@ import kotlinx.coroutines.withContext
 internal class ChatRealtimeDataSource(
     private val realtime: Realtime,
 ) {
+    /**
+     * Every transition into CONNECTED — cold start and each reconnection. It is the cue to pull a
+     * fresh snapshot, since anything that changed while the socket was down was never delivered.
+     */
+    fun observeConnected(): Flow<Unit> = realtime.status
+        .filter { status -> status == Realtime.Status.CONNECTED }
+        .map { }
+
     fun observeConversations(userId: String): Flow<ChatRemoteChange> = flow {
         val channel = realtime.channel("${CONVERSATIONS_TABLE}_$userId")
         val changes = channel.postgresChangeFlow<PostgresAction>(schema = SCHEMA) {

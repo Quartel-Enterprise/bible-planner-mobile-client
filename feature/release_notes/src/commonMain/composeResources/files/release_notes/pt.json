@@ -3,7 +3,8 @@
     "Agora você pode excluir sua conta pelo próprio app, em Perfil › Conta e dados. Antes de confirmar, o app mostra tudo o que será apagado e lembra que a assinatura precisa ser cancelada na loja onde você assinou.",
     "A tela de apagar todo o progresso ficou mais clara: agora ela mostra o que é removido e o que continua com você, como sua conta, sua assinatura e suas preferências.",
     "Você agora pode conversar com a IA sobre a leitura do dia: toque em \"Pergunte à IA\" na tela do dia, ou no cartão \"Pergunte sobre esta leitura\" dentro da aba Perguntas, e o assistente já começa sabendo quais capítulos você está lendo. A resposta aparece aos poucos, enquanto está sendo escrita.",
-    "Suas conversas com a IA ficam salvas na sua conta: você pode voltar a qualquer uma pelo histórico, buscar por assunto, renomear ou excluir — e tudo isso aparece na hora nos seus outros aparelhos."
+    "Suas conversas com a IA ficam salvas na sua conta: você pode voltar a qualquer uma pelo histórico, buscar por assunto, renomear ou excluir — e tudo isso aparece na hora nos seus outros aparelhos.",
+    "Suas conversas com a IA agora ficam guardadas no aparelho: mesmo sem internet você continua abrindo o histórico e relendo o que já foi respondido — só para fazer novas perguntas é que a conexão é necessária."
   ],
   "2.4.0": [
     "Corrigido um problema que podia mostrar um erro na tela de versões da Bíblia mesmo com internet funcionando.",

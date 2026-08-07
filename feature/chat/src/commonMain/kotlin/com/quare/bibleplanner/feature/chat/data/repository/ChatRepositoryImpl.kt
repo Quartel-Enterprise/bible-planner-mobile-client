@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLangua
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatConversationsRemoteDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatLocalDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatMessagesRemoteDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatRealtimeDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatStreamRemoteDataSource
@@ -20,6 +21,7 @@ import com.quare.bibleplanner.feature.chat.data.mapper.ChatMessageMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatQuotaMapper
 import com.quare.bibleplanner.feature.chat.data.model.ChatRemoteChange
 import com.quare.bibleplanner.feature.chat.data.model.ChatStreamEvent
+import com.quare.bibleplanner.feature.chat.data.model.StreamingAnswer
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
@@ -31,32 +33,35 @@ import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import io.github.jan.supabase.exceptions.RestException
 import io.ktor.client.plugins.sse.SSEClientException
 import io.ktor.client.statement.bodyAsText
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 
 /**
- * Owns the chat session in memory: conversations, their messages and the quota. Messages are keyed
- * by the id the server assigns, which is what makes the two sources of truth converge — the SSE
- * stream of an answer being written here and the Realtime insert of that same row (or of a message
- * from another device) upsert into the same slot instead of producing two bubbles.
+ * Reads the chat from the local mirror (Room) and keeps that mirror in step with the server, so a
+ * reader with no connection still has their conversations and can re-read them.
  *
- * There is no local database on purpose: the chat needs the network to say anything at all.
+ * Only what the server confirmed is cached. The answer being written right now lives in memory
+ * instead, and is combined with the cached thread for display — a half-streamed answer must never
+ * be persisted as if it were the final one. Everything is keyed by the id the server assigns, which
+ * is what makes the streamed answer and its later Realtime insert land on the same message instead
+ * of on two.
  */
 internal class ChatRepositoryImpl(
+    private val localDataSource: ChatLocalDataSource,
     private val conversationsDataSource: ChatConversationsRemoteDataSource,
     private val messagesDataSource: ChatMessagesRemoteDataSource,
     private val streamDataSource: ChatStreamRemoteDataSource,
@@ -71,95 +76,115 @@ internal class ChatRepositoryImpl(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val json: Json,
 ) : ChatRepository {
-    private val conversations: MutableStateFlow<Map<String, ChatConversationModel>> = MutableStateFlow(emptyMap())
-    private val messages: MutableStateFlow<Map<String, Map<String, ChatMessageModel>>> = MutableStateFlow(emptyMap())
+    private val streamingAnswer: MutableStateFlow<StreamingAnswer?> = MutableStateFlow(null)
     private val quota: MutableStateFlow<ChatQuotaModel?> = MutableStateFlow(null)
     private var currentUserId: String? = null
 
-    override fun observeConversations(): Flow<List<ChatConversationModel>> = conversations
-        .asStateFlow()
-        .map { current -> current.values.sortedByDescending(ChatConversationModel::updatedAt) }
+    override fun observeConversations(): Flow<List<ChatConversationModel>> = localDataSource.observeConversations()
 
-    override fun observeMessages(conversationId: String): Flow<List<ChatMessageModel>> = messages
-        .asStateFlow()
-        .map { current -> current[conversationId].orEmpty().values.sortedWith(messageOrder) }
+    override fun observeMessages(conversationId: String): Flow<List<ChatMessageModel>> = combine(
+        localDataSource.observeMessages(conversationId),
+        streamingAnswer.asStateFlow(),
+    ) { cached, streaming ->
+        if (streaming == null || streaming.conversationId != conversationId) {
+            cached
+        } else {
+            cached + streaming.toMessage()
+        }
+    }
 
     override fun observeQuota(): Flow<ChatQuotaModel?> = quota.asStateFlow()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun syncRemoteChanges() {
         observeAuthenticatedUserId()
             .onEach(::onUserChanged)
-            .filterNotNull()
-            .flatMapLatest { userId ->
-                merge(
-                    realtimeDataSource.observeConversations(userId),
-                    realtimeDataSource.observeMessages(userId),
-                )
-            }.catch { throwable -> Logger.e(throwable) { "Chat realtime sync failed" } }
+            .collectLatest { userId ->
+                if (userId == null) return@collectLatest
+                coroutineScope {
+                    launch { observeRemoteChanges(userId) }
+                    launch { pullOnConnected() }
+                }
+            }
+    }
+
+    private suspend fun observeRemoteChanges(userId: String) {
+        merge(
+            realtimeDataSource.observeConversations(userId),
+            realtimeDataSource.observeMessages(userId),
+        ).catch { throwable -> Logger.e(throwable) { "Chat realtime sync failed" } }
             .collect(::applyRemoteChange)
     }
 
-    // The session store outlives the screen, so signing out (or into another account) must empty
-    // it: nobody should ever see the previous user's conversations.
-    private fun onUserChanged(userId: String?) {
-        if (userId == currentUserId) return
+    /**
+     * Realtime only delivers what happens while the socket is up, so every reconnection re-pulls the
+     * conversation list: that is what reconciles anything renamed or deleted elsewhere while this
+     * device was offline.
+     */
+    private suspend fun pullOnConnected() {
+        realtimeDataSource.observeConnected().collect {
+            suspendRunCatching { refreshConversations() }
+                .onFailure { error -> Logger.e(error) { "Failed to pull the chat snapshot" } }
+        }
+    }
+
+    /**
+     * Wipes the mirror only when a *different* account takes over without a logout in between —
+     * signing out clears it through ClearChatLocalData instead. Two cases must not wipe: signing
+     * into the same account, which is what every cold start looks like and is the whole point of
+     * having a cache, and losing the session (an expired token would otherwise cost the reader
+     * their offline history over a transient auth hiccup).
+     */
+    private suspend fun onUserChanged(userId: String?) {
+        val previousUserId = currentUserId
         currentUserId = userId
-        conversations.value = emptyMap()
-        messages.value = emptyMap()
+        if (previousUserId == null || userId == null || previousUserId == userId) return
         quota.value = null
+        localDataSource.deleteAll()
     }
 
-    private fun applyRemoteChange(change: ChatRemoteChange) {
+    // One unusable change must not take the whole subscription down with it, so each is applied on
+    // its own: the next event still arrives.
+    private suspend fun applyRemoteChange(change: ChatRemoteChange) {
+        suspendRunCatching { applyChange(change) }
+            .onFailure { error -> Logger.e(error) { "Failed to apply a remote chat change" } }
+    }
+
+    private suspend fun applyChange(change: ChatRemoteChange) {
         when (change) {
-            is ChatRemoteChange.ConversationUpserted -> conversationMapper.map(change.conversation).let { model ->
-                conversations.update { it + (model.id to model) }
-            }
+            is ChatRemoteChange.ConversationUpserted ->
+                localDataSource.saveConversation(conversationMapper.map(change.conversation))
 
-            is ChatRemoteChange.ConversationDeleted -> {
-                conversations.update { it - change.conversationId }
-                messages.update { it - change.conversationId }
-            }
+            is ChatRemoteChange.ConversationDeleted -> localDataSource.deleteConversation(change.conversationId)
 
-            is ChatRemoteChange.MessageUpserted -> upsertMessage(
-                conversationId = change.message.conversationId,
-                message = messageMapper.map(change.message),
-            )
+            is ChatRemoteChange.MessageUpserted -> onRemoteMessage(change)
 
-            is ChatRemoteChange.MessageDeleted -> messages.update { current ->
-                current.mapValues { (_, byId) -> byId - change.messageId }
-            }
+            is ChatRemoteChange.MessageDeleted -> localDataSource.deleteMessage(change.messageId)
         }
     }
 
-    // A message already in the session keeps its streamed content until the stream finishes, so a
-    // Realtime insert arriving mid-answer never truncates the bubble the user is reading.
-    private fun upsertMessage(
-        conversationId: String,
-        message: ChatMessageModel,
-    ) {
-        messages.update { current ->
-            val byId = current[conversationId].orEmpty()
-            val existing = byId[message.id]
-            val merged = if (existing?.isStreaming == true) existing else message
-            current + (conversationId to byId + (message.id to merged))
-        }
+    /**
+     * A message can arrive for a conversation this device has never seen — started on another
+     * device, or created while the socket was down. Pulling the list first gives the message a
+     * thread to belong to instead of dropping it.
+     */
+    private suspend fun onRemoteMessage(change: ChatRemoteChange.MessageUpserted) {
+        val conversationId = change.message.conversationId
+        if (findConversation(conversationId) == null) refreshConversations()
+        localDataSource.saveMessage(
+            conversationId = conversationId,
+            message = messageMapper.map(change.message),
+        )
     }
 
     override suspend fun refreshConversations() {
-        val fetched = conversationsDataSource.fetchAll().map(conversationMapper::map)
-        conversations.value = fetched.associateBy(ChatConversationModel::id)
+        localDataSource.replaceConversations(conversationsDataSource.fetchAll().map(conversationMapper::map))
     }
 
     override suspend fun refreshMessages(conversationId: String) {
-        val fetched = messagesDataSource
-            .fetchByConversation(conversationId)
-            .map(messageMapper::map)
-            .associateBy(ChatMessageModel::id)
-        messages.update { current ->
-            val streaming = current[conversationId].orEmpty().filterValues(ChatMessageModel::isStreaming)
-            current + (conversationId to fetched + streaming)
-        }
+        localDataSource.replaceMessages(
+            conversationId = conversationId,
+            messages = messagesDataSource.fetchByConversation(conversationId).map(messageMapper::map),
+        )
     }
 
     override suspend fun refreshQuota() {
@@ -206,15 +231,17 @@ internal class ChatRepositoryImpl(
             question = request.message,
         )
 
-        is ChatStreamEvent.Delta -> pending?.also { answer ->
-            updateStreamingMessage(answer) { current -> current + event.text }
+        is ChatStreamEvent.Delta -> pending?.also {
+            streamingAnswer.update { current -> current?.copy(content = current.content + event.text) }
         }
 
         // The model restarted from scratch: what was shown so far is no longer the answer.
-        ChatStreamEvent.Restart -> pending?.also { answer -> updateStreamingMessage(answer) { "" } }
+        ChatStreamEvent.Restart -> pending?.also {
+            streamingAnswer.update { current -> current?.copy(content = "") }
+        }
 
         is ChatStreamEvent.Done -> {
-            finishStreamingMessage(
+            onDone(
                 conversationId = event.payload.conversationId,
                 messageId = event.payload.assistantMessageId,
                 content = event.payload.content,
@@ -224,46 +251,41 @@ internal class ChatRepositoryImpl(
             null
         }
 
-        is ChatStreamEvent.Title -> pending.also {
-            conversations.update { current ->
-                val conversation = current[event.conversationId] ?: return@update current
-                current + (event.conversationId to conversation.copy(title = event.title))
-            }
-        }
+        is ChatStreamEvent.Title -> pending.also { onTitleGenerated(event.conversationId, event.title) }
     }
 
     private suspend fun FlowCollector<ChatSendEventModel>.onAccepted(
         payload: ChatAcceptedDto,
         question: String,
     ): PendingAnswer {
+        val now = Clock.System.now()
         if (payload.isNewConversation) {
-            conversationMapper
-                .map(
+            localDataSource.saveConversation(
+                conversationMapper.map(
                     conversationId = payload.conversationId,
                     title = payload.title,
                     preview = question,
                     contextLabel = payload.contextLabel,
-                ).let { model -> conversations.update { it + (model.id to model) } }
+                ),
+            )
         }
-        putMessage(
+        // The question is already persisted server-side at this point, so it belongs in the mirror
+        // right away; only the answer is still provisional.
+        localDataSource.saveMessage(
             conversationId = payload.conversationId,
             message = ChatMessageModel(
                 id = payload.userMessageId,
                 role = ChatRoleModel.USER,
                 content = question,
                 isStreaming = false,
-                createdAt = Clock.System.now(),
+                createdAt = now,
             ),
         )
-        putMessage(
+        streamingAnswer.value = StreamingAnswer(
             conversationId = payload.conversationId,
-            message = ChatMessageModel(
-                id = payload.assistantMessageId,
-                role = ChatRoleModel.ASSISTANT,
-                content = "",
-                isStreaming = true,
-                createdAt = Clock.System.now(),
-            ),
+            messageId = payload.assistantMessageId,
+            content = "",
+            createdAt = now,
         )
         emit(
             ChatSendEventModel.Accepted(
@@ -279,59 +301,56 @@ internal class ChatRepositoryImpl(
         )
     }
 
-    private fun putMessage(
-        conversationId: String,
-        message: ChatMessageModel,
-    ) {
-        messages.update { current ->
-            current + (conversationId to current[conversationId].orEmpty() + (message.id to message))
-        }
-    }
-
-    private fun updateStreamingMessage(
-        pending: PendingAnswer,
-        transform: (String) -> String,
-    ) {
-        messages.update { current ->
-            val byId = current[pending.conversationId].orEmpty()
-            val streaming = byId[pending.assistantMessageId] ?: return@update current
-            current +
-                (
-                    pending.conversationId to
-                        byId + (streaming.id to streaming.copy(content = transform(streaming.content)))
-                )
-        }
-    }
-
-    private fun finishStreamingMessage(
+    private suspend fun onDone(
         conversationId: String,
         messageId: String,
         content: String,
     ) {
-        messages.update { current ->
-            val byId = current[conversationId].orEmpty()
-            val streaming = byId[messageId] ?: return@update current
-            val finished = streaming.copy(
+        val createdAt = streamingAnswer.value?.createdAt ?: Clock.System.now()
+        streamingAnswer.value = null
+        localDataSource.saveMessage(
+            conversationId = conversationId,
+            message = ChatMessageModel(
+                id = messageId,
+                role = ChatRoleModel.ASSISTANT,
                 content = content,
                 isStreaming = false,
-            )
-            current + (conversationId to byId + (messageId to finished))
-        }
+                createdAt = createdAt,
+            ),
+        )
+        // Answering is what moves a conversation to the top of the history, so the mirror follows.
+        touchConversation(conversationId)
     }
 
+    private suspend fun onTitleGenerated(
+        conversationId: String,
+        title: String,
+    ) {
+        val conversation = findConversation(conversationId) ?: return
+        localDataSource.saveConversation(conversation.copy(title = title))
+    }
+
+    private suspend fun touchConversation(conversationId: String) {
+        val conversation = findConversation(conversationId) ?: return
+        localDataSource.saveConversation(conversation.copy(updatedAt = Clock.System.now()))
+    }
+
+    private suspend fun findConversation(conversationId: String): ChatConversationModel? = localDataSource
+        .observeConversations()
+        .first()
+        .firstOrNull { it.id == conversationId }
+
     /**
-     * The server drops the question row when a generation fails, so the session drops it too:
+     * The server drops the question row when a generation fails, so the mirror drops it too:
      * retrying then re-asks instead of stacking a second copy of the same question.
      */
-    private fun discardPendingAnswer(pending: PendingAnswer) {
-        messages.update { current ->
-            val byId = current[pending.conversationId].orEmpty()
-            current + (pending.conversationId to byId - pending.userMessageId - pending.assistantMessageId)
-        }
+    private suspend fun discardPendingAnswer(pending: PendingAnswer) {
+        streamingAnswer.value = null
         if (pending.isNewConversation) {
-            conversations.update { it - pending.conversationId }
-            messages.update { it - pending.conversationId }
+            localDataSource.deleteConversation(pending.conversationId)
+            return
         }
+        localDataSource.deleteMessage(pending.userMessageId)
     }
 
     override suspend fun renameConversation(
@@ -342,23 +361,21 @@ internal class ChatRepositoryImpl(
             conversationId = conversationId,
             title = title,
         )
-        conversations.update { current ->
-            val conversation = current[conversationId] ?: return@update current
-            current + (conversationId to conversation.copy(title = title))
-        }
+        val conversation = findConversation(conversationId) ?: return
+        localDataSource.saveConversation(conversation.copy(title = title))
     }
 
     override suspend fun deleteConversation(conversationId: String) {
         conversationsDataSource.delete(conversationId)
-        conversations.update { it - conversationId }
-        messages.update { it - conversationId }
+        localDataSource.deleteConversation(conversationId)
     }
 
     private suspend fun mapFailure(
         throwable: Throwable,
         pending: PendingAnswer?,
     ): Throwable {
-        pending?.let(::discardPendingAnswer)
+        pending?.let { discardPendingAnswer(it) }
+        streamingAnswer.value = null
         throwable.rateLimitRetrySeconds()?.let { seconds -> return ChatRateLimitedException(seconds) }
         if (throwable.isLimitReached()) return ChatLimitReachedException()
         Logger.e(throwable) { "Failed to send the chat message" }
@@ -392,10 +409,5 @@ internal class ChatRepositoryImpl(
         const val LIMIT_EXCEEDED_STATUS = 402
         const val RATE_LIMITED_STATUS = 429
         const val DEFAULT_RETRY_SECONDS = 30
-
-        val messageOrder: Comparator<ChatMessageModel> = compareBy(
-            { it.createdAt },
-            { it.id },
-        )
     }
 }

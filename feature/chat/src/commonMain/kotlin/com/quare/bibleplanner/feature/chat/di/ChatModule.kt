@@ -1,11 +1,14 @@
 package com.quare.bibleplanner.feature.chat.di
 
+import com.quare.bibleplanner.core.clear.domain.ClearChatLocalData
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatConversationsRemoteDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatLocalDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatMessagesRemoteDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatRealtimeDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatStreamRemoteDataSource
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatContextRequestMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatConversationMapper
+import com.quare.bibleplanner.feature.chat.data.mapper.ChatEntityMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatMessageMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatQuotaMapper
 import com.quare.bibleplanner.feature.chat.data.repository.ChatRepositoryImpl
@@ -25,6 +28,7 @@ import com.quare.bibleplanner.feature.chat.domain.usecase.RefreshChatQuotaUseCas
 import com.quare.bibleplanner.feature.chat.domain.usecase.RenameChatConversationUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.SendChatMessageUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.SyncChatRemoteChangesUseCase
+import com.quare.bibleplanner.feature.chat.domain.usecase.impl.ClearChatLocalDataUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.impl.GetChatContextUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.impl.GetChatSuggestionsUseCase
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
@@ -41,9 +45,11 @@ val chatModule = module {
     factoryOf(::ChatMessageMapper)
     factoryOf(::ChatQuotaMapper)
     factoryOf(::ChatContextRequestMapper)
+    factoryOf(::ChatEntityMapper)
     factoryOf(::ChatMessageUiMapper)
     factoryOf(::ChatConversationGroupMapper)
 
+    singleOf(::ChatLocalDataSource)
     singleOf(::ChatStreamRemoteDataSource)
     singleOf(::ChatConversationsRemoteDataSource)
     singleOf(::ChatMessagesRemoteDataSource)
@@ -64,6 +70,7 @@ val chatModule = module {
     factoryOf(::DeleteChatConversationUseCase)
     factoryOf(::GetChatSuggestionsUseCase).bind<GetChatSuggestions>()
     factoryOf(::GetChatContextUseCase).bind<GetChatContext>()
+    factoryOf(::ClearChatLocalDataUseCase).bind<ClearChatLocalData>()
     factoryOf(::ChatUseCases)
 
     viewModelOf(::ChatViewModel)
