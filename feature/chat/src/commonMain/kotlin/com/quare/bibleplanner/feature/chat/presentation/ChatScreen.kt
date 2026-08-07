@@ -32,9 +32,16 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.chat.generated.resources.Res
 import bibleplanner.feature.chat.generated.resources.chat_context_chip
@@ -58,6 +65,7 @@ import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
+import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 
@@ -78,6 +86,9 @@ internal fun ChatScreen(
 ) {
     val isWide = LocalIsWideLayout.current
     val listState = rememberLazyListState()
+    var composerHeight by remember { mutableStateOf(0.dp) }
+    // The composer owns the bottom edge here, so the app's snackbar has to clear it.
+    ReserveBottomOverlayHeight(composerHeight)
     ScrollToBottomEffect(
         requests = scrollToBottomRequests,
         listState = listState,
@@ -117,6 +128,7 @@ internal fun ChatScreen(
                 ChatComposer(
                     uiState = uiState,
                     onEvent = onEvent,
+                    onHeightChange = { height -> composerHeight = height },
                 )
             }
         }
@@ -294,10 +306,13 @@ private fun ChatMessages(
 private fun ChatComposer(
     uiState: ChatUiState,
     onEvent: (ChatUiEvent) -> Unit,
+    onHeightChange: (Dp) -> Unit,
 ) {
+    val density = LocalDensity.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .onSizeChanged { size -> onHeightChange(with(density) { size.height.toDp() }) }
             .padding(
                 horizontal = 12.dp,
                 vertical = 8.dp,
