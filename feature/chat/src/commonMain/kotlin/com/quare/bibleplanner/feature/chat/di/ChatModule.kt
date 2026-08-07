@@ -31,6 +31,8 @@ import com.quare.bibleplanner.feature.chat.domain.usecase.SyncChatRemoteChangesU
 import com.quare.bibleplanner.feature.chat.domain.usecase.impl.ClearChatLocalDataUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.impl.GetChatContextUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.impl.GetChatSuggestionsUseCase
+import com.quare.bibleplanner.feature.chat.presentation.GetDefaultChatSuggestions
+import com.quare.bibleplanner.feature.chat.presentation.GetDefaultChatSuggestionsUseCase
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapper
 import com.quare.bibleplanner.feature.chat.presentation.viewmodel.ChatViewModel
@@ -48,6 +50,7 @@ val chatModule = module {
     factoryOf(::ChatEntityMapper)
     factoryOf(::ChatMessageUiMapper)
     factoryOf(::ChatConversationGroupMapper)
+    factoryOf(::GetDefaultChatSuggestionsUseCase).bind<GetDefaultChatSuggestions>()
 
     singleOf(::ChatLocalDataSource)
     singleOf(::ChatStreamRemoteDataSource)

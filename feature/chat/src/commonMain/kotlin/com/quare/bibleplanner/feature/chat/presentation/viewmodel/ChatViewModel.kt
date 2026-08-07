@@ -18,6 +18,7 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatSendFailureModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
 import com.quare.bibleplanner.feature.chat.domain.usecase.ChatUseCases
+import com.quare.bibleplanner.feature.chat.presentation.GetDefaultChatSuggestions
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapper
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatHistoryUiState
@@ -47,6 +48,7 @@ internal class ChatViewModel(
     route: ChatNavRoute,
     private val useCases: ChatUseCases,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
+    private val getDefaultSuggestions: GetDefaultChatSuggestions,
     private val coordinator: ChatStreamCoordinator,
     private val messageUiMapper: ChatMessageUiMapper,
     private val conversationGroupMapper: ChatConversationGroupMapper,
@@ -162,10 +164,16 @@ internal class ChatViewModel(
 
     private fun loadContext() {
         viewModelScope.launch {
-            val loaded = useCases.getContext(dayRoute) ?: return@launch
+            val loaded = useCases.getContext(dayRoute)
             context = loaded
-            _uiState.update { it.copy(contextLabel = loaded.label) }
-            val suggestions = useCases.getSuggestions(loaded.passages)
+            _uiState.update { it.copy(contextLabel = loaded?.label) }
+            // The day study's own common questions are the best chips there are, but they only exist
+            // once that study was generated on this device — so the starter ones stand in, and the
+            // empty state is never bare.
+            val suggestions = loaded
+                ?.let { useCases.getSuggestions(it.passages) }
+                .orEmpty()
+                .ifEmpty { getDefaultSuggestions(hasReadingContext = loaded != null) }
             _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
         }
     }

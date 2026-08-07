@@ -54,6 +54,7 @@ internal class ChatViewModelTest {
     private val authenticatedUserId = MutableStateFlow<String?>("user-1")
     private var chatContext: ChatContextModel? = null
     private var chatSuggestions: List<String> = emptyList()
+    private var defaultSuggestions: List<String> = emptyList()
 
     @BeforeTest
     fun setUp() {
@@ -108,6 +109,34 @@ internal class ChatViewModelTest {
 
         assertTrue(repository.refreshedConversations > 0)
         assertTrue(repository.refreshedQuota > 0)
+    }
+
+    @Test
+    fun `GIVEN a reading with no cached study WHEN opening THEN the starter chips show`() = runTest(testDispatcher) {
+        chatContext = ChatContextModel(
+            label = "Gênesis 4-7",
+            passages = emptyList(),
+        )
+        chatSuggestions = emptyList()
+        defaultSuggestions = listOf("Resuma esta leitura")
+
+        val viewModel = createViewModel()
+
+        assertEquals(listOf("Resuma esta leitura"), viewModel.uiState.value.suggestions)
+    }
+
+    @Test
+    fun `GIVEN a cached study WHEN opening THEN its own questions win over the starters`() = runTest(testDispatcher) {
+        chatContext = ChatContextModel(
+            label = "Gênesis 4-7",
+            passages = emptyList(),
+        )
+        chatSuggestions = listOf(SUGGESTION)
+        defaultSuggestions = listOf("Resuma esta leitura")
+
+        val viewModel = createViewModel()
+
+        assertEquals(listOf(SUGGESTION), viewModel.uiState.value.suggestions)
     }
 
     @Test
@@ -331,6 +360,7 @@ internal class ChatViewModelTest {
             readingPlanType = null,
         ),
         observeAuthenticatedUserId = { authenticatedUserId },
+        getDefaultSuggestions = { defaultSuggestions },
         useCases = ChatUseCases(
             observeConversations = ObserveChatConversationsUseCase(repository),
             observeMessages = ObserveChatMessagesUseCase(repository),

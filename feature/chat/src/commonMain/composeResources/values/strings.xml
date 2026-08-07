@@ -4,8 +4,8 @@
     <string name="chat_context_loaded">Chatting with the context of %1$s loaded</string>
     <string name="chat_context_empty">Ask about any reading in your plan or about the Bible</string>
     <string name="chat_context_chip">Context of %1$s</string>
-    <string name="chat_welcome_with_context">Hi! I can help you understand today\'s reading (%1$s). Ask anything or tap a suggestion.</string>
-    <string name="chat_welcome_generic">Hi! I\'m your study assistant. I can help with what you have read in your plan or with any other question about the Bible. What would you like to talk about?</string>
+    <string name="chat_welcome_with_context">Hi! I can help you understand today's reading (%1$s). Ask anything or tap a suggestion.</string>
+    <string name="chat_welcome_generic">Hi! I'm your study assistant. I can help with what you have read in your plan or with any other question about the Bible. What would you like to talk about?</string>
     <string name="chat_thinking">Thinking…</string>
     <string name="chat_suggestions_label">SUGGESTIONS</string>
     <string name="chat_suggestion_bar_single">Suggestion</string>
@@ -36,6 +36,12 @@
     <string name="chat_bucket_today">Today</string>
     <string name="chat_bucket_yesterday">Yesterday</string>
     <string name="chat_bucket_last_seven_days">Last 7 days</string>
+    <string name="chat_default_suggestion_summary">Summarise this reading</string>
+    <string name="chat_default_suggestion_context">What is the historical context?</string>
+    <string name="chat_default_suggestion_application">What does this teach for today?</string>
+    <string name="chat_default_suggestion_start">Where do I start reading the Bible?</string>
+    <string name="chat_default_suggestion_plan">How do I get the most out of my reading plan?</string>
+    <string name="chat_default_suggestion_grace">What is the grace of God?</string>
     <plurals name="chat_free_questions_left">
         <item quantity="one">%1$d free question left</item>
         <item quantity="other">%1$d free questions left</item>

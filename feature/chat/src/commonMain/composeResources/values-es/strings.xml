@@ -36,6 +36,12 @@
     <string name="chat_bucket_today">Hoy</string>
     <string name="chat_bucket_yesterday">Ayer</string>
     <string name="chat_bucket_last_seven_days">Últimos 7 días</string>
+    <string name="chat_default_suggestion_summary">Resume esta lectura</string>
+    <string name="chat_default_suggestion_context">¿Cuál es el contexto histórico?</string>
+    <string name="chat_default_suggestion_application">¿Qué enseña esto para hoy?</string>
+    <string name="chat_default_suggestion_start">¿Por dónde empiezo a leer la Biblia?</string>
+    <string name="chat_default_suggestion_plan">¿Cómo aprovechar mejor mi plan de lectura?</string>
+    <string name="chat_default_suggestion_grace">¿Qué es la gracia de Dios?</string>
     <plurals name="chat_free_questions_left">
         <item quantity="one">%1$d pregunta gratis restante</item>
         <item quantity="other">%1$d preguntas gratis restantes</item>
