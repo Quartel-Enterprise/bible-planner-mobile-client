@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.day.presentation.component.AskAiFab
 import com.quare.bibleplanner.feature.day.presentation.component.DayScreenTopBarComponent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.DayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
@@ -42,6 +43,11 @@ internal fun DayScreen(
             .then(scaffoldNestedScrollModifier),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
+        },
+        floatingActionButton = {
+            if (uiState is DayUiState.Loaded) {
+                AskAiFab(onClick = { onEvent(DayUiEvent.OnAskAiClick) })
+            }
         },
         topBar = {
             if (!isLandscape) {

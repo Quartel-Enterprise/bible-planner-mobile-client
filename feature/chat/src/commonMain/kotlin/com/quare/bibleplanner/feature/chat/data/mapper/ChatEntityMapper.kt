@@ -1,0 +1,45 @@
+package com.quare.bibleplanner.feature.chat.data.mapper
+
+import com.quare.bibleplanner.core.provider.room.entity.ChatConversationEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChatMessageEntity
+import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
+import kotlin.time.Instant
+
+internal class ChatEntityMapper {
+    fun mapConversation(entity: ChatConversationEntity): ChatConversationModel = ChatConversationModel(
+        id = entity.id,
+        title = entity.title,
+        preview = entity.preview,
+        contextLabel = entity.contextLabel,
+        updatedAt = Instant.fromEpochMilliseconds(entity.updatedAtEpochMillis),
+    )
+
+    fun mapConversation(model: ChatConversationModel): ChatConversationEntity = ChatConversationEntity(
+        id = model.id,
+        title = model.title,
+        preview = model.preview,
+        contextLabel = model.contextLabel,
+        updatedAtEpochMillis = model.updatedAt.toEpochMilliseconds(),
+    )
+
+    fun mapMessage(entity: ChatMessageEntity): ChatMessageModel = ChatMessageModel(
+        id = entity.id,
+        role = if (entity.isFromUser) ChatRoleModel.USER else ChatRoleModel.ASSISTANT,
+        content = entity.content,
+        isStreaming = false,
+        createdAt = Instant.fromEpochMilliseconds(entity.createdAtEpochMillis),
+    )
+
+    fun mapMessage(
+        conversationId: String,
+        model: ChatMessageModel,
+    ): ChatMessageEntity = ChatMessageEntity(
+        id = model.id,
+        conversationId = conversationId,
+        isFromUser = model.role == ChatRoleModel.USER,
+        content = model.content,
+        createdAtEpochMillis = model.createdAt.toEpochMilliseconds(),
+    )
+}

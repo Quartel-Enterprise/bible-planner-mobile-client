@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.provider.room.converter.BibleVersionDownloadS
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
+import com.quare.bibleplanner.core.provider.room.dao.ChatDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
 import com.quare.bibleplanner.core.provider.room.dao.DayStudyDao
 import com.quare.bibleplanner.core.provider.room.dao.ProfileDao
@@ -18,6 +19,8 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChatConversationEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChatMessageEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyChapterSummaryEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyEntity
@@ -46,8 +49,10 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         DayStudyQuestionEntity::class,
         UserDeviceEntity::class,
         ProfileEntity::class,
+        ChatConversationEntity::class,
+        ChatMessageEntity::class,
     ],
-    version = 14,
+    version = 15,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
@@ -58,6 +63,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
+        AutoMigration(from = 14, to = 15),
     ],
     exportSchema = true,
 )
@@ -81,4 +87,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDeviceDao(): UserDeviceDao
 
     abstract fun profileDao(): ProfileDao
+
+    abstract fun chatDao(): ChatDao
 }

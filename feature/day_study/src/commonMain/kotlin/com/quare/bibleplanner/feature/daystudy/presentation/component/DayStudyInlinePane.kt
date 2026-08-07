@@ -18,6 +18,7 @@ private val contentMaxWidth = 720.dp
 internal fun DayStudyInlinePane(
     study: DayStudyModel,
     showHeader: Boolean,
+    onAskAiClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -42,6 +43,7 @@ internal fun DayStudyInlinePane(
         DayStudyTabbedContent(
             study = study,
             contentMaxWidth = contentMaxWidth,
+            onAskAiClick = onAskAiClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),

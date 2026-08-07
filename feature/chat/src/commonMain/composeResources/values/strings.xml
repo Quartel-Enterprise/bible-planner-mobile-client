@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_title">Assistant</string>
+    <string name="chat_context_loaded">Chatting with the context of %1$s loaded</string>
+    <string name="chat_context_empty">Ask about any reading in your plan or about the Bible</string>
+    <string name="chat_context_chip">Context of %1$s</string>
+    <string name="chat_welcome_with_context">Hi! I can help you understand today's reading (%1$s). Ask anything or tap a suggestion.</string>
+    <string name="chat_welcome_generic">Hi! I'm your study assistant. I can help with what you have read in your plan or with any other question about the Bible. What would you like to talk about?</string>
+    <string name="chat_thinking">Thinking…</string>
+    <string name="chat_suggestions_label">SUGGESTIONS</string>
+    <string name="chat_suggestion_bar_single">Suggestion</string>
+    <string name="chat_suggestion_bar_many">Suggestions (%1$d)</string>
+    <string name="chat_input_placeholder_with_context">Ask about %1$s…</string>
+    <string name="chat_input_placeholder_generic">Ask about your readings…</string>
+    <string name="chat_send">Send</string>
+    <string name="chat_offline_title">No connection</string>
+    <string name="chat_offline_message">The answer could not be obtained. Check your internet and try again.</string>
+    <string name="chat_retry">Try again</string>
+    <string name="chat_rate_limit_title">Hold on a moment</string>
+    <string name="chat_rate_limit_message">You sent many questions in a row. This helps keep the service stable — you will be able to continue shortly.</string>
+    <string name="chat_rate_limit_countdown">Available in %1$ds</string>
+    <string name="chat_cooldown_input">Wait %1$ds to send again</string>
+    <string name="chat_locked_input">Subscribe to keep asking</string>
+    <string name="chat_history">History</string>
+    <string name="chat_new">New</string>
+    <string name="chat_conversations">Conversations</string>
+    <string name="chat_search_conversations">Search conversations</string>
+    <string name="chat_no_conversations_found">No conversations found</string>
+    <string name="chat_new_conversation">New conversation</string>
+    <string name="chat_rename">Rename</string>
+    <string name="chat_delete">Delete</string>
+    <string name="chat_delete_confirmation">Delete this conversation?</string>
+    <string name="chat_cancel">Cancel</string>
+    <string name="chat_confirm_rename">Confirm</string>
+    <string name="chat_conversation_options">Conversation options</string>
+    <string name="chat_bucket_today">Today</string>
+    <string name="chat_bucket_yesterday">Yesterday</string>
+    <string name="chat_bucket_last_seven_days">Last 7 days</string>
+    <string name="chat_default_suggestion_summary">Summarise this reading</string>
+    <string name="chat_default_suggestion_context">What is the historical context?</string>
+    <string name="chat_default_suggestion_application">What does this teach for today?</string>
+    <string name="chat_default_suggestion_start">Where do I start reading the Bible?</string>
+    <string name="chat_default_suggestion_plan">How do I get the most out of my reading plan?</string>
+    <string name="chat_default_suggestion_grace">What is the grace of God?</string>
+    <plurals name="chat_free_questions_left">
+        <item quantity="one">%1$d free question left</item>
+        <item quantity="other">%1$d free questions left</item>
+    </plurals>
+</resources>

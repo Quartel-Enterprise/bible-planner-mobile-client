@@ -94,14 +94,7 @@ private fun NarrowTabScaffold(
     val density = LocalDensity.current
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     var bottomBarHeightPx by remember { mutableFloatStateOf(0f) }
-    val bottomBarState = LocalMainBottomBarState.current
-    LaunchedEffect(bottomBarState) {
-        snapshotFlow { (bottomBarHeightPx + scrollBehavior.state.heightOffset).coerceAtLeast(0f) }
-            .collect { visibleHeight -> bottomBarState.visibleHeightPx = visibleHeight }
-    }
-    DisposableEffect(bottomBarState) {
-        onDispose { bottomBarState.visibleHeightPx = 0f }
-    }
+    ReserveBottomOverlayHeight { (bottomBarHeightPx + scrollBehavior.state.heightOffset).coerceAtLeast(0f) }
 
     Scaffold(
         modifier = Modifier

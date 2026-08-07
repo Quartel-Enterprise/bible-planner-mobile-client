@@ -32,9 +32,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -53,6 +58,7 @@ import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
 import org.jetbrains.compose.resources.stringResource
 
 private val landscapeMinWidth = 600.dp
@@ -111,6 +117,9 @@ private fun PaywallPortraitContent(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    var actionBarHeightPx by remember { mutableFloatStateOf(0f) }
+    // Nothing may cover the subscribe button, and the app's snackbar is anchored to the window.
+    ReserveBottomOverlayHeight { actionBarHeightPx }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -121,7 +130,12 @@ private fun PaywallPortraitContent(
             )
         },
         bottomBar = {
-            Column(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onSizeChanged { size -> actionBarHeightPx = size.height.toFloat() }
+                    .background(MaterialTheme.colorScheme.surface),
+            ) {
                 HorizontalDivider(
                     thickness = 1.dp,
                     color = MaterialTheme.colorScheme.outlineVariant,

@@ -1,0 +1,73 @@
+plugins {
+    alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
+    alias(libs.plugins.kotlin.serialization)
+}
+
+kotlin {
+    android {
+        namespace = "com.quare.bibleplanner.feature.chat"
+    }
+
+    jvm()
+
+    sourceSets {
+        commonMain.dependencies {
+            // Core
+            implementation(projects.core.clear)
+            implementation(projects.core.model)
+            implementation(projects.core.utils)
+            implementation(projects.core.books)
+            implementation(projects.core.date)
+            implementation(projects.core.user)
+            implementation(projects.core.provider.language)
+            implementation(projects.core.provider.room)
+            implementation(projects.core.provider.supabase)
+            implementation(projects.core.provider.billing)
+            implementation(projects.core.provider.analytics)
+            implementation(projects.core.provider.platform)
+
+            // Feature
+            implementation(projects.feature.dayStudy)
+
+            // UI
+            implementation(projects.ui.component)
+            implementation(projects.ui.utils)
+            implementation(projects.ui.theme)
+
+            // Compose
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.compose.materialIconsExtended)
+            implementation(libs.compose.components.resources)
+
+            // Supabase
+            implementation(project.dependencies.platform(libs.supabase.bom))
+            implementation(libs.supabase.functions)
+            implementation(libs.supabase.postgrest)
+            implementation(libs.supabase.realtime)
+
+            // Ktor
+            implementation(libs.ktor.client.core)
+
+            // Serialization
+            implementation(libs.kotlinx.serialization.json)
+
+            // Koin
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+
+            // Logging
+            implementation(libs.kermit)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
+    }
+}

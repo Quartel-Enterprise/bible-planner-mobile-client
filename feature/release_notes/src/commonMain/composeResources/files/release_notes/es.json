@@ -1,7 +1,10 @@
 {
   "2.5.0": [
     "Ahora puedes eliminar tu cuenta desde la propia app, en Perfil › Cuenta y datos. Antes de confirmar, la app muestra todo lo que se borrará y te recuerda cancelar la suscripción en la tienda donde te suscribiste.",
-    "La pantalla para eliminar todo el progreso es más clara: ahora muestra qué se elimina y qué se mantiene, como tu cuenta, tu suscripción y tus preferencias."
+    "La pantalla para eliminar todo el progreso es más clara: ahora muestra qué se elimina y qué se mantiene, como tu cuenta, tu suscripción y tus preferencias.",
+    "Ahora puedes conversar con la IA sobre la lectura del día: toca \"Pregúntale a la IA\" en la pantalla del día, o la tarjeta \"Pregunta sobre esta lectura\" dentro de la pestaña Preguntas, y el asistente ya sabe qué capítulos estás leyendo. La respuesta aparece poco a poco, mientras se escribe.",
+    "Tus conversaciones con la IA quedan guardadas en tu cuenta: puedes volver a cualquiera desde el historial, buscar por tema, renombrarlas o eliminarlas — y todo aparece al instante en tus otros dispositivos.",
+    "Tus conversaciones con la IA ahora quedan guardadas en el dispositivo: incluso sin internet puedes abrir el historial y releer lo que ya fue respondido — solo necesitas conexión para hacer preguntas nuevas."
   ],
   "2.4.0": [
     "Se corrigió un problema que podía mostrar un error en la pantalla de versiones de la Biblia incluso con internet funcionando.",

@@ -9,6 +9,8 @@ import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
@@ -150,11 +152,34 @@ internal class DayViewModel(
             is DayUiEvent.OnNotesFocus -> onNotesFocus()
             is DayUiEvent.OnBackClick -> backToPreviousScreen()
             is DayUiEvent.OnChapterClick -> onChapterClick(event.strategy)
+            is DayUiEvent.OnAskAiClick -> onAskAiClick()
             is DayUiEvent.OnDayStudySubscribeClick -> navigateToPaywall()
             is DayUiEvent.OnDayStudyLoginRequired -> navigateToDayStudyLoginWarning()
             is DayUiEvent.OnDayStudyMessage -> showSnackBarText(event.message)
             is DayUiEvent.OnDayStudyNavigate -> navigateToStudy()
             is DayUiEvent.OnWidthClassChanged -> onWidthClassChanged(event.isWide)
+        }
+    }
+
+    // Nothing gates the entry: the chat opens for anyone. Signing in is only asked for when the
+    // user actually sends a question, and the paywall only when the free ones are over — both
+    // with the conversation already in view.
+    private fun onAskAiClick() {
+        trackEvent(
+            name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+            params = mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key),
+        )
+        viewModelScope.launch {
+            _uiAction.emit(
+                DayUiAction.NavigateToRoute(
+                    ChatNavRoute(
+                        source = ChatEntrySource.DAY_FAB,
+                        dayNumber = dayNumber,
+                        weekNumber = weekNumber,
+                        readingPlanType = readingPlanType.name,
+                    ),
+                ),
+            )
         }
     }
 

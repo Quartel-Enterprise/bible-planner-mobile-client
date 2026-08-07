@@ -64,6 +64,7 @@ internal fun DayStudyPane(
     isOpeningStudy: Boolean,
     onCardClick: () -> Unit,
     onRetryClick: () -> Unit,
+    onAskAiClick: () -> Unit,
     showStudyHeader: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -90,6 +91,7 @@ internal fun DayStudyPane(
             openStudy != null -> DayStudyInlinePane(
                 study = openStudy,
                 showHeader = showStudyHeader,
+                onAskAiClick = onAskAiClick,
                 modifier = Modifier.fillMaxSize(),
             )
 
