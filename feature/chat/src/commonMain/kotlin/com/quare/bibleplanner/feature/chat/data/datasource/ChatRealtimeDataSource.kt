@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.chat.data.datasource
 
 import com.quare.bibleplanner.feature.chat.data.dto.ChatConversationDto
+import com.quare.bibleplanner.feature.chat.data.dto.ChatDeletedRowDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatMessageDto
 import com.quare.bibleplanner.feature.chat.data.model.ChatRemoteChange
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.withContext
 
 /**
@@ -34,54 +37,55 @@ internal class ChatRealtimeDataSource(
         .filter { status -> status == Realtime.Status.CONNECTED }
         .map { }
 
-    fun observeConversations(userId: String): Flow<ChatRemoteChange> = flow {
-        val channel = realtime.channel("${CONVERSATIONS_TABLE}_$userId")
-        val changes = channel.postgresChangeFlow<PostgresAction>(schema = SCHEMA) {
-            table = CONVERSATIONS_TABLE
+    fun observeConversations(userId: String): Flow<ChatRemoteChange> = observeTable(
+        table = CONVERSATIONS_TABLE,
+        userId = userId,
+        upserted = { record: ChatConversationDto -> ChatRemoteChange.ConversationUpserted(record) },
+        deleted = ChatRemoteChange::ConversationDeleted,
+    )
+
+    fun observeMessages(userId: String): Flow<ChatRemoteChange> = observeTable(
+        table = MESSAGES_TABLE,
+        userId = userId,
+        upserted = { record: ChatMessageDto -> ChatRemoteChange.MessageUpserted(record) },
+        deleted = ChatRemoteChange::MessageDeleted,
+    )
+
+    /**
+     * Writes and deletions have to be subscribed separately, because they cannot share a filter.
+     *
+     * Inserts and updates are narrowed to this user server-side. Deletions cannot be: Postgres has
+     * no row left to check a policy against, so Realtime strips the old record down to the primary
+     * key — a `user_id` filter then matches nothing and the event is dropped before it is ever
+     * sent. Listening unfiltered is what makes a deletion elsewhere arrive at all; the ids of other
+     * readers' rows come with it, and deleting an id this device never had is a no-op.
+     */
+    private inline fun <reified T : Any> observeTable(
+        table: String,
+        userId: String,
+        crossinline upserted: (T) -> ChatRemoteChange,
+        crossinline deleted: (String) -> ChatRemoteChange,
+    ): Flow<ChatRemoteChange> = flow {
+        val channel = realtime.channel("${table}_$userId")
+        val writes = channel.postgresChangeFlow<PostgresAction>(schema = SCHEMA) {
+            this.table = table
             filter(USER_ID_COLUMN, FilterOperator.EQ, userId)
+        }
+        val deletions = channel.postgresChangeFlow<PostgresAction.Delete>(schema = SCHEMA) {
+            this.table = table
         }
         channel.subscribe()
         try {
-            changes.collect { action ->
-                val change = when (action) {
-                    is PostgresAction.Insert -> ChatRemoteChange.ConversationUpserted(action.decodeRecord())
-
-                    is PostgresAction.Update -> ChatRemoteChange.ConversationUpserted(action.decodeRecord())
-
-                    // Delivered with the full old row thanks to `replica identity full` on the table.
-                    is PostgresAction.Delete ->
-                        ChatRemoteChange.ConversationDeleted(action.decodeOldRecord<ChatConversationDto>().id)
-
-                    else -> null
-                }
-                if (change != null) emit(change)
-            }
-        } finally {
-            withContext(NonCancellable) {
-                realtime.removeChannel(channel)
-            }
-        }
-    }
-
-    fun observeMessages(userId: String): Flow<ChatRemoteChange> = flow {
-        val channel = realtime.channel("${MESSAGES_TABLE}_$userId")
-        val changes = channel.postgresChangeFlow<PostgresAction>(schema = SCHEMA) {
-            table = MESSAGES_TABLE
-            filter(USER_ID_COLUMN, FilterOperator.EQ, userId)
-        }
-        channel.subscribe()
-        try {
-            changes.collect { action ->
-                val change = when (action) {
-                    is PostgresAction.Insert -> ChatRemoteChange.MessageUpserted(action.decodeRecord())
-
-                    is PostgresAction.Delete ->
-                        ChatRemoteChange.MessageDeleted(action.decodeOldRecord<ChatMessageDto>().id)
-
-                    else -> null
-                }
-                if (change != null) emit(change)
-            }
+            merge(
+                writes.mapNotNull { action ->
+                    when (action) {
+                        is PostgresAction.Insert -> upserted(action.decodeRecord())
+                        is PostgresAction.Update -> upserted(action.decodeRecord())
+                        else -> null
+                    }
+                },
+                deletions.map { action -> deleted(action.decodeOldRecord<ChatDeletedRowDto>().id) },
+            ).collect(::emit)
         } finally {
             withContext(NonCancellable) {
                 realtime.removeChannel(channel)
