@@ -44,6 +44,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 private const val SUGGESTION = "Por que Caim matou Abel?"
+private const val STARTER = "Resuma esta leitura"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChatViewModelTest {
@@ -55,6 +56,7 @@ internal class ChatViewModelTest {
     private var chatContext: ChatContextModel? = null
     private var chatSuggestions: List<String> = emptyList()
     private var defaultSuggestions: List<String> = emptyList()
+    private var entrySource: ChatEntrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
 
     @BeforeTest
     fun setUp() {
@@ -112,31 +114,39 @@ internal class ChatViewModelTest {
     }
 
     @Test
-    fun `GIVEN a reading with no cached study WHEN opening THEN the starter chips show`() = runTest(testDispatcher) {
-        chatContext = ChatContextModel(
-            label = "Gênesis 4-7",
-            passages = emptyList(),
-        )
+    fun `GIVEN the study has no questions THEN the starters stand in`() = runTest(testDispatcher) {
+        entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+        chatContext = readingContext()
         chatSuggestions = emptyList()
-        defaultSuggestions = listOf("Resuma esta leitura")
+        defaultSuggestions = listOf(STARTER)
 
         val viewModel = createViewModel()
 
-        assertEquals(listOf("Resuma esta leitura"), viewModel.uiState.value.suggestions)
+        assertEquals(listOf(STARTER), viewModel.uiState.value.suggestions)
     }
 
     @Test
-    fun `GIVEN a cached study WHEN opening THEN its own questions win over the starters`() = runTest(testDispatcher) {
-        chatContext = ChatContextModel(
-            label = "Gênesis 4-7",
-            passages = emptyList(),
-        )
+    fun `GIVEN the chat opened from the study THEN its questions are offered`() = runTest(testDispatcher) {
+        entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+        chatContext = readingContext()
         chatSuggestions = listOf(SUGGESTION)
-        defaultSuggestions = listOf("Resuma esta leitura")
+        defaultSuggestions = listOf(STARTER)
 
         val viewModel = createViewModel()
 
         assertEquals(listOf(SUGGESTION), viewModel.uiState.value.suggestions)
+    }
+
+    @Test
+    fun `GIVEN the chat opened from the day THEN the starters are offered`() = runTest(testDispatcher) {
+        entrySource = ChatEntrySource.DAY_FAB
+        chatContext = readingContext()
+        chatSuggestions = listOf(SUGGESTION)
+        defaultSuggestions = listOf(STARTER)
+
+        val viewModel = createViewModel()
+
+        assertEquals(listOf(STARTER), viewModel.uiState.value.suggestions)
     }
 
     @Test
@@ -344,17 +354,20 @@ internal class ChatViewModelTest {
         }
 
     private fun createViewModelWithSuggestion(): ChatViewModel {
-        chatContext = ChatContextModel(
-            label = "Gênesis 4-7",
-            passages = emptyList(),
-        )
+        entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+        chatContext = readingContext()
         chatSuggestions = listOf(SUGGESTION)
         return createViewModel()
     }
 
+    private fun readingContext(): ChatContextModel = ChatContextModel(
+        label = "Gênesis 4-7",
+        passages = emptyList(),
+    )
+
     private fun createViewModel(): ChatViewModel = ChatViewModel(
         route = ChatNavRoute(
-            source = ChatEntrySource.DAY_FAB,
+            source = entrySource,
             dayNumber = null,
             weekNumber = null,
             readingPlanType = null,

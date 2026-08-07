@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.chat.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
@@ -88,6 +89,10 @@ internal class ChatViewModel(
     private val cooldownTick: Duration = 1.seconds
 
     private val dayRoute = route.toDayNavRoute()
+
+    // Only the study screen hands over its own questions. From the day's button the chips are always
+    // the same ones, instead of quietly depending on whether that study happens to be generated.
+    private val usesStudyQuestions = route.source == ChatEntrySource.DAY_STUDY_QUESTIONS
     private val activeConversationId: MutableStateFlow<String?> = MutableStateFlow(null)
     private var conversations: List<ChatConversationModel> = emptyList()
     private var context: ChatContextModel? = null
@@ -167,10 +172,8 @@ internal class ChatViewModel(
             val loaded = useCases.getContext(dayRoute)
             context = loaded
             _uiState.update { it.copy(contextLabel = loaded?.label) }
-            // The day study's own common questions are the best chips there are, but they only exist
-            // once that study was generated on this device — so the starter ones stand in, and the
-            // empty state is never bare.
             val suggestions = loaded
+                ?.takeIf { usesStudyQuestions }
                 ?.let { useCases.getSuggestions(it.passages) }
                 .orEmpty()
                 .ifEmpty { getDefaultSuggestions(hasReadingContext = loaded != null) }
