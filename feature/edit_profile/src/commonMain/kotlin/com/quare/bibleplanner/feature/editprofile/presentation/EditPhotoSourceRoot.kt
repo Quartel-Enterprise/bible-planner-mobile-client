@@ -27,11 +27,6 @@ fun EntryProviderScope<NavKey>.editPhotoSource(
     ) {
         val viewModel = koinViewModel<ProfilePhotoViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        ProfilePhotoPickers(
-            viewModel = viewModel,
-            onOpenCrop = onNavigateReplacingTop,
-            onPhotoChanged = onNavigateBack,
-        )
         ResponsiveDialogSheet(
             onCloseClick = onNavigateBack,
             title = stringResource(Res.string.edit_profile_photo_title),
@@ -42,5 +37,10 @@ fun EntryProviderScope<NavKey>.editPhotoSource(
                 onEvent = viewModel::onEvent,
             )
         }
+        ProfilePhotoPickers(
+            viewModel = viewModel,
+            onOpenCrop = onNavigateReplacingTop,
+            onPhotoChanged = onNavigateBack,
+        )
     }
 }

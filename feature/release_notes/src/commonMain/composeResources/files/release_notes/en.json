@@ -2,6 +2,8 @@
   "2.5.0": [
     "You can now delete your account from within the app, in Profile › Account and data. Before you confirm, the app shows everything that will be erased and reminds you to cancel your subscription in the store where you subscribed.",
     "The delete all progress screen is clearer now: it shows what gets removed and what stays with you, such as your account, your subscription and your preferences.",
+    "Fixed problems when taking your profile photo with the camera on iPhone: the adjustment screen no longer appears blurred and taps keep working after you close the editing windows.",
+    "A loading indicator now appears while the camera opens.",
     "You can now chat with the AI about the day's reading: tap \"Ask the AI\" on the day screen, or the \"Ask about this reading\" card inside the Questions tab, and the assistant already knows which chapters you are reading. The answer appears little by little, as it is being written.",
     "Your conversations with the AI are saved to your account: you can return to any of them from the history, search by subject, rename or delete them — and it all shows up right away on your other devices.",
     "Your conversations with the AI are now kept on the device: even with no internet you can still open the history and re-read what was already answered — a connection is only needed to ask something new."

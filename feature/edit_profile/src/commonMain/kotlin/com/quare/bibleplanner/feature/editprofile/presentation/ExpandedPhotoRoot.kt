@@ -23,16 +23,16 @@ fun EntryProviderScope<NavKey>.expandedPhoto(
     ) {
         val viewModel = koinViewModel<ProfilePhotoViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        ProfilePhotoPickers(
-            viewModel = viewModel,
-            onOpenCrop = onNavigate,
-            onPhotoChanged = {},
-        )
         ExpandedPhotoOverlay(
             profile = uiState.profile.valueOrNull(),
             isCameraAvailable = uiState.isCameraAvailable,
             onDismiss = onNavigateBack,
             onEvent = viewModel::onEvent,
+        )
+        ProfilePhotoPickers(
+            viewModel = viewModel,
+            onOpenCrop = onNavigate,
+            onPhotoChanged = {},
         )
     }
 }
