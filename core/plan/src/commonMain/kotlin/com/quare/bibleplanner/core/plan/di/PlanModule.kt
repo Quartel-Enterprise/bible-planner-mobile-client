@@ -54,6 +54,7 @@ val planModule = module {
             remoteStore = get<UserPreferencesRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "PreferencesSync",
         )
     }
@@ -66,6 +67,7 @@ val planModule = module {
             remoteStore = get<DayMetaRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "DayMetaSync",
         )
     }

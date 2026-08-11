@@ -40,6 +40,7 @@ val profileModule = module {
                 remoteStore = get<ProfileRemoteStore>(),
                 networkConnectivityObserver = get(),
                 getAuthenticatedUserId = get(),
+                currentTimestampProvider = get(),
                 logTag = "ProfileSync",
             ),
             profileDao = get(),
