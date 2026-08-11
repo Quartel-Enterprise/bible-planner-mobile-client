@@ -44,6 +44,10 @@ internal class SyncedPreferenceLocalStore(
         entity = entity,
     )
 
+    override suspend fun adoptProvisionalDefaults(now: Long) {
+        dao.adoptProvisional(now)
+    }
+
     override suspend fun clearLocal() {
         dao.deleteAll()
     }

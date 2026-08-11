@@ -42,6 +42,8 @@ interface SyncLocalStore<E, D> {
      */
     suspend fun seed(now: Long) = Unit
 
+    suspend fun adoptProvisionalDefaults(now: Long) = Unit
+
     /** Wipes this dataset's local state on logout, without scheduling a push. */
     suspend fun clearLocal()
 }
