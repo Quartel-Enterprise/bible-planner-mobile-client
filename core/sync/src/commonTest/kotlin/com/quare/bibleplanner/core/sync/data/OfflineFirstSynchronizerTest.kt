@@ -115,6 +115,33 @@ internal class OfflineFirstSynchronizerTest {
     }
 
     @Test
+    fun `GIVEN a remote snapshot WHEN pulling THEN provisional defaults are adopted after it is applied`() = runTest {
+        // Given
+        val sync = prepareScenario(online = true)
+        remote.snapshot = listOf("GEN")
+
+        // When
+        sync.pullSnapshot()
+
+        // Then
+        assertEquals(listOf(NOW), local.adoptProvisionalDefaultsCalls)
+        assertEquals(listOf("GEN"), local.appliedBeforeAdopting)
+    }
+
+    @Test
+    fun `GIVEN no authenticated session WHEN pulling THEN provisional defaults are not adopted`() = runTest {
+        // Given
+        val sync = prepareScenario(online = true)
+        userId.value = null
+
+        // When
+        sync.pullSnapshot()
+
+        // Then
+        assertTrue(local.adoptProvisionalDefaultsCalls.isEmpty())
+    }
+
+    @Test
     fun `GIVEN pending WHEN flushing once THEN pushes and marks synced`() = runTest {
         // Given
         val sync = prepareScenario(online = true)
@@ -142,8 +169,13 @@ internal class OfflineFirstSynchronizerTest {
             remoteStore = remote,
             networkConnectivityObserver = { flowOf(online) },
             getAuthenticatedUserId = { userId.value },
+            currentTimestampProvider = { NOW },
             logTag = "Test",
         )
+    }
+
+    private companion object {
+        const val NOW = 1_000L
     }
 }
 
@@ -151,6 +183,8 @@ private class FakeLocalStore : SyncLocalStore<String, String> {
     val pending = MutableStateFlow<List<String>>(emptyList())
     val markSyncedCalls = mutableListOf<String>()
     val applyRemoteCalls = mutableListOf<String>()
+    val adoptProvisionalDefaultsCalls = mutableListOf<Long>()
+    var appliedBeforeAdopting = emptyList<String>()
 
     override fun pendingFlow(): Flow<List<String>> = pending
 
@@ -162,6 +196,11 @@ private class FakeLocalStore : SyncLocalStore<String, String> {
 
     override suspend fun applyRemote(dto: String) {
         applyRemoteCalls += dto
+    }
+
+    override suspend fun adoptProvisionalDefaults(now: Long) {
+        adoptProvisionalDefaultsCalls += now
+        appliedBeforeAdopting = applyRemoteCalls.toList()
     }
 
     override fun toDto(

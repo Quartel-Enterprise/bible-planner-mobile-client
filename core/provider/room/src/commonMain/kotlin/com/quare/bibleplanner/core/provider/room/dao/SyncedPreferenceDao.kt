@@ -80,6 +80,9 @@ abstract class SyncedPreferenceDao {
         value: String,
     )
 
+    @Query("UPDATE synced_preferences SET updatedAt = :now, pendingSync = 1 WHERE updatedAt = 0")
+    abstract suspend fun adoptProvisional(now: Long)
+
     @Query("DELETE FROM synced_preferences WHERE key IN (:keys)")
     abstract suspend fun deleteByKeys(keys: List<String>)
 

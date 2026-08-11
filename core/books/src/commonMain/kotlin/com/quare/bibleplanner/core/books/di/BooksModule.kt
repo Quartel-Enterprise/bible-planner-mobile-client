@@ -106,6 +106,7 @@ val booksModule = module {
             remoteStore = get<FavoritesRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "FavoritesSync",
         )
     }
@@ -115,6 +116,7 @@ val booksModule = module {
             remoteStore = get<ChapterReadRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "ChapterReadSync",
         )
     }
@@ -124,6 +126,7 @@ val booksModule = module {
             remoteStore = get<VerseReadRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "VerseReadSync",
         )
     }
