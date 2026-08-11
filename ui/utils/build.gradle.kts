@@ -18,7 +18,8 @@ kotlin {
             // Analytics
             api(projects.core.provider.analytics)
 
-            // View Model
+            // Lifecycle
+            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
 
             // DateTime
