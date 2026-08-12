@@ -17,12 +17,25 @@ cd "$(dirname "$0")/.."
 # app runs via Gradle (:desktopApp:run) or as a packaged distribution.
 desktop_app_marker="com.quare.bibleplanner.MainKt"
 
-# Room DB: DatabaseConstructor.desktop.kt stores it under $TMPDIR with -wal/-shm/.lck sidecars.
-db_prefix="${TMPDIR:-/tmp}"
-db_path="${db_prefix%/}/bible_planner.db"
+# Both the Room DB and the DataStore file live in the app data directory resolved by
+# AppDataDirectoryUtils.kt. The locations they were moved from are cleared too: the app migrates
+# a legacy file on first launch, so one left behind would come back as the "fresh" data.
+app_data_directory_name="com.quare.bibleplanner"
+case "$(uname -s)" in
+  Darwin) app_data_dir="$HOME/Library/Application Support/$app_data_directory_name" ;;
+  *) app_data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/$app_data_directory_name" ;;
+esac
 
-# DataStore: CreateDataStore.jvm.kt writes prefs.preferences_pb relative to the launch dir.
+# Room DB, with its -wal/-shm/.lck sidecars. Second path: where it lived before the move.
+tmp_dir="${TMPDIR:-/tmp}"
+db_paths=(
+  "${app_data_dir}/bible_planner.db"
+  "${tmp_dir%/}/bible_planner.db"
+)
+
+# DataStore. The last two are where it was written before the move: relative to the launch dir.
 datastore_files=(
+  "${app_data_dir}/prefs.preferences_pb"
   "desktopApp/prefs.preferences_pb"
   "prefs.preferences_pb"
 )
@@ -105,12 +118,14 @@ ensure_desktop_app_closed() {
 
 ensure_desktop_app_closed
 
-for file in "${db_path}"*; do
-  if [ -e "$file" ]; then
-    rm -f "$file"
-    echo "Deleted $file"
-    deleted=1
-  fi
+for db_path in "${db_paths[@]}"; do
+  for file in "${db_path}"*; do
+    if [ -e "$file" ]; then
+      rm -f "$file"
+      echo "Deleted $file"
+      deleted=1
+    fi
+  done
 done
 
 for file in "${datastore_files[@]}"; do
