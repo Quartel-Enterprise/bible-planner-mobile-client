@@ -126,7 +126,7 @@ internal class ChatViewModelTest {
     }
 
     @Test
-    fun `GIVEN the chat opened from the study THEN its questions are offered`() = runTest(testDispatcher) {
+    fun `GIVEN the chat opened from the study THEN its questions lead the starters`() = runTest(testDispatcher) {
         entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
         chatContext = readingContext()
         chatSuggestions = listOf(SUGGESTION)
@@ -134,7 +134,19 @@ internal class ChatViewModelTest {
 
         val viewModel = createViewModel()
 
-        assertEquals(listOf(SUGGESTION), viewModel.uiState.value.suggestions)
+        assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
+    }
+
+    @Test
+    fun `GIVEN a study question repeats a starter THEN it is offered once`() = runTest(testDispatcher) {
+        entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+        chatContext = readingContext()
+        chatSuggestions = listOf(SUGGESTION)
+        defaultSuggestions = listOf(SUGGESTION, STARTER)
+
+        val viewModel = createViewModel()
+
+        assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
     }
 
     @Test

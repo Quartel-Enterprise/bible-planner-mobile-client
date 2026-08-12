@@ -172,11 +172,14 @@ internal class ChatViewModel(
             val loaded = useCases.getContext(dayRoute)
             context = loaded
             _uiState.update { it.copy(contextLabel = loaded?.label) }
-            val suggestions = loaded
+            val studyQuestions = loaded
                 ?.takeIf { usesStudyQuestions }
                 ?.let { useCases.getSuggestions(it.passages) }
                 .orEmpty()
-                .ifEmpty { getDefaultSuggestions(hasReadingContext = loaded != null) }
+            // The questions from the study come first, being the ones the reader just saw, and the
+            // openers follow instead of being replaced: arriving from the study is no reason to
+            // lose the only prompts on offer everywhere else.
+            val suggestions = (studyQuestions + getDefaultSuggestions(hasReadingContext = loaded != null)).distinct()
             _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
         }
     }
