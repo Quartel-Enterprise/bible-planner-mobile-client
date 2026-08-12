@@ -107,19 +107,23 @@ internal fun BoxScope.ChatHistoryDrawer(
                     onDismiss = { onEvent(ChatUiEvent.OnHistoryDismiss) },
                     contentPadding = listPadding,
                 )
-                ExtendedFloatingActionButton(
-                    onClick = { onEvent(ChatUiEvent.OnNewConversationClick) },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp),
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Add,
-                            contentDescription = null,
-                        )
-                    },
-                    text = { Text(stringResource(Res.string.chat_new_conversation)) },
-                )
+                // The empty state already invites the first question, and a button offering a new
+                // conversation on top of the new conversation the reader is in says nothing.
+                if (history.hasConversations) {
+                    ExtendedFloatingActionButton(
+                        onClick = { onEvent(ChatUiEvent.OnNewConversationClick) },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Add,
+                                contentDescription = null,
+                            )
+                        },
+                        text = { Text(stringResource(Res.string.chat_new_conversation)) },
+                    )
+                }
             }
         }
     }

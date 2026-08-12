@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Forum
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.chat.generated.resources.Res
@@ -38,7 +40,9 @@ import bibleplanner.feature.chat.generated.resources.chat_bucket_last_seven_days
 import bibleplanner.feature.chat.generated.resources.chat_bucket_today
 import bibleplanner.feature.chat.generated.resources.chat_bucket_yesterday
 import bibleplanner.feature.chat.generated.resources.chat_conversations
+import bibleplanner.feature.chat.generated.resources.chat_no_conversations_body
 import bibleplanner.feature.chat.generated.resources.chat_no_conversations_found
+import bibleplanner.feature.chat.generated.resources.chat_no_conversations_title
 import bibleplanner.feature.chat.generated.resources.chat_search_conversations
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatConversationBucket
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatHistoryUiState
@@ -48,6 +52,7 @@ import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.stringResource
 
 private val emptyStateIconSize = 36.dp
+private val emptyHistoryIconSize = 40.dp
 private val searchFieldShape = RoundedCornerShape(12.dp)
 private val searchIconSize = 19.dp
 private val clearIconSize = 20.dp
@@ -105,8 +110,10 @@ internal fun ChatHistoryPane(
             onQueryChange = { query -> onEvent(ChatUiEvent.OnHistoryQueryChanged(query)) },
         )
         VerticalSpacer(8)
-        if (history.groups.isEmpty() && history.hasConversations) {
-            EmptySearchState()
+        if (history.groups.isEmpty()) {
+            // Never asked anything, or asked and matched nothing: the two say different things, and
+            // "no conversations found" over an account that has none reads as a failure to load.
+            if (history.hasConversations) EmptySearchState() else EmptyHistoryState()
         } else {
             ConversationList(
                 history = history,
@@ -228,6 +235,40 @@ private fun ConversationList(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyHistoryState() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                horizontal = 22.dp,
+                vertical = 56.dp,
+            ),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Forum,
+            contentDescription = null,
+            modifier = Modifier.size(emptyHistoryIconSize),
+            tint = MaterialTheme.colorScheme.outline,
+        )
+        Text(
+            text = stringResource(Res.string.chat_no_conversations_title),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = stringResource(Res.string.chat_no_conversations_body),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

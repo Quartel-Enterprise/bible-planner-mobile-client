@@ -27,6 +27,8 @@
     <string name="chat_back">Volver</string>
     <string name="chat_search_conversations">Buscar conversaciones</string>
     <string name="chat_no_conversations_found">No se encontraron conversaciones</string>
+    <string name="chat_no_conversations_title">Aún no hay conversaciones</string>
+    <string name="chat_no_conversations_body">Tus conversaciones con el asistente aparecen aquí. Empieza preguntando sobre la lectura de hoy.</string>
     <string name="chat_new_conversation">Nueva conversación</string>
     <string name="chat_rename">Renombrar</string>
     <string name="chat_delete">Eliminar</string>
