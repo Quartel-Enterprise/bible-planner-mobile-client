@@ -56,7 +56,11 @@ import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.stringResource
 
 private val drawerWidth = 320.dp
-private val emptyStateIconSize = 36.dp
+private val listPadding = PaddingValues(
+    start = 12.dp,
+    end = 12.dp,
+    bottom = 96.dp,
+)
 private const val SCRIM_ALPHA = 0.45f
 
 @Composable
@@ -96,9 +100,12 @@ internal fun BoxScope.ChatHistoryDrawer(
             tonalElevation = 2.dp,
         ) {
             Box(modifier = Modifier.systemBarsPadding()) {
-                HistoryContent(
+                ChatHistoryPane(
                     history = history,
                     onEvent = onEvent,
+                    onNavigateBack = null,
+                    onDismiss = { onEvent(ChatUiEvent.OnHistoryDismiss) },
+                    contentPadding = listPadding,
                 )
                 ExtendedFloatingActionButton(
                     onClick = { onEvent(ChatUiEvent.OnNewConversationClick) },
@@ -116,154 +123,4 @@ internal fun BoxScope.ChatHistoryDrawer(
             }
         }
     }
-}
-
-@Composable
-private fun HistoryContent(
-    history: ChatHistoryUiState,
-    onEvent: (ChatUiEvent) -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = 8.dp,
-                    top = 12.dp,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(Res.string.chat_conversations),
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-            )
-            IconButton(onClick = { onEvent(ChatUiEvent.OnHistoryDismiss) }) {
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = stringResource(Res.string.chat_conversations),
-                )
-            }
-        }
-        OutlinedTextField(
-            value = history.query,
-            onValueChange = { query -> onEvent(ChatUiEvent.OnHistoryQueryChanged(query)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            placeholder = { Text(stringResource(Res.string.chat_search_conversations)) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Rounded.Search,
-                    contentDescription = null,
-                )
-            },
-            trailingIcon = {
-                if (history.query.isNotEmpty()) {
-                    IconButton(onClick = { onEvent(ChatUiEvent.OnHistoryQueryChanged("")) }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            contentDescription = null,
-                        )
-                    }
-                }
-            },
-            singleLine = true,
-        )
-        VerticalSpacer(8)
-        if (history.groups.isEmpty() && history.hasConversations) {
-            EmptySearchState()
-        } else {
-            ConversationList(
-                history = history,
-                onEvent = onEvent,
-            )
-        }
-    }
-}
-
-@Composable
-private fun ConversationList(
-    history: ChatHistoryUiState,
-    onEvent: (ChatUiEvent) -> Unit,
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = 12.dp,
-            end = 12.dp,
-            bottom = 96.dp,
-        ),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        history.groups.forEach { group ->
-            item(key = group.bucket.toString()) {
-                Text(
-                    text = group.bucket.label(),
-                    modifier = Modifier.padding(
-                        start = 8.dp,
-                        top = 12.dp,
-                        bottom = 4.dp,
-                    ),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline,
-                )
-            }
-            items(
-                items = group.conversations,
-                key = { conversation -> conversation.id },
-            ) { conversation ->
-                ChatHistoryRow(
-                    conversation = conversation,
-                    areActionsExpanded = history.expandedActionsId == conversation.id,
-                    isRenaming = history.renamingId == conversation.id,
-                    renameDraft = history.renameDraft,
-                    isDeleting = history.deletingId == conversation.id,
-                    onClick = { onEvent(ChatUiEvent.OnConversationClick(conversation.id)) },
-                    onActionsToggle = { onEvent(ChatUiEvent.OnConversationActionsToggle(conversation.id)) },
-                    onRenameClick = { onEvent(ChatUiEvent.OnRenameConversationClick(conversation.id)) },
-                    onRenameDraftChange = { title -> onEvent(ChatUiEvent.OnRenameDraftChanged(title)) },
-                    onRenameConfirm = { onEvent(ChatUiEvent.OnRenameConfirm) },
-                    onRenameCancel = { onEvent(ChatUiEvent.OnRenameCancel) },
-                    onDeleteClick = { onEvent(ChatUiEvent.OnDeleteConversationClick(conversation.id)) },
-                    onDeleteConfirm = { onEvent(ChatUiEvent.OnDeleteConfirm) },
-                    onDeleteCancel = { onEvent(ChatUiEvent.OnDeleteCancel) },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptySearchState() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.SearchOff,
-            contentDescription = null,
-            modifier = Modifier.width(emptyStateIconSize),
-            tint = MaterialTheme.colorScheme.outline,
-        )
-        VerticalSpacer(8)
-        Text(
-            text = stringResource(Res.string.chat_no_conversations_found),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.outline,
-        )
-    }
-}
-
-@Composable
-private fun ChatConversationBucket.label(): String = when (this) {
-    ChatConversationBucket.Today -> stringResource(Res.string.chat_bucket_today)
-    ChatConversationBucket.Yesterday -> stringResource(Res.string.chat_bucket_yesterday)
-    ChatConversationBucket.LastSevenDays -> stringResource(Res.string.chat_bucket_last_seven_days)
-    is ChatConversationBucket.InMonth -> stringResource(month.toStringResource())
 }

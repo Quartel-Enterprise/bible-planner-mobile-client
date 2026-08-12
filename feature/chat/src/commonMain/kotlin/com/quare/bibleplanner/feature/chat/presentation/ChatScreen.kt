@@ -18,18 +18,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,14 +42,14 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.chat.generated.resources.Res
-import bibleplanner.feature.chat.generated.resources.chat_context_chip
+import bibleplanner.feature.chat.generated.resources.chat_back
 import bibleplanner.feature.chat.generated.resources.chat_conversations
-import bibleplanner.feature.chat.generated.resources.chat_history
 import bibleplanner.feature.chat.generated.resources.chat_new
 import bibleplanner.feature.chat.generated.resources.chat_new_conversation
 import bibleplanner.feature.chat.generated.resources.chat_title
 import bibleplanner.feature.chat.generated.resources.chat_welcome_generic
 import bibleplanner.feature.chat.generated.resources.chat_welcome_with_context
+import com.quare.bibleplanner.feature.chat.presentation.component.ChatContextChip
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatContextPill
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatFailureCard
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatInputBar
@@ -58,6 +58,7 @@ import com.quare.bibleplanner.feature.chat.presentation.component.ChatSuggestion
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatSuggestionChips
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatThinkingIndicator
 import com.quare.bibleplanner.feature.chat.presentation.component.history.ChatHistoryDrawer
+import com.quare.bibleplanner.feature.chat.presentation.component.history.ChatHistorySidebar
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatMessageUiModel
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiState
@@ -92,48 +93,95 @@ internal fun ChatScreen(
         listState = listState,
     )
     Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            topBar = {
-                ChatTopBar(
-                    contextLabel = uiState.contextLabel,
-                    isWide = isWide,
-                    onNavigateBack = onNavigateBack,
+        // Wide enough for both at once: the history stops being a place you go to and becomes a
+        // column you read from, which is why the way back out of the chat moves into it.
+        if (isWide) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                ChatHistorySidebar(
+                    history = uiState.history,
                     onEvent = onEvent,
+                    onNavigateBack = onNavigateBack,
                 )
-            },
-        ) { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .imePadding(),
-            ) {
-                if (!isWide) {
-                    ChatContextPill(
-                        contextLabel = uiState.contextLabel,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .widthIn(max = contentMaxWidth)
-                            .padding(horizontal = 12.dp),
-                    )
-                }
-                ChatMessages(
+                VerticalDivider()
+                ChatThread(
                     uiState = uiState,
                     listState = listState,
+                    isWide = true,
+                    onNavigateBack = onNavigateBack,
                     onEvent = onEvent,
+                    onComposerHeightChange = { height -> composerHeightPx = height },
                     modifier = Modifier.weight(1f),
                 )
-                ChatComposer(
-                    uiState = uiState,
-                    onEvent = onEvent,
-                    onHeightChange = { height -> composerHeightPx = height },
+            }
+        } else {
+            ChatThread(
+                uiState = uiState,
+                listState = listState,
+                isWide = false,
+                onNavigateBack = onNavigateBack,
+                onEvent = onEvent,
+                onComposerHeightChange = { height -> composerHeightPx = height },
+                modifier = Modifier.fillMaxSize(),
+            )
+            ChatHistoryDrawer(
+                history = uiState.history,
+                onEvent = onEvent,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChatThread(
+    uiState: ChatUiState,
+    listState: LazyListState,
+    isWide: Boolean,
+    onNavigateBack: () -> Unit,
+    onEvent: (ChatUiEvent) -> Unit,
+    onComposerHeightChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            ChatTopBar(
+                contextLabel = uiState.contextLabel,
+                isWide = isWide,
+                onNavigateBack = onNavigateBack,
+                onEvent = onEvent,
+            )
+        },
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .imePadding(),
+        ) {
+            if (!isWide) {
+                ChatContextPill(
+                    contextLabel = uiState.contextLabel,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .widthIn(max = contentMaxWidth)
+                        .padding(horizontal = 12.dp),
                 )
             }
+            ChatMessages(
+                uiState = uiState,
+                listState = listState,
+                onEvent = onEvent,
+                modifier = Modifier.weight(1f),
+            )
+            // The wide thread has room to spare below it, so the composer needs a line of its own
+            // to read as the floor of the conversation rather than as the last thing said in it.
+            if (isWide) HorizontalDivider()
+            ChatComposer(
+                uiState = uiState,
+                onEvent = onEvent,
+                onHeightChange = onComposerHeightChange,
+            )
         }
-        ChatHistoryDrawer(
-            history = uiState.history,
-            onEvent = onEvent,
-        )
     }
 }
 
@@ -162,28 +210,26 @@ private fun ChatTopBar(
             }
         },
         navigationIcon = {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = null,
-                )
+            // On a wide window the sidebar already carries the way back, and a second arrow in the
+            // bar would only ask the reader which one leaves the screen.
+            if (!isWide) {
+                IconButton(onClick = onNavigateBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = stringResource(Res.string.chat_back),
+                    )
+                }
             }
         },
         actions = {
-            // On a wide window the bar has room to name its actions and to carry the reading
-            // context itself, so the pill below the bar is dropped there.
+            // The wide bar has room to name the action and to wear the reading context itself, so
+            // the banner below the bar is dropped there — and the history needs no button at all,
+            // being permanently on screen.
             if (isWide) {
-                TextButton(onClick = { onEvent(ChatUiEvent.OnHistoryClick) }) {
-                    Icon(
-                        imageVector = Icons.Rounded.History,
-                        contentDescription = null,
-                    )
-                    Text(
-                        text = stringResource(Res.string.chat_history),
-                        modifier = Modifier.padding(start = 6.dp),
-                    )
-                }
-                TextButton(onClick = { onEvent(ChatUiEvent.OnNewConversationClick) }) {
+                OutlinedButton(
+                    onClick = { onEvent(ChatUiEvent.OnNewConversationClick) },
+                    modifier = Modifier.padding(end = 8.dp),
+                ) {
                     Icon(
                         imageVector = Icons.Rounded.EditNote,
                         contentDescription = null,
@@ -194,17 +240,9 @@ private fun ChatTopBar(
                     )
                 }
                 contextLabel?.let { label ->
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(stringResource(Res.string.chat_context_chip, label)) },
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        enabled = false,
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Bolt,
-                                contentDescription = null,
-                            )
-                        },
+                    ChatContextChip(
+                        contextLabel = label,
+                        modifier = Modifier.padding(end = 16.dp),
                     )
                 }
             } else {
@@ -237,6 +275,7 @@ private fun ChatMessages(
         state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item(key = WELCOME_KEY) {
             ChatMessageBubble(
