@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.chat.presentation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.chat.generated.resources.Res
 import bibleplanner.feature.chat.generated.resources.chat_back
@@ -63,7 +64,6 @@ import com.quare.bibleplanner.feature.chat.presentation.model.ChatMessageUiModel
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
-import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
@@ -74,6 +74,7 @@ private const val THINKING_KEY = "thinking"
 private const val FAILURE_KEY = "failure"
 private const val SUGGESTIONS_KEY = "suggestions"
 private val contentMaxWidth = 720.dp
+private val sidebarLayoutMinWidth = 840.dp
 private val sparkleSize = 22.dp
 
 @Composable
@@ -83,7 +84,6 @@ internal fun ChatScreen(
     onEvent: (ChatUiEvent) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-    val isWide = LocalIsWideLayout.current
     val listState = rememberLazyListState()
     var composerHeightPx by remember { mutableFloatStateOf(0f) }
     // The composer owns the bottom edge here, so the app's snackbar has to clear it.
@@ -92,7 +92,11 @@ internal fun ChatScreen(
         requests = scrollToBottomRequests,
         listState = listState,
     )
-    Box(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        // Measured here rather than taken from the window: the sidebar only earns its place if what
+        // is left over still fits a thread and a top bar that names its actions. Just past the
+        // window's own wide mark it does not, and the title was wrapping onto three lines.
+        val isWide = maxWidth >= sidebarLayoutMinWidth
         // Wide enough for both at once: the history stops being a place you go to and becomes a
         // column you read from, which is why the way back out of the chat moves into it.
         if (isWide) {
@@ -211,6 +215,8 @@ private fun ChatTopBar(
                     text = stringResource(Res.string.chat_title),
                     modifier = Modifier.padding(start = 8.dp),
                     fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         },
