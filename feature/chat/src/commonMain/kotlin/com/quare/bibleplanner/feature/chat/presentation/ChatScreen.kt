@@ -144,12 +144,17 @@ private fun ChatThread(
     Scaffold(
         modifier = modifier,
         topBar = {
-            ChatTopBar(
-                contextLabel = uiState.contextLabel,
-                isWide = isWide,
-                onNavigateBack = onNavigateBack,
-                onEvent = onEvent,
-            )
+            Column {
+                ChatTopBar(
+                    contextLabel = uiState.contextLabel,
+                    isWide = isWide,
+                    onNavigateBack = onNavigateBack,
+                    onEvent = onEvent,
+                )
+                // The bar carries the context on a wide window, so it needs a line to close it off:
+                // without one it reads as the first thing in the thread rather than as its header.
+                if (isWide) HorizontalDivider()
+            }
         },
     ) { padding ->
         Column(
