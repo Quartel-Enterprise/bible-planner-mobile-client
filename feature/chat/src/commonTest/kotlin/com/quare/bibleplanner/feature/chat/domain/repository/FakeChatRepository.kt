@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.chat.domain.repository
 
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
@@ -18,6 +19,7 @@ internal class FakeChatRepository : ChatRepository {
     val renamed: MutableList<Pair<String, String>> = mutableListOf()
     val deleted: MutableList<String> = mutableListOf()
     val loadedConversationIds: MutableList<String> = mutableListOf()
+    val studyQuestionDays: MutableSet<ChatPlanDayModel> = mutableSetOf()
     var refreshedConversations: Int = 0
     var refreshedQuota: Int = 0
 
@@ -54,4 +56,10 @@ internal class FakeChatRepository : ChatRepository {
     override suspend fun deleteConversation(conversationId: String) {
         deleted += conversationId
     }
+
+    override suspend fun rememberStudyQuestions(planDay: ChatPlanDayModel) {
+        studyQuestionDays += planDay
+    }
+
+    override suspend fun hasStudyQuestions(planDay: ChatPlanDayModel): Boolean = studyQuestionDays.contains(planDay)
 }

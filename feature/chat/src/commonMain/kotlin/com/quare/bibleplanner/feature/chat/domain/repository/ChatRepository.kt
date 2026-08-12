@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.chat.domain.repository
 
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
@@ -32,4 +33,12 @@ interface ChatRepository {
     )
 
     suspend fun deleteConversation(conversationId: String)
+
+    /**
+     * Records that this day's chat was entered through the study's questions, so the day's own
+     * button offers them too from then on: they belong to the thread, not to the door taken.
+     */
+    suspend fun rememberStudyQuestions(planDay: ChatPlanDayModel)
+
+    suspend fun hasStudyQuestions(planDay: ChatPlanDayModel): Boolean
 }

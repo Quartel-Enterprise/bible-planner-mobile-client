@@ -90,9 +90,7 @@ internal class ChatViewModel(
 
     private val dayRoute = route.toDayNavRoute()
 
-    // Only the study screen hands over its own questions. From the day's button the chips are always
-    // the same ones, instead of quietly depending on whether that study happens to be generated.
-    private val usesStudyQuestions = route.source == ChatEntrySource.DAY_STUDY_QUESTIONS
+    private val entersFromStudy = route.source == ChatEntrySource.DAY_STUDY_QUESTIONS
     private val activeConversationId: MutableStateFlow<String?> = MutableStateFlow(null)
     private var conversations: List<ChatConversationModel> = emptyList()
     private var context: ChatContextModel? = null
@@ -177,10 +175,7 @@ internal class ChatViewModel(
             val loaded = useCases.getContext(dayRoute)
             context = loaded
             _uiState.update { it.copy(contextLabel = loaded?.label) }
-            val studyQuestions = loaded
-                ?.takeIf { usesStudyQuestions }
-                ?.let { useCases.getSuggestions(it.passages) }
-                .orEmpty()
+            val studyQuestions = loaded?.let { studyQuestionsOf(it) }.orEmpty()
             // The questions from the study come first, being the ones the reader just saw, and the
             // openers follow instead of being replaced: arriving from the study is no reason to
             // lose the only prompts on offer everywhere else.
@@ -188,6 +183,22 @@ internal class ChatViewModel(
             _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
             claimDayThread()
         }
+    }
+
+    /**
+     * The study's questions, offered on the way in from the study and on every later visit to that
+     * day — including through the day's own button. Having read them once, the reader should not
+     * have to remember which door produced them.
+     *
+     * Only the day is remembered. The questions themselves stay in the day study's cache, where a
+     * regenerated study replaces them; a second copy here would quietly go stale.
+     */
+    private suspend fun studyQuestionsOf(context: ChatContextModel): List<String> {
+        val planDay = context.planDay
+        if (entersFromStudy && planDay != null) useCases.rememberStudyQuestions(planDay)
+        val offersStudyQuestions = entersFromStudy || (planDay != null && useCases.hasStudyQuestions(planDay))
+        if (!offersStudyQuestions) return emptyList()
+        return useCases.getSuggestions(context.passages)
     }
 
     private fun loadDefaultSuggestions() {

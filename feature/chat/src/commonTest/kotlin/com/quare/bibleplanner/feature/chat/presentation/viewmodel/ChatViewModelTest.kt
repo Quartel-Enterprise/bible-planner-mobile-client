@@ -16,12 +16,14 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatSendFailureModel
 import com.quare.bibleplanner.feature.chat.domain.repository.FakeChatRepository
 import com.quare.bibleplanner.feature.chat.domain.usecase.ChatUseCases
 import com.quare.bibleplanner.feature.chat.domain.usecase.DeleteChatConversationUseCase
+import com.quare.bibleplanner.feature.chat.domain.usecase.HasChatStudyQuestionsUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.LoadChatMessagesUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.ObserveChatConversationsUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.ObserveChatMessagesUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.ObserveChatQuotaUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.RefreshChatConversationsUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.RefreshChatQuotaUseCase
+import com.quare.bibleplanner.feature.chat.domain.usecase.RememberChatStudyQuestionsUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.RenameChatConversationUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.SyncChatRemoteChangesUseCase
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
@@ -155,6 +157,21 @@ internal class ChatViewModelTest {
 
         assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
     }
+
+    @Test
+    fun `GIVEN the study questions were seen for this day THEN the day button offers them too`() =
+        runTest(testDispatcher) {
+            entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+            chatContext = readingContext()
+            chatSuggestions = listOf(SUGGESTION)
+            defaultSuggestions = listOf(STARTER)
+            createViewModel()
+
+            entrySource = ChatEntrySource.DAY_FAB
+            val viewModel = createViewModel()
+
+            assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
+        }
 
     @Test
     fun `GIVEN the chat opened from the day THEN the starters are offered`() = runTest(testDispatcher) {
@@ -463,6 +480,8 @@ internal class ChatViewModelTest {
             renameConversation = RenameChatConversationUseCase(repository),
             deleteConversation = DeleteChatConversationUseCase(repository),
             getSuggestions = { chatSuggestions },
+            rememberStudyQuestions = RememberChatStudyQuestionsUseCase(repository),
+            hasStudyQuestions = HasChatStudyQuestionsUseCase(repository),
             getContext = { chatContext },
         ),
         coordinator = coordinator,

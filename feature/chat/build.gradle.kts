@@ -21,6 +21,7 @@ kotlin {
             implementation(projects.core.date)
             implementation(projects.core.user)
             implementation(projects.core.provider.language)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.billing)
@@ -36,6 +37,9 @@ kotlin {
             implementation(projects.ui.theme)
 
             // Compose
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
+
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
