@@ -101,6 +101,7 @@ internal class ChatConversationGroupMapperTest {
         title = title,
         preview = preview,
         contextLabel = null,
+        planDay = null,
         updatedAt = updatedAt,
     )
 }

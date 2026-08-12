@@ -25,6 +25,7 @@ import com.quare.bibleplanner.feature.chat.data.model.StreamingAnswer
 import com.quare.bibleplanner.feature.chat.data.model.withStreamingAnswer
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
@@ -211,6 +212,7 @@ internal class ChatRepositoryImpl(
             contextRequestMapper.map(
                 passages = model.passages,
                 version = bibleRepository.getSelectedVersionIdFlow().first(),
+                planDay = model.planDay,
             )
         }
         return AskChatRequestDto(
@@ -229,6 +231,7 @@ internal class ChatRepositoryImpl(
         is ChatStreamEvent.Accepted -> onAccepted(
             payload = event.payload,
             question = request.message,
+            planDay = request.context?.planDay,
         )
 
         is ChatStreamEvent.Delta -> pending?.also {
@@ -257,6 +260,7 @@ internal class ChatRepositoryImpl(
     private suspend fun FlowCollector<ChatSendEventModel>.onAccepted(
         payload: ChatAcceptedDto,
         question: String,
+        planDay: ChatPlanDayModel?,
     ): PendingAnswer {
         val now = Clock.System.now()
         if (payload.isNewConversation) {
@@ -266,6 +270,7 @@ internal class ChatRepositoryImpl(
                     title = payload.title,
                     preview = question,
                     contextLabel = payload.contextLabel,
+                    planDay = planDay,
                 ),
             )
         }

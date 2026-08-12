@@ -13,5 +13,8 @@ data class ChatConversationEntity(
     val title: String,
     val preview: String?,
     val contextLabel: String?,
+    val dayNumber: Int?,
+    val weekNumber: Int?,
+    val readingPlanType: String?,
     val updatedAtEpochMillis: Long,
 )

@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.provider.room.entity.ChatConversationEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChatMessageEntity
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import kotlin.time.Instant
 
@@ -13,7 +14,14 @@ internal class ChatEntityMapper {
         title = entity.title,
         preview = entity.preview,
         contextLabel = entity.contextLabel,
+        planDay = entity.planDay(),
         updatedAt = Instant.fromEpochMilliseconds(entity.updatedAtEpochMillis),
+    )
+
+    private fun ChatConversationEntity.planDay(): ChatPlanDayModel? = ChatPlanDayModel(
+        dayNumber = dayNumber ?: return null,
+        weekNumber = weekNumber ?: return null,
+        readingPlanType = readingPlanType ?: return null,
     )
 
     fun mapConversation(model: ChatConversationModel): ChatConversationEntity = ChatConversationEntity(
@@ -21,6 +29,9 @@ internal class ChatEntityMapper {
         title = model.title,
         preview = model.preview,
         contextLabel = model.contextLabel,
+        dayNumber = model.planDay?.dayNumber,
+        weekNumber = model.planDay?.weekNumber,
+        readingPlanType = model.planDay?.readingPlanType,
         updatedAtEpochMillis = model.updatedAt.toEpochMilliseconds(),
     )
 

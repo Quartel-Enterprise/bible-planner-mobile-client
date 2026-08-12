@@ -7,7 +7,9 @@ import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.feature.chat.domain.coordinator.FakeChatStreamCoordinator
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendFailureModel
@@ -45,6 +47,11 @@ import kotlin.time.Instant
 
 private const val SUGGESTION = "Por que Caim matou Abel?"
 private const val STARTER = "Resuma esta leitura"
+private val readingPlanDay = ChatPlanDayModel(
+    dayNumber = 4,
+    weekNumber = 1,
+    readingPlanType = "CHRONOLOGICAL",
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChatViewModelTest {
@@ -160,6 +167,55 @@ internal class ChatViewModelTest {
 
         assertEquals(listOf(STARTER), viewModel.uiState.value.suggestions)
     }
+
+    @Test
+    fun `GIVEN the day already has a conversation WHEN opening the chat THEN it is resumed`() =
+        runTest(testDispatcher) {
+            chatContext = readingContext()
+            repository.conversations.value = listOf(conversation(planDay = readingPlanDay))
+
+            val viewModel = createViewModel()
+
+            assertEquals(listOf("day-conversation"), repository.loadedConversationIds)
+            assertEquals("Gênesis 4-7", viewModel.uiState.value.contextLabel)
+        }
+
+    @Test
+    fun `GIVEN a conversation of another day WHEN opening the chat THEN a new one is started`() =
+        runTest(testDispatcher) {
+            chatContext = readingContext()
+            repository.conversations.value = listOf(conversation(planDay = readingPlanDay.copy(dayNumber = 5)))
+
+            createViewModel()
+
+            assertTrue(repository.loadedConversationIds.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the day has a conversation WHEN starting a new one THEN it is left behind`() = runTest(testDispatcher) {
+        chatContext = readingContext()
+        defaultSuggestions = listOf(STARTER)
+        repository.conversations.value = listOf(conversation(planDay = readingPlanDay))
+        val viewModel = createViewModel()
+
+        viewModel.onEvent(ChatUiEvent.OnNewConversationClick)
+
+        assertNull(viewModel.uiState.value.contextLabel)
+        assertEquals(listOf(STARTER), viewModel.uiState.value.suggestions)
+    }
+
+    @Test
+    fun `GIVEN a new conversation was started WHEN the day thread syncs THEN it does not take over`() =
+        runTest(testDispatcher) {
+            chatContext = readingContext()
+            val viewModel = createViewModel()
+            viewModel.onEvent(ChatUiEvent.OnNewConversationClick)
+
+            repository.conversations.value = listOf(conversation(planDay = readingPlanDay))
+
+            assertTrue(repository.loadedConversationIds.isEmpty())
+            assertNull(viewModel.uiState.value.contextLabel)
+        }
 
     @Test
     fun `GIVEN a signed-out reader WHEN tapping a suggestion THEN the chip is kept`() = runTest(testDispatcher) {
@@ -372,9 +428,19 @@ internal class ChatViewModelTest {
         return createViewModel()
     }
 
+    private fun conversation(planDay: ChatPlanDayModel?): ChatConversationModel = ChatConversationModel(
+        id = "day-conversation",
+        title = "Gênesis 4-7",
+        preview = SUGGESTION,
+        contextLabel = "Gênesis 4-7",
+        planDay = planDay,
+        updatedAt = Instant.parse("2026-08-11T10:00:00Z"),
+    )
+
     private fun readingContext(): ChatContextModel = ChatContextModel(
         label = "Gênesis 4-7",
         passages = emptyList(),
+        planDay = readingPlanDay,
     )
 
     private fun createViewModel(): ChatViewModel = ChatViewModel(

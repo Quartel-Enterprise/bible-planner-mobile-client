@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.books.util.getReadingLabel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.usecase.GetChatContext
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import kotlinx.coroutines.flow.filterNotNull
@@ -23,6 +24,11 @@ class GetChatContextUseCase(
         return ChatContextModel(
             label = passages.getReadingLabel(),
             passages = passages,
+            planDay = ChatPlanDayModel(
+                dayNumber = dayRoute.dayNumber,
+                weekNumber = dayRoute.weekNumber,
+                readingPlanType = dayRoute.readingPlanType,
+            ),
         )
     }
 }

@@ -7,5 +7,6 @@ data class ChatConversationModel(
     val title: String,
     val preview: String?,
     val contextLabel: String?,
+    val planDay: ChatPlanDayModel?,
     val updatedAt: Instant,
 )

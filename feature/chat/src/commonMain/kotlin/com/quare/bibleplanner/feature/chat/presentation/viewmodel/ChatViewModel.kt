@@ -97,6 +97,11 @@ internal class ChatViewModel(
     private var conversations: List<ChatConversationModel> = emptyList()
     private var context: ChatContextModel? = null
     private var usedSuggestions: Set<String> = emptySet()
+
+    // The day's own thread is claimed once, while the reader has not chosen otherwise. After they
+    // start a fresh conversation or open another from the history, that choice stands: the day's
+    // thread arriving late in a sync must not pull the screen back to it.
+    private var isDayThreadClaimed = false
     private var cooldownJob: Job? = null
     private var isLoggedIn: Boolean = false
 
@@ -181,6 +186,14 @@ internal class ChatViewModel(
             // lose the only prompts on offer everywhere else.
             val suggestions = (studyQuestions + getDefaultSuggestions(hasReadingContext = loaded != null)).distinct()
             _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
+            claimDayThread()
+        }
+    }
+
+    private fun loadDefaultSuggestions() {
+        viewModelScope.launch {
+            val suggestions = getDefaultSuggestions(hasReadingContext = false)
+            _uiState.update { state -> state.copy(suggestions = suggestions) }
         }
     }
 
@@ -201,6 +214,7 @@ internal class ChatViewModel(
         viewModelScope.launch {
             useCases.observeConversations().collect { loaded ->
                 conversations = loaded
+                claimDayThread()
                 refreshHistoryGroups()
             }
         }
@@ -369,22 +383,50 @@ internal class ChatViewModel(
         refreshHistoryGroups()
     }
 
+    /**
+     * Starts a conversation with no reading behind it. Coming from a day would otherwise seed this
+     * one with the same reading as the day's own thread, and the two would be indistinguishable —
+     * asking for a new conversation is asking to leave that reading behind.
+     */
     private fun onNewConversationClick() {
         activeConversationId.value = null
         usedSuggestions = emptySet()
+        isDayThreadClaimed = true
+        context = null
         _uiState.update { state ->
             state.copy(
+                contextLabel = null,
                 input = "",
                 failure = null,
+                suggestions = emptyList(),
                 isSuggestionBarExpanded = false,
                 history = state.history.copy(isOpen = false),
             )
         }
-        loadContext()
+        loadDefaultSuggestions()
         refreshHistoryGroups()
     }
 
+    /**
+     * Reopens the conversation this day already has, so returning from the day's button or from the
+     * study's questions card carries on where the reader left off rather than piling up a thread
+     * per visit. The suggestions are not touched: they follow the door taken this time, which is
+     * how the study's questions still show up in a thread that was started from the day screen.
+     */
+    private fun claimDayThread() {
+        if (isDayThreadClaimed || activeConversationId.value != null) return
+        val planDay = context?.planDay ?: return
+        val existing = conversations.firstOrNull { it.planDay == planDay } ?: return
+        isDayThreadClaimed = true
+        openConversation(existing.id)
+    }
+
     private fun onConversationClick(conversationId: String) {
+        isDayThreadClaimed = true
+        openConversation(conversationId)
+    }
+
+    private fun openConversation(conversationId: String) {
         activeConversationId.value = conversationId
         _uiState.update { state ->
             state.copy(

@@ -10,4 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class ChatContextDto(
     @SerialName("label") val label: String,
+    @SerialName("day_number") val dayNumber: Int?,
+    @SerialName("week_number") val weekNumber: Int?,
+    @SerialName("reading_plan_type") val readingPlanType: String?,
 )

@@ -52,7 +52,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         ChatConversationEntity::class,
         ChatMessageEntity::class,
     ],
-    version = 15,
+    version = 16,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
@@ -64,6 +64,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
+        AutoMigration(from = 15, to = 16),
     ],
     exportSchema = true,
 )

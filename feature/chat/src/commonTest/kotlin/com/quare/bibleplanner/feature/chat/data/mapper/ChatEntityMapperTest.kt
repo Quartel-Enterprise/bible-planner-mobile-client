@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.chat.data.mapper
 
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -20,6 +21,11 @@ internal class ChatEntityMapperTest {
             title = "Caim e Abel",
             preview = "Por que Caim matou Abel?",
             contextLabel = "Gênesis 4-7",
+            planDay = ChatPlanDayModel(
+                dayNumber = 4,
+                weekNumber = 1,
+                readingPlanType = "CHRONOLOGICAL",
+            ),
             updatedAt = updatedAt,
         )
 
@@ -33,6 +39,7 @@ internal class ChatEntityMapperTest {
             title = "Uma dúvida",
             preview = null,
             contextLabel = null,
+            planDay = null,
             updatedAt = updatedAt,
         )
 
