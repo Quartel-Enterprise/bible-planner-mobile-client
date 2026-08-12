@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 15,
-    "identityHash": "3ed56a50ff7cb9f25612fb1818e686cd",
+    "identityHash": "e7e29b9d7eff4fbe5990fdb479f62a41",
     "entities": [
       {
         "tableName": "books",
@@ -898,7 +898,7 @@
       },
       {
         "tableName": "chat_conversations",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `preview` TEXT, `contextLabel` TEXT, `updatedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `preview` TEXT, `contextLabel` TEXT, `dayNumber` INTEGER, `weekNumber` INTEGER, `readingPlanType` TEXT, `updatedAtEpochMillis` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -920,6 +920,21 @@
           {
             "fieldPath": "contextLabel",
             "columnName": "contextLabel",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "dayNumber",
+            "columnName": "dayNumber",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "weekNumber",
+            "columnName": "weekNumber",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "readingPlanType",
+            "columnName": "readingPlanType",
             "affinity": "TEXT"
           },
           {
@@ -1005,7 +1020,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3ed56a50ff7cb9f25612fb1818e686cd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e7e29b9d7eff4fbe5990fdb479f62a41')"
     ]
   }
 }
