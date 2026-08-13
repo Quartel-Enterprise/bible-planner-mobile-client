@@ -4,7 +4,8 @@
     "La pantalla para eliminar todo el progreso es más clara: ahora muestra qué se elimina y qué se mantiene, como tu cuenta, tu suscripción y tus preferencias.",
     "Se corrigieron problemas al tomar la foto de perfil con la cámara en iPhone: la pantalla de ajuste ya no se ve borrosa y los toques siguen funcionando después de cerrar las ventanas de edición.",
     "Ahora aparece un indicador de carga mientras la cámara se abre.",
-    "Se corrigió un problema que hacía que el plan empezara en fechas distintas en cada dispositivo cuando nunca habías elegido la fecha de inicio: ahora esa fecha vale para toda tu cuenta y se ve igual en todos tus dispositivos."
+    "Se corrigió un problema que hacía que el plan empezara en fechas distintas en cada dispositivo cuando nunca habías elegido la fecha de inicio: ahora esa fecha vale para toda tu cuenta y se ve igual en todos tus dispositivos.",
+    "Se corrigió un bloqueo poco frecuente que podía ocurrir al tocar rápidamente la sugerencia de siguiente capítulo en la pantalla de lectura."
   ],
   "2.4.0": [
     "Se corrigió un problema que podía mostrar un error en la pantalla de versiones de la Biblia incluso con internet funcionando.",
