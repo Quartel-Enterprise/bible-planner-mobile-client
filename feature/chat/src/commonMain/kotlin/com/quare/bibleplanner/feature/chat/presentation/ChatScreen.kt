@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -44,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -99,11 +103,17 @@ internal fun ChatScreen(
         listState = listState,
     )
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        // Measured here rather than taken from the window: the sidebar only earns its place if what
-        // is left over still fits a thread and a top bar that names its actions. What the system
-        // keeps for itself is already out of this number — the app root pads for it — so a phone
-        // held sideways is measured by the width it can actually draw in, not the one it claims.
-        val isWide = maxWidth >= sidebarLayoutMinWidth
+        // Measured here rather than taken from the window, and net of what the system keeps for
+        // itself: the sidebar only earns its place if what is left over still fits a thread and a
+        // top bar that names its actions. A phone held sideways still measures wide until the notch
+        // is taken out of both edges — some 120 points the app never draws in — which is how iOS
+        // ended up with the sidebar and a title cut down to an ellipsis.
+        val safeAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
+        val layoutDirection = LocalLayoutDirection.current
+        val drawableWidth = maxWidth -
+            safeAreaPadding.calculateStartPadding(layoutDirection) -
+            safeAreaPadding.calculateEndPadding(layoutDirection)
+        val isWide = drawableWidth >= sidebarLayoutMinWidth
         // Wide enough for both at once: the history stops being a place you go to and becomes a
         // column you read from, which is why the way back out of the chat moves into it.
         if (isWide) {
