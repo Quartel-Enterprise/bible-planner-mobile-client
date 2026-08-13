@@ -20,6 +20,7 @@ internal data class StreamingAnswer(
         role = ChatRoleModel.ASSISTANT,
         content = content,
         isStreaming = true,
+        isFailed = false,
         createdAt = createdAt,
     )
 }

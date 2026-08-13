@@ -101,6 +101,7 @@ internal class StreamingAnswerTest {
         role = ChatRoleModel.USER,
         content = content,
         isStreaming = false,
+        isFailed = false,
         createdAt = createdAt,
     )
 }

@@ -40,6 +40,7 @@ internal class ChatEntityMapper {
         role = if (entity.isFromUser) ChatRoleModel.USER else ChatRoleModel.ASSISTANT,
         content = entity.content,
         isStreaming = false,
+        isFailed = entity.isFailed,
         createdAt = Instant.fromEpochMilliseconds(entity.createdAtEpochMillis),
     )
 
@@ -51,6 +52,7 @@ internal class ChatEntityMapper {
         conversationId = conversationId,
         isFromUser = model.role == ChatRoleModel.USER,
         content = model.content,
+        isFailed = model.isFailed,
         createdAtEpochMillis = model.createdAt.toEpochMilliseconds(),
     )
 }

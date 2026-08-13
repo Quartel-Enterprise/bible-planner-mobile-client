@@ -50,6 +50,7 @@ import bibleplanner.feature.chat.generated.resources.chat_new_conversation
 import bibleplanner.feature.chat.generated.resources.chat_title
 import bibleplanner.feature.chat.generated.resources.chat_welcome_generic
 import bibleplanner.feature.chat.generated.resources.chat_welcome_with_context
+import com.quare.bibleplanner.feature.chat.domain.model.ChatSendFailureModel
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatContextChip
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatContextPill
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatFailureCard
@@ -297,6 +298,7 @@ private fun ChatMessages(
                         ?: stringResource(Res.string.chat_welcome_generic),
                     isFromUser = false,
                     isStreaming = false,
+                    isFailed = false,
                 ),
                 modifier = Modifier.centeredContent(),
             )
@@ -305,6 +307,17 @@ private fun ChatMessages(
             items = uiState.messages,
             key = { message -> message.id },
         ) { message ->
+            // An answer the server marked failed is the thread's own record of what happened, so it
+            // is shown where the answer would have been rather than as a banner over the screen.
+            if (message.isFailed) {
+                ChatFailureCard(
+                    failure = ChatSendFailureModel.Generic,
+                    cooldownSeconds = uiState.cooldownSeconds,
+                    onRetryClick = { onEvent(ChatUiEvent.OnRetryClick) },
+                    modifier = Modifier.centeredContent(),
+                )
+                return@items
+            }
             ChatMessageBubble(
                 message = message,
                 modifier = Modifier.centeredContent(),
@@ -318,6 +331,7 @@ private fun ChatMessages(
                         text = question,
                         isFromUser = true,
                         isStreaming = false,
+                        isFailed = false,
                     ),
                     modifier = Modifier.centeredContent(),
                 )

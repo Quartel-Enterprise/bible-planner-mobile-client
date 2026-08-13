@@ -53,6 +53,7 @@ internal class ChatEntityMapperTest {
             role = ChatRoleModel.ASSISTANT,
             content = "Caim matou Abel por inveja.",
             isStreaming = true,
+            isFailed = false,
             createdAt = updatedAt,
         )
 
@@ -72,6 +73,7 @@ internal class ChatEntityMapperTest {
             role = ChatRoleModel.USER,
             content = "Por que Caim matou Abel?",
             isStreaming = false,
+            isFailed = false,
             createdAt = updatedAt,
         )
 

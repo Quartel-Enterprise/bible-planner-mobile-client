@@ -10,4 +10,5 @@ internal data class ChatMessageDto(
     @SerialName("role") val role: String,
     @SerialName("content") val content: String,
     @SerialName("created_at") val createdAt: String,
+    @SerialName("status") val status: String,
 )

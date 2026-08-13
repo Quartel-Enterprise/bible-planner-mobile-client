@@ -27,5 +27,6 @@ data class ChatMessageEntity(
     val conversationId: String,
     val isFromUser: Boolean,
     val content: String,
+    val isFailed: Boolean,
     val createdAtEpochMillis: Long,
 )

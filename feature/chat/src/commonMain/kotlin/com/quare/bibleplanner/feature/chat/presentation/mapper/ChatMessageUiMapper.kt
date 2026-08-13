@@ -17,6 +17,7 @@ class ChatMessageUiMapper {
                 text = message.content,
                 isFromUser = message.role == ChatRoleModel.USER,
                 isStreaming = message.isStreaming,
+                isFailed = message.isFailed,
             )
         }
 

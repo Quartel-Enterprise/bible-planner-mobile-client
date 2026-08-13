@@ -70,16 +70,34 @@ internal class ChatMessageUiMapperTest {
         assertEquals(listOf("answer"), mapper.map(messages).map { it.id })
     }
 
+    @Test
+    fun `GIVEN an answer the server marked failed WHEN mapping THEN it survives to be shown`() {
+        val messages = listOf(
+            message(
+                id = "answer",
+                role = ChatRoleModel.ASSISTANT,
+                content = "",
+                isFailed = true,
+            ),
+        )
+
+        val mapped = mapper.map(messages).single()
+        assertTrue(mapped.isFailed)
+        assertTrue(!mapper.isThinking(messages))
+    }
+
     private fun message(
         id: String,
         role: ChatRoleModel,
         content: String,
         isStreaming: Boolean = false,
+        isFailed: Boolean = false,
     ): ChatMessageModel = ChatMessageModel(
         id = id,
         role = role,
         content = content,
         isStreaming = isStreaming,
+        isFailed = isFailed,
         createdAt = createdAt,
     )
 }

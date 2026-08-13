@@ -430,7 +430,10 @@ internal class ChatViewModel(
                 pendingQuestion = pending,
                 isThinking = state.isThinking || pending != null,
                 isAnswering = send != null && send.failure == null,
-                failure = send?.failure,
+                // A failure the server got to record is already in the thread, marked on the answer
+                // it belongs to; carding it here too would state the same event twice, and only on
+                // the device that happened to be holding the stream.
+                failure = send?.failure?.takeUnless { send.isAccepted && it is ChatSendFailureModel.Generic },
             )
         }
         when (val failure = send?.failure) {
@@ -494,9 +497,18 @@ internal class ChatViewModel(
         return true
     }
 
+    /**
+     * Retrying the send this device owns, or — on a device that only watched the failure arrive —
+     * asking the failed question again. The server replaces the failed exchange with the new
+     * attempt, so the thread does not gain a second copy of the question.
+     */
     private fun onRetryClick() {
         _uiState.update { it.copy(failure = null) }
-        coordinator.retry()
+        if (coordinator.send.value?.failure != null) {
+            coordinator.retry()
+            return
+        }
+        threadMessages.lastOrNull { it.role == ChatRoleModel.USER }?.let { question -> send(question.content) }
     }
 
     private fun startCooldown(seconds: Int) {

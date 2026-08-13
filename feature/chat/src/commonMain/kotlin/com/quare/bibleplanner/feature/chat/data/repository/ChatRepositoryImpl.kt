@@ -287,6 +287,7 @@ internal class ChatRepositoryImpl(
                 role = ChatRoleModel.USER,
                 content = question,
                 isStreaming = false,
+                isFailed = false,
                 createdAt = now,
             ),
         )
@@ -323,6 +324,7 @@ internal class ChatRepositoryImpl(
                 role = ChatRoleModel.ASSISTANT,
                 content = content,
                 isStreaming = false,
+                isFailed = false,
                 // Stamped now, not when the question was sent: an answer that carried the question's
                 // own instant left the two tied, and the thread then ordered them by their random
                 // ids — which is how an answer could end up above the question that asked for it.

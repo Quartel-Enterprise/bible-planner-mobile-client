@@ -5,4 +5,5 @@ data class ChatMessageUiModel(
     val text: String,
     val isFromUser: Boolean,
     val isStreaming: Boolean,
+    val isFailed: Boolean,
 )
