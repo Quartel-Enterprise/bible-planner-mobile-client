@@ -51,6 +51,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Clock
 import kotlin.time.Instant
 
 private const val SUGGESTION = "Por que Caim matou Abel?"
@@ -239,6 +240,57 @@ internal class ChatViewModelTest {
 
             assertTrue(repository.loadedConversationIds.isEmpty())
             assertNull(viewModel.uiState.value.contextLabel)
+        }
+
+    @Test
+    fun `GIVEN a question with no answer yet WHEN watching from another device THEN it thinks`() =
+        runTest(testDispatcher) {
+            repository.conversations.value = listOf(conversation(planDay = null))
+            repository.messages.value = mapOf(
+                "day-conversation" to listOf(
+                    ChatMessageModel(
+                        id = "question-1",
+                        role = ChatRoleModel.USER,
+                        content = SUGGESTION,
+                        isStreaming = false,
+                        createdAt = Clock.System.now(),
+                    ),
+                ),
+            )
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(ChatUiEvent.OnConversationClick("day-conversation"))
+
+            assertTrue(viewModel.uiState.value.isThinking)
+        }
+
+    @Test
+    fun `GIVEN an answered question WHEN watching from another device THEN it does not think`() =
+        runTest(testDispatcher) {
+            repository.conversations.value = listOf(conversation(planDay = null))
+            repository.messages.value = mapOf(
+                "day-conversation" to listOf(
+                    ChatMessageModel(
+                        id = "question-1",
+                        role = ChatRoleModel.USER,
+                        content = SUGGESTION,
+                        isStreaming = false,
+                        createdAt = Clock.System.now(),
+                    ),
+                    ChatMessageModel(
+                        id = "answer-1",
+                        role = ChatRoleModel.ASSISTANT,
+                        content = "Por inveja.",
+                        isStreaming = false,
+                        createdAt = Clock.System.now(),
+                    ),
+                ),
+            )
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(ChatUiEvent.OnConversationClick("day-conversation"))
+
+            assertTrue(!viewModel.uiState.value.isThinking)
         }
 
     @Test

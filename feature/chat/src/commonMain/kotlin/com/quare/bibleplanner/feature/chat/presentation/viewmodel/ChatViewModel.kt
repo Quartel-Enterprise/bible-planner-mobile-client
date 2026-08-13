@@ -15,7 +15,9 @@ import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.feature.chat.domain.coordinator.ChatStreamCoordinator
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendFailureModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
@@ -43,7 +45,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 internal class ChatViewModel(
@@ -90,6 +94,8 @@ internal class ChatViewModel(
 
     private val cooldownTick: Duration = 1.seconds
     private val draftDebounceDelay: Duration = 2.seconds
+    private val answerWaitWindow: Duration = 2.minutes
+    private val answerWaitRecheck: Duration = 5.seconds
 
     private val dayRoute = route.toDayNavRoute()
 
@@ -107,6 +113,8 @@ internal class ChatViewModel(
     private var draftSaveJob: Job? = null
     private var pendingDraft: String? = null
     private var lastAppliedDraft: String? = null
+    private var threadMessages: List<ChatMessageModel> = emptyList()
+    private var awaitingAnswerJob: Job? = null
     private val currentThreadKey: MutableStateFlow<String> = MutableStateFlow(NEW_THREAD_KEY)
     private var isLoggedIn: Boolean = false
 
@@ -318,14 +326,67 @@ internal class ChatViewModel(
                 .flatMapLatest { conversationId ->
                     if (conversationId == null) flowOf(emptyList()) else useCases.observeMessages(conversationId)
                 }.collect { messages ->
-                    _uiState.update { state ->
-                        state.copy(
-                            messages = messageUiMapper.map(messages),
-                            isThinking = messageUiMapper.isThinking(messages) || state.pendingQuestion != null,
-                        )
-                    }
+                    applyMessages(messages)
                     emitAction(ChatUiAction.ScrollToBottom)
                 }
+        }
+    }
+
+    private fun applyMessages(messages: List<ChatMessageModel>) {
+        threadMessages = messages
+        val isAwaitingAnswer = messages.isAwaitingAnswer()
+        _uiState.update { state ->
+            state.copy(
+                messages = messageUiMapper.map(messages),
+                isThinking = state.isThinkingWith(
+                    messages = messages,
+                    isAwaitingAnswer = isAwaitingAnswer,
+                ),
+            )
+        }
+        watchAwaitingAnswer(isAwaitingAnswer)
+    }
+
+    private fun ChatUiState.isThinkingWith(
+        messages: List<ChatMessageModel>,
+        isAwaitingAnswer: Boolean,
+    ): Boolean = messageUiMapper.isThinking(messages) || pendingQuestion != null || isAwaitingAnswer
+
+    /**
+     * A question with no answer under it means one is being written — for the account, not for this
+     * device — so a reader watching from another one is told so instead of facing a thread that
+     * looks abandoned. The device that asked is already covered by its own stream.
+     */
+    private fun List<ChatMessageModel>.isAwaitingAnswer(): Boolean {
+        val last = lastOrNull() ?: return false
+        if (last.role != ChatRoleModel.USER) return false
+        return Clock.System.now() - last.createdAt < answerWaitWindow
+    }
+
+    /**
+     * The wait has an end, and nothing else will emit to announce it: a generation that died
+     * without the server tidying its question away would otherwise leave every other device
+     * thinking for good.
+     */
+    private fun watchAwaitingAnswer(isAwaitingAnswer: Boolean) {
+        if (!isAwaitingAnswer) {
+            awaitingAnswerJob?.cancel()
+            awaitingAnswerJob = null
+            return
+        }
+        if (awaitingAnswerJob?.isActive == true) return
+        awaitingAnswerJob = viewModelScope.launch {
+            while (threadMessages.isAwaitingAnswer()) {
+                delay(answerWaitRecheck)
+            }
+            _uiState.update { state ->
+                state.copy(
+                    isThinking = state.isThinkingWith(
+                        messages = threadMessages,
+                        isAwaitingAnswer = false,
+                    ),
+                )
+            }
         }
     }
 

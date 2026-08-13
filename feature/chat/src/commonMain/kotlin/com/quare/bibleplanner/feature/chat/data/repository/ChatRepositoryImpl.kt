@@ -352,16 +352,17 @@ internal class ChatRepositoryImpl(
         .firstOrNull { it.id == conversationId }
 
     /**
-     * The server drops the question row when a generation fails, so the mirror drops it too:
-     * retrying then re-asks instead of stacking a second copy of the same question.
+     * What survives a failed generation is the server's to say: it drops the question when the
+     * answer fails, but a connection that died mid-stream may have left the row standing. Dropping
+     * it locally on a guess is what left the asking device without the question while every other
+     * device still showed it, so the thread is re-read instead.
      */
     private suspend fun discardPendingAnswer(pending: PendingAnswer) {
         streamingAnswer.value = null
-        if (pending.isNewConversation) {
-            localDataSource.deleteConversation(pending.conversationId)
-            return
-        }
-        localDataSource.deleteMessage(pending.userMessageId)
+        suspendRunCatching {
+            refreshConversations()
+            refreshMessages(pending.conversationId)
+        }.onFailure { error -> Logger.e(error) { "Failed to reconcile the thread after a failed answer" } }
     }
 
     override suspend fun renameConversation(

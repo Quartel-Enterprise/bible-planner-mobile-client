@@ -391,7 +391,11 @@ private fun ChatComposer(
     }
 }
 
-private fun Modifier.centeredContent(): Modifier = this.widthIn(max = contentMaxWidth)
+// Caps the column and fills it: without the fill, anything narrower than the thread — the thinking
+// indicator, a failure card — would be centred by the list instead of starting where the answers do.
+private fun Modifier.centeredContent(): Modifier = this
+    .widthIn(max = contentMaxWidth)
+    .fillMaxWidth()
 
 // New content always lands at the bottom of the thread, the way a chat is read.
 @Composable
