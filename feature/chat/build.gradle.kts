@@ -19,6 +19,8 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.books)
             implementation(projects.core.date)
+            implementation(projects.core.sync)
+            implementation(projects.core.provider.connectivity)
             implementation(projects.core.user)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.dataStore)

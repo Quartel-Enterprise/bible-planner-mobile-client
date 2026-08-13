@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLangua
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatConversationsRemoteDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatDraftLocalDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatLocalDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatMessagesRemoteDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatRealtimeDataSource
@@ -66,6 +67,7 @@ import kotlin.time.Clock
 internal class ChatRepositoryImpl(
     private val localDataSource: ChatLocalDataSource,
     private val studyQuestionsDataSource: ChatStudyQuestionsLocalDataSource,
+    private val draftDataSource: ChatDraftLocalDataSource,
     private val conversationsDataSource: ChatConversationsRemoteDataSource,
     private val messagesDataSource: ChatMessagesRemoteDataSource,
     private val streamDataSource: ChatStreamRemoteDataSource,
@@ -385,6 +387,18 @@ internal class ChatRepositoryImpl(
 
     override suspend fun hasStudyQuestions(planDay: ChatPlanDayModel): Boolean =
         studyQuestionsDataSource.contains(planDay)
+
+    override fun observeDraft(threadKey: String): Flow<String> = draftDataSource.observeDraft(threadKey)
+
+    override suspend fun saveDraft(
+        threadKey: String,
+        content: String,
+    ) {
+        draftDataSource.saveDraft(
+            threadKey = threadKey,
+            content = content,
+        )
+    }
 
     private suspend fun mapFailure(
         throwable: Throwable,

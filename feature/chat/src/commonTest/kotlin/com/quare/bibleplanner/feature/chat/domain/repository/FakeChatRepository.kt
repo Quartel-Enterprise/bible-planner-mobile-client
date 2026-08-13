@@ -20,6 +20,7 @@ internal class FakeChatRepository : ChatRepository {
     val deleted: MutableList<String> = mutableListOf()
     val loadedConversationIds: MutableList<String> = mutableListOf()
     val studyQuestionDays: MutableSet<ChatPlanDayModel> = mutableSetOf()
+    val drafts: MutableStateFlow<Map<String, String>> = MutableStateFlow(emptyMap())
     var refreshedConversations: Int = 0
     var refreshedQuota: Int = 0
 
@@ -62,4 +63,14 @@ internal class FakeChatRepository : ChatRepository {
     }
 
     override suspend fun hasStudyQuestions(planDay: ChatPlanDayModel): Boolean = studyQuestionDays.contains(planDay)
+
+    override fun observeDraft(threadKey: String): Flow<String> = drafts
+        .map { current -> current[threadKey].orEmpty() }
+
+    override suspend fun saveDraft(
+        threadKey: String,
+        content: String,
+    ) {
+        drafts.value = drafts.value + (threadKey to content)
+    }
 }

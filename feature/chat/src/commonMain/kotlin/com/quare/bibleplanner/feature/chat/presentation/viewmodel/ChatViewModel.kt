@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
+import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.feature.chat.domain.coordinator.ChatStreamCoordinator
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
@@ -48,6 +49,7 @@ import kotlin.time.Duration.Companion.seconds
 internal class ChatViewModel(
     route: ChatNavRoute,
     private val useCases: ChatUseCases,
+    private val applicationScope: ApplicationScope,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val getDefaultSuggestions: GetDefaultChatSuggestions,
     private val coordinator: ChatStreamCoordinator,
@@ -87,6 +89,7 @@ internal class ChatViewModel(
     val uiAction: SharedFlow<ChatUiAction> = _uiAction
 
     private val cooldownTick: Duration = 1.seconds
+    private val draftDebounceDelay: Duration = 2.seconds
 
     private val dayRoute = route.toDayNavRoute()
 
@@ -101,6 +104,9 @@ internal class ChatViewModel(
     // thread arriving late in a sync must not pull the screen back to it.
     private var isDayThreadClaimed = false
     private var cooldownJob: Job? = null
+    private var draftSaveJob: Job? = null
+    private var pendingDraft: String? = null
+    private val currentThreadKey: MutableStateFlow<String> = MutableStateFlow(NEW_THREAD_KEY)
     private var isLoggedIn: Boolean = false
 
     init {
@@ -111,11 +117,23 @@ internal class ChatViewModel(
         observeQuota()
         observeSend()
         syncRemoteChanges()
+        observeDraft()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // The debounce still holding the last keystrokes must not die with the screen: what was
+        // typed is exactly what this exists to keep.
+        val unsaved = pendingDraft ?: return
+        if (draftSaveJob?.isActive != true) return
+        draftSaveJob?.cancel()
+        val key = currentThreadKey.value
+        applicationScope.launch { useCases.saveDraft(key, unsaved) }
     }
 
     override fun handleEvent(event: ChatUiEvent) {
         when (event) {
-            is ChatUiEvent.OnInputChanged -> _uiState.update { it.copy(input = event.text) }
+            is ChatUiEvent.OnInputChanged -> onInputChanged(event.text)
 
             ChatUiEvent.OnSendClick -> send(_uiState.value.input)
 
@@ -170,10 +188,63 @@ internal class ChatViewModel(
         }
     }
 
+    /**
+     * The name the composer's text is kept under. A claimed conversation owns its draft; before one
+     * exists, the day does; with no reading at all, the single fresh-conversation slot does. The
+     * same keys are what the other devices write, which is how a draft follows the reader across
+     * them.
+     *
+     * Held as state rather than computed on demand: what it derives from arrives at its own pace
+     * (the context loads after the screen opens, a conversation is claimed later still), and the
+     * draft hydration has to move with it or it reads the wrong thread's slot.
+     */
+    private fun refreshThreadKey() {
+        currentThreadKey.value = activeConversationId.value
+            ?: context?.planDay?.let { "$DAY_THREAD_KEY_PREFIX:${it.readingPlanType}:${it.weekNumber}:${it.dayNumber}" }
+            ?: NEW_THREAD_KEY
+    }
+
+    private fun onInputChanged(text: String) {
+        _uiState.update { it.copy(input = text) }
+        pendingDraft = text
+        draftSaveJob?.cancel()
+        val key = currentThreadKey.value
+        draftSaveJob = viewModelScope.launch {
+            delay(draftDebounceDelay)
+            useCases.saveDraft(key, text)
+            pendingDraft = null
+        }
+    }
+
+    /**
+     * Fills the composer with the thread's saved draft — but only an empty composer: what the
+     * reader is typing right now always wins over anything stored, including another device's.
+     */
+    private fun observeDraft() {
+        viewModelScope.launch {
+            currentThreadKey
+                .flatMapLatest(useCases.observeDraft::invoke)
+                .collect { draft ->
+                    if (draft.isEmpty()) return@collect
+                    _uiState.update { state ->
+                        if (state.input.isNotEmpty()) state else state.copy(input = draft)
+                    }
+                }
+        }
+    }
+
+    private fun clearDraft() {
+        pendingDraft = null
+        draftSaveJob?.cancel()
+        val key = currentThreadKey.value
+        viewModelScope.launch { useCases.saveDraft(key, "") }
+    }
+
     private fun loadContext() {
         viewModelScope.launch {
             val loaded = useCases.getContext(dayRoute)
             context = loaded
+            refreshThreadKey()
             _uiState.update { it.copy(contextLabel = loaded?.label) }
             val studyQuestions = loaded?.let { studyQuestionsOf(it) }.orEmpty()
             // The questions from the study come first, being the ones the reader just saw, and the
@@ -300,7 +371,7 @@ internal class ChatViewModel(
     }
 
     private fun syncRemoteChanges() {
-        viewModelScope.launch { useCases.syncRemoteChanges() }
+        useCases.syncRemoteChanges()
     }
 
     private fun onSuggestionClick(suggestion: String) {
@@ -342,6 +413,7 @@ internal class ChatViewModel(
                 failure = null,
             )
         }
+        clearDraft()
         coordinator.start(
             ChatSendRequestModel(
                 conversationId = conversationId,
@@ -404,6 +476,7 @@ internal class ChatViewModel(
         usedSuggestions = emptySet()
         isDayThreadClaimed = true
         context = null
+        refreshThreadKey()
         _uiState.update { state ->
             state.copy(
                 contextLabel = null,
@@ -439,6 +512,7 @@ internal class ChatViewModel(
 
     private fun openConversation(conversationId: String) {
         activeConversationId.value = conversationId
+        refreshThreadKey()
         _uiState.update { state ->
             state.copy(
                 contextLabel = conversations.firstOrNull { it.id == conversationId }?.contextLabel,
@@ -511,5 +585,10 @@ internal class ChatViewModel(
 
     private fun emitAction(action: ChatUiAction) {
         viewModelScope.launch { _uiAction.emit(action) }
+    }
+
+    private companion object {
+        const val DAY_THREAD_KEY_PREFIX = "day"
+        const val NEW_THREAD_KEY = "new"
     }
 }

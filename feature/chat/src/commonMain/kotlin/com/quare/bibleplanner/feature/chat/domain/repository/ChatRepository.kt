@@ -40,5 +40,13 @@ interface ChatRepository {
      */
     suspend fun rememberStudyQuestions(planDay: ChatPlanDayModel)
 
+    /** The composer draft of one thread, empty when there is none. */
+    fun observeDraft(threadKey: String): Flow<String>
+
+    suspend fun saveDraft(
+        threadKey: String,
+        content: String,
+    )
+
     suspend fun hasStudyQuestions(planDay: ChatPlanDayModel): Boolean
 }

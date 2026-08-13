@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.feature.chat.domain.usecase
 
-import com.quare.bibleplanner.feature.chat.domain.repository.ChatRepository
+import com.quare.bibleplanner.feature.chat.domain.coordinator.ChatSyncCoordinator
 
 class SyncChatRemoteChangesUseCase(
-    private val repository: ChatRepository,
+    private val coordinator: ChatSyncCoordinator,
 ) {
-    suspend operator fun invoke() {
-        repository.syncRemoteChanges()
+    operator fun invoke() {
+        coordinator.ensureStarted()
     }
 }

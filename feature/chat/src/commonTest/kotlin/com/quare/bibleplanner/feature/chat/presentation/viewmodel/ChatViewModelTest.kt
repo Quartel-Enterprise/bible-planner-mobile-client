@@ -5,7 +5,9 @@ import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.feature.chat.domain.coordinator.FakeChatStreamCoordinator
+import com.quare.bibleplanner.feature.chat.domain.coordinator.FakeChatSyncCoordinator
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
@@ -19,23 +21,27 @@ import com.quare.bibleplanner.feature.chat.domain.usecase.DeleteChatConversation
 import com.quare.bibleplanner.feature.chat.domain.usecase.HasChatStudyQuestionsUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.LoadChatMessagesUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.ObserveChatConversationsUseCase
+import com.quare.bibleplanner.feature.chat.domain.usecase.ObserveChatDraftUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.ObserveChatMessagesUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.ObserveChatQuotaUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.RefreshChatConversationsUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.RefreshChatQuotaUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.RememberChatStudyQuestionsUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.RenameChatConversationUseCase
+import com.quare.bibleplanner.feature.chat.domain.usecase.SaveChatDraftUseCase
 import com.quare.bibleplanner.feature.chat.domain.usecase.SyncChatRemoteChangesUseCase
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatMessageUiMapper
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatInputMode
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiAction
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -49,6 +55,7 @@ import kotlin.time.Instant
 
 private const val SUGGESTION = "Por que Caim matou Abel?"
 private const val STARTER = "Resuma esta leitura"
+private const val DAY_DRAFT_KEY = "day:CHRONOLOGICAL:1:4"
 private val readingPlanDay = ChatPlanDayModel(
     dayNumber = 4,
     weekNumber = 1,
@@ -233,6 +240,39 @@ internal class ChatViewModelTest {
             assertTrue(repository.loadedConversationIds.isEmpty())
             assertNull(viewModel.uiState.value.contextLabel)
         }
+
+    @Test
+    fun `GIVEN a saved draft WHEN opening the chat THEN the composer is filled`() = runTest(testDispatcher) {
+        chatContext = readingContext()
+        repository.drafts.value = mapOf(DAY_DRAFT_KEY to "Por que")
+
+        val viewModel = createViewModel()
+
+        assertEquals("Por que", viewModel.uiState.value.input)
+    }
+
+    @Test
+    fun `GIVEN typed text WHEN the debounce elapses THEN the draft is saved`() = runTest(testDispatcher) {
+        chatContext = readingContext()
+        val viewModel = createViewModel()
+
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim"))
+        advanceUntilIdle()
+
+        assertEquals("Por que Caim", repository.drafts.value[DAY_DRAFT_KEY])
+    }
+
+    @Test
+    fun `GIVEN a draft WHEN the question is sent THEN the draft is cleared`() = runTest(testDispatcher) {
+        chatContext = readingContext()
+        val viewModel = createViewModel()
+
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+        viewModel.onEvent(ChatUiEvent.OnSendClick)
+        advanceUntilIdle()
+
+        assertEquals("", repository.drafts.value[DAY_DRAFT_KEY])
+    }
 
     @Test
     fun `GIVEN a signed-out reader WHEN tapping a suggestion THEN the chip is kept`() = runTest(testDispatcher) {
@@ -460,7 +500,8 @@ internal class ChatViewModelTest {
         planDay = readingPlanDay,
     )
 
-    private fun createViewModel(): ChatViewModel = ChatViewModel(
+    private fun createViewModel(scope: CoroutineScope = CoroutineScope(testDispatcher)): ChatViewModel = ChatViewModel(
+        applicationScope = ApplicationScope(scope),
         route = ChatNavRoute(
             source = entrySource,
             dayNumber = null,
@@ -473,7 +514,7 @@ internal class ChatViewModelTest {
             observeConversations = ObserveChatConversationsUseCase(repository),
             observeMessages = ObserveChatMessagesUseCase(repository),
             observeQuota = ObserveChatQuotaUseCase(repository),
-            syncRemoteChanges = SyncChatRemoteChangesUseCase(repository),
+            syncRemoteChanges = SyncChatRemoteChangesUseCase(FakeChatSyncCoordinator()),
             refreshConversations = RefreshChatConversationsUseCase(repository),
             loadMessages = LoadChatMessagesUseCase(repository),
             refreshQuota = RefreshChatQuotaUseCase(repository),
@@ -481,6 +522,8 @@ internal class ChatViewModelTest {
             deleteConversation = DeleteChatConversationUseCase(repository),
             getSuggestions = { chatSuggestions },
             rememberStudyQuestions = RememberChatStudyQuestionsUseCase(repository),
+            observeDraft = ObserveChatDraftUseCase(repository),
+            saveDraft = SaveChatDraftUseCase(repository),
             hasStudyQuestions = HasChatStudyQuestionsUseCase(repository),
             getContext = { chatContext },
         ),

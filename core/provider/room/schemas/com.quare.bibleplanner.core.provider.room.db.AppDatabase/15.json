@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 15,
-    "identityHash": "e7e29b9d7eff4fbe5990fdb479f62a41",
+    "identityHash": "39aa21c562982044ff69f6890c5be4e9",
     "entities": [
       {
         "tableName": "books",
@@ -1016,11 +1016,47 @@
             ]
           }
         ]
+      },
+      {
+        "tableName": "chat_drafts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`threadKey` TEXT NOT NULL, `content` TEXT NOT NULL, `updatedAtEpochMillis` INTEGER NOT NULL, `isPendingSync` INTEGER NOT NULL, PRIMARY KEY(`threadKey`))",
+        "fields": [
+          {
+            "fieldPath": "threadKey",
+            "columnName": "threadKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAtEpochMillis",
+            "columnName": "updatedAtEpochMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPendingSync",
+            "columnName": "isPendingSync",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "threadKey"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e7e29b9d7eff4fbe5990fdb479f62a41')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '39aa21c562982044ff69f6890c5be4e9')"
     ]
   }
 }

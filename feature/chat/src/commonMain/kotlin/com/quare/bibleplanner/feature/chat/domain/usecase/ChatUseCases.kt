@@ -12,6 +12,8 @@ data class ChatUseCases(
     val deleteConversation: DeleteChatConversationUseCase,
     val getSuggestions: GetChatSuggestions,
     val rememberStudyQuestions: RememberChatStudyQuestionsUseCase,
+    val observeDraft: ObserveChatDraftUseCase,
+    val saveDraft: SaveChatDraftUseCase,
     val hasStudyQuestions: HasChatStudyQuestionsUseCase,
     val getContext: GetChatContext,
 )

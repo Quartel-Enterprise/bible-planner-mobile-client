@@ -70,3 +70,6 @@ supabase/.temp/
 
 # Store listings
 store_listings/
+
+# Capas geradas por scripts/generate_book_covers.py (nao commitar imagens geradas)
+out/

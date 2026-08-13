@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
 import com.quare.bibleplanner.core.provider.room.dao.ChatDao
+import com.quare.bibleplanner.core.provider.room.dao.ChatDraftDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
 import com.quare.bibleplanner.core.provider.room.dao.DayStudyDao
 import com.quare.bibleplanner.core.provider.room.dao.ProfileDao
@@ -20,6 +21,7 @@ import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChatConversationEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChatDraftEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChatMessageEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyChapterSummaryEntity
@@ -51,6 +53,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         ProfileEntity::class,
         ChatConversationEntity::class,
         ChatMessageEntity::class,
+        ChatDraftEntity::class,
     ],
     version = 15,
     autoMigrations = [
@@ -89,4 +92,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
 
     abstract fun chatDao(): ChatDao
+
+    abstract fun chatDraftDao(): ChatDraftDao
 }
