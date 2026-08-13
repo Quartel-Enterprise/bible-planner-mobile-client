@@ -159,10 +159,15 @@ interface VerseDao {
      * @param startVerse The starting verse number of the range.
      * @param endVerse The ending verse number of the range.
      * @param isRead The new read status to be applied.
+     *
+     * `isRead <> :isRead` keeps verses that already hold the value out of the write: a range
+     * overlapping verses already in that state would otherwise mark them pending and cost a push
+     * and a realtime broadcast each, for a value nobody changed.
      */
     @Query(
         "UPDATE verses SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
-            "WHERE chapterId = :chapterId AND number BETWEEN :startVerse AND :endVerse",
+            "WHERE chapterId = :chapterId AND number BETWEEN :startVerse AND :endVerse " +
+            "AND isRead <> :isRead",
     )
     suspend fun updateVerseReadStatusRange(
         chapterId: Long,

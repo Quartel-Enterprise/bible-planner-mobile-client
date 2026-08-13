@@ -37,9 +37,14 @@ interface ChapterDao {
     @Update
     suspend fun updateChapter(chapter: ChapterEntity)
 
+    /**
+     * `isRead <> :isRead` keeps a re-set of the value the row already holds from becoming a write:
+     * without it the row is marked pending and pushed to the backend, where it costs a row version
+     * and a realtime broadcast to every device — for a value nobody changed.
+     */
     @Query(
         "UPDATE chapters SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
-            "WHERE id = :chapterId",
+            "WHERE id = :chapterId AND isRead <> :isRead",
     )
     suspend fun updateChapterReadStatus(
         chapterId: Long,
@@ -47,9 +52,14 @@ interface ChapterDao {
         updatedAt: Long,
     )
 
+    /**
+     * Same guard, and this is where it matters most: without `isRead <> :isRead` this marks *every*
+     * chapter of the book pending — 50 rows for Genesis, 150 for Psalms — whether or not any of them
+     * actually changed. Each one is then upserted and broadcast.
+     */
     @Query(
         "UPDATE chapters SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
-            "WHERE bookId = :bookId",
+            "WHERE bookId = :bookId AND isRead <> :isRead",
     )
     suspend fun updateChaptersReadStatusByBook(
         bookId: String,
