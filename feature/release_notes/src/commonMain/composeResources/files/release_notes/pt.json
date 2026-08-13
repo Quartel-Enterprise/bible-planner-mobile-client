@@ -4,7 +4,8 @@
     "A tela de apagar todo o progresso ficou mais clara: agora ela mostra o que é removido e o que continua com você, como sua conta, sua assinatura e suas preferências.",
     "Corrigidos problemas ao tirar a foto de perfil com a câmera no iPhone: a tela de ajuste não fica mais desfocada e os toques continuam funcionando depois de fechar as janelas de edição.",
     "Um indicador de carregamento agora aparece enquanto a câmera abre.",
-    "Corrigido um problema que fazia o plano começar em datas diferentes em cada aparelho quando você nunca tinha escolhido a data de início: agora essa data vale para a conta toda e aparece igual em todos os seus aparelhos."
+    "Corrigido um problema que fazia o plano começar em datas diferentes em cada aparelho quando você nunca tinha escolhido a data de início: agora essa data vale para a conta toda e aparece igual em todos os seus aparelhos.",
+    "Corrigido um travamento raro que podia acontecer ao tocar rapidamente na sugestão de próximo capítulo na tela de leitura."
   ],
   "2.4.0": [
     "Corrigido um problema que podia mostrar um erro na tela de versões da Bíblia mesmo com internet funcionando.",
