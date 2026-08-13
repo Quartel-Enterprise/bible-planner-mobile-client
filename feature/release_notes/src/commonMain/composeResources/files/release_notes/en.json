@@ -5,6 +5,7 @@
     "Fixed problems when taking your profile photo with the camera on iPhone: the adjustment screen no longer appears blurred and taps keep working after you close the editing windows.",
     "A loading indicator now appears while the camera opens.",
     "Fixed a problem that made the plan start on a different date on each device when you had never picked a start date: that date now applies to your whole account and shows up the same on all your devices.",
+    "Fixed a rare crash that could happen when quickly tapping the next chapter suggestion on the reading screen.",
     "You can now chat with the AI about the day's reading: tap \"Ask the AI\" on the day screen, or the \"Ask about this reading\" card inside the Questions tab, and the assistant already knows which chapters you are reading. The answer appears little by little, as it is being written.",
     "Your conversations with the AI are saved to your account: you can return to any of them from the history, search by subject, rename or delete them — and it all shows up right away on your other devices.",
     "Your conversations with the AI are now kept on the device: even with no internet you can still open the history and re-read what was already answered — a connection is only needed to ask something new."

@@ -71,9 +71,11 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         forwardStack.removeLastOrNull()?.asReversed()?.forEach(backStack::add)
     }
     val onNavigateReplacingTop: (NavKey) -> Unit = { route ->
-        backStack.removeLastOrNull()
-        backStack.add(route)
-        forwardStack.clear()
+        if (route != backStack.lastOrNull()) {
+            backStack.removeLastOrNull()
+            backStack.add(route)
+            forwardStack.clear()
+        }
     }
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }

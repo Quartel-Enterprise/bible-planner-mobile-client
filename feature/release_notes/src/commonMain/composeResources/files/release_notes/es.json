@@ -5,6 +5,7 @@
     "Se corrigieron problemas al tomar la foto de perfil con la cámara en iPhone: la pantalla de ajuste ya no se ve borrosa y los toques siguen funcionando después de cerrar las ventanas de edición.",
     "Ahora aparece un indicador de carga mientras la cámara se abre.",
     "Se corrigió un problema que hacía que el plan empezara en fechas distintas en cada dispositivo cuando nunca habías elegido la fecha de inicio: ahora esa fecha vale para toda tu cuenta y se ve igual en todos tus dispositivos.",
+    "Se corrigió un bloqueo poco frecuente que podía ocurrir al tocar rápidamente la sugerencia de siguiente capítulo en la pantalla de lectura.",
     "Ahora puedes conversar con la IA sobre la lectura del día: toca \"Pregúntale a la IA\" en la pantalla del día, o la tarjeta \"Pregunta sobre esta lectura\" dentro de la pestaña Preguntas, y el asistente ya sabe qué capítulos estás leyendo. La respuesta aparece poco a poco, mientras se escribe.",
     "Tus conversaciones con la IA quedan guardadas en tu cuenta: puedes volver a cualquiera desde el historial, buscar por tema, renombrarlas o eliminarlas — y todo aparece al instante en tus otros dispositivos.",
     "Tus conversaciones con la IA ahora quedan guardadas en el dispositivo: incluso sin internet puedes abrir el historial y releer lo que ya fue respondido — solo necesitas conexión para hacer preguntas nuevas."
