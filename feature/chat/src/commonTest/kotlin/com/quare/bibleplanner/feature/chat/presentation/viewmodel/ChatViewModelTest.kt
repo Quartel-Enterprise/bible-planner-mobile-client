@@ -252,6 +252,31 @@ internal class ChatViewModelTest {
     }
 
     @Test
+    fun `GIVEN a hydrated composer WHEN the draft is cleared elsewhere THEN the composer clears`() =
+        runTest(testDispatcher) {
+            chatContext = readingContext()
+            repository.drafts.value = mapOf(DAY_DRAFT_KEY to "teste")
+            val viewModel = createViewModel()
+            assertEquals("teste", viewModel.uiState.value.input)
+
+            repository.drafts.value = mapOf(DAY_DRAFT_KEY to "")
+
+            assertEquals("", viewModel.uiState.value.input)
+        }
+
+    @Test
+    fun `GIVEN local typing WHEN the draft is cleared elsewhere THEN the typing is kept`() = runTest(testDispatcher) {
+        chatContext = readingContext()
+        repository.drafts.value = mapOf(DAY_DRAFT_KEY to "teste")
+        val viewModel = createViewModel()
+
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("minha pergunta"))
+        repository.drafts.value = mapOf(DAY_DRAFT_KEY to "")
+
+        assertEquals("minha pergunta", viewModel.uiState.value.input)
+    }
+
+    @Test
     fun `GIVEN typed text WHEN the debounce elapses THEN the draft is saved`() = runTest(testDispatcher) {
         chatContext = readingContext()
         val viewModel = createViewModel()

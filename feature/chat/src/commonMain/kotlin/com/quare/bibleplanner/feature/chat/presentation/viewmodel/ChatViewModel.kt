@@ -106,6 +106,7 @@ internal class ChatViewModel(
     private var cooldownJob: Job? = null
     private var draftSaveJob: Job? = null
     private var pendingDraft: String? = null
+    private var lastAppliedDraft: String? = null
     private val currentThreadKey: MutableStateFlow<String> = MutableStateFlow(NEW_THREAD_KEY)
     private var isLoggedIn: Boolean = false
 
@@ -216,21 +217,29 @@ internal class ChatViewModel(
         }
     }
 
-    /**
-     * Fills the composer with the thread's saved draft — but only an empty composer: what the
-     * reader is typing right now always wins over anything stored, including another device's.
-     */
     private fun observeDraft() {
         viewModelScope.launch {
             currentThreadKey
                 .flatMapLatest(useCases.observeDraft::invoke)
-                .collect { draft ->
-                    if (draft.isEmpty()) return@collect
-                    _uiState.update { state ->
-                        if (state.input.isNotEmpty()) state else state.copy(input = draft)
-                    }
-                }
+                .collect(::onDraftChanged)
         }
+    }
+
+    /**
+     * The composer follows the stored draft — a clear included, which is how deleting the text on
+     * one device empties the others — for as long as it holds exactly what the draft last gave it.
+     * The moment the reader types something of their own, theirs wins; the debounce then writes it
+     * back, and the two are in step again.
+     */
+    private fun onDraftChanged(draft: String) {
+        val input = _uiState.value.input
+        if (input == draft) {
+            lastAppliedDraft = draft
+            return
+        }
+        if (input.isNotEmpty() && input != lastAppliedDraft) return
+        lastAppliedDraft = draft
+        _uiState.update { it.copy(input = draft) }
     }
 
     private fun clearDraft() {
