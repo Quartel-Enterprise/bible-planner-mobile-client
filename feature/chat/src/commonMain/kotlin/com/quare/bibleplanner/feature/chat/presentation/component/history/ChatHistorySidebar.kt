@@ -1,8 +1,14 @@
 package com.quare.bibleplanner.feature.chat.presentation.component.history
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -35,12 +41,20 @@ internal fun ChatHistorySidebar(
             .fillMaxHeight(),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        ChatHistoryPane(
-            history = history,
-            onEvent = onEvent,
-            onNavigateBack = onNavigateBack,
-            onDismiss = null,
-            contentPadding = listPadding,
-        )
+        // The surface runs edge to edge; only what is read inside it steps clear of the notch and
+        // the home indicator, so the column keeps its colour all the way to the window's border.
+        Box(
+            modifier = Modifier.windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Start + WindowInsetsSides.Vertical),
+            ),
+        ) {
+            ChatHistoryPane(
+                history = history,
+                onEvent = onEvent,
+                onNavigateBack = onNavigateBack,
+                onDismiss = null,
+                contentPadding = listPadding,
+            )
+        }
     }
 }

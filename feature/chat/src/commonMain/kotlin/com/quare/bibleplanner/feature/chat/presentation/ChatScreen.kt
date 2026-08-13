@@ -5,10 +5,14 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
@@ -95,8 +100,9 @@ internal fun ChatScreen(
     )
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         // Measured here rather than taken from the window: the sidebar only earns its place if what
-        // is left over still fits a thread and a top bar that names its actions. Just past the
-        // window's own wide mark it does not, and the title was wrapping onto three lines.
+        // is left over still fits a thread and a top bar that names its actions. What the system
+        // keeps for itself is already out of this number — the app root pads for it — so a phone
+        // held sideways is measured by the width it can actually draw in, not the one it claims.
         val isWide = maxWidth >= sidebarLayoutMinWidth
         // Wide enough for both at once: the history stops being a place you go to and becomes a
         // column you read from, which is why the way back out of the chat moves into it.
@@ -148,6 +154,13 @@ private fun ChatThread(
 ) {
     Scaffold(
         modifier = modifier,
+        // Beside the sidebar the thread no longer touches the window's leading edge, so padding it
+        // for a notch that the sidebar is already covering would only cost the answers their width.
+        contentWindowInsets = if (isWide) {
+            WindowInsets.safeDrawing.only(WindowInsetsSides.End + WindowInsetsSides.Vertical)
+        } else {
+            ScaffoldDefaults.contentWindowInsets
+        },
         topBar = {
             Column {
                 ChatTopBar(
