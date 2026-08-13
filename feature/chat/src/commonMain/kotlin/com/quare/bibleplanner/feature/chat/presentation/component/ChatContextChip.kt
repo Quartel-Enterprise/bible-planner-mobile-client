@@ -23,11 +23,6 @@ import org.jetbrains.compose.resources.stringResource
 private val chipShape = RoundedCornerShape(20.dp)
 private val chipIconSize = 17.dp
 
-/**
- * The reading behind the conversation, worn by the top bar itself. A wide window has room for it up
- * there, which is what lets the banner below the bar go: the same fact stated twice would only cost
- * the thread a line of height.
- */
 @Composable
 internal fun ChatContextChip(
     contextLabel: String,

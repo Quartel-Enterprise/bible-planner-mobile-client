@@ -13,7 +13,6 @@ internal sealed interface DayStudyRouteUiEvent : UiEvent {
     }
 
     data object OnAskAiClick : DayStudyRouteUiEvent {
-        // The params depend on whether the user is signed in, which is only known in the handler.
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
         )

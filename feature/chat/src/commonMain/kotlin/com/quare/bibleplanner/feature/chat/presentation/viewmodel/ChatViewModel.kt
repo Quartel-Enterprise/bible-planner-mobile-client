@@ -105,9 +105,6 @@ internal class ChatViewModel(
     private var context: ChatContextModel? = null
     private var usedSuggestions: Set<String> = emptySet()
 
-    // The day's own thread is claimed once, while the reader has not chosen otherwise. After they
-    // start a fresh conversation or open another from the history, that choice stands: the day's
-    // thread arriving late in a sync must not pull the screen back to it.
     private var isDayThreadClaimed = false
     private var cooldownJob: Job? = null
     private var draftSaveJob: Job? = null
@@ -131,8 +128,6 @@ internal class ChatViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        // The debounce still holding the last keystrokes must not die with the screen: what was
-        // typed is exactly what this exists to keep.
         val unsaved = pendingDraft ?: return
         if (draftSaveJob?.isActive != true) return
         draftSaveJob?.cancel()
@@ -197,16 +192,6 @@ internal class ChatViewModel(
         }
     }
 
-    /**
-     * The name the composer's text is kept under. A claimed conversation owns its draft; before one
-     * exists, the day does; with no reading at all, the single fresh-conversation slot does. The
-     * same keys are what the other devices write, which is how a draft follows the reader across
-     * them.
-     *
-     * Held as state rather than computed on demand: what it derives from arrives at its own pace
-     * (the context loads after the screen opens, a conversation is claimed later still), and the
-     * draft hydration has to move with it or it reads the wrong thread's slot.
-     */
     private fun refreshThreadKey() {
         currentThreadKey.value = activeConversationId.value
             ?: context?.planDay?.let { "$DAY_THREAD_KEY_PREFIX:${it.readingPlanType}:${it.weekNumber}:${it.dayNumber}" }
@@ -233,12 +218,6 @@ internal class ChatViewModel(
         }
     }
 
-    /**
-     * The composer follows the stored draft — a clear included, which is how deleting the text on
-     * one device empties the others — for as long as it holds exactly what the draft last gave it.
-     * The moment the reader types something of their own, theirs wins; the debounce then writes it
-     * back, and the two are in step again.
-     */
     private fun onDraftChanged(draft: String) {
         val input = _uiState.value.input
         if (input == draft) {
@@ -264,23 +243,12 @@ internal class ChatViewModel(
             refreshThreadKey()
             _uiState.update { it.copy(contextLabel = loaded?.label) }
             val studyQuestions = loaded?.let { studyQuestionsOf(it) }.orEmpty()
-            // The questions from the study come first, being the ones the reader just saw, and the
-            // openers follow instead of being replaced: arriving from the study is no reason to
-            // lose the only prompts on offer everywhere else.
             val suggestions = (studyQuestions + getDefaultSuggestions(hasReadingContext = loaded != null)).distinct()
             _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
             claimDayThread()
         }
     }
 
-    /**
-     * The study's questions, offered on the way in from the study and on every later visit to that
-     * day — including through the day's own button. Having read them once, the reader should not
-     * have to remember which door produced them.
-     *
-     * Only the day is remembered. The questions themselves stay in the day study's cache, where a
-     * regenerated study replaces them; a second copy here would quietly go stale.
-     */
     private suspend fun studyQuestionsOf(context: ChatContextModel): List<String> {
         val planDay = context.planDay
         if (entersFromStudy && planDay != null) useCases.rememberStudyQuestions(planDay)
@@ -296,8 +264,6 @@ internal class ChatViewModel(
         }
     }
 
-    // Everything server-side needs an account, so the chat only reaches for it once there is one —
-    // which also means signing in from the send gate loads the history and quota straight away.
     private fun observeAuthentication() {
         viewModelScope.launch {
             observeAuthenticatedUserId().collect { userId ->
@@ -352,22 +318,12 @@ internal class ChatViewModel(
         isAwaitingAnswer: Boolean,
     ): Boolean = messageUiMapper.isThinking(messages) || pendingQuestion != null || isAwaitingAnswer
 
-    /**
-     * A question with no answer under it means one is being written — for the account, not for this
-     * device — so a reader watching from another one is told so instead of facing a thread that
-     * looks abandoned. The device that asked is already covered by its own stream.
-     */
     private fun List<ChatMessageModel>.isAwaitingAnswer(): Boolean {
         val last = lastOrNull() ?: return false
         if (last.role != ChatRoleModel.USER) return false
         return Clock.System.now() - last.createdAt < answerWaitWindow
     }
 
-    /**
-     * The wait has an end, and nothing else will emit to announce it: a generation that died
-     * without the server tidying its question away would otherwise leave every other device
-     * thinking for good.
-     */
     private fun watchAwaitingAnswer(isAwaitingAnswer: Boolean) {
         if (!isAwaitingAnswer) {
             awaitingAnswerJob?.cancel()
@@ -418,21 +374,15 @@ internal class ChatViewModel(
     }
 
     private fun onSendChanged(send: ChatSendModel?) {
-        // A conversation created by this send only gets its id once the server accepts it.
         send?.conversationId?.let { conversationId ->
             if (activeConversationId.value == null) activeConversationId.value = conversationId
         }
-        // Until the server echoes the question back, the screen shows it locally so the send feels
-        // instant; the same message then arrives with its real id and replaces this placeholder.
         val pending = send?.takeIf { !it.isAccepted && it.failure == null }?.request?.message
         _uiState.update { state ->
             state.copy(
                 pendingQuestion = pending,
                 isThinking = state.isThinking || pending != null,
                 isAnswering = send != null && send.failure == null,
-                // A failure the server got to record is already in the thread, marked on the answer
-                // it belongs to; carding it here too would state the same event twice, and only on
-                // the device that happened to be holding the stream.
                 failure = send?.failure?.takeUnless { send.isAccepted && it is ChatSendFailureModel.Generic },
             )
         }
@@ -452,8 +402,6 @@ internal class ChatViewModel(
             name = AnalyticsEventNames.AI_CHAT_SUGGESTION_CLICKED,
             params = emptyMap(),
         )
-        // The chip is only spent when the question actually goes out: a tap that hits the login or
-        // the cooldown gate leaves the suggestion on screen to be tapped again afterwards.
         if (!send(suggestion)) return
         usedSuggestions = usedSuggestions + suggestion
         _uiState.update { state -> state.copy(suggestions = state.suggestions - suggestion) }
@@ -462,15 +410,11 @@ internal class ChatViewModel(
     private fun send(message: String): Boolean {
         val trimmed = message.trim()
         if (trimmed.isEmpty()) return false
-        // Asking is what needs an account (the conversation is saved to it), so the gate sits here
-        // rather than on the way in: a signed-out reader still gets the screen and the suggestions.
         if (!isLoggedIn) {
             emitAction(ChatUiAction.NavigateToRoute(LoginWarningNavRoute(LoginWarningReason.AiChat.key)))
             return false
         }
         if (_uiState.value.inputMode != ChatInputMode.ENABLED) return false
-        // One answer at a time: the coordinator owns a single stream, so a second question sent now
-        // would be dropped. Keep the text in the field instead of swallowing it.
         if (_uiState.value.isAnswering) return false
         val conversationId = activeConversationId.value
         trackEvent(
@@ -497,11 +441,6 @@ internal class ChatViewModel(
         return true
     }
 
-    /**
-     * Retrying the send this device owns, or — on a device that only watched the failure arrive —
-     * asking the failed question again. The server replaces the failed exchange with the new
-     * attempt, so the thread does not gain a second copy of the question.
-     */
     private fun onRetryClick() {
         _uiState.update { it.copy(failure = null) }
         if (coordinator.send.value?.failure != null) {
@@ -548,11 +487,6 @@ internal class ChatViewModel(
         refreshHistoryGroups()
     }
 
-    /**
-     * Starts a conversation with no reading behind it. Coming from a day would otherwise seed this
-     * one with the same reading as the day's own thread, and the two would be indistinguishable —
-     * asking for a new conversation is asking to leave that reading behind.
-     */
     private fun onNewConversationClick() {
         activeConversationId.value = null
         usedSuggestions = emptySet()
@@ -573,12 +507,6 @@ internal class ChatViewModel(
         refreshHistoryGroups()
     }
 
-    /**
-     * Reopens the conversation this day already has, so returning from the day's button or from the
-     * study's questions card carries on where the reader left off rather than piling up a thread
-     * per visit. The suggestions are not touched: they follow the door taken this time, which is
-     * how the study's questions still show up in a thread that was started from the day screen.
-     */
     private fun claimDayThread() {
         if (isDayThreadClaimed || activeConversationId.value != null) return
         val planDay = context?.planDay ?: return

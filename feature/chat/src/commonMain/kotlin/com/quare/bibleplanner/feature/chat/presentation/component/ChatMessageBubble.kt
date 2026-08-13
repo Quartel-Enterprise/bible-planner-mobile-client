@@ -82,7 +82,6 @@ internal fun ChatMessageBubble(
     }
 }
 
-// The caret rides along with the text so it always sits right after the last word written.
 @Composable
 private fun ChatMessageUiModel.annotatedText() = buildAnnotatedString {
     append(text)

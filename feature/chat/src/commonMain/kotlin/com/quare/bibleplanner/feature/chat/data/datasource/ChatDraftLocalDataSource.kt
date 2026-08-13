@@ -7,10 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
-/**
- * The composer drafts, read and written locally; the sync engine carries them to the account and
- * brings the other devices' edits back into the same table.
- */
 internal class ChatDraftLocalDataSource(
     private val chatDraftDao: ChatDraftDao,
     private val currentTimestampProvider: CurrentTimestampProvider,

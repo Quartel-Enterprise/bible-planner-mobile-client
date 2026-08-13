@@ -9,7 +9,6 @@ import io.github.jan.supabase.postgrest.query.Order
 internal class ChatConversationsRemoteDataSource(
     private val supabaseClient: SupabaseClient,
 ) {
-    // RLS scopes every query to the caller, so no user filter is needed here.
     suspend fun fetchAll(): List<ChatConversationDto> = supabaseClient
         .from(TABLE)
         .select {

@@ -13,10 +13,6 @@ import androidx.compose.ui.unit.dp
 private val chipShape = RoundedCornerShape(18.dp)
 private val chipBorderWidth = 1.dp
 
-/**
- * The chat's own suggestion chip rather than Material's, whose height is fixed at 32dp: these read
- * as questions, not as filters, and need the room to breathe that the design gives them.
- */
 @Composable
 internal fun ChatSuggestionChip(
     suggestion: String,

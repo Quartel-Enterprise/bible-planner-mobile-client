@@ -20,19 +20,9 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.withContext
 
-/**
- * Live conversation and message changes for the signed-in user, so a rename, a deletion or a
- * question asked on another device shows up here without a refresh. Two user-scoped channels
- * (rather than one per conversation) keep the history list fresh with a fixed number of
- * subscriptions.
- */
 internal class ChatRealtimeDataSource(
     private val realtime: Realtime,
 ) {
-    /**
-     * Every transition into CONNECTED — cold start and each reconnection. It is the cue to pull a
-     * fresh snapshot, since anything that changed while the socket was down was never delivered.
-     */
     fun observeConnected(): Flow<Unit> = realtime.status
         .filter { status -> status == Realtime.Status.CONNECTED }
         .map { }
@@ -51,15 +41,6 @@ internal class ChatRealtimeDataSource(
         deleted = ChatRemoteChange::MessageDeleted,
     )
 
-    /**
-     * Writes and deletions have to be subscribed separately, because they cannot share a filter.
-     *
-     * Inserts and updates are narrowed to this user server-side. Deletions cannot be: Postgres has
-     * no row left to check a policy against, so Realtime strips the old record down to the primary
-     * key — a `user_id` filter then matches nothing and the event is dropped before it is ever
-     * sent. Listening unfiltered is what makes a deletion elsewhere arrive at all; the ids of other
-     * readers' rows come with it, and deleting an id this device never had is a no-op.
-     */
     private inline fun <reified T : Any> observeTable(
         table: String,
         userId: String,
@@ -71,6 +52,9 @@ internal class ChatRealtimeDataSource(
             this.table = table
             filter(USER_ID_COLUMN, FilterOperator.EQ, userId)
         }
+        // Unfiltered on purpose: Postgres cannot check a row policy against a row that no longer
+        // exists, so Realtime strips the old record of an RLS table down to its primary key and a
+        // user_id filter would match nothing.
         val deletions = channel.postgresChangeFlow<PostgresAction.Delete>(schema = SCHEMA) {
             this.table = table
         }

@@ -7,7 +7,6 @@ import com.quare.bibleplanner.feature.chat.data.dto.ChatDraftDto
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatDraftMapper
 import kotlinx.coroutines.flow.Flow
 
-/** Adapts the composer drafts on the `chat_drafts` table to the generic sync engine. */
 internal class ChatDraftLocalStore(
     private val chatDraftDao: ChatDraftDao,
     private val mapper: ChatDraftMapper,

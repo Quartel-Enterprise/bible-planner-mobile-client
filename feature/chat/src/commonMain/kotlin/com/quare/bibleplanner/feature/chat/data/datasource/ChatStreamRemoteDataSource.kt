@@ -61,8 +61,6 @@ internal class ChatStreamRemoteDataSource(
             }.onEach { receivedEvent = true }
             .mapNotNull(::mapEvent)
             .retryWhen { cause, attempt ->
-                // Only a connection that never delivered anything is safe to retry blindly: once
-                // the question is persisted server-side, a retry here would ask it twice.
                 val shouldRetry = attempt == 0L && !receivedEvent && cause.isTransientConnectionFailure()
                 if (shouldRetry) delay(retryDelay)
                 shouldRetry

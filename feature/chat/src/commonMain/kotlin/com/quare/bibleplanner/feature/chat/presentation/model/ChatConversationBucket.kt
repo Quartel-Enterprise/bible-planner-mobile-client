@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.chat.presentation.model
 
 import kotlinx.datetime.Month
 
-/** How the history list groups conversations by recency. */
 sealed interface ChatConversationBucket {
     data object Today : ChatConversationBucket
 

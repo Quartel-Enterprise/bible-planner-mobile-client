@@ -124,9 +124,6 @@ internal class DayStudyRouteViewModel(
         }
     }
 
-    // Nothing gates the entry: the chat opens for anyone. Signing in is only asked for when the
-    // user actually sends a question, and the paywall only when the free ones are over — both
-    // with the conversation already in view.
     private fun onAskAiClick() {
         trackEvent(
             name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,

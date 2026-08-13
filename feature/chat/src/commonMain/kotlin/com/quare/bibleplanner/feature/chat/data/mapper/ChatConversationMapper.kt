@@ -20,8 +20,6 @@ internal class ChatConversationMapper {
         updatedAt = Instant.parse(dto.updatedAt),
     )
 
-    // Conversations created before the server started recording the plan day have none, and are
-    // simply never matched to a day: the reader gets a new thread once, and that one carries it.
     private fun JsonObject.planDay(): ChatPlanDayModel? = ChatPlanDayModel(
         dayNumber = number(DAY_NUMBER_KEY) ?: return null,
         weekNumber = number(WEEK_NUMBER_KEY) ?: return null,

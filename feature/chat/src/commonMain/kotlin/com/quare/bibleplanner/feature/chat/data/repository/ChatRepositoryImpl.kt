@@ -54,16 +54,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 
-/**
- * Reads the chat from the local mirror (Room) and keeps that mirror in step with the server, so a
- * reader with no connection still has their conversations and can re-read them.
- *
- * Only what the server confirmed is cached. The answer being written right now lives in memory
- * instead, and is combined with the cached thread for display — a half-streamed answer must never
- * be persisted as if it were the final one. Everything is keyed by the id the server assigns, which
- * is what makes the streamed answer and its later Realtime insert land on the same message instead
- * of on two.
- */
 internal class ChatRepositoryImpl(
     private val localDataSource: ChatLocalDataSource,
     private val studyQuestionsDataSource: ChatStudyQuestionsLocalDataSource,
@@ -120,11 +110,6 @@ internal class ChatRepositoryImpl(
             .collect(::applyRemoteChange)
     }
 
-    /**
-     * Realtime only delivers what happens while the socket is up, so every reconnection re-pulls the
-     * conversation list: that is what reconciles anything renamed or deleted elsewhere while this
-     * device was offline.
-     */
     private suspend fun pullOnConnected() {
         realtimeDataSource.observeConnected().collect {
             suspendRunCatching { refreshConversations() }
@@ -132,13 +117,6 @@ internal class ChatRepositoryImpl(
         }
     }
 
-    /**
-     * Wipes the mirror only when a *different* account takes over without a logout in between —
-     * signing out clears it through ClearChatLocalData instead. Two cases must not wipe: signing
-     * into the same account, which is what every cold start looks like and is the whole point of
-     * having a cache, and losing the session (an expired token would otherwise cost the reader
-     * their offline history over a transient auth hiccup).
-     */
     private suspend fun onUserChanged(userId: String?) {
         val previousUserId = currentUserId
         currentUserId = userId
@@ -147,8 +125,6 @@ internal class ChatRepositoryImpl(
         localDataSource.deleteAll()
     }
 
-    // One unusable change must not take the whole subscription down with it, so each is applied on
-    // its own: the next event still arrives.
     private suspend fun applyRemoteChange(change: ChatRemoteChange) {
         suspendRunCatching { applyChange(change) }
             .onFailure { error -> Logger.e(error) { "Failed to apply a remote chat change" } }
@@ -167,11 +143,6 @@ internal class ChatRepositoryImpl(
         }
     }
 
-    /**
-     * A message can arrive for a conversation this device has never seen — started on another
-     * device, or created while the socket was down. Pulling the list first gives the message a
-     * thread to belong to instead of dropping it.
-     */
     private suspend fun onRemoteMessage(change: ChatRemoteChange.MessageUpserted) {
         val conversationId = change.message.conversationId
         if (findConversation(conversationId) == null) refreshConversations()
@@ -242,7 +213,6 @@ internal class ChatRepositoryImpl(
             streamingAnswer.update { current -> current?.copy(content = current.content + event.text) }
         }
 
-        // The model restarted from scratch: what was shown so far is no longer the answer.
         ChatStreamEvent.Restart -> pending?.also {
             streamingAnswer.update { current -> current?.copy(content = "") }
         }
@@ -278,8 +248,6 @@ internal class ChatRepositoryImpl(
                 ),
             )
         }
-        // The question is already persisted server-side at this point, so it belongs in the mirror
-        // right away; only the answer is still provisional.
         localDataSource.saveMessage(
             conversationId = payload.conversationId,
             message = ChatMessageModel(
@@ -325,13 +293,9 @@ internal class ChatRepositoryImpl(
                 content = content,
                 isStreaming = false,
                 isFailed = false,
-                // Stamped now, not when the question was sent: an answer that carried the question's
-                // own instant left the two tied, and the thread then ordered them by their random
-                // ids — which is how an answer could end up above the question that asked for it.
                 createdAt = Clock.System.now(),
             ),
         )
-        // Answering is what moves a conversation to the top of the history, so the mirror follows.
         touchConversation(conversationId)
     }
 
@@ -353,12 +317,6 @@ internal class ChatRepositoryImpl(
         .first()
         .firstOrNull { it.id == conversationId }
 
-    /**
-     * What survives a failed generation is the server's to say: it drops the question when the
-     * answer fails, but a connection that died mid-stream may have left the row standing. Dropping
-     * it locally on a guess is what left the asking device without the question while every other
-     * device still showed it, so the thread is re-read instead.
-     */
     private suspend fun discardPendingAnswer(pending: PendingAnswer) {
         streamingAnswer.value = null
         suspendRunCatching {

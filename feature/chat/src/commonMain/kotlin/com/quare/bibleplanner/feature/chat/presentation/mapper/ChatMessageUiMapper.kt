@@ -5,9 +5,6 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatMessageUiModel
 
 class ChatMessageUiMapper {
-    // An assistant message with nothing written yet is the "thinking" state, not an empty bubble.
-    // Ids are deduplicated here because the list feeds a lazy list, which throws on a repeated key:
-    // dropping a duplicate is a far better outcome than taking the chat down mid-answer.
     fun map(messages: List<ChatMessageModel>): List<ChatMessageUiModel> = messages
         .distinctBy(ChatMessageModel::id)
         .filterNot { message -> message.isStreaming && message.content.isEmpty() }

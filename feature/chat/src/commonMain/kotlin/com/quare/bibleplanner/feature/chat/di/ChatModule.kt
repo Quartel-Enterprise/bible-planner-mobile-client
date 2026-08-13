@@ -73,7 +73,6 @@ val chatModule = module {
     singleOf(::ChatConversationsRemoteDataSource)
     singleOf(::ChatMessagesRemoteDataSource)
     singleOf(::ChatRealtimeDataSource)
-    // Single: the session store lives here, so every screen and the coordinator share one state.
     singleOf(::ChatRepositoryImpl).bind<ChatRepository>()
     singleOf(::ChatStreamCoordinatorImpl).bind<ChatStreamCoordinator>()
     singleOf(::ChatSyncCoordinatorImpl).bind<ChatSyncCoordinator>()

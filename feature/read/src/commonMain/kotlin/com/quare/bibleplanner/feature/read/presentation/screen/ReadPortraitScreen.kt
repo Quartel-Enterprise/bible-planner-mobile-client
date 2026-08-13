@@ -40,8 +40,6 @@ fun ReadPortraitScreen(
     val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var bottomBarHeightPx by remember { mutableFloatStateOf(0f) }
-    // The bar owns the bottom edge, and slides away as the reader scrolls: the app's overlays
-    // follow it down instead of covering the read toggle.
     ReserveBottomOverlayHeight {
         (bottomBarHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
     }

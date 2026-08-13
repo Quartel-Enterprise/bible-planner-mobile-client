@@ -33,10 +33,6 @@ private val fieldShape = RoundedCornerShape(12.dp)
 private val iconSize = 20.dp
 private val hintIconSize = 16.dp
 
-/**
- * Entry point to the chat from the questions tab. The field is a preview, not an input: tapping
- * anywhere opens the chat, which already carries this reading as its context.
- */
 @Composable
 internal fun AskAboutReadingCard(
     passageLabel: String,

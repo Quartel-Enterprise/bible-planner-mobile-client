@@ -10,10 +10,8 @@ internal data class ChatConversationDto(
     @SerialName("title") val title: String?,
     @SerialName("preview") val preview: String?,
     @SerialName("context_type") val contextType: String?,
-    // Read as raw json rather than a typed shape: the server grows this payload over time, and a
-    // field a conversation was frozen before simply is not there. Declared, it would be required —
-    // kotlinx only treats a missing key as null when the property has a default — and one older
-    // conversation would fail the whole list.
+    // Raw json, not a typed shape: kotlinx only treats a missing key as null when the property has
+    // a default, so naming a field the server added later would fail every older row.
     @SerialName("context") val context: JsonObject?,
     @SerialName("updated_at") val updatedAt: String,
 )

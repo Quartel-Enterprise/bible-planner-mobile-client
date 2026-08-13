@@ -29,7 +29,6 @@ interface ChatDraftDao {
         syncedUpdatedAt: Long,
     )
 
-    /** Applies a remote draft with Last-Write-Wins. Returns the number of rows changed. */
     @Query(
         "UPDATE chat_drafts SET content = :content, updatedAtEpochMillis = :remoteUpdatedAt " +
             "WHERE threadKey = :threadKey AND isPendingSync = 0 AND updatedAtEpochMillis < :remoteUpdatedAt",

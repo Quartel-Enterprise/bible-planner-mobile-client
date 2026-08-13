@@ -15,7 +15,6 @@ interface ChatRepository {
 
     fun observeQuota(): Flow<ChatQuotaModel?>
 
-    /** Runs until cancelled, applying the user's remote changes (other devices) to the session. */
     suspend fun syncRemoteChanges()
 
     suspend fun refreshConversations()
@@ -24,7 +23,6 @@ interface ChatRepository {
 
     suspend fun refreshQuota()
 
-    /** Streams one answer, growing the assistant message in the session as fragments arrive. */
     fun sendMessage(request: ChatSendRequestModel): Flow<ChatSendEventModel>
 
     suspend fun renameConversation(
@@ -34,13 +32,8 @@ interface ChatRepository {
 
     suspend fun deleteConversation(conversationId: String)
 
-    /**
-     * Records that this day's chat was entered through the study's questions, so the day's own
-     * button offers them too from then on: they belong to the thread, not to the door taken.
-     */
     suspend fun rememberStudyQuestions(planDay: ChatPlanDayModel)
 
-    /** The composer draft of one thread, empty when there is none. */
     fun observeDraft(threadKey: String): Flow<String>
 
     suspend fun saveDraft(

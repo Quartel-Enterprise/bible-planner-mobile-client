@@ -24,11 +24,6 @@ private val listPadding = PaddingValues(
     bottom = 24.dp,
 )
 
-/**
- * The conversation list as a permanent column, for windows wide enough to show the history without
- * taking the thread away. It spans the full height beside the chat, so the way out of the screen
- * lives here rather than in the top bar.
- */
 @Composable
 internal fun ChatHistorySidebar(
     history: ChatHistoryUiState,
@@ -41,8 +36,6 @@ internal fun ChatHistorySidebar(
             .fillMaxHeight(),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        // The surface runs edge to edge; only what is read inside it steps clear of the notch and
-        // the home indicator, so the column keeps its colour all the way to the window's border.
         Box(
             modifier = Modifier.windowInsetsPadding(
                 WindowInsets.safeDrawing.only(WindowInsetsSides.Start + WindowInsetsSides.Vertical),

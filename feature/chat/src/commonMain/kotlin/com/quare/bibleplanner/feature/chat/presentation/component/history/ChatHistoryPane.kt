@@ -57,12 +57,6 @@ private val searchFieldShape = RoundedCornerShape(12.dp)
 private val searchIconSize = 19.dp
 private val clearIconSize = 20.dp
 
-/**
- * The conversation list itself, without the surface it sits on: slid in over the thread on a narrow
- * window, permanently beside it on a wide one. Which of [onNavigateBack] and [onDismiss] is given
- * is what tells the two apart — a sidebar leads the title with the way out of the chat, a drawer
- * trails it with the way back to the thread.
- */
 @Composable
 internal fun ChatHistoryPane(
     history: ChatHistoryUiState,
@@ -111,8 +105,6 @@ internal fun ChatHistoryPane(
         )
         VerticalSpacer(8)
         if (history.groups.isEmpty()) {
-            // Never asked anything, or asked and matched nothing: the two say different things, and
-            // "no conversations found" over an account that has none reads as a failure to load.
             if (history.hasConversations) EmptySearchState() else EmptyHistoryState()
         } else {
             ConversationList(
@@ -124,11 +116,6 @@ internal fun ChatHistoryPane(
     }
 }
 
-/**
- * A single line, the height of its own text: a search box is a place to type a word or two, and the
- * standard field is built tall enough that its placeholder wraps at this width and turns the top of
- * the list into a block.
- */
 @Composable
 private fun SearchField(
     query: String,

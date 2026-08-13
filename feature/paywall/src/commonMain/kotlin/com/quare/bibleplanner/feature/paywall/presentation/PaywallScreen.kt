@@ -118,7 +118,6 @@ private fun PaywallPortraitContent(
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     var actionBarHeightPx by remember { mutableFloatStateOf(0f) }
-    // Nothing may cover the subscribe button, and the app's snackbar is anchored to the window.
     ReserveBottomOverlayHeight { actionBarHeightPx }
     Scaffold(
         topBar = {

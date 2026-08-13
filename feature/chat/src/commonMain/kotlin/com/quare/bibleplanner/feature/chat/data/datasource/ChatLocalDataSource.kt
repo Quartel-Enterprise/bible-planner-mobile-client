@@ -7,10 +7,6 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-/**
- * The offline copy of the chat. It is a mirror, never a source of writes for the server: everything
- * here arrived from a fetch, from Realtime or from an answer the server already confirmed.
- */
 internal class ChatLocalDataSource(
     private val chatDao: ChatDao,
     private val mapper: ChatEntityMapper,

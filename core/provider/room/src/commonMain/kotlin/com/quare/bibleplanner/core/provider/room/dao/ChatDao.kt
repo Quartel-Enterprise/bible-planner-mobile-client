@@ -14,8 +14,7 @@ interface ChatDao {
     fun observeConversations(): Flow<List<ChatConversationEntity>>
 
     @Query(
-        // On identical timestamps the question comes before its answer (isFromUser first), so a
-        // tie can never read as the assistant replying before it was asked.
+        // isFromUser breaks ties: on equal timestamps the question has to come before its answer.
         "SELECT * FROM chat_messages WHERE conversationId = :conversationId " +
             "ORDER BY createdAtEpochMillis ASC, isFromUser DESC, id ASC",
     )
@@ -48,10 +47,6 @@ interface ChatDao {
         messageIds: List<String>,
     )
 
-    /**
-     * Mirrors the server's conversation list, dropping the ones deleted elsewhere — the reason this
-     * cache is reconciled rather than merely upserted. Their messages go with them (cascade).
-     */
     @Transaction
     suspend fun replaceConversations(conversations: List<ChatConversationEntity>) {
         if (conversations.isEmpty()) {
@@ -62,14 +57,11 @@ interface ChatDao {
         upsertConversations(conversations)
     }
 
-    /** Same reconciliation for one thread: a question dropped by a failed generation disappears. */
     @Transaction
     suspend fun replaceMessages(
         conversationId: String,
         messages: List<ChatMessageEntity>,
     ) {
-        // An empty list has to take the unfiltered delete: Room renders `NOT IN ()` for it, which
-        // SQLite rejects outright.
         if (messages.isEmpty()) {
             deleteMessagesOf(conversationId)
             return

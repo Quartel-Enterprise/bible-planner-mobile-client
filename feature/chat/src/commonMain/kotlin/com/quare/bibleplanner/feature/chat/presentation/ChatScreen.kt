@@ -96,26 +96,18 @@ internal fun ChatScreen(
 ) {
     val listState = rememberLazyListState()
     var composerHeightPx by remember { mutableFloatStateOf(0f) }
-    // The composer owns the bottom edge here, so the app's snackbar has to clear it.
     ReserveBottomOverlayHeight { composerHeightPx }
     ScrollToBottomEffect(
         requests = scrollToBottomRequests,
         listState = listState,
     )
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        // Measured here rather than taken from the window, and net of what the system keeps for
-        // itself: the sidebar only earns its place if what is left over still fits a thread and a
-        // top bar that names its actions. A phone held sideways still measures wide until the notch
-        // is taken out of both edges — some 120 points the app never draws in — which is how iOS
-        // ended up with the sidebar and a title cut down to an ellipsis.
         val safeAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
         val layoutDirection = LocalLayoutDirection.current
         val drawableWidth = maxWidth -
             safeAreaPadding.calculateStartPadding(layoutDirection) -
             safeAreaPadding.calculateEndPadding(layoutDirection)
         val isWide = drawableWidth >= sidebarLayoutMinWidth
-        // Wide enough for both at once: the history stops being a place you go to and becomes a
-        // column you read from, which is why the way back out of the chat moves into it.
         if (isWide) {
             Row(modifier = Modifier.fillMaxSize()) {
                 ChatHistorySidebar(
@@ -164,8 +156,6 @@ private fun ChatThread(
 ) {
     Scaffold(
         modifier = modifier,
-        // Beside the sidebar the thread no longer touches the window's leading edge, so padding it
-        // for a notch that the sidebar is already covering would only cost the answers their width.
         contentWindowInsets = if (isWide) {
             WindowInsets.safeDrawing.only(WindowInsetsSides.End + WindowInsetsSides.Vertical)
         } else {
@@ -179,8 +169,6 @@ private fun ChatThread(
                     onNavigateBack = onNavigateBack,
                     onEvent = onEvent,
                 )
-                // The bar carries the context on a wide window, so it needs a line to close it off:
-                // without one it reads as the first thing in the thread rather than as its header.
                 if (isWide) HorizontalDivider()
             }
         },
@@ -206,8 +194,6 @@ private fun ChatThread(
                 onEvent = onEvent,
                 modifier = Modifier.weight(1f),
             )
-            // The wide thread has room to spare below it, so the composer needs a line of its own
-            // to read as the floor of the conversation rather than as the last thing said in it.
             if (isWide) HorizontalDivider()
             ChatComposer(
                 uiState = uiState,
@@ -245,8 +231,6 @@ private fun ChatTopBar(
             }
         },
         navigationIcon = {
-            // On a wide window the sidebar already carries the way back, and a second arrow in the
-            // bar would only ask the reader which one leaves the screen.
             if (!isWide) {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
@@ -257,9 +241,6 @@ private fun ChatTopBar(
             }
         },
         actions = {
-            // The wide bar has room to name the action and to wear the reading context itself, so
-            // the banner below the bar is dropped there — and the history needs no button at all,
-            // being permanently on screen.
             if (isWide) {
                 OutlinedButton(
                     onClick = { onEvent(ChatUiEvent.OnNewConversationClick) },
@@ -330,8 +311,6 @@ private fun ChatMessages(
             items = uiState.messages,
             key = { message -> message.id },
         ) { message ->
-            // An answer the server marked failed is the thread's own record of what happened, so it
-            // is shown where the answer would have been rather than as a banner over the screen.
             if (message.isFailed) {
                 ChatFailureCard(
                     failure = ChatSendFailureModel.Generic,
@@ -428,13 +407,10 @@ private fun ChatComposer(
     }
 }
 
-// Caps the column and fills it: without the fill, anything narrower than the thread — the thinking
-// indicator, a failure card — would be centred by the list instead of starting where the answers do.
 private fun Modifier.centeredContent(): Modifier = this
     .widthIn(max = contentMaxWidth)
     .fillMaxWidth()
 
-// New content always lands at the bottom of the thread, the way a chat is read.
 @Composable
 private fun ScrollToBottomEffect(
     requests: Flow<Unit>,

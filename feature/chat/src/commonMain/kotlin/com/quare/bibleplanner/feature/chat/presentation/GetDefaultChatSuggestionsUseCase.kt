@@ -21,10 +21,6 @@ private val openSuggestions: List<StringResource> = listOf(
     Res.string.chat_default_suggestion_grace,
 )
 
-/**
- * Resolved here rather than in the composable because a chip's text is also the question that gets
- * sent: what leaves the device has to be exactly what the reader saw.
- */
 internal class GetDefaultChatSuggestionsUseCase : GetDefaultChatSuggestions {
     override suspend fun invoke(hasReadingContext: Boolean): List<String> =
         (if (hasReadingContext) readingSuggestions else openSuggestions).map { resource -> getString(resource) }

@@ -7,11 +7,6 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.quare.bibleplanner.core.datastore.read
 import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 
-/**
- * The days whose chat has been entered through the study's questions. Only the days are kept, never
- * the questions themselves: those already live in the day study's own cache, and a second copy
- * would go stale the moment a study is regenerated.
- */
 internal class ChatStudyQuestionsLocalDataSource(
     private val dataStore: DataStore<Preferences>,
 ) {

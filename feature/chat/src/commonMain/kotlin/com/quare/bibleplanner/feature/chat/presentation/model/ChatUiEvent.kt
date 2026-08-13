@@ -12,7 +12,6 @@ sealed interface ChatUiEvent : UiEvent {
     }
 
     data object OnSendClick : ChatUiEvent {
-        // The params (context + whether the conversation is new) are only known in the handler.
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(AnalyticsEventNames.AI_CHAT_MESSAGE_SENT)
     }
 

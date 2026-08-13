@@ -15,10 +15,6 @@ import kotlin.time.Instant
 
 private const val RECENT_DAYS = 7
 
-/**
- * Turns the conversation list into the history drawer's sections. Grouping happens on calendar
- * days, so a conversation from 23:50 yesterday reads as "Yesterday" rather than "hours ago".
- */
 class ChatConversationGroupMapper {
     fun map(
         conversations: List<ChatConversationModel>,
