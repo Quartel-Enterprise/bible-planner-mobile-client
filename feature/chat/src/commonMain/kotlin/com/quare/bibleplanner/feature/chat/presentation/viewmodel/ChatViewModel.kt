@@ -378,6 +378,7 @@ internal class ChatViewModel(
             if (activeConversationId.value == null) activeConversationId.value = conversationId
         }
         val pending = send?.takeIf { !it.isAccepted && it.failure == null }?.request?.message
+        val hadPendingQuestion = _uiState.value.pendingQuestion != null
         _uiState.update { state ->
             state.copy(
                 pendingQuestion = pending,
@@ -386,6 +387,9 @@ internal class ChatViewModel(
                 failure = send?.failure?.takeUnless { send.isAccepted && it is ChatSendFailureModel.Generic },
             )
         }
+        // The question shows up in the thread before the server echoes it back, and it belongs at the
+        // bottom where the reader is looking.
+        if (pending != null && !hadPendingQuestion) emitAction(ChatUiAction.ScrollToBottom)
         when (val failure = send?.failure) {
             is ChatSendFailureModel.RateLimited -> startCooldown(failure.retryAfterSeconds)
             ChatSendFailureModel.LimitReached -> _uiState.update { it.copy(inputMode = ChatInputMode.LOCKED) }
@@ -428,6 +432,7 @@ internal class ChatViewModel(
             it.copy(
                 input = "",
                 failure = null,
+                isSuggestionBarExpanded = false,
             )
         }
         clearDraft()

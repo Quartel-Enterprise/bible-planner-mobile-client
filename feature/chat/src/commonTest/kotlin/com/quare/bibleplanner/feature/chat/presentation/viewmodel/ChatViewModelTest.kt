@@ -355,6 +355,42 @@ internal class ChatViewModelTest {
     }
 
     @Test
+    fun `GIVEN the suggestion bar is open WHEN sending THEN it closes`() = runTest(testDispatcher) {
+        val viewModel = createViewModel()
+        viewModel.onEvent(ChatUiEvent.OnSuggestionBarToggle)
+        assertTrue(viewModel.uiState.value.isSuggestionBarExpanded)
+
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+        viewModel.onEvent(ChatUiEvent.OnSendClick)
+
+        assertTrue(!viewModel.uiState.value.isSuggestionBarExpanded)
+    }
+
+    @Test
+    fun `GIVEN the suggestion bar is open WHEN tapping a chip THEN it closes`() = runTest(testDispatcher) {
+        val viewModel = createViewModelWithSuggestion()
+        viewModel.onEvent(ChatUiEvent.OnSuggestionBarToggle)
+
+        viewModel.onEvent(ChatUiEvent.OnSuggestionClick(SUGGESTION))
+
+        assertTrue(!viewModel.uiState.value.isSuggestionBarExpanded)
+        assertEquals(SUGGESTION, coordinator.startedRequests.single().message)
+    }
+
+    @Test
+    fun `GIVEN a question is sent THEN the thread is scrolled to the bottom`() = runTest(testDispatcher) {
+        val viewModel = createViewModel()
+        val actions = mutableListOf<ChatUiAction>()
+        val collection = launch { viewModel.uiAction.collect(actions::add) }
+
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+        viewModel.onEvent(ChatUiEvent.OnSendClick)
+
+        assertTrue(actions.contains(ChatUiAction.ScrollToBottom))
+        collection.cancel()
+    }
+
+    @Test
     fun `GIVEN a signed-out reader WHEN tapping a suggestion THEN the chip is kept`() = runTest(testDispatcher) {
         authenticatedUserId.value = null
         val viewModel = createViewModelWithSuggestion()
