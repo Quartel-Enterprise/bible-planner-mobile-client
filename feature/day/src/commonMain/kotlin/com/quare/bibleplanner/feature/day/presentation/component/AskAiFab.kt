@@ -17,6 +17,9 @@ import org.jetbrains.compose.resources.stringResource
 
 private val sparkleSize = 22.dp
 
+/** What the scrolled content leaves free below itself so the button never rests on its last row. */
+internal val askAiFabClearance = 88.dp
+
 @Composable
 internal fun AskAiFab(
     onClick: () -> Unit,
