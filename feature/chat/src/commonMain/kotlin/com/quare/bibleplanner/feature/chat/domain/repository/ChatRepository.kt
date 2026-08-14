@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.chat.domain.repository
 
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
-import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
@@ -32,14 +31,10 @@ interface ChatRepository {
 
     suspend fun deleteConversation(conversationId: String)
 
-    suspend fun rememberStudyQuestions(planDay: ChatPlanDayModel)
-
     fun observeDraft(threadKey: String): Flow<String>
 
     suspend fun saveDraft(
         threadKey: String,
         content: String,
     )
-
-    suspend fun hasStudyQuestions(planDay: ChatPlanDayModel): Boolean
 }

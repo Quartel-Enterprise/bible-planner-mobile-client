@@ -99,7 +99,6 @@ internal class ChatViewModel(
 
     private val dayRoute = route.toDayNavRoute()
 
-    private val entersFromStudy = route.source == ChatEntrySource.DAY_STUDY_QUESTIONS
     private val activeConversationId: MutableStateFlow<String?> = MutableStateFlow(null)
     private var conversations: List<ChatConversationModel> = emptyList()
     private var context: ChatContextModel? = null
@@ -242,19 +241,11 @@ internal class ChatViewModel(
             context = loaded
             refreshThreadKey()
             _uiState.update { it.copy(contextLabel = loaded?.label) }
-            val studyQuestions = loaded?.let { studyQuestionsOf(it) }.orEmpty()
+            val studyQuestions = loaded?.let { useCases.getSuggestions(it.passages) }.orEmpty()
             val suggestions = (studyQuestions + getDefaultSuggestions(hasReadingContext = loaded != null)).distinct()
             _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
             claimDayThread()
         }
-    }
-
-    private suspend fun studyQuestionsOf(context: ChatContextModel): List<String> {
-        val planDay = context.planDay
-        if (entersFromStudy && planDay != null) useCases.rememberStudyQuestions(planDay)
-        val offersStudyQuestions = entersFromStudy || (planDay != null && useCases.hasStudyQuestions(planDay))
-        if (!offersStudyQuestions) return emptyList()
-        return useCases.getSuggestions(context.passages)
     }
 
     private fun loadDefaultSuggestions() {

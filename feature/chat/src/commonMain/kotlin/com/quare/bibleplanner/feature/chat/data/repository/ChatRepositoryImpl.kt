@@ -11,7 +11,6 @@ import com.quare.bibleplanner.feature.chat.data.datasource.ChatLocalDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatMessagesRemoteDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatRealtimeDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatStreamRemoteDataSource
-import com.quare.bibleplanner.feature.chat.data.datasource.ChatStudyQuestionsLocalDataSource
 import com.quare.bibleplanner.feature.chat.data.dto.AskChatRequestDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatAcceptedDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatRateLimitDto
@@ -56,7 +55,6 @@ import kotlin.time.Clock
 
 internal class ChatRepositoryImpl(
     private val localDataSource: ChatLocalDataSource,
-    private val studyQuestionsDataSource: ChatStudyQuestionsLocalDataSource,
     private val draftDataSource: ChatDraftLocalDataSource,
     private val conversationsDataSource: ChatConversationsRemoteDataSource,
     private val messagesDataSource: ChatMessagesRemoteDataSource,
@@ -341,13 +339,6 @@ internal class ChatRepositoryImpl(
         conversationsDataSource.delete(conversationId)
         localDataSource.deleteConversation(conversationId)
     }
-
-    override suspend fun rememberStudyQuestions(planDay: ChatPlanDayModel) {
-        studyQuestionsDataSource.remember(planDay)
-    }
-
-    override suspend fun hasStudyQuestions(planDay: ChatPlanDayModel): Boolean =
-        studyQuestionsDataSource.contains(planDay)
 
     override fun observeDraft(threadKey: String): Flow<String> = draftDataSource.observeDraft(threadKey)
 
