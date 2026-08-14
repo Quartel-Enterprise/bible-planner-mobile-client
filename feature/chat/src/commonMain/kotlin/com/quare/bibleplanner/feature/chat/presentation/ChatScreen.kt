@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.chat.presentation
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
@@ -37,11 +38,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -91,6 +94,7 @@ private const val FAILURE_KEY = "failure"
 private const val SUGGESTIONS_KEY = "suggestions"
 private val contentMaxWidth = 720.dp
 private val sidebarLayoutMinWidth = 840.dp
+private val headerElevation = 4.dp
 private val sparkleSize = 22.dp
 
 @Composable
@@ -169,14 +173,32 @@ private fun ChatThread(
             ScaffoldDefaults.contentWindowInsets
         },
         topBar = {
-            Column {
-                ChatTopBar(
-                    contextLabel = uiState.contextLabel,
-                    isWide = isWide,
-                    onNavigateBack = onNavigateBack,
-                    onEvent = onEvent,
-                )
-                if (isWide) HorizontalDivider()
+            // The header lifts off the thread once there is thread above it to lift off from, so a
+            // message scrolling past has an edge to disappear under instead of touching the bar.
+            val isScrolled by remember { derivedStateOf { listState.canScrollBackward } }
+            val elevation by animateDpAsState(if (isScrolled) headerElevation else 0.dp)
+            Surface(shadowElevation = elevation) {
+                Column {
+                    ChatTopBar(
+                        contextLabel = uiState.contextLabel,
+                        isWide = isWide,
+                        onNavigateBack = onNavigateBack,
+                        onEvent = onEvent,
+                    )
+                    if (!isWide) {
+                        ChatContextPill(
+                            contextLabel = uiState.contextLabel,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .widthIn(max = contentMaxWidth)
+                                .padding(
+                                    horizontal = 12.dp,
+                                    vertical = 6.dp,
+                                ),
+                        )
+                    }
+                    if (isWide) HorizontalDivider()
+                }
             }
         },
     ) { padding ->
@@ -186,15 +208,6 @@ private fun ChatThread(
                 .padding(padding)
                 .imePadding(),
         ) {
-            if (!isWide) {
-                ChatContextPill(
-                    contextLabel = uiState.contextLabel,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .widthIn(max = contentMaxWidth)
-                        .padding(horizontal = 12.dp),
-                )
-            }
             ChatMessages(
                 uiState = uiState,
                 listState = listState,
@@ -269,16 +282,16 @@ private fun ChatTopBar(
                     )
                 }
             } else {
-                IconButton(onClick = { onEvent(ChatUiEvent.OnHistoryClick) }) {
-                    Icon(
-                        imageVector = Icons.Rounded.History,
-                        contentDescription = stringResource(Res.string.chat_conversations),
-                    )
-                }
                 IconButton(onClick = { onEvent(ChatUiEvent.OnNewConversationClick) }) {
                     Icon(
                         imageVector = Icons.Rounded.EditNote,
                         contentDescription = stringResource(Res.string.chat_new_conversation),
+                    )
+                }
+                IconButton(onClick = { onEvent(ChatUiEvent.OnHistoryClick) }) {
+                    Icon(
+                        imageVector = Icons.Rounded.History,
+                        contentDescription = stringResource(Res.string.chat_conversations),
                     )
                 }
             }

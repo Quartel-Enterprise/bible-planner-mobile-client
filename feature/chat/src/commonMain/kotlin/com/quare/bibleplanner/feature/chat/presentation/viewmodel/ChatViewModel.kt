@@ -103,6 +103,7 @@ internal class ChatViewModel(
     private val activeConversationId: MutableStateFlow<String?> = MutableStateFlow(null)
     private var conversations: List<ChatConversationModel> = emptyList()
     private var context: ChatContextModel? = null
+    private var dayContext: ChatContextModel? = null
     private var usedSuggestions: Set<String> = emptySet()
 
     private var isDayThreadClaimed = false
@@ -240,6 +241,7 @@ internal class ChatViewModel(
     private fun loadContext() {
         viewModelScope.launch {
             val loaded = useCases.getContext(dayRoute)
+            dayContext = loaded
             context = loaded
             refreshThreadKey()
             _uiState.update { it.copy(contextLabel = loaded?.label) }
@@ -247,6 +249,15 @@ internal class ChatViewModel(
             val suggestions = (studyQuestions + getDefaultSuggestions(hasReadingContext = loaded != null)).distinct()
             _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
             claimDayThread()
+        }
+    }
+
+    private fun loadSuggestions() {
+        val reading = context ?: return
+        viewModelScope.launch {
+            val studyQuestions = useCases.getSuggestions(reading.passages)
+            val suggestions = (studyQuestions + getDefaultSuggestions(hasReadingContext = true)).distinct()
+            _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
         }
     }
 
@@ -529,17 +540,31 @@ internal class ChatViewModel(
     }
 
     private fun openConversation(conversationId: String) {
+        val conversation = conversations.firstOrNull { it.id == conversationId }
         activeConversationId.value = conversationId
         refreshThreadKey()
         _uiState.update { state ->
             state.copy(
-                contextLabel = conversations.firstOrNull { it.id == conversationId }?.contextLabel,
+                contextLabel = conversation?.contextLabel,
                 failure = null,
                 history = state.history.copy(isOpen = false),
             )
         }
+        restoreContextOf(conversation)
         refreshHistoryGroups()
         viewModelScope.launch { useCases.loadMessages(conversationId) }
+    }
+
+    /**
+     * Puts back the reading a conversation belongs to, which starting a fresh one had cleared away.
+     * Only for this screen's own day: another day's thread would need its passages, which are not
+     * loaded here, and offering this day's questions under it would be worse than offering none.
+     */
+    private fun restoreContextOf(conversation: ChatConversationModel?) {
+        if (context != null) return
+        if (conversation?.planDay == null || conversation.planDay != dayContext?.planDay) return
+        context = dayContext
+        loadSuggestions()
     }
 
     private fun onRenameConversationClick(conversationId: String) {
