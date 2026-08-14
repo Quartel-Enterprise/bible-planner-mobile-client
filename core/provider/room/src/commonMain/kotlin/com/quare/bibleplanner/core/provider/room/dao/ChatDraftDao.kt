@@ -42,6 +42,9 @@ interface ChatDraftDao {
     @Query("SELECT * FROM chat_drafts WHERE threadKey = :threadKey")
     suspend fun getDraft(threadKey: String): ChatDraftEntity?
 
+    @Query("DELETE FROM chat_drafts WHERE threadKey = :threadKey")
+    suspend fun deleteDraft(threadKey: String)
+
     @Query("DELETE FROM chat_drafts")
     suspend fun deleteAll()
 }

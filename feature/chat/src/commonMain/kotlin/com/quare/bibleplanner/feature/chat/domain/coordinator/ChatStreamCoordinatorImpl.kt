@@ -58,7 +58,19 @@ class ChatStreamCoordinatorImpl(
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (throwable: Throwable) {
-            onFailure(throwable)
+            val failure = sendChatMessage.mapFailure(throwable)
+            if (failure == ChatSendFailureModel.ConversationGone && request.conversationId != null) {
+                val newConversationRequest = request.copy(conversationId = null)
+                _send.update { current ->
+                    current?.copy(
+                        request = newConversationRequest,
+                        conversationId = null,
+                    )
+                }
+                stream(newConversationRequest)
+                return
+            }
+            onFailure(throwable, failure)
         }
     }
 
@@ -76,8 +88,10 @@ class ChatStreamCoordinatorImpl(
         }
     }
 
-    private fun onFailure(throwable: Throwable) {
-        val failure = sendChatMessage.mapFailure(throwable)
+    private fun onFailure(
+        throwable: Throwable,
+        failure: ChatSendFailureModel,
+    ) {
         Logger.e(throwable) { "Chat answer failed: $failure" }
         _send.update { current ->
             current?.copy(
@@ -94,12 +108,14 @@ class ChatStreamCoordinatorImpl(
     private fun ChatSendFailureModel.reason(): String = when (this) {
         ChatSendFailureModel.Generic -> GENERIC_REASON
         ChatSendFailureModel.LimitReached -> LIMIT_REACHED_REASON
+        ChatSendFailureModel.ConversationGone -> CONVERSATION_GONE_REASON
         is ChatSendFailureModel.RateLimited -> RATE_LIMITED_REASON
     }
 
     private companion object {
         const val GENERIC_REASON = "generic"
         const val LIMIT_REACHED_REASON = "limit_reached"
+        const val CONVERSATION_GONE_REASON = "conversation_gone"
         const val RATE_LIMITED_REASON = "rate_limited"
     }
 }

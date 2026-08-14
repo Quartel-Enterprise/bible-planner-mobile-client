@@ -14,6 +14,7 @@ import com.quare.bibleplanner.feature.chat.data.datasource.ChatStreamRemoteDataS
 import com.quare.bibleplanner.feature.chat.data.dto.AskChatRequestDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatAcceptedDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatRateLimitDto
+import com.quare.bibleplanner.feature.chat.data.exception.ChatConversationGoneException
 import com.quare.bibleplanner.feature.chat.data.exception.ChatLimitReachedException
 import com.quare.bibleplanner.feature.chat.data.exception.ChatRateLimitedException
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatContextRequestMapper
@@ -176,7 +177,13 @@ internal class ChatRepositoryImpl(
                     pending = pending,
                 )
             }
-        }.catch { throwable -> throw mapFailure(throwable, pending) }
+        }.catch { throwable ->
+            throw mapFailure(
+                throwable = throwable,
+                pending = pending,
+                conversationId = request.conversationId,
+            )
+        }
     }
 
     private suspend fun buildRequest(request: ChatSendRequestModel): AskChatRequestDto {
@@ -338,6 +345,7 @@ internal class ChatRepositoryImpl(
     override suspend fun deleteConversation(conversationId: String) {
         conversationsDataSource.delete(conversationId)
         localDataSource.deleteConversation(conversationId)
+        draftDataSource.deleteDraft(conversationId)
     }
 
     override fun observeDraft(threadKey: String): Flow<String> = draftDataSource.observeDraft(threadKey)
@@ -355,11 +363,17 @@ internal class ChatRepositoryImpl(
     private suspend fun mapFailure(
         throwable: Throwable,
         pending: PendingAnswer?,
+        conversationId: String?,
     ): Throwable {
         pending?.let { discardPendingAnswer(it) }
         streamingAnswer.value = null
         throwable.rateLimitRetrySeconds()?.let { seconds -> return ChatRateLimitedException(seconds) }
         if (throwable.isLimitReached()) return ChatLimitReachedException()
+        if (conversationId != null && throwable.isConversationGone()) {
+            localDataSource.deleteConversation(conversationId)
+            draftDataSource.deleteDraft(conversationId)
+            return ChatConversationGoneException()
+        }
         Logger.e(throwable) { "Failed to send the chat message" }
         return throwable
     }
@@ -371,6 +385,8 @@ internal class ChatRepositoryImpl(
     }
 
     private fun Throwable.isLimitReached(): Boolean = statusCode() == LIMIT_EXCEEDED_STATUS
+
+    private fun Throwable.isConversationGone(): Boolean = statusCode() == CONVERSATION_GONE_STATUS
 
     private suspend fun Throwable.rateLimitRetrySeconds(): Int? {
         if (statusCode() != RATE_LIMITED_STATUS) return null
@@ -389,6 +405,7 @@ internal class ChatRepositoryImpl(
 
     private companion object {
         const val LIMIT_EXCEEDED_STATUS = 402
+        const val CONVERSATION_GONE_STATUS = 404
         const val RATE_LIMITED_STATUS = 429
         const val DEFAULT_RETRY_SECONDS = 30
     }

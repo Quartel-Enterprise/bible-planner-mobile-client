@@ -16,6 +16,10 @@ internal class ChatDraftLocalDataSource(
         .map { draft -> draft?.content.orEmpty() }
         .distinctUntilChanged()
 
+    suspend fun deleteDraft(threadKey: String) {
+        chatDraftDao.deleteDraft(threadKey)
+    }
+
     suspend fun saveDraft(
         threadKey: String,
         content: String,

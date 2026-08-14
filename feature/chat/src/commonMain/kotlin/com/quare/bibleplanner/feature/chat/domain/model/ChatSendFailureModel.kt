@@ -5,6 +5,8 @@ sealed interface ChatSendFailureModel {
 
     data object LimitReached : ChatSendFailureModel
 
+    data object ConversationGone : ChatSendFailureModel
+
     data class RateLimited(
         val retryAfterSeconds: Int,
     ) : ChatSendFailureModel

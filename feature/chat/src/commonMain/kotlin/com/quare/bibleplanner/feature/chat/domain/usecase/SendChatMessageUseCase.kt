@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.chat.domain.usecase
 
+import com.quare.bibleplanner.feature.chat.data.exception.ChatConversationGoneException
 import com.quare.bibleplanner.feature.chat.data.exception.ChatLimitReachedException
 import com.quare.bibleplanner.feature.chat.data.exception.ChatRateLimitedException
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
@@ -16,6 +17,7 @@ class SendChatMessageUseCase(
     fun mapFailure(throwable: Throwable): ChatSendFailureModel = when (throwable) {
         is ChatLimitReachedException -> ChatSendFailureModel.LimitReached
         is ChatRateLimitedException -> ChatSendFailureModel.RateLimited(throwable.retryAfterSeconds)
+        is ChatConversationGoneException -> ChatSendFailureModel.ConversationGone
         else -> ChatSendFailureModel.Generic
     }
 }

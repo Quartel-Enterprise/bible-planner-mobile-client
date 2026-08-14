@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.chat.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
@@ -384,7 +385,7 @@ internal class ChatViewModel(
         when (val failure = send?.failure) {
             is ChatSendFailureModel.RateLimited -> startCooldown(failure.retryAfterSeconds)
             ChatSendFailureModel.LimitReached -> _uiState.update { it.copy(inputMode = ChatInputMode.LOCKED) }
-            ChatSendFailureModel.Generic, null -> Unit
+            ChatSendFailureModel.ConversationGone, ChatSendFailureModel.Generic, null -> Unit
         }
     }
 
@@ -569,7 +570,12 @@ internal class ChatViewModel(
             )
         }
         if (activeConversationId.value == conversationId) onNewConversationClick()
-        viewModelScope.launch { useCases.deleteConversation(conversationId) }
+        viewModelScope.launch {
+            useCases.deleteConversation(conversationId).onFailure { throwable ->
+                Logger.e(throwable) { "Failed to delete the conversation" }
+                useCases.refreshConversations()
+            }
+        }
     }
 
     private fun refreshHistoryGroups() {
