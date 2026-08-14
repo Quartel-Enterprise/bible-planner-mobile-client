@@ -5,6 +5,7 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
+import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {
@@ -33,8 +34,5 @@ interface ChatRepository {
 
     fun observeDraft(threadKey: String): Flow<String>
 
-    suspend fun saveDraft(
-        threadKey: String,
-        content: String,
-    )
+    suspend fun saveDraft(draft: PendingDraftModel)
 }

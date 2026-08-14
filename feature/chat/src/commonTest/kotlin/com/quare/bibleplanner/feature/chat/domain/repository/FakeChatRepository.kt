@@ -6,6 +6,7 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
+import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -60,10 +61,7 @@ internal class FakeChatRepository : ChatRepository {
     override fun observeDraft(threadKey: String): Flow<String> = drafts
         .map { current -> current[threadKey].orEmpty() }
 
-    override suspend fun saveDraft(
-        threadKey: String,
-        content: String,
-    ) {
-        drafts.value = drafts.value + (threadKey to content)
+    override suspend fun saveDraft(draft: PendingDraftModel) {
+        drafts.value = drafts.value + (draft.threadKey to draft.content)
     }
 }

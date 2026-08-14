@@ -22,6 +22,7 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendFailureModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
+import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import com.quare.bibleplanner.feature.chat.domain.usecase.ChatUseCases
 import com.quare.bibleplanner.feature.chat.presentation.GetDefaultChatSuggestions
 import com.quare.bibleplanner.feature.chat.presentation.mapper.ChatConversationGroupMapper
@@ -109,7 +110,7 @@ internal class ChatViewModel(
     private var isDayThreadClaimed = false
     private var cooldownJob: Job? = null
     private var draftSaveJob: Job? = null
-    private var pendingDraft: String? = null
+    private var pendingDraft: PendingDraftModel? = null
     private var lastAppliedDraft: String? = null
     private var threadMessages: List<ChatMessageModel> = emptyList()
     private var newestMessage: Pair<String, Boolean>? = null
@@ -133,8 +134,7 @@ internal class ChatViewModel(
         val unsaved = pendingDraft ?: return
         if (draftSaveJob?.isActive != true) return
         draftSaveJob?.cancel()
-        val key = currentThreadKey.value
-        applicationScope.launch { useCases.saveDraft(key, unsaved) }
+        applicationScope.launch { useCases.saveDraft(unsaved) }
     }
 
     override fun handleEvent(event: ChatUiEvent) {
@@ -202,12 +202,15 @@ internal class ChatViewModel(
 
     private fun onInputChanged(text: String) {
         _uiState.update { it.copy(input = text) }
-        pendingDraft = text
+        val draft = PendingDraftModel(
+            threadKey = currentThreadKey.value,
+            content = text,
+        )
+        pendingDraft = draft
         draftSaveJob?.cancel()
-        val key = currentThreadKey.value
         draftSaveJob = viewModelScope.launch {
             delay(draftDebounceDelay)
-            useCases.saveDraft(key, text)
+            useCases.saveDraft(draft)
             pendingDraft = null
         }
     }
@@ -234,8 +237,11 @@ internal class ChatViewModel(
     private fun clearDraft() {
         pendingDraft = null
         draftSaveJob?.cancel()
-        val key = currentThreadKey.value
-        viewModelScope.launch { useCases.saveDraft(key, "") }
+        val cleared = PendingDraftModel(
+            threadKey = currentThreadKey.value,
+            content = "",
+        )
+        viewModelScope.launch { useCases.saveDraft(cleared) }
     }
 
     private fun loadContext() {

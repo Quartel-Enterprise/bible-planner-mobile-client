@@ -1,70 +1,31 @@
 package com.quare.bibleplanner.feature.chat.data.datasource
 
-import com.quare.bibleplanner.core.provider.room.dao.ChatDao
-import com.quare.bibleplanner.feature.chat.data.mapper.ChatEntityMapper
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
-internal class ChatLocalDataSource(
-    private val chatDao: ChatDao,
-    private val mapper: ChatEntityMapper,
-) {
-    fun observeConversations(): Flow<List<ChatConversationModel>> = chatDao
-        .observeConversations()
-        .map { entities -> entities.map(mapper::mapConversation) }
+internal interface ChatLocalDataSource {
+    fun observeConversations(): Flow<List<ChatConversationModel>>
 
-    fun observeMessages(conversationId: String): Flow<List<ChatMessageModel>> = chatDao
-        .observeMessages(conversationId)
-        .map { entities -> entities.map(mapper::mapMessage) }
+    fun observeMessages(conversationId: String): Flow<List<ChatMessageModel>>
 
-    suspend fun replaceConversations(conversations: List<ChatConversationModel>) {
-        chatDao.replaceConversations(conversations.map(mapper::mapConversation))
-    }
+    suspend fun replaceConversations(conversations: List<ChatConversationModel>)
 
-    suspend fun saveConversation(conversation: ChatConversationModel) {
-        chatDao.upsertConversations(listOf(mapper.mapConversation(conversation)))
-    }
+    suspend fun saveConversation(conversation: ChatConversationModel)
 
     suspend fun replaceMessages(
         conversationId: String,
         messages: List<ChatMessageModel>,
-    ) {
-        chatDao.replaceMessages(
-            conversationId = conversationId,
-            messages = messages.map { message ->
-                mapper.mapMessage(
-                    conversationId = conversationId,
-                    model = message,
-                )
-            },
-        )
-    }
+    )
 
     suspend fun saveMessage(
         conversationId: String,
         message: ChatMessageModel,
-    ) {
-        chatDao.upsertMessages(
-            listOf(
-                mapper.mapMessage(
-                    conversationId = conversationId,
-                    model = message,
-                ),
-            ),
-        )
-    }
+    )
 
-    suspend fun deleteMessage(messageId: String) {
-        chatDao.deleteMessage(messageId)
-    }
+    suspend fun deleteMessage(messageId: String)
 
-    suspend fun deleteConversation(conversationId: String) {
-        chatDao.deleteConversation(conversationId)
-    }
+    suspend fun deleteConversation(conversationId: String)
 
-    suspend fun deleteAll() {
-        chatDao.deleteAll()
-    }
+    suspend fun deleteAll()
 }

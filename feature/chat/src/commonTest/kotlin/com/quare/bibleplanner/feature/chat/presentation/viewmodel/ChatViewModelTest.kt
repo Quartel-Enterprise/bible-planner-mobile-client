@@ -304,6 +304,20 @@ internal class ChatViewModelTest {
     }
 
     @Test
+    fun `GIVEN typing in the day thread WHEN switching threads before the save THEN it lands in the day slot`() =
+        runTest(testDispatcher) {
+            chatContext = readingContext()
+            val viewModel = createViewModel()
+
+            viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim"))
+            viewModel.onEvent(ChatUiEvent.OnNewConversationClick)
+            advanceUntilIdle()
+
+            assertEquals("Por que Caim", repository.drafts.value[DAY_DRAFT_KEY])
+            assertNull(repository.drafts.value["new"])
+        }
+
+    @Test
     fun `GIVEN a hydrated composer WHEN the draft is cleared elsewhere THEN the composer clears`() =
         runTest(testDispatcher) {
             chatContext = readingContext()

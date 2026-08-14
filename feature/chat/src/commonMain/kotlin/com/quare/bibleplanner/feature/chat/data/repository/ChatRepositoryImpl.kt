@@ -32,6 +32,7 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
+import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import com.quare.bibleplanner.feature.chat.domain.repository.ChatRepository
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import io.github.jan.supabase.exceptions.RestException
@@ -350,14 +351,8 @@ internal class ChatRepositoryImpl(
 
     override fun observeDraft(threadKey: String): Flow<String> = draftDataSource.observeDraft(threadKey)
 
-    override suspend fun saveDraft(
-        threadKey: String,
-        content: String,
-    ) {
-        draftDataSource.saveDraft(
-            threadKey = threadKey,
-            content = content,
-        )
+    override suspend fun saveDraft(draft: PendingDraftModel) {
+        draftDataSource.saveDraft(draft)
     }
 
     private suspend fun mapFailure(

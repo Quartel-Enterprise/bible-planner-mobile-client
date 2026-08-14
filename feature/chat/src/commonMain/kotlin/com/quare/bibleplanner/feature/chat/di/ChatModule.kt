@@ -4,11 +4,17 @@ import com.quare.bibleplanner.core.clear.domain.ClearChatLocalData
 import com.quare.bibleplanner.core.sync.data.OfflineFirstSynchronizer
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatConversationsRemoteDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatConversationsRemoteDataSourceImpl
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatDraftLocalDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatDraftLocalDataSourceImpl
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatLocalDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatLocalDataSourceImpl
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatMessagesRemoteDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatMessagesRemoteDataSourceImpl
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatRealtimeDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatRealtimeDataSourceImpl
 import com.quare.bibleplanner.feature.chat.data.datasource.ChatStreamRemoteDataSource
+import com.quare.bibleplanner.feature.chat.data.datasource.ChatStreamRemoteDataSourceImpl
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatContextRequestMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatConversationMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatDraftMapper
@@ -63,12 +69,12 @@ val chatModule = module {
     factoryOf(::ChatConversationGroupMapper)
     factoryOf(::GetDefaultChatSuggestionsUseCase).bind<GetDefaultChatSuggestions>()
 
-    singleOf(::ChatLocalDataSource)
-    singleOf(::ChatDraftLocalDataSource)
-    singleOf(::ChatStreamRemoteDataSource)
-    singleOf(::ChatConversationsRemoteDataSource)
-    singleOf(::ChatMessagesRemoteDataSource)
-    singleOf(::ChatRealtimeDataSource)
+    singleOf(::ChatLocalDataSourceImpl).bind<ChatLocalDataSource>()
+    singleOf(::ChatDraftLocalDataSourceImpl).bind<ChatDraftLocalDataSource>()
+    singleOf(::ChatStreamRemoteDataSourceImpl).bind<ChatStreamRemoteDataSource>()
+    singleOf(::ChatConversationsRemoteDataSourceImpl).bind<ChatConversationsRemoteDataSource>()
+    singleOf(::ChatMessagesRemoteDataSourceImpl).bind<ChatMessagesRemoteDataSource>()
+    singleOf(::ChatRealtimeDataSourceImpl).bind<ChatRealtimeDataSource>()
     singleOf(::ChatRepositoryImpl).bind<ChatRepository>()
     singleOf(::ChatStreamCoordinatorImpl).bind<ChatStreamCoordinator>()
     singleOf(::ChatSyncCoordinatorImpl).bind<ChatSyncCoordinator>()
