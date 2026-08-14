@@ -17,6 +17,7 @@ val navigationSavedStateConfiguration = SavedStateConfiguration {
             subclass(AppLanguageNavRoute::class, AppLanguageNavRoute.serializer())
             subclass(BibleVersionSelectorRoute::class, BibleVersionSelectorRoute.serializer())
             subclass(BookDetailsNavRoute::class, BookDetailsNavRoute.serializer())
+            subclass(ChatNavRoute::class, ChatNavRoute.serializer())
             subclass(CongratsNavRoute::class, CongratsNavRoute.serializer())
             subclass(ContactSupportNavRoute::class, ContactSupportNavRoute.serializer())
             subclass(CropPhotoNavRoute::class, CropPhotoNavRoute.serializer())

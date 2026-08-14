@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_title">Asistente</string>
+    <string name="chat_context_loaded">Conversación con el contexto de %1$s cargado</string>
+    <string name="chat_context_empty">Pregunta sobre cualquier lectura de tu plan o sobre la Biblia</string>
+    <string name="chat_context_chip">Contexto de %1$s</string>
+    <string name="chat_welcome_with_context">¡Hola! Puedo ayudarte a entender la lectura de hoy (%1$s). Pregunta lo que quieras o toca una sugerencia.</string>
+    <string name="chat_welcome_generic">¡Hola! Soy tu asistente de estudios. Puedo ayudarte con lo que ya leíste en tu plan o con cualquier otra duda sobre la Biblia. ¿De qué quieres conversar?</string>
+    <string name="chat_thinking">Pensando…</string>
+    <string name="chat_suggestions_label">SUGERENCIAS</string>
+    <string name="chat_suggestion_bar_single">Sugerencia</string>
+    <string name="chat_suggestion_bar_many">Sugerencias (%1$d)</string>
+    <string name="chat_input_placeholder_with_context">Pregunta sobre %1$s…</string>
+    <string name="chat_input_placeholder_generic">Pregunta sobre tus lecturas…</string>
+    <string name="chat_send">Enviar</string>
+    <string name="chat_offline_title">Sin conexión</string>
+    <string name="chat_offline_message">No fue posible obtener la respuesta. Revisa tu internet e inténtalo de nuevo.</string>
+    <string name="chat_retry">Intentar de nuevo</string>
+    <string name="chat_rate_limit_title">Espera un momento</string>
+    <string name="chat_rate_limit_message">Enviaste muchas preguntas seguidas. Esto ayuda a mantener el servicio estable — en instantes podrás continuar.</string>
+    <string name="chat_rate_limit_countdown">Disponible en %1$ds</string>
+    <string name="chat_cooldown_input">Espera %1$ds para enviar de nuevo</string>
+    <string name="chat_locked_input">Suscríbete para seguir preguntando</string>
+    <string name="chat_history">Historial</string>
+    <string name="chat_new">Nueva</string>
+    <string name="chat_conversations">Conversaciones</string>
+    <string name="chat_back">Volver</string>
+    <string name="chat_search_conversations">Buscar conversaciones</string>
+    <string name="chat_no_conversations_found">No se encontraron conversaciones</string>
+    <string name="chat_no_conversations_title">Aún no hay conversaciones</string>
+    <string name="chat_no_conversations_body">Tus conversaciones con el asistente aparecen aquí. Empieza preguntando sobre la lectura de hoy.</string>
+    <string name="chat_new_conversation">Nueva conversación</string>
+    <string name="chat_rename">Renombrar</string>
+    <string name="chat_delete">Eliminar</string>
+    <string name="chat_delete_confirmation">¿Eliminar esta conversación?</string>
+    <string name="chat_cancel">Cancelar</string>
+    <string name="chat_confirm_rename">Confirmar</string>
+    <string name="chat_conversation_options">Opciones de la conversación</string>
+    <string name="chat_bucket_today">Hoy</string>
+    <string name="chat_bucket_yesterday">Ayer</string>
+    <string name="chat_bucket_last_seven_days">Últimos 7 días</string>
+    <string name="chat_default_suggestion_summary">Resume esta lectura</string>
+    <string name="chat_default_suggestion_context">¿Cuál es el contexto histórico?</string>
+    <string name="chat_default_suggestion_application">¿Qué enseña esto para hoy?</string>
+    <string name="chat_default_suggestion_start">¿Por dónde empiezo a leer la Biblia?</string>
+    <string name="chat_default_suggestion_plan">¿Cómo aprovechar mejor mi plan de lectura?</string>
+    <string name="chat_default_suggestion_grace">¿Qué es la gracia de Dios?</string>
+    <plurals name="chat_free_questions_left">
+        <item quantity="one">%1$d pregunta gratis restante</item>
+        <item quantity="other">%1$d preguntas gratis restantes</item>
+    </plurals>
+</resources>

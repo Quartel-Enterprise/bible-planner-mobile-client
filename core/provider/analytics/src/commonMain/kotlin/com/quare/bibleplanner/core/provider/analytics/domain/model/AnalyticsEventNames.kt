@@ -49,6 +49,18 @@ object AnalyticsEventNames {
     const val DAY_STUDY_BG_CARD_OPENED = "day_study_bg_card_opened"
     const val DAY_STUDY_BG_CARD_DISMISSED = "day_study_bg_card_dismissed"
 
+    const val AI_CHAT_ENTRY_CLICKED = "ai_chat_entry_clicked"
+    const val AI_CHAT_MESSAGE_SENT = "ai_chat_message_sent"
+    const val AI_CHAT_SUGGESTION_CLICKED = "ai_chat_suggestion_clicked"
+    const val AI_CHAT_ANSWER_FAILED = "ai_chat_answer_failed"
+    const val AI_CHAT_RETRY_CLICKED = "ai_chat_retry_clicked"
+    const val AI_CHAT_SUBSCRIBE_CLICKED = "ai_chat_subscribe_clicked"
+    const val AI_CHAT_HISTORY_OPENED = "ai_chat_history_opened"
+    const val AI_CHAT_NEW_CONVERSATION_CLICKED = "ai_chat_new_conversation_clicked"
+    const val AI_CHAT_CONVERSATION_SELECTED = "ai_chat_conversation_selected"
+    const val AI_CHAT_CONVERSATION_RENAMED = "ai_chat_conversation_renamed"
+    const val AI_CHAT_CONVERSATION_DELETED = "ai_chat_conversation_deleted"
+
     const val BIBLE_VERSION_SELECTED = "bible_version_selected"
     const val BIBLE_VERSION_MANAGE_CLICKED = "bible_version_manage_clicked"
     const val BIBLE_VERSION_DOWNLOAD_STARTED = "bible_version_download_started"

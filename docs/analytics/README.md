@@ -115,6 +115,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `CropPhotoNavRoute` | `crop_profile_photo` | `screen` | — |
 | `DayNavRoute` | `day` | `screen` | `plan_type`, `week_number`, `day_number` |
 | `DayStudyNavRoute` | `day_study` | `screen` | `plan_type`, `week_number`, `day_number` |
+| `ChatNavRoute` | `ai_chat` | `screen` | `source`, and `plan_type`, `week_number`, `day_number` when opened from a reading |
 | `DeleteAllProgressNavRoute` | `delete_all_progress` | `dialog` | — |
 | `DeleteNotesRoute` | `delete_notes` | `dialog` | `plan_type`, `week_number`, `day_number` |
 | `DeleteVersionNavRoute` | `delete_version` | `dialog` | `version_id` |

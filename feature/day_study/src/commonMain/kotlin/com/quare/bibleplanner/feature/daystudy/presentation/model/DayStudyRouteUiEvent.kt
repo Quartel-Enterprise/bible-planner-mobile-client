@@ -12,6 +12,12 @@ internal sealed interface DayStudyRouteUiEvent : UiEvent {
         )
     }
 
+    data object OnAskAiClick : DayStudyRouteUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+        )
+    }
+
     data object OnCardClick : DayStudyRouteUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             setOf(

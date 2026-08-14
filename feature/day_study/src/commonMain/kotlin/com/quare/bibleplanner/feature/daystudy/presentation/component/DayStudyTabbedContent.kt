@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 internal fun DayStudyTabbedContent(
     study: DayStudyModel,
     contentMaxWidth: Dp,
+    onAskAiClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -72,8 +73,14 @@ internal fun DayStudyTabbedContent(
                 ) {
                     when (DayStudyTab.entries[page]) {
                         DayStudyTab.SUMMARY -> SummaryTabContent(study)
+
                         DayStudyTab.CONTEXT -> ContextTabContent(study.context)
-                        DayStudyTab.QUESTIONS -> QuestionsTabContent(study.commonQuestions)
+
+                        DayStudyTab.QUESTIONS -> QuestionsTabContent(
+                            questions = study.commonQuestions,
+                            passageLabel = study.passageLabel,
+                            onAskAiClick = onAskAiClick,
+                        )
                     }
                     VerticalSpacer(20)
                     DayStudyDisclaimer()

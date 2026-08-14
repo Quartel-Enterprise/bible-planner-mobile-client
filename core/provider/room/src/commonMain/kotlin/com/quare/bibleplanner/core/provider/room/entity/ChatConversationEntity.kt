@@ -1,0 +1,16 @@
+package com.quare.bibleplanner.core.provider.room.entity
+
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
+
+@Entity(tableName = "chat_conversations")
+data class ChatConversationEntity(
+    @PrimaryKey val id: String,
+    val title: String,
+    val preview: String?,
+    val contextLabel: String?,
+    val dayNumber: Int?,
+    val weekNumber: Int?,
+    val readingPlanType: String?,
+    val updatedAtEpochMillis: Long,
+)

@@ -25,6 +25,12 @@ internal sealed interface DayUiEvent : UiEvent {
         )
     }
 
+    data object OnAskAiClick : DayUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+        )
+    }
+
     data object OnDayReadToggle : DayUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.DAY_READ_TOGGLED,

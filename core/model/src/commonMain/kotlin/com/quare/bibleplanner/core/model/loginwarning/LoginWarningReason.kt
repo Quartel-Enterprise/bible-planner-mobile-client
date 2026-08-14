@@ -17,6 +17,10 @@ sealed interface LoginWarningReason {
         override val key: String = "day_study"
     }
 
+    data object AiChat : LoginWarningReason {
+        override val key: String = "ai_chat"
+    }
+
     sealed interface Preferences : LoginWarningReason {
         data object Theme : Preferences {
             override val key: String = "preferences_theme"
@@ -31,6 +35,7 @@ sealed interface LoginWarningReason {
         private val entries: List<LoginWarningReason> = listOf(
             Purchase,
             DayStudy,
+            AiChat,
             Preferences.Theme,
             Preferences.Language,
         )

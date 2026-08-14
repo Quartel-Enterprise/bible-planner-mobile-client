@@ -10,8 +10,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onSizeChanged
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
@@ -20,6 +25,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadTop
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadErrorContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadScreenSuccessPortraitContent
+import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +39,10 @@ fun ReadPortraitScreen(
     val listState = rememberLazyListState()
     val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var bottomBarHeightPx by remember { mutableFloatStateOf(0f) }
+    ReserveBottomOverlayHeight {
+        (bottomBarHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -50,6 +60,7 @@ fun ReadPortraitScreen(
         },
         bottomBar = {
             ReadBottomBar(
+                modifier = Modifier.onSizeChanged { size -> bottomBarHeightPx = size.height.toFloat() },
                 scrollBehavior = bottomBarScrollBehavior,
                 state = state,
                 onEvent = onEvent,

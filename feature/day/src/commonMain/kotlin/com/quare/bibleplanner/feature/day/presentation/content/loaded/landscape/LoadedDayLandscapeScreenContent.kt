@@ -20,6 +20,7 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.component.DayHeaderTitle
 import com.quare.bibleplanner.feature.day.presentation.component.DayLandscapeHeader
+import com.quare.bibleplanner.feature.day.presentation.component.askAiFabClearance
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.side.LoadedDayLandscapeScreenLeftContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -67,7 +68,7 @@ internal fun LoadedDayLandscapeContent(
                         start = 16.dp,
                         end = 8.dp,
                         top = 8.dp,
-                        bottom = 24.dp,
+                        bottom = askAiFabClearance,
                     ),
                 day = day,
                 uiState = uiState,

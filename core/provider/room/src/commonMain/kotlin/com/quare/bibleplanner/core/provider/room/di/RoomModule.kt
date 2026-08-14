@@ -4,6 +4,8 @@ import androidx.room3.RoomDatabase
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
+import com.quare.bibleplanner.core.provider.room.dao.ChatDao
+import com.quare.bibleplanner.core.provider.room.dao.ChatDraftDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
 import com.quare.bibleplanner.core.provider.room.dao.DayStudyDao
 import com.quare.bibleplanner.core.provider.room.dao.ProfileDao
@@ -31,6 +33,8 @@ val roomModule = module {
     single<BibleVersionDao> { get<AppDatabase>().bibleVersionDao() }
     single<SyncedPreferenceDao> { get<AppDatabase>().syncedPreferenceDao() }
     single<DayStudyDao> { get<AppDatabase>().dayStudyDao() }
+    single<ChatDao> { get<AppDatabase>().chatDao() }
+    single<ChatDraftDao> { get<AppDatabase>().chatDraftDao() }
     single<UserDeviceDao> { get<AppDatabase>().userDeviceDao() }
     single<ProfileDao> { get<AppDatabase>().profileDao() }
 }

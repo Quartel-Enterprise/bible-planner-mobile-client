@@ -44,4 +44,7 @@
         <item quantity="one">Espera a que termine el análisis en curso antes de generar uno nuevo.</item>
         <item quantity="other">Espera a que terminen los %1$d análisis en curso antes de generar uno nuevo.</item>
     </plurals>
+    <string name="ai_chat_entry_title">Pregunta sobre esta lectura</string>
+    <string name="ai_chat_entry_placeholder">Pregunta cualquier cosa sobre %1$s…</string>
+    <string name="ai_chat_entry_hint">El chat ya conoce el contexto de hoy</string>
 </resources>

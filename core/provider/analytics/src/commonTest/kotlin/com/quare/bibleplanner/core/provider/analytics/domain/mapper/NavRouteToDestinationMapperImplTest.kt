@@ -4,6 +4,8 @@ import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -55,6 +57,12 @@ class NavRouteToDestinationMapperImplTest {
             AppLanguageNavRoute to ("app_language" to DestinationType.RESPONSIVE),
             BibleVersionSelectorRoute to ("bible_version_selector" to DestinationType.RESPONSIVE),
             BookDetailsNavRoute(bookId = "genesis") to ("book_details" to DestinationType.SCREEN),
+            ChatNavRoute(
+                source = ChatEntrySource.DAY_FAB,
+                dayNumber = 1,
+                weekNumber = 2,
+                readingPlanType = "chronological",
+            ) to ("ai_chat" to DestinationType.SCREEN),
             CongratsNavRoute to ("congrats" to DestinationType.BOTTOM_SHEET),
             ContactSupportNavRoute to ("contact_support" to DestinationType.RESPONSIVE),
             DayNavRoute(dayNumber = 1, weekNumber = 2, readingPlanType = "chronological") to

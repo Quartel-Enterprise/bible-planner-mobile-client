@@ -13,6 +13,8 @@ import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
@@ -118,7 +120,25 @@ internal class DayStudyRouteViewModel(
         when (event) {
             DayStudyRouteUiEvent.OnCardClick -> onCardClick()
             DayStudyRouteUiEvent.OnRetryClick -> onRetryClick()
+            DayStudyRouteUiEvent.OnAskAiClick -> onAskAiClick()
         }
+    }
+
+    private fun onAskAiClick() {
+        trackEvent(
+            name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+            params = mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_STUDY_QUESTIONS.key),
+        )
+        emitAction(
+            DayStudyRouteUiAction.NavigateToRoute(
+                ChatNavRoute(
+                    source = ChatEntrySource.DAY_STUDY_QUESTIONS,
+                    dayNumber = dayRoute.dayNumber,
+                    weekNumber = dayRoute.weekNumber,
+                    readingPlanType = dayRoute.readingPlanType,
+                ),
+            ),
+        )
     }
 
     private fun onRetryClick() {
