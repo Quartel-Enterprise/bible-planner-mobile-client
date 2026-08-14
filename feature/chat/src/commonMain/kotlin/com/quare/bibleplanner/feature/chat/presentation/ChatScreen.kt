@@ -42,8 +42,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -76,6 +79,7 @@ import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 
 private const val WELCOME_KEY = "welcome"
@@ -100,6 +104,7 @@ internal fun ChatScreen(
     ScrollToBottomEffect(
         requests = scrollToBottomRequests,
         listState = listState,
+        hasThread = uiState.messages.isNotEmpty(),
     )
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val safeAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
@@ -415,7 +420,18 @@ private fun Modifier.centeredContent(): Modifier = this
 private fun ScrollToBottomEffect(
     requests: Flow<Unit>,
     listState: LazyListState,
+    hasThread: Boolean,
 ) {
+    var hasLanded by rememberSaveable { mutableStateOf(false) }
+    // Opening a thread lands on its newest message, and lands there rather than travelling: the
+    // reader is coming back to what was last said. Driven by the thread itself, because the scroll
+    // request the view model sends is a passing event that the screen is not yet listening for.
+    LaunchedEffect(hasThread) {
+        if (!hasThread || hasLanded) return@LaunchedEffect
+        snapshotFlow { listState.layoutInfo.totalItemsCount }.first { count -> count > 0 }
+        listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
+        hasLanded = true
+    }
     LaunchedEffect(requests) {
         requests.collect {
             val lastIndex = listState.layoutInfo.totalItemsCount - 1
