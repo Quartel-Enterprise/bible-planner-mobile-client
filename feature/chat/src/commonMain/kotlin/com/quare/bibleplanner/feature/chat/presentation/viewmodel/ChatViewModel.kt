@@ -111,6 +111,7 @@ internal class ChatViewModel(
     private var pendingDraft: String? = null
     private var lastAppliedDraft: String? = null
     private var threadMessages: List<ChatMessageModel> = emptyList()
+    private var newestMessage: Pair<String, Boolean>? = null
     private var awaitingAnswerJob: Job? = null
     private val currentThreadKey: MutableStateFlow<String> = MutableStateFlow(NEW_THREAD_KEY)
     private var isLoggedIn: Boolean = false
@@ -283,10 +284,7 @@ internal class ChatViewModel(
             activeConversationId
                 .flatMapLatest { conversationId ->
                     if (conversationId == null) flowOf(emptyList()) else useCases.observeMessages(conversationId)
-                }.collect { messages ->
-                    applyMessages(messages)
-                    emitAction(ChatUiAction.ScrollToBottom)
-                }
+                }.collect(::applyMessages)
         }
     }
 
@@ -303,6 +301,19 @@ internal class ChatViewModel(
             )
         }
         watchAwaitingAnswer(isAwaitingAnswer)
+        scrollOnNewMessage(messages)
+    }
+
+    /**
+     * A message arriving — the reader's own or the answer to it — brings the thread to its end. The
+     * answer being written does not, or every token would drag the list out from under whoever is
+     * reading further up; it lands once when it appears and again when it is finished.
+     */
+    private fun scrollOnNewMessage(messages: List<ChatMessageModel>) {
+        val newest = messages.lastOrNull()?.let { message -> message.id to message.isStreaming }
+        if (newest == null || newest == newestMessage) return
+        newestMessage = newest
+        emitAction(ChatUiAction.ScrollToBottom)
     }
 
     private fun ChatUiState.isThinkingWith(

@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.chat.presentation
 
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -430,12 +432,32 @@ private fun ScrollToBottomEffect(
         if (!hasThread || hasLanded) return@LaunchedEffect
         snapshotFlow { listState.layoutInfo.totalItemsCount }.first { count -> count > 0 }
         listState.scrollToItem(listState.layoutInfo.totalItemsCount - 1)
+        listState.settleAtEnd()
         hasLanded = true
     }
     LaunchedEffect(requests) {
-        requests.collect {
-            val lastIndex = listState.layoutInfo.totalItemsCount - 1
-            if (lastIndex >= 0) listState.animateScrollToItem(lastIndex)
-        }
+        requests.collect { listState.animateToEnd() }
     }
+}
+
+/**
+ * Reaching the bottom takes two moves: scrolling to the last item leaves its start at the top of
+ * the viewport, which for an answer taller than the screen is nowhere near the end of it.
+ */
+private suspend fun LazyListState.animateToEnd() {
+    val lastIndex = layoutInfo.totalItemsCount - 1
+    if (lastIndex < 0) return
+    animateScrollToItem(lastIndex)
+    val overshoot = endOvershoot()
+    if (overshoot > 0f) animateScrollBy(overshoot)
+}
+
+private suspend fun LazyListState.settleAtEnd() {
+    val overshoot = endOvershoot()
+    if (overshoot > 0f) scrollBy(overshoot)
+}
+
+private fun LazyListState.endOvershoot(): Float {
+    val last = layoutInfo.visibleItemsInfo.lastOrNull() ?: return 0f
+    return (last.offset + last.size - layoutInfo.viewportEndOffset).toFloat()
 }
