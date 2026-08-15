@@ -42,11 +42,11 @@ import com.quare.bibleplanner.feature.notificationpermission.presentation.notifi
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
 import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
-import com.quare.bibleplanner.feature.shareverse.presentation.shareVerse
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.subscriptionDetails
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
-import com.quare.bibleplanner.feature.versenote.presentation.verseNote
-import com.quare.bibleplanner.feature.verseselection.presentation.verseSelection
+import com.quare.bibleplanner.feature.verse.addnote.presentation.verseNote
+import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.verseSelection
+import com.quare.bibleplanner.feature.verse.share.presentation.shareVerse
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
