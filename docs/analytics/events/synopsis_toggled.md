@@ -22,4 +22,4 @@ User taps the synopsis header on the book-details screen to expand or collapse i
 ## Notes
 
 - `OnToggleSynopsisExpanded` is a parameterless `data object`: both params come from ViewModel state (`book_id` from the route, `is_expanded` from the UiState after the toggle), not from the UiEvent.
-- Related: [destination_view](destination_view.md) (`book_details` with `book_id`), [book_read_toggled](book_read_toggled.md).
+- Related: [screen_view](screen_view.md) (`book_details` with `book_id`), [book_read_toggled](book_read_toggled.md).

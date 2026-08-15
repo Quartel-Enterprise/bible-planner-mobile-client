@@ -28,7 +28,7 @@ For each user action added or changed (each `UiEvent` case):
   screen/dialog/sheet, goes back, switches a bottom tab) **or seems low-value** (a menu
   open/close, a retry button, an intermediate picker step). There is no "covered by navigation"
   or "too minor to matter" opt-out: every discrete user click gets its own event. A click and the
-  `destination_view` it triggers are different funnel signals (click-through rate vs. screen-view
+  `screen_view` it triggers are different funnel signals (click-through rate vs. screen-view
   rate). **Never classify a real user click as `NotTracked`**; if it isn't trackable yet, that's a
   gap to fix now, not a reason to leave it untracked. `NotTracked` is reserved for things that are
   not clicks at all.

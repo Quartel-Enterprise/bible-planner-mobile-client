@@ -19,5 +19,5 @@ None. The device name is user content and is intentionally not sent.
 ## Notes
 
 - Confirming with an unchanged or blank name only closes the dialog and does not fire this event.
-- The rename dialog impression is covered by [destination_view](destination_view.md) (`destination_name=rename_device`).
+- The rename dialog impression is covered by [screen_view](screen_view.md) (`screen_name=rename_device`).
 - The rename is offline-first (written locally and synced later), so this event fires even without connectivity.

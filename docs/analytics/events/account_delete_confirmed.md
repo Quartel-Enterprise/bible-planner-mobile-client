@@ -21,6 +21,6 @@ The user taps "Excluir conta" in the delete-account dialog after typing the conf
 ## Notes
 
 - Fires on the confirmation click, not on success — a confirmed deletion can still end in [account_delete_failed](account_delete_failed.md).
-- The dialog impression is covered by `destination_view` (`destination_name=delete_account`); reaching it is covered by [profile_option_clicked](profile_option_clicked.md) with `option=delete_account`.
+- The dialog impression is covered by `screen_view` (`screen_name=delete_account`); reaching it is covered by [profile_option_clicked](profile_option_clicked.md) with `option=delete_account`.
 - Deleting the account does not cancel a Google Play / App Store subscription; an `is_pro=true` event is a candidate for a support follow-up.
 - Related: [account_delete_cancelled](account_delete_cancelled.md), [logout_confirmed](logout_confirmed.md).

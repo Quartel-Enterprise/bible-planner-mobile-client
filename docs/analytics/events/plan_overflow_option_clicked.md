@@ -21,5 +21,5 @@ User taps an option in the reading-plan overflow menu.
 ## Notes
 
 - Opening/closing the overflow menu itself (`OnOverflowClick`, `OnOverflowDismiss`) is not tracked (see README "Explicitly not tracked").
-- `edit_start_day` navigates to `EditPlanStartDateNavRoute` and `delete_progress` to `DeleteAllProgressNavRoute`; those destination impressions are covered by [destination_view](destination_view.md).
+- `edit_start_day` navigates to `EditPlanStartDateNavRoute` and `delete_progress` to `DeleteAllProgressNavRoute`; those destination impressions are covered by [screen_view](screen_view.md).
 - Related: [plan_edit_clicked](plan_edit_clicked.md), [plan_shortcut_used](plan_shortcut_used.md).

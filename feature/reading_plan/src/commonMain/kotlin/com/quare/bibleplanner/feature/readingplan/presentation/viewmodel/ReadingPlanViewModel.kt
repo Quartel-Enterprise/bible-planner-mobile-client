@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
 import com.quare.bibleplanner.core.review.domain.usecase.RequestReviewIfNeeded
@@ -162,7 +163,7 @@ internal class ReadingPlanViewModel(
                 if (event.type != uiState.value.selectedReadingPlan) {
                     trackEvent(
                         name = AnalyticsEventNames.PLAN_SELECTED,
-                        params = mapOf(AnalyticsParams.PLAN_TYPE to event.type.name.lowercase()),
+                        params = mapOf(AnalyticsParams.PLAN_TYPE to event.type.toAnalyticsValue()),
                     )
                 }
                 changeOrderMenuVisibility(false)
@@ -351,7 +352,7 @@ internal class ReadingPlanViewModel(
         trackEvent(
             name = AnalyticsEventNames.DAY_READ_TOGGLED,
             params = mapOf(
-                AnalyticsParams.PLAN_TYPE to selectedPlan.name.lowercase(),
+                AnalyticsParams.PLAN_TYPE to selectedPlan.toAnalyticsValue(),
                 AnalyticsParams.WEEK_NUMBER to event.weekNumber,
                 AnalyticsParams.DAY_NUMBER to event.dayNumber,
                 AnalyticsParams.IS_READ to newReadStatus,

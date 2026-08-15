@@ -22,5 +22,5 @@ A free user focuses the notes field on a day without an existing note while alre
 
 - `ShouldBlockAddNotesUseCase` gates on `isFreeUser() && daysWithNotes >= maxFreeNotes`, so this event never fires for Pro users.
 - Focusing a day that already has a note never blocks (editing existing notes is always allowed) and must not fire this event.
-- The dialog's own impressions are also covered by [destination_view](destination_view.md) (`add_notes_free_warning`); this event exists so the funnel step has a stable name independent of navigation. Follow-up steps: `paywall_viewed` with `source=notes_limit` if the user taps subscribe (`AddNotesFreeWarningUiEvent.OnSubscribeToPro`).
+- The dialog's own impressions are also covered by [screen_view](screen_view.md) (`add_notes_free_warning`); this event exists so the funnel step has a stable name independent of navigation. Follow-up steps: `paywall_viewed` with `source=notes_limit` if the user taps subscribe (`AddNotesFreeWarningUiEvent.OnSubscribeToPro`).
 - Related: [note_saved](note_saved.md), [note_deleted](note_deleted.md) (deleting frees a slot).

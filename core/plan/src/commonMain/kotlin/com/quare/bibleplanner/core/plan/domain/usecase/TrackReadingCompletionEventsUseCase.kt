@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 
 class TrackReadingCompletionEventsUseCase(
@@ -71,6 +72,4 @@ class TrackReadingCompletionEventsUseCase(
     private fun WeekPlanModel?.isComplete(): Boolean = this != null && days.isNotEmpty() && days.all { it.isRead }
 
     private fun List<WeekPlanModel>.isPlanComplete(): Boolean = isNotEmpty() && all { it.isComplete() }
-
-    private fun ReadingPlanType.toAnalyticsValue(): String = name.lowercase()
 }

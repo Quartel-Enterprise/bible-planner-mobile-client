@@ -21,4 +21,4 @@ The user taps the Google or Apple button on the login bottom sheet, before the n
 ## Notes
 
 - Every `login_started` should terminate in exactly one of [login](login.md), [login_failed](login_failed.md) or [login_cancelled](login_cancelled.md); sessions that end with none of them indicate an unhandled abandonment path.
-- The login sheet impression itself is covered by `destination_view` (`destination_name=login`), so no separate "login sheet shown" event exists.
+- The login sheet impression itself is covered by `screen_view` (`screen_name=login`), so no separate "login sheet shown" event exists.

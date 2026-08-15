@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.core.provider.analytics.domain.model
 
 object AnalyticsParams {
-    const val DESTINATION_NAME = "destination_name"
-    const val DESTINATION_TYPE = "destination_type"
+    const val SCREEN_NAME = "screen_name"
+    const val SCREEN_CLASS = "screen_class"
     const val PLAN_TYPE = "plan_type"
     const val WEEK_NUMBER = "week_number"
     const val DAY_NUMBER = "day_number"

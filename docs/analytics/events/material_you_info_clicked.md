@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Opens the Material You bottom sheet; its impression is covered by [destination_view](destination_view.md) (`material_you`, `dialog`).
+- Opens the Material You bottom sheet; its impression is covered by [screen_view](screen_view.md) (`material_you`, `dialog`).
 - Related: [material_you_info_dismissed](material_you_info_dismissed.md), [dynamic_colors_toggled](dynamic_colors_toggled.md).

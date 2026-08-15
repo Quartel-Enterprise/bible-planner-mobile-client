@@ -20,6 +20,6 @@ Captures a successful "restore purchases" on the paywall — an existing subscri
 
 ## Notes
 
-- Requires login: an anonymous tap routes to the login warning (covered by [destination_view](destination_view.md) with `reason=purchase`) and nothing is logged here.
+- Requires login: an anonymous tap routes to the login warning (covered by [screen_view](screen_view.md) with `reason=purchase`) and nothing is logged here.
 - Not a new conversion — never count it together with [purchase_completed](purchase_completed.md) in revenue funnels.
 - Failure counterpart: [restore_failed](restore_failed.md).

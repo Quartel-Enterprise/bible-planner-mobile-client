@@ -20,4 +20,4 @@ The user taps the "manage Bible versions" action on the Read screen, opening the
 
 ## Notes
 
-- The resulting selector screen's own impression is covered by `destination_view` (`destination_name=bible_version_selector`); this event captures the entry point instead.
+- The resulting selector screen's own impression is covered by `screen_view` (`screen_name=bible_version_selector`); this event captures the entry point instead.

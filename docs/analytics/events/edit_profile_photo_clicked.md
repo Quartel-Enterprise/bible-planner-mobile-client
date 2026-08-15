@@ -19,4 +19,4 @@ None.
 ## Notes
 
 - Pairs with [profile_photo_source_selected](profile_photo_source_selected.md) to measure how many users who open the photo sheet actually pick a source.
-- Navigates to `EditPhotoSourceNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`edit_profile_photo_source`, `responsive`).
+- Navigates to `EditPhotoSourceNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`edit_profile_photo_source`, `responsive`).

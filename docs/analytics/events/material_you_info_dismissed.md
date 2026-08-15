@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the Material You bottom sheet is covered by [destination_view](destination_view.md) (`material_you`, `dialog`).
+- Destination impression for the Material You bottom sheet is covered by [screen_view](screen_view.md) (`material_you`, `dialog`).
 - Related: [material_you_info_clicked](material_you_info_clicked.md), [material_you_got_it_clicked](material_you_got_it_clicked.md).

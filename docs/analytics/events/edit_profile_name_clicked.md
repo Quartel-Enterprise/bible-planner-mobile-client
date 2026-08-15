@@ -19,4 +19,4 @@ None.
 ## Notes
 
 - Pairs with [profile_name_updated](profile_name_updated.md) to measure the drop-off between opening the name dialog and actually saving.
-- Navigates to `EditNameNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`edit_profile_name`, `dialog`).
+- Navigates to `EditNameNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`edit_profile_name`, `dialog`).

@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to the paywall; the screen view itself is covered by [destination_view](destination_view.md).
+- Navigates to the paywall; the screen view itself is covered by [screen_view](screen_view.md).
 - The chat quota is metered separately from the day-study one, so this is a distinct monetization path from [day_study_card_clicked](day_study_card_clicked.md) with `card_mode=locked`.

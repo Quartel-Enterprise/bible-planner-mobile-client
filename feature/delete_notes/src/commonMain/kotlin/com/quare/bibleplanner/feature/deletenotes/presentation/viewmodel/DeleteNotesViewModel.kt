@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.deletenotes.presentation.model.DeleteNotesUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -41,7 +42,7 @@ internal class DeleteNotesViewModel(
                     trackEvent(
                         name = AnalyticsEventNames.NOTE_DELETED,
                         params = mapOf(
-                            AnalyticsParams.PLAN_TYPE to readingPlanType.name.lowercase(),
+                            AnalyticsParams.PLAN_TYPE to readingPlanType.toAnalyticsValue(),
                             AnalyticsParams.WEEK_NUMBER to weekNumber,
                             AnalyticsParams.DAY_NUMBER to dayNumber,
                         ),

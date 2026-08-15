@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the screen itself is covered by [destination_view](destination_view.md) (`release_notes`, `screen`).
+- Destination impression for the screen itself is covered by [screen_view](screen_view.md) (`release_notes`, `screen`).
 - Related: [release_notes_tab_selected](release_notes_tab_selected.md).

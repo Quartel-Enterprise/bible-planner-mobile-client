@@ -3,7 +3,7 @@ package com.quare.bibleplanner.core.provider.analytics.domain.model
 /**
  * The analytics decision carried by a user-intent event. Every `UiEvent` declares one, so a new
  * event cannot compile without a conscious decision about how it is tracked — the same compile-time
- * guarantee the destination mapper gives for `destination_view`. The top-level split answers
+ * guarantee the destination mapper gives for `screen_view`. The top-level split answers
  * whether the event is tracked at all ([Track]) or not ([NotTracked]); [Track] then splits on *how*.
  */
 sealed interface EventAnalytics {

@@ -21,5 +21,5 @@ No parameters.
 
 ## Notes
 
-- Dialog impressions are covered by [destination_view](destination_view.md) (`destination_name=delete_version` with `version_id`).
+- Dialog impressions are covered by [screen_view](screen_view.md) (`screen_name=delete_version` with `version_id`).
 - Pair: [bible_version_deleted](bible_version_deleted.md).

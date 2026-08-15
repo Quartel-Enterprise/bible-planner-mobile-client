@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the sheet itself is covered by [destination_view](destination_view.md) (`app_language`, `responsive`).
+- Destination impression for the sheet itself is covered by [screen_view](screen_view.md) (`app_language`, `responsive`).
 - Related: [language_changed](language_changed.md).

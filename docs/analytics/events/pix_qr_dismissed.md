@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the screen itself is covered by [destination_view](destination_view.md) (`pix_qr`, `dialog`).
+- Destination impression for the screen itself is covered by [screen_view](screen_view.md) (`pix_qr`, `dialog`).
 - Related: [pix_qr_shared](pix_qr_shared.md), [pix_qr_opened](pix_qr_opened.md).

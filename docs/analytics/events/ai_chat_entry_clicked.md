@@ -21,5 +21,5 @@ The user taps the "Ask the AI" FAB on the day screen, or the "Ask about this rea
 
 ## Notes
 
-- Nothing gates the entry — being signed out or out of free questions still opens the chat. Both are asked for at the moment the reader tries to send: signing in via the login warning (`reason=ai_chat`, covered by [destination_view](destination_view.md)), subscribing via the locked input ([ai_chat_subscribe_clicked](ai_chat_subscribe_clicked.md)). So the gap between this event and [ai_chat_message_sent](ai_chat_message_sent.md) is where both gates show up.
-- Funnel: `ai_chat_entry_clicked` → [destination_view](destination_view.md) (`ai_chat`) → [ai_chat_message_sent](ai_chat_message_sent.md).
+- Nothing gates the entry — being signed out or out of free questions still opens the chat. Both are asked for at the moment the reader tries to send: signing in via the login warning (`reason=ai_chat`, covered by [screen_view](screen_view.md)), subscribing via the locked input ([ai_chat_subscribe_clicked](ai_chat_subscribe_clicked.md)). So the gap between this event and [ai_chat_message_sent](ai_chat_message_sent.md) is where both gates show up.
+- Funnel: `ai_chat_entry_clicked` → [screen_view](screen_view.md) (`ai_chat`) → [ai_chat_message_sent](ai_chat_message_sent.md).

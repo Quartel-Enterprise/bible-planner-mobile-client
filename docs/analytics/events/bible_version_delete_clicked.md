@@ -20,5 +20,5 @@ User taps the delete icon/action on a downloaded Bible version row in the versio
 
 ## Notes
 
-- Opens the delete-confirmation dialog; its impression is covered by [destination_view](destination_view.md) (`delete_version`, `dialog`, `version_id`).
+- Opens the delete-confirmation dialog; its impression is covered by [screen_view](screen_view.md) (`delete_version`, `dialog`, `version_id`).
 - Related: [bible_version_deleted](bible_version_deleted.md), [bible_version_delete_cancelled](bible_version_delete_cancelled.md).

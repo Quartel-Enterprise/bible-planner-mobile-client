@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.provider.analytics.domain.model
 
 object AnalyticsEventNames {
-    const val DESTINATION_VIEW = "destination_view"
+    const val SCREEN_VIEW = "screen_view"
 
     const val CHAPTER_READ_TOGGLED = "chapter_read_toggled"
     const val DAY_READ_TOGGLED = "day_read_toggled"

@@ -20,6 +20,6 @@ The login-warning dialog appears after a logged-out user attempts a login-gated 
 
 ## Notes
 
-- Overlaps with `destination_view` (`destination_name=login_warning`, which also carries `reason` as a route arg); this dedicated event exists so the auth funnel can be built without joining on screen views.
+- Overlaps with `screen_view` (`screen_name=login_warning`, which also carries `reason` as a route arg); this dedicated event exists so the auth funnel can be built without joining on screen views.
 - New `LoginWarningReason` cases automatically become new `reason` values — keep this list in sync with the sealed interface in `core/model/.../loginwarning/LoginWarningReason.kt`.
 - Outcomes: [login_warning_accepted](login_warning_accepted.md), [login_warning_dismissed](login_warning_dismissed.md).

@@ -43,6 +43,7 @@ import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.Destination
 import com.quare.bibleplanner.core.provider.analytics.domain.model.DestinationType
+import com.quare.bibleplanner.core.provider.analytics.domain.model.toPlanTypeAnalyticsValue
 
 internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
     override fun map(route: NavRoute): Destination? = when (route) {
@@ -87,7 +88,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is DayNavRoute -> screen(
             name = "day",
             params = mapOf(
-                AnalyticsParams.PLAN_TYPE to route.readingPlanType,
+                AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
                 AnalyticsParams.WEEK_NUMBER to route.weekNumber,
                 AnalyticsParams.DAY_NUMBER to route.dayNumber,
             ),
@@ -96,7 +97,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is DayStudyNavRoute -> screen(
             name = "day_study",
             params = mapOf(
-                AnalyticsParams.PLAN_TYPE to route.readingPlanType,
+                AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
                 AnalyticsParams.WEEK_NUMBER to route.weekNumber,
                 AnalyticsParams.DAY_NUMBER to route.dayNumber,
             ),
@@ -106,7 +107,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             name = "ai_chat",
             params = buildMap {
                 put(AnalyticsParams.SOURCE, route.source.key)
-                route.readingPlanType?.let { put(AnalyticsParams.PLAN_TYPE, it) }
+                route.readingPlanType?.let { put(AnalyticsParams.PLAN_TYPE, it.toPlanTypeAnalyticsValue()) }
                 route.weekNumber?.let { put(AnalyticsParams.WEEK_NUMBER, it) }
                 route.dayNumber?.let { put(AnalyticsParams.DAY_NUMBER, it) }
             },
@@ -119,7 +120,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is DeleteNotesRoute -> dialog(
             name = "delete_notes",
             params = mapOf(
-                AnalyticsParams.PLAN_TYPE to route.readingPlanType,
+                AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
                 AnalyticsParams.WEEK_NUMBER to route.week,
                 AnalyticsParams.DAY_NUMBER to route.day,
             ),

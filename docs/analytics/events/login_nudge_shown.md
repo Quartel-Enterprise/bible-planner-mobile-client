@@ -21,5 +21,5 @@ None.
 
 ## Notes
 
-- Logging inside the use case (rather than in each calling ViewModel) keeps one trigger point; the impression is also visible as `destination_view` with `destination_name=login_sync_nudge`, but this dedicated event anchors the nudge funnel.
+- Logging inside the use case (rather than in each calling ViewModel) keeps one trigger point; the impression is also visible as `screen_view` with `screen_name=login_sync_nudge`, but this dedicated event anchors the nudge funnel.
 - Outcomes: [login_nudge_accepted](login_nudge_accepted.md), [login_nudge_snoozed](login_nudge_snoozed.md), [login_nudge_disabled](login_nudge_disabled.md).

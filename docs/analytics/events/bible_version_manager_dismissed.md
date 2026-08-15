@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the sheet itself is covered by [destination_view](destination_view.md) (`bible_version_selector`, `responsive`).
+- Destination impression for the sheet itself is covered by [screen_view](screen_view.md) (`bible_version_selector`, `responsive`).
 - Related: [bible_version_selected](bible_version_selected.md), [bible_version_manage_clicked](bible_version_manage_clicked.md).

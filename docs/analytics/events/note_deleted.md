@@ -25,4 +25,4 @@ The route (`DeleteNotesRoute`) carries `readingPlanType`, `week` and `day`, mapp
 ## Notes
 
 - Only the confirmed dialog path is tracked. Manually erasing all text in the notes field also removes the note (blank saves persist `null` in `DayViewModel.saveNotes`) but bypasses the dialog — that implicit path is untracked by design; revisit if slot-freeing behavior needs full coverage.
-- `OnCancel` on this dialog is deliberately not an event; impressions come from [destination_view](destination_view.md) (`delete_notes`).
+- `OnCancel` on this dialog is deliberately not an event; impressions come from [screen_view](screen_view.md) (`delete_notes`).

@@ -27,5 +27,5 @@ Two trigger points:
 - Fires on Android 13+ and iOS; the JVM requester is inert. On iOS the prompt only fires while authorization is not determined, so it happens at most once per install.
 - On Android the prompt can fire more than once per session: every user-initiated download start while the permission is denied-but-askable re-launches the system prompt.
 - Auto-resume of an in-progress download at startup and the iOS Live Activity resume deep link never prompt.
-- The permission dialog itself is a NavKey (`notification_permission`), so its impressions are also covered by [destination_view](destination_view.md).
+- The permission dialog itself is a NavKey (`notification_permission`), so its impressions are also covered by [screen_view](screen_view.md).
 - Related: [notification_permission_result](notification_permission_result.md).

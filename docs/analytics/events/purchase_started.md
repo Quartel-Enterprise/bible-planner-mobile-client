@@ -23,5 +23,5 @@ The user taps the "start Pro journey" button, the login check passes, a matching
 
 ## Notes
 
-- Not fired when the tap is blocked: user not logged in (routed to the login warning instead — that impression is covered by [destination_view](destination_view.md) with `reason=purchase`), a purchase already in flight (`isPurchasing`), or no matching store package.
+- Not fired when the tap is blocked: user not logged in (routed to the login warning instead — that impression is covered by [screen_view](screen_view.md) with `reason=purchase`), a purchase already in flight (`isPurchasing`), or no matching store package.
 - Exactly one of [purchase_completed](purchase_completed.md) or [purchase_failed](purchase_failed.md) follows each `purchase_started`.

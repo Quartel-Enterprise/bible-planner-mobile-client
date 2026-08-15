@@ -22,5 +22,5 @@ The dialog itself is reached from `feature/preferences/bible_version/.../present
 
 ## Notes
 
-- Dialog impressions (and implicitly the cancel rate) are covered by [destination_view](destination_view.md) (`destination_name=delete_version` with `version_id`); `DeleteVersionUiEvent.OnCancel` is deliberately not tracked.
+- Dialog impressions (and implicitly the cancel rate) are covered by [screen_view](screen_view.md) (`screen_name=delete_version` with `version_id`); `DeleteVersionUiEvent.OnCancel` is deliberately not tracked.
 - A later re-download shows up as [bible_version_download_started](bible_version_download_started.md) with `is_resume=false`.

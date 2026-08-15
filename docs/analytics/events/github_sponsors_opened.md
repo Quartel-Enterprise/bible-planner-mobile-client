@@ -21,5 +21,5 @@ No parameters.
 
 ## Notes
 
-- Donation sheet impressions are covered by [destination_view](destination_view.md) (`destination_name=donation`); this event divided by those impressions gives the sponsors click-through rate.
+- Donation sheet impressions are covered by [screen_view](screen_view.md) (`screen_name=donation`); this event divided by those impressions gives the sponsors click-through rate.
 - Related: [donation_method_copied](donation_method_copied.md) for the one-off crypto/Pix channels.

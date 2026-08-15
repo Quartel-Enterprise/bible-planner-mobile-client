@@ -23,4 +23,4 @@ No parameters.
 
 - The handler catches failures from `resetAllProgress()` and returns the dialog to idle — log only after the use case succeeds, not on tap.
 - After a reset, the high-water marks for [bible_progress_milestone](bible_progress_milestone.md) must be cleared, and derived events ([book_completed](book_completed.md), [week_completed](week_completed.md), [plan_completed](plan_completed.md)) must not fire from the reset write itself.
-- Pair: [progress_reset_cancelled](progress_reset_cancelled.md). Dialog impressions come from [destination_view](destination_view.md) (`delete_all_progress`), so confirm-rate is impressions vs this event.
+- Pair: [progress_reset_cancelled](progress_reset_cancelled.md). Dialog impressions come from [screen_view](screen_view.md) (`delete_all_progress`), so confirm-rate is impressions vs this event.

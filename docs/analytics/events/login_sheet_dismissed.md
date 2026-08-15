@@ -24,4 +24,4 @@ The user dismisses the login bottom sheet either by tapping the close button or 
 ## Notes
 
 - This is distinct from [login_cancelled](login_cancelled.md), which only fires once a native provider sign-in flow was actually started and then closed by the user.
-- The sheet impression itself is covered by `destination_view` (`destination_name=login`).
+- The sheet impression itself is covered by `screen_view` (`screen_name=login`).

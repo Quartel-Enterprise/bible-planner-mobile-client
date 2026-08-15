@@ -2,7 +2,7 @@
 
 **Tier:** P2 | **Domain:** Reading
 
-Captures tapping a day card on the reading plan screen to open that day. Click-through on the day card is a distinct funnel signal from the resulting Day screen impression, so it is tracked separately from `destination_view`.
+Captures tapping a day card on the reading plan screen to open that day. Click-through on the day card is a distinct funnel signal from the resulting Day screen impression, so it is tracked separately from `screen_view`.
 
 ## When it fires
 
@@ -21,5 +21,5 @@ User taps a day card in the reading plan list.
 
 ## Notes
 
-- The subsequent Day screen impression is separately captured by [destination_view](destination_view.md); this event only covers the card tap itself.
+- The subsequent Day screen impression is separately captured by [screen_view](screen_view.md); this event only covers the card tap itself.
 - Distinct from [day_read_toggled](day_read_toggled.md), which marks the day as read via the checkbox, not the card tap.

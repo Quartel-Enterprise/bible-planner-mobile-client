@@ -22,4 +22,4 @@ User selects a language in the app-language bottom sheet.
 
 - Fires on every selection, including re-selecting the current language — instrumentation may skip no-op selections.
 - Should also refresh the proposed `app_language` user property (see README).
-- Related: [setting_sync_toggled](setting_sync_toggled.md) (`setting=language`); sheet impressions are covered by [destination_view](destination_view.md) (`app_language`).
+- Related: [setting_sync_toggled](setting_sync_toggled.md) (`setting=language`); sheet impressions are covered by [screen_view](screen_view.md) (`app_language`).

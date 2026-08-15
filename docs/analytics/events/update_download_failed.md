@@ -19,5 +19,5 @@ _None._
 ## Notes
 
 - **Android only.** iOS hands off to the App Store and never downloads in-app; Desktop is a no-op. The download-state flow is empty on those platforms, so this event cannot fire there.
-- A successful download instead produces the [update_downloaded](destination_view.md) dialog impression (`destination_name=update_downloaded`); there is no separate `update_download_completed` event because that impression already marks the milestone.
+- A successful download instead produces the [update_downloaded](screen_view.md) dialog impression (`screen_name=update_downloaded`); there is no separate `update_download_completed` event because that impression already marks the milestone.
 - Play Core does not expose a typed failure reason here, so no `reason` parameter is logged.

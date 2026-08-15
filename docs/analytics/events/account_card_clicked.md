@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to `AccountDetailsNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`account_details`, `responsive`).
+- Navigates to `AccountDetailsNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`account_details`, `responsive`).
 - Related: [pro_card_clicked](pro_card_clicked.md), [login_row_clicked](login_row_clicked.md), [rename_device_clicked](rename_device_clicked.md).
