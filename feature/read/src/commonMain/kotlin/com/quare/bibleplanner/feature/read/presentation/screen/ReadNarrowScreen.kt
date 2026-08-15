@@ -4,8 +4,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomAppBarDefaults
@@ -95,7 +99,19 @@ internal fun ReadNarrowScreen(
             }
         },
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+        /*
+         * The bars auto-hide as the reader scrolls, and the padding the scaffold hands out shrinks
+         * with them — down to zero. Consuming that padding and then re-applying whatever system-bar
+         * inset is left keeps the text clear of the status and navigation bars once the app's own
+         * bars are gone, without double-padding while they are still on screen.
+         */
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
+                .windowInsetsPadding(WindowInsets.systemBars),
+        ) {
             when (val content = state.content) {
                 ReadContentUiState.Loading -> ReadLoadingContent(Modifier.fillMaxSize())
 

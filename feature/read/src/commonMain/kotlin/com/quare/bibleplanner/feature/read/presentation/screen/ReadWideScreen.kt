@@ -5,15 +5,20 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -51,6 +56,7 @@ import org.jetbrains.compose.resources.stringResource
 
 private val readingColumnMaxWidth = 640.dp
 private val sidePanelWidth = 392.dp
+private val titleMinColumnWidth = 520.dp
 
 /**
  * On a wide window the selection tools move into a panel beside the text instead of covering it, so
@@ -62,7 +68,11 @@ internal fun ReadWideScreen(
     state: ReadUiState,
     onEvent: (ReadUiEvent) -> Unit,
 ) {
-    Row(modifier = Modifier.fillMaxSize()) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars),
+    ) {
         Column(modifier = Modifier.weight(1f)) {
             ReadWideHeader(
                 platform = platform,
@@ -143,13 +153,18 @@ internal fun ReadWideScreen(
     }
 }
 
+/**
+ * The title is dropped on a column too narrow to hold it next to the controls: the chapter's own
+ * header names it anyway, and an ellipsis on its own says nothing.
+ */
 @Composable
 private fun ReadWideHeader(
     platform: Platform,
     header: ReadHeaderUiModel,
     isSidePanelOpen: Boolean,
     onEvent: (ReadUiEvent) -> Unit,
-) {
+) = BoxWithConstraints {
+    val hasRoomForTitle = maxWidth >= titleMinColumnWidth
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -159,13 +174,17 @@ private fun ReadWideHeader(
             platform = platform,
             onBackClick = { onEvent(ReadUiEvent.OnArrowBackClick) },
         )
-        Text(
-            modifier = Modifier.weight(1f),
-            text = "${stringResource(header.bookStringResource)} ${header.chapterNumber}",
-            style = MaterialTheme.typography.titleMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (hasRoomForTitle) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = "${stringResource(header.bookStringResource)} ${header.chapterNumber}",
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(1f))
+        }
         ReadStatusPill(
             isRead = header.isChapterRead,
             isCompact = true,
