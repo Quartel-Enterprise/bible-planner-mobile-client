@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to the paywall; fired alongside [paywall_viewed](paywall_viewed.md) with `source=chat`, which is what carries this entry point into the purchase funnel. The screen view itself is covered by [screen_view](screen_view.md).
+- Navigates to the paywall, which then logs [paywall_viewed](paywall_viewed.md) with `source=chat`. The gap between this click and that impression is the drop-off on the way in; the screen view itself is also covered by [screen_view](screen_view.md).
 - The chat quota is metered separately from the day-study one, so this is a distinct monetization path from [day_study_card_clicked](day_study_card_clicked.md) with `card_mode=locked`.

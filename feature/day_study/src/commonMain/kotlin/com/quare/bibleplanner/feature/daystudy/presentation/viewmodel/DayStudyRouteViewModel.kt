@@ -18,6 +18,7 @@ import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.toDayNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -302,15 +303,22 @@ internal class DayStudyRouteViewModel(
 
     private fun onCardClick() {
         val card = _uiState.value.card.valueOrNull() ?: return
+        trackEvent(
+            name = AnalyticsEventNames.DAY_STUDY_CARD_CLICKED,
+            params = mapOf(
+                AnalyticsParams.CARD_MODE to card.mode.name.lowercase(),
+                AnalyticsParams.IS_PRO to card.isPro,
+                AnalyticsParams.SOURCE to CARD_CLICK_SOURCE,
+            ),
+        )
         if (_uiState.value.openStudy != null || _uiState.value.generation != null) return
         when (card.mode) {
-            DayStudyCardMode.LOCKED -> {
-                trackEvent(
-                    name = AnalyticsEventNames.PAYWALL_VIEWED,
-                    params = mapOf(AnalyticsParams.SOURCE to PAYWALL_SOURCE),
+            DayStudyCardMode.LOCKED ->
+                emitAction(
+                    DayStudyRouteUiAction.NavigateToRoute(
+                        PaywallNavRoute(PaywallEntrySource.DAY_STUDY_DETAIL),
+                    ),
                 )
-                emitAction(DayStudyRouteUiAction.NavigateToRoute(PaywallNavRoute))
-            }
 
             DayStudyCardMode.GENERATE -> generateIfLoggedIn()
 
@@ -456,7 +464,7 @@ internal class DayStudyRouteViewModel(
         const val UNKNOWN_REASON = "unknown"
         const val LOAD_TARGET = "panel"
         const val PERF_LOG_TAG = "DayStudyPerf"
-        const val PAYWALL_SOURCE = "day_study_detail"
+        const val CARD_CLICK_SOURCE = "day_study_detail"
     }
 }
 

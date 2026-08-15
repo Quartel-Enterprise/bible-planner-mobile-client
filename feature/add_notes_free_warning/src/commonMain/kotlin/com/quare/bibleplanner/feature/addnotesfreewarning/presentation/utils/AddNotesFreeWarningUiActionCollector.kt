@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.addnotesfreewarning.presentation.utils
 
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavKey
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.model.AddNotesFreeWarningUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -16,7 +17,10 @@ internal fun AddNotesFreeWarningUiActionCollector(
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             AddNotesFreeWarningUiAction.NavigateBack -> onNavigateBack()
-            AddNotesFreeWarningUiAction.NavigateToPro -> onNavigateReplacingTop(PaywallNavRoute)
+
+            AddNotesFreeWarningUiAction.NavigateToPro -> onNavigateReplacingTop(
+                PaywallNavRoute(PaywallEntrySource.NOTES_LIMIT),
+            )
         }
     }
 }

@@ -21,10 +21,10 @@ internal sealed interface DayStudyRouteUiEvent : UiEvent {
     data object OnCardClick : DayStudyRouteUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             setOf(
+                AnalyticsEventNames.DAY_STUDY_CARD_CLICKED,
                 AnalyticsEventNames.DAY_STUDY_OPENED,
                 AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
                 AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED,
-                AnalyticsEventNames.PAYWALL_VIEWED,
             ),
         )
     }

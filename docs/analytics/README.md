@@ -135,7 +135,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `LogoutNavRoute` | `logout` | `dialog` | — |
 | `MaterialYouBottomSheetNavRoute` | `material_you` | `dialog` | — |
 | `NotificationPermissionNavRoute` | `notification_permission` | `dialog` | — |
-| `PaywallNavRoute` | `paywall` | `screen` | — |
+| `PaywallNavRoute` | `paywall` | `screen` | `source` |
 | `PendingBibleUpdatesNavRoute` | `pending_bible_updates` | `dialog` | — |
 | `PixQrNavRoute` | `pix_qr` | `dialog` | — |
 | `ReadNavRoute` | `read` | `screen` | `book_id`, `chapter_number` |
@@ -217,6 +217,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [note_delete_cancelled](events/note_delete_cancelled.md) | P2 | Notes |
 | [notes_limit_reached](events/notes_limit_reached.md) | P1 | Notes |
 | [add_notes_free_warning_dismissed](events/add_notes_free_warning_dismissed.md) | P2 | Notes |
+| [notes_limit_subscribe_clicked](events/notes_limit_subscribe_clicked.md) | P1 | Notes |
 | [notes_clear_clicked](events/notes_clear_clicked.md) | P2 | Notes |
 
 ### Day Study (AI)
@@ -421,6 +422,10 @@ low-signal-sounding names):
   `OnFlashCompleted`) — fired when a programmatic animation finishes, not user-initiated.
 - VM lifecycle hooks not triggered by the user (`DayStudyUiEvent.OnStart`) and incoming
   messages/snackbar bridges (`DayUiEvent.OnDayStudyMessage`).
+- Navigation bridges that relay a child ViewModel's action rather than a tap
+  (`DayUiEvent.OnDayStudySubscribeClick`) — the tap itself is already logged by the child that
+  raised the action, as [day_study_card_clicked](events/day_study_card_clicked.md) with
+  `card_mode=locked`.
 
 ## Adding a new event
 

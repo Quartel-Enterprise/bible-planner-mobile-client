@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.toDayNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -151,7 +152,8 @@ internal class ChatViewModel(
 
             ChatUiEvent.OnRetryClick -> onRetryClick()
 
-            ChatUiEvent.OnSubscribeClick -> onSubscribeClick()
+            ChatUiEvent.OnSubscribeClick ->
+                emitAction(ChatUiAction.NavigateToRoute(PaywallNavRoute(PaywallEntrySource.CHAT)))
 
             ChatUiEvent.OnHistoryClick -> onHistoryClick()
 
@@ -421,18 +423,6 @@ internal class ChatViewModel(
         useCases.syncRemoteChanges()
     }
 
-    private fun onSubscribeClick() {
-        trackEvent(
-            name = AnalyticsEventNames.AI_CHAT_SUBSCRIBE_CLICKED,
-            params = emptyMap(),
-        )
-        trackEvent(
-            name = AnalyticsEventNames.PAYWALL_VIEWED,
-            params = mapOf(AnalyticsParams.SOURCE to PAYWALL_SOURCE),
-        )
-        emitAction(ChatUiAction.NavigateToRoute(PaywallNavRoute))
-    }
-
     private fun onSuggestionClick(suggestion: String) {
         trackEvent(
             name = AnalyticsEventNames.AI_CHAT_SUGGESTION_CLICKED,
@@ -656,6 +646,5 @@ internal class ChatViewModel(
     private companion object {
         const val DAY_THREAD_KEY_PREFIX = "day"
         const val NEW_THREAD_KEY = "new"
-        const val PAYWALL_SOURCE = "chat"
     }
 }
