@@ -24,7 +24,7 @@ import bibleplanner.feature.read.generated.resources.delete_color_keep_highlight
 import bibleplanner.feature.read.generated.resources.delete_highlight_color_message
 import bibleplanner.feature.read.generated.resources.delete_highlight_color_title
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
-import com.quare.bibleplanner.feature.read.presentation.utils.toSwatchColor
+import com.quare.bibleplanner.ui.component.highlight.toSwatchColor
 import org.jetbrains.compose.resources.stringResource
 
 private val colorDotSize = 34.dp

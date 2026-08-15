@@ -82,6 +82,7 @@ include(":feature:preferences:bible_version")
 include(":feature:preferences:app_language")
 include(":feature:read")
 include(":feature:verse_note")
+include(":feature:verse_selection")
 include(":feature:share_verse")
 
 include(":feature:paywall")

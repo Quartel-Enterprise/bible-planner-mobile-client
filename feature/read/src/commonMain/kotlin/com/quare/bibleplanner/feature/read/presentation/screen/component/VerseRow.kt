@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
-import com.quare.bibleplanner.feature.read.presentation.utils.toBackgroundColor
+import com.quare.bibleplanner.ui.component.highlight.toBackgroundColor
 import com.quare.bibleplanner.ui.theme.font.displaySerifFontFamily
 import com.quare.bibleplanner.ui.theme.font.toFontFamily
 

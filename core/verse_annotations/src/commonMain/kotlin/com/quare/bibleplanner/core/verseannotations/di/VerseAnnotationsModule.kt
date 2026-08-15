@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.verseannotations.data.repository.HighlightPal
 import com.quare.bibleplanner.core.verseannotations.data.repository.SavedVerseRepositoryImpl
 import com.quare.bibleplanner.core.verseannotations.data.repository.VerseHighlightRepositoryImpl
 import com.quare.bibleplanner.core.verseannotations.data.repository.VerseNoteRepositoryImpl
+import com.quare.bibleplanner.core.verseannotations.data.repository.VerseSelectionRepositoryImpl
 import com.quare.bibleplanner.core.verseannotations.data.sync.SavedVerseLocalStore
 import com.quare.bibleplanner.core.verseannotations.data.sync.SavedVerseRemoteStore
 import com.quare.bibleplanner.core.verseannotations.data.sync.VerseHighlightLocalStore
@@ -21,24 +22,31 @@ import com.quare.bibleplanner.core.verseannotations.domain.repository.HighlightP
 import com.quare.bibleplanner.core.verseannotations.domain.repository.SavedVerseRepository
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseHighlightRepository
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseNoteRepository
+import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseSelectionRepository
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.AddCustomHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ApplyHighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ClearVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.DeleteVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.GetVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveHighlightPalette
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemoveCustomHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleSavedVerses
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.AddCustomHighlightColorUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ApplyHighlightColorUseCase
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ClearVerseSelectionUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.DeleteVerseNoteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.GetVerseNoteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveChapterAnnotationsUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveHighlightPaletteUseCase
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveVerseSelectionUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.RemoveCustomHighlightColorUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.SaveVerseNoteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ToggleSavedVersesUseCase
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ToggleVerseSelectionUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
@@ -56,6 +64,7 @@ val verseAnnotationsModule = module {
     singleOf(::SavedVerseRepositoryImpl).bind<SavedVerseRepository>()
     singleOf(::VerseNoteRepositoryImpl).bind<VerseNoteRepository>()
     singleOf(::HighlightPaletteRepositoryImpl).bind<HighlightPaletteRepository>()
+    singleOf(::VerseSelectionRepositoryImpl).bind<VerseSelectionRepository>()
 
     factoryOf(::ObserveChapterAnnotationsUseCase).bind<ObserveChapterAnnotations>()
     factoryOf(::ApplyHighlightColorUseCase).bind<ApplyHighlightColor>()
@@ -66,6 +75,9 @@ val verseAnnotationsModule = module {
     factoryOf(::ObserveHighlightPaletteUseCase).bind<ObserveHighlightPalette>()
     factoryOf(::AddCustomHighlightColorUseCase).bind<AddCustomHighlightColor>()
     factoryOf(::RemoveCustomHighlightColorUseCase).bind<RemoveCustomHighlightColor>()
+    factoryOf(::ObserveVerseSelectionUseCase).bind<ObserveVerseSelection>()
+    factoryOf(::ToggleVerseSelectionUseCase).bind<ToggleVerseSelection>()
+    factoryOf(::ClearVerseSelectionUseCase).bind<ClearVerseSelection>()
 
     factoryOf(::VerseHighlightLocalStore)
     factoryOf(::VerseHighlightRemoteStore)

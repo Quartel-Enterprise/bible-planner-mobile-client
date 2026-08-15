@@ -47,6 +47,7 @@ val navigationSavedStateConfiguration = SavedStateConfiguration {
             subclass(ReaderAppearanceNavRoute::class, ReaderAppearanceNavRoute.serializer())
             subclass(DeleteHighlightColorNavRoute::class, DeleteHighlightColorNavRoute.serializer())
             subclass(VerseNoteNavRoute::class, VerseNoteNavRoute.serializer())
+            subclass(VerseSelectionNavRoute::class, VerseSelectionNavRoute.serializer())
             subclass(ShareVerseNavRoute::class, ShareVerseNavRoute.serializer())
             subclass(ShareVerseImageNavRoute::class, ShareVerseImageNavRoute.serializer())
             subclass(RenameDeviceNavRoute::class, RenameDeviceNavRoute.serializer())

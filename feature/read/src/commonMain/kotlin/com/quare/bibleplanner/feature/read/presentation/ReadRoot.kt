@@ -12,6 +12,7 @@ import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
+import com.quare.bibleplanner.core.model.route.readerPane
 import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppearanceContent
 import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppearanceUiEvent
 import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppearanceViewModel
@@ -32,7 +33,7 @@ fun EntryProviderScope<NavKey>.read(
     onNavigateBack: () -> Unit,
     onNavigateReplacingTop: (NavKey) -> Unit,
 ) {
-    entry<ReadNavRoute> { route ->
+    entry<ReadNavRoute>(metadata = readerPane()) { route ->
         val viewModel = koinViewModel<ReadViewModel> { parametersOf(route) }
         val state by viewModel.uiState.collectAsState()
         ReadUiActionCollector(

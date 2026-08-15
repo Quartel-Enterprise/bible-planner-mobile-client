@@ -5,14 +5,13 @@ import bibleplanner.feature.read.generated.resources.mark_as_read
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
+import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
-import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
-import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.fake.FakeObserveReadData
+import com.quare.bibleplanner.feature.read.fake.FakeVerseSelectionStore
 import com.quare.bibleplanner.feature.read.fake.ThrowingBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
@@ -40,10 +39,9 @@ import kotlin.test.assertTrue
 
 internal class ReadViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
     private lateinit var viewModel: ReadViewModel
     private lateinit var actions: List<ReadUiAction>
-    private lateinit var appliedHighlights: MutableList<Pair<List<VerseRef>, HighlightColor>>
+    private lateinit var selectionStore: FakeVerseSelectionStore
     private lateinit var trackedEvents: MutableList<String>
 
     @BeforeTest
@@ -57,7 +55,7 @@ internal class ReadViewModelTest {
     }
 
     @Test
-    fun `selects the tapped verse and offers it in the selection panel`() = runTest(testDispatcher) {
+    fun `marks the tapped verse as selected in the chapter`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -66,29 +64,48 @@ internal class ReadViewModelTest {
         runCurrent()
 
         // Then
-        val selection = viewModel.uiState.value.selection
         assertEquals(
             expected = listOf(2),
-            actual = selection?.verseNumbers,
+            actual = selectedVerseNumbers(),
         )
         assertTrue(trackedEvents.contains("verse_selection_toggled"))
     }
 
     @Test
-    fun `keeps the selection sorted when verses are tapped out of order`() = runTest(testDispatcher) {
+    fun `opens the selection panel the moment the first verse is picked`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
         // When
-        viewModel.onEvent(verseClick(3))
-        viewModel.onEvent(verseClick(1))
+        viewModel.onEvent(verseClick(2))
         runCurrent()
 
         // Then
         assertEquals(
-            expected = listOf(1, 3),
-            actual = viewModel.uiState.value.selection
-                ?.verseNumbers,
+            expected = listOf(
+                ReadUiAction.NavigateToRoute(
+                    route = VerseSelectionNavRoute,
+                    replace = false,
+                ),
+            ),
+            actual = actions,
+        )
+    }
+
+    @Test
+    fun `does not reopen the panel while the selection grows`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(verseClick(1))
+
+        // When
+        viewModel.onEvent(verseClick(2))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = 1,
+            actual = actions.size,
         )
     }
 
@@ -103,45 +120,25 @@ internal class ReadViewModelTest {
         runCurrent()
 
         // Then
-        assertNull(viewModel.uiState.value.selection)
+        assertNull(selectionStore.selection.value)
+        assertTrue(selectedVerseNumbers().isEmpty())
     }
 
     @Test
-    fun `applies the tapped color to the whole selection`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(verseClick(1))
-        viewModel.onEvent(verseClick(2))
-
-        // When
-        viewModel.onEvent(ReadUiEvent.OnHighlightColorClick(yellow))
-        runCurrent()
-
-        // Then
-        val (refs, color) = appliedHighlights.single()
-        assertEquals(
-            expected = listOf(1, 2),
-            actual = refs.map { it.verseNumber },
-        )
-        assertEquals(
-            expected = yellow,
-            actual = color,
-        )
-        assertTrue(trackedEvents.contains("verse_highlight_applied"))
-    }
-
-    @Test
-    fun `clearing the selection closes the panel`() = runTest(testDispatcher) {
+    fun `closes the panel when the last selected verse is dropped`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(verseClick(1))
 
         // When
-        viewModel.onEvent(ReadUiEvent.OnClearSelectionClick)
+        viewModel.onEvent(verseClick(1))
         runCurrent()
 
         // Then
-        assertNull(viewModel.uiState.value.selection)
+        assertEquals(
+            expected = ReadUiAction.NavigateBack,
+            actual = actions.last(),
+        )
     }
 
     @Test
@@ -165,22 +162,12 @@ internal class ReadViewModelTest {
         )
     }
 
-    @Test
-    fun `toggling the side panel flips it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(ReadUiEvent.OnSidePanelToggleClick)
-        runCurrent()
-
-        // Then
-        assertEquals(
-            expected = false,
-            actual = viewModel.uiState.value.isSidePanelOpen,
-        )
-        assertTrue(trackedEvents.contains("read_side_panel_toggled"))
-    }
+    private fun selectedVerseNumbers(): List<Int> = (viewModel.uiState.value.content as ReadContentUiState.Success)
+        .chapters
+        .single()
+        .verses
+        .filter { it.isSelected }
+        .map { it.number }
 
     private fun verseClick(verseNumber: Int): ReadUiEvent.OnVerseClick = ReadUiEvent.OnVerseClick(
         bookId = BookId.GEN,
@@ -189,8 +176,8 @@ internal class ReadViewModelTest {
     )
 
     private fun TestScope.prepareScenario() {
-        appliedHighlights = mutableListOf()
         trackedEvents = mutableListOf()
+        selectionStore = FakeVerseSelectionStore()
         val bookStringResource = Res.string.mark_as_read
         val chapter = ReadChapterUiModel(
             bookId = BookId.GEN,
@@ -250,14 +237,15 @@ internal class ReadViewModelTest {
             requestDownloadNotificationPermission = { error("unused") },
             observeReaderSettings = { settings },
             setReaderFocusAid = { error("unused") },
-            observeHighlightPalette = { MutableStateFlow(emptyList()) },
-            applyHighlightColor = { refs, color ->
-                appliedHighlights += refs to color
-                true
+            observeVerseSelection = { selectionStore.selection },
+            toggleVerseSelection = { bookId, chapterNumber, verseNumber ->
+                selectionStore.toggle(
+                    bookId = bookId,
+                    chapterNumber = chapterNumber,
+                    verseNumber = verseNumber,
+                )
             },
-            addCustomHighlightColor = { error("unused") },
-            toggleSavedVerses = { error("unused") },
-            getVersesShareContent = { _, _, _ -> error("unused") },
+            clearVerseSelection = { selectionStore.clear() },
             trackEvent = { name, _ -> trackedEvents += name },
             platform = Platform.Android,
         )

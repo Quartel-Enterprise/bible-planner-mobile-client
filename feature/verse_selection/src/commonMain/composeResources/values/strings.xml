@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="close">Close</string>
+    <string name="save_verses">Save</string>
+    <string name="saved_verses">Saved</string>
+    <string name="add_note">Note</string>
+    <string name="share">Share</string>
+    <string name="copy">Copy</string>
+    <string name="custom_color">Custom color</string>
+    <string name="custom_color_hint">Press and hold a custom color to remove it from the palette</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply_color">Apply color</string>
+    <string name="highlight_saved">Highlight saved</string>
+    <string name="highlight_removed">Highlight removed</string>
+    <string name="verses_saved">Saved</string>
+    <string name="removed_from_saved">Removed from saved</string>
+    <string name="copied_to_clipboard">Copied to the clipboard</string>
+</resources>

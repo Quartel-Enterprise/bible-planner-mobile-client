@@ -38,21 +38,6 @@
     <string name="reader_font_atkinson">Atkinson</string>
     <string name="reader_font_dyslexic">Dislexia</string>
     <string name="font_preview">Aa</string>
-    <string name="close">Fechar</string>
-    <string name="save_verses">Salvar</string>
-    <string name="saved_verses">Salvo</string>
-    <string name="add_note">Anotação</string>
-    <string name="share">Compartilhar</string>
-    <string name="copy">Copiar</string>
-    <string name="custom_color">Cor personalizada</string>
-    <string name="custom_color_hint">Segure uma cor personalizada para removê-la da paleta</string>
-    <string name="cancel">Cancelar</string>
-    <string name="apply_color">Aplicar cor</string>
-    <string name="highlight_saved">Destaque salvo</string>
-    <string name="highlight_removed">Destaque removido</string>
-    <string name="verses_saved">Salvo</string>
-    <string name="removed_from_saved">Removido dos salvos</string>
-    <string name="copied_to_clipboard">Copiado para a área de transferência</string>
     <string name="delete_highlight_color_title">Excluir esta cor?</string>
     <string name="delete_highlight_color_message">Você pode tirar a cor da paleta mantendo os destaques já feitos com ela, ou excluir tudo.</string>
     <string name="delete_color_keep_highlights">Excluir cor e manter destaques</string>
@@ -63,4 +48,5 @@
     <string name="open_side_panel">Abrir o painel lateral</string>
     <string name="close_side_panel">Fechar o painel lateral</string>
     <string name="selection_panel_empty">Toque em um versículo para destacar, salvar ou anotar.</string>
+    <string name="cancel">Cancelar</string>
 </resources>

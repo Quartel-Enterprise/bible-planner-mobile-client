@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.read.presentation.screen.component.selection
+package com.quare.bibleplanner.feature.verseselection.presentation.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -22,11 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.custom_color
+import bibleplanner.feature.verse_selection.generated.resources.Res
+import bibleplanner.feature.verse_selection.generated.resources.custom_color
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
-import com.quare.bibleplanner.feature.read.presentation.utils.toSwatchColor
+import com.quare.bibleplanner.ui.component.highlight.toSwatchColor
 import org.jetbrains.compose.resources.stringResource
 
 private val swatchSize = 34.dp

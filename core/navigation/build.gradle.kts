@@ -40,6 +40,7 @@ kotlin {
             implementation(projects.feature.read)
             implementation(projects.feature.shareVerse)
             implementation(projects.feature.verseNote)
+            implementation(projects.feature.verseSelection)
             implementation(projects.feature.notificationPermission)
             implementation(projects.feature.dayStudy)
             implementation(projects.feature.chat)

@@ -38,21 +38,6 @@
     <string name="reader_font_atkinson">Atkinson</string>
     <string name="reader_font_dyslexic">Dyslexic</string>
     <string name="font_preview">Aa</string>
-    <string name="close">Close</string>
-    <string name="save_verses">Save</string>
-    <string name="saved_verses">Saved</string>
-    <string name="add_note">Note</string>
-    <string name="share">Share</string>
-    <string name="copy">Copy</string>
-    <string name="custom_color">Custom color</string>
-    <string name="custom_color_hint">Press and hold a custom color to remove it from the palette</string>
-    <string name="cancel">Cancel</string>
-    <string name="apply_color">Apply color</string>
-    <string name="highlight_saved">Highlight saved</string>
-    <string name="highlight_removed">Highlight removed</string>
-    <string name="verses_saved">Saved</string>
-    <string name="removed_from_saved">Removed from saved</string>
-    <string name="copied_to_clipboard">Copied to the clipboard</string>
     <string name="delete_highlight_color_title">Delete this color?</string>
     <string name="delete_highlight_color_message">You can take the color out of the palette and keep the highlights already made with it, or delete everything.</string>
     <string name="delete_color_keep_highlights">Delete color, keep highlights</string>
@@ -63,4 +48,5 @@
     <string name="open_side_panel">Open the side panel</string>
     <string name="close_side_panel">Close the side panel</string>
     <string name="selection_panel_empty">Tap a verse to highlight it, save it, or write a note.</string>
+    <string name="cancel">Cancel</string>
 </resources>

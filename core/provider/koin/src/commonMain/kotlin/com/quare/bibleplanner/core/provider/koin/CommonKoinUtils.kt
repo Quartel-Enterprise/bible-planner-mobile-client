@@ -59,6 +59,7 @@ import com.quare.bibleplanner.feature.shareverse.di.shareVerseModule
 import com.quare.bibleplanner.feature.subscriptiondetails.di.subscriptionDetailsModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
 import com.quare.bibleplanner.feature.versenote.di.verseNoteModule
+import com.quare.bibleplanner.feature.verseselection.di.verseSelectionModule
 
 object CommonKoinUtils {
     val modules = listOf(
@@ -68,6 +69,7 @@ object CommonKoinUtils {
         syncModule,
         verseAnnotationsModule,
         verseNoteModule,
+        verseSelectionModule,
         shareVerseModule,
         platformModule,
         connectivityModule,

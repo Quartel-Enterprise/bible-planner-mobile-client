@@ -27,6 +27,7 @@ kotlin {
             implementation(projects.core.verseAnnotations)
             implementation(projects.feature.shareVerse)
             implementation(projects.feature.verseNote)
+            implementation(projects.feature.verseSelection)
             implementation(projects.core.utils)
             implementation(projects.core.utils.jsonReader)
             implementation(projects.core.date)

@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.read.presentation.screen.component.selection
+package com.quare.bibleplanner.feature.verseselection.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,12 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.close
-import bibleplanner.feature.read.generated.resources.custom_color_hint
+import bibleplanner.feature.verse_selection.generated.resources.Res
+import bibleplanner.feature.verse_selection.generated.resources.close
+import bibleplanner.feature.verse_selection.generated.resources.custom_color_hint
 import com.quare.bibleplanner.core.books.util.verseReferenceLabel
-import com.quare.bibleplanner.feature.read.presentation.model.ReadSelectionUiModel
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.feature.verseselection.presentation.model.VerseSelectionUiEvent
+import com.quare.bibleplanner.feature.verseselection.presentation.model.VerseSelectionUiState
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import org.jetbrains.compose.resources.stringResource
 
@@ -29,8 +29,8 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 internal fun SelectionPanel(
-    selection: ReadSelectionUiModel,
-    onEvent: (ReadUiEvent) -> Unit,
+    selection: VerseSelectionUiState,
+    onEvent: (VerseSelectionUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -55,15 +55,15 @@ internal fun SelectionPanel(
                 modifier = Modifier.align(Alignment.CenterEnd),
                 imageVector = Icons.Default.Close,
                 contentDescription = stringResource(Res.string.close),
-                onClick = { onEvent(ReadUiEvent.OnClearSelectionClick) },
+                onClick = { onEvent(VerseSelectionUiEvent.OnClearSelectionClick) },
             )
         }
         HighlightPaletteRow(
             customColors = selection.customColors,
             activeColor = selection.activeColor,
-            onColorClick = { color -> onEvent(ReadUiEvent.OnHighlightColorClick(color)) },
-            onCustomColorLongClick = { color -> onEvent(ReadUiEvent.OnCustomColorLongClick(color)) },
-            onCustomColorPickerOpen = { onEvent(ReadUiEvent.OnCustomColorPickerOpen) },
+            onColorClick = { color -> onEvent(VerseSelectionUiEvent.OnHighlightColorClick(color)) },
+            onCustomColorLongClick = { color -> onEvent(VerseSelectionUiEvent.OnCustomColorLongClick(color)) },
+            onCustomColorPickerOpen = { onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen) },
         )
         if (selection.customColors.isNotEmpty()) {
             Text(
@@ -78,22 +78,22 @@ internal fun SelectionPanel(
                 color = picker,
                 onColorChange = { hue, lightness ->
                     onEvent(
-                        ReadUiEvent.OnCustomColorChange(
+                        VerseSelectionUiEvent.OnCustomColorChange(
                             hue = hue,
                             lightness = lightness,
                         ),
                     )
                 },
-                onCancel = { onEvent(ReadUiEvent.OnCustomColorCancelClick) },
-                onApply = { onEvent(ReadUiEvent.OnCustomColorApplyClick) },
+                onCancel = { onEvent(VerseSelectionUiEvent.OnCustomColorCancelClick) },
+                onApply = { onEvent(VerseSelectionUiEvent.OnCustomColorApplyClick) },
             )
         }
         SelectionActionsRow(
             isSelectionSaved = selection.isSelectionSaved,
-            onSaveClick = { onEvent(ReadUiEvent.OnToggleSavedClick) },
-            onNoteClick = { onEvent(ReadUiEvent.OnNoteClick) },
-            onShareClick = { onEvent(ReadUiEvent.OnShareClick) },
-            onCopyClick = { onEvent(ReadUiEvent.OnCopyClick) },
+            onSaveClick = { onEvent(VerseSelectionUiEvent.OnToggleSavedClick) },
+            onNoteClick = { onEvent(VerseSelectionUiEvent.OnNoteClick) },
+            onShareClick = { onEvent(VerseSelectionUiEvent.OnShareClick) },
+            onCopyClick = { onEvent(VerseSelectionUiEvent.OnCopyClick) },
         )
     }
 }

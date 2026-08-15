@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.read.presentation.utils
+package com.quare.bibleplanner.ui.component.highlight
 
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor

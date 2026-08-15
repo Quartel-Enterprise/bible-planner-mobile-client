@@ -46,6 +46,7 @@ import com.quare.bibleplanner.feature.shareverse.presentation.shareVerse
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.subscriptionDetails
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.feature.versenote.presentation.verseNote
+import com.quare.bibleplanner.feature.verseselection.presentation.verseSelection
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -155,6 +156,10 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigateReplacingTop = onNavigateReplacingTop,
     )
     verseNote(onNavigateBack)
+    verseSelection(
+        onNavigate = onNavigate,
+        onNavigateBack = onNavigateBack,
+    )
     shareVerse(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,

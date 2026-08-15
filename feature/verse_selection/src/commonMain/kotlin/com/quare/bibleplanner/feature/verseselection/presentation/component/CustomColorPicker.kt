@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.read.presentation.screen.component.selection
+package com.quare.bibleplanner.feature.verseselection.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,12 +23,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.apply_color
-import bibleplanner.feature.read.generated.resources.cancel
+import bibleplanner.feature.verse_selection.generated.resources.Res
+import bibleplanner.feature.verse_selection.generated.resources.apply_color
+import bibleplanner.feature.verse_selection.generated.resources.cancel
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
-import com.quare.bibleplanner.feature.read.presentation.model.CustomColorUiModel
-import com.quare.bibleplanner.feature.read.presentation.utils.toSwatchColor
+import com.quare.bibleplanner.feature.verseselection.presentation.model.CustomColorUiModel
+import com.quare.bibleplanner.ui.component.highlight.toSwatchColor
 import org.jetbrains.compose.resources.stringResource
 
 private const val MIN_HUE = 0f

@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.read.presentation.screen.component.selection
+package com.quare.bibleplanner.feature.verseselection.presentation.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,12 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import bibleplanner.feature.read.generated.resources.Res
-import bibleplanner.feature.read.generated.resources.add_note
-import bibleplanner.feature.read.generated.resources.copy
-import bibleplanner.feature.read.generated.resources.save_verses
-import bibleplanner.feature.read.generated.resources.saved_verses
-import bibleplanner.feature.read.generated.resources.share
+import bibleplanner.feature.verse_selection.generated.resources.Res
+import bibleplanner.feature.verse_selection.generated.resources.add_note
+import bibleplanner.feature.verse_selection.generated.resources.copy
+import bibleplanner.feature.verse_selection.generated.resources.save_verses
+import bibleplanner.feature.verse_selection.generated.resources.saved_verses
+import bibleplanner.feature.verse_selection.generated.resources.share
 import org.jetbrains.compose.resources.stringResource
 
 private val tileHeight = 56.dp

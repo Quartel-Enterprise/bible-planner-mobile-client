@@ -45,6 +45,7 @@ import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
+import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.Destination
 import com.quare.bibleplanner.core.provider.analytics.domain.model.DestinationType
@@ -177,6 +178,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is DeleteHighlightColorNavRoute -> dialog("delete_highlight_color")
 
         is VerseNoteNavRoute -> responsive("verse_note")
+
+        is VerseSelectionNavRoute -> responsive("verse_selection")
 
         is ShareVerseNavRoute -> responsive("share_verse")
 

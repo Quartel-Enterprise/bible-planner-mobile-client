@@ -142,6 +142,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `ReaderAppearanceNavRoute` | `reader_appearance` | `responsive` | — |
 | `DeleteHighlightColorNavRoute` | `delete_highlight_color` | `dialog` | — |
 | `VerseNoteNavRoute` | `verse_note` | `responsive` | — |
+| `VerseSelectionNavRoute` | `verse_selection` | `responsive` | — |
 | `ShareVerseNavRoute` | `share_verse` | `responsive` | — |
 | `ShareVerseImageNavRoute` | `share_verse_image` | `responsive` | — |
 | `ReleaseNotesNavRoute` | `release_notes` | `screen` | — |
@@ -249,7 +250,6 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [reader_font_menu_toggled](events/reader_font_menu_toggled.md) | P2 | Reader |
 | [reader_focus_aid_changed](events/reader_focus_aid_changed.md) | P2 | Reader |
 | [reader_vertical_reading_toggled](events/reader_vertical_reading_toggled.md) | P2 | Reader |
-| [read_side_panel_toggled](events/read_side_panel_toggled.md) | P2 | Reader |
 
 ### Notes
 

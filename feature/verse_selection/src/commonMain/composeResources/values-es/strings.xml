@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="close">Cerrar</string>
+    <string name="save_verses">Guardar</string>
+    <string name="saved_verses">Guardado</string>
+    <string name="add_note">Nota</string>
+    <string name="share">Compartir</string>
+    <string name="copy">Copiar</string>
+    <string name="custom_color">Color personalizado</string>
+    <string name="custom_color_hint">Mantén pulsado un color personalizado para quitarlo de la paleta</string>
+    <string name="cancel">Cancelar</string>
+    <string name="apply_color">Aplicar color</string>
+    <string name="highlight_saved">Resaltado guardado</string>
+    <string name="highlight_removed">Resaltado eliminado</string>
+    <string name="verses_saved">Guardado</string>
+    <string name="removed_from_saved">Quitado de guardados</string>
+    <string name="copied_to_clipboard">Copiado al portapapeles</string>
+</resources>
