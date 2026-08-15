@@ -1,47 +1,55 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import bibleplanner.feature.read.generated.resources.Res
+import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
-import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
+import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * The title only appears once the chapter's own oversized header has scrolled away, so the two never
+ * name the chapter at the same time.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReadTopBar(
+internal fun ReadTopBar(
     platform: Platform,
-    modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    state: ReadUiState,
+    header: ReadHeaderUiModel,
+    isTitleVisible: Boolean,
     topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null,
 ) {
-    val bookName = stringResource(state.bookStringResource)
-    val chapterNumber = state.chapterNumber
+    val bookName = stringResource(header.bookStringResource)
     TopAppBar(
-        scrollBehavior = topAppBarScrollBehavior,
         modifier = modifier,
+        scrollBehavior = topAppBarScrollBehavior,
         title = {
-            ReadScreenTitleComponent(
-                animatedVisibilityScope = animatedVisibilityScope,
-                sharedTransitionScope = sharedTransitionScope,
-                bookName = bookName,
-                chapterNumber = chapterNumber,
-            )
+            AnimatedVisibility(
+                visible = isTitleVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Text(text = "$bookName ${header.chapterNumber}")
+            }
         },
         navigationIcon = {
             BackIcon(
@@ -50,7 +58,15 @@ fun ReadTopBar(
             )
         },
         actions = {
-            ChangeBibleVersionIconButton(onEvent = onEvent)
+            CommonIconButton(
+                imageVector = Icons.Default.TextFormat,
+                contentDescription = stringResource(Res.string.reader_appearance),
+                onClick = { onEvent(ReadUiEvent.OnAppearanceClick) },
+            )
+            BibleVersionChip(
+                versionName = header.versionAbbreviation,
+                onClick = { onEvent(ReadUiEvent.ManageBibleVersions) },
+            )
         },
     )
 }

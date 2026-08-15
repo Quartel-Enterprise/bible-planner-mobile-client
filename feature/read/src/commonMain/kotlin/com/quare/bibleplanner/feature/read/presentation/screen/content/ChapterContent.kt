@@ -1,0 +1,67 @@
+package com.quare.bibleplanner.feature.read.presentation.screen.content
+
+import androidx.compose.foundation.lazy.LazyListScope
+import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterEndNavigation
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterHeader
+import com.quare.bibleplanner.feature.read.presentation.screen.component.VerseRow
+import org.jetbrains.compose.resources.stringResource
+
+/**
+ * One chapter as list items: its header, its verses, and the end-of-chapter controls. Vertical
+ * reading calls this once per chapter into the same list, which is what makes the text continue.
+ */
+internal fun LazyListScope.chapterContent(
+    chapter: ReadChapterUiModel,
+    header: ReadHeaderUiModel,
+    settings: ReaderSettingsModel,
+    isPrimaryChapter: Boolean,
+    focusedVerseNumber: Int?,
+    onEvent: (ReadUiEvent) -> Unit,
+) {
+    item(key = "chapter-header-${chapter.bookId}-${chapter.chapterNumber}") {
+        ChapterHeader(
+            bookName = stringResource(chapter.bookStringResource),
+            chapterNumber = chapter.chapterNumber,
+        )
+    }
+    items(
+        count = chapter.verses.size,
+        key = { index -> "verse-${chapter.bookId}-${chapter.chapterNumber}-${chapter.verses[index].number}" },
+    ) { index ->
+        val verse = chapter.verses[index]
+        VerseRow(
+            verse = verse,
+            settings = settings,
+            isDimmed = focusedVerseNumber != null && focusedVerseNumber != verse.number,
+            onClick = {
+                onEvent(
+                    ReadUiEvent.OnVerseClick(
+                        bookId = chapter.bookId,
+                        chapterNumber = chapter.chapterNumber,
+                        verseNumber = verse.number,
+                    ),
+                )
+            },
+        )
+    }
+    item(key = "chapter-end-${chapter.bookId}-${chapter.chapterNumber}") {
+        ChapterEndNavigation(
+            previous = header.navigationSuggestions.previous.takeIf { isPrimaryChapter },
+            next = header.navigationSuggestions.next.takeIf { isPrimaryChapter },
+            isRead = chapter.isRead,
+            onReadClick = {
+                onEvent(
+                    ReadUiEvent.ToggleReadStatus(
+                        bookId = chapter.bookId,
+                        chapterNumber = chapter.chapterNumber,
+                    ),
+                )
+            },
+            onEvent = onEvent,
+        )
+    }
+}

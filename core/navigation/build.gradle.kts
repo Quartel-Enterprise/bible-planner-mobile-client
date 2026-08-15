@@ -38,6 +38,8 @@ kotlin {
             implementation(projects.feature.preferences.bibleVersion)
             implementation(projects.feature.preferences.appLanguage)
             implementation(projects.feature.read)
+            implementation(projects.feature.shareVerse)
+            implementation(projects.feature.verseNote)
             implementation(projects.feature.notificationPermission)
             implementation(projects.feature.dayStudy)
             implementation(projects.feature.chat)

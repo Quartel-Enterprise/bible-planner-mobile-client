@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAccountNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
@@ -35,11 +36,15 @@ import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.PendingBibleUpdatesNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
+import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
+import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
+import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.Destination
 import com.quare.bibleplanner.core.provider.analytics.domain.model.DestinationType
@@ -166,6 +171,16 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
                 AnalyticsParams.CHAPTER_NUMBER to route.chapterNumber,
             ),
         )
+
+        is ReaderAppearanceNavRoute -> responsive("reader_appearance")
+
+        is DeleteHighlightColorNavRoute -> dialog("delete_highlight_color")
+
+        is VerseNoteNavRoute -> responsive("verse_note")
+
+        is ShareVerseNavRoute -> responsive("share_verse")
+
+        is ShareVerseImageNavRoute -> responsive("share_verse_image")
 
         is PendingBibleUpdatesNavRoute -> dialog("pending_bible_updates")
 

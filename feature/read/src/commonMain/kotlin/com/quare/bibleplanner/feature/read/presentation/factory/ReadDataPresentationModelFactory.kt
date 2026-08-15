@@ -4,103 +4,176 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
+import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
-import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
+import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
 import com.quare.bibleplanner.feature.read.domain.usecase.GetReadNavigationSuggestionsModelUseCase
+import com.quare.bibleplanner.feature.read.presentation.model.ChapterLoadResult
+import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
+import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.StringResource
 
+/**
+ * Assembles what the reader renders: the chapter's verses decorated with the user's annotations,
+ * plus the header the screen keeps showing even when the text itself failed to load.
+ */
 class ReadDataPresentationModelFactory(
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
     private val getChapterId: GetChapterIdUseCase,
     private val getVersesWithTextsByChapterIdFlow: GetVersesWithTextsByChapterIdFlowUseCase,
     private val getSelectedBibleFlow: GetSelectedBibleFlowUseCase,
     private val getReadNavigationSuggestionsModelFlow: GetReadNavigationSuggestionsModelUseCase,
-) {
-    fun create(
+    private val observeChapterAnnotations: ObserveChapterAnnotations,
+) : ObserveReadData {
+    /**
+     * With [isVerticalReadingEnabled] on, the next chapter is appended to the same flow so the reader
+     * keeps scrolling into it instead of stopping at the end of this one.
+     */
+    override fun invoke(
         bookId: BookId,
         chapterNumber: Int,
         bookStringResource: StringResource,
         isInitiallyRead: Boolean,
         isFromBookDetails: Boolean,
-    ): Flow<ReadUiState> = flow {
+        isVerticalReadingEnabled: Boolean,
+    ): Flow<ReadDataUiModel> = flow {
         getReadNavigationSuggestionsModelFlow(
             shouldForceCanonOrder = isFromBookDetails,
             currentBookId = bookId,
             currentChapterNumber = chapterNumber,
         ).collect { navigationSuggestions ->
-            getChapterId(
-                bookId = bookId,
-                chapterNumber = chapterNumber,
-            )?.let { chapterId ->
-                getReadUiStateFlow(
-                    chapterId = chapterId,
-                    bookStringResource = bookStringResource,
-                    chapterNumber = chapterNumber,
-                    navigationSuggestions = navigationSuggestions,
-                )
-            }?.let { readUiStateFlow ->
-                emitAll(readUiStateFlow)
-            } ?: emit(
-                ReadUiState.Error.Unknown(
-                    bookStringResource = bookStringResource,
-                    chapterNumber = chapterNumber,
-                    isChapterRead = isInitiallyRead,
-                    errorUiEvent = ReadUiEvent.OnRetryClick,
-                    navigationSuggestions = navigationSuggestions,
-                ),
+            val nextChapter = navigationSuggestions.next.takeIf { isVerticalReadingEnabled }
+            emitAll(
+                combine(
+                    chapterFlow(
+                        bookId = bookId,
+                        chapterNumber = chapterNumber,
+                    ),
+                    nextChapter
+                        ?.let {
+                            chapterFlow(
+                                bookId = it.bookId,
+                                chapterNumber = it.chapterNumber,
+                            )
+                        } ?: flowOf(null),
+                    getSelectedBibleFlow(),
+                ) { chapterResult, appendedChapterResult, selectedBible ->
+                    val chapter = (chapterResult as? ChapterLoadResult.Loaded)?.chapter
+                    ReadDataUiModel(
+                        header = ReadHeaderUiModel(
+                            bookId = bookId,
+                            bookStringResource = bookStringResource,
+                            chapterNumber = chapterNumber,
+                            isChapterRead = chapter?.isRead ?: isInitiallyRead,
+                            navigationSuggestions = navigationSuggestions,
+                            versionAbbreviation = selectedBible
+                                ?.version
+                                ?.id
+                                ?.uppercase()
+                                .orEmpty(),
+                        ),
+                        content = toContent(
+                            chapterResult = chapterResult,
+                            appendedChapter = (appendedChapterResult as? ChapterLoadResult.Loaded)?.chapter,
+                            selectedBibleVersionName = selectedBible?.version?.name.orEmpty(),
+                            downloadStatus = selectedBible?.downloadStatus ?: DownloadStatusModel.NotStarted,
+                            versionSizeInBytes = selectedBible?.version?.size,
+                        ),
+                    )
+                },
             )
         }
     }
 
-    private fun getReadUiStateFlow(
-        chapterId: Long,
-        bookStringResource: StringResource,
-        chapterNumber: Int,
-        navigationSuggestions: ReadNavigationSuggestionsModel,
-    ): Flow<ReadUiState> = combine(
-        getSelectedVersionIdFlow(),
-        getVersesWithTextsByChapterIdFlow(chapterId),
-        getSelectedBibleFlow(),
-    ) { versionId, versesWithTexts, selectedBible ->
-        val isChapterRead = versesWithTexts.all { it.verse.isRead }
-        val chapterNotFoundState = ReadUiState.Error.ChapterNotFound(
-            bookStringResource = bookStringResource,
-            chapterNumber = chapterNumber,
-            isChapterRead = isChapterRead,
-            selectedBibleVersionName = selectedBible?.version?.name.orEmpty(),
-            errorUiEvent = ReadUiEvent.ManageBibleVersions,
-            navigationSuggestions = navigationSuggestions,
-            downloadStatus = selectedBible?.downloadStatus ?: DownloadStatusModel.NotStarted,
-            versionSizeInBytes = selectedBible?.version?.size,
+    private fun toContent(
+        chapterResult: ChapterLoadResult,
+        appendedChapter: ReadChapterUiModel?,
+        selectedBibleVersionName: String,
+        downloadStatus: DownloadStatusModel,
+        versionSizeInBytes: Long?,
+    ): ReadContentUiState = when (chapterResult) {
+        ChapterLoadResult.ChapterMissing -> ReadContentUiState.Error.Unknown(
+            errorUiEvent = ReadUiEvent.OnRetryClick,
         )
-        if (versesWithTexts.isEmpty()) {
-            chapterNotFoundState
-        } else {
-            val verseUiModels = versesWithTexts.map { verseWithTexts ->
-                verseWithTexts.texts.find { it.bibleVersionId == versionId }?.let { verseText ->
-                    VerseUiModel(
-                        number = verseWithTexts.verse.number,
+
+        ChapterLoadResult.TextMissing -> ReadContentUiState.Error.ChapterNotFound(
+            errorUiEvent = ReadUiEvent.ManageBibleVersions,
+            selectedBibleVersionName = selectedBibleVersionName,
+            downloadStatus = downloadStatus,
+            versionSizeInBytes = versionSizeInBytes,
+        )
+
+        is ChapterLoadResult.Loaded -> ReadContentUiState.Success(
+            chapters = listOfNotNull(chapterResult.chapter, appendedChapter),
+        )
+    }
+
+    private fun chapterFlow(
+        bookId: BookId,
+        chapterNumber: Int,
+    ): Flow<ChapterLoadResult> = flow {
+        val chapterId = getChapterId(
+            bookId = bookId,
+            chapterNumber = chapterNumber,
+        )
+        if (chapterId == null) {
+            emit(ChapterLoadResult.ChapterMissing)
+            return@flow
+        }
+        emitAll(
+            combine(
+                getSelectedVersionIdFlow(),
+                getVersesWithTextsByChapterIdFlow(chapterId),
+                observeChapterAnnotations(
+                    bookId = bookId,
+                    chapterNumber = chapterNumber,
+                ),
+            ) { versionId, versesWithTexts, annotations ->
+                if (versesWithTexts.isEmpty()) return@combine ChapterLoadResult.TextMissing
+                val verses = versesWithTexts.map { verseWithTexts ->
+                    val verseText = verseWithTexts.texts.find { it.bibleVersionId == versionId }
+                        ?: return@combine ChapterLoadResult.TextMissing
+                    verseWithTexts.verse.number.toVerseUiModel(
                         heading = verseText.heading,
                         text = verseText.text,
-                        isSelected = false, // TODO: will be used in the future for the copy/share feature
+                        annotations = annotations,
                     )
-                } ?: return@combine chapterNotFoundState
-            }
-            ReadUiState.Success(
-                bookStringResource = bookStringResource,
-                chapterNumber = chapterNumber,
-                verses = verseUiModels,
-                isChapterRead = isChapterRead,
-                navigationSuggestions = navigationSuggestions,
-            )
-        }
+                }
+                ChapterLoadResult.Loaded(
+                    ReadChapterUiModel(
+                        bookId = bookId,
+                        bookStringResource = bookId.toBookNameResource(),
+                        chapterNumber = chapterNumber,
+                        isRead = versesWithTexts.all { it.verse.isRead },
+                        verses = verses,
+                    ),
+                )
+            },
+        )
     }
+
+    private fun Int.toVerseUiModel(
+        heading: String?,
+        text: String,
+        annotations: ChapterAnnotations,
+    ): VerseUiModel = VerseUiModel(
+        number = this,
+        heading = heading,
+        text = text,
+        isSelected = false,
+        highlightColor = annotations.highlightColorByVerse[this],
+        isSaved = this in annotations.savedVerseNumbers,
+        noteId = annotations.noteIdByVerse[this],
+    )
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="verse_note_title">Note</string>
+    <string name="save_note">Save</string>
+    <string name="note_placeholder">Write your reflection, prayer or observation about this passage…</string>
+    <string name="note_saved">Note saved</string>
+    <string name="close">Close</string>
+</resources>

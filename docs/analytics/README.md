@@ -139,6 +139,11 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `PendingBibleUpdatesNavRoute` | `pending_bible_updates` | `dialog` | — |
 | `PixQrNavRoute` | `pix_qr` | `dialog` | — |
 | `ReadNavRoute` | `read` | `screen` | `book_id`, `chapter_number` |
+| `ReaderAppearanceNavRoute` | `reader_appearance` | `responsive` | — |
+| `DeleteHighlightColorNavRoute` | `delete_highlight_color` | `dialog` | — |
+| `VerseNoteNavRoute` | `verse_note` | `responsive` | — |
+| `ShareVerseNavRoute` | `share_verse` | `responsive` | — |
+| `ShareVerseImageNavRoute` | `share_verse_image` | `responsive` | — |
 | `ReleaseNotesNavRoute` | `release_notes` | `screen` | — |
 | `RenameDeviceNavRoute` | `rename_device` | `dialog` | — |
 | `SubscriptionDetailsNavRoute` | `subscription_details` | `dialog` | — |
@@ -207,6 +212,44 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_time_picker_shown](events/day_time_picker_shown.md) | P2 | Reading |
 | [day_date_picker_dismissed](events/day_date_picker_dismissed.md) | P2 | Reading |
 | [day_date_selected](events/day_date_selected.md) | P2 | Reading |
+
+### Verse annotations
+
+| Event | Tier | Domain |
+|---|---|---|
+| [verse_selection_toggled](events/verse_selection_toggled.md) | P2 | Verse annotations |
+| [verse_selection_cleared](events/verse_selection_cleared.md) | P2 | Verse annotations |
+| [verse_highlight_applied](events/verse_highlight_applied.md) | P1 | Verse annotations |
+| [verse_highlight_removed](events/verse_highlight_removed.md) | P1 | Verse annotations |
+| [highlight_color_picker_opened](events/highlight_color_picker_opened.md) | P2 | Verse annotations |
+| [highlight_color_picker_dismissed](events/highlight_color_picker_dismissed.md) | P2 | Verse annotations |
+| [highlight_custom_color_created](events/highlight_custom_color_created.md) | P1 | Verse annotations |
+| [highlight_custom_color_delete_opened](events/highlight_custom_color_delete_opened.md) | P2 | Verse annotations |
+| [highlight_custom_color_deleted](events/highlight_custom_color_deleted.md) | P1 | Verse annotations |
+| [highlight_custom_color_delete_cancelled](events/highlight_custom_color_delete_cancelled.md) | P2 | Verse annotations |
+| [verse_saved_toggled](events/verse_saved_toggled.md) | P1 | Verse annotations |
+| [verse_note_opened](events/verse_note_opened.md) | P1 | Verse annotations |
+| [verse_note_saved](events/verse_note_saved.md) | P1 | Verse annotations |
+| [verse_note_dismissed](events/verse_note_dismissed.md) | P2 | Verse annotations |
+| [verses_copied](events/verses_copied.md) | P1 | Verse annotations |
+| [verse_share_opened](events/verse_share_opened.md) | P1 | Verse annotations |
+| [verse_shared](events/verse_shared.md) | P1 | Verse annotations |
+| [verse_share_image_opened](events/verse_share_image_opened.md) | P2 | Verse annotations |
+| [verse_share_style_changed](events/verse_share_style_changed.md) | P2 | Verse annotations |
+| [verse_share_dismissed](events/verse_share_dismissed.md) | P2 | Verse annotations |
+
+### Reader
+
+| Event | Tier | Domain |
+|---|---|---|
+| [reader_appearance_opened](events/reader_appearance_opened.md) | P2 | Reader |
+| [reader_appearance_dismissed](events/reader_appearance_dismissed.md) | P2 | Reader |
+| [reader_font_size_changed](events/reader_font_size_changed.md) | P2 | Reader |
+| [reader_font_changed](events/reader_font_changed.md) | P2 | Reader |
+| [reader_font_menu_toggled](events/reader_font_menu_toggled.md) | P2 | Reader |
+| [reader_focus_aid_changed](events/reader_focus_aid_changed.md) | P2 | Reader |
+| [reader_vertical_reading_toggled](events/reader_vertical_reading_toggled.md) | P2 | Reader |
+| [read_side_panel_toggled](events/read_side_panel_toggled.md) | P2 | Reader |
 
 ### Notes
 

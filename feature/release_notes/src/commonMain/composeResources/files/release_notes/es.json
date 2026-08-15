@@ -1,4 +1,14 @@
 {
+  "2.7.0": [
+    "La pantalla de lectura fue rediseñada: el capítulo ahora se abre con el nombre del libro y el número en grande, el texto tiene más espacio entre las líneas y el botón de marcar como leído queda siempre a mano, junto a las flechas del capítulo anterior y el siguiente.",
+    "Toca un versículo para seleccionarlo — puedes elegir varios — y aparece un panel con todo lo que puedes hacer con el pasaje.",
+    "Ahora puedes resaltar versículos en seis colores, o crear el tuyo mezclando el que quieras. Para quitar el resaltado, solo toca de nuevo el color ya aplicado; y al mantener pulsado un color personalizado eliges si quieres quitar solo el color de la paleta o también los resaltados hechos con él.",
+    "Puedes guardar versículos, escribir una nota sobre un pasaje y copiarlo con la referencia y la versión ya incluidas.",
+    "Compartir mejoró: además del texto, puedes crear una tarjeta con el versículo para Stories y estados de WhatsApp, eligiendo entre seis tipografías y ocho fondos.",
+    "Tus resaltados, versículos guardados y notas quedan en tu cuenta y aparecen en todos tus dispositivos.",
+    "Un nuevo botón \"Aa\" en la pantalla de lectura abre la apariencia de la lectura: ajusta el tamaño del texto, elige entre nueve fuentes — incluida una pensada para personas con dislexia — activa la regla de lectura para mantener el foco en la línea y activa la lectura vertical para seguir en el próximo capítulo sin salir de la pantalla.",
+    "En pantallas más grandes, como tabletas y computadoras, el texto queda en una columna y las herramientas del versículo seleccionado aparecen en un panel al lado, sin tapar la lectura."
+  ],
   "2.6.0": [
     "La solicitud de permiso para notificaciones ya no aparece al abrir la app: ahora solo se pide cuando empiezas a descargar una versión de la Biblia, que es cuando se usan las notificaciones de progreso de la descarga."
   ],

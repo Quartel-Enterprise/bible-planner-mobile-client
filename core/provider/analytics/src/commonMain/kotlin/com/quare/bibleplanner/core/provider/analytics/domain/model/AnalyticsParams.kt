@@ -68,4 +68,17 @@ object AnalyticsParams {
     const val CHAPTERS_MS = "chapters_ms"
     const val CONTEXT_MS = "context_ms"
     const val QUESTIONS_MS = "questions_ms"
+
+    const val VERSE_COUNT = "verse_count"
+    const val COLOR = "color"
+    const val IS_CUSTOM = "is_custom"
+    const val KEPT_HIGHLIGHTS = "kept_highlights"
+    const val IS_SAVED = "is_saved"
+    const val IS_EXISTING = "is_existing"
+    const val FONT = "font"
+    const val FONT_SIZE = "font_size"
+    const val FOCUS_AID = "focus_aid"
+    const val IS_OPEN = "is_open"
+    const val FORMAT = "format"
+    const val BACKGROUND = "background"
 }

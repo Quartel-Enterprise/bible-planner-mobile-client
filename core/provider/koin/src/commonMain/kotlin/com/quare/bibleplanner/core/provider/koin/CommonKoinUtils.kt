@@ -23,6 +23,7 @@ import com.quare.bibleplanner.core.sync.di.syncModule
 import com.quare.bibleplanner.core.user.di.userModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
 import com.quare.bibleplanner.core.utils.jsonreader.di.jsonReaderModule
+import com.quare.bibleplanner.core.verseannotations.di.verseAnnotationsModule
 import com.quare.bibleplanner.feature.accountdetails.di.accountDetailsModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
 import com.quare.bibleplanner.feature.applanguage.di.appLanguageModule
@@ -54,8 +55,10 @@ import com.quare.bibleplanner.feature.paywall.di.paywallModule
 import com.quare.bibleplanner.feature.profile.di.featureProfileModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.releasenotes.di.releaseNotesModule
+import com.quare.bibleplanner.feature.shareverse.di.shareVerseModule
 import com.quare.bibleplanner.feature.subscriptiondetails.di.subscriptionDetailsModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
+import com.quare.bibleplanner.feature.versenote.di.verseNoteModule
 
 object CommonKoinUtils {
     val modules = listOf(
@@ -63,6 +66,9 @@ object CommonKoinUtils {
         planModule,
         clearModule,
         syncModule,
+        verseAnnotationsModule,
+        verseNoteModule,
+        shareVerseModule,
         platformModule,
         connectivityModule,
         dataStoreProviderModule,

@@ -42,8 +42,10 @@ import com.quare.bibleplanner.feature.notificationpermission.presentation.notifi
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
 import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
+import com.quare.bibleplanner.feature.shareverse.presentation.shareVerse
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.subscriptionDetails
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
+import com.quare.bibleplanner.feature.versenote.presentation.verseNote
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -151,7 +153,11 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
         onNavigateReplacingTop = onNavigateReplacingTop,
-        sharedTransitionScope = sharedTransitionScope,
+    )
+    verseNote(onNavigateBack)
+    shareVerse(
+        onNavigate = onNavigate,
+        onNavigateBack = onNavigateBack,
     )
     notificationPermission(onNavigateBack)
     inAppUpdate(onNavigateBack)

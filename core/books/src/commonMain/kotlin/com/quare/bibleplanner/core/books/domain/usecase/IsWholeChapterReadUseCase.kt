@@ -7,8 +7,8 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 class IsWholeChapterReadUseCase(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
-) {
-    suspend operator fun invoke(
+) : IsWholeChapterRead {
+    override suspend fun invoke(
         chapterNumber: Int,
         bookId: BookId,
     ): Boolean = chapterDao
