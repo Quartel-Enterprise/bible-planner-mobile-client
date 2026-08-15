@@ -151,7 +151,7 @@ internal class ChatViewModel(
 
             ChatUiEvent.OnRetryClick -> onRetryClick()
 
-            ChatUiEvent.OnSubscribeClick -> emitAction(ChatUiAction.NavigateToRoute(PaywallNavRoute))
+            ChatUiEvent.OnSubscribeClick -> onSubscribeClick()
 
             ChatUiEvent.OnHistoryClick -> onHistoryClick()
 
@@ -421,6 +421,18 @@ internal class ChatViewModel(
         useCases.syncRemoteChanges()
     }
 
+    private fun onSubscribeClick() {
+        trackEvent(
+            name = AnalyticsEventNames.AI_CHAT_SUBSCRIBE_CLICKED,
+            params = emptyMap(),
+        )
+        trackEvent(
+            name = AnalyticsEventNames.PAYWALL_VIEWED,
+            params = mapOf(AnalyticsParams.SOURCE to PAYWALL_SOURCE),
+        )
+        emitAction(ChatUiAction.NavigateToRoute(PaywallNavRoute))
+    }
+
     private fun onSuggestionClick(suggestion: String) {
         trackEvent(
             name = AnalyticsEventNames.AI_CHAT_SUGGESTION_CLICKED,
@@ -644,5 +656,6 @@ internal class ChatViewModel(
     private companion object {
         const val DAY_THREAD_KEY_PREFIX = "day"
         const val NEW_THREAD_KEY = "new"
+        const val PAYWALL_SOURCE = "chat"
     }
 }

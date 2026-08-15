@@ -74,6 +74,10 @@ tasks.withType<Test>().configureEach {
             .dir(rootProject.layout.projectDirectory.dir("docs/analytics/events"))
             .withPropertyName("analyticsEventsCatalog")
             .withPathSensitivity(PathSensitivity.RELATIVE)
+        inputs
+            .file(rootProject.layout.projectDirectory.file("docs/analytics/README.md"))
+            .withPropertyName("analyticsEventIndex")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
     }
 }
 

@@ -45,9 +45,10 @@ ViewModels that receive user intents extend `TrackedViewModel<XxxUiEvent>` (`ui/
 Declaring a decision doesn't prove it's true, so `AnalyticsCatalogTest` (`core/provider/analytics/src/jvmTest/.../AnalyticsCatalogTest.kt`) statically checks the whole repo on every run of that module's `jvmTest`:
 
 - every name listed in a `Track.Manual(names)` must appear in an actual `trackEvent(...)` call somewhere else in the same Gradle module (proof the wiring exists, not just the declaration);
-- every name declared via `Track.Automatic` or `Track.Manual` anywhere must have a matching `docs/analytics/events/<name>.md` catalog entry.
+- every name declared via `Track.Automatic` or `Track.Manual` anywhere must have a matching `docs/analytics/events/<name>.md` catalog entry;
+- the catalog and the [event index](#event-index) below must match exactly, in both directions — an event file with no index row is as much a failure as an index row pointing at a file that doesn't exist. Only rows under `## Event index` count, so prose links elsewhere in this README don't accidentally satisfy the check.
 
-Because this test reads files outside its own module's normal Gradle inputs, `core/provider/analytics/build.gradle.kts` explicitly declares `feature/` and `docs/analytics/events/` as task inputs for `jvmTest` — without that, Gradle's up-to-date check wouldn't notice changes to other modules and the guarantee would silently stop firing.
+Because this test reads files outside its own module's normal Gradle inputs, `core/provider/analytics/build.gradle.kts` explicitly declares `feature/`, `docs/analytics/events/` and this README as task inputs for `jvmTest` — without that, Gradle's up-to-date check wouldn't notice changes to other modules and the guarantee would silently stop firing.
 
 ## Naming conventions
 
@@ -234,6 +235,22 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_study_bg_card_opened](events/day_study_bg_card_opened.md) | P2 | DayStudy |
 | [day_study_bg_card_dismissed](events/day_study_bg_card_dismissed.md) | P2 | DayStudy |
 
+### AI Chat
+
+| Event | Tier | Domain |
+|---|---|---|
+| [ai_chat_message_sent](events/ai_chat_message_sent.md) | P0 | AiChat |
+| [ai_chat_entry_clicked](events/ai_chat_entry_clicked.md) | P1 | AiChat |
+| [ai_chat_answer_failed](events/ai_chat_answer_failed.md) | P1 | AiChat |
+| [ai_chat_subscribe_clicked](events/ai_chat_subscribe_clicked.md) | P1 | AiChat |
+| [ai_chat_suggestion_clicked](events/ai_chat_suggestion_clicked.md) | P2 | AiChat |
+| [ai_chat_retry_clicked](events/ai_chat_retry_clicked.md) | P2 | AiChat |
+| [ai_chat_history_opened](events/ai_chat_history_opened.md) | P2 | AiChat |
+| [ai_chat_new_conversation_clicked](events/ai_chat_new_conversation_clicked.md) | P2 | AiChat |
+| [ai_chat_conversation_selected](events/ai_chat_conversation_selected.md) | P2 | AiChat |
+| [ai_chat_conversation_deleted](events/ai_chat_conversation_deleted.md) | P2 | AiChat |
+| [ai_chat_conversation_renamed](events/ai_chat_conversation_renamed.md) | P3 | AiChat |
+
 ### Bible versions
 
 | Event | Tier | Domain |
@@ -306,6 +323,10 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [session_lost](events/session_lost.md) | P1 | Auth |
 | [current_device_revoked](events/current_device_revoked.md) | P1 | Auth |
 | [rename_device_clicked](events/rename_device_clicked.md) | P2 | Auth |
+| [device_signed_out](events/device_signed_out.md) | P1 | Auth |
+| [connected_devices_toggled](events/connected_devices_toggled.md) | P2 | Account |
+| [device_renamed](events/device_renamed.md) | P2 | Account |
+| [device_rename_cancelled](events/device_rename_cancelled.md) | P3 | Account |
 
 ### Settings & shell
 
@@ -410,4 +431,4 @@ Prefer running the `add-analytics-event` skill, which walks these steps:
 3. Classify the `UiEvent` case: `Track.Automatic(name, params)` for static params (auto-emitted), or `Track.Manual(names)` (keep the `trackEvent(...)` call in the branch) for params only known post-domain / from `UiState`.
 4. Create `events/<event_name>.md` following the template used by the existing files (Tier/Domain header, When it fires, Trigger source, Parameters, Notes).
 5. Add the event to the index table above, in its domain section.
-6. Run `:core:provider:analytics:jvmTest` — `AnalyticsCatalogTest` fails if a `Track.Manual` name isn't actually wired to a `trackEvent` call, or if any declared name is missing its catalog entry.
+6. Run `:core:provider:analytics:jvmTest` — `AnalyticsCatalogTest` fails if a `Track.Manual` name isn't actually wired to a `trackEvent` call, if any declared name is missing its catalog entry, or if step 5 was skipped and the catalog no longer matches the index.

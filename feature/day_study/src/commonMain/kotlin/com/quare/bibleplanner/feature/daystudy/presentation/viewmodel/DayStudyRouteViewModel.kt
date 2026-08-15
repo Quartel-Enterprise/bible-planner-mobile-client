@@ -304,8 +304,16 @@ internal class DayStudyRouteViewModel(
         val card = _uiState.value.card.valueOrNull() ?: return
         if (_uiState.value.openStudy != null || _uiState.value.generation != null) return
         when (card.mode) {
-            DayStudyCardMode.LOCKED -> emitAction(DayStudyRouteUiAction.NavigateToRoute(PaywallNavRoute))
+            DayStudyCardMode.LOCKED -> {
+                trackEvent(
+                    name = AnalyticsEventNames.PAYWALL_VIEWED,
+                    params = mapOf(AnalyticsParams.SOURCE to PAYWALL_SOURCE),
+                )
+                emitAction(DayStudyRouteUiAction.NavigateToRoute(PaywallNavRoute))
+            }
+
             DayStudyCardMode.GENERATE -> generateIfLoggedIn()
+
             DayStudyCardMode.VIEW -> generateOrOpen()
         }
     }
@@ -448,6 +456,7 @@ internal class DayStudyRouteViewModel(
         const val UNKNOWN_REASON = "unknown"
         const val LOAD_TARGET = "panel"
         const val PERF_LOG_TAG = "DayStudyPerf"
+        const val PAYWALL_SOURCE = "day_study_detail"
     }
 }
 
