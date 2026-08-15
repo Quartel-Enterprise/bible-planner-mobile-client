@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestDownloadNotificationPermissionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
@@ -26,6 +27,7 @@ class BibleVersionViewModel(
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val initializeBibleVersions: InitializeBibleVersionsUseCase,
     private val updateBibleVersion: UpdateBibleVersionUseCase,
+    private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
     trackEvent: TrackEvent,
     uiStateFactory: BibleVersionsUiStateFactory,
 ) : TrackedViewModel<BibleVersionUiEvent>(trackEvent) {
@@ -69,6 +71,9 @@ class BibleVersionViewModel(
         if (downloaderFacade.shouldShowDownloadTip) {
             emitUiAction(BibleVersionUiAction.ShowDownloadTip)
         }
+        viewModelScope.launch {
+            requestDownloadNotificationPermission()
+        }
     }
 
     private fun pauseDownload(id: String) {
@@ -80,12 +85,14 @@ class BibleVersionViewModel(
     private fun resumeDownload(id: String) {
         viewModelScope.launch {
             downloaderFacade.downloadVersion(id)
+            requestDownloadNotificationPermission()
         }
     }
 
     private fun updateVersion(id: String) {
         viewModelScope.launch {
             updateBibleVersion(id)
+            requestDownloadNotificationPermission()
         }
     }
 

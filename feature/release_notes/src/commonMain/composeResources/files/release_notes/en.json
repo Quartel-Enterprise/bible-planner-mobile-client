@@ -1,4 +1,7 @@
 {
+  "2.6.0": [
+    "The notification permission request no longer appears when you open the app: it is now only asked when you start downloading a Bible version, which is when download progress notifications are used."
+  ],
   "2.5.0": [
     "You can now delete your account from within the app, in Profile › Account and data. Before you confirm, the app shows everything that will be erased and reminds you to cancel your subscription in the store where you subscribed.",
     "The delete all progress screen is clearer now: it shows what gets removed and what stays with you, such as your account, your subscription and your preferences.",

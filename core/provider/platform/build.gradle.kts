@@ -15,6 +15,11 @@ kotlin {
             implementation(libs.compose.runtime)
             implementation(projects.core.utils)
             implementation(projects.core.provider.language)
+            implementation(projects.core.model)
+            implementation(projects.core.provider.analytics)
+
+            // Coroutines
+            implementation(libs.kotlinx.coroutines.core)
 
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -23,10 +28,15 @@ kotlin {
             // Logging
             implementation(libs.kermit)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
         androidMain.dependencies {
             implementation(libs.koin.android)
             implementation(libs.play.review)
             implementation(libs.play.review.ktx)
+            implementation(libs.androidx.activity.compose)
         }
     }
 }

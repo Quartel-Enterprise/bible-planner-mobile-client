@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestDownloadNotificationPermissionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DismissBibleUpdatePromptUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPendingBibleUpdatesUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
@@ -22,6 +23,7 @@ internal class PendingBibleUpdatesViewModel(
     private val getPendingBibleUpdates: GetPendingBibleUpdatesUseCase,
     private val updateBibleVersion: UpdateBibleVersionUseCase,
     private val dismissBibleUpdatePrompt: DismissBibleUpdatePromptUseCase,
+    private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PendingBibleUpdatesUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<PendingBibleUpdatesUiAction>()
@@ -69,11 +71,13 @@ internal class PendingBibleUpdatesViewModel(
 
     private fun updateSelectedVersions() {
         viewModelScope.launch {
-            _pendingUpdates.value
-                .filter { it.isSelected }
-                .forEach { item ->
-                    updateBibleVersion(item.id)
-                }
+            val selectedUpdates = _pendingUpdates.value.filter { it.isSelected }
+            selectedUpdates.forEach { item ->
+                updateBibleVersion(item.id)
+            }
+            if (selectedUpdates.isNotEmpty()) {
+                requestDownloadNotificationPermission()
+            }
             _uiAction.emit(PendingBibleUpdatesUiAction.NavigateBack)
         }
     }

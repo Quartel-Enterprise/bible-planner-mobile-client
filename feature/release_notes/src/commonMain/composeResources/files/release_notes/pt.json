@@ -1,4 +1,7 @@
 {
+  "2.6.0": [
+    "O pedido de permissão para notificações não aparece mais ao abrir o app: agora ele só é feito quando você começa a baixar uma versão da Bíblia, que é quando as notificações de progresso do download são usadas."
+  ],
   "2.5.0": [
     "Agora você pode excluir sua conta pelo próprio app, em Perfil › Conta e dados. Antes de confirmar, o app mostra tudo o que será apagado e lembra que a assinatura precisa ser cancelada na loja onde você assinou.",
     "A tela de apagar todo o progresso ficou mais clara: agora ela mostra o que é removido e o que continua com você, como sua conta, sua assinatura e suas preferências.",

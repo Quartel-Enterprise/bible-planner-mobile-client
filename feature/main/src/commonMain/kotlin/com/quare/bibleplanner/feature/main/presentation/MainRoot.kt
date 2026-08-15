@@ -32,7 +32,6 @@ import com.quare.bibleplanner.feature.main.presentation.navhost.rememberNavTabSt
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationBar
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationRail
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
-import com.quare.bibleplanner.feature.notificationpermission.presentation.NotificationPermissionStartEffect
 import com.quare.bibleplanner.feature.profile.presentation.profile
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -69,7 +68,6 @@ private fun MainRootContent(
     LaunchedEffect(selectedTab) {
         trackDestination(selectedTab)
     }
-    NotificationPermissionStartEffect(onNavigate)
     ActionCollector(mainViewModel.uiAction) { uiAction ->
         when (uiAction) {
             is MainScreenUiAction.NavigateToBottomRoute ->
