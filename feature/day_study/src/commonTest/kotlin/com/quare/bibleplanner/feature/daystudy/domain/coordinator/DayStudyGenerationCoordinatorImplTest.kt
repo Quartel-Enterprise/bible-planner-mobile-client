@@ -175,7 +175,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
 
             // Then
             val (_, params) = trackedEvents.single { it.first == "day_study_generation_completed" }
-            assertEquals(dayRoute.readingPlanType, params["plan_type"])
+            assertEquals("one_year", params["plan_type"])
             assertEquals(dayRoute.weekNumber, params["week_number"])
             assertEquals(dayRoute.dayNumber, params["day_number"])
             assertEquals(false, params["is_pro"])
