@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -70,21 +73,24 @@ internal fun VerseRow(
         ),
         color = MaterialTheme.colorScheme.onSurface,
     )
-    Column(
-        modifier = modifier
-            .clickable(onClick = onClick)
-            .alpha(if (isDimmed) DIMMED_ALPHA else 1f),
-    ) {
+    Column(modifier = modifier.alpha(if (isDimmed) DIMMED_ALPHA else 1f)) {
         verse.heading?.let { heading ->
-            Text(
-                modifier = Modifier.padding(top = 18.dp, bottom = 2.dp),
-                text = heading,
-                style = textStyle,
-                fontSize = fontSize * HEADING_FONT_SIZE_RATIO,
-                fontWeight = FontWeight.SemiBold,
-                fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            /*
+             * The heading titles the section, not this verse, so it stays outside the tap target —
+             * selecting a verse by its heading would pick an arbitrary one. It is left selectable
+             * instead, so the section title can be copied through the platform's own control.
+             */
+            SelectionContainer {
+                Text(
+                    modifier = Modifier.padding(top = 18.dp, bottom = 2.dp),
+                    text = heading,
+                    style = textStyle,
+                    fontSize = fontSize * HEADING_FONT_SIZE_RATIO,
+                    fontWeight = FontWeight.SemiBold,
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         /*
          * Both texts align by baseline rather than by top edge: the verse text carries a 1.75 line
@@ -92,7 +98,10 @@ internal fun VerseRow(
          * the number would drift the moment the reader changes the text size.
          */
         Row(
-            modifier = Modifier.padding(vertical = verseVerticalPadding),
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .clickable(onClick = onClick)
+                .padding(vertical = verseVerticalPadding),
             horizontalArrangement = Arrangement.spacedBy(9.dp),
         ) {
             Text(
