@@ -152,7 +152,10 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
 
         is NotificationPermissionNavRoute -> dialog("notification_permission")
 
-        is PaywallNavRoute -> screen("paywall")
+        is PaywallNavRoute -> screen(
+            name = "paywall",
+            params = mapOf(AnalyticsParams.SOURCE to route.source.key),
+        )
 
         is PixQrNavRoute -> dialog("pix_qr")
 

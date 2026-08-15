@@ -21,6 +21,7 @@ import com.quare.bibleplanner.core.model.route.EditProfileNavRoute
 import com.quare.bibleplanner.core.model.route.ExpandedPhotoNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
@@ -91,13 +92,8 @@ internal class ProfileViewModel(
 
                     ProfileOptionItemType.TERMS -> emitAction(OpenLink(LegalUrl.TERMS_OF_SERVICE))
 
-                    ProfileOptionItemType.BECOME_PRO -> {
-                        trackEvent(
-                            name = AnalyticsEventNames.PAYWALL_VIEWED,
-                            params = mapOf(AnalyticsParams.SOURCE to PAYWALL_SOURCE),
-                        )
-                        goToRoute(PaywallNavRoute)
-                    }
+                    ProfileOptionItemType.BECOME_PRO ->
+                        goToRoute(PaywallNavRoute(PaywallEntrySource.PROFILE_MENU))
 
                     ProfileOptionItemType.INSTAGRAM -> emitAction(OpenLink(getInstagramUrl()))
 
@@ -218,7 +214,6 @@ internal class ProfileViewModel(
     }
 
     private companion object {
-        const val PAYWALL_SOURCE = "profile_menu"
         const val STOP_TIMEOUT_MILLIS = 5_000L
     }
 }

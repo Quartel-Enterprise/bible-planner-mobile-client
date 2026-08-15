@@ -240,6 +240,7 @@ internal class DayStudyViewModel(
             params = mapOf(
                 AnalyticsParams.CARD_MODE to card.mode.name.lowercase(),
                 AnalyticsParams.IS_PRO to card.isPro,
+                AnalyticsParams.SOURCE to CARD_CLICK_SOURCE,
             ),
         )
         if (_uiState.value.generation != null) {
@@ -355,6 +356,7 @@ internal class DayStudyViewModel(
         const val UNKNOWN_REASON = "unknown"
         const val LOAD_TARGET = "card"
         const val PERF_LOG_TAG = "DayStudyPerf"
+        const val CARD_CLICK_SOURCE = "day_screen"
     }
 }
 
