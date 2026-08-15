@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.AnnotatedString
@@ -34,12 +33,15 @@ private const val LINE_HEIGHT_RATIO = 1.75f
 private const val HEADING_FONT_SIZE_RATIO = 0.94f
 private const val VERSE_NUMBER_ALPHA = 0.55f
 private const val DIMMED_ALPHA = 0.22f
-private val verseNumberFontSize = 12.sp
-private val verseNumberWidth = 18.dp
+private const val VERSE_NUMBER_FONT_SIZE_RATIO = 0.68f
+private const val VERSE_NUMBER_WIDTH_RATIO = 1.2f
 
 /**
  * A verse and, when the section starts here, its pericope heading. Tapping anywhere on the row
  * selects the verse — the whole row is the target, not just the words.
+ *
+ * The verse number's size and gutter are fractions of the reader's text size, so they grow with it
+ * instead of shrinking into the margin.
  */
 @Composable
 internal fun VerseRow(
@@ -72,24 +74,29 @@ internal fun VerseRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        /*
+         * Both texts align by baseline rather than by top edge: the verse text carries a 1.75 line
+         * height, so its first baseline sits well below the top of its box, and any fixed offset on
+         * the number would drift the moment the reader changes the text size.
+         */
         Row(
             modifier = Modifier.padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.Top,
         ) {
             Text(
                 modifier = Modifier
-                    .widthIn(min = verseNumberWidth)
-                    .padding(top = 6.dp)
+                    .widthIn(min = (settings.fontSizeSp * VERSE_NUMBER_WIDTH_RATIO).dp)
+                    .alignByBaseline()
                     .alpha(VERSE_NUMBER_ALPHA),
                 text = verse.number.toString(),
                 fontFamily = displaySerifFontFamily(),
-                fontSize = verseNumberFontSize,
+                fontSize = fontSize * VERSE_NUMBER_FONT_SIZE_RATIO,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.End,
             )
             Text(
+                modifier = Modifier.alignByBaseline(),
                 text = verse.text.withHighlight(verse.highlightColor),
                 style = textStyle,
                 textDecoration = TextDecoration.Underline.takeIf { verse.isSelected },
