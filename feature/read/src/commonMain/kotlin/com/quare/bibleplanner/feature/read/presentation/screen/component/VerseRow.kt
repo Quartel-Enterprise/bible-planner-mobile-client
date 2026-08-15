@@ -17,6 +17,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -35,6 +36,7 @@ private const val VERSE_NUMBER_ALPHA = 0.55f
 private const val DIMMED_ALPHA = 0.22f
 private const val VERSE_NUMBER_FONT_SIZE_RATIO = 0.68f
 private const val VERSE_NUMBER_WIDTH_RATIO = 1.2f
+private val verseVerticalPadding = 6.dp
 
 /**
  * A verse and, when the section starts here, its pericope heading. Tapping anywhere on the row
@@ -56,6 +58,16 @@ internal fun VerseRow(
         fontFamily = settings.font.toFontFamily(),
         fontSize = fontSize,
         lineHeight = fontSize * LINE_HEIGHT_RATIO,
+        /*
+         * Compose trims the leading above the first line and below the last one by default, so a
+         * verse hugs its own text and consecutive verses end up closer together than the lines
+         * inside them. Keeping the leading untrimmed gives the chapter one even rhythm, and because
+         * the leading is a fraction of the text size it opens up as the reader enlarges the text.
+         */
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Proportional,
+            trim = LineHeightStyle.Trim.None,
+        ),
         color = MaterialTheme.colorScheme.onSurface,
     )
     Column(
@@ -80,8 +92,8 @@ internal fun VerseRow(
          * the number would drift the moment the reader changes the text size.
          */
         Row(
-            modifier = Modifier.padding(vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(vertical = verseVerticalPadding),
+            horizontalArrangement = Arrangement.spacedBy(9.dp),
         ) {
             Text(
                 modifier = Modifier
