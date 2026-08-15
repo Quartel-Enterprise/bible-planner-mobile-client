@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestDownloadNotificationPermissionUseCase
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.presentation.factory.ReadDataPresentationModelFactory
@@ -37,6 +38,7 @@ class ReadViewModel(
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
+    private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<ReadUiEvent>(trackEvent) {
@@ -135,6 +137,7 @@ class ReadViewModel(
                     AnalyticsParams.SOURCE to SOURCE_READER,
                 ),
             )
+            requestDownloadNotificationPermission()
         }
     }
 

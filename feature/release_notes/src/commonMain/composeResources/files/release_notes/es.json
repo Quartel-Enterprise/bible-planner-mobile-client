@@ -1,4 +1,7 @@
 {
+  "2.6.0": [
+    "La solicitud de permiso para notificaciones ya no aparece al abrir la app: ahora solo se pide cuando empiezas a descargar una versión de la Biblia, que es cuando se usan las notificaciones de progreso de la descarga."
+  ],
   "2.5.0": [
     "Ahora puedes eliminar tu cuenta desde la propia app, en Perfil › Cuenta y datos. Antes de confirmar, la app muestra todo lo que se borrará y te recuerda cancelar la suscripción en la tienda donde te suscribiste.",
     "La pantalla para eliminar todo el progreso es más clara: ahora muestra qué se elimina y qué se mantiene, como tu cuenta, tu suscripción y tus preferencias.",

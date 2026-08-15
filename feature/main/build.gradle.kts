@@ -23,7 +23,6 @@ kotlin {
             implementation(projects.feature.readingPlan)
             implementation(projects.feature.profile)
             implementation(projects.feature.books)
-            implementation(projects.feature.notificationPermission)
             implementation(projects.feature.preferences.appLanguage)
 
             // UI

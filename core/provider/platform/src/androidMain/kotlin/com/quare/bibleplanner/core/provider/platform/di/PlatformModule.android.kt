@@ -5,6 +5,8 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.quare.bibleplanner.core.provider.platform.AndroidRequestInAppReview
 import com.quare.bibleplanner.core.provider.platform.CurrentActivityProvider
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestInAppReview
+import com.quare.bibleplanner.core.provider.platform.notification.AndroidNotificationPermissionRequester
+import com.quare.bibleplanner.core.provider.platform.notification.NotificationPermissionRequester
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -16,4 +18,8 @@ internal actual val platformReviewModule: Module = module {
     single<ReviewManager> { ReviewManagerFactory.create(androidContext()) }
     singleOf(::CurrentActivityProvider)
     factoryOf(::AndroidRequestInAppReview).bind<RequestInAppReview>()
+}
+
+internal actual val platformNotificationPermissionModule: Module = module {
+    factoryOf(::AndroidNotificationPermissionRequester).bind<NotificationPermissionRequester>()
 }
