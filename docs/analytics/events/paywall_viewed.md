@@ -24,6 +24,6 @@ The paywall screen is shown, regardless of which flow navigated to it.
 
 ## Notes
 
-- The bare paywall impression is also covered by [destination_view](destination_view.md) (`destination_name=paywall`); this event exists to carry `source`, which `destination_view` cannot know.
+- The bare paywall impression is also covered by [screen_view](screen_view.md) (`screen_name=paywall`); this event exists to carry `source`, which `screen_view` cannot know.
 - Funnel: `paywall_viewed` → [paywall_plan_selected](paywall_plan_selected.md) → [purchase_started](purchase_started.md) → [purchase_completed](purchase_completed.md) / [purchase_failed](purchase_failed.md), all segmentable by `source` once it is a route param.
 - If a new caller of `PaywallNavRoute` is added, extend the `source` enum here.

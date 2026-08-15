@@ -23,6 +23,6 @@ An update was detected — either automatically when the app is opened or brough
 ## Notes
 
 - A manual check that finds **no** update produces only [profile_option_clicked](profile_option_clicked.md) with `option=check_for_update` and no `update_prompt_shown` — so "manual checks that found an update" = manual `update_prompt_shown`, and "manual checks with no update" = the difference.
-- On iOS the sheet impression is also captured generically by [destination_view](destination_view.md) with `destination_name=in_app_update`; this event adds the `source`/`version` funnel context that `destination_view` deliberately omits. Android has no sheet, so it fires this event with no matching `destination_view`.
+- On iOS the sheet impression is also captured generically by [screen_view](screen_view.md) with `screen_name=in_app_update`; this event adds the `source`/`version` funnel context that `screen_view` deliberately omits. Android has no sheet, so it fires this event with no matching `screen_view`.
 - The automatic prompt is throttled to at most one per hour. The last prompt timestamp is persisted in DataStore (`update_prompt_last_prompted_at`), so the cooldown survives the app being killed and reopened, and a `manual` prompt also resets it. Expect at most one `startup` impression per hour per user, not one per launch.
 - Desktop never fires this event (the checker is a no-op and the row is hidden).

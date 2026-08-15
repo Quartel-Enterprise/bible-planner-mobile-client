@@ -24,4 +24,4 @@ The user taps a job row (or its "Open" button) on the background generation card
 ## Notes
 
 - The card only surfaces backgrounded days (the day currently on screen is suppressed), so this event never overlaps with the foreground [day_study_card_clicked](day_study_card_clicked.md).
-- A separate [destination_view](destination_view.md) for `day_study` also fires from the navigation that follows; this event measures the click-through, not the screen view.
+- A separate [screen_view](screen_view.md) for `day_study` also fires from the navigation that follows; this event measures the click-through, not the screen view.

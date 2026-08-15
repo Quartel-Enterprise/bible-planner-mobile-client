@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to `EditPlanStartDateNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`edit_plan_start_date`, `dialog`).
+- Navigates to `EditPlanStartDateNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`edit_plan_start_date`, `dialog`).
 - Related: [plan_overflow_option_clicked](plan_overflow_option_clicked.md) (`edit_start_day` option reaches the same destination via a different entry point), [plan_start_date_changed](plan_start_date_changed.md).

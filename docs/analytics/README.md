@@ -24,7 +24,7 @@ interface UiEvent {
 }
 ```
 
-Because the member is abstract, **adding a new `UiEvent` case that doesn't declare `analytics` is a compile error** — the same guarantee `NavRouteToDestinationMapper` gives for `destination_view`. The top-level split (`EventAnalytics`, in `core/provider/analytics/.../domain/model/`) answers whether the event is tracked at all:
+Because the member is abstract, **adding a new `UiEvent` case that doesn't declare `analytics` is a compile error** — the same guarantee `NavRouteToDestinationMapper` gives for `screen_view`. The top-level split (`EventAnalytics`, in `core/provider/analytics/.../domain/model/`) answers whether the event is tracked at all:
 
 - `Track` — the event is tracked. Splits on *how*:
   - `Track.Automatic(name, params)` — the event and its params are fully known from the event itself. The base ViewModel emits it automatically; do **not** also call `trackEvent` manually.
@@ -32,10 +32,10 @@ Because the member is abstract, **adding a new `UiEvent` case that doesn't decla
 - `NotTracked` — genuinely not a trackable action: UI plumbing only (scroll, menu open/close, animation callbacks, retry; see "Explicitly not tracked" below). No business action should ever be classified this way — if a case neither navigates nor calls `trackEvent`, that's a gap, not a `NotTracked`.
 
 **Every click gets its own event, even when it also triggers navigation.** A click and the
-resulting `destination_view` are different funnel signals — click-through rate vs. screen-view
+resulting `screen_view` are different funnel signals — click-through rate vs. screen-view
 rate are not the same number, and collapsing them loses the distinction. There is no "covered by
 navigation" opt-out: a click that opens a screen/dialog/sheet gets its own `Track` event in
-addition to whatever `destination_view` also logs. This applies uniformly, including bottom-tab/
+addition to whatever `screen_view` also logs. This applies uniformly, including bottom-tab/
 nav-rail clicks (`bottom_tab_clicked`).
 
 ViewModels that receive user intents extend `TrackedViewModel<XxxUiEvent>` (`ui/utils/.../presentation/TrackedViewModel.kt`), passing `TrackEvent` to the base and implementing `handleEvent` instead of `onEvent`. The base reads `event.analytics`, auto-emits any `Track.Automatic`, then delegates to `handleEvent`.
@@ -63,8 +63,8 @@ Parameters shared across many events are defined once here; event files referenc
 
 | Parameter | Type | Values / example | Description |
 |---|---|---|---|
-| `destination_name` | string | `read` | Stable destination identifier (see mapping below) |
-| `destination_type` | string | `screen` \| `dialog` \| `bottom_sheet` \| `responsive` | What kind of destination is being shown (see mapping below) |
+| `screen_name` | string | `read` | Stable destination identifier (see mapping below) |
+| `screen_class` | string | `screen` \| `dialog` \| `bottom_sheet` \| `responsive` | What kind of destination is being shown (see mapping below) |
 | `plan_type` | string | `chronological` \| `books` | Active reading plan |
 | `week_number` | int | `12` | 1-based week within the plan |
 | `day_number` | int | `3` | 1-based day within the week |
@@ -79,27 +79,29 @@ Parameters shared across many events are defined once here; event files referenc
 
 Firebase automatically logs `first_open`, `app_open`, `session_start`, `user_engagement`, `os_update`, `app_update` and `in_app_purchase` on Android and iOS — do not log these manually. The Desktop target gets **none** of these automatically (Measurement Protocol only sends what we post); this gap is accepted for now since desktop traffic is small.
 
-## destination_view strategy
+## screen_view strategy
 
-`destination_view` is not automatic in a Compose Multiplatform single-activity app, so it is emitted centrally by observing the Navigation 3 back stacks:
+Firebase's automatic screen tracking is useless in a Compose Multiplatform single-activity app — it reports `MainActivity` as the `screen_class` and never sets `screen_name` at all — so it is **disabled** on both platforms (`google_analytics_automatic_screen_reporting_enabled=false` in the Android manifest, `FirebaseAutomaticScreenReportingEnabled=false` in the iOS `Info.plist`). `screen_view` is emitted manually instead, centrally, by observing the Navigation 3 back stacks:
 
 - the **root** back stack in `core/navigation/.../RootAppNavDisplay.kt`, and
 - the **per-tab** back stacks in `feature/main/.../navhost/BottomNavTabState.kt` (each bottom tab owns its own stack).
 
-Whenever the top entry of the visible stack changes, log `destination_view` with the `destination_name` and `destination_type` mapped from the NavKey below. Route arguments become event parameters. Tab clicks are covered by this mechanism, so there is no separate tab-selection event.
+Whenever the top entry of the visible stack changes, log `screen_view` with the `screen_name` and `screen_class` mapped from the NavKey below. Route arguments become event parameters. Tab clicks are covered by this mechanism, so there is no separate tab-selection event.
+
+The event and both parameters use GA4's reserved names on purpose: they are the only ones that populate the `unifiedScreenName` / `unifiedScreenClass` dimensions, which the built-in "Screens" report, path exploration and funnel exploration are built on. Any other naming leaves those dimensions `(not set)`. The `destination_*` vocabulary is kept in the code (`Destination`, `DestinationType`, `NavRouteToDestinationMapper`, `TrackDestination`); only the wire names follow GA4.
 
 Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavKey` interface. `NavRouteToDestinationMapper.map(route: NavRoute)` switches on it exhaustively — no `else` branch — so adding a new route that forgets to update the mapper is a compile error, not a silent gap. `TrackDestinationUseCase` receives the raw `NavKey` from the back stack (the Navigation 3 API is invariant on `NavKey`) and casts it to `NavRoute` at that single boundary before calling the mapper.
 
-`destination_type` is:
+`screen_class` is:
 
 - `screen` for a full NavDisplay entry.
 - `dialog` for a route that renders as an `AlertDialog`/`Dialog`/`DatePickerDialog`.
 - `bottom_sheet` for a route that renders as a `ModalBottomSheet`.
 - `responsive` for a route that renders as a dialog on wide layouts and a bottom sheet on narrow ones, via the shared `ResponsiveDialogSheet` component (`ui/component/.../ResponsiveDialogSheet.kt`) — the actual shape depends on window width at render time, which the NavKey mapping can't see, so these get their own value instead of being forced into `dialog` or `bottom_sheet`.
 
-### NavKey → destination_name / destination_type mapping
+### NavKey → screen_name / screen_class mapping
 
-| NavKey (`core/model/.../route/`) | `destination_name` | `destination_type` | Route args → params |
+| NavKey (`core/model/.../route/`) | `screen_name` | `screen_class` | Route args → params |
 |---|---|---|---|
 | `MainNavRoute` | *(not logged — shell container; tabs log instead)* | — | — |
 | `MainNavRouteDestination.Plans` | `plans` | `screen` | — |
@@ -142,11 +144,11 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `ThemeNavRoute` | `theme_selection` | `responsive` | — |
 | `UpdateDownloadedNavRoute` | `update_downloaded` | `dialog` | — |
 
-`InAppUpdateNavRoute` carries `version_name` and `source` args, but — like `LoginNavRoute` — they are not mapped onto `destination_view`; the richer funnel parameters live on the dedicated [update_prompt_shown](events/update_prompt_shown.md) event instead. The route is only reached on iOS: Android hands straight over to the Google Play in-app update flow, so it produces `update_prompt_shown` without a matching `destination_view`.
+`InAppUpdateNavRoute` carries `version_name` and `source` args, but — like `LoginNavRoute` — they are not mapped onto `screen_view`; the richer funnel parameters live on the dedicated [update_prompt_shown](events/update_prompt_shown.md) event instead. The route is only reached on iOS: Android hands straight over to the Google Play in-app update flow, so it produces `update_prompt_shown` without a matching `screen_view`.
 
 `MaterialYouBottomSheetNavRoute` is named after an earlier bottom-sheet implementation but currently renders as a centered `Dialog` (`feature/material_you/.../MaterialYouDialog.kt`) — classified by actual rendering, not by route name.
 
-The authoritative NavKey registry is `core/model/.../route/Nav3SavedStateConfiguration.kt`; keep this table in sync when routes are added. Since `NavRouteToDestinationMapper` is an exhaustive `when` over the sealed `NavRoute`, forgetting to add a new route there fails the build immediately rather than silently missing a `destination_view`.
+The authoritative NavKey registry is `core/model/.../route/Nav3SavedStateConfiguration.kt`; keep this table in sync when routes are added. Since `NavRouteToDestinationMapper` is an exhaustive `when` over the sealed `NavRoute`, forgetting to add a new route there fails the build immediately rather than silently missing a `screen_view`.
 
 ## User properties
 
@@ -171,7 +173,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 
 | Event | Tier | Domain |
 |---|---|---|
-| [destination_view](events/destination_view.md) | P1 | Navigation |
+| [screen_view](events/screen_view.md) | P1 | Navigation |
 
 ### Reading
 
@@ -403,7 +405,7 @@ low-signal-sounding names):
 
 Prefer running the `add-analytics-event` skill, which walks these steps:
 
-1. Decide whether the action needs an event at all. Every click gets its own event — even one that only opens a screen/dialog/sheet, since `destination_view` measures screen-view rate, not click-through rate. Only genuine UI plumbing (see "Explicitly not tracked" above) is exempt, classified as `NotTracked`. A business action — including navigation — should never end up `NotTracked`.
+1. Decide whether the action needs an event at all. Every click gets its own event — even one that only opens a screen/dialog/sheet, since `screen_view` measures screen-view rate, not click-through rate. Only genuine UI plumbing (see "Explicitly not tracked" above) is exempt, classified as `NotTracked`. A business action — including navigation — should never end up `NotTracked`.
 2. Add the event name as a `const val` in `AnalyticsEventNames.kt` and any new parameter keys in `AnalyticsParams.kt`.
 3. Classify the `UiEvent` case: `Track.Automatic(name, params)` for static params (auto-emitted), or `Track.Manual(names)` (keep the `trackEvent(...)` call in the branch) for params only known post-domain / from `UiState`.
 4. Create `events/<event_name>.md` following the template used by the existing files (Tier/Domain header, When it fires, Trigger source, Parameters, Notes).

@@ -21,5 +21,5 @@ The user taps a downloaded version in the Bible version selector, making it the 
 ## Notes
 
 - Only downloaded versions are selectable; selecting is independent of downloading ([bible_version_download_started](bible_version_download_started.md)).
-- Selector impressions are covered by [destination_view](destination_view.md) (`destination_name=bible_version_selector`).
+- Selector impressions are covered by [screen_view](screen_view.md) (`screen_name=bible_version_selector`).
 - Re-selecting the already-active version still emits the UiEvent; decide during implementation whether to dedupe (recommended: log only actual changes).

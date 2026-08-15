@@ -23,4 +23,4 @@ User taps "send email" in the contact-support sheet; the ViewModel builds the ma
 
 - The UiState does not carry these booleans directly — instrumentation derives them from `accountStatusModel` and `subscriptionStatus`; while either is still `Loading` the value should be omitted rather than defaulted.
 - Opening the mail client is fire-and-forget: this does not confirm an email was actually sent.
-- Related: [contact_support_email_copied](contact_support_email_copied.md); sheet impressions are covered by [destination_view](destination_view.md) (`contact_support`).
+- Related: [contact_support_email_copied](contact_support_email_copied.md); sheet impressions are covered by [screen_view](screen_view.md) (`contact_support`).

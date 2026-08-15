@@ -19,5 +19,5 @@ None.
 ## Notes
 
 - Only the idle dialog can be dismissed: while the deletion runs, back press and outside taps are disabled, so no event fires mid-deletion.
-- The dialog impression is covered by `destination_view` (`destination_name=delete_account`).
+- The dialog impression is covered by `screen_view` (`screen_name=delete_account`).
 - Related: [account_delete_confirmed](account_delete_confirmed.md).

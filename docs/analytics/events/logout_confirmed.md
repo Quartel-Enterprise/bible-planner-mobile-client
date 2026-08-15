@@ -24,5 +24,5 @@ The user taps the confirm button in the logout dialog — either the normal conf
 ## Notes
 
 - Fires on the confirmation click, not on logout success — a confirmed logout can still end in [logout_failed](logout_failed.md).
-- Cancelling or dismissing the dialog is deliberately untracked (per the "not tracked" list); the dialog impression is covered by `destination_view` (`destination_name=logout`).
+- Cancelling or dismissing the dialog is deliberately untracked (per the "not tracked" list); the dialog impression is covered by `screen_view` (`screen_name=logout`).
 - An `is_forced=true` event is always preceded by a [logout_failed](logout_failed.md) with `reason=pending_changes` in the same session.

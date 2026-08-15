@@ -22,5 +22,5 @@ User taps any list item on the Profile screen.
 
 - The Pro banner card, login and logout rows are separate events on `ProfileUiEvent` (`OnProCardClick`, `OnLoginClick`, `OnLogoutClick`) and are covered by the monetization/auth funnels, not by this event.
 - The enum value is `EDIT_PLAN_START_DAY` (day, not date), so the param value is `edit_plan_start_day`.
-- Destination impressions are also captured by [destination_view](destination_view.md); this event additionally covers options that open external links (`instagram`, `privacy_policy`, `terms`, `web_app`, `rate_app`) with no screen of their own.
+- Destination impressions are also captured by [screen_view](screen_view.md); this event additionally covers options that open external links (`instagram`, `privacy_policy`, `terms`, `web_app`, `rate_app`) with no screen of their own.
 - `rate_app` always opens the platform store listing (`GetAppStoreLinkUseCase`); this tap is the only event for that action.

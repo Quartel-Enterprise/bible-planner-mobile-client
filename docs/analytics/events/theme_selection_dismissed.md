@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the sheet itself is covered by [destination_view](destination_view.md) (`theme_selection`, `responsive`).
+- Destination impression for the sheet itself is covered by [screen_view](screen_view.md) (`theme_selection`, `responsive`).
 - Related: [theme_changed](theme_changed.md), [contrast_changed](contrast_changed.md).

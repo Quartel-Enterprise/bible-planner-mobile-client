@@ -21,5 +21,5 @@ No parameters.
 
 ## Notes
 
-- Dialog impressions are covered by [destination_view](destination_view.md) (`destination_name=notification_permission`).
+- Dialog impressions are covered by [screen_view](screen_view.md) (`screen_name=notification_permission`).
 - Related: [notification_permission_prompted](notification_permission_prompted.md), [notification_permission_result](notification_permission_result.md).

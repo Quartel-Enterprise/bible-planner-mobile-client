@@ -16,10 +16,10 @@ class TrackDestinationUseCase(
     override fun invoke(navKey: NavKey) {
         val destination = (navKey as? NavRoute)?.let(mapper::map) ?: return
         trackEvent(
-            name = AnalyticsEventNames.DESTINATION_VIEW,
+            name = AnalyticsEventNames.SCREEN_VIEW,
             params = destination.params +
-                (AnalyticsParams.DESTINATION_NAME to destination.name) +
-                (AnalyticsParams.DESTINATION_TYPE to destination.type.toAnalyticsValue()),
+                (AnalyticsParams.SCREEN_NAME to destination.name) +
+                (AnalyticsParams.SCREEN_CLASS to destination.type.toAnalyticsValue()),
         )
     }
 

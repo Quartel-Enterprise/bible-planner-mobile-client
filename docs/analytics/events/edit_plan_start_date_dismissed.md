@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the dialog itself is covered by [destination_view](destination_view.md) (`edit_plan_start_date`, `dialog`).
+- Destination impression for the dialog itself is covered by [screen_view](screen_view.md) (`edit_plan_start_date`, `dialog`).
 - Related: [plan_start_date_changed](plan_start_date_changed.md).

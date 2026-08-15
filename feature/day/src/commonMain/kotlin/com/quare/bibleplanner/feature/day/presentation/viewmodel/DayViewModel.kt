@@ -18,6 +18,7 @@ import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.toDayStudyNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
@@ -449,7 +450,7 @@ internal class DayViewModel(
     }
 
     private fun dayParams(): Map<String, Any> = mapOf(
-        AnalyticsParams.PLAN_TYPE to readingPlanType.name.lowercase(),
+        AnalyticsParams.PLAN_TYPE to readingPlanType.toAnalyticsValue(),
         AnalyticsParams.WEEK_NUMBER to weekNumber,
         AnalyticsParams.DAY_NUMBER to dayNumber,
     )

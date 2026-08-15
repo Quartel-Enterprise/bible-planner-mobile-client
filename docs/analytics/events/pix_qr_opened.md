@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to `PixQrNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`pix_qr`, `dialog`).
+- Navigates to `PixQrNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`pix_qr`, `dialog`).
 - Related: [pix_qr_shared](pix_qr_shared.md), [pix_qr_dismissed](pix_qr_dismissed.md), [donation_section_toggled](donation_section_toggled.md).

@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to `LoginNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`login`, `bottom_sheet`).
+- Navigates to `LoginNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`login`, `bottom_sheet`).
 - Related: [account_card_clicked](account_card_clicked.md), [logout_clicked](logout_clicked.md), [login](login.md).

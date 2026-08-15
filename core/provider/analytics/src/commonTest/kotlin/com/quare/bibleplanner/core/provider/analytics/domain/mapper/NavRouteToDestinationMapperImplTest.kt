@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.provider.analytics.domain.mapper
 
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
@@ -47,7 +48,7 @@ class NavRouteToDestinationMapperImplTest {
     }
 
     @Test
-    fun `GIVEN every other route WHEN mapping THEN returns the expected destination_name and destination_type`() {
+    fun `GIVEN every other route WHEN mapping THEN returns the expected screen_name and screen_class`() {
         val expectations: List<Pair<NavRoute, Pair<String, DestinationType>>> = listOf(
             MainNavRouteDestination.Plans to ("plans" to DestinationType.SCREEN),
             MainNavRouteDestination.Books to ("books" to DestinationType.SCREEN),
@@ -95,8 +96,8 @@ class NavRouteToDestinationMapperImplTest {
         expectations.forEach { (route, expected) ->
             val (expectedName, expectedType) = expected
             val destination = mapper.map(route)
-            assertEquals(expectedName, destination?.name, "destination_name mismatch for $route")
-            assertEquals(expectedType, destination?.type, "destination_type mismatch for $route")
+            assertEquals(expectedName, destination?.name, "screen_name mismatch for $route")
+            assertEquals(expectedType, destination?.type, "screen_class mismatch for $route")
         }
     }
 
@@ -115,9 +116,13 @@ class NavRouteToDestinationMapperImplTest {
     }
 
     @Test
-    fun `GIVEN DayNavRoute WHEN mapping THEN carries plan_type week_number and day_number params`() {
+    fun `GIVEN DayNavRoute WHEN mapping THEN lowercases the plan_type carried by the route`() {
         val destination = mapper.map(
-            DayNavRoute(dayNumber = 3, weekNumber = 2, readingPlanType = "chronological"),
+            DayNavRoute(
+                dayNumber = 3,
+                weekNumber = 2,
+                readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
+            ),
         )
 
         assertEquals(
@@ -131,8 +136,53 @@ class NavRouteToDestinationMapperImplTest {
     }
 
     @Test
-    fun `GIVEN DeleteNotesRoute WHEN mapping THEN carries plan_type week_number and day_number params`() {
-        val destination = mapper.map(DeleteNotesRoute(readingPlanType = "books", week = 4, day = 5))
+    fun `GIVEN ChatNavRoute opened from a reading WHEN mapping THEN lowercases the plan_type carried by the route`() {
+        val destination = mapper.map(
+            ChatNavRoute(
+                source = ChatEntrySource.DAY_FAB,
+                dayNumber = 3,
+                weekNumber = 2,
+                readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
+            ),
+        )
+
+        assertEquals(
+            mapOf(
+                AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key,
+                AnalyticsParams.PLAN_TYPE to "chronological",
+                AnalyticsParams.WEEK_NUMBER to 2,
+                AnalyticsParams.DAY_NUMBER to 3,
+            ),
+            destination?.params,
+        )
+    }
+
+    @Test
+    fun `GIVEN ChatNavRoute opened outside a reading WHEN mapping THEN omits the plan_type param`() {
+        val destination = mapper.map(
+            ChatNavRoute(
+                source = ChatEntrySource.DAY_FAB,
+                dayNumber = null,
+                weekNumber = null,
+                readingPlanType = null,
+            ),
+        )
+
+        assertEquals(
+            mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key),
+            destination?.params,
+        )
+    }
+
+    @Test
+    fun `GIVEN DeleteNotesRoute WHEN mapping THEN lowercases the plan_type carried by the route`() {
+        val destination = mapper.map(
+            DeleteNotesRoute(
+                readingPlanType = ReadingPlanType.BOOKS.name,
+                week = 4,
+                day = 5,
+            ),
+        )
 
         assertEquals(
             mapOf(

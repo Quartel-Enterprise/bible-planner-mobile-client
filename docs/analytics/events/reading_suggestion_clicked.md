@@ -24,4 +24,4 @@ User taps the previous- or next-chapter suggestion at the bottom of the chapter 
 
 - Discrepancy with the plan table: `ReadNavigationSuggestionModel` carries only `bookId` and `chapterNumber` — no direction. Direction is known only by which slot of `ReadNavigationSuggestionsModel` (`previous`/`next`) the tapped suggestion came from, so it must be passed from the UI layer or added to the model.
 - Suggestions can cross book boundaries (last chapter of a book suggests the next book's chapter 1), so `book_id` may differ from the current screen's book.
-- The navigation itself replaces the current entry, so the resulting [destination_view](destination_view.md) (`read`) still fires.
+- The navigation itself replaces the current entry, so the resulting [screen_view](screen_view.md) (`read`) still fires.

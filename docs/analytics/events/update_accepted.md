@@ -21,5 +21,5 @@ The user taps "Abrir na App Store" on the update sheet, which opens the store. *
 ## Notes
 
 - Platform is not a parameter (Firebase segments by platform automatically), but in practice every event comes from iOS.
-- On Android, a successful download arrives as the [update_downloaded](destination_view.md) impression (`destination_name=update_downloaded`) with no preceding `update_accepted`; a failed one as [update_download_failed](update_download_failed.md).
+- On Android, a successful download arrives as the [update_downloaded](screen_view.md) impression (`screen_name=update_downloaded`) with no preceding `update_accepted`; a failed one as [update_download_failed](update_download_failed.md).
 - The final successful install is covered by Firebase's auto-collected `app_update` event on next launch, so it is not logged manually.

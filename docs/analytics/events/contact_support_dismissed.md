@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the sheet itself is covered by [destination_view](destination_view.md) (`contact_support`, `responsive`).
+- Destination impression for the sheet itself is covered by [screen_view](screen_view.md) (`contact_support`, `responsive`).
 - Related: [contact_support_email_opened](contact_support_email_opened.md), [contact_support_email_copied](contact_support_email_copied.md).

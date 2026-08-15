@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to `EditProfileNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`edit_profile`, `responsive`).
+- Navigates to `EditProfileNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`edit_profile`, `responsive`).
 - Related: [profile_avatar_clicked](profile_avatar_clicked.md), [account_card_clicked](account_card_clicked.md).

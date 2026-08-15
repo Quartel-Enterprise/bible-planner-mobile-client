@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to `RenameDeviceNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`rename_device`, `dialog`).
+- Navigates to `RenameDeviceNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`rename_device`, `dialog`).
 - The actual rename outcome is a separate, manually-tracked event once wired (see `DEVICE_RENAMED`/`DEVICE_RENAME_CANCELLED` in `AnalyticsEventNames.kt`).

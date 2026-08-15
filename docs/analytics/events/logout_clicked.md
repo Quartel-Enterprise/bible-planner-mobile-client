@@ -21,5 +21,5 @@ User taps the logout row on the Profile screen, or the logout action on the Acco
 
 ## Notes
 
-- Both trigger points navigate to `LogoutNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`logout`, `dialog`).
+- Both trigger points navigate to `LogoutNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`logout`, `dialog`).
 - The actual confirmation/cancellation on that dialog is covered by [logout_confirmed](logout_confirmed.md) and [logout_cancelled](logout_cancelled.md).

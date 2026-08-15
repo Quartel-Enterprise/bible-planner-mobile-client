@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Navigates to `SubscriptionDetailsNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`subscription_details`, `dialog`).
+- Navigates to `SubscriptionDetailsNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`subscription_details`, `dialog`).
 - Related: [account_card_clicked](account_card_clicked.md), [login_row_clicked](login_row_clicked.md), [logout_clicked](logout_clicked.md), [profile_option_clicked](profile_option_clicked.md).
