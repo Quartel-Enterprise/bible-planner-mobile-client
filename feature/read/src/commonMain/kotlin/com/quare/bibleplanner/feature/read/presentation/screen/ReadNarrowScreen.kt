@@ -1,8 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.screen
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -14,9 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -36,7 +33,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadBottomBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadingRulerOverlay
-import com.quare.bibleplanner.feature.read.presentation.screen.component.selection.SelectionPanel
+import com.quare.bibleplanner.feature.read.presentation.screen.component.selection.SelectionSheet
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadErrorContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterContent
@@ -77,25 +74,27 @@ internal fun ReadNarrowScreen(
             )
         },
         bottomBar = {
-            Column(modifier = Modifier.onSizeChanged { size -> bottomOverlayHeightPx = size.height.toFloat() }) {
-                AnimatedVisibility(visible = state.selection != null) {
-                    state.selection?.let { selection ->
-                        Surface(tonalElevation = 3.dp) {
-                            Column {
-                                HorizontalDivider()
-                                SelectionPanel(
-                                    selection = selection,
-                                    onEvent = onEvent,
-                                )
-                            }
-                        }
-                    }
+            /*
+             * The sheet takes the bottom bar's place rather than stacking on top of it: while a
+             * selection is live the chapter controls are not what the user is reaching for.
+             */
+            AnimatedContent(
+                modifier = Modifier.onSizeChanged { size -> bottomOverlayHeightPx = size.height.toFloat() },
+                targetState = state.selection,
+                contentKey = { selection -> selection != null },
+            ) { selection ->
+                if (selection == null) {
+                    ReadBottomBar(
+                        header = state.header,
+                        scrollBehavior = bottomBarScrollBehavior,
+                        onEvent = onEvent,
+                    )
+                } else {
+                    SelectionSheet(
+                        selection = selection,
+                        onEvent = onEvent,
+                    )
                 }
-                ReadBottomBar(
-                    header = state.header,
-                    scrollBehavior = bottomBarScrollBehavior,
-                    onEvent = onEvent,
-                )
             }
         },
     ) { paddingValues ->

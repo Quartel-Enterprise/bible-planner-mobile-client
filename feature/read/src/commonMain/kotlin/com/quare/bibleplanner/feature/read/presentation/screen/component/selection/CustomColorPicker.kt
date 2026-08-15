@@ -41,6 +41,7 @@ private const val PERCENT = 100f
 private const val MAX_LIGHTNESS_TRACK = 88f
 private val previewSize = 46.dp
 private val previewRingWidth = 2.dp
+private val sliderSpacing = 4.dp
 private val hueBrush = Brush.horizontalGradient(
     listOf(
         Color(0xFFFF5555),
@@ -58,6 +59,9 @@ private val hueBrush = Brush.horizontalGradient(
  *
  * Each track is painted in the colours it selects — the full hue wheel, and the lightness ramp of
  * the hue the user is on — so the sliders read as the choice they offer rather than as a value.
+ *
+ * The 4dp between them lands the tracks the 12dp apart the design asks for: each slider is only as
+ * tall as its thumb, which overhangs the track by 4dp on each side.
  */
 @Composable
 internal fun CustomColorPicker(
@@ -98,7 +102,7 @@ internal fun CustomColorPicker(
                 )
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(sliderSpacing),
                 ) {
                     ColorPickerSlider(
                         value = color.hue.toFloat(),

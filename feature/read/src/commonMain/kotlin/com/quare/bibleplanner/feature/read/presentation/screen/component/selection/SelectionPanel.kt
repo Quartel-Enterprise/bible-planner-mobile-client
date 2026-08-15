@@ -1,13 +1,12 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.component.selection
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,9 +37,12 @@ internal fun SelectionPanel(
         modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // The label is centred on the sheet, not on the space left over by the close button.
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
             Text(
-                modifier = Modifier.weight(1f),
                 text = verseReferenceLabel(
                     bookId = selection.bookId,
                     chapterNumber = selection.chapterNumber,
@@ -50,12 +52,12 @@ internal fun SelectionPanel(
                 textAlign = TextAlign.Center,
             )
             CommonIconButton(
+                modifier = Modifier.align(Alignment.CenterEnd),
                 imageVector = Icons.Default.Close,
                 contentDescription = stringResource(Res.string.close),
                 onClick = { onEvent(ReadUiEvent.OnClearSelectionClick) },
             )
         }
-        HorizontalDivider()
         HighlightPaletteRow(
             customColors = selection.customColors,
             activeColor = selection.activeColor,

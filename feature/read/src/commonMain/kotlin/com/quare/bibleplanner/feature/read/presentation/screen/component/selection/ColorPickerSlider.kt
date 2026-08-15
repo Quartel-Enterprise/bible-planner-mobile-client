@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,8 +39,12 @@ internal fun ColorPickerSlider(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    /*
+     * Forced to the thumb's height so the two sliders can sit as close as the design puts them: the
+     * stock slider reserves a 48dp touch row, which on its own pushed them far apart.
+     */
     Slider(
-        modifier = modifier,
+        modifier = modifier.requiredHeight(thumbSize),
         value = value,
         onValueChange = onValueChange,
         valueRange = valueRange,
