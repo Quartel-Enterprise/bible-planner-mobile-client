@@ -78,6 +78,7 @@ object AnalyticsEventNames {
     const val BIBLE_VERSION_UPDATE_PROMPT_VERSION_TOGGLED = "bible_update_prompt_version_toggled"
 
     const val PAYWALL_VIEWED = "paywall_viewed"
+    const val NOTES_LIMIT_SUBSCRIBE_CLICKED = "notes_limit_subscribe_clicked"
     const val PAYWALL_PLAN_SELECTED = "paywall_plan_selected"
     const val PURCHASE_STARTED = "purchase_started"
     const val PURCHASE_COMPLETED = "purchase_completed"

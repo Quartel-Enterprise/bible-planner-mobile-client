@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.toDayStudyNavRoute
@@ -183,7 +184,7 @@ internal class DayViewModel(
 
     private fun navigateToPaywall() {
         viewModelScope.launch {
-            _uiAction.emit(DayUiAction.NavigateToRoute(PaywallNavRoute))
+            _uiAction.emit(DayUiAction.NavigateToRoute(PaywallNavRoute(PaywallEntrySource.DAY_STUDY)))
         }
     }
 

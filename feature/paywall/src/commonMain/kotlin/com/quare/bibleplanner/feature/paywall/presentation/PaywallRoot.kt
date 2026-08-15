@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.feature.paywall.presentation.utils.PaywallUiActionCollector
 import com.quare.bibleplanner.feature.paywall.presentation.viewmodel.PaywallViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.paywall(
@@ -21,8 +22,8 @@ fun EntryProviderScope<NavKey>.paywall(
     onNavigateReplacingTop: (NavKey) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
-    entry<PaywallNavRoute> {
-        val viewModel = koinViewModel<PaywallViewModel>()
+    entry<PaywallNavRoute> { route ->
+        val viewModel = koinViewModel<PaywallViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         PaywallUiActionCollector(

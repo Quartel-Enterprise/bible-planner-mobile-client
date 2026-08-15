@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.paywall.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class PaywallViewModel(
+    route: PaywallNavRoute,
     private val factory: PaywallUiStateFactory,
     private val getPurchaseResultUseCase: GetPurchaseResultUseCase,
     private val getRestorePurchaseResultUseCase: GetRestorePurchaseResultUseCase,
@@ -66,6 +68,10 @@ internal class PaywallViewModel(
     private var purchaseInitiated = false
 
     init {
+        trackEvent(
+            name = AnalyticsEventNames.PAYWALL_VIEWED,
+            params = mapOf(AnalyticsParams.SOURCE to route.source.key),
+        )
         viewModelScope.launch {
             _uiState.update { PaywallUiState.Loading }
             val initializationResult = factory.create(storeName)
