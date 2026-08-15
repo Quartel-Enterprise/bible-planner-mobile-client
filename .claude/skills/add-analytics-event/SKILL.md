@@ -73,5 +73,6 @@ Compile the affected module (`./gradlew :feature:<name>:compileCommonMainKotlinM
 `./gradlew :feature:<name>:ktlintFormat`. A missing `analytics` declaration fails the build.
 
 Then run `./gradlew :core:provider:analytics:jvmTest` — `AnalyticsCatalogTest` fails if a
-`Track.Manual` name isn't wired to an actual `trackEvent` call in the same module, or if any
-`Track.Automatic`/`Track.Manual` name is missing its `docs/analytics/events/<name>.md` entry.
+`Track.Manual` name isn't wired to an actual `trackEvent` call in the same module, if any
+`Track.Automatic`/`Track.Manual` name is missing its `docs/analytics/events/<name>.md` entry, or
+if the catalog and the README event index don't match each other exactly (both directions).

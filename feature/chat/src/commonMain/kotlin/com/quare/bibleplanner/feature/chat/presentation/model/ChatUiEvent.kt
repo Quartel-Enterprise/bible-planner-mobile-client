@@ -38,9 +38,11 @@ sealed interface ChatUiEvent : UiEvent {
     }
 
     data object OnSubscribeClick : ChatUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.AI_CHAT_SUBSCRIBE_CLICKED,
-            params = emptyMap(),
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.AI_CHAT_SUBSCRIBE_CLICKED,
+                AnalyticsEventNames.PAYWALL_VIEWED,
+            ),
         )
     }
 

@@ -24,6 +24,7 @@ internal sealed interface DayStudyRouteUiEvent : UiEvent {
                 AnalyticsEventNames.DAY_STUDY_OPENED,
                 AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
                 AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED,
+                AnalyticsEventNames.PAYWALL_VIEWED,
             ),
         )
     }
