@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.AddCustomHighlightColor
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -65,24 +67,37 @@ internal class VerseSelectionViewModel(
     )
     private val customColorPicker = MutableStateFlow<CustomColorUiModel?>(null)
 
+    /**
+     * What the panel shows before the database answers. Both the annotations and the palette come
+     * from Room, and waiting for them would hold the whole panel back by a query or two — long
+     * enough to feel like a delay between tapping a verse and the sheet arriving. It opens on the
+     * selection alone and fills in the colour, the bookmark and the note when they land.
+     */
+    private val emptyAnnotations = ChapterAnnotations(
+        highlightColorByVerse = emptyMap(),
+        savedVerseNumbers = emptySet(),
+        noteIdByVerse = emptyMap(),
+    )
+
     private val _uiAction = MutableSharedFlow<VerseSelectionUiAction>()
     val uiAction: SharedFlow<VerseSelectionUiAction> = _uiAction
 
     val uiState: StateFlow<VerseSelectionUiState?> = combine(
-        observeVerseSelection().flatMapLatest { selection ->
-            selection
-                ?.let { safeSelection ->
-                    observeChapterAnnotations(
-                        bookId = safeSelection.bookId,
-                        chapterNumber = safeSelection.chapterNumber,
-                    )
-                } ?: flowOf(null)
-        },
+        observeVerseSelection()
+            .flatMapLatest { selection ->
+                selection
+                    ?.let { safeSelection ->
+                        observeChapterAnnotations(
+                            bookId = safeSelection.bookId,
+                            chapterNumber = safeSelection.chapterNumber,
+                        )
+                    } ?: flowOf(emptyAnnotations)
+            }.onStart { emit(emptyAnnotations) },
         observeVerseSelection(),
-        observeHighlightPalette(),
+        observeHighlightPalette().onStart { emit(emptyList()) },
         customColorPicker,
     ) { annotations, selection, customColors, picker ->
-        if (selection == null || annotations == null) {
+        if (selection == null) {
             null
         } else {
             VerseSelectionUiState(

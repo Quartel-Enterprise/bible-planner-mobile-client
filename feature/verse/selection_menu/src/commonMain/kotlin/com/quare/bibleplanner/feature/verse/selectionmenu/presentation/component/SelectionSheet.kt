@@ -1,26 +1,42 @@
 package com.quare.bibleplanner.feature.verse.selectionmenu.presentation.component
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiEvent
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiState
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
+private const val DISMISS_HEIGHT_FRACTION = 0.4f
+private const val DISMISS_VELOCITY = 1_500f
 private val cornerRadius = 28.dp
 private val handleWidth = 36.dp
 private val handleHeight = 4.dp
@@ -31,7 +47,10 @@ private val sheetElevation = 8.dp
  * own pane on a wide one.
  *
  * Neither is modal — there is no scrim and the chapter stays tappable, so the selection can be
- * extended verse by verse while this is open.
+ * extended verse by verse while this is open. That rules out [androidx.compose.material3.ModalBottomSheet],
+ * whose scrim would swallow those taps, so the drag it would have given us is built here instead:
+ * the sheet follows the finger down and closes when thrown or dragged past its middle, and springs
+ * back otherwise.
  */
 @Composable
 internal fun SelectionSheet(
@@ -40,8 +59,61 @@ internal fun SelectionSheet(
     isWide: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    if (isWide) {
+        SelectionSurface(
+            modifier = modifier.fillMaxHeight(),
+            isWide = true,
+        ) {
+            SelectionPanel(
+                selection = selection,
+                onEvent = onEvent,
+            )
+        }
+        return
+    }
+    val coroutineScope = rememberCoroutineScope()
+    val dragOffset = remember { Animatable(0f) }
+    var sheetHeightPx by remember { mutableFloatStateOf(0f) }
+    SelectionSurface(
+        modifier = modifier
+            .fillMaxWidth()
+            .onSizeChanged { size -> sheetHeightPx = size.height.toFloat() }
+            .offset { IntOffset(x = 0, y = dragOffset.value.roundToInt()) }
+            .draggable(
+                state = rememberDraggableState { delta ->
+                    coroutineScope.launch {
+                        dragOffset.snapTo((dragOffset.value + delta).coerceAtLeast(0f))
+                    }
+                },
+                orientation = Orientation.Vertical,
+                onDragStopped = { velocity ->
+                    val isDismissed = velocity > DISMISS_VELOCITY ||
+                        dragOffset.value > sheetHeightPx * DISMISS_HEIGHT_FRACTION
+                    if (isDismissed) {
+                        onEvent(VerseSelectionUiEvent.OnClearSelectionClick)
+                    } else {
+                        dragOffset.animateTo(0f)
+                    }
+                },
+            ),
+        isWide = false,
+    ) {
+        DragHandle()
+        SelectionPanel(
+            selection = selection,
+            onEvent = onEvent,
+        )
+    }
+}
+
+@Composable
+private fun SelectionSurface(
+    modifier: Modifier,
+    isWide: Boolean,
+    content: @Composable () -> Unit,
+) {
     Surface(
-        modifier = if (isWide) modifier.fillMaxHeight() else modifier.fillMaxWidth(),
+        modifier = modifier,
         shape = if (isWide) {
             RectangleShape
         } else {
@@ -54,13 +126,7 @@ internal fun SelectionSheet(
         shadowElevation = if (isWide) 0.dp else sheetElevation,
     ) {
         Column(modifier = Modifier.navigationBarsPadding()) {
-            if (!isWide) {
-                DragHandle()
-            }
-            SelectionPanel(
-                selection = selection,
-                onEvent = onEvent,
-            )
+            content()
         }
     }
 }
