@@ -18,8 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -37,6 +39,7 @@ import kotlin.math.roundToInt
 
 private const val DISMISS_HEIGHT_FRACTION = 0.4f
 private const val DISMISS_VELOCITY = 1_500f
+private const val OFF_SCREEN_OFFSET_PX = 10_000f
 private val cornerRadius = 28.dp
 private val handleWidth = 36.dp
 private val handleHeight = 4.dp
@@ -72,8 +75,26 @@ internal fun SelectionSheet(
         return
     }
     val coroutineScope = rememberCoroutineScope()
-    val dragOffset = remember { Animatable(0f) }
+    val dragOffset = remember { Animatable(OFF_SCREEN_OFFSET_PX) }
     var sheetHeightPx by remember { mutableFloatStateOf(0f) }
+    var isEntered by remember { mutableStateOf(false) }
+    /*
+     * The sheet waits well below the screen until it knows its own height, then slides up, and
+     * leaves the same way: closing waits for the slide-out before the entry is actually popped.
+     * The scene swap itself is instant, so this is the only motion the user sees.
+     */
+    LaunchedEffect(sheetHeightPx) {
+        if (isEntered || sheetHeightPx == 0f) return@LaunchedEffect
+        dragOffset.snapTo(sheetHeightPx)
+        dragOffset.animateTo(0f)
+        isEntered = true
+    }
+    val dismiss: () -> Unit = {
+        coroutineScope.launch {
+            dragOffset.animateTo(sheetHeightPx)
+            onEvent(VerseSelectionUiEvent.OnClearSelectionClick)
+        }
+    }
     SelectionSurface(
         modifier = modifier
             .fillMaxWidth()
@@ -89,11 +110,7 @@ internal fun SelectionSheet(
                 onDragStopped = { velocity ->
                     val isDismissed = velocity > DISMISS_VELOCITY ||
                         dragOffset.value > sheetHeightPx * DISMISS_HEIGHT_FRACTION
-                    if (isDismissed) {
-                        onEvent(VerseSelectionUiEvent.OnClearSelectionClick)
-                    } else {
-                        dragOffset.animateTo(0f)
-                    }
+                    if (isDismissed) dismiss() else dragOffset.animateTo(0f)
                 },
             ),
         isWide = false,
@@ -101,7 +118,9 @@ internal fun SelectionSheet(
         DragHandle()
         SelectionPanel(
             selection = selection,
-            onEvent = onEvent,
+            onEvent = { event ->
+                if (event == VerseSelectionUiEvent.OnClearSelectionClick) dismiss() else onEvent(event)
+            },
         )
     }
 }
