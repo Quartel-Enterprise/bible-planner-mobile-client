@@ -22,7 +22,7 @@ internal class ChapterReadLocalStore(
     private val verseDao: VerseDao,
     private val chapterReadMapper: ChapterReadMapper,
 ) : SyncLocalStore<ChapterEntity, ChapterReadDto> {
-    override fun pendingFlow(): Flow<List<ChapterEntity>> = chapterDao.getPendingReadSyncChaptersFlow()
+    override fun observePending(): Flow<List<ChapterEntity>> = chapterDao.getPendingReadSyncChaptersFlow()
 
     override suspend fun getPending(): List<ChapterEntity> = chapterDao.getPendingReadSyncChapters()
 

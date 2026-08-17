@@ -461,16 +461,16 @@ private suspend fun LazyListState.animateToEnd() {
     val lastIndex = layoutInfo.totalItemsCount - 1
     if (lastIndex < 0) return
     animateScrollToItem(lastIndex)
-    val overshoot = endOvershoot()
+    val overshoot = getEndOvershoot()
     if (overshoot > 0f) animateScrollBy(overshoot)
 }
 
 private suspend fun LazyListState.settleAtEnd() {
-    val overshoot = endOvershoot()
+    val overshoot = getEndOvershoot()
     if (overshoot > 0f) scrollBy(overshoot)
 }
 
-private fun LazyListState.endOvershoot(): Float {
+private fun LazyListState.getEndOvershoot(): Float {
     val last = layoutInfo.visibleItemsInfo.lastOrNull() ?: return 0f
     return (last.offset + last.size - layoutInfo.viewportEndOffset).toFloat()
 }

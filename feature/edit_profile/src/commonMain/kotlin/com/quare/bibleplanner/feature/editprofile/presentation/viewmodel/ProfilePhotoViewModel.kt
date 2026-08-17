@@ -50,11 +50,11 @@ internal class ProfilePhotoViewModel(
                 profile = Loadable.Loaded(profile),
                 isCameraAvailable = isCameraAvailable,
             )
-        }.onStart { emit(initialState()) }
+        }.onStart { emit(createInitialState()) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
-            initialValue = initialState(),
+            initialValue = createInitialState(),
         )
 
     override fun handleEvent(event: ProfilePhotoUiEvent) {
@@ -109,7 +109,7 @@ internal class ProfilePhotoViewModel(
         viewModelScope.launch { _uiAction.emit(action) }
     }
 
-    private fun initialState(): ProfilePhotoUiState = ProfilePhotoUiState(
+    private fun createInitialState(): ProfilePhotoUiState = ProfilePhotoUiState(
         profile = Loadable.Loading,
         isCameraAvailable = isCameraAvailable,
     )

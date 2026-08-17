@@ -72,7 +72,7 @@ internal class AccountDetailsViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
-        initialValue = initialState(),
+        initialValue = createInitialState(),
     )
 
     override fun handleEvent(event: AccountDetailsUiEvent) {
@@ -132,7 +132,7 @@ internal class AccountDetailsViewModel(
         viewModelScope.launch { _uiAction.emit(action) }
     }
 
-    private fun initialState(): AccountDetailsUiState = AccountDetailsUiState(
+    private fun createInitialState(): AccountDetailsUiState = AccountDetailsUiState(
         accountInfo = Loadable.Loading,
         devices = Loadable.Loading,
         isDevicesExpanded = false,

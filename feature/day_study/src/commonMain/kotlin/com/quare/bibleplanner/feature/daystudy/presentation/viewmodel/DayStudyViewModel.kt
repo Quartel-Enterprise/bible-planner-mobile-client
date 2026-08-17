@@ -280,7 +280,7 @@ internal class DayStudyViewModel(
         if (!isConnected()) {
             trackEvent(
                 name = AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
-                params = dayParams(route) + mapOf(
+                params = getDayParams(route) + mapOf(
                     AnalyticsParams.REASON to OFFLINE_REASON,
                     AnalyticsParams.IS_PRO to isPro,
                 ),
@@ -292,7 +292,7 @@ internal class DayStudyViewModel(
         if (!canStartFreeGeneration(quota)) return
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED,
-            params = dayParams(route) + mapOf(
+            params = getDayParams(route) + mapOf(
                 AnalyticsParams.IS_PRO to isPro,
                 AnalyticsParams.REMAINING_FREE to quota.remainingFree,
             ),
@@ -304,7 +304,7 @@ internal class DayStudyViewModel(
 
     private suspend fun canStartFreeGeneration(quota: DayStudyQuotaModel): Boolean {
         if (isPro || quota.isUnlockedForDay) return true
-        val inFlight = generationCoordinator.generatingCount(excludingKey = jobKey)
+        val inFlight = generationCoordinator.getGeneratingCount(excludingKey = jobKey)
         if (inFlight < quota.remainingFree) return true
         _uiAction.emit(
             DayStudyUiAction.ShowSnackBarPlural(
@@ -334,7 +334,7 @@ internal class DayStudyViewModel(
         }
     }
 
-    private fun dayParams(route: DayNavRoute): Map<String, Any> = mapOf(
+    private fun getDayParams(route: DayNavRoute): Map<String, Any> = mapOf(
         AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
         AnalyticsParams.WEEK_NUMBER to route.weekNumber,
         AnalyticsParams.DAY_NUMBER to route.dayNumber,

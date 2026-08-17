@@ -38,7 +38,7 @@ import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrategy
-import com.quare.bibleplanner.core.navigation.utils.back
+import com.quare.bibleplanner.core.navigation.utils.popBackEntries
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.feature.bibleversion.presentation.PendingBibleUpdatesPromptOverlay
@@ -109,7 +109,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
         val onNavigateBack: () -> Unit = {
-            val removed = backStack.back(isWide = isWide)
+            val removed = backStack.popBackEntries(isWide = isWide)
             if (removed.isNotEmpty()) {
                 forwardStack.add(removed)
             }

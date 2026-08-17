@@ -105,7 +105,7 @@ internal class PaywallViewModel(
             PaywallUiEvent.OnBackClick -> {
                 trackEvent(
                     name = AnalyticsEventNames.PAYWALL_DISMISSED,
-                    params = selectedPlanParams(),
+                    params = getSelectedPlanParams(),
                 )
                 viewModelScope.launch {
                     _uiAction.emit(PaywallUiAction.NavigateBack)
@@ -167,7 +167,7 @@ internal class PaywallViewModel(
             }
 
             is PaywallUiEvent.OnPlanSelected -> {
-                if (selectedPlanType() != event.planType) {
+                if (getSelectedPlanType() != event.planType) {
                     trackEvent(
                         name = AnalyticsEventNames.PAYWALL_PLAN_SELECTED,
                         params = mapOf(AnalyticsParams.SUBSCRIPTION_PLAN to event.planType.toAnalyticsValue()),
@@ -245,11 +245,11 @@ internal class PaywallViewModel(
         )
     }
 
-    private fun selectedPlanParams(): Map<String, Any> = selectedPlanType()
+    private fun getSelectedPlanParams(): Map<String, Any> = getSelectedPlanType()
         ?.let { mapOf(AnalyticsParams.SUBSCRIPTION_PLAN to it.toAnalyticsValue()) }
         .orEmpty()
 
-    private fun selectedPlanType(): SubscriptionPlanType? = (_uiState.value as? PaywallUiState.Success)
+    private fun getSelectedPlanType(): SubscriptionPlanType? = (_uiState.value as? PaywallUiState.Success)
         ?.subscriptionPlans
         ?.firstOrNull { it.isSelected }
         ?.type

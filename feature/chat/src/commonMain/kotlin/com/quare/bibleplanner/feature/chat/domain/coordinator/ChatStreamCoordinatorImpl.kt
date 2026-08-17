@@ -101,11 +101,11 @@ class ChatStreamCoordinatorImpl(
         }
         trackEvent(
             name = AnalyticsEventNames.AI_CHAT_ANSWER_FAILED,
-            params = mapOf(AnalyticsParams.REASON to failure.reason()),
+            params = mapOf(AnalyticsParams.REASON to failure.getReason()),
         )
     }
 
-    private fun ChatSendFailureModel.reason(): String = when (this) {
+    private fun ChatSendFailureModel.getReason(): String = when (this) {
         ChatSendFailureModel.Generic -> GENERIC_REASON
         ChatSendFailureModel.LimitReached -> LIMIT_REACHED_REASON
         ChatSendFailureModel.ConversationGone -> CONVERSATION_GONE_REASON

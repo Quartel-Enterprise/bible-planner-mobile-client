@@ -24,7 +24,7 @@ private const val QUALITY_SCALE = 100.0
 private const val HALF = 2.0
 private const val STRAIGHT_ANGLE_DEGREES = 180.0
 
-actual fun avatarImageCropper(): AvatarImageCropper = IosAvatarImageCropper()
+actual fun createAvatarImageCropper(): AvatarImageCropper = IosAvatarImageCropper()
 
 @OptIn(ExperimentalForeignApi::class)
 internal class IosAvatarImageCropper : AvatarImageCropper {
@@ -34,7 +34,7 @@ internal class IosAvatarImageCropper : AvatarImageCropper {
     ): ByteArray {
         val crop = computeCropRect(params)
         val decoded = UIImage.imageWithData(source.toNsData()) ?: throw UnsupportedImageFormatException()
-        val image = decoded.oriented(params.orientation)
+        val image = decoded.orient(params.orientation)
         val width = image.size.useContents { width }
         val height = image.size.useContents { height }
         val side = crop.size * minOf(width, height)
@@ -58,7 +58,7 @@ internal class IosAvatarImageCropper : AvatarImageCropper {
         return jpeg.toByteArray()
     }
 
-    private fun UIImage.oriented(orientation: PhotoOrientation): UIImage {
+    private fun UIImage.orient(orientation: PhotoOrientation): UIImage {
         if (orientation.isOriginal) return this
         val width = size.useContents { width }
         val height = size.useContents { height }

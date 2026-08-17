@@ -65,8 +65,8 @@ internal fun StandardHero(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             HeroKicker(
-                icon = mode.kickerIcon(),
-                text = stringResource(mode.kickerResource()),
+                icon = mode.toKickerIcon(),
+                text = stringResource(mode.toKickerResource()),
             )
             if (mode.showsHeaderDate()) {
                 next.plannedReadDate?.let { date ->
@@ -107,7 +107,7 @@ internal fun StandardHero(
         ) {
             HeroPrimaryButton(
                 modifier = Modifier.weight(1f),
-                text = stringResource(mode.primaryResource()),
+                text = stringResource(mode.toPrimaryResource()),
                 icon = Icons.AutoMirrored.Filled.ArrowForward,
                 trailingIcon = true,
                 onClick = { onEvent(next.toDayClick()) },
@@ -117,14 +117,14 @@ internal fun StandardHero(
     }
 }
 
-private fun PlanMode.kickerResource(): StringResource = when (this) {
+private fun PlanMode.toKickerResource(): StringResource = when (this) {
     PlanMode.New -> Res.string.hero_kicker_new
     PlanMode.CaughtUp -> Res.string.hero_kicker_caughtup
     PlanMode.Ahead -> Res.string.hero_kicker_ahead
     else -> Res.string.hero_kicker_today
 }
 
-private fun PlanMode.kickerIcon(): ImageVector? = when (this) {
+private fun PlanMode.toKickerIcon(): ImageVector? = when (this) {
     PlanMode.CaughtUp -> Icons.Default.CheckCircle
     PlanMode.Ahead -> Icons.Default.Bolt
     else -> null
@@ -132,7 +132,7 @@ private fun PlanMode.kickerIcon(): ImageVector? = when (this) {
 
 private fun PlanMode.showsHeaderDate(): Boolean = this != PlanMode.Ahead && this != PlanMode.CaughtUp
 
-private fun PlanMode.primaryResource(): StringResource = when (this) {
+private fun PlanMode.toPrimaryResource(): StringResource = when (this) {
     PlanMode.New -> Res.string.hero_primary_start
     PlanMode.CaughtUp -> Res.string.hero_primary_read_ahead
     PlanMode.Ahead -> Res.string.hero_primary_continue

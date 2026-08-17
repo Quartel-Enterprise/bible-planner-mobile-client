@@ -111,9 +111,9 @@ private fun MainRootContent(
         ),
         modifier = Modifier.fillMaxSize(),
         onBack = tabState::goBack,
-        transitionSpec = { tabTransitionSpec() },
-        popTransitionSpec = { tabTransitionSpec() },
-        predictivePopTransitionSpec = { tabTransitionSpec() },
+        transitionSpec = { createTabTransitionSpec() },
+        popTransitionSpec = { createTabTransitionSpec() },
+        predictivePopTransitionSpec = { createTabTransitionSpec() },
     )
 }
 
@@ -147,6 +147,6 @@ private fun EntryProviderScope<NavKey>.toMainEntries(
     )
 }
 
-private fun tabTransitionSpec(): ContentTransform =
+private fun createTabTransitionSpec(): ContentTransform =
     fadeIn(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS)) togetherWith
         fadeOut(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS))

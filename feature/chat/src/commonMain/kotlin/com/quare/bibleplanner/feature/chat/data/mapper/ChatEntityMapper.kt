@@ -14,11 +14,11 @@ internal class ChatEntityMapper {
         title = entity.title,
         preview = entity.preview,
         contextLabel = entity.contextLabel,
-        planDay = entity.planDay(),
+        planDay = entity.getPlanDay(),
         updatedAt = Instant.fromEpochMilliseconds(entity.updatedAtEpochMillis),
     )
 
-    private fun ChatConversationEntity.planDay(): ChatPlanDayModel? = ChatPlanDayModel(
+    private fun ChatConversationEntity.getPlanDay(): ChatPlanDayModel? = ChatPlanDayModel(
         dayNumber = dayNumber ?: return null,
         weekNumber = weekNumber ?: return null,
         readingPlanType = readingPlanType ?: return null,

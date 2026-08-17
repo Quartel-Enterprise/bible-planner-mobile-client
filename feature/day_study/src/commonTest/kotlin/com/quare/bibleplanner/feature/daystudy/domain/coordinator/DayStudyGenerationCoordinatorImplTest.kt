@@ -142,8 +142,8 @@ internal class DayStudyGenerationCoordinatorImplTest {
         coordinator.start(passages, otherDayRoute, "Gênesis 2")
 
         // When / Then
-        assertEquals(2, coordinator.generatingCount(excludingKey = null))
-        assertEquals(1, coordinator.generatingCount(excludingKey = coordinator.keyOf(dayRoute)))
+        assertEquals(2, coordinator.getGeneratingCount(excludingKey = null))
+        assertEquals(1, coordinator.getGeneratingCount(excludingKey = coordinator.keyOf(dayRoute)))
     }
 
     @Test
@@ -158,7 +158,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         advanceUntilIdle()
 
         // Then
-        assertEquals(0, coordinator.generatingCount(excludingKey = null))
+        assertEquals(0, coordinator.getGeneratingCount(excludingKey = null))
     }
 
     @Test

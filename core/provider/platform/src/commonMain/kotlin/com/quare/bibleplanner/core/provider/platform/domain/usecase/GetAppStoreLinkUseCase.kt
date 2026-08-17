@@ -9,18 +9,21 @@ class GetAppStoreLinkUseCase(
     private val languageProvider: LanguageProvider,
 ) {
     operator fun invoke(): String = when (platform) {
-        Platform.Ios -> "https://apps.apple.com/${iosLocale()}/app/bible-planner-reading-plans/$APP_STORE_ID"
-        Platform.Android -> "https://play.google.com/store/apps/details?id=$ANDROID_PACKAGE_NAME&hl=${androidLocale()}"
+        Platform.Ios -> "https://apps.apple.com/${getIosLocale()}/app/bible-planner-reading-plans/$APP_STORE_ID"
+
+        Platform.Android ->
+            "https://play.google.com/store/apps/details?id=$ANDROID_PACKAGE_NAME&hl=${getAndroidLocale()}"
+
         is Platform.Desktop -> DESKTOP_URL
     }
 
-    private fun iosLocale(): String = when (languageProvider.getAppLanguage()) {
+    private fun getIosLocale(): String = when (languageProvider.getAppLanguage()) {
         Language.PORTUGUESE_BRAZIL -> "br"
         Language.SPANISH -> "es"
         Language.ENGLISH -> "us"
     }
 
-    private fun androidLocale(): String = when (languageProvider.getAppLanguage()) {
+    private fun getAndroidLocale(): String = when (languageProvider.getAppLanguage()) {
         Language.PORTUGUESE_BRAZIL -> "pt-BR"
         Language.SPANISH -> "es"
         Language.ENGLISH -> "en"

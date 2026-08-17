@@ -6,15 +6,18 @@ import platform.UIKit.UIUserInterfaceIdiomPad
 import platform.UIKit.UIUserInterfaceIdiomPhone
 
 internal actual class DeviceInfoProvider actual constructor() {
-    actual fun deviceName(): String = UIDevice.currentDevice.name
+    actual val deviceName: String
+        get() = UIDevice.currentDevice.name
 
-    actual fun platform(): String = PLATFORM_IOS
+    actual val platform: String
+        get() = PLATFORM_IOS
 
-    actual fun formFactor(): DeviceFormFactor = when (UIDevice.currentDevice.userInterfaceIdiom) {
-        UIUserInterfaceIdiomPad -> DeviceFormFactor.TABLET
-        UIUserInterfaceIdiomPhone -> DeviceFormFactor.PHONE
-        else -> DeviceFormFactor.UNKNOWN
-    }
+    actual val formFactor: DeviceFormFactor
+        get() = when (UIDevice.currentDevice.userInterfaceIdiom) {
+            UIUserInterfaceIdiomPad -> DeviceFormFactor.TABLET
+            UIUserInterfaceIdiomPhone -> DeviceFormFactor.PHONE
+            else -> DeviceFormFactor.UNKNOWN
+        }
 
     private companion object {
         const val PLATFORM_IOS = "ios"

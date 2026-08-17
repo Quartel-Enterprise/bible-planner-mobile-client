@@ -24,7 +24,7 @@ internal class ContactSupportUiStateFactory(
     private val sessionUserMapper: SessionUserMapper,
     private val platform: Platform,
 ) {
-    fun initialState(): ContactSupportUiState = ContactSupportUiState(
+    fun createInitialState(): ContactSupportUiState = ContactSupportUiState(
         accountStatusModel = AccountStatusModel.Loading,
         subscriptionStatus = Loadable.Loading,
         selectedLanguage = Loadable.Loading,
@@ -33,7 +33,7 @@ internal class ContactSupportUiStateFactory(
     )
 
     fun create(): Flow<ContactSupportUiState> = merge(
-        subscriptionStatusFlow().map { status ->
+        observeSubscriptionStatus().map { status ->
             { state: ContactSupportUiState -> state.copy(subscriptionStatus = Loadable.Loaded(status)) }
         },
         getAppLanguageFlow().map { language ->
@@ -42,9 +42,9 @@ internal class ContactSupportUiStateFactory(
         sessionStatus.map { status ->
             { state: ContactSupportUiState -> state.copy(accountStatusModel = status.toAccountStatusModel()) }
         },
-    ).scan(initialState()) { state, reduce -> reduce(state) }
+    ).scan(createInitialState()) { state, reduce -> reduce(state) }
 
-    private fun subscriptionStatusFlow(): Flow<SubscriptionStatus?> =
+    private fun observeSubscriptionStatus(): Flow<SubscriptionStatus?> =
         getSubscriptionStatusFlow?.invoke() ?: flowOf(null)
 
     private fun SessionStatus.toAccountStatusModel(): AccountStatusModel = when (this) {

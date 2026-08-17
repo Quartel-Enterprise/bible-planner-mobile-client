@@ -31,7 +31,7 @@ class JvmAvatarImageCropperTest {
     @Test
     fun `swaps the left and right quadrants when the photo is mirrored horizontally`() {
         // When
-        val output = crop(original().flippedHorizontally())
+        val output = crop(original().flipHorizontally())
 
         // Then
         assertQuadrants(
@@ -46,7 +46,7 @@ class JvmAvatarImageCropperTest {
     @Test
     fun `swaps the top and bottom quadrants when the photo is mirrored vertically`() {
         // When
-        val output = crop(original().flippedVertically())
+        val output = crop(original().flipVertically())
 
         // Then
         assertQuadrants(
@@ -61,7 +61,7 @@ class JvmAvatarImageCropperTest {
     @Test
     fun `turns the quadrants clockwise on a quarter turn`() {
         // When
-        val output = crop(original().rotatedQuarterTurn())
+        val output = crop(original().rotateQuarterTurn())
 
         // Then
         assertQuadrants(

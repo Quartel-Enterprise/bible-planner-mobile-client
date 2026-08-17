@@ -3,9 +3,9 @@ package com.quare.bibleplanner.core.devices.data
 import com.quare.bibleplanner.core.devices.domain.model.DeviceFormFactor
 
 internal expect class DeviceInfoProvider() {
-    fun deviceName(): String
+    val deviceName: String
 
-    fun platform(): String
+    val platform: String
 
-    fun formFactor(): DeviceFormFactor
+    val formFactor: DeviceFormFactor
 }

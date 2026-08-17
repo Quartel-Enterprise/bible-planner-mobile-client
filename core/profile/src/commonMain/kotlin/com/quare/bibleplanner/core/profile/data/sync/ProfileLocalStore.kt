@@ -11,7 +11,7 @@ internal class ProfileLocalStore(
     private val profileDao: ProfileDao,
     private val profileMapper: ProfileMapper,
 ) : SyncLocalStore<ProfileEntity, ProfileDto> {
-    override fun pendingFlow(): Flow<List<ProfileEntity>> = profileDao.getPendingFlow()
+    override fun observePending(): Flow<List<ProfileEntity>> = profileDao.getPendingFlow()
 
     override suspend fun getPending(): List<ProfileEntity> = profileDao.getPending()
 

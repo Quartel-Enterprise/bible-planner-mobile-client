@@ -271,10 +271,10 @@ private fun jobSubtitle(
 ): String = when {
     isDone && isMulti -> stringResource(Res.string.ai_study_bg_multi_done_subtitle)
     isDone -> stringResource(Res.string.ai_study_bg_done_subtitle)
-    else -> stringResource(job.phase.subtitleRes())
+    else -> stringResource(job.phase.toSubtitleRes())
 }
 
-private fun DayStudyPhaseModel?.subtitleRes(): StringResource = when (this) {
+private fun DayStudyPhaseModel?.toSubtitleRes(): StringResource = when (this) {
     DayStudyPhaseModel.CHAPTERS -> Res.string.ai_study_phase_chapters
     DayStudyPhaseModel.CONTEXT -> Res.string.ai_study_phase_context
     DayStudyPhaseModel.QUESTIONS -> Res.string.ai_study_phase_questions

@@ -49,7 +49,7 @@ internal class UserDevicesRemoteStore(
                 val change = when (action) {
                     is PostgresAction.Insert -> DeviceChange.Upserted(action.decodeRecord<UserDeviceDto>())
                     is PostgresAction.Update -> DeviceChange.Upserted(action.decodeRecord<UserDeviceDto>())
-                    is PostgresAction.Delete -> action.oldRecord.rowId()?.let(DeviceChange::Removed)
+                    is PostgresAction.Delete -> action.oldRecord.getRowId()?.let(DeviceChange::Removed)
                     else -> null
                 }
                 if (change != null) emit(change)
@@ -97,7 +97,7 @@ internal class UserDevicesRemoteStore(
         }
     }
 
-    private fun JsonObject.rowId(): String? = (get("id") as? JsonPrimitive)?.contentOrNull
+    private fun JsonObject.getRowId(): String? = (get("id") as? JsonPrimitive)?.contentOrNull
 
     private companion object {
         const val TABLE = "user_devices"

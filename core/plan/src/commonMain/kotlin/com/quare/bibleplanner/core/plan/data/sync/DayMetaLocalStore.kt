@@ -15,7 +15,7 @@ internal class DayMetaLocalStore(
     private val dayDao: DayDao,
     private val dayMetaMapper: DayMetaMapper,
 ) : SyncLocalStore<DayEntity, DayMetaDto> {
-    override fun pendingFlow(): Flow<List<DayEntity>> = dayDao.getPendingDayMetaSyncFlow()
+    override fun observePending(): Flow<List<DayEntity>> = dayDao.getPendingDayMetaSyncFlow()
 
     override suspend fun getPending(): List<DayEntity> = dayDao.getPendingDayMetaSync()
 
