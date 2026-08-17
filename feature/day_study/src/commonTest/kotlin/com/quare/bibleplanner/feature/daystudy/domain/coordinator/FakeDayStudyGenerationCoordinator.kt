@@ -46,7 +46,7 @@ internal class FakeDayStudyGenerationCoordinator : DayStudyGenerationCoordinator
 
     override fun acknowledge(key: String) = Unit
 
-    override fun generatingCount(excludingKey: String?): Int = 0
+    override fun getGeneratingCount(excludingKey: String?): Int = 0
 
     private companion object {
         const val KEY_SEPARATOR = "|"

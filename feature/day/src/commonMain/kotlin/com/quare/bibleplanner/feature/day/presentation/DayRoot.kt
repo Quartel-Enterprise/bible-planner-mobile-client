@@ -12,7 +12,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.core.model.route.dayStudyMainPane
+import com.quare.bibleplanner.core.model.route.getDayStudyMainPane
 import com.quare.bibleplanner.feature.day.presentation.component.TimeEditionDialog
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -28,7 +28,7 @@ fun EntryProviderScope<NavKey>.day(
     onNavigateBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
-    entry<DayNavRoute>(metadata = dayStudyMainPane()) { route ->
+    entry<DayNavRoute>(metadata = getDayStudyMainPane()) { route ->
         DayRootContent(
             route = route,
             onNavigate = onNavigate,

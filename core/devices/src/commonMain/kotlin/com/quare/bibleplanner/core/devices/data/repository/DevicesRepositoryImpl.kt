@@ -59,9 +59,9 @@ internal class DevicesRepositoryImpl(
         remoteStore.registerCurrentDevice(
             RegisterDeviceRequest(
                 deviceId = deviceIdProvider.getOrCreate(),
-                name = deviceInfoProvider.deviceName(),
-                platform = deviceInfoProvider.platform(),
-                formFactor = deviceInfoProvider.formFactor().toRaw(),
+                name = deviceInfoProvider.deviceName,
+                platform = deviceInfoProvider.platform,
+                formFactor = deviceInfoProvider.formFactor.toRaw(),
             ),
         )
     }

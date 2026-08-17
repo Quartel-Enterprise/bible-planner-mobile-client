@@ -39,5 +39,5 @@ interface DayStudyGenerationCoordinator {
 
     fun acknowledge(key: String)
 
-    fun generatingCount(excludingKey: String?): Int
+    fun getGeneratingCount(excludingKey: String?): Int
 }

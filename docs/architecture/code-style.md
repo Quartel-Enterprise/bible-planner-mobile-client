@@ -71,6 +71,56 @@ This applies to:
 - Extension functions
 - `operator fun invoke`
 
+## Function Naming
+
+A function that returns a value **must** be named as a **verb phrase**, and the verb **must** say what
+kind of operation it is. A bare noun (`avatarImageCropper()`, `pendingFlow()`, `dayParams()`) reads like a
+property and hides whether the call creates, reads, computes or does I/O.
+
+| Prefix | Use for |
+|---|---|
+| *(none — declare a `val`)* | no parameters and no real computation: it is not a function |
+| `get…` | cheap in-memory read that takes a parameter |
+| `fetch…` / `load…` | I/O — network, disk, database |
+| `observe…` | returns a `Flow` you subscribe to |
+| `create…` / `build…` | produces a **new** instance |
+| `find…` | lookup that may miss (pair with `…OrNull`) |
+| `to…` / `as…` | converts between representations |
+| `is…` / `has…` / `can…` | returns `Boolean` |
+
+```kotlin
+// Correct
+expect fun createAvatarImageCropper(): AvatarImageCropper
+fun observePending(): Flow<List<E>>
+fun getGeneratingCount(excludingKey: String?): Int
+val deviceName: String
+
+// Wrong
+expect fun avatarImageCropper(): AvatarImageCropper   // creates a new instance — 'get' would lie too
+fun pendingFlow(): Flow<List<E>>                      // noun; say what it does with the flow
+fun generatingCount(excludingKey: String?): Int       // noun
+fun deviceName(): String                              // no params, no computation — should be a val
+```
+
+Note that `get` is **not** a catch-all. In Kotlin a parameterless `getX()` should be a property, and
+`get` on a factory would claim the instance already exists.
+
+This is enforced automatically by the custom ktlint rule
+`bible-planner-style:value-returning-function-naming` (in `tools/ktlint-custom-rules`), which flags any
+function with a non-`Unit` return type whose name does not start with an approved verb.
+
+**Exempt** (the rule skips these):
+- `@Composable` functions that return a value — the Compose API guidelines deliberately name these as
+  nouns (`googleLogo()`, `megabytesText()`, `mainContentBottomInset()`).
+- Extension functions on `Modifier` (`Modifier.shimmer()`, `Modifier.verticalScrollbar()`).
+- `override` and `actual` declarations — the convention is enforced at the `expect`/interface site.
+- `operator` functions, and names ending in `…OrNull` / `…Of` / `…For`.
+- Members of a `@Dao` or `@Database` type — Room dictates `bookDao()`, `chapterDao()`, etc.
+- Test source sets — fixtures named after what they produce (`versionDto()`, `passage()`, `day()`) read
+  well in Given/When/Then, so the rule is disabled there in `.editorconfig`.
+
+New verbs are added to `ALLOWED_VERB_PREFIXES` in the rule when a genuinely new kind of operation shows up.
+
 ## Imports
 
 Never use fully-qualified (inline) type or function references in the body of a function or expression. Always add the import at the top of the file and use the simple name.

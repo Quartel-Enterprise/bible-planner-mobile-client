@@ -11,7 +11,7 @@ private const val JPEG_FORMAT = "jpg"
 private const val HALF = 2
 private const val STRAIGHT_ANGLE_DEGREES = 180.0
 
-actual fun avatarImageCropper(): AvatarImageCropper = JvmAvatarImageCropper()
+actual fun createAvatarImageCropper(): AvatarImageCropper = JvmAvatarImageCropper()
 
 internal class JvmAvatarImageCropper : AvatarImageCropper {
     override fun invoke(
@@ -21,7 +21,7 @@ internal class JvmAvatarImageCropper : AvatarImageCropper {
         val crop = computeCropRect(params)
         val decoded = ByteArrayInputStream(source).use(ImageIO::read)
             ?: throw UnsupportedImageFormatException()
-        val oriented = decoded.oriented(params.orientation)
+        val oriented = decoded.orient(params.orientation)
         val side = (crop.size * minOf(oriented.width, oriented.height)).toInt().coerceAtLeast(1)
         val left = (crop.left * oriented.width).toInt().coerceIn(0, oriented.width - 1)
         val top = (crop.top * oriented.height).toInt().coerceIn(0, oriented.height - 1)
@@ -45,7 +45,7 @@ internal class JvmAvatarImageCropper : AvatarImageCropper {
         }
     }
 
-    private fun BufferedImage.oriented(orientation: PhotoOrientation): BufferedImage {
+    private fun BufferedImage.orient(orientation: PhotoOrientation): BufferedImage {
         if (orientation.isOriginal) return this
         val sourceWidth = width
         val sourceHeight = height
@@ -57,7 +57,7 @@ internal class JvmAvatarImageCropper : AvatarImageCropper {
             translate(targetWidth / HALF, targetHeight / HALF)
             rotate(orientation.rotationDegrees * PI / STRAIGHT_ANGLE_DEGREES)
             scale(orientation.horizontalScale.toDouble(), orientation.verticalScale.toDouble())
-            drawImage(this@oriented, -sourceWidth / HALF, -sourceHeight / HALF, null)
+            drawImage(this@orient, -sourceWidth / HALF, -sourceHeight / HALF, null)
             dispose()
         }
         return target

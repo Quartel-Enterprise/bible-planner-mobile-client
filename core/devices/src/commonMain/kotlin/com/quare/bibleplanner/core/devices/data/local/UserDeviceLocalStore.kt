@@ -16,7 +16,7 @@ internal class UserDeviceLocalStore(
 ) {
     fun observeAll(): Flow<List<UserDeviceEntity>> = userDeviceDao.observeAll()
 
-    fun pendingFlow(): Flow<List<UserDeviceEntity>> = userDeviceDao.getPendingFlow()
+    fun observePending(): Flow<List<UserDeviceEntity>> = userDeviceDao.getPendingFlow()
 
     suspend fun getPending(): List<UserDeviceEntity> = userDeviceDao.getPending()
 

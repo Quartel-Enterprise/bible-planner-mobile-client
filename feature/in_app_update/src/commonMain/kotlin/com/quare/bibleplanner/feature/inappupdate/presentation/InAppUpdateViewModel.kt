@@ -30,7 +30,7 @@ internal class InAppUpdateViewModel(
     val uiState: StateFlow<InAppUpdateUiState> = _uiState
 
     init {
-        trackEvent(AnalyticsEventNames.UPDATE_PROMPT_SHOWN, promptParams(route.versionName))
+        trackEvent(AnalyticsEventNames.UPDATE_PROMPT_SHOWN, getPromptParams(route.versionName))
     }
 
     override fun handleEvent(event: InAppUpdateUiEvent) {
@@ -41,7 +41,7 @@ internal class InAppUpdateViewModel(
     }
 
     private fun onUpdateClick() {
-        trackEvent(AnalyticsEventNames.UPDATE_ACCEPTED, sourceParams())
+        trackEvent(AnalyticsEventNames.UPDATE_ACCEPTED, getSourceParams())
         viewModelScope.launch {
             startUpdate()
             emitAction(InAppUpdateUiAction.NavigateBack)
@@ -49,16 +49,16 @@ internal class InAppUpdateViewModel(
     }
 
     private fun onDismiss() {
-        trackEvent(AnalyticsEventNames.UPDATE_DISMISSED, sourceParams())
+        trackEvent(AnalyticsEventNames.UPDATE_DISMISSED, getSourceParams())
         emitAction(InAppUpdateUiAction.NavigateBack)
     }
 
-    private fun promptParams(versionName: String?): Map<String, Any> = buildMap {
+    private fun getPromptParams(versionName: String?): Map<String, Any> = buildMap {
         put(AnalyticsParams.SOURCE, source)
         versionName?.let { put(AnalyticsParams.VERSION, it) }
     }
 
-    private fun sourceParams(): Map<String, Any> = mapOf(AnalyticsParams.SOURCE to source)
+    private fun getSourceParams(): Map<String, Any> = mapOf(AnalyticsParams.SOURCE to source)
 
     private fun emitAction(action: InAppUpdateUiAction) {
         viewModelScope.launch {

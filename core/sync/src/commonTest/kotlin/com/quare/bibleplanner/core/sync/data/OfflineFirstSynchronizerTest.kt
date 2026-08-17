@@ -186,7 +186,7 @@ private class FakeLocalStore : SyncLocalStore<String, String> {
     val adoptProvisionalDefaultsCalls = mutableListOf<Long>()
     var appliedBeforeAdopting = emptyList<String>()
 
-    override fun pendingFlow(): Flow<List<String>> = pending
+    override fun observePending(): Flow<List<String>> = pending
 
     override suspend fun getPending(): List<String> = pending.value
 

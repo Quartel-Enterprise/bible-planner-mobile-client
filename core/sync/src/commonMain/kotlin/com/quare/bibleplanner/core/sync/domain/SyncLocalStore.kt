@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface SyncLocalStore<E, D> {
     /** Rows with local changes not yet acknowledged by the backend. */
-    fun pendingFlow(): Flow<List<E>>
+    fun observePending(): Flow<List<E>>
 
     /** Snapshot of the currently pending rows (for a one-shot flush, e.g. before logout). */
     suspend fun getPending(): List<E>

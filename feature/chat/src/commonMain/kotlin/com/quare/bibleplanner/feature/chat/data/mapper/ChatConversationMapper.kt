@@ -15,20 +15,20 @@ internal class ChatConversationMapper {
         id = dto.id,
         title = dto.title.orEmpty(),
         preview = dto.preview,
-        contextLabel = dto.context?.text(LABEL_KEY),
-        planDay = dto.context?.planDay(),
+        contextLabel = dto.context?.getText(LABEL_KEY),
+        planDay = dto.context?.getPlanDay(),
         updatedAt = Instant.parse(dto.updatedAt),
     )
 
-    private fun JsonObject.planDay(): ChatPlanDayModel? = ChatPlanDayModel(
-        dayNumber = number(DAY_NUMBER_KEY) ?: return null,
-        weekNumber = number(WEEK_NUMBER_KEY) ?: return null,
-        readingPlanType = text(READING_PLAN_TYPE_KEY) ?: return null,
+    private fun JsonObject.getPlanDay(): ChatPlanDayModel? = ChatPlanDayModel(
+        dayNumber = getNumber(DAY_NUMBER_KEY) ?: return null,
+        weekNumber = getNumber(WEEK_NUMBER_KEY) ?: return null,
+        readingPlanType = getText(READING_PLAN_TYPE_KEY) ?: return null,
     )
 
-    private fun JsonObject.text(key: String): String? = get(key)?.jsonPrimitive?.contentOrNull
+    private fun JsonObject.getText(key: String): String? = get(key)?.jsonPrimitive?.contentOrNull
 
-    private fun JsonObject.number(key: String): Int? = get(key)?.jsonPrimitive?.intOrNull
+    private fun JsonObject.getNumber(key: String): Int? = get(key)?.jsonPrimitive?.intOrNull
 
     fun map(
         conversationId: String,

@@ -67,7 +67,7 @@ internal class ProfileUiStateFactory(
     private val getAppLanguageFlow: GetAppLanguageFlow,
     private val platform: Platform,
 ) {
-    fun initialState(): ProfileUiState = ProfileUiState(
+    fun createInitialState(): ProfileUiState = ProfileUiState(
         accountStatusModel = AccountStatusModel.Loading,
         subscriptionStatus = Loadable.Loading,
         isProCardVisible = Loadable.Loaded(true),
@@ -81,7 +81,7 @@ internal class ProfileUiStateFactory(
         bibleVersionName = Loadable.Loading,
         bibleDownloadProgress = Loadable.Loading,
         planStartDate = Loadable.Loading,
-        currentDate = currentDate(),
+        currentDate = getCurrentDate(),
         appVersion = ProfileBuildKonfig.APP_VERSION,
         isUpdateRowVisible = platform !is Platform.Desktop,
         isCheckingForUpdate = false,
@@ -112,10 +112,10 @@ internal class ProfileUiStateFactory(
         getPlanStartDate().map { startDate ->
             { state: ProfileUiState -> state.copy(planStartDate = Loadable.Loaded(startDate)) }
         },
-        subscriptionStatusFlow().map { subscriptionStatus ->
+        observeSubscriptionStatus().map { subscriptionStatus ->
             { state: ProfileUiState -> state.copy(subscriptionStatus = Loadable.Loaded(subscriptionStatus)) }
         },
-        accountStatusFlow().map { accountStatusModel ->
+        observeAccountStatus().map { accountStatusModel ->
             { state: ProfileUiState -> state.copy(accountStatusModel = accountStatusModel) }
         },
         getBibleRowFlow().map { bibleRow ->
@@ -126,9 +126,9 @@ internal class ProfileUiStateFactory(
                 )
             }
         },
-    ).scan(initialState()) { state, reduce -> reduce(state) }
+    ).scan(createInitialState()) { state, reduce -> reduce(state) }
 
-    private fun subscriptionStatusFlow(): Flow<SubscriptionStatus?> =
+    private fun observeSubscriptionStatus(): Flow<SubscriptionStatus?> =
         getSubscriptionStatusFlow?.invoke() ?: flowOf(null)
 
     private fun getBibleRowFlow(): Flow<BibleRow> = combine(
@@ -166,12 +166,12 @@ internal class ProfileUiStateFactory(
         )
     }.distinctUntilChanged()
 
-    private fun currentDate(): LocalDate = Clock.System
+    private fun getCurrentDate(): LocalDate = Clock.System
         .now()
         .toLocalDateTime(TimeZone.currentSystemDefault())
         .date
 
-    private fun accountStatusFlow(): Flow<AccountStatusModel> = sessionStatus.flatMapLatest { status ->
+    private fun observeAccountStatus(): Flow<AccountStatusModel> = sessionStatus.flatMapLatest { status ->
         when (status) {
             is SessionStatus.Authenticated -> observeUserProfile().map { profile ->
                 profile?.let(AccountStatusModel::LoggedIn) ?: AccountStatusModel.Error

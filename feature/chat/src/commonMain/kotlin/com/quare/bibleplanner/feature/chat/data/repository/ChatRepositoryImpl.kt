@@ -362,7 +362,7 @@ internal class ChatRepositoryImpl(
     ): Throwable {
         pending?.let { discardPendingAnswer(it) }
         streamingAnswer.value = null
-        throwable.rateLimitRetrySeconds()?.let { seconds -> return ChatRateLimitedException(seconds) }
+        throwable.getRateLimitRetrySeconds()?.let { seconds -> return ChatRateLimitedException(seconds) }
         if (throwable.isLimitReached()) return ChatLimitReachedException()
         if (conversationId != null && throwable.isConversationGone()) {
             localDataSource.deleteConversation(conversationId)
@@ -373,18 +373,18 @@ internal class ChatRepositoryImpl(
         return throwable
     }
 
-    private fun Throwable.statusCode(): Int? = when (this) {
+    private fun Throwable.getStatusCode(): Int? = when (this) {
         is RestException -> statusCode
         is SSEClientException -> response?.status?.value
         else -> null
     }
 
-    private fun Throwable.isLimitReached(): Boolean = statusCode() == LIMIT_EXCEEDED_STATUS
+    private fun Throwable.isLimitReached(): Boolean = getStatusCode() == LIMIT_EXCEEDED_STATUS
 
-    private fun Throwable.isConversationGone(): Boolean = statusCode() == CONVERSATION_GONE_STATUS
+    private fun Throwable.isConversationGone(): Boolean = getStatusCode() == CONVERSATION_GONE_STATUS
 
-    private suspend fun Throwable.rateLimitRetrySeconds(): Int? {
-        if (statusCode() != RATE_LIMITED_STATUS) return null
+    private suspend fun Throwable.getRateLimitRetrySeconds(): Int? {
+        if (getStatusCode() != RATE_LIMITED_STATUS) return null
         val body = suspendRunCatching { (this as? SSEClientException)?.response?.bodyAsText() }.getOrNull()
             ?: return DEFAULT_RETRY_SECONDS
         return suspendRunCatching { json.decodeFromString(ChatRateLimitDto.serializer(), body).retryAfterSeconds }

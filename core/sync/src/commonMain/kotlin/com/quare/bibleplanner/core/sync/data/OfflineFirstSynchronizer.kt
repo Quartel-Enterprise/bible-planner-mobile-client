@@ -61,7 +61,7 @@ class OfflineFirstSynchronizer<E, D>(
      */
     override suspend fun runPushLoop() {
         combine(
-            localStore.pendingFlow(),
+            localStore.observePending(),
             networkConnectivityObserver.observe(),
         ) { pending, isOnline -> pending to isOnline }
             .collectLatest { (pending, isOnline) ->

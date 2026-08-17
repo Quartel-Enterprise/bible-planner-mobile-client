@@ -17,16 +17,16 @@ data class PhotoOrientation(
     val verticalScale: Float
         get() = if (isFlippedVertically) MIRRORED_SCALE else NORMAL_SCALE
 
-    fun rotatedQuarterTurn(): PhotoOrientation =
+    fun rotateQuarterTurn(): PhotoOrientation =
         copy(rotationDegrees = (rotationDegrees + QUARTER_TURN_DEGREES) % FULL_TURN_DEGREES)
 
-    fun flippedHorizontally(): PhotoOrientation = if (isQuarterTurned) {
+    fun flipHorizontally(): PhotoOrientation = if (isQuarterTurned) {
         copy(isFlippedVertically = !isFlippedVertically)
     } else {
         copy(isFlippedHorizontally = !isFlippedHorizontally)
     }
 
-    fun flippedVertically(): PhotoOrientation = if (isQuarterTurned) {
+    fun flipVertically(): PhotoOrientation = if (isQuarterTurned) {
         copy(isFlippedHorizontally = !isFlippedHorizontally)
     } else {
         copy(isFlippedVertically = !isFlippedVertically)

@@ -34,7 +34,7 @@ internal class ProfileSynchronizer(
     }
 
     override suspend fun pushPendingOnce() {
-        profileDao.getPending().firstPendingAvatar()?.let { entity ->
+        profileDao.getPending().findFirstPendingAvatar()?.let { entity ->
             suspendRunCatching { upload(entity) }
         }
         delegate.pushPendingOnce()
@@ -42,7 +42,7 @@ internal class ProfileSynchronizer(
 
     private suspend fun runAvatarUploadLoop() {
         combine(
-            profileDao.getPendingFlow().map { it.firstPendingAvatar() },
+            profileDao.getPendingFlow().map { it.findFirstPendingAvatar() },
             networkConnectivityObserver.observe(),
         ) { pendingAvatar, isOnline -> pendingAvatar.takeIf { isOnline } }
             .distinctUntilChangedBy { entity -> entity?.id to entity?.updatedAt }
@@ -82,7 +82,8 @@ internal class ProfileSynchronizer(
         )
     }
 
-    private fun List<ProfileEntity>.firstPendingAvatar(): ProfileEntity? = firstOrNull { it.pendingAvatarBytes != null }
+    private fun List<ProfileEntity>.findFirstPendingAvatar(): ProfileEntity? =
+        firstOrNull { it.pendingAvatarBytes != null }
 
     private companion object {
         const val LOG_TAG = "ProfileSync"

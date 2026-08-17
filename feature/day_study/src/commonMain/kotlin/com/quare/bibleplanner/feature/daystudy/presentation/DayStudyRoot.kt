@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
-import com.quare.bibleplanner.core.model.route.dayStudyDetailPane
+import com.quare.bibleplanner.core.model.route.getDayStudyDetailPane
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiAction
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyRouteViewModel
@@ -23,7 +23,7 @@ fun EntryProviderScope<NavKey>.dayStudy(
     onNavigate: (NavKey) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-    entry<DayStudyNavRoute>(metadata = dayStudyDetailPane()) { route ->
+    entry<DayStudyNavRoute>(metadata = getDayStudyDetailPane()) { route ->
         DayStudyRootContent(
             route = route,
             onNavigate = onNavigate,

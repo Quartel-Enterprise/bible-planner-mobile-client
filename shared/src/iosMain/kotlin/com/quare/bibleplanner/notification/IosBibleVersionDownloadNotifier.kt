@@ -41,7 +41,7 @@ internal class IosBibleVersionDownloadNotifier(
             setTitle(getString(Res.string.notification_complete_title, versionName))
             setBody(getString(Res.string.notification_complete_message))
         }
-        val request = UNNotificationRequest.requestWithIdentifier(completeId(versionId), content, trigger = null)
+        val request = UNNotificationRequest.requestWithIdentifier(getCompleteId(versionId), content, trigger = null)
         center.addNotificationRequest(request, withCompletionHandler = null)
     }
 
@@ -53,19 +53,19 @@ internal class IosBibleVersionDownloadNotifier(
             setTitle(getString(Res.string.notification_error_title, versionName))
             setBody(getString(Res.string.notification_error_message))
         }
-        val request = UNNotificationRequest.requestWithIdentifier(errorId(versionId), content, trigger = null)
+        val request = UNNotificationRequest.requestWithIdentifier(getErrorId(versionId), content, trigger = null)
         center.addNotificationRequest(request, withCompletionHandler = null)
     }
 
     override suspend fun dismiss(versionId: String) {
-        removeNotifications(listOf(progressId(versionId), completeId(versionId), errorId(versionId)))
+        removeNotifications(listOf(getProgressId(versionId), getCompleteId(versionId), getErrorId(versionId)))
     }
 
-    private fun progressId(versionId: String): String = "${versionId}_progress"
+    private fun getProgressId(versionId: String): String = "${versionId}_progress"
 
-    private fun completeId(versionId: String): String = "${versionId}_complete"
+    private fun getCompleteId(versionId: String): String = "${versionId}_complete"
 
-    private fun errorId(versionId: String): String = "${versionId}_error"
+    private fun getErrorId(versionId: String): String = "${versionId}_error"
 
     private fun removeNotifications(identifiers: List<String>) {
         center.removePendingNotificationRequestsWithIdentifiers(identifiers)

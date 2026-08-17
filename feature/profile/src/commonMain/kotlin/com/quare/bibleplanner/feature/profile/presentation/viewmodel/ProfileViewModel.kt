@@ -77,7 +77,7 @@ internal class ProfileViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
-        initialValue = uiStateFactory.initialState(),
+        initialValue = uiStateFactory.createInitialState(),
     )
 
     override fun handleEvent(event: ProfileUiEvent) {

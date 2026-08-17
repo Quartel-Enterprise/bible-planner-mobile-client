@@ -46,7 +46,7 @@ val supabaseModule = module {
     }
     single<SupabaseClient> { getSupabaseClient(get()) }
     single<Auth> { get<SupabaseClient>().auth }
-    single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.ignoringTransientInitializing() }
+    single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.filterTransientInitializing() }
     single<Realtime> { get<SupabaseClient>().realtime }
     single<Functions> { get<SupabaseClient>().functions }
     single<BucketApi>(named(CONTENT_BUCKET)) {
@@ -57,7 +57,7 @@ val supabaseModule = module {
     }
 }
 
-private fun StateFlow<SessionStatus>.ignoringTransientInitializing(): StateFlow<SessionStatus> =
+private fun StateFlow<SessionStatus>.filterTransientInitializing(): StateFlow<SessionStatus> =
     runningReduce { resolved, next ->
         if (next is SessionStatus.Initializing) resolved else next
     }.stateIn(
