@@ -7,7 +7,7 @@ buildkonfig = "0.22.0"
 ktlint = "1.8.0"
 ktlint-gradle = "14.2.0"
 google-services = "4.5.0"
-firebase-crashlytics-plugin = "3.0.7"
+firebase-crashlytics-plugin = "3.0.8"
 
 # Android SDK levels
 android-minSdk = "26"
@@ -42,7 +42,7 @@ compose-shimmer = "1.5.0"
 # Third party
 coil = "3.5.0"
 filekit = "0.15.0"
-firebase-bom = "34.17.0"
+firebase-bom = "34.18.0"
 kermit = "2.1.0"
 koin = "4.2.2"
 ktor = "3.5.2"
