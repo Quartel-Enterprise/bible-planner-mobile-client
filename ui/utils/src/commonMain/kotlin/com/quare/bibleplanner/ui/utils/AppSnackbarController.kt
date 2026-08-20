@@ -3,7 +3,6 @@ package com.quare.bibleplanner.ui.utils
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import org.jetbrains.compose.resources.StringResource
 
 /**
  * App-wide snackbar channel: features push a message and the root scaffold shows it on the

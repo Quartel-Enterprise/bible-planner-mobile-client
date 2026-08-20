@@ -9,6 +9,6 @@ object ReaderPaneKey : NavMetadataKey<Boolean>
 /** Marks the selection entry that renders over — or beside — the reader. */
 object VerseSelectionPaneKey : NavMetadataKey<Boolean>
 
-fun readerPane(): Map<String, Any> = metadata { put(ReaderPaneKey, true) }
+fun getReaderPane(): Map<String, Any> = metadata { put(ReaderPaneKey, true) }
 
-fun verseSelectionPane(): Map<String, Any> = metadata { put(VerseSelectionPaneKey, true) }
+fun getVerseSelectionPane(): Map<String, Any> = metadata { put(VerseSelectionPaneKey, true) }

@@ -8,7 +8,7 @@ class CropGeometryTest {
     @Test
     fun `fits the shorter side of the image exactly into the circle at rest`() {
         // When
-        val scale = circleCoverScale(
+        val scale = getCircleCoverScale(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
@@ -65,7 +65,7 @@ class CropGeometryTest {
     @Test
     fun `blocks sideways panning at minimum zoom so the image never leaves the circle`() {
         // When
-        val (maxX, maxY) = maxPanOffset(
+        val (maxX, maxY) = getMaxPanOffset(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
@@ -81,7 +81,7 @@ class CropGeometryTest {
     @Test
     fun `unlocks sideways panning once the user zooms in`() {
         // When
-        val (maxX, maxY) = maxPanOffset(
+        val (maxX, maxY) = getMaxPanOffset(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
@@ -97,7 +97,7 @@ class CropGeometryTest {
     @Test
     fun `swaps the panning axes when the photo is turned sideways`() {
         // When
-        val (maxX, maxY) = maxPanOffset(
+        val (maxX, maxY) = getMaxPanOffset(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
@@ -131,7 +131,7 @@ class CropGeometryTest {
         isFlippedVertically = false,
     )
 
-    private fun quarterTurned(): PhotoOrientation = original().rotatedQuarterTurn()
+    private fun quarterTurned(): PhotoOrientation = original().rotateQuarterTurn()
 
     private companion object {
         const val TOLERANCE = 0.001f

@@ -11,7 +11,7 @@ internal class ChatDraftLocalStore(
     private val chatDraftDao: ChatDraftDao,
     private val mapper: ChatDraftMapper,
 ) : SyncLocalStore<ChatDraftEntity, ChatDraftDto> {
-    override fun pendingFlow(): Flow<List<ChatDraftEntity>> = chatDraftDao.getPendingSyncFlow()
+    override fun observePending(): Flow<List<ChatDraftEntity>> = chatDraftDao.getPendingSyncFlow()
 
     override suspend fun getPending(): List<ChatDraftEntity> = chatDraftDao.getPendingSync()
 

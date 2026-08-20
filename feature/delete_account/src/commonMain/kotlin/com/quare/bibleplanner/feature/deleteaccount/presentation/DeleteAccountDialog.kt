@@ -247,14 +247,14 @@ private fun DeleteAccountStatusContent(phase: DeleteAccountPhase?) {
             CircularProgressIndicator(modifier = Modifier.size(progressIconSize))
         }
         Text(
-            text = stringResource(phase.messageRes()),
+            text = stringResource(phase.toMessageRes()),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
         )
     }
 }
 
-private fun DeleteAccountPhase?.messageRes(): StringResource = when (this) {
+private fun DeleteAccountPhase?.toMessageRes(): StringResource = when (this) {
     DeleteAccountPhase.DELETING_DATA -> Res.string.delete_account_deleting_data
     DeleteAccountPhase.CLOSING_ACCOUNT -> Res.string.delete_account_closing
     null -> Res.string.delete_account_deleted

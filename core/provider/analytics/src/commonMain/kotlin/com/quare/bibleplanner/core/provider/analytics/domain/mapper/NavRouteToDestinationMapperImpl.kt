@@ -55,43 +55,43 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
     override fun map(route: NavRoute): Destination? = when (route) {
         is MainNavRoute -> null
 
-        is MainNavRouteDestination.Plans -> screen("plans")
+        is MainNavRouteDestination.Plans -> createScreenDestination("plans")
 
-        is MainNavRouteDestination.Books -> screen("books")
+        is MainNavRouteDestination.Books -> createScreenDestination("books")
 
-        is MainNavRouteDestination.Profile -> screen("profile")
+        is MainNavRouteDestination.Profile -> createScreenDestination("profile")
 
-        is AccountDetailsNavRoute -> responsive("account_details")
+        is AccountDetailsNavRoute -> createResponsiveDestination("account_details")
 
-        is EditProfileNavRoute -> responsive("edit_profile")
+        is EditProfileNavRoute -> createResponsiveDestination("edit_profile")
 
-        is CropPhotoNavRoute -> screen("crop_profile_photo")
+        is CropPhotoNavRoute -> createScreenDestination("crop_profile_photo")
 
-        is EditPhotoSourceNavRoute -> responsive("edit_profile_photo_source")
+        is EditPhotoSourceNavRoute -> createResponsiveDestination("edit_profile_photo_source")
 
-        is EditNameNavRoute -> dialog("edit_profile_name")
+        is EditNameNavRoute -> createDialogDestination("edit_profile_name")
 
-        is ExpandedPhotoNavRoute -> dialog("profile_photo_expanded")
+        is ExpandedPhotoNavRoute -> createDialogDestination("profile_photo_expanded")
 
-        is AddNotesFreeWarningNavRoute -> dialog(
+        is AddNotesFreeWarningNavRoute -> createDialogDestination(
             name = "add_notes_free_warning",
             params = mapOf(AnalyticsParams.MAX_FREE_NOTES to route.maxFreeNotesAmount),
         )
 
-        is AppLanguageNavRoute -> responsive("app_language")
+        is AppLanguageNavRoute -> createResponsiveDestination("app_language")
 
-        is BibleVersionSelectorRoute -> responsive("bible_version_selector")
+        is BibleVersionSelectorRoute -> createResponsiveDestination("bible_version_selector")
 
-        is BookDetailsNavRoute -> screen(
+        is BookDetailsNavRoute -> createScreenDestination(
             name = "book_details",
             params = mapOf(AnalyticsParams.BOOK_ID to route.bookId),
         )
 
-        is CongratsNavRoute -> bottomSheet("congrats")
+        is CongratsNavRoute -> createBottomSheetDestination("congrats")
 
-        is ContactSupportNavRoute -> responsive("contact_support")
+        is ContactSupportNavRoute -> createResponsiveDestination("contact_support")
 
-        is DayNavRoute -> screen(
+        is DayNavRoute -> createScreenDestination(
             name = "day",
             params = mapOf(
                 AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
@@ -100,7 +100,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             ),
         )
 
-        is DayStudyNavRoute -> screen(
+        is DayStudyNavRoute -> createScreenDestination(
             name = "day_study",
             params = mapOf(
                 AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
@@ -109,7 +109,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             ),
         )
 
-        is ChatNavRoute -> screen(
+        is ChatNavRoute -> createScreenDestination(
             name = "ai_chat",
             params = buildMap {
                 put(AnalyticsParams.SOURCE, route.source.key)
@@ -119,11 +119,11 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             },
         )
 
-        is DeleteAllProgressNavRoute -> dialog("delete_all_progress")
+        is DeleteAllProgressNavRoute -> createDialogDestination("delete_all_progress")
 
-        is DeleteAccountNavRoute -> dialog("delete_account")
+        is DeleteAccountNavRoute -> createDialogDestination("delete_account")
 
-        is DeleteNotesRoute -> dialog(
+        is DeleteNotesRoute -> createDialogDestination(
             name = "delete_notes",
             params = mapOf(
                 AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
@@ -132,40 +132,40 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             ),
         )
 
-        is DeleteVersionNavRoute -> dialog(
+        is DeleteVersionNavRoute -> createDialogDestination(
             name = "delete_version",
             params = mapOf(AnalyticsParams.VERSION_ID to route.versionId),
         )
 
-        is DonationNavRoute -> bottomSheet("donation")
+        is DonationNavRoute -> createBottomSheetDestination("donation")
 
-        is EditPlanStartDateNavRoute -> dialog("edit_plan_start_date")
+        is EditPlanStartDateNavRoute -> createDialogDestination("edit_plan_start_date")
 
-        is InAppUpdateNavRoute -> responsive("in_app_update")
+        is InAppUpdateNavRoute -> createResponsiveDestination("in_app_update")
 
-        is LoginNavRoute -> bottomSheet("login")
+        is LoginNavRoute -> createBottomSheetDestination("login")
 
-        is LoginSyncNudgeNavRoute -> dialog("login_sync_nudge")
+        is LoginSyncNudgeNavRoute -> createDialogDestination("login_sync_nudge")
 
-        is LoginWarningNavRoute -> dialog(
+        is LoginWarningNavRoute -> createDialogDestination(
             name = "login_warning",
             params = mapOf(AnalyticsParams.REASON to route.reason),
         )
 
-        is LogoutNavRoute -> dialog("logout")
+        is LogoutNavRoute -> createDialogDestination("logout")
 
-        is MaterialYouBottomSheetNavRoute -> dialog("material_you")
+        is MaterialYouBottomSheetNavRoute -> createDialogDestination("material_you")
 
-        is NotificationPermissionNavRoute -> dialog("notification_permission")
+        is NotificationPermissionNavRoute -> createDialogDestination("notification_permission")
 
-        is PaywallNavRoute -> screen(
+        is PaywallNavRoute -> createScreenDestination(
             name = "paywall",
             params = mapOf(AnalyticsParams.SOURCE to route.source.key),
         )
 
-        is PixQrNavRoute -> dialog("pix_qr")
+        is PixQrNavRoute -> createDialogDestination("pix_qr")
 
-        is ReadNavRoute -> screen(
+        is ReadNavRoute -> createScreenDestination(
             name = "read",
             params = mapOf(
                 AnalyticsParams.BOOK_ID to route.bookId,
@@ -173,32 +173,32 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             ),
         )
 
-        is ReaderAppearanceNavRoute -> responsive("reader_appearance")
+        is ReaderAppearanceNavRoute -> createResponsiveDestination("reader_appearance")
 
-        is DeleteHighlightColorNavRoute -> dialog("delete_highlight_color")
+        is DeleteHighlightColorNavRoute -> createDialogDestination("delete_highlight_color")
 
-        is VerseNoteNavRoute -> responsive("verse_note")
+        is VerseNoteNavRoute -> createResponsiveDestination("verse_note")
 
-        is VerseSelectionNavRoute -> responsive("verse_selection")
+        is VerseSelectionNavRoute -> createResponsiveDestination("verse_selection")
 
-        is ShareVerseNavRoute -> responsive("share_verse")
+        is ShareVerseNavRoute -> createResponsiveDestination("share_verse")
 
-        is ShareVerseImageNavRoute -> responsive("share_verse_image")
+        is ShareVerseImageNavRoute -> createResponsiveDestination("share_verse_image")
 
-        is PendingBibleUpdatesNavRoute -> dialog("pending_bible_updates")
+        is PendingBibleUpdatesNavRoute -> createDialogDestination("pending_bible_updates")
 
-        is ReleaseNotesNavRoute -> screen("release_notes")
+        is ReleaseNotesNavRoute -> createScreenDestination("release_notes")
 
-        is RenameDeviceNavRoute -> dialog("rename_device")
+        is RenameDeviceNavRoute -> createDialogDestination("rename_device")
 
-        is SubscriptionDetailsNavRoute -> dialog("subscription_details")
+        is SubscriptionDetailsNavRoute -> createDialogDestination("subscription_details")
 
-        is ThemeNavRoute -> responsive("theme_selection")
+        is ThemeNavRoute -> createResponsiveDestination("theme_selection")
 
-        is UpdateDownloadedNavRoute -> dialog("update_downloaded")
+        is UpdateDownloadedNavRoute -> createDialogDestination("update_downloaded")
     }
 
-    private fun screen(
+    private fun createScreenDestination(
         name: String,
         params: Map<String, Any> = emptyMap(),
     ): Destination = Destination(
@@ -207,7 +207,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         params = params,
     )
 
-    private fun dialog(
+    private fun createDialogDestination(
         name: String,
         params: Map<String, Any> = emptyMap(),
     ): Destination = Destination(
@@ -216,7 +216,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         params = params,
     )
 
-    private fun bottomSheet(
+    private fun createBottomSheetDestination(
         name: String,
         params: Map<String, Any> = emptyMap(),
     ): Destination = Destination(
@@ -225,7 +225,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         params = params,
     )
 
-    private fun responsive(
+    private fun createResponsiveDestination(
         name: String,
         params: Map<String, Any> = emptyMap(),
     ): Destination = Destination(

@@ -200,7 +200,7 @@ internal class ReadingPlanViewModel(
             }
 
             ReadingPlanUiEvent.OnToggleUpcomingExpanded -> {
-                loadedState()?.let { state ->
+                getLoadedState()?.let { state ->
                     val isExpanded = !state.upcomingExpanded
                     updateLoaded { it.copy(upcomingExpanded = isExpanded) }
                     trackGroupToggled(
@@ -211,7 +211,7 @@ internal class ReadingPlanViewModel(
             }
 
             ReadingPlanUiEvent.OnToggleCompletedExpanded -> {
-                loadedState()?.let { state ->
+                getLoadedState()?.let { state ->
                     val isExpanded = !state.completedExpanded
                     updateLoaded { it.copy(completedExpanded = isExpanded) }
                     trackGroupToggled(
@@ -222,10 +222,10 @@ internal class ReadingPlanViewModel(
             }
 
             ReadingPlanUiEvent.OnGoToActiveRowClick ->
-                scrollAndFlashToDay(loadedState()?.planStatus?.nextDay)
+                scrollAndFlashToDay(getLoadedState()?.planStatus?.nextDay)
 
             ReadingPlanUiEvent.OnSkipToTodayClick ->
-                scrollAndFlashToDay(loadedState()?.planStatus?.todayDay)
+                scrollAndFlashToDay(getLoadedState()?.planStatus?.todayDay)
 
             ReadingPlanUiEvent.OnScrollToTopClick -> {
                 updateState { state ->
@@ -509,7 +509,7 @@ internal class ReadingPlanViewModel(
         )
     }
 
-    private fun loadedState(): ReadingPlanUiState.Loaded? = _uiState.value as? ReadingPlanUiState.Loaded
+    private fun getLoadedState(): ReadingPlanUiState.Loaded? = _uiState.value as? ReadingPlanUiState.Loaded
 
     private fun updateLoaded(transform: (ReadingPlanUiState.Loaded) -> ReadingPlanUiState.Loaded) {
         _uiState.update { state ->

@@ -38,9 +38,9 @@ internal class ResolvePlanStatusUseCase : ResolvePlanStatus {
             totalDays = indexedDays.size,
             readDays = readDays,
             streakDays = calculateStreak(indexedDays),
-            daysAhead = diffOrZero(todayGlobalIndex, lastReadGlobalIndex),
-            daysBehind = diffOrZero(todayGlobalIndex, nextDay?.globalIndex, reversed = true),
-            daysSinceLastRead = diffOrZero(todayGlobalIndex, lastReadGlobalIndex, reversed = true)
+            daysAhead = getDiffOrZero(todayGlobalIndex, lastReadGlobalIndex),
+            daysBehind = getDiffOrZero(todayGlobalIndex, nextDay?.globalIndex, reversed = true),
+            daysSinceLastRead = getDiffOrZero(todayGlobalIndex, lastReadGlobalIndex, reversed = true)
                 .takeIf { it > 0 },
         )
     }
@@ -58,7 +58,7 @@ internal class ResolvePlanStatusUseCase : ResolvePlanStatus {
         else -> PlanMode.Ahead
     }
 
-    private fun diffOrZero(
+    private fun getDiffOrZero(
         todayGlobalIndex: Int?,
         otherGlobalIndex: Int?,
         reversed: Boolean = false,

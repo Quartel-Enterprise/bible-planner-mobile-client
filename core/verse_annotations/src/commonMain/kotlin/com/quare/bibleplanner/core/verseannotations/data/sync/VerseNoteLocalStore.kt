@@ -11,7 +11,7 @@ internal class VerseNoteLocalStore(
     private val verseNoteDao: VerseNoteDao,
     private val verseNoteSyncMapper: VerseNoteSyncMapper,
 ) : SyncLocalStore<VerseNoteWithVerses, VerseNoteDto> {
-    override fun pendingFlow(): Flow<List<VerseNoteWithVerses>> = verseNoteDao.getPendingSyncNotesFlow()
+    override fun observePending(): Flow<List<VerseNoteWithVerses>> = verseNoteDao.getPendingSyncNotesFlow()
 
     override suspend fun getPending(): List<VerseNoteWithVerses> = verseNoteDao.getPendingSyncNotes()
 

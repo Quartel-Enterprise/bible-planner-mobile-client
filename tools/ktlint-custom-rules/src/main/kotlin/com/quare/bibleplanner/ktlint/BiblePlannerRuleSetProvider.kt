@@ -12,5 +12,7 @@ class BiblePlannerRuleSetProvider : RuleSetProviderV3(RuleSetId(RULE_SET_ID)) {
         RuleProvider { WhenEntrySingleStatementBracesRule() },
         RuleProvider { FunInterfaceRule() },
         RuleProvider { RedundantSamConstructorArgumentRule() },
+        RuleProvider { ValueReturningFunctionNamingRule() },
+        RuleProvider { UnitFunctionBlockBodyRule() },
     )
 }

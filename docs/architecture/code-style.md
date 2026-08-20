@@ -30,6 +30,13 @@ This applies to:
 - Extension functions
 - Composable functions (return `Unit` — use block body, omit return type)
 
+The block-body half of this is enforced by the custom ktlint rule
+`bible-planner-style:unit-function-block-body` (in `tools/ktlint-custom-rules`). Ktlint rules have no type
+resolution, so the rule flags the two cases it can prove: an explicit `: Unit` return type paired with an
+expression body, and an expression body that delegates to a `Unit`-returning function declared in the same
+class or file. A body that calls a `Unit` function from another file (`= println(...)`) is invisible to it —
+treat the rule as a net, not a guarantee.
+
 ## Expression Body
 
 Non-Unit functions **must** use expression body (`=`) whenever the entire body is a single expression. Reserve block body (`{ return ... }`) for functions that require multiple statements.
@@ -71,6 +78,56 @@ This applies to:
 - Extension functions
 - `operator fun invoke`
 
+## Function Naming
+
+A function that returns a value **must** be named as a **verb phrase**, and the verb **must** say what
+kind of operation it is. A bare noun (`avatarImageCropper()`, `pendingFlow()`, `dayParams()`) reads like a
+property and hides whether the call creates, reads, computes or does I/O.
+
+| Prefix | Use for |
+|---|---|
+| *(none — declare a `val`)* | no parameters and no real computation: it is not a function |
+| `get…` | cheap in-memory read that takes a parameter |
+| `fetch…` / `load…` | I/O — network, disk, database |
+| `observe…` | returns a `Flow` you subscribe to |
+| `create…` / `build…` | produces a **new** instance |
+| `find…` | lookup that may miss (pair with `…OrNull`) |
+| `to…` / `as…` | converts between representations |
+| `is…` / `has…` / `can…` | returns `Boolean` |
+
+```kotlin
+// Correct
+expect fun createAvatarImageCropper(): AvatarImageCropper
+fun observePending(): Flow<List<E>>
+fun getGeneratingCount(excludingKey: String?): Int
+val deviceName: String
+
+// Wrong
+expect fun avatarImageCropper(): AvatarImageCropper   // creates a new instance — 'get' would lie too
+fun pendingFlow(): Flow<List<E>>                      // noun; say what it does with the flow
+fun generatingCount(excludingKey: String?): Int       // noun
+fun deviceName(): String                              // no params, no computation — should be a val
+```
+
+Note that `get` is **not** a catch-all. In Kotlin a parameterless `getX()` should be a property, and
+`get` on a factory would claim the instance already exists.
+
+This is enforced automatically by the custom ktlint rule
+`bible-planner-style:value-returning-function-naming` (in `tools/ktlint-custom-rules`), which flags any
+function with a non-`Unit` return type whose name does not start with an approved verb.
+
+**Exempt** (the rule skips these):
+- `@Composable` functions that return a value — the Compose API guidelines deliberately name these as
+  nouns (`googleLogo()`, `megabytesText()`, `mainContentBottomInset()`).
+- Extension functions on `Modifier` (`Modifier.shimmer()`, `Modifier.verticalScrollbar()`).
+- `override` and `actual` declarations — the convention is enforced at the `expect`/interface site.
+- `operator` functions, and names ending in `…OrNull` / `…Of` / `…For`.
+- Members of a `@Dao` or `@Database` type — Room dictates `bookDao()`, `chapterDao()`, etc.
+- Test source sets — fixtures named after what they produce (`versionDto()`, `passage()`, `day()`) read
+  well in Given/When/Then, so the rule is disabled there in `.editorconfig`.
+
+New verbs are added to `ALLOWED_VERB_PREFIXES` in the rule when a genuinely new kind of operation shows up.
+
 ## Imports
 
 Never use fully-qualified (inline) type or function references in the body of a function or expression. Always add the import at the top of the file and use the simple name.
@@ -96,6 +153,30 @@ This applies to:
 - Extension function receivers
 - Companion object and static-style calls
 - Type aliases and generic bounds
+
+### No unused imports
+
+Unused imports are a build error. Stock ktlint ships `standard:no-unused-imports` but leaves it off in the
+`ktlint_official` code style, so it is turned on explicitly in `.editorconfig`
+(`ktlint_standard_no-unused-imports = enabled`). It is autocorrectable — `./scripts/ktlint.sh --format`
+strips them. The rule counts KDoc `[Link]` references as usages, so an import that only exists to make a
+KDoc link resolve is kept.
+
+Note that commented-out code does not count as a usage. Commenting out a block and leaving its imports
+behind fails the build.
+
+### No wildcard imports
+
+Every import names exactly one symbol — `import androidx.compose.foundation.layout.Row`, never
+`import androidx.compose.foundation.layout.*`.
+
+This one needs no configuration: `standard:no-wildcard-imports` is enabled by default in the
+`ktlint_official` code style. Because `ij_kotlin_packages_to_use_import_on_demand` is left unset in
+`.editorconfig`, no package is exempt — not even `java.util.*`.
+
+Unlike the rule above, this one is **not** autocorrectable, since ktlint cannot know which concrete
+symbols a wildcard stands for. `--format` will not fix it; expand the import by hand, or let the IDE's
+*Optimize Imports* do it.
 
 ## Naming File-Scoped Constants
 

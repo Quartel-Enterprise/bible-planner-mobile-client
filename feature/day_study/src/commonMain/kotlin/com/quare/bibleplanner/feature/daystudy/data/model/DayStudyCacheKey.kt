@@ -11,18 +11,18 @@ internal data class DayStudyCacheKey(
     fun asStorageKey(): String {
         val passagesPart = passages
             .sortedBy(PassageRequestDto::book)
-            .joinToString(PASSAGE_SEPARATOR, transform = ::passageKey)
+            .joinToString(PASSAGE_SEPARATOR, transform = ::getPassageKey)
         return listOf(passagesPart, version, language).joinToString(FIELD_SEPARATOR)
     }
 
-    private fun passageKey(passage: PassageRequestDto): String {
+    private fun getPassageKey(passage: PassageRequestDto): String {
         val chaptersPart = passage.chapters
             .sortedWith(compareBy(ChapterRequestDto::number, ChapterRequestDto::startVerse))
-            .joinToString(CHAPTER_SEPARATOR, transform = ::chapterKey)
+            .joinToString(CHAPTER_SEPARATOR, transform = ::getChapterKey)
         return "${passage.book}$BOOK_CHAPTERS_SEPARATOR$chaptersPart"
     }
 
-    private fun chapterKey(chapter: ChapterRequestDto): String =
+    private fun getChapterKey(chapter: ChapterRequestDto): String =
         if (chapter.startVerse == null && chapter.endVerse == null) {
             chapter.number.toString()
         } else {

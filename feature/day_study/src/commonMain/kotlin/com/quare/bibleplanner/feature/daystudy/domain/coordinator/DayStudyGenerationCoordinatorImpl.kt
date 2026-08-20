@@ -91,7 +91,7 @@ class DayStudyGenerationCoordinatorImpl(
         applicationScope.launch {
             val streamJob = launch { runGeneration(key = key, passages = passages, dayRoute = dayRoute) }
             val connectivityWatcher = launch {
-                connectivitySignals().firstOrNull { isOnline -> !isOnline } ?: return@launch
+                observeConnectivity().firstOrNull { isOnline -> !isOnline } ?: return@launch
                 streamJob.cancel()
                 failGeneration(
                     key = key,
@@ -106,7 +106,7 @@ class DayStudyGenerationCoordinatorImpl(
         return key
     }
 
-    private fun connectivitySignals(): Flow<Boolean> = merge(
+    private fun observeConnectivity(): Flow<Boolean> = merge(
         networkConnectivityObserver.observe(),
         flow {
             while (true) {
@@ -226,7 +226,7 @@ class DayStudyGenerationCoordinatorImpl(
         _dismissedKeys.update { it - key }
     }
 
-    override fun generatingCount(excludingKey: String?): Int = _jobs.value.count { job ->
+    override fun getGeneratingCount(excludingKey: String?): Int = _jobs.value.count { job ->
         job.key != excludingKey && job.status == DayStudyGenerationStatus.Generating
     }
 
@@ -260,7 +260,7 @@ class DayStudyGenerationCoordinatorImpl(
     ) {
         val mark = generationStartMarks.remove(key) ?: return
         val durationMs = mark.elapsedNow().inWholeMilliseconds
-        val phaseDurations = phaseDurations(
+        val phaseDurations = getPhaseDurations(
             entries = phaseEntriesByKey.remove(key).orEmpty(),
             totalMs = durationMs,
         )
@@ -280,7 +280,7 @@ class DayStudyGenerationCoordinatorImpl(
         )
     }
 
-    private fun phaseDurations(
+    private fun getPhaseDurations(
         entries: Map<DayStudyPhaseModel, Long>,
         totalMs: Long,
     ): Map<String, Long> {

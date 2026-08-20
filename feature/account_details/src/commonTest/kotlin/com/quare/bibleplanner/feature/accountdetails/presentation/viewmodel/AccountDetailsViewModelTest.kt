@@ -2,15 +2,11 @@ package com.quare.bibleplanner.feature.accountdetails.presentation.viewmodel
 
 import com.quare.bibleplanner.core.devices.domain.model.DeviceFormFactor
 import com.quare.bibleplanner.core.devices.domain.model.DeviceModel
-import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDevices
-import com.quare.bibleplanner.core.devices.domain.usecase.SignOutDevice
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
-import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.user.domain.model.UserModel
-import com.quare.bibleplanner.core.user.domain.usecase.ObserveCurrentUser
 import com.quare.bibleplanner.feature.accountdetails.presentation.mapper.DeviceUiModelMapper
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiAction
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiEvent
@@ -33,7 +29,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 

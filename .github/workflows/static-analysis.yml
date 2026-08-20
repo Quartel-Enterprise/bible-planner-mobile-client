@@ -4,21 +4,25 @@ on:
   pull_request:
     paths:
       - '.github/workflows/static-analysis.yml'
-      - 'scripts/ci-local.sh'
+      - '.github/actions/ktlint/action.yml'
+      - '.github/actions/gradle/action.yml'
+      - 'scripts/ktlint.sh'
       - '**/*.kt'
       - '**/*.kts'
       - '.editorconfig'
-      - 'build.gradle.kts'
+      - 'gradle/libs.versions.toml'
   push:
     branches:
       - main
     paths:
       - '.github/workflows/static-analysis.yml'
-      - 'scripts/ci-local.sh'
+      - '.github/actions/ktlint/action.yml'
+      - '.github/actions/gradle/action.yml'
+      - 'scripts/ktlint.sh'
       - '**/*.kt'
       - '**/*.kts'
       - '.editorconfig'
-      - 'build.gradle.kts'
+      - 'gradle/libs.versions.toml'
 
 permissions:
   contents: read
@@ -37,8 +41,11 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Project
-        uses: ./.github/actions/gradle
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
       - name: Run Static Analysis
         uses: ./.github/actions/ktlint

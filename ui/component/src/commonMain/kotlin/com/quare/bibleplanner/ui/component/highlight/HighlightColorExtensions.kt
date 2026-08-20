@@ -11,16 +11,16 @@ private const val PERCENT = 100f
 /** The colour of the palette swatch: the full-strength ink of the highlight. */
 fun HighlightColor.toSwatchColor(): Color = when (this) {
     is HighlightColor.Preset -> preset.swatchColor
-    is HighlightColor.Custom -> customColor(alpha = 1f)
+    is HighlightColor.Custom -> toColor(alpha = 1f)
 }
 
 /** The wash drawn behind the verse text, translucent so the text stays readable in both themes. */
 fun HighlightColor.toBackgroundColor(): Color = when (this) {
     is HighlightColor.Preset -> preset.swatchColor.copy(alpha = preset.backgroundAlpha)
-    is HighlightColor.Custom -> customColor(alpha = CUSTOM_BACKGROUND_ALPHA)
+    is HighlightColor.Custom -> toColor(alpha = CUSTOM_BACKGROUND_ALPHA)
 }
 
-private fun HighlightColor.Custom.customColor(alpha: Float): Color = Color.hsl(
+private fun HighlightColor.Custom.toColor(alpha: Float): Color = Color.hsl(
     hue = hue.toFloat(),
     saturation = CUSTOM_SATURATION,
     lightness = lightness / PERCENT,

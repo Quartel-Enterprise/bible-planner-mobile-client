@@ -11,7 +11,7 @@ internal class SavedVerseLocalStore(
     private val savedVerseDao: SavedVerseDao,
     private val savedVerseMapper: SavedVerseMapper,
 ) : SyncLocalStore<SavedVerseEntity, SavedVerseDto> {
-    override fun pendingFlow(): Flow<List<SavedVerseEntity>> = savedVerseDao.getPendingSyncSavedVersesFlow()
+    override fun observePending(): Flow<List<SavedVerseEntity>> = savedVerseDao.getPendingSyncSavedVersesFlow()
 
     override suspend fun getPending(): List<SavedVerseEntity> = savedVerseDao.getPendingSyncSavedVerses()
 

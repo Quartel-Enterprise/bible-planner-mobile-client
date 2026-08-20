@@ -1,13 +1,13 @@
 package com.quare.bibleplanner.core.image
 
-fun circleCoverScale(
+fun getCircleCoverScale(
     imageWidth: Int,
     imageHeight: Int,
     circleDiameter: Float,
 ): Float = circleDiameter / minOf(imageWidth, imageHeight)
 
 internal fun computeCropRect(params: CropParams): NormalizedCropRect = with(params) {
-    val effectiveScale = circleCoverScale(
+    val effectiveScale = getCircleCoverScale(
         imageWidth = orientedWidth,
         imageHeight = orientedHeight,
         circleDiameter = circleDiameter,
@@ -26,7 +26,7 @@ internal fun computeCropRect(params: CropParams): NormalizedCropRect = with(para
     )
 }
 
-fun maxPanOffset(
+fun getMaxPanOffset(
     imageWidth: Int,
     imageHeight: Int,
     circleDiameter: Float,
@@ -35,7 +35,7 @@ fun maxPanOffset(
 ): Pair<Float, Float> {
     val orientedWidth = if (orientation.isQuarterTurned) imageHeight else imageWidth
     val orientedHeight = if (orientation.isQuarterTurned) imageWidth else imageHeight
-    val effectiveScale = circleCoverScale(
+    val effectiveScale = getCircleCoverScale(
         imageWidth = orientedWidth,
         imageHeight = orientedHeight,
         circleDiameter = circleDiameter,

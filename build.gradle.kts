@@ -1,6 +1,7 @@
+import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -15,6 +16,13 @@ plugins {
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
 }
+
+val ktlintVersion: String = extensions
+    .getByType<VersionCatalogsExtension>()
+    .named("libs")
+    .findVersion("ktlint")
+    .get()
+    .requiredVersion
 
 // version.xcconfig is the single source of truth for the app version: iOS reads it through
 // `#include` in Config.xcconfig, and the lines below expose the same values to every Gradle
@@ -44,10 +52,9 @@ subprojects {
     }
 
     extensions.configure<KtlintExtension> {
-        version.set("1.8.0")
+        version.set(ktlintVersion)
         debug.set(false)
         verbose.set(true)
-        android.set(true)
         outputToConsole.set(true)
         ignoreFailures.set(false)
         enableExperimentalRules.set(false)
@@ -69,44 +76,6 @@ subprojects {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
             freeCompilerArgs.add("-Xexpect-actual-classes")
-        }
-    }
-
-    // Ensure KSP code generation runs before ktlint for projects with KSP
-    // This is important for Room's DatabaseConstructor and other generated code
-    afterEvaluate {
-        val ktlintCheckTask = tasks.findByName("ktlintCheck")
-        if (ktlintCheckTask != null) {
-            // Make ktlintCheck depend on KSP tasks if they exist
-            // Priority: Android and JVM first (don't require native toolchains in CI)
-            // These are the most important for generating code that ktlint needs
-            val primaryKspTaskNames = listOf(
-                "kspKotlinAndroid",
-                "kspKotlinJvm",
-            )
-
-            // Also try iOS targets, but they may fail in CI without native toolchains
-            val secondaryKspTaskNames = listOf(
-                "kspKotlinMetadata",
-                "kspKotlinIosArm64",
-                "kspKotlinIosSimulatorArm64",
-            )
-
-            // Add dependencies for primary targets (required)
-            primaryKspTaskNames.forEach { taskName ->
-                val kspTask = tasks.findByName(taskName)
-                if (kspTask != null) {
-                    ktlintCheckTask.dependsOn(kspTask)
-                }
-            }
-
-            // Add dependencies for secondary targets (optional - may fail in CI)
-            secondaryKspTaskNames.forEach { taskName ->
-                val kspTask = tasks.findByName(taskName)
-                if (kspTask != null) {
-                    ktlintCheckTask.dependsOn(kspTask)
-                }
-            }
         }
     }
 }

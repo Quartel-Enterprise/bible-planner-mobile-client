@@ -13,10 +13,10 @@ class PhotoOrientationTest {
 
         // When
         val turned = original
-            .rotatedQuarterTurn()
-            .rotatedQuarterTurn()
-            .rotatedQuarterTurn()
-            .rotatedQuarterTurn()
+            .rotateQuarterTurn()
+            .rotateQuarterTurn()
+            .rotateQuarterTurn()
+            .rotateQuarterTurn()
 
         // Then
         assertEquals(original, turned)
@@ -26,8 +26,8 @@ class PhotoOrientationTest {
     @Test
     fun `reports being turned sideways only on quarter turns`() {
         // When
-        val quarter = original().rotatedQuarterTurn()
-        val half = quarter.rotatedQuarterTurn()
+        val quarter = original().rotateQuarterTurn()
+        val half = quarter.rotateQuarterTurn()
 
         // Then
         assertTrue(quarter.isQuarterTurned)
@@ -37,7 +37,7 @@ class PhotoOrientationTest {
     @Test
     fun `undoes a mirroring when the same flip is applied twice`() {
         // When
-        val flipped = original().flippedHorizontally().flippedHorizontally()
+        val flipped = original().flipHorizontally().flipHorizontally()
 
         // Then
         assertTrue(flipped.isOriginal)
@@ -46,10 +46,10 @@ class PhotoOrientationTest {
     @Test
     fun `mirrors along the screen axis when the photo is turned sideways`() {
         // Given — turned sideways, the photo axes are swapped on screen
-        val sideways = original().rotatedQuarterTurn()
+        val sideways = original().rotateQuarterTurn()
 
         // When
-        val flipped = sideways.flippedHorizontally()
+        val flipped = sideways.flipHorizontally()
 
         // Then — flipping the photo vertically is what mirrors it horizontally on screen
         assertTrue(flipped.isFlippedVertically)
@@ -59,7 +59,7 @@ class PhotoOrientationTest {
     @Test
     fun `scales negatively on the mirrored axis only`() {
         // When
-        val flipped = original().flippedVertically()
+        val flipped = original().flipVertically()
 
         // Then
         assertEquals(1f, flipped.horizontalScale)

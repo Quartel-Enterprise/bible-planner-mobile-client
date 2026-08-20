@@ -10,7 +10,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.NavDisplay
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
-import com.quare.bibleplanner.core.model.route.verseSelectionPane
+import com.quare.bibleplanner.core.model.route.getVerseSelectionPane
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.component.SelectionSheet
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.utils.VerseSelectionUiActionCollector
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
@@ -29,7 +29,7 @@ fun EntryProviderScope<NavKey>.verseSelection(
     onNavigateBack: () -> Unit,
 ) {
     entry<VerseSelectionNavRoute>(
-        metadata = verseSelectionPane() +
+        metadata = getVerseSelectionPane() +
             NavDisplay.transitionSpec { instantTransition } +
             NavDisplay.popTransitionSpec { instantTransition } +
             NavDisplay.predictivePopTransitionSpec { instantTransition },

@@ -11,7 +11,7 @@ internal class VerseHighlightLocalStore(
     private val verseHighlightDao: VerseHighlightDao,
     private val verseHighlightMapper: VerseHighlightMapper,
 ) : SyncLocalStore<VerseHighlightEntity, VerseHighlightDto> {
-    override fun pendingFlow(): Flow<List<VerseHighlightEntity>> = verseHighlightDao.getPendingSyncHighlightsFlow()
+    override fun observePending(): Flow<List<VerseHighlightEntity>> = verseHighlightDao.getPendingSyncHighlightsFlow()
 
     override suspend fun getPending(): List<VerseHighlightEntity> = verseHighlightDao.getPendingSyncHighlights()
 

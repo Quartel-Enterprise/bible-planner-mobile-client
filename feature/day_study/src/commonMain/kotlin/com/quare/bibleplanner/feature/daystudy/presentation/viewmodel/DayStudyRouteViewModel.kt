@@ -2,9 +2,7 @@ package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_study_error
 import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.util.getReadingLabel
@@ -363,7 +361,7 @@ internal class DayStudyRouteViewModel(
         if (!isConnected()) {
             trackEvent(
                 name = AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
-                params = dayParams() + mapOf(
+                params = getDayParams() + mapOf(
                     AnalyticsParams.REASON to OFFLINE_REASON,
                     AnalyticsParams.IS_PRO to isPro,
                 ),
@@ -375,7 +373,7 @@ internal class DayStudyRouteViewModel(
         if (!canStartFreeGeneration(quota)) return
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED,
-            params = dayParams() + mapOf(
+            params = getDayParams() + mapOf(
                 AnalyticsParams.IS_PRO to isPro,
                 AnalyticsParams.REMAINING_FREE to quota.remainingFree,
             ),
@@ -386,7 +384,7 @@ internal class DayStudyRouteViewModel(
 
     private suspend fun canStartFreeGeneration(quota: DayStudyQuotaModel): Boolean {
         if (isPro || quota.isUnlockedForDay) return true
-        val inFlight = generationCoordinator.generatingCount(excludingKey = jobKey)
+        val inFlight = generationCoordinator.getGeneratingCount(excludingKey = jobKey)
         if (inFlight < quota.remainingFree) return true
         _uiAction.emit(
             DayStudyRouteUiAction.ShowSnackBarPlural(
@@ -442,7 +440,7 @@ internal class DayStudyRouteViewModel(
         )
     }
 
-    private fun dayParams(): Map<String, Any> = mapOf(
+    private fun getDayParams(): Map<String, Any> = mapOf(
         AnalyticsParams.PLAN_TYPE to dayRoute.readingPlanType.toPlanTypeAnalyticsValue(),
         AnalyticsParams.WEEK_NUMBER to dayRoute.weekNumber,
         AnalyticsParams.DAY_NUMBER to dayRoute.dayNumber,

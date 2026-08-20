@@ -178,7 +178,7 @@ internal class VerseSelectionViewModel(
     }
 
     private fun applyColor(color: HighlightColor) {
-        val selection = currentSelection() ?: return
+        val selection = getCurrentSelection() ?: return
         viewModelScope.launch {
             val isApplied = applyHighlightColor(
                 refs = selection.refs,
@@ -222,7 +222,7 @@ internal class VerseSelectionViewModel(
     }
 
     private fun toggleSaved() {
-        val selection = currentSelection() ?: return
+        val selection = getCurrentSelection() ?: return
         viewModelScope.launch {
             val isSaved = toggleSavedVerses(selection.refs)
             trackEvent(
@@ -241,7 +241,7 @@ internal class VerseSelectionViewModel(
     }
 
     private fun openNote() {
-        val selection = currentSelection() ?: return
+        val selection = getCurrentSelection() ?: return
         val noteId = uiState.value?.noteId
         trackEvent(
             name = AnalyticsEventNames.VERSE_NOTE_OPENED,
@@ -263,7 +263,7 @@ internal class VerseSelectionViewModel(
     }
 
     private fun copySelection() {
-        val selection = currentSelection() ?: return
+        val selection = getCurrentSelection() ?: return
         viewModelScope.launch {
             val shareContent = getVersesShareContent(
                 bookId = selection.bookId,
@@ -284,7 +284,7 @@ internal class VerseSelectionViewModel(
     }
 
     private fun shareSelection() {
-        val selection = currentSelection() ?: return
+        val selection = getCurrentSelection() ?: return
         trackEvent(
             name = AnalyticsEventNames.VERSE_SHARE_OPENED,
             params = mapOf(AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size),
@@ -300,7 +300,7 @@ internal class VerseSelectionViewModel(
         )
     }
 
-    private fun currentSelection(): VerseSelection? = observeVerseSelection().value
+    private fun getCurrentSelection(): VerseSelection? = observeVerseSelection().value
 
     private fun emitAction(action: VerseSelectionUiAction) {
         viewModelScope.launch { _uiAction.emit(action) }

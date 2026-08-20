@@ -30,7 +30,7 @@ internal class ContactSupportViewModel(
 ) : TrackedViewModel<ContactSupportUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<ContactSupportUiAction>()
     val uiAction: SharedFlow<ContactSupportUiAction> = _uiAction
-    private val _uiState = MutableStateFlow(uiStateFactory.initialState())
+    private val _uiState = MutableStateFlow(uiStateFactory.createInitialState())
     val uiState: StateFlow<ContactSupportUiState> = _uiState
 
     init {

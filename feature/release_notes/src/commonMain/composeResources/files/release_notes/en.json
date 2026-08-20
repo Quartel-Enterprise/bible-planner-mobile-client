@@ -1,5 +1,6 @@
 {
   "2.7.0": [
+    "Fixed a crash that prevented the app from opening on some devices. On those devices, Bible version downloads now happen while the app is open.",
     "The reading screen has been redesigned: a chapter now opens with the book name and the number in large type, the text has more room to breathe between lines, and the mark as read button is always within reach, next to the arrows for the previous and next chapters.",
     "Tap a verse to select it — you can pick several — and a panel appears with everything you can do with the passage.",
     "You can now highlight verses in six colours, or mix your own. To remove a highlight, just tap the colour that is already applied; and pressing and holding a custom colour lets you choose whether to remove only the colour from the palette or the highlights made with it too.",

@@ -17,7 +17,7 @@ internal class SyncedPreferenceLocalStore(
     private val dao: SyncedPreferenceDao,
     private val mapper: UserPreferenceMapper,
 ) : SyncLocalStore<SyncedPreferenceEntity, UserPreferenceDto> {
-    override fun pendingFlow(): Flow<List<SyncedPreferenceEntity>> = dao.getPendingFlow()
+    override fun observePending(): Flow<List<SyncedPreferenceEntity>> = dao.getPendingFlow()
 
     override suspend fun getPending(): List<SyncedPreferenceEntity> = dao.getPending()
 

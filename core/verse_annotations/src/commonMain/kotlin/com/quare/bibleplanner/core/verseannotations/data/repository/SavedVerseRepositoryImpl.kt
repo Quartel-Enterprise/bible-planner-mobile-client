@@ -24,7 +24,7 @@ internal class SavedVerseRepositoryImpl(
 
     override suspend fun areAllSaved(refs: List<VerseRef>): Boolean {
         if (refs.isEmpty()) return false
-        val savedRefs = storedStateByRef(refs).filterValues { it }.keys
+        val savedRefs = getStoredStateByRef(refs).filterValues { it }.keys
         return refs.all { ref -> ref in savedRefs }
     }
 
@@ -32,7 +32,7 @@ internal class SavedVerseRepositoryImpl(
         refs: List<VerseRef>,
         isSaved: Boolean,
     ) {
-        val currentState = storedStateByRef(refs)
+        val currentState = getStoredStateByRef(refs)
         val changedRefs = refs.filter { ref -> currentState[ref] != isSaved }
         if (changedRefs.isEmpty()) return
         val now = currentTimestampProvider.getCurrentTimestamp()
@@ -50,7 +50,7 @@ internal class SavedVerseRepositoryImpl(
         )
     }
 
-    private suspend fun storedStateByRef(refs: List<VerseRef>): Map<VerseRef, Boolean> = refs
+    private suspend fun getStoredStateByRef(refs: List<VerseRef>): Map<VerseRef, Boolean> = refs
         .groupBy { ref -> ref.bookId to ref.chapterNumber }
         .flatMap { (chapter, chapterRefs) ->
             savedVerseDao.getSavedVerses(

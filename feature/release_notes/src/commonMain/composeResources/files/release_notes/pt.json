@@ -1,5 +1,6 @@
 {
   "2.7.0": [
+    "Corrigido um travamento que impedia o app de abrir em alguns aparelhos. Nesses aparelhos, o download das versões da Bíblia agora acontece com o app aberto.",
     "A tela de leitura foi redesenhada: o capítulo agora abre com o nome do livro e o número em destaque, o texto ganhou mais espaço entre as linhas e o botão de marcar como lido fica sempre à mão, junto das setas para o capítulo anterior e o próximo.",
     "Toque em um versículo para selecioná-lo — pode marcar vários — e um painel aparece com tudo o que dá para fazer com o trecho.",
     "Agora você pode destacar versículos em seis cores, ou criar a sua própria misturando a cor que quiser. Para tirar o destaque, é só tocar de novo na cor que já está aplicada; e segurando uma cor personalizada você escolhe se quer apagar só a cor da paleta ou também os destaques feitos com ela.",

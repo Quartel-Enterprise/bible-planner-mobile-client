@@ -56,13 +56,13 @@ class ReadDataPresentationModelFactory(
             val nextChapter = navigationSuggestions.next.takeIf { isVerticalReadingEnabled }
             emitAll(
                 combine(
-                    chapterFlow(
+                    observeChapter(
                         bookId = bookId,
                         chapterNumber = chapterNumber,
                     ),
                     nextChapter
                         ?.let {
-                            chapterFlow(
+                            observeChapter(
                                 bookId = it.bookId,
                                 chapterNumber = it.chapterNumber,
                             )
@@ -119,7 +119,7 @@ class ReadDataPresentationModelFactory(
         )
     }
 
-    private fun chapterFlow(
+    private fun observeChapter(
         bookId: BookId,
         chapterNumber: Int,
     ): Flow<ChapterLoadResult> = flow {

@@ -1,5 +1,6 @@
 {
   "2.7.0": [
+    "Se corrigió un bloqueo que impedía abrir la app en algunos dispositivos. En esos dispositivos, la descarga de las versiones de la Biblia ahora ocurre con la app abierta.",
     "La pantalla de lectura fue rediseñada: el capítulo ahora se abre con el nombre del libro y el número en grande, el texto tiene más espacio entre las líneas y el botón de marcar como leído queda siempre a mano, junto a las flechas del capítulo anterior y el siguiente.",
     "Toca un versículo para seleccionarlo — puedes elegir varios — y aparece un panel con todo lo que puedes hacer con el pasaje.",
     "Ahora puedes resaltar versículos en seis colores, o crear el tuyo mezclando el que quieras. Para quitar el resaltado, solo toca de nuevo el color ya aplicado; y al mantener pulsado un color personalizado eliges si quieres quitar solo el color de la paleta o también los resaltados hechos con él.",

@@ -44,7 +44,7 @@ internal fun buildReadingPlanWeekItems(state: ReadingPlanUiState.Loaded): List<R
     }
 }
 
-internal fun readingPlanWeekScrollIndex(
+internal fun getReadingPlanWeekScrollIndex(
     state: ReadingPlanUiState.Loaded,
     includeSidePanel: Boolean,
     weekNumber: Int,
@@ -58,7 +58,7 @@ internal fun readingPlanWeekScrollIndex(
     return leading + indexInWeeks
 }
 
-internal fun readingPlanItemKey(item: ReadingPlanListItem): Any = when (item) {
+internal fun getReadingPlanItemKey(item: ReadingPlanListItem): Any = when (item) {
     is ReadingPlanListItem.SectionHeader -> "section_${item.group}"
     is ReadingPlanListItem.Week -> item.week.weekPlan.number
     is ReadingPlanListItem.ShowMore -> "show_more_${item.group}"

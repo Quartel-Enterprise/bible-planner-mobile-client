@@ -19,7 +19,7 @@ class DownloadBibleUseCase(
 ) {
     suspend operator fun invoke(versionId: String): Result<Unit> = suspendRunCatching {
         val version = bibleVersionDao.getVersionById(versionId)
-            ?: return trackedFailure(
+            ?: return trackFailure(
                 versionId = versionId,
                 throwable = IllegalStateException("Version not found"),
             )
@@ -50,7 +50,7 @@ class DownloadBibleUseCase(
             }.getOrThrow()
     }
 
-    private fun trackedFailure(
+    private fun trackFailure(
         versionId: String,
         throwable: Throwable,
     ): Result<Unit> {

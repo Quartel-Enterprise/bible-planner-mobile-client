@@ -6,7 +6,6 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.domain.exception.LimitReachedException
@@ -142,8 +141,8 @@ internal class DayStudyGenerationCoordinatorImplTest {
         coordinator.start(passages, otherDayRoute, "Gênesis 2")
 
         // When / Then
-        assertEquals(2, coordinator.generatingCount(excludingKey = null))
-        assertEquals(1, coordinator.generatingCount(excludingKey = coordinator.keyOf(dayRoute)))
+        assertEquals(2, coordinator.getGeneratingCount(excludingKey = null))
+        assertEquals(1, coordinator.getGeneratingCount(excludingKey = coordinator.keyOf(dayRoute)))
     }
 
     @Test
@@ -158,7 +157,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         advanceUntilIdle()
 
         // Then
-        assertEquals(0, coordinator.generatingCount(excludingKey = null))
+        assertEquals(0, coordinator.getGeneratingCount(excludingKey = null))
     }
 
     @Test

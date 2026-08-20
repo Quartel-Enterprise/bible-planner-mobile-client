@@ -3,21 +3,53 @@ description: 'Runs ktlint check and annotates results'
 runs:
   using: "composite"
   steps:
-    - name: Make ci-local script executable
+    - name: Read ktlint version
+      id: ktlint-version
       shell: bash
-      run: chmod +x ./scripts/ci-local.sh
+      run: |
+        VERSION=$(sed -nE 's/^ktlint[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' gradle/libs.versions.toml | head -1)
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+    - name: Cache ktlint CLI
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ktlint
+        key: ktlint-cli-${{ steps.ktlint-version.outputs.version }}
+
+    - name: Cache custom ruleset jar
+      id: ruleset-cache
+      uses: actions/cache@v4
+      with:
+        path: tools/ktlint-custom-rules/build/libs/ktlint-custom-rules.jar
+        key: >-
+          ktlint-ruleset-${{ steps.ktlint-version.outputs.version }}-${{
+          hashFiles('tools/ktlint-custom-rules/**/*.kt', 'tools/ktlint-custom-rules/build.gradle.kts',
+          'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties') }}
+
+    # actions/checkout stamps every source file with the current time, so a restored jar would
+    # always look stale to the mtime check in ktlint.sh. The cache key already pins the sources.
+    - name: Mark cached ruleset jar as up to date
+      if: steps.ruleset-cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: touch tools/ktlint-custom-rules/build/libs/ktlint-custom-rules.jar
+
+    # Gradle is only needed to rebuild the ruleset jar, which changes rarely
+    - name: Setup Gradle
+      if: steps.ruleset-cache.outputs.cache-hit != 'true'
+      uses: ./.github/actions/gradle
 
     - name: Run ktlint check (same as local)
       id: ktlint-check
       shell: bash
       run: |
-        ./scripts/ci-local.sh
+        chmod +x ./scripts/ktlint.sh
+        ./scripts/ktlint.sh
       continue-on-error: true
 
     - name: Annotate ktlint results
       uses: yutailang0119/action-ktlint@v5
       with:
-        report-path: 'build/**/*.xml'
+        report-path: 'build/ktlint-report.xml'
         ignore-warnings: false
       continue-on-error: false
 
@@ -25,5 +57,5 @@ runs:
       shell: bash
       if: steps.ktlint-check.outcome == 'failure'
       run: |
-        echo "❌ ktlint found formatting errors. Please run './gradlew ktlintFormat' to fix them."
+        echo "❌ ktlint found formatting errors. Please run './scripts/ktlint.sh --format' to fix them."
         exit 1

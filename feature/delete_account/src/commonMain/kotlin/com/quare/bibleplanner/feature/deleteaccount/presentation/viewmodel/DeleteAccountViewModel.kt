@@ -124,7 +124,7 @@ internal class DeleteAccountViewModel(
             _uiAction.emit(DeleteAccountUiAction.NotifySuccess(Res.string.delete_account_success_message))
             _uiAction.emit(DeleteAccountUiAction.NavigateBack)
         }.onFailure { throwable ->
-            val reason = failureReason()
+            val reason = getFailureReason()
             logger.e(throwable) { "Account deletion failed during $reason" }
             trackEvent(
                 name = AnalyticsEventNames.ACCOUNT_DELETE_FAILED,
@@ -135,7 +135,7 @@ internal class DeleteAccountViewModel(
         }
     }
 
-    private fun failureReason(): String {
+    private fun getFailureReason(): String {
         val status = _uiState.value.status
         return if (status is DeleteAccountUiStatus.Deleting && status.phase == DeleteAccountPhase.CLOSING_ACCOUNT) {
             REASON_CLOSE_SESSION

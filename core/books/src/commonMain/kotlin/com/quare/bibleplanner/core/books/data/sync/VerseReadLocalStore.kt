@@ -17,7 +17,7 @@ internal class VerseReadLocalStore(
     private val verseDao: VerseDao,
     private val verseReadMapper: VerseReadMapper,
 ) : SyncLocalStore<PendingVerseRead, VerseReadDto> {
-    override fun pendingFlow(): Flow<List<PendingVerseRead>> = verseDao.getPendingReadSyncVersesFlow()
+    override fun observePending(): Flow<List<PendingVerseRead>> = verseDao.getPendingReadSyncVersesFlow()
 
     override suspend fun getPending(): List<PendingVerseRead> = verseDao.getPendingReadSyncVerses()
 

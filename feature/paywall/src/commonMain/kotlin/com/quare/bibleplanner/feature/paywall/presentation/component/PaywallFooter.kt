@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.paywall.presentation.component.description.SecurePaymentDescription
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.StartProButton
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent

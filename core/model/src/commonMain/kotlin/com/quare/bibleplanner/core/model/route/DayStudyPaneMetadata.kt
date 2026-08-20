@@ -7,6 +7,6 @@ object DayStudyMainPaneKey : NavMetadataKey<Boolean>
 
 object DayStudyDetailPaneKey : NavMetadataKey<Boolean>
 
-fun dayStudyMainPane(): Map<String, Any> = metadata { put(DayStudyMainPaneKey, true) }
+fun getDayStudyMainPane(): Map<String, Any> = metadata { put(DayStudyMainPaneKey, true) }
 
-fun dayStudyDetailPane(): Map<String, Any> = metadata { put(DayStudyDetailPaneKey, true) }
+fun getDayStudyDetailPane(): Map<String, Any> = metadata { put(DayStudyDetailPaneKey, true) }

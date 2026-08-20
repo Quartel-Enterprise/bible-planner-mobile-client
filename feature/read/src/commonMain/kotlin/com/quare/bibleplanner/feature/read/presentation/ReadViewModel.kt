@@ -113,7 +113,7 @@ class ReadViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = loadingState(),
+        initialValue = createLoadingState(),
     )
 
     init {
@@ -311,7 +311,7 @@ class ReadViewModel(
     private fun ReadNavigationSuggestionModel.toDirection(): String =
         if (this == uiState.value.header.navigationSuggestions.previous) DIRECTION_PREVIOUS else DIRECTION_NEXT
 
-    private fun loadingState(): ReadUiState = ReadUiState(
+    private fun createLoadingState(): ReadUiState = ReadUiState(
         header = ReadHeaderUiModel(
             bookId = bookId,
             bookStringResource = bookStringResource,

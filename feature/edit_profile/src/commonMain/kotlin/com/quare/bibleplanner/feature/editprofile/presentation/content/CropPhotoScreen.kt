@@ -45,7 +45,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -65,7 +64,7 @@ import bibleplanner.feature.edit_profile.generated.resources.edit_profile_crop_f
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_crop_hint
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_crop_rotate
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_crop_title
-import com.quare.bibleplanner.core.image.circleCoverScale
+import com.quare.bibleplanner.core.image.getCircleCoverScale
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiEvent
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiState
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ImageResult
@@ -143,7 +142,7 @@ internal fun CropPhotoScreen(
                 )
             }
 
-            val baseScale = circleCoverScale(
+            val baseScale = getCircleCoverScale(
                 imageWidth = bitmap.width,
                 imageHeight = bitmap.height,
                 circleDiameter = circleDiameterPx,

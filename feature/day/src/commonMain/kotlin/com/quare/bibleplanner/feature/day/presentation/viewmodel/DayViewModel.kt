@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.day.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
-import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
@@ -249,7 +248,7 @@ internal class DayViewModel(
 
         trackEvent(
             name = AnalyticsEventNames.READ_DATE_EDITED,
-            params = dayParams(),
+            params = getDayParams(),
         )
 
         viewModelScope.launch {
@@ -269,7 +268,7 @@ internal class DayViewModel(
 
         trackEvent(
             name = AnalyticsEventNames.DAY_READ_TOGGLED,
-            params = dayParams() + mapOf(
+            params = getDayParams() + mapOf(
                 AnalyticsParams.IS_READ to newReadStatus,
                 AnalyticsParams.SOURCE to SOURCE_DAY_SCREEN,
             ),
@@ -330,7 +329,7 @@ internal class DayViewModel(
                 val chapterNumber = passage.chapters.getOrNull(strategy.chapterIndex)?.number ?: return
                 trackEvent(
                     name = AnalyticsEventNames.CHAPTER_READ_TOGGLED,
-                    params = dayParams() + mapOf(
+                    params = getDayParams() + mapOf(
                         AnalyticsParams.BOOK_ID to passage.bookId.name.lowercase(),
                         AnalyticsParams.CHAPTER_NUMBER to chapterNumber,
                         AnalyticsParams.IS_READ to isRead,
@@ -375,7 +374,7 @@ internal class DayViewModel(
         sanitizedNotes?.let { savedNotes ->
             trackEvent(
                 name = AnalyticsEventNames.NOTE_SAVED,
-                params = dayParams() + mapOf(AnalyticsParams.NOTE_LENGTH to savedNotes.length),
+                params = getDayParams() + mapOf(AnalyticsParams.NOTE_LENGTH to savedNotes.length),
             )
         }
     }
@@ -450,7 +449,7 @@ internal class DayViewModel(
         }
     }
 
-    private fun dayParams(): Map<String, Any> = mapOf(
+    private fun getDayParams(): Map<String, Any> = mapOf(
         AnalyticsParams.PLAN_TYPE to readingPlanType.toAnalyticsValue(),
         AnalyticsParams.WEEK_NUMBER to weekNumber,
         AnalyticsParams.DAY_NUMBER to dayNumber,
