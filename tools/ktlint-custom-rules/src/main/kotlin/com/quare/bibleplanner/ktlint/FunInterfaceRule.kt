@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.ktlint
 
+import com.pinterest.ktlint.rule.engine.core.api.AutocorrectDecision
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.CLASS
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.CLASS_BODY
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.FUN
@@ -8,6 +9,7 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.IDENTIFIER
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.PROPERTY
 import com.pinterest.ktlint.rule.engine.core.api.Rule
 import com.pinterest.ktlint.rule.engine.core.api.Rule.About
+import com.pinterest.ktlint.rule.engine.core.api.RuleAutocorrectApproveHandler
 import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import com.pinterest.ktlint.rule.engine.core.api.children
 import com.pinterest.ktlint.rule.engine.core.api.hasModifier
@@ -24,13 +26,11 @@ class FunInterfaceRule :
             repositoryUrl = "https://github.com/quare-tech/bible-planner-mobile-client",
             issueTrackerUrl = "https://github.com/quare-tech/bible-planner-mobile-client/issues",
         ),
-    ) {
-    @Deprecated("Marked for removal in Ktlint 2.0")
-    @Suppress("DEPRECATION")
+    ),
+    RuleAutocorrectApproveHandler {
     override fun beforeVisitChildNodes(
         node: ASTNode,
-        autoCorrect: Boolean,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit,
+        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
     ) {
         if (node.elementType != CLASS) return
         val ktClass = node.psi as? KtClass ?: return

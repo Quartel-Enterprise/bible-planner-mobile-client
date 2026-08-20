@@ -1,9 +1,11 @@
 package com.quare.bibleplanner.ktlint
 
+import com.pinterest.ktlint.rule.engine.core.api.AutocorrectDecision
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.FUN
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.IDENTIFIER
 import com.pinterest.ktlint.rule.engine.core.api.Rule
 import com.pinterest.ktlint.rule.engine.core.api.Rule.About
+import com.pinterest.ktlint.rule.engine.core.api.RuleAutocorrectApproveHandler
 import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtCallExpression
@@ -22,13 +24,11 @@ class UnitFunctionBlockBodyRule :
             repositoryUrl = "https://github.com/quare-tech/bible-planner-mobile-client",
             issueTrackerUrl = "https://github.com/quare-tech/bible-planner-mobile-client/issues",
         ),
-    ) {
-    @Deprecated("Marked for removal in Ktlint 2.0")
-    @Suppress("DEPRECATION")
+    ),
+    RuleAutocorrectApproveHandler {
     override fun beforeVisitChildNodes(
         node: ASTNode,
-        autoCorrect: Boolean,
-        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> Unit,
+        emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
     ) {
         if (node.elementType != FUN) return
 
