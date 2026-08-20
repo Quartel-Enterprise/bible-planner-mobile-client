@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.day.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
-import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel

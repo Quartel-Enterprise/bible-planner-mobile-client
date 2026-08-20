@@ -20,6 +20,7 @@ ktlint_standard_function-naming = disabled
 ktlint_standard_filename = disabled
 ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_when-entry-bracing = disabled
+ktlint_standard_no-unused-imports = enabled
 ktlint_function_signature_body_expression_wrapping = default
 
 
