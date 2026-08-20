@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.ui.component.generated.resources.Res
 import bibleplanner.ui.component.generated.resources.close
@@ -34,6 +35,7 @@ import com.quare.bibleplanner.ui.utils.LocalNavigationBarInsets
 import org.jetbrains.compose.resources.stringResource
 
 private val wideLayoutMinWidth = 600.dp
+private val centredTitleHorizontalPadding = 56.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +44,7 @@ fun ResponsiveDialogSheet(
     modifier: Modifier = Modifier,
     title: String? = null,
     subtitle: String? = null,
+    isTitleCentred: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     DialogWindowDimEffect()
@@ -52,6 +55,7 @@ fun ResponsiveDialogSheet(
                     onCloseClick = onCloseClick,
                     title = title,
                     subtitle = subtitle,
+                    isTitleCentred = isTitleCentred,
                     content = content,
                 )
             }
@@ -65,6 +69,7 @@ fun ResponsiveDialogSheet(
                     onCloseClick = onCloseClick,
                     title = title,
                     subtitle = subtitle,
+                    isTitleCentred = isTitleCentred,
                     content = content,
                     modifier = Modifier.windowInsetsPadding(LocalNavigationBarInsets.current),
                 )
@@ -78,13 +83,18 @@ private fun CloseableContent(
     onCloseClick: (() -> Unit)?,
     title: String?,
     subtitle: String?,
+    isTitleCentred: Boolean,
     content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         Column {
             if (title != null) {
-                DialogHeader(title = title, subtitle = subtitle)
+                DialogHeader(
+                    title = title,
+                    subtitle = subtitle,
+                    isCentred = isTitleCentred,
+                )
             }
             content()
         }
@@ -99,16 +109,34 @@ private fun CloseableContent(
     }
 }
 
+/**
+ * A centred title shares its row with the close button, so it is set at the smaller size that fits
+ * beside it and is inset to stay clear of it. Left-aligned titles keep the display size they had.
+ */
 @Composable
 private fun DialogHeader(
     title: String,
     subtitle: String?,
+    isCentred: Boolean,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = if (isCentred) centredTitleHorizontalPadding else 16.dp,
+                vertical = 16.dp,
+            ),
+        horizontalAlignment = if (isCentred) Alignment.CenterHorizontally else Alignment.Start,
+    ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge,
+            style = if (isCentred) {
+                MaterialTheme.typography.titleSmall
+            } else {
+                MaterialTheme.typography.titleLarge
+            },
             fontWeight = FontWeight.Bold,
+            textAlign = if (isCentred) TextAlign.Center else TextAlign.Start,
         )
         if (subtitle != null) {
             VerticalSpacer(4.dp)
@@ -116,6 +144,7 @@ private fun DialogHeader(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = if (isCentred) TextAlign.Center else TextAlign.Start,
             )
         }
     }

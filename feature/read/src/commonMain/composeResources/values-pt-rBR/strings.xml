@@ -49,4 +49,5 @@
     <string name="close_side_panel">Fechar o painel lateral</string>
     <string name="selection_panel_empty">Toque em um versículo para destacar, salvar ou anotar.</string>
     <string name="cancel">Cancelar</string>
+    <string name="text_size_sample">A</string>
 </resources>

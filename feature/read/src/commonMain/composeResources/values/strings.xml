@@ -49,4 +49,5 @@
     <string name="close_side_panel">Close the side panel</string>
     <string name="selection_panel_empty">Tap a verse to highlight it, save it, or write a note.</string>
     <string name="cancel">Cancel</string>
+    <string name="text_size_sample">A</string>
 </resources>

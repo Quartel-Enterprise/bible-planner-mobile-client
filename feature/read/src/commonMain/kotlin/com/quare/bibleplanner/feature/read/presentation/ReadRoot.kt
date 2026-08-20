@@ -62,6 +62,7 @@ fun EntryProviderScope<NavKey>.read(
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(ReaderAppearanceUiEvent.OnDismiss) },
             title = stringResource(Res.string.reader_appearance),
+            isTitleCentred = true,
         ) {
             ReaderAppearanceContent(
                 uiState = uiState,
