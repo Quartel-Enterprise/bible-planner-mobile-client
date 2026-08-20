@@ -43,6 +43,8 @@ kotlin {
             // WorkManager
             implementation(libs.androidx.work.runtime.ktx)
 
+            implementation(libs.kermit)
+
             // Room: framework SQLite driver, so the Android app does not ship the
             // bundled libsqliteJni.so native library (missing-ABI-split crashes).
             implementation(libs.androidx.sqlite.framework)

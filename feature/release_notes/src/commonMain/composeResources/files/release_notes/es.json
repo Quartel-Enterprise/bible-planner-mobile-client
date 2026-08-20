@@ -1,4 +1,7 @@
 {
+  "2.7.0": [
+    "Se corrigió un bloqueo que impedía abrir la app en algunos dispositivos. En esos dispositivos, la descarga de las versiones de la Biblia ahora ocurre con la app abierta."
+  ],
   "2.6.0": [
     "La solicitud de permiso para notificaciones ya no aparece al abrir la app: ahora solo se pide cuando empiezas a descargar una versión de la Biblia, que es cuando se usan las notificaciones de progreso de la descarga."
   ],
