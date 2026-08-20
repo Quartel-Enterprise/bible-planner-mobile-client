@@ -30,6 +30,13 @@ This applies to:
 - Extension functions
 - Composable functions (return `Unit` — use block body, omit return type)
 
+The block-body half of this is enforced by the custom ktlint rule
+`bible-planner-style:unit-function-block-body` (in `tools/ktlint-custom-rules`). Ktlint rules have no type
+resolution, so the rule flags the two cases it can prove: an explicit `: Unit` return type paired with an
+expression body, and an expression body that delegates to a `Unit`-returning function declared in the same
+class or file. A body that calls a `Unit` function from another file (`= println(...)`) is invisible to it —
+treat the rule as a net, not a guarantee.
+
 ## Expression Body
 
 Non-Unit functions **must** use expression body (`=`) whenever the entire body is a single expression. Reserve block body (`{ return ... }`) for functions that require multiple statements.
