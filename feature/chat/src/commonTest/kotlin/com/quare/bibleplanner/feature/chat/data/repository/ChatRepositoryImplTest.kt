@@ -19,7 +19,6 @@ import com.quare.bibleplanner.feature.chat.data.mapper.ChatQuotaMapper
 import com.quare.bibleplanner.feature.chat.data.model.ChatRemoteChange
 import com.quare.bibleplanner.feature.chat.data.model.ChatStreamEvent
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
-import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper

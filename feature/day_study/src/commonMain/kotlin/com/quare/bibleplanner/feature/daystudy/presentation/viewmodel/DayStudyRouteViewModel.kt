@@ -2,9 +2,7 @@ package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_study_error
 import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.util.getReadingLabel

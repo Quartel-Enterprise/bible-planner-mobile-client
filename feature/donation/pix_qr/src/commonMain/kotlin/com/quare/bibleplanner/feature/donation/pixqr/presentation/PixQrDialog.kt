@@ -20,10 +20,8 @@ import bibleplanner.feature.donation.pix_qr.generated.resources.Res
 import bibleplanner.feature.donation.pix_qr.generated.resources.pix_qr_close
 import bibleplanner.feature.donation.pix_qr.generated.resources.pix_qr_description
 import bibleplanner.feature.donation.pix_qr.generated.resources.pix_qr_instruction
-import bibleplanner.feature.donation.pix_qr.generated.resources.pix_qr_share
 import bibleplanner.feature.donation.pix_qr.generated.resources.pix_qr_title
 import bibleplanner.feature.donation.pix_qr.generated.resources.qr_code_pix
-import com.quare.bibleplanner.ui.component.icon.ShareIconButton
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

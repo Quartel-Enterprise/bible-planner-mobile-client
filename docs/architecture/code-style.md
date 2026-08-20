@@ -154,6 +154,12 @@ This applies to:
 - Companion object and static-style calls
 - Type aliases and generic bounds
 
+Unused imports are a build error. Stock ktlint ships `standard:no-unused-imports` but leaves it off in the
+`ktlint_official` code style, so it is turned on explicitly in `.editorconfig`
+(`ktlint_standard_no-unused-imports = enabled`). It is autocorrectable — `./scripts/ci-local.sh --format`
+strips them. The rule counts KDoc `[Link]` references as usages, so an import that only exists to make a
+KDoc link resolve is kept.
+
 ## Naming File-Scoped Constants
 
 A `private val` declared at file (top-level) scope — typically right above the `@Composable` function it sizes/shapes for, e.g. a `Dp`, `Shape`, or `TextUnit` constant — **must** use `lowerCamelCase`, never `PascalCase` or `SCREAMING_SNAKE_CASE`.

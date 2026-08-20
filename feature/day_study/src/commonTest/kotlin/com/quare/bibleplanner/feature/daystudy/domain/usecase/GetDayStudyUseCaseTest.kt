@@ -5,7 +5,6 @@ import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
-import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.domain.exception.LimitReachedException
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper

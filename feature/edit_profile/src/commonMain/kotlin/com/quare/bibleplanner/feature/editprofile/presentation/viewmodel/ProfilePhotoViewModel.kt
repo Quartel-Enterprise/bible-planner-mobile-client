@@ -9,7 +9,6 @@ import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_
 import com.quare.bibleplanner.core.image.MAX_AVATAR_SOURCE_BYTES
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
-import com.quare.bibleplanner.core.profile.domain.model.UserProfile
 import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform

@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.chat.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
-import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource

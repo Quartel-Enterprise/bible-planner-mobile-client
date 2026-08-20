@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.read.presentation.model
 
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
-import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import org.jetbrains.compose.resources.StringResource
 

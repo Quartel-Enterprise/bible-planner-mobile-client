@@ -10,10 +10,6 @@ import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMes
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage.Milestone
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage.OverallProgress
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage.Streak
-import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveDaySituationMotivation
-import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveMilestoneMotivation
-import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveOverallProgressMotivation
-import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveStreakMotivation
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
