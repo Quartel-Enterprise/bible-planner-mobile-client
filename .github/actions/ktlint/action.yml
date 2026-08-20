@@ -27,7 +27,7 @@ runs:
           'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties') }}
 
     # actions/checkout stamps every source file with the current time, so a restored jar would
-    # always look stale to the mtime check in ci-local.sh. The cache key already pins the sources.
+    # always look stale to the mtime check in ktlint.sh. The cache key already pins the sources.
     - name: Mark cached ruleset jar as up to date
       if: steps.ruleset-cache.outputs.cache-hit == 'true'
       shell: bash
@@ -42,8 +42,8 @@ runs:
       id: ktlint-check
       shell: bash
       run: |
-        chmod +x ./scripts/ci-local.sh
-        ./scripts/ci-local.sh
+        chmod +x ./scripts/ktlint.sh
+        ./scripts/ktlint.sh
       continue-on-error: true
 
     - name: Annotate ktlint results
@@ -57,5 +57,5 @@ runs:
       shell: bash
       if: steps.ktlint-check.outcome == 'failure'
       run: |
-        echo "❌ ktlint found formatting errors. Please run './scripts/ci-local.sh --format' to fix them."
+        echo "❌ ktlint found formatting errors. Please run './scripts/ktlint.sh --format' to fix them."
         exit 1

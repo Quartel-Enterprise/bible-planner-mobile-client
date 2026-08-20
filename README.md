@@ -59,11 +59,11 @@ in your IDE's toolbar or open the [/iosApp](./iosApp) directory in Xcode and run
 This project uses ktlint for code formatting and style checking, extended with the custom rules in
 `tools/ktlint-custom-rules` (documented in [Code Style](docs/architecture/code-style.md)).
 
-CI runs the ktlint CLI directly, and `scripts/ci-local.sh` runs exactly the same check locally:
+CI runs the ktlint CLI directly, and `scripts/ktlint.sh` runs exactly the same check locally:
 
 ```bash
-./scripts/ci-local.sh            # check (what CI runs)
-./scripts/ci-local.sh --format   # autocorrect what can be autocorrected
+./scripts/ktlint.sh            # check (what CI runs)
+./scripts/ktlint.sh --format   # autocorrect what can be autocorrected
 ```
 
 The script downloads the ktlint CLI once (cached in `~/.cache/ktlint`) and rebuilds the custom

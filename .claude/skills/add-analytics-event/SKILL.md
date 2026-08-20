@@ -70,7 +70,9 @@ Example (`feature/more`): `OnItemClick` carries its `type`, so its params are st
 ### 5. Verify
 
 Compile the affected module (`./gradlew :feature:<name>:compileCommonMainKotlinMetadata`) and run
-`./gradlew :feature:<name>:ktlintFormat`. A missing `analytics` declaration fails the build.
+`./scripts/ktlint.sh --format` — the ktlint CLI, which is what the `static-analysis` workflow runs in
+CI. It formats the whole repo rather than a single module (there is no per-module scoping), and is still
+much faster than `./gradlew ktlintFormat`. A missing `analytics` declaration fails the build.
 
 Then run `./gradlew :core:provider:analytics:jvmTest` — `AnalyticsCatalogTest` fails if a
 `Track.Manual` name isn't wired to an actual `trackEvent` call in the same module, if any
