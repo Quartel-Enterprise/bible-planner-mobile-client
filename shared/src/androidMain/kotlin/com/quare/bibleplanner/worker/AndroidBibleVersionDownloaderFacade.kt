@@ -32,10 +32,12 @@ internal class AndroidBibleVersionDownloaderFacade(
 
     override val shouldShowDownloadTip: Boolean = false
 
-    override fun downloadVersion(versionId: String) = withWorkManager(
-        onAvailable = { manager -> enqueueDownload(manager = manager, versionId = versionId) },
-        onUnavailable = { inProcessDownloader.startDownload(versionId) },
-    )
+    override fun downloadVersion(versionId: String) {
+        withWorkManager(
+            onAvailable = { manager -> enqueueDownload(manager = manager, versionId = versionId) },
+            onUnavailable = { inProcessDownloader.startDownload(versionId) },
+        )
+    }
 
     override suspend fun pauseDownload(versionId: String) {
         withWorkManager(
