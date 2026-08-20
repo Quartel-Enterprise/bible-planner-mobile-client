@@ -156,7 +156,7 @@ This applies to:
 
 Unused imports are a build error. Stock ktlint ships `standard:no-unused-imports` but leaves it off in the
 `ktlint_official` code style, so it is turned on explicitly in `.editorconfig`
-(`ktlint_standard_no-unused-imports = enabled`). It is autocorrectable — `./scripts/ci-local.sh --format`
+(`ktlint_standard_no-unused-imports = enabled`). It is autocorrectable — `./scripts/ktlint.sh --format`
 strips them. The rule counts KDoc `[Link]` references as usages, so an import that only exists to make a
 KDoc link resolve is kept.
 

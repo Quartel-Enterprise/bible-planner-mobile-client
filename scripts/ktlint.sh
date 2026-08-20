@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script to simulate CI locally
-# This runs the same checks that GitHub Actions runs
+# Runs ktlint over the whole repository, with the project's custom ruleset.
+# This is the same check the static-analysis workflow runs in CI.
 
 set -e
 
@@ -36,7 +36,7 @@ fi
 # Change to project root
 cd "$PROJECT_ROOT"
 
-echo "🔍 Simulating CI locally..."
+echo "🔍 Running ktlint..."
 echo "📁 Working directory: $PROJECT_ROOT"
 echo ""
 
@@ -132,14 +132,14 @@ if [ $KTLINT_EXIT_CODE -ne 0 ]; then
         echo "❌ ktlint found formatting errors."
         echo ""
         echo "To fix them, run:"
-        echo "  ./scripts/ci-local.sh --format"
+        echo "  ./scripts/ktlint.sh --format"
     fi
     echo ""
-    echo "✨ CI simulation complete (with errors)!"
+    echo "✨ ktlint finished (with errors)!"
     exit $KTLINT_EXIT_CODE
 fi
 
 if [ "$FORMAT_MODE" = false ]; then
     echo "✅ Report saved to: $REPORT_PATH"
 fi
-echo "✨ CI simulation complete!"
+echo "✨ ktlint finished!"
