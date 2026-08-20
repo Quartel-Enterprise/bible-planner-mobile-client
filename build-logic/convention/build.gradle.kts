@@ -18,7 +18,7 @@ gradlePlugin {
             id = "bibleplanner.kotlin.multiplatform"
             implementationClass = "KotlinMultiplatformConventionPlugin"
         }
-        register("composeMultiplatform"){
+        register("composeMultiplatform") {
             id = "bibleplanner.kotlin.composeMultiplatform"
             implementationClass = "ComposeMultiplatformConventionPlugin"
         }
