@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.ui.component.icon.BackIcon
@@ -24,13 +25,15 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The title only appears once the chapter's own oversized header has scrolled away, so the two never
- * name the chapter at the same time.
+ * name the chapter at the same time. It names [visibleChapter] rather than the one the screen was
+ * opened on, because vertical reading scrolls through chapters without leaving the screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReadTopBar(
     platform: Platform,
     header: ReadHeaderUiModel,
+    visibleChapter: ReadChapterUiModel?,
     isTitleVisible: Boolean,
     topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadUiEvent) -> Unit,
@@ -38,7 +41,8 @@ internal fun ReadTopBar(
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null,
 ) {
-    val bookName = stringResource(header.bookStringResource)
+    val bookName = stringResource(visibleChapter?.bookStringResource ?: header.bookStringResource)
+    val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
     TopAppBar(
         modifier = modifier,
         scrollBehavior = topAppBarScrollBehavior,
@@ -48,7 +52,7 @@ internal fun ReadTopBar(
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                Text(text = "$bookName ${header.chapterNumber}")
+                Text(text = "$bookName $chapterNumber")
             }
         },
         navigationIcon = {

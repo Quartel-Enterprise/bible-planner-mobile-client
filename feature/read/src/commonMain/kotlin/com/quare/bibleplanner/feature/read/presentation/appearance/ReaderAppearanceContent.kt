@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CenterFocusStrong
+import androidx.compose.material.icons.filled.DensityLarge
+import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.SwipeVertical
 import androidx.compose.material.icons.filled.TextFields
@@ -44,18 +46,23 @@ import bibleplanner.feature.read.generated.resources.reader_font
 import bibleplanner.feature.read.generated.resources.reader_ruler
 import bibleplanner.feature.read.generated.resources.reader_ruler_description
 import bibleplanner.feature.read.generated.resources.reader_ruler_description_wide
+import bibleplanner.feature.read.generated.resources.reader_ruler_height
+import bibleplanner.feature.read.generated.resources.reader_ruler_lines
 import bibleplanner.feature.read.generated.resources.reader_text_size
 import bibleplanner.feature.read.generated.resources.reader_vertical_reading
 import bibleplanner.feature.read.generated.resources.reader_vertical_reading_description
 import bibleplanner.feature.read.generated.resources.text_size_sample
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.ui.component.icon.ArrowRotationIcon
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.theme.font.displaySerifFontFamily
 import com.quare.bibleplanner.ui.theme.font.toFontFamily
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.roundToInt
 
 private const val TRACK_ALPHA = 0.16f
 private const val FONT_TILE_WIDTH_FRACTION = 0.28f
@@ -104,7 +111,15 @@ internal fun ReaderAppearanceContent(
                     ),
                 )
             },
-        )
+        ) {
+            // The height only means anything while the band is on screen.
+            AnimatedVisibility(visible = uiState.settings.isRulerEnabled) {
+                RulerHeightRow(
+                    lines = uiState.settings.rulerLines,
+                    onEvent = onEvent,
+                )
+            }
+        }
         if (isWide) {
             SettingSwitchCard(
                 icon = Icons.Default.CenterFocusStrong,
@@ -184,22 +199,46 @@ private fun SampleLetter(fontSize: TextUnit) {
  * twenty-position range into a row of dots. The steps still quantise the value, they are just not
  * drawn.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TextSizeSlider(
     fontSizeSp: Float,
     onEvent: (ReaderAppearanceUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Slider(
+    PlainSlider(
         modifier = modifier,
         value = fontSizeSp,
+        valueRange = ReaderFontSize.MIN..ReaderFontSize.MAX,
+        steps = ((ReaderFontSize.MAX - ReaderFontSize.MIN) / ReaderFontSize.STEP).toInt() - 1,
         onValueChange = { value -> onEvent(ReaderAppearanceUiEvent.OnFontSizeChange(value)) },
         onValueChangeFinished = {
             onEvent(ReaderAppearanceUiEvent.OnFontSizeChangeFinished(fontSizeSp))
         },
-        valueRange = ReaderFontSize.MIN..ReaderFontSize.MAX,
-        steps = ((ReaderFontSize.MAX - ReaderFontSize.MIN) / ReaderFontSize.STEP).toInt() - 1,
+    )
+}
+
+/**
+ * A plain track and a round knob: the stock slider marks every step it can stop at, which turns a
+ * twenty-position range into a row of beads. The steps still quantise the value, they are just not
+ * drawn.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PlainSlider(
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+    onValueChangeFinished: (() -> Unit)? = null,
+) {
+    Slider(
+        modifier = modifier,
+        value = value,
+        onValueChange = onValueChange,
+        onValueChangeFinished = onValueChangeFinished,
+        valueRange = valueRange,
+        steps = steps,
         track = {
             Box(
                 modifier = Modifier
@@ -316,30 +355,78 @@ private fun SettingSwitchCard(
     description: String,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    extraContent: @Composable () -> Unit = {},
 ) {
     SettingCard {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 13.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                RowIcon(icon)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Switch(
+                    checked = isChecked,
+                    onCheckedChange = onCheckedChange,
+                )
+            }
+            extraContent()
+        }
+    }
+}
+
+@Composable
+private fun RulerHeightRow(
+    lines: Int,
+    onEvent: (ReaderAppearanceUiEvent) -> Unit,
+) {
+    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 14.dp)) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 13.dp),
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = stringResource(Res.string.reader_ruler_height),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = pluralStringResource(
+                    Res.plurals.reader_ruler_lines,
+                    lines,
+                    lines,
+                ),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+        Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            RowIcon(icon)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Switch(
-                checked = isChecked,
-                onCheckedChange = onCheckedChange,
+            RowIcon(Icons.Default.DensitySmall)
+            PlainSlider(
+                modifier = Modifier.weight(1f),
+                value = lines.toFloat(),
+                valueRange = ReaderRulerLines.MIN.toFloat()..ReaderRulerLines.MAX.toFloat(),
+                steps = ReaderRulerLines.MAX - ReaderRulerLines.MIN - 1,
+                onValueChange = { value ->
+                    onEvent(ReaderAppearanceUiEvent.OnRulerLinesChange(value.roundToInt()))
+                },
             )
+            RowIcon(Icons.Default.DensityLarge)
         }
     }
 }

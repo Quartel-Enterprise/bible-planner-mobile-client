@@ -22,7 +22,7 @@
     <string name="reader_text_size">Text size</string>
     <string name="reader_font">Font</string>
     <string name="reader_ruler">Reading ruler</string>
-    <string name="reader_ruler_description">A fixed band keeps the line you are on in focus while you scroll</string>
+    <string name="reader_ruler_description">Starts at the chapter title; drag the handle to move it</string>
     <string name="reader_ruler_description_wide">The line under the cursor stays in focus</string>
     <string name="reader_focused_verse">Focused verse</string>
     <string name="reader_focused_verse_description">Dims the rest of the chapter while you read a verse</string>
@@ -50,4 +50,10 @@
     <string name="selection_panel_empty">Tap a verse to highlight it, save it, or write a note.</string>
     <string name="cancel">Cancel</string>
     <string name="text_size_sample">A</string>
+    <string name="move_ruler">Move the ruler</string>
+    <string name="reader_ruler_height">Band height</string>
+    <plurals name="reader_ruler_lines">
+        <item quantity="one">%1$d line</item>
+        <item quantity="other">%1$d lines</item>
+    </plurals>
 </resources>

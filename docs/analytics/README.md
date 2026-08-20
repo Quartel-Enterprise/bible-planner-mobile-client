@@ -249,6 +249,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [reader_font_changed](events/reader_font_changed.md) | P2 | Reader |
 | [reader_font_menu_toggled](events/reader_font_menu_toggled.md) | P2 | Reader |
 | [reader_focus_aid_changed](events/reader_focus_aid_changed.md) | P2 | Reader |
+| [reader_ruler_height_changed](events/reader_ruler_height_changed.md) | P2 | Reader |
 | [reader_vertical_reading_toggled](events/reader_vertical_reading_toggled.md) | P2 | Reader |
 
 ### Notes

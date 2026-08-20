@@ -223,5 +223,6 @@ object AnalyticsEventNames {
     const val READER_FONT_CHANGED = "reader_font_changed"
     const val READER_FONT_MENU_TOGGLED = "reader_font_menu_toggled"
     const val READER_FOCUS_AID_CHANGED = "reader_focus_aid_changed"
+    const val READER_RULER_HEIGHT_CHANGED = "reader_ruler_height_changed"
     const val READER_VERTICAL_READING_TOGGLED = "reader_vertical_reading_toggled"
 }

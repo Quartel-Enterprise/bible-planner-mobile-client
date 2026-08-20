@@ -11,6 +11,7 @@ data class ReaderSettingsModel(
     val fontSizeSp: Float,
     val font: ReaderFont,
     val isRulerEnabled: Boolean,
+    val rulerLines: Int,
     val isFocusedVerseEnabled: Boolean,
     val isVerticalReadingEnabled: Boolean,
 )

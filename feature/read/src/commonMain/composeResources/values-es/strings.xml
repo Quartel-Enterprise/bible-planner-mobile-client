@@ -22,7 +22,7 @@
     <string name="reader_text_size">Tamaño del texto</string>
     <string name="reader_font">Fuente</string>
     <string name="reader_ruler">Regla de lectura</string>
-    <string name="reader_ruler_description">Banda fija que destaca la línea en foco mientras te desplazas</string>
+    <string name="reader_ruler_description">Empieza en el título del capítulo; arrastra el asa para moverla</string>
     <string name="reader_ruler_description_wide">La línea bajo el cursor queda en foco</string>
     <string name="reader_focused_verse">Versículo en foco</string>
     <string name="reader_focused_verse_description">Atenúa el resto del capítulo mientras lees un versículo</string>
@@ -50,4 +50,10 @@
     <string name="selection_panel_empty">Toca un versículo para resaltarlo, guardarlo o anotarlo.</string>
     <string name="cancel">Cancelar</string>
     <string name="text_size_sample">A</string>
+    <string name="move_ruler">Mover la regla</string>
+    <string name="reader_ruler_height">Altura de la banda</string>
+    <plurals name="reader_ruler_lines">
+        <item quantity="one">%1$d línea</item>
+        <item quantity="other">%1$d líneas</item>
+    </plurals>
 </resources>

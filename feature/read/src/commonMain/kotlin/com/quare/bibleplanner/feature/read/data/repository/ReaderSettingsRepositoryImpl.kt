@@ -4,9 +4,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.datastore.write
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.domain.repository.ReaderSettingsRepository
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
@@ -21,6 +23,7 @@ internal class ReaderSettingsRepositoryImpl(
             fontSizeSp = preferences[FONT_SIZE_KEY] ?: ReaderFontSize.DEFAULT,
             font = preferences[FONT_KEY]?.toReaderFont() ?: ReaderFont.LORA,
             isRulerEnabled = preferences[RULER_ENABLED_KEY] == true,
+            rulerLines = preferences[RULER_LINES_KEY] ?: ReaderRulerLines.DEFAULT,
             isFocusedVerseEnabled = preferences[FOCUSED_VERSE_ENABLED_KEY] == true,
             isVerticalReadingEnabled = preferences[VERTICAL_READING_ENABLED_KEY] == true,
         )
@@ -41,6 +44,11 @@ internal class ReaderSettingsRepositoryImpl(
         value = isEnabled,
     )
 
+    override suspend fun setRulerLines(lines: Int) = dataStore.write(
+        key = RULER_LINES_KEY,
+        value = lines,
+    )
+
     override suspend fun setFocusedVerseEnabled(isEnabled: Boolean) = dataStore.write(
         key = FOCUSED_VERSE_ENABLED_KEY,
         value = isEnabled,
@@ -57,6 +65,7 @@ internal class ReaderSettingsRepositoryImpl(
         val FONT_SIZE_KEY = floatPreferencesKey("reader_font_size")
         val FONT_KEY = stringPreferencesKey("reader_font")
         val RULER_ENABLED_KEY = booleanPreferencesKey("reader_ruler_enabled")
+        val RULER_LINES_KEY = intPreferencesKey("reader_ruler_lines")
         val FOCUSED_VERSE_ENABLED_KEY = booleanPreferencesKey("reader_focused_verse_enabled")
         val VERTICAL_READING_ENABLED_KEY = booleanPreferencesKey("reader_vertical_reading_enabled")
     }

@@ -73,6 +73,11 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
+    /** The end of the loaded text came into view, so vertical reading pulls in the next chapter. */
+    data object OnReachedEnd : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
+
     data object OnRulerDismissClick : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.READER_FOCUS_AID_CHANGED,

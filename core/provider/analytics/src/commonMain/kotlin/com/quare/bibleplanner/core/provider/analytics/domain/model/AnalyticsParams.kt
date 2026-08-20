@@ -78,6 +78,7 @@ object AnalyticsParams {
     const val FONT = "font"
     const val FONT_SIZE = "font_size"
     const val FOCUS_AID = "focus_aid"
+    const val LINE_COUNT = "line_count"
     const val IS_OPEN = "is_open"
     const val FORMAT = "format"
     const val BACKGROUND = "background"

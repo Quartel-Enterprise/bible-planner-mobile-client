@@ -12,6 +12,8 @@ interface ReaderSettingsRepository {
 
     suspend fun setRulerEnabled(isEnabled: Boolean)
 
+    suspend fun setRulerLines(lines: Int)
+
     suspend fun setFocusedVerseEnabled(isEnabled: Boolean)
 
     suspend fun setVerticalReadingEnabled(isEnabled: Boolean)

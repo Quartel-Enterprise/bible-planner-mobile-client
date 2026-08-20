@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetReadNavigationSuggestionsModelUseCase
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterLoadResult
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.StringResource
 
 /**
@@ -41,8 +41,8 @@ class ReadDataPresentationModelFactory(
     private val observeChapterAnnotations: ObserveChapterAnnotations,
 ) : ObserveReadData {
     /**
-     * With [isVerticalReadingEnabled] on, the next chapter is appended to the same flow so the reader
-     * keeps scrolling into it instead of stopping at the end of this one.
+     * Every chapter in [appendedChapters] is observed alongside this one and laid out after it, so
+     * vertical reading keeps going for as long as the reader asks for more.
      */
     override fun invoke(
         bookId: BookId,
@@ -50,29 +50,30 @@ class ReadDataPresentationModelFactory(
         bookStringResource: StringResource,
         isInitiallyRead: Boolean,
         isFromBookDetails: Boolean,
-        isVerticalReadingEnabled: Boolean,
+        appendedChapters: List<ReadNavigationSuggestionModel>,
     ): Flow<ReadDataUiModel> = flow {
         getReadNavigationSuggestionsModelFlow(
             shouldForceCanonOrder = isFromBookDetails,
             currentBookId = bookId,
             currentChapterNumber = chapterNumber,
         ).collect { navigationSuggestions ->
-            val nextChapter = navigationSuggestions.next.takeIf { isVerticalReadingEnabled }
+            val chapterFlows = listOf(
+                observeChapter(
+                    bookId = bookId,
+                    chapterNumber = chapterNumber,
+                ),
+            ) + appendedChapters.map { appended ->
+                observeChapter(
+                    bookId = appended.bookId,
+                    chapterNumber = appended.chapterNumber,
+                )
+            }
             emitAll(
                 combine(
-                    observeChapter(
-                        bookId = bookId,
-                        chapterNumber = chapterNumber,
-                    ),
-                    nextChapter
-                        ?.let {
-                            observeChapter(
-                                bookId = it.bookId,
-                                chapterNumber = it.chapterNumber,
-                            )
-                        } ?: flowOf(null),
+                    combine(chapterFlows) { results -> results.toList() },
                     getSelectedBibleFlow(),
-                ) { chapterResult, appendedChapterResult, selectedBible ->
+                ) { chapterResults, selectedBible ->
+                    val chapterResult = chapterResults.first()
                     val chapter = (chapterResult as? ChapterLoadResult.Loaded)?.chapter
                     ReadDataUiModel(
                         header = ReadHeaderUiModel(
@@ -89,7 +90,9 @@ class ReadDataPresentationModelFactory(
                         ),
                         content = toContent(
                             chapterResult = chapterResult,
-                            appendedChapter = (appendedChapterResult as? ChapterLoadResult.Loaded)?.chapter,
+                            appendedChapters = chapterResults
+                                .drop(1)
+                                .mapNotNull { (it as? ChapterLoadResult.Loaded)?.chapter },
                             selectedBibleVersionName = selectedBible?.version?.name.orEmpty(),
                             downloadStatus = selectedBible?.downloadStatus ?: DownloadStatusModel.NotStarted,
                             versionSizeInBytes = selectedBible?.version?.size,
@@ -102,7 +105,7 @@ class ReadDataPresentationModelFactory(
 
     private fun toContent(
         chapterResult: ChapterLoadResult,
-        appendedChapter: ReadChapterUiModel?,
+        appendedChapters: List<ReadChapterUiModel>,
         selectedBibleVersionName: String,
         downloadStatus: DownloadStatusModel,
         versionSizeInBytes: Long?,
@@ -119,7 +122,7 @@ class ReadDataPresentationModelFactory(
         )
 
         is ChapterLoadResult.Loaded -> ReadContentUiState.Success(
-            chapters = listOfNotNull(chapterResult.chapter, appendedChapter),
+            chapters = listOf(chapterResult.chapter) + appendedChapters,
         )
     }
 

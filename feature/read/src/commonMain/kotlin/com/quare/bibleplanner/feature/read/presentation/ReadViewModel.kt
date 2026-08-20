@@ -26,7 +26,9 @@ import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestion
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
+import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.ObserveReaderSettings
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFocusAid
 import com.quare.bibleplanner.feature.read.presentation.factory.ObserveReadData
@@ -73,31 +75,40 @@ class ReadViewModel(
     private val requestDownloadNotificationPermission: RequestDownloadNotificationPermission,
     private val observeReaderSettings: ObserveReaderSettings,
     private val setReaderFocusAid: SetReaderFocusAid,
+    private val getNextChapter: GetNextChapter,
     private val observeVerseSelection: ObserveVerseSelection,
     private val toggleVerseSelection: ToggleVerseSelection,
     private val clearVerseSelection: ClearVerseSelection,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<ReadUiEvent>(trackEvent) {
+    private var isAppendingChapter = false
     private val bookId = BookId.valueOf(route.bookId)
     private val bookStringResource = bookId.toBookNameResource()
     private val retryCount = MutableStateFlow(0)
+
+    /**
+     * The chapters vertical reading has pulled in behind this one. It grows one chapter at a time as
+     * the reader reaches the end, so the scroll has no fixed limit, and empties when the setting goes
+     * off or the reader lands on another chapter.
+     */
+    private val appendedChapters = MutableStateFlow<List<ReadNavigationSuggestionModel>>(emptyList())
 
     private val _uiAction = MutableSharedFlow<ReadUiAction>()
     val uiAction: SharedFlow<ReadUiAction> = _uiAction
 
     private val dataFlow = combine(
-        observeReaderSettings().map { it.isVerticalReadingEnabled }.distinctUntilChanged(),
+        appendedChapters,
         retryCount,
-    ) { isVerticalReadingEnabled, _ -> isVerticalReadingEnabled }
-        .flatMapLatest { isVerticalReadingEnabled ->
+    ) { chapters, _ -> chapters }
+        .flatMapLatest { chapters ->
             observeReadData(
                 bookId = bookId,
                 chapterNumber = route.chapterNumber,
                 bookStringResource = bookStringResource,
                 isInitiallyRead = route.isChapterRead,
                 isFromBookDetails = route.isFromBookDetails,
-                isVerticalReadingEnabled = isVerticalReadingEnabled,
+                appendedChapters = chapters,
             )
         }
 
@@ -117,6 +128,7 @@ class ReadViewModel(
     )
 
     init {
+        observeVerticalReading()
         /*
          * Pushing is driven by the store rather than by the tap so it survives any other way the
          * selection could start, and it is idempotent: the navigator ignores a route already on the
@@ -134,6 +146,18 @@ class ReadViewModel(
                     replace = false,
                 ),
             )
+        }
+    }
+
+    /** Nothing to keep reading into once the setting is off. */
+    private fun observeVerticalReading() {
+        observe(
+            observeReaderSettings()
+                .map { it.isVerticalReadingEnabled }
+                .distinctUntilChanged()
+                .filter { isEnabled -> !isEnabled },
+        ) {
+            appendedChapters.update { emptyList() }
         }
     }
 
@@ -176,6 +200,8 @@ class ReadViewModel(
             }
 
             ReadUiEvent.OnRulerDismissClick -> dismissRuler()
+
+            ReadUiEvent.OnReachedEnd -> appendNextChapter()
         }
     }
 
@@ -241,6 +267,33 @@ class ReadViewModel(
                     replace = true,
                 ),
             )
+        }
+    }
+
+    /**
+     * Walks the reading order from the last chapter on screen. Only one append is in flight at a
+     * time, because the end of the list stays visible while the next chapter loads and would
+     * otherwise ask for it again on every frame.
+     */
+    private fun appendNextChapter() {
+        if (isAppendingChapter) return
+        isAppendingChapter = true
+        viewModelScope.launch {
+            val isVerticalReadingEnabled = observeReaderSettings().first().isVerticalReadingEnabled
+            val lastChapter = appendedChapters.value.lastOrNull()
+            val next = if (!isVerticalReadingEnabled) {
+                null
+            } else {
+                getNextChapter(
+                    bookId = lastChapter?.bookId ?: bookId,
+                    chapterNumber = lastChapter?.chapterNumber ?: route.chapterNumber,
+                    shouldForceCanonOrder = route.isFromBookDetails,
+                )
+            }
+            if (next != null) {
+                appendedChapters.update { it + next }
+            }
+            isAppendingChapter = false
         }
     }
 
@@ -327,6 +380,7 @@ class ReadViewModel(
             fontSizeSp = ReaderFontSize.DEFAULT,
             font = ReaderFont.LORA,
             isRulerEnabled = false,
+            rulerLines = ReaderRulerLines.DEFAULT,
             isFocusedVerseEnabled = false,
             isVerticalReadingEnabled = false,
         ),

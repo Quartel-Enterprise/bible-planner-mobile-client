@@ -5,11 +5,13 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.domain.usecase.ObserveReaderSettings
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFont
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderVerticalReading
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -28,6 +30,7 @@ internal class ReaderAppearanceViewModel(
     private val setReaderFontSize: SetReaderFontSize,
     private val setReaderFont: SetReaderFont,
     private val setReaderFocusAid: SetReaderFocusAid,
+    private val setReaderRulerLines: SetReaderRulerLines,
     private val setReaderVerticalReading: SetReaderVerticalReading,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ReaderAppearanceUiEvent>(trackEvent) {
@@ -52,6 +55,7 @@ internal class ReaderAppearanceViewModel(
                 fontSizeSp = ReaderFontSize.DEFAULT,
                 font = ReaderFont.LORA,
                 isRulerEnabled = false,
+                rulerLines = ReaderRulerLines.DEFAULT,
                 isFocusedVerseEnabled = false,
                 isVerticalReadingEnabled = false,
             ),
@@ -96,6 +100,14 @@ internal class ReaderAppearanceViewModel(
                     ),
                 )
                 viewModelScope.launch { setReaderFocusAid(event.focusAid) }
+            }
+
+            is ReaderAppearanceUiEvent.OnRulerLinesChange -> {
+                trackEvent(
+                    name = AnalyticsEventNames.READER_RULER_HEIGHT_CHANGED,
+                    params = mapOf(AnalyticsParams.LINE_COUNT to event.lines),
+                )
+                viewModelScope.launch { setReaderRulerLines(event.lines) }
             }
 
             is ReaderAppearanceUiEvent.OnVerticalReadingChange -> {

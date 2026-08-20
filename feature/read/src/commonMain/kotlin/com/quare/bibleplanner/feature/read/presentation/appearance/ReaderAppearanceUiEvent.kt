@@ -46,6 +46,14 @@ sealed interface ReaderAppearanceUiEvent : UiEvent {
         )
     }
 
+    data class OnRulerLinesChange(
+        val lines: Int,
+    ) : ReaderAppearanceUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.READER_RULER_HEIGHT_CHANGED,
+        )
+    }
+
     data class OnVerticalReadingChange(
         val isEnabled: Boolean,
     ) : ReaderAppearanceUiEvent {

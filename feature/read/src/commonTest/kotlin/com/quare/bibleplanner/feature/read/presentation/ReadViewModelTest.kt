@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.fake.FakeObserveReadData
 import com.quare.bibleplanner.feature.read.fake.FakeVerseSelectionStore
@@ -222,6 +223,7 @@ internal class ReadViewModelTest {
                 fontSizeSp = ReaderFontSize.DEFAULT,
                 font = ReaderFont.LORA,
                 isRulerEnabled = false,
+                rulerLines = ReaderRulerLines.DEFAULT,
                 isFocusedVerseEnabled = false,
                 isVerticalReadingEnabled = false,
             ),
@@ -242,6 +244,7 @@ internal class ReadViewModelTest {
             requestDownloadNotificationPermission = { error("unused") },
             observeReaderSettings = { settings },
             setReaderFocusAid = { error("unused") },
+            getNextChapter = { _, _, _ -> null },
             observeVerseSelection = { selectionStore.selection },
             toggleVerseSelection = { chapter, verseNumber ->
                 selectionStore.toggle(
