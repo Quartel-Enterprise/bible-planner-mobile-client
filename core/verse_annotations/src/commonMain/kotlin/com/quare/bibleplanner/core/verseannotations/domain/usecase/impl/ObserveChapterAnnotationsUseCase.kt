@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.verseannotations.domain.usecase.impl
 
-import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.repository.SavedVerseRepository
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseHighlightRepository
@@ -14,22 +14,10 @@ internal class ObserveChapterAnnotationsUseCase(
     private val savedVerseRepository: SavedVerseRepository,
     private val verseNoteRepository: VerseNoteRepository,
 ) : ObserveChapterAnnotations {
-    override fun invoke(
-        bookId: BookId,
-        chapterNumber: Int,
-    ): Flow<ChapterAnnotations> = combine(
-        verseHighlightRepository.observeChapterHighlights(
-            bookId = bookId,
-            chapterNumber = chapterNumber,
-        ),
-        savedVerseRepository.observeChapterSavedVerses(
-            bookId = bookId,
-            chapterNumber = chapterNumber,
-        ),
-        verseNoteRepository.observeChapterNotes(
-            bookId = bookId,
-            chapterNumber = chapterNumber,
-        ),
+    override fun invoke(chapter: ChapterRef): Flow<ChapterAnnotations> = combine(
+        verseHighlightRepository.observeChapterHighlights(chapter),
+        savedVerseRepository.observeChapterSavedVerses(chapter),
+        verseNoteRepository.observeChapterNotes(chapter),
     ) { highlights, savedVerses, notes ->
         ChapterAnnotations(
             highlightColorByVerse = highlights,

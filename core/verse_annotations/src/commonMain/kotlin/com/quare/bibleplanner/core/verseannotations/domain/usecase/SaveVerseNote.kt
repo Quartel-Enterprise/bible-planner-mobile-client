@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.verseannotations.domain.usecase
 
-import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 
 fun interface SaveVerseNote {
     /**
@@ -9,8 +9,7 @@ fun interface SaveVerseNote {
      */
     suspend operator fun invoke(
         noteId: String?,
-        bookId: BookId,
-        chapterNumber: Int,
+        chapter: ChapterRef,
         verseNumbers: List<Int>,
         text: String,
     )

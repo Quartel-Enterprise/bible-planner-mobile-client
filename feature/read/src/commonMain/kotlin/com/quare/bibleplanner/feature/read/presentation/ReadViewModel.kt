@@ -181,8 +181,7 @@ class ReadViewModel(
 
     private fun selectVerse(event: ReadUiEvent.OnVerseClick) {
         val selection = toggleVerseSelection(
-            bookId = event.bookId,
-            chapterNumber = event.chapterNumber,
+            chapter = event.chapter,
             verseNumber = event.verseNumber,
         )
         val verseNumbers = selection?.verseNumbers.orEmpty()
@@ -298,7 +297,7 @@ class ReadViewModel(
 
     private fun ReadChapterUiModel.withSelection(selection: VerseSelection?): ReadChapterUiModel {
         val selectedVerseNumbers = selection
-            ?.takeIf { it.bookId == bookId && it.chapterNumber == chapterNumber }
+            ?.takeIf { it.chapter == chapter }
             ?.verseNumbers
             .orEmpty()
         return copy(

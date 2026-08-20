@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.verse.selectionmenu.presentation
 
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
@@ -27,6 +28,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
 
 internal class VerseSelectionViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -160,8 +167,9 @@ internal class VerseSelectionViewModelTest {
         assertEquals(
             expected = VerseSelectionUiAction.NavigateToRoute(
                 VerseNoteNavRoute(
-                    bookId = BookId.GEN.name,
-                    chapterNumber = 3,
+                    bibleVersionId = testChapter.bibleVersionId,
+                    bookId = testChapter.bookId.name,
+                    chapterNumber = testChapter.chapterNumber,
                     verseNumbers = listOf(1, 2),
                     noteId = null,
                 ),
@@ -193,8 +201,7 @@ internal class VerseSelectionViewModelTest {
     }
 
     private fun verseSelection(verseNumbers: List<Int>): VerseSelection = VerseSelection(
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumbers = verseNumbers,
     )
 
@@ -206,7 +213,7 @@ internal class VerseSelectionViewModelTest {
         viewModel = VerseSelectionViewModel(
             observeVerseSelection = { selection },
             clearVerseSelection = { clearedCount += Unit },
-            observeChapterAnnotations = { _, _ ->
+            observeChapterAnnotations = { _ ->
                 flowOf(
                     ChapterAnnotations(
                         highlightColorByVerse = emptyMap(),

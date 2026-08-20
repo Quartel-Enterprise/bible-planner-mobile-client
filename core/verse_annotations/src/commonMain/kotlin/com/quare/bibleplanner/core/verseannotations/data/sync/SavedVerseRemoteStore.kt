@@ -21,7 +21,7 @@ internal class SavedVerseRemoteStore(
 ) : SyncRemoteStore<SavedVerseDto> {
     override suspend fun upsert(dtos: List<SavedVerseDto>) {
         supabaseClient.from(TABLE).upsert(dtos) {
-            onConflict = "user_id,book_id,chapter_number,verse_number"
+            onConflict = "user_id,bible_version_id,book_id,chapter_number,verse_number"
         }
     }
 

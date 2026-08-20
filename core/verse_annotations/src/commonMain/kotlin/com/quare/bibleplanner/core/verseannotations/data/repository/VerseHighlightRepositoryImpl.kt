@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.verseannotations.data.repository
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.room.dao.VerseHighlightDao
 import com.quare.bibleplanner.core.provider.room.entity.VerseHighlightEntity
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
@@ -14,13 +15,11 @@ internal class VerseHighlightRepositoryImpl(
     private val verseHighlightDao: VerseHighlightDao,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : VerseHighlightRepository {
-    override fun observeChapterHighlights(
-        bookId: BookId,
-        chapterNumber: Int,
-    ): Flow<Map<Int, HighlightColor>> = verseHighlightDao
+    override fun observeChapterHighlights(chapter: ChapterRef): Flow<Map<Int, HighlightColor>> = verseHighlightDao
         .getChapterHighlightsFlow(
-            bookId = bookId.name,
-            chapterNumber = chapterNumber,
+            bibleVersionId = chapter.bibleVersionId,
+            bookId = chapter.bookId.name,
+            chapterNumber = chapter.chapterNumber,
         ).map { entities ->
             entities
                 .mapNotNull { entity ->
@@ -32,20 +31,15 @@ internal class VerseHighlightRepositoryImpl(
 
     override suspend fun getColors(refs: List<VerseRef>): Map<VerseRef, HighlightColor?> {
         val storedColorByRef = refs
-            .groupBy { ref -> ref.bookId to ref.chapterNumber }
+            .groupBy { ref -> ref.chapter }
             .flatMap { (chapter, chapterRefs) ->
                 verseHighlightDao.getHighlights(
-                    bookId = chapter.first.name,
-                    chapterNumber = chapter.second,
+                    bibleVersionId = chapter.bibleVersionId,
+                    bookId = chapter.bookId.name,
+                    chapterNumber = chapter.chapterNumber,
                     verseNumbers = chapterRefs.map { it.verseNumber },
                 )
-            }.associateBy { entity ->
-                VerseRef(
-                    bookId = BookId.valueOf(entity.bookId),
-                    chapterNumber = entity.chapterNumber,
-                    verseNumber = entity.verseNumber,
-                )
-            }
+            }.associateBy { entity -> entity.toVerseRef() }
         return refs.associateWith { ref ->
             storedColorByRef[ref]?.color?.let(HighlightColor::fromKey)
         }
@@ -66,8 +60,9 @@ internal class VerseHighlightRepositoryImpl(
         verseHighlightDao.upsertHighlights(
             changedRefs.map { ref ->
                 VerseHighlightEntity(
-                    bookId = ref.bookId.name,
-                    chapterNumber = ref.chapterNumber,
+                    bibleVersionId = ref.chapter.bibleVersionId,
+                    bookId = ref.chapter.bookId.name,
+                    chapterNumber = ref.chapter.chapterNumber,
                     verseNumber = ref.verseNumber,
                     color = color?.key,
                     updatedAtEpochMillis = now,
@@ -77,6 +72,7 @@ internal class VerseHighlightRepositoryImpl(
         )
     }
 
+    /** Colours belong to the palette, which is version-independent, so this clears every version. */
     override suspend fun removeAllWithColor(colorKey: String) {
         val now = currentTimestampProvider.getCurrentTimestamp()
         val cleared = verseHighlightDao.getHighlightsByColor(colorKey).map { entity ->
@@ -89,4 +85,13 @@ internal class VerseHighlightRepositoryImpl(
         if (cleared.isEmpty()) return
         verseHighlightDao.upsertHighlights(cleared)
     }
+
+    private fun VerseHighlightEntity.toVerseRef(): VerseRef = VerseRef(
+        chapter = ChapterRef(
+            bibleVersionId = bibleVersionId,
+            bookId = BookId.valueOf(bookId),
+            chapterNumber = chapterNumber,
+        ),
+        verseNumber = verseNumber,
+    )
 }

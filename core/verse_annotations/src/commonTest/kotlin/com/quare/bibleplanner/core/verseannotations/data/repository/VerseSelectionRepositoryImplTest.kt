@@ -1,10 +1,17 @@
 package com.quare.bibleplanner.core.verseannotations.data.repository
 
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
 
 internal class VerseSelectionRepositoryImplTest {
     private lateinit var repository: VerseSelectionRepositoryImpl
@@ -70,18 +77,44 @@ internal class VerseSelectionRepositoryImplTest {
 
         // When
         repository.toggle(
-            bookId = BookId.GEN,
-            chapterNumber = 4,
+            chapter = testChapter.copy(chapterNumber = 4),
             verseNumber = 7,
         )
 
         // Then
         assertEquals(
             expected = 4,
-            actual = repository.selection.value?.chapterNumber,
+            actual = repository.selection.value
+                ?.chapter
+                ?.chapterNumber,
         )
         assertEquals(
             expected = listOf(7),
+            actual = repository.selection.value?.verseNumbers,
+        )
+    }
+
+    @Test
+    fun `starts over when the same verse is tapped in another version`() {
+        // Given
+        toggle(1)
+        toggle(2)
+
+        // When
+        repository.toggle(
+            chapter = testChapter.copy(bibleVersionId = "WEB"),
+            verseNumber = 2,
+        )
+
+        // Then
+        assertEquals(
+            expected = "WEB",
+            actual = repository.selection.value
+                ?.chapter
+                ?.bibleVersionId,
+        )
+        assertEquals(
+            expected = listOf(2),
             actual = repository.selection.value?.verseNumbers,
         )
     }
@@ -99,8 +132,7 @@ internal class VerseSelectionRepositoryImplTest {
     }
 
     private fun toggle(verseNumber: Int) = repository.toggle(
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumber = verseNumber,
     )
 }

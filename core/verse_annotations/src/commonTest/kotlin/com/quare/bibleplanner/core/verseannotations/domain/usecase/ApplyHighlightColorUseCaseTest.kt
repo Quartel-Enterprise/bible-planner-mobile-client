@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.verseannotations.domain.usecase
 
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
@@ -12,6 +13,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
 
 internal class ApplyHighlightColorUseCaseTest {
     private val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
@@ -97,8 +104,7 @@ internal class ApplyHighlightColorUseCaseTest {
     }
 
     private fun verseRef(verseNumber: Int): VerseRef = VerseRef(
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumber = verseNumber,
     )
 

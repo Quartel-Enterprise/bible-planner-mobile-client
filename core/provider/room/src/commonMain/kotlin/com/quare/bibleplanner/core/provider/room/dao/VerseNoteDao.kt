@@ -17,10 +17,11 @@ private const val INSERT_IGNORED = -1L
 interface VerseNoteDao {
     @Transaction
     @Query(
-        "SELECT * FROM verse_notes WHERE bookId = :bookId AND chapterNumber = :chapterNumber " +
-            "AND isDeleted = 0 ORDER BY createdAtEpochMillis",
+        "SELECT * FROM verse_notes WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
+            "AND chapterNumber = :chapterNumber AND isDeleted = 0 ORDER BY createdAtEpochMillis",
     )
     fun getChapterNotesFlow(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
     ): Flow<List<VerseNoteWithVerses>>
@@ -81,6 +82,7 @@ interface VerseNoteDao {
         val changedRows = if (insertedRowId == INSERT_IGNORED) {
             updateRemoteNote(
                 noteId = note.id,
+                bibleVersionId = note.bibleVersionId,
                 bookId = note.bookId,
                 chapterNumber = note.chapterNumber,
                 text = note.text,
@@ -100,12 +102,14 @@ interface VerseNoteDao {
     suspend fun insertNoteIfAbsent(note: VerseNoteEntity): Long
 
     @Query(
-        "UPDATE verse_notes SET bookId = :bookId, chapterNumber = :chapterNumber, text = :text, " +
-            "isDeleted = :isDeleted, updatedAtEpochMillis = :remoteUpdatedAt " +
+        "UPDATE verse_notes SET bibleVersionId = :bibleVersionId, bookId = :bookId, " +
+            "chapterNumber = :chapterNumber, text = :text, isDeleted = :isDeleted, " +
+            "updatedAtEpochMillis = :remoteUpdatedAt " +
             "WHERE id = :noteId AND isPendingSync = 0 AND updatedAtEpochMillis < :remoteUpdatedAt",
     )
     suspend fun updateRemoteNote(
         noteId: String,
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
         text: String,

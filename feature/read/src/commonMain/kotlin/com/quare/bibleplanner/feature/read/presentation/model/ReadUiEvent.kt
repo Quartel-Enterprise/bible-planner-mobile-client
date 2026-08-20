@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.model
 
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
@@ -57,8 +58,7 @@ sealed interface ReadUiEvent : UiEvent {
     }
 
     data class OnVerseClick(
-        val bookId: BookId,
-        val chapterNumber: Int,
+        val chapter: ChapterRef,
         val verseNumber: Int,
     ) : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(

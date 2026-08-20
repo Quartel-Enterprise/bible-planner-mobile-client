@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.verseannotations.domain.usecase
 
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.SaveVerseNoteUseCase
 import com.quare.bibleplanner.core.verseannotations.fake.FakeVerseNoteRepository
@@ -8,6 +9,12 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
 
 internal class SaveVerseNoteUseCaseTest {
     private val now = 1_700_000_000_000L
@@ -23,8 +30,7 @@ internal class SaveVerseNoteUseCaseTest {
         // When
         useCase(
             noteId = null,
-            bookId = BookId.GEN,
-            chapterNumber = 3,
+            chapter = testChapter,
             verseNumbers = listOf(1, 2),
             text = "  Uma reflexao  ",
         )
@@ -54,8 +60,7 @@ internal class SaveVerseNoteUseCaseTest {
         // When
         useCase(
             noteId = "note-1",
-            bookId = BookId.GEN,
-            chapterNumber = 3,
+            chapter = testChapter,
             verseNumbers = listOf(1, 2, 3),
             text = "Texto editado",
         )
@@ -88,8 +93,7 @@ internal class SaveVerseNoteUseCaseTest {
         // When
         useCase(
             noteId = "note-1",
-            bookId = BookId.GEN,
-            chapterNumber = 3,
+            chapter = testChapter,
             verseNumbers = listOf(1, 2),
             text = "   ",
         )
@@ -110,8 +114,7 @@ internal class SaveVerseNoteUseCaseTest {
         // When
         useCase(
             noteId = null,
-            bookId = BookId.GEN,
-            chapterNumber = 3,
+            chapter = testChapter,
             verseNumbers = listOf(1),
             text = "",
         )
@@ -123,8 +126,7 @@ internal class SaveVerseNoteUseCaseTest {
 
     private fun existingNote(): VerseNote = VerseNote(
         id = "note-1",
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumbers = listOf(1, 2),
         text = "Texto original",
         createdAtEpochMillis = createdAt,

@@ -17,6 +17,7 @@ internal class VerseHighlightLocalStore(
 
     override suspend fun markSynced(entity: VerseHighlightEntity) {
         verseHighlightDao.markHighlightSynced(
+            bibleVersionId = entity.bibleVersionId,
             bookId = entity.bookId,
             chapterNumber = entity.chapterNumber,
             verseNumber = entity.verseNumber,

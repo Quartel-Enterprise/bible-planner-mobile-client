@@ -17,6 +17,7 @@ internal class SavedVerseLocalStore(
 
     override suspend fun markSynced(entity: SavedVerseEntity) {
         savedVerseDao.markSavedVerseSynced(
+            bibleVersionId = entity.bibleVersionId,
             bookId = entity.bookId,
             chapterNumber = entity.chapterNumber,
             verseNumber = entity.verseNumber,

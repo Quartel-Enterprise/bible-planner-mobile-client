@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 internal data class VerseHighlightDto(
     @SerialName("user_id") val userId: String,
+    @SerialName("bible_version_id") val bibleVersionId: String,
     @SerialName("book_id") val bookId: String,
     @SerialName("chapter_number") val chapterNumber: Int,
     @SerialName("verse_number") val verseNumber: Int,

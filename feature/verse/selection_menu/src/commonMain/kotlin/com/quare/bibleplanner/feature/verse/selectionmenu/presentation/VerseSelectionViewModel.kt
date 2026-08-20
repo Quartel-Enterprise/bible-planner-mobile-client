@@ -87,10 +87,7 @@ internal class VerseSelectionViewModel(
             .flatMapLatest { selection ->
                 selection
                     ?.let { safeSelection ->
-                        observeChapterAnnotations(
-                            bookId = safeSelection.bookId,
-                            chapterNumber = safeSelection.chapterNumber,
-                        )
+                        observeChapterAnnotations(safeSelection.chapter)
                     } ?: flowOf(emptyAnnotations)
             }.onStart { emit(emptyAnnotations) },
         observeVerseSelection(),
@@ -101,8 +98,7 @@ internal class VerseSelectionViewModel(
             null
         } else {
             VerseSelectionUiState(
-                bookId = selection.bookId,
-                chapterNumber = selection.chapterNumber,
+                chapter = selection.chapter,
                 verseNumbers = selection.verseNumbers,
                 customColors = customColors,
                 activeColor = selection.verseNumbers
@@ -253,8 +249,9 @@ internal class VerseSelectionViewModel(
         emitAction(
             VerseSelectionUiAction.NavigateToRoute(
                 VerseNoteNavRoute(
-                    bookId = selection.bookId.name,
-                    chapterNumber = selection.chapterNumber,
+                    bibleVersionId = selection.chapter.bibleVersionId,
+                    bookId = selection.chapter.bookId.name,
+                    chapterNumber = selection.chapter.chapterNumber,
                     verseNumbers = selection.verseNumbers,
                     noteId = noteId,
                 ),
@@ -266,8 +263,8 @@ internal class VerseSelectionViewModel(
         val selection = getCurrentSelection() ?: return
         viewModelScope.launch {
             val shareContent = getVersesShareContent(
-                bookId = selection.bookId,
-                chapterNumber = selection.chapterNumber,
+                bookId = selection.chapter.bookId,
+                chapterNumber = selection.chapter.chapterNumber,
                 verseNumbers = selection.verseNumbers,
             ) ?: return@launch
             trackEvent(
@@ -292,8 +289,8 @@ internal class VerseSelectionViewModel(
         emitAction(
             VerseSelectionUiAction.NavigateToRoute(
                 ShareVerseNavRoute(
-                    bookId = selection.bookId.name,
-                    chapterNumber = selection.chapterNumber,
+                    bookId = selection.chapter.bookId.name,
+                    chapterNumber = selection.chapter.chapterNumber,
                     verseNumbers = selection.verseNumbers,
                 ),
             ),

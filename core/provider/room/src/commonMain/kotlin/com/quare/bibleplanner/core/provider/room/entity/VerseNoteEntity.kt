@@ -9,14 +9,16 @@ import androidx.room3.PrimaryKey
  * its identity once it reaches the backend.
  *
  * The verses the note covers live in [VerseNoteVerseEntity] because they are payload, not identity:
- * extending a note from 3:1-3 to 3:1-5 keeps the same note.
+ * extending a note from 3:1-3 to 3:1-5 keeps the same note. The version is payload for the same
+ * reason — the note keeps its id — but it is indexed, because a chapter is read in one version.
  */
 @Entity(
     tableName = "verse_notes",
-    indices = [Index("bookId", "chapterNumber")],
+    indices = [Index("bibleVersionId", "bookId", "chapterNumber")],
 )
 data class VerseNoteEntity(
     @PrimaryKey val id: String,
+    val bibleVersionId: String,
     val bookId: String,
     val chapterNumber: Int,
     val text: String,

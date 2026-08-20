@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 16,
-    "identityHash": "44f5f5ea5c15ab87071be8d26dc5e059",
+    "version": 17,
+    "identityHash": "cb6c3fd580f7fa00c810bf0548254797",
     "entities": [
       {
         "tableName": "books",
@@ -1061,13 +1061,14 @@
       },
       {
         "tableName": "verse_highlights",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bibleVersionId` TEXT NOT NULL, `bookId` TEXT NOT NULL, `chapterNumber` INTEGER NOT NULL, `verseNumber` INTEGER NOT NULL, `color` TEXT, `updatedAtEpochMillis` INTEGER NOT NULL, `isPendingSync` INTEGER NOT NULL, PRIMARY KEY(`bibleVersionId`, `bookId`, `chapterNumber`, `verseNumber`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bibleVersionId` TEXT NOT NULL DEFAULT '', `bookId` TEXT NOT NULL, `chapterNumber` INTEGER NOT NULL, `verseNumber` INTEGER NOT NULL, `color` TEXT, `updatedAtEpochMillis` INTEGER NOT NULL, `isPendingSync` INTEGER NOT NULL, PRIMARY KEY(`bibleVersionId`, `bookId`, `chapterNumber`, `verseNumber`))",
         "fields": [
           {
             "fieldPath": "bibleVersionId",
             "columnName": "bibleVersionId",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "''"
           },
           {
             "fieldPath": "bookId",
@@ -1117,13 +1118,14 @@
       },
       {
         "tableName": "saved_verses",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bibleVersionId` TEXT NOT NULL, `bookId` TEXT NOT NULL, `chapterNumber` INTEGER NOT NULL, `verseNumber` INTEGER NOT NULL, `isSaved` INTEGER NOT NULL, `updatedAtEpochMillis` INTEGER NOT NULL, `isPendingSync` INTEGER NOT NULL, PRIMARY KEY(`bibleVersionId`, `bookId`, `chapterNumber`, `verseNumber`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bibleVersionId` TEXT NOT NULL DEFAULT '', `bookId` TEXT NOT NULL, `chapterNumber` INTEGER NOT NULL, `verseNumber` INTEGER NOT NULL, `isSaved` INTEGER NOT NULL, `updatedAtEpochMillis` INTEGER NOT NULL, `isPendingSync` INTEGER NOT NULL, PRIMARY KEY(`bibleVersionId`, `bookId`, `chapterNumber`, `verseNumber`))",
         "fields": [
           {
             "fieldPath": "bibleVersionId",
             "columnName": "bibleVersionId",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "''"
           },
           {
             "fieldPath": "bookId",
@@ -1174,7 +1176,7 @@
       },
       {
         "tableName": "verse_notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `bibleVersionId` TEXT NOT NULL, `bookId` TEXT NOT NULL, `chapterNumber` INTEGER NOT NULL, `text` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `createdAtEpochMillis` INTEGER NOT NULL, `updatedAtEpochMillis` INTEGER NOT NULL, `isPendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `bibleVersionId` TEXT NOT NULL DEFAULT '', `bookId` TEXT NOT NULL, `chapterNumber` INTEGER NOT NULL, `text` TEXT NOT NULL, `isDeleted` INTEGER NOT NULL, `createdAtEpochMillis` INTEGER NOT NULL, `updatedAtEpochMillis` INTEGER NOT NULL, `isPendingSync` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1186,7 +1188,8 @@
             "fieldPath": "bibleVersionId",
             "columnName": "bibleVersionId",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "''"
           },
           {
             "fieldPath": "bookId",
@@ -1345,7 +1348,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '44f5f5ea5c15ab87071be8d26dc5e059')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cb6c3fd580f7fa00c810bf0548254797')"
     ]
   }
 }

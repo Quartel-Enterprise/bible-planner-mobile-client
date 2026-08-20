@@ -12,19 +12,21 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SavedVerseDao {
     @Query(
-        "SELECT * FROM saved_verses WHERE bookId = :bookId AND chapterNumber = :chapterNumber " +
-            "AND isSaved = 1 ORDER BY verseNumber",
+        "SELECT * FROM saved_verses WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
+            "AND chapterNumber = :chapterNumber AND isSaved = 1 ORDER BY verseNumber",
     )
     fun getChapterSavedVersesFlow(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
     ): Flow<List<SavedVerseEntity>>
 
     @Query(
-        "SELECT * FROM saved_verses WHERE bookId = :bookId AND chapterNumber = :chapterNumber " +
-            "AND verseNumber IN (:verseNumbers)",
+        "SELECT * FROM saved_verses WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
+            "AND chapterNumber = :chapterNumber AND verseNumber IN (:verseNumbers)",
     )
     suspend fun getSavedVerses(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
         verseNumbers: List<Int>,
@@ -40,11 +42,12 @@ interface SavedVerseDao {
     suspend fun getPendingSyncSavedVerses(): List<SavedVerseEntity>
 
     @Query(
-        "UPDATE saved_verses SET isPendingSync = 0 WHERE bookId = :bookId " +
-            "AND chapterNumber = :chapterNumber AND verseNumber = :verseNumber " +
+        "UPDATE saved_verses SET isPendingSync = 0 WHERE bibleVersionId = :bibleVersionId " +
+            "AND bookId = :bookId AND chapterNumber = :chapterNumber AND verseNumber = :verseNumber " +
             "AND updatedAtEpochMillis = :syncedUpdatedAt",
     )
     suspend fun markSavedVerseSynced(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
         verseNumber: Int,
@@ -55,6 +58,7 @@ interface SavedVerseDao {
     suspend fun applyRemoteSavedVerse(savedVerse: SavedVerseEntity) {
         insertSavedVerseIfAbsent(savedVerse)
         updateRemoteSavedVerse(
+            bibleVersionId = savedVerse.bibleVersionId,
             bookId = savedVerse.bookId,
             chapterNumber = savedVerse.chapterNumber,
             verseNumber = savedVerse.verseNumber,
@@ -68,10 +72,12 @@ interface SavedVerseDao {
 
     @Query(
         "UPDATE saved_verses SET isSaved = :isSaved, updatedAtEpochMillis = :remoteUpdatedAt " +
-            "WHERE bookId = :bookId AND chapterNumber = :chapterNumber AND verseNumber = :verseNumber " +
+            "WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
+            "AND chapterNumber = :chapterNumber AND verseNumber = :verseNumber " +
             "AND isPendingSync = 0 AND updatedAtEpochMillis < :remoteUpdatedAt",
     )
     suspend fun updateRemoteSavedVerse(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
         verseNumber: Int,

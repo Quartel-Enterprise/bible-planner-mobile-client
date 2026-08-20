@@ -11,6 +11,7 @@ internal class VerseHighlightMapper(
         entity: VerseHighlightEntity,
     ): VerseHighlightDto = VerseHighlightDto(
         userId = userId,
+        bibleVersionId = entity.bibleVersionId,
         bookId = entity.bookId,
         chapterNumber = entity.chapterNumber,
         verseNumber = entity.verseNumber,
@@ -19,6 +20,7 @@ internal class VerseHighlightMapper(
     )
 
     fun toEntity(dto: VerseHighlightDto): VerseHighlightEntity = VerseHighlightEntity(
+        bibleVersionId = dto.bibleVersionId,
         bookId = dto.bookId,
         chapterNumber = dto.chapterNumber,
         verseNumber = dto.verseNumber,

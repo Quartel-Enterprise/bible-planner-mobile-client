@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.verseannotations.data.repository
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.room.dao.SavedVerseDao
 import com.quare.bibleplanner.core.provider.room.entity.SavedVerseEntity
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
@@ -13,13 +14,11 @@ internal class SavedVerseRepositoryImpl(
     private val savedVerseDao: SavedVerseDao,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : SavedVerseRepository {
-    override fun observeChapterSavedVerses(
-        bookId: BookId,
-        chapterNumber: Int,
-    ): Flow<Set<Int>> = savedVerseDao
+    override fun observeChapterSavedVerses(chapter: ChapterRef): Flow<Set<Int>> = savedVerseDao
         .getChapterSavedVersesFlow(
-            bookId = bookId.name,
-            chapterNumber = chapterNumber,
+            bibleVersionId = chapter.bibleVersionId,
+            bookId = chapter.bookId.name,
+            chapterNumber = chapter.chapterNumber,
         ).map { entities -> entities.map { it.verseNumber }.toSet() }
 
     override suspend fun areAllSaved(refs: List<VerseRef>): Boolean {
@@ -39,8 +38,9 @@ internal class SavedVerseRepositoryImpl(
         savedVerseDao.upsertSavedVerses(
             changedRefs.map { ref ->
                 SavedVerseEntity(
-                    bookId = ref.bookId.name,
-                    chapterNumber = ref.chapterNumber,
+                    bibleVersionId = ref.chapter.bibleVersionId,
+                    bookId = ref.chapter.bookId.name,
+                    chapterNumber = ref.chapter.chapterNumber,
                     verseNumber = ref.verseNumber,
                     isSaved = isSaved,
                     updatedAtEpochMillis = now,
@@ -51,17 +51,21 @@ internal class SavedVerseRepositoryImpl(
     }
 
     private suspend fun getStoredStateByRef(refs: List<VerseRef>): Map<VerseRef, Boolean> = refs
-        .groupBy { ref -> ref.bookId to ref.chapterNumber }
+        .groupBy { ref -> ref.chapter }
         .flatMap { (chapter, chapterRefs) ->
             savedVerseDao.getSavedVerses(
-                bookId = chapter.first.name,
-                chapterNumber = chapter.second,
+                bibleVersionId = chapter.bibleVersionId,
+                bookId = chapter.bookId.name,
+                chapterNumber = chapter.chapterNumber,
                 verseNumbers = chapterRefs.map { it.verseNumber },
             )
         }.associate { entity ->
             VerseRef(
-                bookId = BookId.valueOf(entity.bookId),
-                chapterNumber = entity.chapterNumber,
+                chapter = ChapterRef(
+                    bibleVersionId = entity.bibleVersionId,
+                    bookId = BookId.valueOf(entity.bookId),
+                    chapterNumber = entity.chapterNumber,
+                ),
                 verseNumber = entity.verseNumber,
             ) to entity.isSaved
         }

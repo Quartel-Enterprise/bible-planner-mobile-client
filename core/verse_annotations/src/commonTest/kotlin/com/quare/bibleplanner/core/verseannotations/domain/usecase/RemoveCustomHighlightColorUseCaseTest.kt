@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.verseannotations.domain.usecase
 
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.RemoveCustomHighlightColorUseCase
@@ -11,14 +12,19 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
+
 internal class RemoveCustomHighlightColorUseCaseTest {
     private val customColor = HighlightColor.Custom(
         hue = 265,
         lightness = 62,
     )
     private val highlightedRef = VerseRef(
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumber = 1,
     )
     private lateinit var useCase: RemoveCustomHighlightColorUseCase

@@ -13,6 +13,7 @@ internal class VerseNoteSyncMapper(
         relation: VerseNoteWithVerses,
     ): VerseNoteDto = VerseNoteDto(
         userId = userId,
+        bibleVersionId = relation.note.bibleVersionId,
         id = relation.note.id,
         bookId = relation.note.bookId,
         chapterNumber = relation.note.chapterNumber,
@@ -31,6 +32,7 @@ internal class VerseNoteSyncMapper(
         val updatedAt = syncTimestampMapper.toEpochMillis(dto.updatedAt)
         return VerseNoteEntity(
             id = dto.id,
+            bibleVersionId = dto.bibleVersionId,
             bookId = dto.bookId,
             chapterNumber = dto.chapterNumber,
             text = dto.text,

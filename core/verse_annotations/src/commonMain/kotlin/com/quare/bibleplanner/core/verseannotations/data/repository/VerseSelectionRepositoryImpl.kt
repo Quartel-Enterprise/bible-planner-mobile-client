@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.verseannotations.data.repository
 
-import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseSelectionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,13 +12,15 @@ internal class VerseSelectionRepositoryImpl : VerseSelectionRepository {
     override val selection: StateFlow<VerseSelection?> = _selection
 
     override fun toggle(
-        bookId: BookId,
-        chapterNumber: Int,
+        chapter: ChapterRef,
         verseNumber: Int,
     ): VerseSelection? {
         _selection.update { current ->
-            val isSameChapter = current?.bookId == bookId && current?.chapterNumber == chapterNumber
-            val previousNumbers = if (isSameChapter) current?.verseNumbers.orEmpty() else emptyList()
+            val previousNumbers = current
+                ?.verseNumbers
+                .orEmpty()
+                .takeIf { current?.chapter == chapter }
+                .orEmpty()
             val verseNumbers = if (verseNumber in previousNumbers) {
                 previousNumbers - verseNumber
             } else {
@@ -28,8 +30,7 @@ internal class VerseSelectionRepositoryImpl : VerseSelectionRepository {
                 null
             } else {
                 VerseSelection(
-                    bookId = bookId,
-                    chapterNumber = chapterNumber,
+                    chapter = chapter,
                     verseNumbers = verseNumbers,
                 )
             }

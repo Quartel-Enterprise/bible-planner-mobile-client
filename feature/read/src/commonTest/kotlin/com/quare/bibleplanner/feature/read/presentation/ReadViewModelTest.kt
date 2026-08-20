@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.read.presentation
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.mark_as_read
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
@@ -36,6 +37,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
 
 internal class ReadViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -170,8 +177,7 @@ internal class ReadViewModelTest {
         .map { it.number }
 
     private fun verseClick(verseNumber: Int): ReadUiEvent.OnVerseClick = ReadUiEvent.OnVerseClick(
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumber = verseNumber,
     )
 
@@ -180,9 +186,8 @@ internal class ReadViewModelTest {
         selectionStore = FakeVerseSelectionStore()
         val bookStringResource = Res.string.mark_as_read
         val chapter = ReadChapterUiModel(
-            bookId = BookId.GEN,
+            chapter = testChapter,
             bookStringResource = bookStringResource,
-            chapterNumber = 3,
             isRead = false,
             verses = (1..3).map { number ->
                 VerseUiModel(
@@ -238,10 +243,9 @@ internal class ReadViewModelTest {
             observeReaderSettings = { settings },
             setReaderFocusAid = { error("unused") },
             observeVerseSelection = { selectionStore.selection },
-            toggleVerseSelection = { bookId, chapterNumber, verseNumber ->
+            toggleVerseSelection = { chapter, verseNumber ->
                 selectionStore.toggle(
-                    bookId = bookId,
-                    chapterNumber = chapterNumber,
+                    chapter = chapter,
                     verseNumber = verseNumber,
                 )
             },

@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.verseannotations.domain.usecase
 
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ToggleSavedVersesUseCase
 import com.quare.bibleplanner.core.verseannotations.fake.FakeSavedVerseRepository
@@ -9,6 +10,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
 
 internal class ToggleSavedVersesUseCaseTest {
     private val refs = listOf(verseRef(1), verseRef(2))
@@ -61,8 +68,7 @@ internal class ToggleSavedVersesUseCaseTest {
     }
 
     private fun verseRef(verseNumber: Int): VerseRef = VerseRef(
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumber = verseNumber,
     )
 

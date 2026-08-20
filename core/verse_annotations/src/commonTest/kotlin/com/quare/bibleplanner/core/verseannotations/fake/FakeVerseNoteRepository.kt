@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.verseannotations.fake
 
-import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseNoteRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,11 +14,8 @@ internal class FakeVerseNoteRepository(
     var deletedNoteIds: List<String> = emptyList()
         private set
 
-    override fun observeChapterNotes(
-        bookId: BookId,
-        chapterNumber: Int,
-    ): Flow<List<VerseNote>> = notes.map { current ->
-        current.filter { it.bookId == bookId && it.chapterNumber == chapterNumber }
+    override fun observeChapterNotes(chapter: ChapterRef): Flow<List<VerseNote>> = notes.map { current ->
+        current.filter { it.chapter == chapter }
     }
 
     override suspend fun getNote(noteId: String): VerseNote? = notes.value.find { it.id == noteId }

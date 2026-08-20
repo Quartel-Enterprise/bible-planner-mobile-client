@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
@@ -17,9 +18,11 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.jetbrains.compose.resources.StringResource
@@ -28,6 +31,7 @@ import org.jetbrains.compose.resources.StringResource
  * Assembles what the reader renders: the chapter's verses decorated with the user's annotations,
  * plus the header the screen keeps showing even when the text itself failed to load.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class ReadDataPresentationModelFactory(
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
     private val getChapterId: GetChapterIdUseCase,
@@ -132,33 +136,44 @@ class ReadDataPresentationModelFactory(
             return@flow
         }
         emitAll(
-            combine(
-                getSelectedVersionIdFlow(),
-                getVersesWithTextsByChapterIdFlow(chapterId),
-                observeChapterAnnotations(
-                    bookId = bookId,
-                    chapterNumber = chapterNumber,
-                ),
-            ) { versionId, versesWithTexts, annotations ->
-                if (versesWithTexts.isEmpty()) return@combine ChapterLoadResult.TextMissing
-                val verses = versesWithTexts.map { verseWithTexts ->
-                    val verseText = verseWithTexts.texts.find { it.bibleVersionId == versionId }
-                        ?: return@combine ChapterLoadResult.TextMissing
-                    verseWithTexts.verse.number.toVerseUiModel(
-                        heading = verseText.heading,
-                        text = verseText.text,
-                        annotations = annotations,
+            /*
+             * The version leads: annotations are scoped to it, so switching version has to
+             * resubscribe them rather than keep showing the ones made in the previous one.
+             */
+            getSelectedVersionIdFlow().flatMapLatest { versionId ->
+                combine(
+                    getVersesWithTextsByChapterIdFlow(chapterId),
+                    observeChapterAnnotations(
+                        ChapterRef(
+                            bibleVersionId = versionId,
+                            bookId = bookId,
+                            chapterNumber = chapterNumber,
+                        ),
+                    ),
+                ) { versesWithTexts, annotations ->
+                    if (versesWithTexts.isEmpty()) return@combine ChapterLoadResult.TextMissing
+                    val verses = versesWithTexts.map { verseWithTexts ->
+                        val verseText = verseWithTexts.texts.find { it.bibleVersionId == versionId }
+                            ?: return@combine ChapterLoadResult.TextMissing
+                        verseWithTexts.verse.number.toVerseUiModel(
+                            heading = verseText.heading,
+                            text = verseText.text,
+                            annotations = annotations,
+                        )
+                    }
+                    ChapterLoadResult.Loaded(
+                        ReadChapterUiModel(
+                            chapter = ChapterRef(
+                                bibleVersionId = versionId,
+                                bookId = bookId,
+                                chapterNumber = chapterNumber,
+                            ),
+                            bookStringResource = bookId.toBookNameResource(),
+                            isRead = versesWithTexts.all { it.verse.isRead },
+                            verses = verses,
+                        ),
                     )
                 }
-                ChapterLoadResult.Loaded(
-                    ReadChapterUiModel(
-                        bookId = bookId,
-                        bookStringResource = bookId.toBookNameResource(),
-                        chapterNumber = chapterNumber,
-                        isRead = versesWithTexts.all { it.verse.isRead },
-                        verses = verses,
-                    ),
-                )
             },
         )
     }

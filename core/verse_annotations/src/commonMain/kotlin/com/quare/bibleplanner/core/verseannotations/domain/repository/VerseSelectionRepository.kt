@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.verseannotations.domain.repository
 
-import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import kotlinx.coroutines.flow.StateFlow
 
@@ -13,8 +13,7 @@ interface VerseSelectionRepository {
 
     /** @return the selection after the toggle, so the caller can report what the tap did. */
     fun toggle(
-        bookId: BookId,
-        chapterNumber: Int,
+        chapter: ChapterRef,
         verseNumber: Int,
     ): VerseSelection?
 

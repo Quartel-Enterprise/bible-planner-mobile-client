@@ -8,9 +8,10 @@ import androidx.room3.Entity
  */
 @Entity(
     tableName = "saved_verses",
-    primaryKeys = ["bookId", "chapterNumber", "verseNumber"],
+    primaryKeys = ["bibleVersionId", "bookId", "chapterNumber", "verseNumber"],
 )
 data class SavedVerseEntity(
+    val bibleVersionId: String,
     val bookId: String,
     val chapterNumber: Int,
     val verseNumber: Int,

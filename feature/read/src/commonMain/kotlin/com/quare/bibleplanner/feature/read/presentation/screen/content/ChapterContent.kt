@@ -22,15 +22,17 @@ internal fun LazyListScope.chapterContent(
     focusedVerseNumber: Int?,
     onEvent: (ReadUiEvent) -> Unit,
 ) {
-    item(key = "chapter-header-${chapter.bookId}-${chapter.chapterNumber}") {
+    item(key = "chapter-header-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
         ChapterHeader(
             bookName = stringResource(chapter.bookStringResource),
-            chapterNumber = chapter.chapterNumber,
+            chapterNumber = chapter.chapter.chapterNumber,
         )
     }
     items(
         count = chapter.verses.size,
-        key = { index -> "verse-${chapter.bookId}-${chapter.chapterNumber}-${chapter.verses[index].number}" },
+        key = { index ->
+            "verse-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}-${chapter.verses[index].number}"
+        },
     ) { index ->
         val verse = chapter.verses[index]
         VerseRow(
@@ -40,15 +42,14 @@ internal fun LazyListScope.chapterContent(
             onClick = {
                 onEvent(
                     ReadUiEvent.OnVerseClick(
-                        bookId = chapter.bookId,
-                        chapterNumber = chapter.chapterNumber,
+                        chapter = chapter.chapter,
                         verseNumber = verse.number,
                     ),
                 )
             },
         )
     }
-    item(key = "chapter-end-${chapter.bookId}-${chapter.chapterNumber}") {
+    item(key = "chapter-end-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
         ChapterEndNavigation(
             previous = header.navigationSuggestions.previous.takeIf { isPrimaryChapter },
             next = header.navigationSuggestions.next.takeIf { isPrimaryChapter },
@@ -56,8 +57,8 @@ internal fun LazyListScope.chapterContent(
             onReadClick = {
                 onEvent(
                     ReadUiEvent.ToggleReadStatus(
-                        bookId = chapter.bookId,
-                        chapterNumber = chapter.chapterNumber,
+                        bookId = chapter.chapter.bookId,
+                        chapterNumber = chapter.chapter.chapterNumber,
                     ),
                 )
             },

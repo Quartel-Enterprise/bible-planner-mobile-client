@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.verseannotations.domain.usecase.impl
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
-import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseNoteRepository
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
@@ -15,8 +15,7 @@ internal class SaveVerseNoteUseCase(
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(
         noteId: String?,
-        bookId: BookId,
-        chapterNumber: Int,
+        chapter: ChapterRef,
         verseNumbers: List<Int>,
         text: String,
     ) {
@@ -30,8 +29,7 @@ internal class SaveVerseNoteUseCase(
         verseNoteRepository.upsert(
             VerseNote(
                 id = existingNote?.id ?: noteId ?: Uuid.random().toString(),
-                bookId = bookId,
-                chapterNumber = chapterNumber,
+                chapter = chapter,
                 verseNumbers = verseNumbers,
                 text = trimmedText,
                 createdAtEpochMillis = existingNote?.createdAtEpochMillis ?: now,

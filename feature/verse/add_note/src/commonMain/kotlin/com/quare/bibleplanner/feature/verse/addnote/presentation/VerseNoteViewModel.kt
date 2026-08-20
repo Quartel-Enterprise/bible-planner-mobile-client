@@ -5,6 +5,7 @@ import bibleplanner.feature.verse.add_note.generated.resources.Res
 import bibleplanner.feature.verse.add_note.generated.resources.note_saved
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -30,14 +31,17 @@ internal class VerseNoteViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<VerseNoteUiEvent>(trackEvent) {
     private val noteId = route.noteId
-    private val bookId = BookId.valueOf(route.bookId)
-    private val chapterNumber = route.chapterNumber
+    private val chapter = ChapterRef(
+        bibleVersionId = route.bibleVersionId,
+        bookId = BookId.valueOf(route.bookId),
+        chapterNumber = route.chapterNumber,
+    )
     private val verseNumbers = route.verseNumbers
 
     private val _uiState = MutableStateFlow(
         VerseNoteUiState(
-            bookId = bookId,
-            chapterNumber = chapterNumber,
+            bookId = chapter.bookId,
+            chapterNumber = chapter.chapterNumber,
             verseNumbers = verseNumbers,
             quote = "",
             text = "",
@@ -88,8 +92,8 @@ internal class VerseNoteViewModel(
     private fun loadQuote() {
         viewModelScope.launch {
             val shareContent = getVersesShareContent(
-                bookId = bookId,
-                chapterNumber = chapterNumber,
+                bookId = chapter.bookId,
+                chapterNumber = chapter.chapterNumber,
                 verseNumbers = verseNumbers,
             ) ?: return@launch
             _uiState.update { it.copy(quote = shareContent.text) }
@@ -109,8 +113,7 @@ internal class VerseNoteViewModel(
         viewModelScope.launch {
             saveVerseNote(
                 noteId = noteId,
-                bookId = bookId,
-                chapterNumber = chapterNumber,
+                chapter = chapter,
                 verseNumbers = verseNumbers,
                 text = text,
             )

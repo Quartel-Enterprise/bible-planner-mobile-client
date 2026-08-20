@@ -11,6 +11,7 @@ internal class SavedVerseMapper(
         entity: SavedVerseEntity,
     ): SavedVerseDto = SavedVerseDto(
         userId = userId,
+        bibleVersionId = entity.bibleVersionId,
         bookId = entity.bookId,
         chapterNumber = entity.chapterNumber,
         verseNumber = entity.verseNumber,
@@ -19,6 +20,7 @@ internal class SavedVerseMapper(
     )
 
     fun toEntity(dto: SavedVerseDto): SavedVerseEntity = SavedVerseEntity(
+        bibleVersionId = dto.bibleVersionId,
         bookId = dto.bookId,
         chapterNumber = dto.chapterNumber,
         verseNumber = dto.verseNumber,

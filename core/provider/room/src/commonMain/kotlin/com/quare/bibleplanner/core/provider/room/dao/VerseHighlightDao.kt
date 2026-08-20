@@ -12,19 +12,21 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface VerseHighlightDao {
     @Query(
-        "SELECT * FROM verse_highlights WHERE bookId = :bookId AND chapterNumber = :chapterNumber " +
-            "AND color IS NOT NULL ORDER BY verseNumber",
+        "SELECT * FROM verse_highlights WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
+            "AND chapterNumber = :chapterNumber AND color IS NOT NULL ORDER BY verseNumber",
     )
     fun getChapterHighlightsFlow(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
     ): Flow<List<VerseHighlightEntity>>
 
     @Query(
-        "SELECT * FROM verse_highlights WHERE bookId = :bookId AND chapterNumber = :chapterNumber " +
-            "AND verseNumber IN (:verseNumbers)",
+        "SELECT * FROM verse_highlights WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
+            "AND chapterNumber = :chapterNumber AND verseNumber IN (:verseNumbers)",
     )
     suspend fun getHighlights(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
         verseNumbers: List<Int>,
@@ -43,11 +45,12 @@ interface VerseHighlightDao {
     suspend fun getPendingSyncHighlights(): List<VerseHighlightEntity>
 
     @Query(
-        "UPDATE verse_highlights SET isPendingSync = 0 WHERE bookId = :bookId " +
-            "AND chapterNumber = :chapterNumber AND verseNumber = :verseNumber " +
+        "UPDATE verse_highlights SET isPendingSync = 0 WHERE bibleVersionId = :bibleVersionId " +
+            "AND bookId = :bookId AND chapterNumber = :chapterNumber AND verseNumber = :verseNumber " +
             "AND updatedAtEpochMillis = :syncedUpdatedAt",
     )
     suspend fun markHighlightSynced(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
         verseNumber: Int,
@@ -63,6 +66,7 @@ interface VerseHighlightDao {
     suspend fun applyRemoteHighlight(highlight: VerseHighlightEntity) {
         insertHighlightIfAbsent(highlight)
         updateRemoteHighlight(
+            bibleVersionId = highlight.bibleVersionId,
             bookId = highlight.bookId,
             chapterNumber = highlight.chapterNumber,
             verseNumber = highlight.verseNumber,
@@ -76,10 +80,12 @@ interface VerseHighlightDao {
 
     @Query(
         "UPDATE verse_highlights SET color = :color, updatedAtEpochMillis = :remoteUpdatedAt " +
-            "WHERE bookId = :bookId AND chapterNumber = :chapterNumber AND verseNumber = :verseNumber " +
+            "WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
+            "AND chapterNumber = :chapterNumber AND verseNumber = :verseNumber " +
             "AND isPendingSync = 0 AND updatedAtEpochMillis < :remoteUpdatedAt",
     )
     suspend fun updateRemoteHighlight(
+        bibleVersionId: String,
         bookId: String,
         chapterNumber: Int,
         verseNumber: Int,

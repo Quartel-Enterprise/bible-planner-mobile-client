@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.verse.addnote.presentation
 
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseNote
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiAction
@@ -21,6 +22,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
 
 internal class VerseNoteViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -127,8 +134,7 @@ internal class VerseNoteViewModelTest {
 
     private fun existingNote(): VerseNote = VerseNote(
         id = "note-1",
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumbers = verseNumbers,
         text = "Texto original",
         createdAtEpochMillis = 0L,
@@ -140,13 +146,14 @@ internal class VerseNoteViewModelTest {
         trackedEvents = mutableListOf()
         viewModel = VerseNoteViewModel(
             route = VerseNoteNavRoute(
-                bookId = BookId.GEN.name,
-                chapterNumber = 3,
+                bibleVersionId = testChapter.bibleVersionId,
+                bookId = testChapter.bookId.name,
+                chapterNumber = testChapter.chapterNumber,
                 verseNumbers = verseNumbers,
                 noteId = existingNote?.id,
             ),
             getVerseNote = { existingNote },
-            saveVerseNote = { noteId, _, _, _, text ->
+            saveVerseNote = { noteId, _, _, text ->
                 savedNotes += noteId to text
             },
             getVersesShareContent = { _, _, _ ->

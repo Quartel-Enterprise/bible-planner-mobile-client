@@ -11,6 +11,7 @@ import kotlinx.serialization.Serializable
 internal data class VerseNoteDto(
     @SerialName("user_id") val userId: String,
     @SerialName("id") val id: String,
+    @SerialName("bible_version_id") val bibleVersionId: String,
     @SerialName("book_id") val bookId: String,
     @SerialName("chapter_number") val chapterNumber: Int,
     @SerialName("verse_numbers") val verseNumbers: List<Int>,

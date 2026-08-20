@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.verseannotations.domain.usecase
 
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseNote
@@ -14,6 +15,12 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private val testChapter = ChapterRef(
+    bibleVersionId = "ACF",
+    bookId = BookId.GEN,
+    chapterNumber = 3,
+)
+
 internal class ObserveChapterAnnotationsUseCaseTest {
     private val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
     private lateinit var useCase: ObserveChapterAnnotationsUseCase
@@ -25,8 +32,7 @@ internal class ObserveChapterAnnotationsUseCaseTest {
 
         // When
         val annotations = useCase(
-            bookId = BookId.GEN,
-            chapterNumber = 3,
+            chapter = testChapter,
         ).first()
 
         // Then
@@ -50,10 +56,30 @@ internal class ObserveChapterAnnotationsUseCaseTest {
         prepareScenario()
 
         // When
-        val annotations = useCase(
-            bookId = BookId.GEN,
-            chapterNumber = 4,
-        ).first()
+        val annotations = useCase(testChapter.copy(chapterNumber = 4)).first()
+
+        // Then
+        assertEquals(
+            expected = emptyMap(),
+            actual = annotations.highlightColorByVerse,
+        )
+        assertEquals(
+            expected = emptySet(),
+            actual = annotations.savedVerseNumbers,
+        )
+        assertEquals(
+            expected = emptyMap(),
+            actual = annotations.noteIdByVerse,
+        )
+    }
+
+    @Test
+    fun `leaves out what was marked in another version of the same chapter`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        val annotations = useCase(testChapter.copy(bibleVersionId = "WEB")).first()
 
         // Then
         assertEquals(
@@ -71,8 +97,7 @@ internal class ObserveChapterAnnotationsUseCaseTest {
     }
 
     private fun verseRef(verseNumber: Int): VerseRef = VerseRef(
-        bookId = BookId.GEN,
-        chapterNumber = 3,
+        chapter = testChapter,
         verseNumber = verseNumber,
     )
 
@@ -86,8 +111,7 @@ internal class ObserveChapterAnnotationsUseCaseTest {
                 initialNotes = listOf(
                     VerseNote(
                         id = "note-1",
-                        bookId = BookId.GEN,
-                        chapterNumber = 3,
+                        chapter = testChapter,
                         verseNumbers = listOf(4, 5),
                         text = "Reflexao",
                         createdAtEpochMillis = 0L,

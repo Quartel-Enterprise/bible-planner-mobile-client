@@ -1,15 +1,12 @@
 package com.quare.bibleplanner.core.verseannotations.domain.repository
 
-import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import kotlinx.coroutines.flow.Flow
 
 interface VerseHighlightRepository {
-    fun observeChapterHighlights(
-        bookId: BookId,
-        chapterNumber: Int,
-    ): Flow<Map<Int, HighlightColor>>
+    fun observeChapterHighlights(chapter: ChapterRef): Flow<Map<Int, HighlightColor>>
 
     suspend fun getColors(refs: List<VerseRef>): Map<VerseRef, HighlightColor?>
 

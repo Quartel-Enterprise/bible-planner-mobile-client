@@ -44,8 +44,8 @@ internal fun SelectionPanel(
         ) {
             Text(
                 text = verseReferenceLabel(
-                    bookId = selection.bookId,
-                    chapterNumber = selection.chapterNumber,
+                    bookId = selection.chapter.bookId,
+                    chapterNumber = selection.chapter.chapterNumber,
                     verseNumbers = selection.verseNumbers,
                 ),
                 style = MaterialTheme.typography.titleSmall,
