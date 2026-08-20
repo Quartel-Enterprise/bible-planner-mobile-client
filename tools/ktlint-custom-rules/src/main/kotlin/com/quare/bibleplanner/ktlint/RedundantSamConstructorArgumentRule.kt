@@ -60,7 +60,8 @@ class RedundantSamConstructorArgumentRule :
         val call = psi as? KtCallExpression ?: return false
         val calleeName = (call.calleeExpression as? KtNameReferenceExpression)?.getReferencedName()
         if (calleeName !in funInterfaceNames) return false
-        if (call.valueArguments.isNotEmpty()) return false
+        val explicitArguments = call.valueArgumentList?.arguments
+        if (!explicitArguments.isNullOrEmpty()) return false
         if (call.lambdaArguments.size != 1) return false
         return call.parent is KtValueArgument
     }
