@@ -154,11 +154,29 @@ This applies to:
 - Companion object and static-style calls
 - Type aliases and generic bounds
 
+### No unused imports
+
 Unused imports are a build error. Stock ktlint ships `standard:no-unused-imports` but leaves it off in the
 `ktlint_official` code style, so it is turned on explicitly in `.editorconfig`
 (`ktlint_standard_no-unused-imports = enabled`). It is autocorrectable — `./scripts/ktlint.sh --format`
 strips them. The rule counts KDoc `[Link]` references as usages, so an import that only exists to make a
 KDoc link resolve is kept.
+
+Note that commented-out code does not count as a usage. Commenting out a block and leaving its imports
+behind fails the build.
+
+### No wildcard imports
+
+Every import names exactly one symbol — `import androidx.compose.foundation.layout.Row`, never
+`import androidx.compose.foundation.layout.*`.
+
+This one needs no configuration: `standard:no-wildcard-imports` is enabled by default in the
+`ktlint_official` code style. Because `ij_kotlin_packages_to_use_import_on_demand` is left unset in
+`.editorconfig`, no package is exempt — not even `java.util.*`.
+
+Unlike the rule above, this one is **not** autocorrectable, since ktlint cannot know which concrete
+symbols a wildcard stands for. `--format` will not fix it; expand the import by hand, or let the IDE's
+*Optimize Imports* do it.
 
 ## Naming File-Scoped Constants
 
