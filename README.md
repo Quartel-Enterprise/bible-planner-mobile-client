@@ -56,7 +56,19 @@ in your IDE's toolbar or open the [/iosApp](./iosApp) directory in Xcode and run
 
 ## 📝 Code Quality
 
-This project uses ktlint for code formatting and style checking. The project is configured to automatically check code style during builds.
+This project uses ktlint for code formatting and style checking, extended with the custom rules in
+`tools/ktlint-custom-rules` (documented in [Code Style](docs/architecture/code-style.md)).
+
+CI runs the ktlint CLI directly, and `scripts/ci-local.sh` runs exactly the same check locally:
+
+```bash
+./scripts/ci-local.sh            # check (what CI runs)
+./scripts/ci-local.sh --format   # autocorrect what can be autocorrected
+```
+
+The script downloads the ktlint CLI once (cached in `~/.cache/ktlint`) and rebuilds the custom
+ruleset jar only when its sources change. `./gradlew ktlintCheck` still works but is much slower,
+because it drags KSP and Kotlin/Native compilation into the task graph.
 
 ## 📄 License
 

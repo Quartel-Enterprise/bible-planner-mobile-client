@@ -59,7 +59,7 @@ class ValueReturningFunctionNamingRule :
         if (returnType in ignoredReturnTypes) return
         if (function.isComposable() || function.isModifierExtension() || function.isInExemptContainer()) return
         if (name.isIdiomatic()) return
-        if (name.leadingWord() in allowedVerbPrefixes) return
+        if (name.takeLeadingWord() in allowedVerbPrefixes) return
 
         val identifier = node.findChildByType(IDENTIFIER) ?: return
         val hint = if (function.valueParameters.isEmpty()) {
@@ -88,5 +88,5 @@ class ValueReturningFunctionNamingRule :
 
     private fun String.isIdiomatic(): Boolean = idiomaticSuffixes.any { endsWith(it) }
 
-    private fun String.leadingWord(): String = takeWhile { !it.isUpperCase() }
+    private fun String.takeLeadingWord(): String = takeWhile { !it.isUpperCase() }
 }

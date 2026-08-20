@@ -34,8 +34,8 @@ class UnitFunctionBlockBodyRule :
 
         val function = node.psi as? KtNamedFunction ?: return
         val name = function.name ?: return
-        val body = function.expressionBody() ?: return
-        if (!function.returnsUnit() && !body.delegatesToUnitFunction(function)) return
+        val body = function.findExpressionBody() ?: return
+        if (!function.hasUnitReturnType() && !body.isDelegatingToUnitFunction(function)) return
 
         val identifier = node.findChildByType(IDENTIFIER) ?: return
         emit(
@@ -46,23 +46,23 @@ class UnitFunctionBlockBodyRule :
         )
     }
 
-    private fun KtNamedFunction.expressionBody(): KtExpression? = bodyExpression?.takeIf { !hasBlockBody() }
+    private fun KtNamedFunction.findExpressionBody(): KtExpression? = bodyExpression?.takeIf { !hasBlockBody() }
 
-    private fun KtNamedFunction.returnsUnit(): Boolean = typeReference?.text == UNIT
+    private fun KtNamedFunction.hasUnitReturnType(): Boolean = typeReference?.text == UNIT
 
-    private fun KtExpression.delegatesToUnitFunction(caller: KtNamedFunction): Boolean {
+    private fun KtExpression.isDelegatingToUnitFunction(caller: KtNamedFunction): Boolean {
         if (caller.typeReference != null) return false
-        val calleeName = calleeName() ?: return false
-        val candidates = caller.functionsInScope().filter { it.name == calleeName }
+        val calleeName = findCalleeName() ?: return false
+        val candidates = caller.getFunctionsInScope().filter { it.name == calleeName }
         return candidates.isNotEmpty() && candidates.all { it.isKnownUnit() }
     }
 
-    private fun KtExpression.calleeName(): String? = (this as? KtCallExpression)
+    private fun KtExpression.findCalleeName(): String? = (this as? KtCallExpression)
         ?.calleeExpression
         ?.let { it as? KtNameReferenceExpression }
         ?.getReferencedName()
 
-    private fun KtNamedFunction.functionsInScope(): List<KtNamedFunction> {
+    private fun KtNamedFunction.getFunctionsInScope(): List<KtNamedFunction> {
         val declarations = containingClassOrObject?.declarations ?: containingKtFile.declarations
         return (declarations + containingKtFile.declarations)
             .filterIsInstance<KtNamedFunction>()
