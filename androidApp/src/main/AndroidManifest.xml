@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -59,12 +60,28 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- WorkManager's automatic initializer runs inside androidx.startup's ContentProvider,
+             before Application.onCreate, so anything it throws is an uncatchable startup crash.
+             Devices that report API 34 without android.app.job.JobScheduler.forNamespace (spoofed
+             fingerprints, modified ROMs) make WorkManager.initialize throw NoSuchMethodError there.
+             Removing the initializer defers initialization to the first WorkManager.getInstance
+             call, where AndroidBibleVersionDownloaderFacade can fall back to in-process downloads.
+             MainApplication implements Configuration.Provider for this on-demand initialization. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                tools:node="remove" />
+        </provider>
+
         <!-- WorkManager foreground service for Bible initialization -->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync"
-            tools:node="merge"
-            xmlns:tools="http://schemas.android.com/tools" />
+            tools:node="merge" />
     </application>
 
 </manifest>

@@ -1,4 +1,7 @@
 {
+  "2.7.0": [
+    "Fixed a crash that prevented the app from opening on some devices. On those devices, Bible version downloads now happen while the app is open."
+  ],
   "2.6.0": [
     "The notification permission request no longer appears when you open the app: it is now only asked when you start downloading a Bible version, which is when download progress notifications are used."
   ],

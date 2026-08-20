@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.notification.AndroidNotificationBuilderProvider
 import com.quare.bibleplanner.core.notification.NotificationBuilderProvider
 import com.quare.bibleplanner.core.provider.room.db.getDatabaseBuilder
+import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
 import com.quare.bibleplanner.notification.BibleVersionNotificationFactory
 import com.quare.bibleplanner.worker.AndroidBibleVersionDownloadRequestFactory
@@ -28,10 +29,12 @@ val androidModule = module {
     }.bind<NotificationBuilderProvider>()
     singleOf(::BibleVersionNotificationFactory)
     single { AndroidBibleVersionDownloadNotifier(androidContext(), get()) }.bind<BibleVersionDownloadNotifier>()
+    singleOf(::InProcessBibleVersionDownloader)
     single {
         AndroidBibleVersionDownloaderFacade(
             context = androidContext(),
             requestFactory = AndroidBibleVersionDownloadRequestFactory(),
+            inProcessDownloader = get(),
             pauseBibleVersion = get(),
             deleteBibleVersion = get(),
         )
