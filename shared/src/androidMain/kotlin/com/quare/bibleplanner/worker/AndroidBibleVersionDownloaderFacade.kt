@@ -32,28 +32,34 @@ internal class AndroidBibleVersionDownloaderFacade(
 
     override val shouldShowDownloadTip: Boolean = false
 
-    override fun downloadVersion(versionId: String) {
-        val manager = workManager
-        if (manager == null) {
-            inProcessDownloader.startDownload(versionId)
-        } else {
-            enqueueDownload(manager = manager, versionId = versionId)
-        }
-    }
+    override fun downloadVersion(versionId: String) = withWorkManager(
+        onAvailable = { manager -> enqueueDownload(manager = manager, versionId = versionId) },
+        onUnavailable = { inProcessDownloader.startDownload(versionId) },
+    )
 
     override suspend fun pauseDownload(versionId: String) {
-        val manager = workManager
-        if (manager == null) {
-            inProcessDownloader.cancelDownload(versionId)
-        } else {
-            manager.cancelUniqueWork(BibleVersionDownloadWorker.workName(versionId))
-        }
+        withWorkManager(
+            onAvailable = { manager -> manager.cancelUniqueWork(BibleVersionDownloadWorker.workName(versionId)) },
+            onUnavailable = { inProcessDownloader.cancelDownload(versionId) },
+        )
         pauseBibleVersion(versionId)
     }
 
     override suspend fun deleteDownload(versionId: String) {
         pauseDownload(versionId)
         deleteBibleVersion(versionId)
+    }
+
+    private fun withWorkManager(
+        onAvailable: (WorkManager) -> Unit,
+        onUnavailable: () -> Unit,
+    ) {
+        val manager = workManager
+        if (manager == null) {
+            onUnavailable()
+        } else {
+            onAvailable(manager)
+        }
     }
 
     private fun enqueueDownload(
