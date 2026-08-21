@@ -34,8 +34,8 @@ import org.jetbrains.compose.resources.stringResource
 
 private val swatchSize = 34.dp
 private val checkSize = 18.dp
-private val lockBadgeSize = 15.dp
-private val lockIconSize = 9.dp
+private val lockBadgeSize = 16.dp
+private val lockIconSize = 10.dp
 private val lockedCustomSwatchAlpha = 0.75f
 private val customSwatchBrush = Brush.sweepGradient(
     listOf(
@@ -104,19 +104,25 @@ internal fun HighlightPaletteRow(
         Box(
             modifier = Modifier
                 .size(swatchSize)
-                .clip(CircleShape)
-                .background(if (isCustomColorLocked) lockedCustomSwatchBrush else customSwatchBrush)
-                .alpha(if (isCustomColorLocked) lockedCustomSwatchAlpha else 1f)
                 .combinedClickable(onClick = onCustomColorPickerOpen)
                 .semantics { contentDescription = customColorLabel },
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                modifier = Modifier.size(checkSize),
-                imageVector = Icons.Default.Palette,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.scrim,
-            )
+            Box(
+                modifier = Modifier
+                    .size(swatchSize)
+                    .clip(CircleShape)
+                    .background(if (isCustomColorLocked) lockedCustomSwatchBrush else customSwatchBrush)
+                    .alpha(if (isCustomColorLocked) lockedCustomSwatchAlpha else 1f),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    modifier = Modifier.size(checkSize),
+                    imageVector = Icons.Default.Palette,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.scrim,
+                )
+            }
             if (isCustomColorLocked) {
                 Box(
                     modifier = Modifier
