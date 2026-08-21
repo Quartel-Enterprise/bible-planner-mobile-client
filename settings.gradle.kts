@@ -86,6 +86,7 @@ include(":feature:verse:add_note")
 include(":feature:verse:selection_menu")
 
 include(":feature:paywall")
+include(":feature:paywall_teaser")
 include(":feature:congrats")
 include(":feature:subscription_details")
 include(":feature:account_details")

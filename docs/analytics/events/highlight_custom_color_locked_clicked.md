@@ -22,4 +22,4 @@ No parameters.
 ## Notes
 
 - Mutually exclusive with [highlight_color_picker_opened](highlight_color_picker_opened.md) for the same tap: a Pro user opens the picker, a free user gets this event instead.
-- Always immediately followed by a navigation to the paywall (`PaywallNavRoute` with source `highlight_custom_color`).
+- Always immediately followed by a navigation to the paywall teaser (`PaywallTeaserNavRoute` with reason `highlight_custom_color`), not the paywall itself — see [paywall_teaser_subscribe_clicked](paywall_teaser_subscribe_clicked.md).

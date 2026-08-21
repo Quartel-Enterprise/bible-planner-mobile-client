@@ -5,8 +5,8 @@ import bibleplanner.feature.verse.selection_menu.generated.resources.Res
 import bibleplanner.feature.verse.selection_menu.generated.resources.copied_to_clipboard
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
-import com.quare.bibleplanner.core.model.route.PaywallEntrySource
-import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -185,7 +185,7 @@ internal class VerseSelectionViewModel(
             )
             emitAction(
                 VerseSelectionUiAction.NavigateToRoute(
-                    PaywallNavRoute(PaywallEntrySource.HIGHLIGHT_CUSTOM_COLOR),
+                    PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
                 ),
             )
             return

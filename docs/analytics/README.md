@@ -322,6 +322,8 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | Event | Tier | Domain |
 |---|---|---|
 | [paywall_viewed](events/paywall_viewed.md) | P1 | Monetization |
+| [paywall_teaser_subscribe_clicked](events/paywall_teaser_subscribe_clicked.md) | P1 | Monetization |
+| [paywall_teaser_dismissed](events/paywall_teaser_dismissed.md) | P2 | Monetization |
 | [paywall_plan_selected](events/paywall_plan_selected.md) | P1 | Monetization |
 | [purchase_started](events/purchase_started.md) | P1 | Monetization |
 | [purchase_completed](events/purchase_completed.md) | P1 | Monetization |

@@ -3,8 +3,8 @@ package com.quare.bibleplanner.feature.verse.selectionmenu.presentation
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
-import com.quare.bibleplanner.core.model.route.PaywallEntrySource
-import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
@@ -152,7 +152,7 @@ internal class VerseSelectionViewModelTest {
         assertNull(viewModel.uiState.value?.customColorPicker)
         assertEquals(
             expected = VerseSelectionUiAction.NavigateToRoute(
-                PaywallNavRoute(PaywallEntrySource.HIGHLIGHT_CUSTOM_COLOR),
+                PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
             ),
             actual = actions.single(),
         )

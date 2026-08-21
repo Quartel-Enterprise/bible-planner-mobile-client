@@ -60,6 +60,7 @@ kotlin {
             implementation(projects.feature.chat)
             implementation(projects.feature.preferences.editPlanStartDate)
             implementation(projects.feature.paywall)
+            implementation(projects.feature.paywallTeaser)
             implementation(projects.feature.deleteNotes)
             implementation(projects.feature.main)
             implementation(projects.feature.congrats)

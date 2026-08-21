@@ -27,6 +27,7 @@ kotlin {
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.preferences.editPlanStartDate)
             implementation(projects.feature.paywall)
+            implementation(projects.feature.paywallTeaser)
             implementation(projects.feature.congrats)
             implementation(projects.feature.releaseNotes)
             implementation(projects.feature.donation)

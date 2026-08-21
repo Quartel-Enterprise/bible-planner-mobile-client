@@ -33,6 +33,7 @@ import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.model.route.NavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PendingBibleUpdatesNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
@@ -161,6 +162,11 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is PaywallNavRoute -> createScreenDestination(
             name = "paywall",
             params = mapOf(AnalyticsParams.SOURCE to route.source.key),
+        )
+
+        is PaywallTeaserNavRoute -> createResponsiveDestination(
+            name = "paywall_teaser",
+            params = mapOf(AnalyticsParams.REASON to route.reason.key),
         )
 
         is PixQrNavRoute -> createDialogDestination("pix_qr")
