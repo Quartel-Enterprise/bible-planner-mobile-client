@@ -38,7 +38,6 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val SCRIM_ALPHA = 0.45f
 private val bandExtraHeight = 14.dp
-private val initialBandOffset = 24.dp
 private val handleWidth = 22.dp
 private val handleHeight = 26.dp
 private val handleGripWidth = 10.dp
@@ -50,8 +49,9 @@ private val dismissInset = 8.dp
 
 /**
  * Dims everything but a band of the reader's chosen height, so the eye has somewhere to sit while
- * scrolling. The band starts near the top and is dragged by the grip on its left, because where the
- * eye wants the line is not something the app can guess.
+ * scrolling. It covers the whole screen, bars included: with the ruler on, the band is the one lit
+ * thing. The band starts at [initialBandOffset] and is dragged by the grip on its left, because
+ * where the eye wants the line is not something the app can guess.
  *
  * Only the grip and the close button take taps: the verses under the dimmed area stay reachable.
  */
@@ -59,6 +59,7 @@ private val dismissInset = 8.dp
 internal fun ReadingRulerOverlay(
     lineHeight: Dp,
     lines: Int,
+    initialBandOffset: Dp,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
