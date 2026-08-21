@@ -272,9 +272,7 @@ internal class VerseSelectionViewModel(
                 params = mapOf(AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size),
             )
             _uiAction.emit(
-                VerseSelectionUiAction.CopyToClipboard(
-                    "${shareContent.text}\n${shareContent.reference} (${shareContent.versionName})",
-                ),
+                VerseSelectionUiAction.CopyToClipboard(shareContent.shareText),
             )
             _uiAction.emit(VerseSelectionUiAction.ShowMessage(Res.string.copied_to_clipboard))
         }

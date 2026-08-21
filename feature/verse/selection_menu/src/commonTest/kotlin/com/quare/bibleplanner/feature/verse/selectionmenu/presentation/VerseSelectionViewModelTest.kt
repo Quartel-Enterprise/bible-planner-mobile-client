@@ -155,6 +155,22 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
+    fun `copies the passage as it is shared`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnCopyClick)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = VerseSelectionUiAction.CopyToClipboard("Gênesis 3:1-2 ARC\nVerse text"),
+            actual = actions.first(),
+        )
+    }
+
+    @Test
     fun `opens the note editor for the selected passage`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -233,7 +249,7 @@ internal class VerseSelectionViewModelTest {
                 VersesShareContentModel(
                     text = "Verse text",
                     reference = "Gênesis 3:1-2",
-                    versionName = "ARC",
+                    versionAbbreviation = "ARC",
                 )
             },
             trackEvent = { name, _ -> trackedEvents += name },

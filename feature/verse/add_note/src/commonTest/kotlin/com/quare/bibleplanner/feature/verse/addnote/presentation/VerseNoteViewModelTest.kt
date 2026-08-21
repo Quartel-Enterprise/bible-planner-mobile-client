@@ -160,7 +160,7 @@ internal class VerseNoteViewModelTest {
                 VersesShareContentModel(
                     text = "1 Primeiro 2 Segundo",
                     reference = "Gênesis 3:1-2",
-                    versionName = "ARC",
+                    versionAbbreviation = "ARC",
                 )
             },
             trackEvent = { name, _ -> trackedEvents += name },

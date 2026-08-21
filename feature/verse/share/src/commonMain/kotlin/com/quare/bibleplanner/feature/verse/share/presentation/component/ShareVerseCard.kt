@@ -74,7 +74,7 @@ internal fun ShareVerseCard(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "${uiState.reference.uppercase()} · ${uiState.versionName}",
+                text = "${uiState.reference.uppercase()} · ${uiState.versionAbbreviation}",
                 fontSize = referenceFontSize,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = referenceLetterSpacing,

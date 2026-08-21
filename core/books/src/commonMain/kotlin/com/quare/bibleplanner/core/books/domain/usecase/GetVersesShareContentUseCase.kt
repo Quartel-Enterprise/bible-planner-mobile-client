@@ -10,7 +10,6 @@ class GetVersesShareContentUseCase(
     private val getChapterId: GetChapterIdUseCase,
     private val verseDao: VerseDao,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
-    private val getSelectedBibleNameFlow: GetSelectedBibleNameFlowUseCase,
 ) : GetVersesShareContent {
     override suspend fun invoke(
         bookId: BookId,
@@ -40,13 +39,17 @@ class GetVersesShareContentUseCase(
                 chapterNumber = chapterNumber,
                 verseNumbers = texts.map { it.first },
             ),
-            versionName = getSelectedBibleNameFlow().first(),
+            versionAbbreviation = versionId.uppercase(),
         )
     }
 
+    /**
+     * One verse per line. A lone verse skips its number, because the reference above it already
+     * names the only one there is.
+     */
     private fun List<Pair<Int, String>>.toShareText(): String = if (size == 1) {
         first().second
     } else {
-        joinToString(separator = " ") { (number, text) -> "$number $text" }
+        joinToString(separator = "\n") { (number, text) -> "[$number] $text" }
     }
 }

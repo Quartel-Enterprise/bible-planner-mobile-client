@@ -151,7 +151,7 @@ internal class ShareVerseViewModelTest {
                 VersesShareContentModel(
                     text = "1 Primeiro 2 Segundo",
                     reference = "Gênesis 3:1-2",
-                    versionName = "ARC",
+                    versionAbbreviation = "ARC",
                 )
             },
             trackEvent = { name, params -> trackedEvents += name to params },

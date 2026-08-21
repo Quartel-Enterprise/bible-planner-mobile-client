@@ -37,7 +37,7 @@ internal class ShareVerseViewModel(
         ShareVerseUiState(
             quote = "",
             reference = "",
-            versionName = "",
+            versionAbbreviation = "",
             background = ShareCardBackground.VIOLET,
             font = ShareCardFont.LORA,
             isReady = false,
@@ -87,7 +87,7 @@ internal class ShareVerseViewModel(
                 it.copy(
                     quote = content.text,
                     reference = content.reference,
-                    versionName = content.versionName,
+                    versionAbbreviation = content.versionAbbreviation,
                     isReady = true,
                 )
             }

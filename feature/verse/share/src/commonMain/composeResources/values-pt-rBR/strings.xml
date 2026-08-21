@@ -9,7 +9,6 @@
     <string name="share_typography">Tipografia</string>
     <string name="share_background">Fundo</string>
     <string name="share_action">Compartilhar</string>
-    <string name="share_message">"%1$s"\n%2$s (%3$s)\n\nEstou lendo a Bíblia no Bible Planner. Vem ler comigo!</string>
     <string name="app_name">Bible Planner</string>
     <string name="close">Fechar</string>
 </resources>
