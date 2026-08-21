@@ -3,6 +3,5 @@
     <string name="verse_note_title">Anotação</string>
     <string name="save_note">Salvar</string>
     <string name="note_placeholder">Escreva sua reflexão, oração ou observação sobre este trecho…</string>
-    <string name="note_saved">Anotação salva</string>
     <string name="close">Fechar</string>
 </resources>

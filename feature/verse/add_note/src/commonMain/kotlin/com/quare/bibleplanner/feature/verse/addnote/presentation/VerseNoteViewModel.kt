@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.verse.addnote.presentation
 
 import androidx.lifecycle.viewModelScope
-import bibleplanner.feature.verse.add_note.generated.resources.Res
-import bibleplanner.feature.verse.add_note.generated.resources.note_saved
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
@@ -12,7 +10,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.GetVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
-import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiAction
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiEvent
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -50,8 +47,8 @@ internal class VerseNoteViewModel(
     )
     val uiState: StateFlow<VerseNoteUiState> = _uiState
 
-    private val _uiAction = MutableSharedFlow<VerseNoteUiAction>()
-    val uiAction: SharedFlow<VerseNoteUiAction> = _uiAction
+    private val _uiAction = MutableSharedFlow<Unit>()
+    val uiAction: SharedFlow<Unit> = _uiAction
 
     init {
         loadNote()
@@ -72,7 +69,7 @@ internal class VerseNoteViewModel(
             VerseNoteUiEvent.OnSaveClick -> saveNote()
 
             VerseNoteUiEvent.OnDismiss ->
-                viewModelScope.launch { _uiAction.emit(VerseNoteUiAction.NavigateBack) }
+                viewModelScope.launch { _uiAction.emit(Unit) }
         }
     }
 
@@ -117,7 +114,7 @@ internal class VerseNoteViewModel(
                 verseNumbers = verseNumbers,
                 text = text,
             )
-            _uiAction.emit(VerseNoteUiAction.NavigateBackWithMessage(Res.string.note_saved))
+            _uiAction.emit(Unit)
         }
     }
 }

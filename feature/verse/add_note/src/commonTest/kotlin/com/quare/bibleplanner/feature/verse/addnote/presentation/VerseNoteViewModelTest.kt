@@ -5,7 +5,6 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseNote
-import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiAction
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,7 +32,7 @@ internal class VerseNoteViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val verseNumbers = listOf(1, 2)
     private lateinit var viewModel: VerseNoteViewModel
-    private lateinit var actions: List<VerseNoteUiAction>
+    private lateinit var actions: List<Unit>
     private lateinit var savedNotes: MutableList<Pair<String?, String>>
     private lateinit var trackedEvents: MutableList<String>
 
@@ -95,7 +94,7 @@ internal class VerseNoteViewModelTest {
     }
 
     @Test
-    fun `saving writes the note and leaves with a confirmation`() = runTest(testDispatcher) {
+    fun `saving writes the note and leaves`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(VerseNoteUiEvent.OnTextChange("Minha reflexao"))
@@ -111,7 +110,10 @@ internal class VerseNoteViewModelTest {
             expected = "Minha reflexao",
             actual = savedText,
         )
-        assertTrue(actions.single() is VerseNoteUiAction.NavigateBackWithMessage)
+        assertEquals(
+            expected = listOf(Unit),
+            actual = actions,
+        )
         assertTrue(trackedEvents.contains("verse_note_saved"))
     }
 
@@ -127,7 +129,7 @@ internal class VerseNoteViewModelTest {
         // Then
         assertTrue(savedNotes.isEmpty())
         assertEquals(
-            expected = listOf(VerseNoteUiAction.NavigateBack),
+            expected = listOf(Unit),
             actual = actions,
         )
     }
@@ -165,7 +167,7 @@ internal class VerseNoteViewModelTest {
             },
             trackEvent = { name, _ -> trackedEvents += name },
         )
-        actions = mutableListOf<VerseNoteUiAction>().also { collected ->
+        actions = mutableListOf<Unit>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
         }
     }
