@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackground
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiAction
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiEvent
@@ -154,6 +155,7 @@ internal class ShareVerseViewModelTest {
                     versionAbbreviation = "ARC",
                 )
             },
+            platform = Platform.Android,
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         actions = mutableListOf<ShareVerseUiAction>().also { collected ->

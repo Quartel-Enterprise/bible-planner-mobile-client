@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.image)
             implementation(projects.core.model)
             implementation(projects.core.provider.analytics)
+            implementation(projects.core.provider.platform)
             implementation(projects.core.utils)
 
             // UI

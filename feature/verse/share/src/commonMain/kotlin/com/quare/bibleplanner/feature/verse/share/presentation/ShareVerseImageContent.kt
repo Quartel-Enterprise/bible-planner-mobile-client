@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -37,10 +35,12 @@ import bibleplanner.feature.verse.share.generated.resources.share_action
 import bibleplanner.feature.verse.share.generated.resources.share_background
 import bibleplanner.feature.verse.share.generated.resources.share_typography
 import com.quare.bibleplanner.core.image.encodeToPng
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.verse.share.presentation.component.ShareVerseCard
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackground
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiEvent
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiState
+import com.quare.bibleplanner.ui.component.icon.shareIcon
 import com.quare.bibleplanner.ui.theme.font.ShareCardFont
 import com.quare.bibleplanner.ui.theme.font.toFontFamily
 import kotlinx.coroutines.launch
@@ -54,6 +54,7 @@ private val fontTileSize = 42.dp
 internal fun ShareVerseImageContent(
     uiState: ShareVerseUiState,
     onEvent: (ShareVerseUiEvent) -> Unit,
+    platform: Platform,
     modifier: Modifier = Modifier,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
@@ -125,7 +126,7 @@ internal fun ShareVerseImageContent(
         ) {
             Icon(
                 modifier = Modifier.size(ButtonDefaults.IconSize),
-                imageVector = Icons.Default.Share,
+                imageVector = platform.shareIcon,
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))

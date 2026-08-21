@@ -72,6 +72,7 @@ fun EntryProviderScope<NavKey>.shareVerse(
             ShareVerseImageContent(
                 uiState = uiState,
                 onEvent = onEvent,
+                platform = viewModel.platform,
             )
         }
     }

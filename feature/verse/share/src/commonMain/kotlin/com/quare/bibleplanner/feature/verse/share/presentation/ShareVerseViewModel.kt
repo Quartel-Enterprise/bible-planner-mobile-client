@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackground
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiAction
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiEvent
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 internal class ShareVerseViewModel(
     route: ShareVerseNavRoute,
     private val getVersesShareContent: GetVersesShareContent,
+    val platform: Platform,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ShareVerseUiEvent>(trackEvent) {
     private val bookId = BookId.valueOf(route.bookId)
