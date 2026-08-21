@@ -224,6 +224,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [verse_highlight_removed](events/verse_highlight_removed.md) | P1 | Verse annotations |
 | [highlight_color_picker_opened](events/highlight_color_picker_opened.md) | P2 | Verse annotations |
 | [highlight_color_picker_dismissed](events/highlight_color_picker_dismissed.md) | P2 | Verse annotations |
+| [highlight_custom_color_locked_clicked](events/highlight_custom_color_locked_clicked.md) | P2 | Verse annotations |
 | [highlight_custom_color_created](events/highlight_custom_color_created.md) | P1 | Verse annotations |
 | [highlight_custom_color_delete_opened](events/highlight_custom_color_delete_opened.md) | P2 | Verse annotations |
 | [highlight_custom_color_deleted](events/highlight_custom_color_deleted.md) | P1 | Verse annotations |

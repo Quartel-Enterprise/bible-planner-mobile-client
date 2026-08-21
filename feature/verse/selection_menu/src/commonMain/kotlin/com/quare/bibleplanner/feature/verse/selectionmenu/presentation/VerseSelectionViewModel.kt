@@ -5,11 +5,14 @@ import bibleplanner.feature.verse.selection_menu.generated.resources.Res
 import bibleplanner.feature.verse.selection_menu.generated.resources.copied_to_clipboard
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
+import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
@@ -56,6 +59,7 @@ internal class VerseSelectionViewModel(
     private val addCustomHighlightColor: AddCustomHighlightColor,
     private val toggleSavedVerses: ToggleSavedVerses,
     private val getVersesShareContent: GetVersesShareContent,
+    private val observeIsProUser: ObserveIsProUser,
     val platform: Platform,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<VerseSelectionUiEvent>(trackEvent) {
@@ -91,7 +95,8 @@ internal class VerseSelectionViewModel(
         observeVerseSelection(),
         observeHighlightPalette().onStart { emit(emptyList()) },
         customColorPicker,
-    ) { annotations, selection, customColors, picker ->
+        observeIsProUser().onStart { emit(false) },
+    ) { annotations, selection, customColors, picker, isPro ->
         if (selection == null) {
             null
         } else {
@@ -106,6 +111,7 @@ internal class VerseSelectionViewModel(
                 isSelectionSaved = selection.verseNumbers.all { it in annotations.savedVerseNumbers },
                 noteId = selection.verseNumbers.firstNotNullOfOrNull { annotations.noteIdByVerse[it] },
                 customColorPicker = picker,
+                isCustomColorLocked = !isPro,
             )
         }
     }.stateIn(
@@ -133,7 +139,7 @@ internal class VerseSelectionViewModel(
 
             is VerseSelectionUiEvent.OnHighlightColorClick -> applyColor(event.color)
 
-            VerseSelectionUiEvent.OnCustomColorPickerOpen -> customColorPicker.update { defaultCustomColor }
+            VerseSelectionUiEvent.OnCustomColorPickerOpen -> openCustomColorPicker()
 
             is VerseSelectionUiEvent.OnCustomColorChange -> {
                 customColorPicker.update {
@@ -169,6 +175,26 @@ internal class VerseSelectionViewModel(
     private fun close() {
         clearVerseSelection()
         emitAction(VerseSelectionUiAction.NavigateBack)
+    }
+
+    private fun openCustomColorPicker() {
+        if (uiState.value?.isCustomColorLocked == true) {
+            trackEvent(
+                name = AnalyticsEventNames.HIGHLIGHT_CUSTOM_COLOR_LOCKED_CLICKED,
+                params = emptyMap(),
+            )
+            emitAction(
+                VerseSelectionUiAction.NavigateToRoute(
+                    PaywallNavRoute(PaywallEntrySource.HIGHLIGHT_CUSTOM_COLOR),
+                ),
+            )
+            return
+        }
+        trackEvent(
+            name = AnalyticsEventNames.HIGHLIGHT_COLOR_PICKER_OPENED,
+            params = emptyMap(),
+        )
+        customColorPicker.update { defaultCustomColor }
     }
 
     private fun applyColor(color: HighlightColor) {

@@ -63,6 +63,7 @@ internal fun SelectionPanel(
         HighlightPaletteRow(
             customColors = selection.customColors,
             activeColor = selection.activeColor,
+            isCustomColorLocked = selection.isCustomColorLocked,
             onColorClick = { color -> onEvent(VerseSelectionUiEvent.OnHighlightColorClick(color)) },
             onCustomColorLongClick = { color -> onEvent(VerseSelectionUiEvent.OnCustomColorLongClick(color)) },
             onCustomColorPickerOpen = { onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen) },

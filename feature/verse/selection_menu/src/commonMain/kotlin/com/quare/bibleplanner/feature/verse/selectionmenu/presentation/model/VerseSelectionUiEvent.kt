@@ -25,9 +25,11 @@ sealed interface VerseSelectionUiEvent : UiEvent {
     }
 
     data object OnCustomColorPickerOpen : VerseSelectionUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.HIGHLIGHT_COLOR_PICKER_OPENED,
-            params = emptyMap(),
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.HIGHLIGHT_COLOR_PICKER_OPENED,
+                AnalyticsEventNames.HIGHLIGHT_CUSTOM_COLOR_LOCKED_CLICKED,
+            ),
         )
     }
 

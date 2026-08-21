@@ -203,6 +203,7 @@ object AnalyticsEventNames {
     const val VERSE_HIGHLIGHT_REMOVED = "verse_highlight_removed"
     const val HIGHLIGHT_COLOR_PICKER_OPENED = "highlight_color_picker_opened"
     const val HIGHLIGHT_COLOR_PICKER_DISMISSED = "highlight_color_picker_dismissed"
+    const val HIGHLIGHT_CUSTOM_COLOR_LOCKED_CLICKED = "highlight_custom_color_locked_clicked"
     const val HIGHLIGHT_CUSTOM_COLOR_CREATED = "highlight_custom_color_created"
     const val HIGHLIGHT_CUSTOM_COLOR_DELETE_OPENED = "highlight_custom_color_delete_opened"
     const val HIGHLIGHT_CUSTOM_COLOR_DELETED = "highlight_custom_color_deleted"

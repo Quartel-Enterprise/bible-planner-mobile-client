@@ -3,6 +3,8 @@ package com.quare.bibleplanner.feature.verse.selectionmenu.presentation
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
+import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
@@ -123,6 +125,41 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
+    fun `opens the custom color picker for a pro user`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isPro = true)
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
+        runCurrent()
+
+        // Then
+        assertTrue(viewModel.uiState.value?.customColorPicker != null)
+        assertTrue(actions.isEmpty())
+        assertTrue(trackedEvents.contains("highlight_color_picker_opened"))
+    }
+
+    @Test
+    fun `sends a free user to the paywall instead of opening the custom color picker`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isPro = false)
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
+        runCurrent()
+
+        // Then
+        assertNull(viewModel.uiState.value?.customColorPicker)
+        assertEquals(
+            expected = VerseSelectionUiAction.NavigateToRoute(
+                PaywallNavRoute(PaywallEntrySource.HIGHLIGHT_CUSTOM_COLOR),
+            ),
+            actual = actions.single(),
+        )
+        assertTrue(trackedEvents.contains("highlight_custom_color_locked_clicked"))
+    }
+
+    @Test
     fun `closing clears the selection and pops itself`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -222,7 +259,7 @@ internal class VerseSelectionViewModelTest {
         verseNumbers = verseNumbers,
     )
 
-    private fun TestScope.prepareScenario() {
+    private fun TestScope.prepareScenario(isPro: Boolean = true) {
         appliedHighlights = mutableListOf()
         clearedCount = mutableListOf()
         trackedEvents = mutableListOf()
@@ -246,6 +283,7 @@ internal class VerseSelectionViewModelTest {
             },
             addCustomHighlightColor = { error("unused") },
             toggleSavedVerses = { error("unused") },
+            observeIsProUser = { flowOf(isPro) },
             getVersesShareContent = { _, _, _ ->
                 VersesShareContentModel(
                     text = "Verse text",

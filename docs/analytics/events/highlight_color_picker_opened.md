@@ -10,7 +10,7 @@ The user taps the multicoloured swatch at the end of the palette row.
 
 ## Trigger source
 
-`feature/read/.../presentation/ReadViewModel.kt` — `ReadUiEvent.OnCustomColorPickerOpen`
+`feature/verse/selection_menu/.../presentation/VerseSelectionViewModel.kt` — `VerseSelectionUiEvent.OnCustomColorPickerOpen`
 
 ## Parameters
 
@@ -21,5 +21,6 @@ No parameters.
 
 ## Notes
 
+- Only fires for a Pro user; a free user gets [highlight_custom_color_locked_clicked](highlight_custom_color_locked_clicked.md) on the same tap instead.
 - Ends in either [highlight_custom_color_created](highlight_custom_color_created.md) or [highlight_color_picker_dismissed](highlight_color_picker_dismissed.md).
 - Dragging the hue and lightness sliders is not tracked: those are continuous gestures, not decisions.
