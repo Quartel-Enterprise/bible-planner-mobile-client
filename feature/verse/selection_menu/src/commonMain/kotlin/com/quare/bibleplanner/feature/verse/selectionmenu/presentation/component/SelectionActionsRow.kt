@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.EditNote
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +29,8 @@ import bibleplanner.feature.verse.selection_menu.generated.resources.copy
 import bibleplanner.feature.verse.selection_menu.generated.resources.save_verses
 import bibleplanner.feature.verse.selection_menu.generated.resources.saved_verses
 import bibleplanner.feature.verse.selection_menu.generated.resources.share
+import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.ui.component.icon.shareIcon
 import org.jetbrains.compose.resources.stringResource
 
 private val tileHeight = 56.dp
@@ -41,6 +42,7 @@ internal fun SelectionActionsRow(
     onNoteClick: () -> Unit,
     onShareClick: () -> Unit,
     onCopyClick: () -> Unit,
+    platform: Platform,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -60,7 +62,7 @@ internal fun SelectionActionsRow(
             onClick = onNoteClick,
         )
         ActionTile(
-            imageVector = Icons.Default.Share,
+            imageVector = platform.shareIcon,
             label = stringResource(Res.string.share),
             isActive = false,
             onClick = onShareClick,

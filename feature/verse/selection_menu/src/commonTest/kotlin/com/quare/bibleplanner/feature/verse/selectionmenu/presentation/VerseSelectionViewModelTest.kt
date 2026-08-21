@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
@@ -252,6 +253,7 @@ internal class VerseSelectionViewModelTest {
                     versionAbbreviation = "ARC",
                 )
             },
+            platform = Platform.Android,
             trackEvent = { name, _ -> trackedEvents += name },
         )
         actions = mutableListOf<VerseSelectionUiAction>().also { collected ->

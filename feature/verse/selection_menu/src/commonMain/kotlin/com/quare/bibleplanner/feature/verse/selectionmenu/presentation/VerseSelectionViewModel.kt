@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
@@ -59,6 +60,7 @@ internal class VerseSelectionViewModel(
     private val addCustomHighlightColor: AddCustomHighlightColor,
     private val toggleSavedVerses: ToggleSavedVerses,
     private val getVersesShareContent: GetVersesShareContent,
+    val platform: Platform,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<VerseSelectionUiEvent>(trackEvent) {
     private val defaultCustomColor = CustomColorUiModel(

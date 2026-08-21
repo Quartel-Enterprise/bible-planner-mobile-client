@@ -46,6 +46,7 @@ fun EntryProviderScope<NavKey>.verseSelection(
                 selection = safeUiState,
                 onEvent = viewModel::onEvent,
                 isWide = LocalIsWideLayout.current,
+                platform = viewModel.platform,
             )
         }
     }

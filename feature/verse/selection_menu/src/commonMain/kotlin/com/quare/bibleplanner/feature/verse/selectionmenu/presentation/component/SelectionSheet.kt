@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiEvent
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiState
 import kotlinx.coroutines.launch
@@ -60,6 +61,7 @@ internal fun SelectionSheet(
     selection: VerseSelectionUiState,
     onEvent: (VerseSelectionUiEvent) -> Unit,
     isWide: Boolean,
+    platform: Platform,
     modifier: Modifier = Modifier,
 ) {
     if (isWide) {
@@ -70,6 +72,7 @@ internal fun SelectionSheet(
             SelectionPanel(
                 selection = selection,
                 onEvent = onEvent,
+                platform = platform,
             )
         }
         return
@@ -121,6 +124,7 @@ internal fun SelectionSheet(
             onEvent = { event ->
                 if (event == VerseSelectionUiEvent.OnClearSelectionClick) dismiss() else onEvent(event)
             },
+            platform = platform,
         )
     }
 }

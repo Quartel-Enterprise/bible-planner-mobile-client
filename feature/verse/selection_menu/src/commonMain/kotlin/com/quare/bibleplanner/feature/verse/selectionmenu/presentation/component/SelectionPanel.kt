@@ -18,6 +18,7 @@ import bibleplanner.feature.verse.selection_menu.generated.resources.Res
 import bibleplanner.feature.verse.selection_menu.generated.resources.close
 import bibleplanner.feature.verse.selection_menu.generated.resources.custom_color_hint
 import com.quare.bibleplanner.core.books.util.verseReferenceLabel
+import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiEvent
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiState
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
@@ -31,6 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SelectionPanel(
     selection: VerseSelectionUiState,
     onEvent: (VerseSelectionUiEvent) -> Unit,
+    platform: Platform,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -94,6 +96,7 @@ internal fun SelectionPanel(
             onNoteClick = { onEvent(VerseSelectionUiEvent.OnNoteClick) },
             onShareClick = { onEvent(VerseSelectionUiEvent.OnShareClick) },
             onCopyClick = { onEvent(VerseSelectionUiEvent.OnCopyClick) },
+            platform = platform,
         )
     }
 }
