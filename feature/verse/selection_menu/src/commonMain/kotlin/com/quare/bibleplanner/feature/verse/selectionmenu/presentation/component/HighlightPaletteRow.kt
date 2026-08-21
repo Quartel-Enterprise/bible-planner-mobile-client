@@ -138,14 +138,14 @@ internal fun HighlightPaletteRow(
                             .offset(x = 2.dp, y = 2.dp)
                             .size(lockBadgeSize)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
+                            .background(MaterialTheme.colorScheme.surfaceContainerLow),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             modifier = Modifier.size(lockIconSize),
                             imageVector = Icons.Default.Lock,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
