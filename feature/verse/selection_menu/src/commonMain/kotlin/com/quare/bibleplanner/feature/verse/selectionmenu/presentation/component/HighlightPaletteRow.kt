@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.verse.selectionmenu.presentation.componen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -38,8 +39,10 @@ import org.jetbrains.compose.resources.stringResource
 private val swatchSize = 34.dp
 private val checkSize = 18.dp
 private val lockBadgeSize = 16.dp
-private val lockIconSize = 10.dp
+private val lockIconSize = 12.dp
+private val customSwatchRingWidth = 1.5.dp
 private val lockedCustomSwatchAlpha = 0.75f
+private const val CUSTOM_SWATCH_RING_ALPHA = 0.35f
 private val customSwatchBrush = Brush.sweepGradient(
     listOf(
         Color(0xFFFF6B6B),
@@ -121,14 +124,18 @@ internal fun HighlightPaletteRow(
                         .size(swatchSize)
                         .clip(CircleShape)
                         .background(if (isCustomColorLocked) lockedCustomSwatchBrush else customSwatchBrush)
-                        .alpha(if (isCustomColorLocked) lockedCustomSwatchAlpha else 1f),
+                        .border(
+                            width = customSwatchRingWidth,
+                            color = Color.White.copy(alpha = CUSTOM_SWATCH_RING_ALPHA),
+                            shape = CircleShape,
+                        ).alpha(if (isCustomColorLocked) lockedCustomSwatchAlpha else 1f),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         modifier = Modifier.size(checkSize),
-                        imageVector = Icons.Default.Palette,
+                        imageVector = Icons.Outlined.Palette,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.scrim,
+                        tint = Color.White,
                     )
                 }
                 if (isCustomColorLocked) {
