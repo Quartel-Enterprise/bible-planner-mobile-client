@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,69 +79,75 @@ internal fun HighlightPaletteRow(
     onCustomColorPickerOpen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FlowRow(
+    Surface(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(9.dp),
-        verticalArrangement = Arrangement.spacedBy(9.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
     ) {
-        PresetHighlightColor.entries.forEach { preset ->
-            val color = HighlightColor.Preset(preset)
-            ColorSwatch(
-                color = color.toSwatchColor(),
-                isActive = activeColor?.key == color.key,
-                onClick = { onColorClick(color) },
-            )
-        }
-        customColors.forEach { custom ->
-            ColorSwatch(
-                modifier = Modifier.combinedClickable(
-                    onClick = { onColorClick(custom) },
-                    onLongClick = { onCustomColorLongClick(custom) },
-                ),
-                color = custom.toSwatchColor(),
-                isActive = activeColor?.key == custom.key,
-                onClick = null,
-            )
-        }
-        val customColorLabel = stringResource(Res.string.custom_color)
-        Box(
-            modifier = Modifier
-                .size(swatchSize)
-                .combinedClickable(onClick = onCustomColorPickerOpen)
-                .semantics { contentDescription = customColorLabel },
-            contentAlignment = Alignment.Center,
+        FlowRow(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(9.dp),
+            verticalArrangement = Arrangement.spacedBy(9.dp),
         ) {
+            PresetHighlightColor.entries.forEach { preset ->
+                val color = HighlightColor.Preset(preset)
+                ColorSwatch(
+                    color = color.toSwatchColor(),
+                    isActive = activeColor?.key == color.key,
+                    onClick = { onColorClick(color) },
+                )
+            }
+            customColors.forEach { custom ->
+                ColorSwatch(
+                    modifier = Modifier.combinedClickable(
+                        onClick = { onColorClick(custom) },
+                        onLongClick = { onCustomColorLongClick(custom) },
+                    ),
+                    color = custom.toSwatchColor(),
+                    isActive = activeColor?.key == custom.key,
+                    onClick = null,
+                )
+            }
+            val customColorLabel = stringResource(Res.string.custom_color)
             Box(
                 modifier = Modifier
                     .size(swatchSize)
-                    .clip(CircleShape)
-                    .background(if (isCustomColorLocked) lockedCustomSwatchBrush else customSwatchBrush)
-                    .alpha(if (isCustomColorLocked) lockedCustomSwatchAlpha else 1f),
+                    .combinedClickable(onClick = onCustomColorPickerOpen)
+                    .semantics { contentDescription = customColorLabel },
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(
-                    modifier = Modifier.size(checkSize),
-                    imageVector = Icons.Default.Palette,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.scrim,
-                )
-            }
-            if (isCustomColorLocked) {
                 Box(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(x = 2.dp, y = 2.dp)
-                        .size(lockBadgeSize)
+                        .size(swatchSize)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface),
+                        .background(if (isCustomColorLocked) lockedCustomSwatchBrush else customSwatchBrush)
+                        .alpha(if (isCustomColorLocked) lockedCustomSwatchAlpha else 1f),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        modifier = Modifier.size(lockIconSize),
-                        imageVector = Icons.Default.Lock,
+                        modifier = Modifier.size(checkSize),
+                        imageVector = Icons.Default.Palette,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.scrim,
                     )
+                }
+                if (isCustomColorLocked) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(x = 2.dp, y = 2.dp)
+                            .size(lockBadgeSize)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(lockIconSize),
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                 }
             }
         }

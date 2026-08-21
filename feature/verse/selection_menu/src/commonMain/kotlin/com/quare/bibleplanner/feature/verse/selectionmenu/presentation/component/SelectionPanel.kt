@@ -61,6 +61,7 @@ internal fun SelectionPanel(
             )
         }
         HighlightPaletteRow(
+            modifier = Modifier.fillMaxWidth(),
             customColors = selection.customColors,
             activeColor = selection.activeColor,
             isCustomColorLocked = selection.isCustomColorLocked,
