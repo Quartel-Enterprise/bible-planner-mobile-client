@@ -10,9 +10,5 @@
     <string name="custom_color_hint">Segure uma cor personalizada para removê-la da paleta</string>
     <string name="cancel">Cancelar</string>
     <string name="apply_color">Aplicar cor</string>
-    <string name="highlight_saved">Destaque salvo</string>
-    <string name="highlight_removed">Destaque removido</string>
-    <string name="verses_saved">Salvo</string>
-    <string name="removed_from_saved">Removido dos salvos</string>
     <string name="copied_to_clipboard">Copiado para a área de transferência</string>
 </resources>

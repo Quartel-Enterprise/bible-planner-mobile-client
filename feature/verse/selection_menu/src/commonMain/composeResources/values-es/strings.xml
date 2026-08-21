@@ -10,9 +10,5 @@
     <string name="custom_color_hint">Mantén pulsado un color personalizado para quitarlo de la paleta</string>
     <string name="cancel">Cancelar</string>
     <string name="apply_color">Aplicar color</string>
-    <string name="highlight_saved">Resaltado guardado</string>
-    <string name="highlight_removed">Resaltado eliminado</string>
-    <string name="verses_saved">Guardado</string>
-    <string name="removed_from_saved">Quitado de guardados</string>
     <string name="copied_to_clipboard">Copiado al portapapeles</string>
 </resources>

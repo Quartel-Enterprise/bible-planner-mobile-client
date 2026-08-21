@@ -3,10 +3,6 @@ package com.quare.bibleplanner.feature.verse.selectionmenu.presentation
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.verse.selection_menu.generated.resources.Res
 import bibleplanner.feature.verse.selection_menu.generated.resources.copied_to_clipboard
-import bibleplanner.feature.verse.selection_menu.generated.resources.highlight_removed
-import bibleplanner.feature.verse.selection_menu.generated.resources.highlight_saved
-import bibleplanner.feature.verse.selection_menu.generated.resources.removed_from_saved
-import bibleplanner.feature.verse.selection_menu.generated.resources.verses_saved
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
@@ -194,11 +190,6 @@ internal class VerseSelectionViewModel(
                     AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size,
                 ),
             )
-            _uiAction.emit(
-                VerseSelectionUiAction.ShowMessage(
-                    if (isApplied) Res.string.highlight_saved else Res.string.highlight_removed,
-                ),
-            )
         }
     }
 
@@ -228,11 +219,6 @@ internal class VerseSelectionViewModel(
                 params = mapOf(
                     AnalyticsParams.IS_SAVED to isSaved,
                     AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size,
-                ),
-            )
-            _uiAction.emit(
-                VerseSelectionUiAction.ShowMessage(
-                    if (isSaved) Res.string.verses_saved else Res.string.removed_from_saved,
                 ),
             )
         }
