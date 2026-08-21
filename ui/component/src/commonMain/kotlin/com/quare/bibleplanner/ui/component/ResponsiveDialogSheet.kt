@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import bibleplanner.ui.component.generated.resources.Res
 import bibleplanner.ui.component.generated.resources.close
@@ -36,6 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 
 private val wideLayoutMinWidth = 600.dp
 private val centredTitleHorizontalPadding = 56.dp
+private val defaultCardMaxWidth = 460.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,12 +47,16 @@ fun ResponsiveDialogSheet(
     title: String? = null,
     subtitle: String? = null,
     isTitleCentred: Boolean = false,
+    cardMaxWidth: Dp = defaultCardMaxWidth,
     content: @Composable () -> Unit,
 ) {
     DialogWindowDimEffect()
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         if (maxWidth >= wideLayoutMinWidth) {
-            ResponsiveDialogSheetCard(onCloseClick = onCloseClick) {
+            ResponsiveDialogSheetCard(
+                onCloseClick = onCloseClick,
+                cardMaxWidth = cardMaxWidth,
+            ) {
                 CloseableContent(
                     onCloseClick = onCloseClick,
                     title = title,
@@ -153,6 +159,7 @@ private fun DialogHeader(
 @Composable
 private fun ResponsiveDialogSheetCard(
     onCloseClick: (() -> Unit)?,
+    cardMaxWidth: Dp,
     content: @Composable () -> Unit,
 ) {
     Box(
@@ -169,7 +176,7 @@ private fun ResponsiveDialogSheetCard(
         Surface(
             modifier = Modifier
                 .padding(24.dp)
-                .widthIn(max = 460.dp)
+                .widthIn(max = cardMaxWidth)
                 .fillMaxWidth()
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },

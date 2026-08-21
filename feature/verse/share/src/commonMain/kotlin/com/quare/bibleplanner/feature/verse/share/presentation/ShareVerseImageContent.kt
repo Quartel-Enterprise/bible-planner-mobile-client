@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 private val cardWidth = 242.dp
+private val wideCardSlotWidth = 300.dp
+private val wideContentPadding = 18.dp
+private val wideContentGap = 20.dp
 private val swatchSize = 32.dp
 private val fontTileSize = 42.dp
 
@@ -58,80 +62,194 @@ internal fun ShareVerseImageContent(
     modifier: Modifier = Modifier,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
-    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ShareVerseCard(
-            modifier = Modifier
-                .width(cardWidth)
-                .drawWithContent {
-                    graphicsLayer.record { this@drawWithContent.drawContent() }
-                    drawLayer(graphicsLayer)
-                },
+        CapturedShareCard(
+            modifier = Modifier.width(cardWidth),
             uiState = uiState,
+            graphicsLayer = graphicsLayer,
         )
+        TypographySection(
+            font = uiState.font,
+            onFontClick = { font -> onEvent(ShareVerseUiEvent.OnFontClick(font)) },
+        )
+        BackgroundSection(
+            background = uiState.background,
+            onBackgroundClick = { background -> onEvent(ShareVerseUiEvent.OnBackgroundClick(background)) },
+        )
+        ShareImageButton(
+            modifier = Modifier.fillMaxWidth(),
+            platform = platform,
+            isReady = uiState.isReady,
+            graphicsLayer = graphicsLayer,
+            onEvent = onEvent,
+        )
+    }
+}
+
+/**
+ * The card keeps its portrait shape and the design's fixed 300dp column width even on a wide
+ * dialog — only the controls beside it grow, matching how the desktop composer is laid out.
+ */
+@Composable
+internal fun ShareVerseImageWideContent(
+    uiState: ShareVerseUiState,
+    onEvent: (ShareVerseUiEvent) -> Unit,
+    platform: Platform,
+    modifier: Modifier = Modifier,
+) {
+    val graphicsLayer = rememberGraphicsLayer()
+    Row(
+        modifier = modifier.padding(wideContentPadding),
+        horizontalArrangement = Arrangement.spacedBy(wideContentGap),
+    ) {
+        Box(
+            modifier = Modifier.width(wideCardSlotWidth),
+            contentAlignment = Alignment.Center,
+        ) {
+            CapturedShareCard(
+                modifier = Modifier.width(cardWidth),
+                uiState = uiState,
+                graphicsLayer = graphicsLayer,
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = uiState.reference,
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Text(
+                text = uiState.versionAbbreviation,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            TypographySection(
+                modifier = Modifier.padding(top = 18.dp),
+                font = uiState.font,
+                onFontClick = { font -> onEvent(ShareVerseUiEvent.OnFontClick(font)) },
+            )
+            BackgroundSection(
+                modifier = Modifier.padding(top = 16.dp),
+                background = uiState.background,
+                onBackgroundClick = { background -> onEvent(ShareVerseUiEvent.OnBackgroundClick(background)) },
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            ShareImageButton(
+                modifier = Modifier.fillMaxWidth().padding(top = 18.dp),
+                platform = platform,
+                isReady = uiState.isReady,
+                graphicsLayer = graphicsLayer,
+                onEvent = onEvent,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CapturedShareCard(
+    uiState: ShareVerseUiState,
+    graphicsLayer: GraphicsLayer,
+    modifier: Modifier = Modifier,
+) {
+    ShareVerseCard(
+        modifier = modifier.drawWithContent {
+            graphicsLayer.record { this@drawWithContent.drawContent() }
+            drawLayer(graphicsLayer)
+        },
+        uiState = uiState,
+    )
+}
+
+@Composable
+private fun TypographySection(
+    font: ShareCardFont,
+    onFontClick: (ShareCardFont) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
         SectionLabel(text = stringResource(Res.string.share_typography))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ShareCardFont.entries.forEach { font ->
+            ShareCardFont.entries.forEach { entry ->
                 Surface(
                     modifier = Modifier.size(fontTileSize),
                     shape = RoundedCornerShape(10.dp),
-                    color = if (font == uiState.font) {
+                    color = if (entry == font) {
                         MaterialTheme.colorScheme.primaryContainer
                     } else {
                         MaterialTheme.colorScheme.surfaceContainerHigh
                     },
                 ) {
                     Box(
-                        modifier = Modifier.clickable { onEvent(ShareVerseUiEvent.OnFontClick(font)) },
+                        modifier = Modifier.clickable { onFontClick(entry) },
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = "Aa",
-                            fontFamily = font.toFontFamily(),
+                            fontFamily = entry.toFontFamily(),
                         )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun BackgroundSection(
+    background: ShareCardBackground,
+    onBackgroundClick: (ShareCardBackground) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
         SectionLabel(text = stringResource(Res.string.share_background))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ShareCardBackground.entries.forEach { background ->
+            ShareCardBackground.entries.forEach { entry ->
                 Box(
                     modifier = Modifier
                         .size(swatchSize)
                         .clip(CircleShape)
                         .background(
-                            Brush.linearGradient(listOf(background.startColor, background.endColor)),
+                            Brush.linearGradient(listOf(entry.startColor, entry.endColor)),
                         ).border(
-                            width = if (background == uiState.background) 2.dp else 0.dp,
+                            width = if (entry == background) 2.dp else 0.dp,
                             color = MaterialTheme.colorScheme.primary,
                             shape = CircleShape,
-                        ).clickable { onEvent(ShareVerseUiEvent.OnBackgroundClick(background)) },
+                        ).clickable { onBackgroundClick(entry) },
                 )
             }
         }
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            enabled = uiState.isReady,
-            onClick = {
-                coroutineScope.launch {
-                    val imageBytes = graphicsLayer.toImageBitmap().encodeToPng()
-                    onEvent(ShareVerseUiEvent.OnShareImageReady(imageBytes))
-                }
-            },
-        ) {
-            Icon(
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-                imageVector = platform.shareIcon,
-                contentDescription = null,
-            )
-            Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(Res.string.share_action))
-        }
+    }
+}
+
+@Composable
+private fun ShareImageButton(
+    platform: Platform,
+    isReady: Boolean,
+    graphicsLayer: GraphicsLayer,
+    onEvent: (ShareVerseUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    Button(
+        modifier = modifier,
+        enabled = isReady,
+        onClick = {
+            coroutineScope.launch {
+                val imageBytes = graphicsLayer.toImageBitmap().encodeToPng()
+                onEvent(ShareVerseUiEvent.OnShareImageReady(imageBytes))
+            }
+        },
+    ) {
+        Icon(
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+            imageVector = platform.shareIcon,
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+        Text(text = stringResource(Res.string.share_action))
     }
 }
 
