@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -18,17 +17,16 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 private const val SHIMMER_GROUP_COUNT = 2
 private const val SHIMMER_ITEMS_PER_GROUP = 1
 
-internal fun LazyListScope.bibleVersionsShimmer() {
+@Composable
+internal fun BibleVersionsShimmer() {
     repeat(SHIMMER_GROUP_COUNT) {
-        item {
-            ShimmerBox(
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .width(96.dp)
-                    .height(14.dp),
-            )
-        }
-        items(SHIMMER_ITEMS_PER_GROUP) {
+        ShimmerBox(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .width(96.dp)
+                .height(14.dp),
+        )
+        repeat(SHIMMER_ITEMS_PER_GROUP) {
             BibleVersionItemShimmer(
                 modifier = Modifier.padding(vertical = 8.dp),
             )

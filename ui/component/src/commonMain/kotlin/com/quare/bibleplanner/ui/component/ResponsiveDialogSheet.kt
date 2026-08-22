@@ -27,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -55,12 +57,15 @@ fun ResponsiveDialogSheet(
     content: @Composable () -> Unit,
 ) {
     DialogWindowDimEffect()
+    val density = LocalDensity.current
+    val windowInfo = LocalWindowInfo.current
+    val contentMaxHeight = with(density) { windowInfo.containerSize.height.toDp() } - cardVerticalMargin * 2
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         if (maxWidth >= wideLayoutMinWidth) {
             ResponsiveDialogSheetCard(
                 onCloseClick = onCloseClick,
                 cardMaxWidth = cardMaxWidth,
-                cardMaxHeight = maxHeight - cardVerticalMargin * 2,
+                cardMaxHeight = contentMaxHeight,
             ) {
                 CloseableContent(
                     onCloseClick = onCloseClick,
@@ -68,6 +73,7 @@ fun ResponsiveDialogSheet(
                     subtitle = subtitle,
                     isTitleCentred = isTitleCentred,
                     content = content,
+                    contentMaxHeight = contentMaxHeight,
                 )
             }
         } else {
@@ -82,6 +88,7 @@ fun ResponsiveDialogSheet(
                     subtitle = subtitle,
                     isTitleCentred = isTitleCentred,
                     content = content,
+                    contentMaxHeight = contentMaxHeight,
                     modifier = Modifier.windowInsetsPadding(LocalNavigationBarInsets.current),
                 )
             }
@@ -96,10 +103,15 @@ private fun CloseableContent(
     subtitle: String?,
     isTitleCentred: Boolean,
     content: @Composable () -> Unit,
+    contentMaxHeight: Dp,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = Modifier
+                .heightIn(max = contentMaxHeight)
+                .verticalScroll(rememberScrollState()),
+        ) {
             if (title != null) {
                 DialogHeader(
                     title = title,
