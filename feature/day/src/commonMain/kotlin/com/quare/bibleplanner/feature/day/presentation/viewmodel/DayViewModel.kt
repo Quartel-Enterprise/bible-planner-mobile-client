@@ -212,6 +212,9 @@ internal class DayViewModel(
                         chapterNumber = chapterNumber,
                         isChapterRead = strategy.isChapterRead,
                         isFromBookDetails = false,
+                        weekNumber = weekNumber,
+                        dayNumber = dayNumber,
+                        readingPlanType = readingPlanType.name,
                     ),
                 ),
             )

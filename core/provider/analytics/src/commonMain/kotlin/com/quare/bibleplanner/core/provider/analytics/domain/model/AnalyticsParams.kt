@@ -82,4 +82,7 @@ object AnalyticsParams {
     const val IS_OPEN = "is_open"
     const val FORMAT = "format"
     const val BACKGROUND = "background"
+    const val ACCOUNT_STATE = "account_state"
+    const val TIMING = "timing"
+    const val CHAPTER_COUNT = "chapter_count"
 }

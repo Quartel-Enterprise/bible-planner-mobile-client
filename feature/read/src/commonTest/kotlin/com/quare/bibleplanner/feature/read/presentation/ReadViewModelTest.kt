@@ -2,11 +2,16 @@ package com.quare.bibleplanner.feature.read.presentation
 
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.mark_as_read
+import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.model.plan.DayModel
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
+import com.quare.bibleplanner.core.plan.domain.usecase.GetDay
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
@@ -170,6 +175,105 @@ internal class ReadViewModelTest {
         )
     }
 
+    @Test
+    fun `opens the day-complete sheet when the last unread chapter of the day is marked read`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                weekNumber = 1,
+                dayNumber = 2,
+                readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+                toggleWholeChapterReadStatus = { _, _ -> true },
+                getDay = { _, _, _ -> dayModel(isRead = true) },
+            )
+
+            // When
+            viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = ReadUiAction.NavigateToRoute(
+                    route = DayReadingCompleteNavRoute(
+                        dayNumber = 2,
+                        weekNumber = 1,
+                        readingPlanType = "CHRONOLOGICAL",
+                    ),
+                    replace = false,
+                ),
+                actual = actions.last(),
+            )
+        }
+
+    @Test
+    fun `does not open the sheet while the day still has unread chapters`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            weekNumber = 1,
+            dayNumber = 2,
+            readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+            toggleWholeChapterReadStatus = { _, _ -> true },
+            getDay = { _, _, _ -> dayModel(isRead = false) },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+        runCurrent()
+
+        // Then
+        assertTrue(actions.none { it is ReadUiAction.NavigateToRoute && it.route is DayReadingCompleteNavRoute })
+    }
+
+    @Test
+    fun `does not open the sheet when the chapter is unmarked instead of marked read`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            weekNumber = 1,
+            dayNumber = 2,
+            readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+            toggleWholeChapterReadStatus = { _, _ -> false },
+            getDay = { _, _, _ -> error("unused") },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+        runCurrent()
+
+        // Then
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `does not open the sheet when the route has no reading-plan day context`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            weekNumber = null,
+            dayNumber = null,
+            readingPlanType = null,
+            toggleWholeChapterReadStatus = { _, _ -> true },
+            getDay = { _, _, _ -> error("unused") },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+        runCurrent()
+
+        // Then
+        assertTrue(actions.isEmpty())
+    }
+
+    private fun dayModel(isRead: Boolean): DayModel = DayModel(
+        number = 2,
+        passages = emptyList(),
+        isRead = isRead,
+        totalVerses = 0,
+        readVerses = 0,
+        readTimestamp = null,
+        plannedReadDate = null,
+        notes = null,
+        isToday = true,
+    )
+
     private fun selectedVerseNumbers(): List<Int> = (viewModel.uiState.value.content as ReadContentUiState.Success)
         .chapters
         .single()
@@ -182,7 +286,18 @@ internal class ReadViewModelTest {
         verseNumber = verseNumber,
     )
 
-    private fun TestScope.prepareScenario() {
+    private fun TestScope.prepareScenario(
+        weekNumber: Int? = null,
+        dayNumber: Int? = null,
+        readingPlanType: ReadingPlanType? = null,
+        toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus = ToggleWholeChapterReadStatus {
+            _,
+            _,
+            ->
+            error("unused")
+        },
+        getDay: GetDay = GetDay { _, _, _ -> error("unused") },
+    ) {
         trackedEvents = mutableListOf()
         selectionStore = FakeVerseSelectionStore()
         val bookStringResource = Res.string.mark_as_read
@@ -234,11 +349,15 @@ internal class ReadViewModelTest {
                 chapterNumber = 3,
                 isChapterRead = false,
                 isFromBookDetails = false,
+                weekNumber = weekNumber,
+                dayNumber = dayNumber,
+                readingPlanType = readingPlanType?.name,
             ),
             observeReadData = FakeObserveReadData(data),
-            toggleWholeChapterReadStatus = { _, _ -> error("unused") },
+            toggleWholeChapterReadStatus = toggleWholeChapterReadStatus,
             isWholeChapterRead = { _, _ -> error("unused") },
-            requestLoginNudgeIfNeeded = { error("unused") },
+            getDay = getDay,
+            requestLoginNudgeIfNeeded = { },
             downloaderFacade = ThrowingBibleVersionDownloaderFacade,
             getSelectedVersionIdFlow = { error("unused") },
             requestDownloadNotificationPermission = { error("unused") },

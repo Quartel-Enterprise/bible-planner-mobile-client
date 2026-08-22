@@ -15,6 +15,8 @@ import com.quare.bibleplanner.core.plan.data.sync.UserPreferencesRemoteStore
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.GetDay
+import com.quare.bibleplanner.core.plan.domain.usecase.GetDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetDaysWithNotesCountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
@@ -75,6 +77,7 @@ val planModule = module {
     // Use cases
     factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
+    factoryOf(::GetDayUseCase).bind<GetDay>()
     factoryOf(::SetPlanStartTimeUseCase)
     factoryOf(::MigratePlanPreferencesToSyncStoreUseCase)
     factoryOf(::EnsureDefaultPlanStartDateUseCase)

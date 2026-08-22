@@ -30,6 +30,9 @@ object AnalyticsEventNames {
     const val DAY_TIME_PICKER_SHOWN = "day_time_picker_shown"
     const val DAY_DATE_PICKER_DISMISSED = "day_date_picker_dismissed"
     const val DAY_DATE_SELECTED = "day_date_selected"
+    const val DAY_READING_COMPLETE_SHOWN = "day_reading_complete_shown"
+    const val DAY_READING_COMPLETE_CTA_CLICKED = "day_reading_complete_cta_clicked"
+    const val DAY_READING_COMPLETE_DISMISSED = "day_reading_complete_dismissed"
 
     const val NOTE_SAVED = "note_saved"
     const val NOTE_DELETED = "note_deleted"

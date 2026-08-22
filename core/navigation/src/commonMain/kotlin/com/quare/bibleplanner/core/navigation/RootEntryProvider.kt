@@ -17,6 +17,7 @@ import com.quare.bibleplanner.feature.chat.presentation.chat
 import com.quare.bibleplanner.feature.congrats.presentation.congrats
 import com.quare.bibleplanner.feature.contactsupport.presentation.contactSupport
 import com.quare.bibleplanner.feature.day.presentation.day
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.dayReadingComplete
 import com.quare.bibleplanner.feature.daystudy.presentation.dayStudy
 import com.quare.bibleplanner.feature.deleteaccount.presentation.deleteAccount
 import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
@@ -81,6 +82,11 @@ internal fun SharedTransitionScope.toEntryProvider(
     dayStudy(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
+    )
+    dayReadingComplete(
+        onNavigate = onNavigate,
+        onNavigateBack = onNavigateBack,
+        onNavigateReplacingTop = onNavigateReplacingTop,
     )
     chat(
         onNavigate = onNavigate,

@@ -9,10 +9,13 @@ import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
+import com.quare.bibleplanner.core.plan.domain.usecase.GetDay
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -69,6 +72,7 @@ class ReadViewModel(
     private val observeReadData: ObserveReadData,
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus,
     private val isWholeChapterRead: IsWholeChapterRead,
+    private val getDay: GetDay,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
@@ -240,6 +244,30 @@ class ReadViewModel(
                 ),
             )
             requestLoginNudgeIfNeeded()
+            if (isRead) checkDayCompletion()
+        }
+    }
+
+    private suspend fun checkDayCompletion() {
+        val weekNumber = route.weekNumber ?: return
+        val dayNumber = route.dayNumber ?: return
+        val readingPlanType = route.readingPlanType ?: return
+        val day = getDay(
+            weekNumber = weekNumber,
+            dayNumber = dayNumber,
+            readingPlanType = ReadingPlanType.valueOf(readingPlanType),
+        )
+        if (day?.isRead == true) {
+            _uiAction.emit(
+                ReadUiAction.NavigateToRoute(
+                    route = DayReadingCompleteNavRoute(
+                        dayNumber = dayNumber,
+                        weekNumber = weekNumber,
+                        readingPlanType = readingPlanType,
+                    ),
+                    replace = false,
+                ),
+            )
         }
     }
 
@@ -263,6 +291,9 @@ class ReadViewModel(
                             bookId = suggestion.bookId,
                         ),
                         isFromBookDetails = route.isFromBookDetails,
+                        weekNumber = route.weekNumber,
+                        dayNumber = route.dayNumber,
+                        readingPlanType = route.readingPlanType,
                     ),
                     replace = true,
                 ),

@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "com.quare.bibleplanner.feature.read"
+        namespace = "com.quare.bibleplanner.feature.dayreadingcomplete"
     }
 
     jvm()
@@ -14,29 +14,21 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.books)
-            implementation(projects.core.model)
             implementation(projects.core.plan)
-            implementation(projects.core.provider.analytics)
-            implementation(projects.core.provider.platform)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.loginNudge)
-            implementation(projects.core.provider.dataStore)
-            implementation(projects.core.verseAnnotations)
+            implementation(projects.core.model)
+            implementation(projects.feature.dayStudy)
             implementation(projects.core.utils)
+            implementation(projects.core.date)
+            implementation(projects.core.user)
+            implementation(projects.core.provider.analytics)
+            implementation(projects.core.provider.billing)
+            implementation(projects.core.provider.connectivity)
+            implementation(projects.core.provider.platform)
 
             // UI
             implementation(projects.ui.component)
-            implementation(projects.ui.theme)
             implementation(projects.ui.utils)
-
-            // Navigation 3
-            implementation(libs.navigation3.ui)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
+            implementation(projects.ui.theme)
 
             // Compose
             implementation(libs.compose.runtime)
@@ -46,16 +38,24 @@ kotlin {
             implementation(libs.compose.materialIconsExtended)
             implementation(libs.compose.components.resources)
 
-            implementation(libs.kotlinx.coroutines.core)
+            // Navigation 3
+            implementation(libs.navigation3.ui)
 
-            // DataStore
-            implementation(libs.datastore.preferences)
+            // DateTime
+            implementation(libs.kotlinx.datetime)
+
+            // Koin
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
         }
 
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.kotlinx.datetime)
+            implementation(projects.core.remoteConfig)
+            implementation(projects.core.provider.language)
         }
     }
 }

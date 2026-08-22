@@ -34,6 +34,7 @@ import com.quare.bibleplanner.feature.chat.di.chatModule
 import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.contactsupport.di.contactSupportModule
 import com.quare.bibleplanner.feature.day.di.dayModule
+import com.quare.bibleplanner.feature.dayreadingcomplete.di.dayReadingCompleteModule
 import com.quare.bibleplanner.feature.daystudy.di.dayStudyModule
 import com.quare.bibleplanner.feature.deleteaccount.di.deleteAccountModule
 import com.quare.bibleplanner.feature.deletenotes.di.deleteNotesModule
@@ -80,6 +81,7 @@ object CommonKoinUtils {
         readingPlanModule,
         dayModule,
         dayStudyModule,
+        dayReadingCompleteModule,
         chatModule,
         deleteProgressModule,
         deleteAccountModule,

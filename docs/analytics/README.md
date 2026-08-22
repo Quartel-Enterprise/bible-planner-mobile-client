@@ -281,6 +281,14 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_study_bg_card_opened](events/day_study_bg_card_opened.md) | P2 | DayStudy |
 | [day_study_bg_card_dismissed](events/day_study_bg_card_dismissed.md) | P2 | DayStudy |
 
+### Day Reading Complete
+
+| Event | Tier | Domain |
+|---|---|---|
+| [day_reading_complete_shown](events/day_reading_complete_shown.md) | P1 | DayReadingComplete |
+| [day_reading_complete_cta_clicked](events/day_reading_complete_cta_clicked.md) | P1 | DayReadingComplete |
+| [day_reading_complete_dismissed](events/day_reading_complete_dismissed.md) | P2 | DayReadingComplete |
+
 ### AI Chat
 
 | Event | Tier | Domain |
