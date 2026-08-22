@@ -11,19 +11,30 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
@@ -39,7 +50,10 @@ private const val VERSE_NUMBER_ALPHA = 0.55f
 private const val DIMMED_ALPHA = 0.22f
 private const val VERSE_NUMBER_FONT_SIZE_RATIO = 0.68f
 private const val VERSE_NUMBER_WIDTH_RATIO = 1.2f
+private const val SELECTION_UNDERLINE_OFFSET_RATIO = 0.14f
 private val verseVerticalPadding = 6.dp
+private val selectionUnderlineDotWidth = 1.6.dp
+private val selectionUnderlineDotGap = 3.dp
 
 /**
  * A verse and, when the section starts here, its pericope heading. Tapping anywhere on the row
@@ -116,13 +130,44 @@ internal fun VerseRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.End,
             )
+            var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
             Text(
-                modifier = Modifier.alignByBaseline(),
+                modifier = Modifier
+                    .alignByBaseline()
+                    .drawWithContent {
+                        drawContent()
+                        if (verse.isSelected) {
+                            textLayoutResult?.let { layout ->
+                                drawSelectionUnderline(layout, fontSize, textStyle.color)
+                            }
+                        }
+                    },
                 text = verse.text.withHighlight(verse.highlightColor),
                 style = textStyle,
-                textDecoration = TextDecoration.Underline.takeIf { verse.isSelected },
+                onTextLayout = { textLayoutResult = it },
             )
         }
+    }
+}
+
+private fun DrawScope.drawSelectionUnderline(
+    layout: TextLayoutResult,
+    fontSize: TextUnit,
+    color: Color,
+) {
+    val offsetPx = fontSize.toPx() * SELECTION_UNDERLINE_OFFSET_RATIO
+    val dotWidthPx = selectionUnderlineDotWidth.toPx()
+    val pathEffect = PathEffect.dashPathEffect(floatArrayOf(dotWidthPx, selectionUnderlineDotGap.toPx()))
+    for (lineIndex in 0 until layout.lineCount) {
+        val y = layout.getLineBaseline(lineIndex) + offsetPx
+        drawLine(
+            color = color,
+            start = Offset(x = layout.getLineLeft(lineIndex), y = y),
+            end = Offset(x = layout.getLineRight(lineIndex), y = y),
+            strokeWidth = dotWidthPx,
+            cap = StrokeCap.Round,
+            pathEffect = pathEffect,
+        )
     }
 }
 
