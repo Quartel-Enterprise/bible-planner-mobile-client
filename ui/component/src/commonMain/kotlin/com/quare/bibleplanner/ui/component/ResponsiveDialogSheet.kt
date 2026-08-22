@@ -44,6 +44,7 @@ private val wideLayoutMinWidth = 600.dp
 private val centredTitleHorizontalPadding = 56.dp
 private val defaultCardMaxWidth = 460.dp
 private val cardVerticalMargin = 24.dp
+private val sheetBottomBreathingRoom = 12.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,7 +90,9 @@ fun ResponsiveDialogSheet(
                     isTitleCentred = isTitleCentred,
                     content = content,
                     contentMaxHeight = contentMaxHeight,
-                    modifier = Modifier.windowInsetsPadding(LocalNavigationBarInsets.current),
+                    modifier = Modifier
+                        .windowInsetsPadding(LocalNavigationBarInsets.current)
+                        .padding(bottom = sheetBottomBreathingRoom),
                 )
             }
         }
