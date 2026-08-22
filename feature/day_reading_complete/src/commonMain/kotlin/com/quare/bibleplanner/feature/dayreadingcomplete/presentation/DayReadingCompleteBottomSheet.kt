@@ -59,10 +59,12 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_on_time
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_overdue
 import com.quare.bibleplanner.core.books.util.toReadingLabel
+import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
+import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
@@ -109,7 +111,7 @@ private fun LoadedContent(
     onEvent: (DayReadingCompleteUiEvent) -> Unit,
 ) {
     val isToday = state.timing == DayTimingState.ON_TIME
-    val dayLabel = state.plannedReadDate?.takeIf { !isToday }?.toDayLabel()
+    val dayLabel = state.plannedReadDate?.takeIf { !isToday }?.toDayLabel(state.language)
     val readingLabel = state.passages.toReadingLabel()
 
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -168,12 +170,11 @@ private fun LoadedContent(
                 Text(text = dismissText(state.ctaState))
             }
         }
-        Icon(
+        CommonIconButton(
             imageVector = Icons.Rounded.Close,
             contentDescription = stringResource(Res.string.day_reading_complete_close),
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 8.dp, end = 8.dp),
+            onClick = { onEvent(DayReadingCompleteUiEvent.OnDismiss) },
+            modifier = Modifier.align(Alignment.TopEnd),
         )
     }
 }
@@ -351,7 +352,8 @@ private fun dismissText(ctaState: StudyCtaState): String = if (ctaState is Study
 }
 
 @Composable
-private fun LocalDate.toDayLabel(): String {
-    val monthName = stringResource(month.toStringResource()).lowercase()
+private fun LocalDate.toDayLabel(language: Language): String {
+    val rawMonthName = stringResource(month.toStringResource())
+    val monthName = if (language == Language.ENGLISH) rawMonthName else rawMonthName.lowercase()
     return stringResource(Res.string.day_reading_complete_day_label, day, monthName)
 }

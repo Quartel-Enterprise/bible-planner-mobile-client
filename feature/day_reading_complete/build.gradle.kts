@@ -20,6 +20,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.date)
             implementation(projects.core.user)
+            implementation(projects.core.provider.language)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.connectivity)
@@ -55,7 +56,6 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.remoteConfig)
-            implementation(projects.core.provider.language)
         }
     }
 }

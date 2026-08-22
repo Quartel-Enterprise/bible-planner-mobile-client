@@ -19,6 +19,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.toPlanTypeAna
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
+import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
@@ -44,6 +45,7 @@ class DayReadingCompleteViewModel(
     private val route: DayReadingCompleteNavRoute,
     private val getDay: GetDay,
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,
+    private val getAppLanguageFlow: GetAppLanguageFlow,
     private val observeIsProUser: ObserveIsProUser,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val isConnected: IsConnected,
@@ -84,6 +86,7 @@ class DayReadingCompleteViewModel(
             passages = day.passages
             val timing = classifyDayTiming(day.plannedReadDate)
             val chapterCount = day.passages.sumOf { it.chapters.size }
+            val language = getAppLanguageFlow().first()
             observeIsProUser().collectLatest { isPro ->
                 val quota = getDayStudyQuota(day.passages)
                 val ctaState = resolveStudyCtaState(isPro, quota)
@@ -94,6 +97,7 @@ class DayReadingCompleteViewModel(
                         passages = day.passages,
                         chapterCount = chapterCount,
                         ctaState = ctaState,
+                        language = language,
                     )
                 }
                 trackShownOnce(timing, ctaState)

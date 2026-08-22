@@ -247,6 +247,7 @@ internal class DayReadingCompleteViewModelTest {
                 languageCodeMapper = LanguageCodeMapper(),
                 getIntRemoteConfig = getIntRemoteConfig,
             ),
+            getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
             observeIsProUser = { flowOf(isPro) },
             observeAuthenticatedUserId = { flowOf(if (isLoggedIn) "user-id" else null) },
             isConnected = { true },
