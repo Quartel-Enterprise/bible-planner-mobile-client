@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paywall_teaser_subscribe">Suscribirse a Pro</string>
+    <string name="paywall_teaser_highlight_custom_color_title">Los colores personalizados son Pro</string>
+    <string name="paywall_teaser_highlight_custom_color_body">La paleta predeterminada sigue siendo gratis. Con Pro puedes crear tus propios colores para diferenciar temas, promesas y oraciones.</string>
+    <string name="paywall_teaser_highlight_custom_color_dismiss">Usar la paleta predeterminada</string>
+</resources>

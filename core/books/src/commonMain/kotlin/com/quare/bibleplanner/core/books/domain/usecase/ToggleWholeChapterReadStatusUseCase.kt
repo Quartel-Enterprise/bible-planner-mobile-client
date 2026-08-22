@@ -5,8 +5,8 @@ import com.quare.bibleplanner.core.model.book.BookId
 class ToggleWholeChapterReadStatusUseCase(
     private val isWholeChapterRead: IsWholeChapterReadUseCase,
     private val updateWholeChapterRead: UpdateWholeChapterReadStatusUseCase,
-) {
-    suspend operator fun invoke(
+) : ToggleWholeChapterReadStatus {
+    override suspend fun invoke(
         bookId: BookId,
         chapterNumber: Int,
     ): Boolean {

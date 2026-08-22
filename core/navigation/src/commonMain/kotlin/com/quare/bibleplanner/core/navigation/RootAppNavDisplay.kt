@@ -38,6 +38,7 @@ import com.quare.bibleplanner.core.model.NavigationEventBus
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrategy
+import com.quare.bibleplanner.core.navigation.strategy.VerseSelectionSceneStrategy
 import com.quare.bibleplanner.core.navigation.utils.popBackEntries
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
@@ -131,6 +132,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                                 onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,
                             )
                         },
+                        remember(isWide) { VerseSelectionSceneStrategy(isWide = isWide) },
                     ),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     entryDecorators = listOf(

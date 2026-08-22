@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 class GetSelectedVersionIdFlowUseCase(
     private val bibleRepository: BibleRepository,
-) {
-    operator fun invoke(): Flow<String> = bibleRepository.getSelectedVersionIdFlow()
+) : GetSelectedVersionIdFlow {
+    override fun invoke(): Flow<String> = bibleRepository.getSelectedVersionIdFlow()
 }

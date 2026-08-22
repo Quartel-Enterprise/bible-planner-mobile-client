@@ -31,8 +31,9 @@ import bibleplanner.feature.read.generated.resources.size_progress
 import bibleplanner.feature.read.generated.resources.status_with_size
 import bibleplanner.feature.read.generated.resources.unknown_error_occurred
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
+import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.text.megabytesText
 import org.jetbrains.compose.resources.stringResource
@@ -41,9 +42,10 @@ private const val PROGRESS_BAR_WIDTH_FRACTION = 0.6f
 
 @Composable
 internal fun ReadErrorContent(
-    modifier: Modifier = Modifier,
-    state: ReadUiState.Error,
+    header: ReadHeaderUiModel,
+    content: ReadContentUiState.Error,
     onEvent: (ReadUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
@@ -53,16 +55,17 @@ internal fun ReadErrorContent(
             alignment = Alignment.CenterVertically,
         ),
     ) {
-        when (state) {
-            is ReadUiState.Error.ChapterNotFound -> ChapterNotFoundContent(
-                state = state,
+        when (content) {
+            is ReadContentUiState.Error.ChapterNotFound -> ChapterNotFoundContent(
+                header = header,
+                content = content,
                 onEvent = onEvent,
             )
 
-            is ReadUiState.Error.Unknown -> {
+            is ReadContentUiState.Error.Unknown -> {
                 ErrorMessage(text = stringResource(Res.string.unknown_error_occurred))
                 Button(
-                    onClick = { onEvent(state.errorUiEvent) },
+                    onClick = { onEvent(content.errorUiEvent) },
                 ) {
                     Text(text = stringResource(Res.string.retry))
                 }
@@ -73,25 +76,26 @@ internal fun ReadErrorContent(
 
 @Composable
 private fun ChapterNotFoundContent(
-    state: ReadUiState.Error.ChapterNotFound,
+    header: ReadHeaderUiModel,
+    content: ReadContentUiState.Error.ChapterNotFound,
     onEvent: (ReadUiEvent) -> Unit,
 ) {
     ErrorMessage(
         text = stringResource(
             resource = Res.string.chapter_not_downloaded_error,
-            stringResource(state.bookStringResource),
-            state.chapterNumber,
-            state.selectedBibleVersionName,
+            stringResource(header.bookStringResource),
+            header.chapterNumber,
+            content.selectedBibleVersionName,
         ),
     )
-    when (val downloadStatus = state.downloadStatus) {
+    when (val downloadStatus = content.downloadStatus) {
         is DownloadStatusModel.InProgress.Downloading -> DownloadProgress(
             inProgressStatus = downloadStatus,
             statusText = stringResource(
                 Res.string.downloading_progress,
                 downloadStatus.progressStr,
             ),
-            versionSizeInBytes = state.versionSizeInBytes,
+            versionSizeInBytes = content.versionSizeInBytes,
         )
 
         is DownloadStatusModel.InProgress.Paused -> {
@@ -101,7 +105,7 @@ private fun ChapterNotFoundContent(
                     Res.string.paused_progress,
                     downloadStatus.progressStr,
                 ),
-                versionSizeInBytes = state.versionSizeInBytes,
+                versionSizeInBytes = content.versionSizeInBytes,
             )
             DownloadButton(
                 text = stringResource(Res.string.resume_download),
@@ -111,7 +115,7 @@ private fun ChapterNotFoundContent(
         }
 
         DownloadStatusModel.NotStarted, DownloadStatusModel.Downloaded -> DownloadButton(
-            text = state.versionSizeInBytes?.let { sizeInBytes ->
+            text = content.versionSizeInBytes?.let { sizeInBytes ->
                 stringResource(
                     Res.string.download_version_with_size,
                     megabytesText(sizeInBytes),

@@ -1,6 +1,14 @@
 {
   "2.7.0": [
-    "Corrigido um travamento que impedia o app de abrir em alguns aparelhos. Nesses aparelhos, o download das versões da Bíblia agora acontece com o app aberto."
+    "Corrigido um travamento que impedia o app de abrir em alguns aparelhos. Nesses aparelhos, o download das versões da Bíblia agora acontece com o app aberto.",
+    "A tela de leitura foi redesenhada: o capítulo agora abre com o nome do livro e o número em destaque, o texto ganhou mais espaço entre as linhas e o botão de marcar como lido fica sempre à mão, junto das setas para o capítulo anterior e o próximo.",
+    "Toque em um versículo para selecioná-lo — pode marcar vários — e um painel aparece com tudo o que dá para fazer com o trecho.",
+    "Agora você pode destacar versículos em seis cores, ou criar a sua própria misturando a cor que quiser. Para tirar o destaque, é só tocar de novo na cor que já está aplicada; e segurando uma cor personalizada você escolhe se quer apagar só a cor da paleta ou também os destaques feitos com ela.",
+    "Você pode salvar versículos, escrever uma anotação sobre um trecho e copiar a passagem com a referência e a versão já prontas.",
+    "Compartilhar ficou melhor: além do texto, dá para gerar um cartão com o versículo para Stories e status do WhatsApp, escolhendo entre seis tipografias e oito fundos.",
+    "Seus destaques, versículos salvos e anotações ficam guardados na sua conta e aparecem em todos os seus aparelhos.",
+    "Um novo botão \"Aa\" na tela de leitura abre a aparência da leitura: ajuste o tamanho do texto, escolha entre nove fontes — incluindo uma pensada para quem tem dislexia — ligue a régua de leitura para manter o foco na linha e ative a leitura vertical para continuar no próximo capítulo sem sair da tela.",
+    "Em telas maiores, como tablets e computadores, o texto fica em uma coluna e as ferramentas do versículo selecionado aparecem em um painel ao lado, sem cobrir a leitura."
   ],
   "2.6.0": [
     "O pedido de permissão para notificações não aparece mais ao abrir o app: agora ele só é feito quando você começa a baixar uma versão da Bíblia, que é quando as notificações de progresso do download são usadas."

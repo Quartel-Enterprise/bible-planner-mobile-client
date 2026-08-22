@@ -9,6 +9,7 @@ enum class PaywallEntrySource {
     DAY_STUDY_DETAIL,
     NOTES_LIMIT,
     CHAT,
+    HIGHLIGHT_CUSTOM_COLOR,
     ;
 
     val key: String
