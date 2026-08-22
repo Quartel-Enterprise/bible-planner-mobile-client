@@ -6,10 +6,12 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -45,6 +47,7 @@ private val cornerRadius = 28.dp
 private val handleWidth = 36.dp
 private val handleHeight = 4.dp
 private val sheetElevation = 8.dp
+private const val NARROW_SHEET_MAX_HEIGHT_FRACTION = 0.9f
 
 /**
  * The selection tools: a bottom sheet over the chapter on a narrow window, a plain panel filling its
@@ -98,34 +101,37 @@ internal fun SelectionSheet(
             onEvent(VerseSelectionUiEvent.OnClearSelectionClick)
         }
     }
-    SelectionSurface(
-        modifier = modifier
-            .fillMaxWidth()
-            .onSizeChanged { size -> sheetHeightPx = size.height.toFloat() }
-            .offset { IntOffset(x = 0, y = dragOffset.value.roundToInt()) }
-            .draggable(
-                state = rememberDraggableState { delta ->
-                    coroutineScope.launch {
-                        dragOffset.snapTo((dragOffset.value + delta).coerceAtLeast(0f))
-                    }
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        SelectionSurface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = maxHeight * NARROW_SHEET_MAX_HEIGHT_FRACTION)
+                .onSizeChanged { size -> sheetHeightPx = size.height.toFloat() }
+                .offset { IntOffset(x = 0, y = dragOffset.value.roundToInt()) }
+                .draggable(
+                    state = rememberDraggableState { delta ->
+                        coroutineScope.launch {
+                            dragOffset.snapTo((dragOffset.value + delta).coerceAtLeast(0f))
+                        }
+                    },
+                    orientation = Orientation.Vertical,
+                    onDragStopped = { velocity ->
+                        val isDismissed = velocity > DISMISS_VELOCITY ||
+                            dragOffset.value > sheetHeightPx * DISMISS_HEIGHT_FRACTION
+                        if (isDismissed) dismiss() else dragOffset.animateTo(0f)
+                    },
+                ),
+            isWide = false,
+        ) {
+            DragHandle()
+            SelectionPanel(
+                selection = selection,
+                onEvent = { event ->
+                    if (event == VerseSelectionUiEvent.OnClearSelectionClick) dismiss() else onEvent(event)
                 },
-                orientation = Orientation.Vertical,
-                onDragStopped = { velocity ->
-                    val isDismissed = velocity > DISMISS_VELOCITY ||
-                        dragOffset.value > sheetHeightPx * DISMISS_HEIGHT_FRACTION
-                    if (isDismissed) dismiss() else dragOffset.animateTo(0f)
-                },
-            ),
-        isWide = false,
-    ) {
-        DragHandle()
-        SelectionPanel(
-            selection = selection,
-            onEvent = { event ->
-                if (event == VerseSelectionUiEvent.OnClearSelectionClick) dismiss() else onEvent(event)
-            },
-            platform = platform,
-        )
+                platform = platform,
+            )
+        }
     }
 }
 

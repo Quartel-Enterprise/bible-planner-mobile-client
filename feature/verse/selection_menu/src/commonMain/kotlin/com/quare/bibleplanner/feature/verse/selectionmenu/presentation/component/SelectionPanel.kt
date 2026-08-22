@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +38,10 @@ internal fun SelectionPanel(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         // The label is centred on the sheet, not on the space left over by the close button.
@@ -64,10 +69,11 @@ internal fun SelectionPanel(
             modifier = Modifier.fillMaxWidth(),
             customColors = selection.customColors,
             activeColor = selection.activeColor,
-            isCustomColorLocked = selection.isCustomColorLocked,
+            isProUser = selection.isProUser,
             onColorClick = { color -> onEvent(VerseSelectionUiEvent.OnHighlightColorClick(color)) },
             onCustomColorLongClick = { color -> onEvent(VerseSelectionUiEvent.OnCustomColorLongClick(color)) },
             onCustomColorPickerOpen = { onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen) },
+            onLockedColorClick = { onEvent(VerseSelectionUiEvent.OnLockedColorClick) },
         )
         if (selection.customColors.isNotEmpty()) {
             Text(

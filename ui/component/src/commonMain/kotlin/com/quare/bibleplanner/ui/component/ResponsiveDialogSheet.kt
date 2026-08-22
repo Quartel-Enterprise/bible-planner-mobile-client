@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +41,7 @@ import org.jetbrains.compose.resources.stringResource
 private val wideLayoutMinWidth = 600.dp
 private val centredTitleHorizontalPadding = 56.dp
 private val defaultCardMaxWidth = 460.dp
+private val cardVerticalMargin = 24.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,6 +60,7 @@ fun ResponsiveDialogSheet(
             ResponsiveDialogSheetCard(
                 onCloseClick = onCloseClick,
                 cardMaxWidth = cardMaxWidth,
+                cardMaxHeight = maxHeight - cardVerticalMargin * 2,
             ) {
                 CloseableContent(
                     onCloseClick = onCloseClick,
@@ -94,7 +99,7 @@ private fun CloseableContent(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
-        Column {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             if (title != null) {
                 DialogHeader(
                     title = title,
@@ -160,6 +165,7 @@ private fun DialogHeader(
 private fun ResponsiveDialogSheetCard(
     onCloseClick: (() -> Unit)?,
     cardMaxWidth: Dp,
+    cardMaxHeight: Dp,
     content: @Composable () -> Unit,
 ) {
     Box(
@@ -178,6 +184,7 @@ private fun ResponsiveDialogSheetCard(
                 .padding(24.dp)
                 .widthIn(max = cardMaxWidth)
                 .fillMaxWidth()
+                .heightIn(max = cardMaxHeight)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,

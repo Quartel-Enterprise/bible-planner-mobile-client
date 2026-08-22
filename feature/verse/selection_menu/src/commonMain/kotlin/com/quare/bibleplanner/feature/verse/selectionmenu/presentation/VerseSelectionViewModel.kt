@@ -111,7 +111,7 @@ internal class VerseSelectionViewModel(
                 isSelectionSaved = selection.verseNumbers.all { it in annotations.savedVerseNumbers },
                 noteId = selection.verseNumbers.firstNotNullOfOrNull { annotations.noteIdByVerse[it] },
                 customColorPicker = picker,
-                isCustomColorLocked = !isPro,
+                isProUser = isPro,
             )
         }
     }.stateIn(
@@ -140,6 +140,8 @@ internal class VerseSelectionViewModel(
             is VerseSelectionUiEvent.OnHighlightColorClick -> applyColor(event.color)
 
             VerseSelectionUiEvent.OnCustomColorPickerOpen -> openCustomColorPicker()
+
+            VerseSelectionUiEvent.OnLockedColorClick -> openColorPaywall()
 
             is VerseSelectionUiEvent.OnCustomColorChange -> {
                 customColorPicker.update {
@@ -178,16 +180,8 @@ internal class VerseSelectionViewModel(
     }
 
     private fun openCustomColorPicker() {
-        if (uiState.value?.isCustomColorLocked == true) {
-            trackEvent(
-                name = AnalyticsEventNames.HIGHLIGHT_CUSTOM_COLOR_LOCKED_CLICKED,
-                params = emptyMap(),
-            )
-            emitAction(
-                VerseSelectionUiAction.NavigateToRoute(
-                    PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
-                ),
-            )
+        if (uiState.value?.isProUser == false) {
+            openColorPaywall()
             return
         }
         trackEvent(
@@ -195,6 +189,18 @@ internal class VerseSelectionViewModel(
             params = emptyMap(),
         )
         customColorPicker.update { defaultCustomColor }
+    }
+
+    private fun openColorPaywall() {
+        trackEvent(
+            name = AnalyticsEventNames.HIGHLIGHT_CUSTOM_COLOR_LOCKED_CLICKED,
+            params = emptyMap(),
+        )
+        emitAction(
+            VerseSelectionUiAction.NavigateToRoute(
+                PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
+            ),
+        )
     }
 
     private fun applyColor(color: HighlightColor) {

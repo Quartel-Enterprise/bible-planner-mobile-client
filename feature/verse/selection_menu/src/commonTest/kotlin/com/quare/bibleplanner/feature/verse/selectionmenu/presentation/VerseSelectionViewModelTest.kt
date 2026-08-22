@@ -160,6 +160,26 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
+    fun `sends a free user to the paywall when a locked preset is tapped`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isPro = false)
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnLockedColorClick)
+        runCurrent()
+
+        // Then
+        assertTrue(appliedHighlights.isEmpty())
+        assertEquals(
+            expected = VerseSelectionUiAction.NavigateToRoute(
+                PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
+            ),
+            actual = actions.single(),
+        )
+        assertTrue(trackedEvents.contains("highlight_custom_color_locked_clicked"))
+    }
+
+    @Test
     fun `closing clears the selection and pops itself`() = runTest(testDispatcher) {
         // Given
         prepareScenario()

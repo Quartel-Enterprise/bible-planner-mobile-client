@@ -42,7 +42,9 @@ private val lockBadgeSize = 16.dp
 private val lockIconSize = 12.dp
 private val customSwatchRingWidth = 1.5.dp
 private val lockedCustomSwatchAlpha = 0.75f
+private val lockedPresetAlpha = 0.42f
 private const val CUSTOM_SWATCH_RING_ALPHA = 0.35f
+private const val PRESET_LOCK_ICON_ALPHA = 0.6f
 private val customSwatchBrush = Brush.sweepGradient(
     listOf(
         Color(0xFFFF6B6B),
@@ -76,10 +78,11 @@ private val lockedCustomSwatchBrush = Brush.sweepGradient(
 internal fun HighlightPaletteRow(
     customColors: List<HighlightColor.Custom>,
     activeColor: HighlightColor?,
-    isCustomColorLocked: Boolean,
+    isProUser: Boolean,
     onColorClick: (HighlightColor) -> Unit,
     onCustomColorLongClick: (HighlightColor.Custom) -> Unit,
     onCustomColorPickerOpen: () -> Unit,
+    onLockedColorClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -94,10 +97,12 @@ internal fun HighlightPaletteRow(
         ) {
             PresetHighlightColor.entries.forEach { preset ->
                 val color = HighlightColor.Preset(preset)
+                val isLocked = preset.requiresPro && !isProUser
                 ColorSwatch(
                     color = color.toSwatchColor(),
                     isActive = activeColor?.key == color.key,
-                    onClick = { onColorClick(color) },
+                    isLocked = isLocked,
+                    onClick = { if (isLocked) onLockedColorClick() else onColorClick(color) },
                 )
             }
             customColors.forEach { custom ->
@@ -111,6 +116,7 @@ internal fun HighlightPaletteRow(
                     onClick = null,
                 )
             }
+            val isCustomLocked = !isProUser
             val customColorLabel = stringResource(Res.string.custom_color)
             Box(
                 modifier = Modifier
@@ -123,12 +129,12 @@ internal fun HighlightPaletteRow(
                     modifier = Modifier
                         .size(swatchSize)
                         .clip(CircleShape)
-                        .background(if (isCustomColorLocked) lockedCustomSwatchBrush else customSwatchBrush)
+                        .background(if (isCustomLocked) lockedCustomSwatchBrush else customSwatchBrush)
                         .border(
                             width = customSwatchRingWidth,
                             color = Color.White.copy(alpha = CUSTOM_SWATCH_RING_ALPHA),
                             shape = CircleShape,
-                        ).alpha(if (isCustomColorLocked) lockedCustomSwatchAlpha else 1f),
+                        ).alpha(if (isCustomLocked) lockedCustomSwatchAlpha else 1f),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -138,7 +144,7 @@ internal fun HighlightPaletteRow(
                         tint = Color.White,
                     )
                 }
-                if (isCustomColorLocked) {
+                if (isCustomLocked) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -167,18 +173,27 @@ private fun ColorSwatch(
     isActive: Boolean,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    isLocked: Boolean = false,
 ) {
     Box(
         modifier = modifier
             .size(swatchSize)
             .clip(CircleShape)
             .background(color)
+            .alpha(if (isLocked) lockedPresetAlpha else 1f)
             .then(
                 onClick?.let { Modifier.combinedClickable(onClick = it) } ?: Modifier,
             ),
         contentAlignment = Alignment.Center,
     ) {
-        if (isActive) {
+        if (isLocked) {
+            Icon(
+                modifier = Modifier.size(checkSize),
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                tint = Color.Black.copy(alpha = PRESET_LOCK_ICON_ALPHA),
+            )
+        } else if (isActive) {
             Icon(
                 modifier = Modifier.size(checkSize),
                 imageVector = Icons.Default.Check,

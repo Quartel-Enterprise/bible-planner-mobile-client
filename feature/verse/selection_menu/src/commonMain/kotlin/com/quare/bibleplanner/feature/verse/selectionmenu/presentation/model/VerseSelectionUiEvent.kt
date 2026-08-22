@@ -33,6 +33,12 @@ sealed interface VerseSelectionUiEvent : UiEvent {
         )
     }
 
+    data object OnLockedColorClick : VerseSelectionUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.HIGHLIGHT_CUSTOM_COLOR_LOCKED_CLICKED,
+        )
+    }
+
     data class OnCustomColorChange(
         val hue: Int,
         val lightness: Int,

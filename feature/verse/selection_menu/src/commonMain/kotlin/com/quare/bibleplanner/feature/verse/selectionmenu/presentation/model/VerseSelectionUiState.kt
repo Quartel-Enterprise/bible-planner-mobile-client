@@ -11,5 +11,5 @@ data class VerseSelectionUiState(
     val isSelectionSaved: Boolean,
     val noteId: String?,
     val customColorPicker: CustomColorUiModel?,
-    val isCustomColorLocked: Boolean,
+    val isProUser: Boolean,
 )
