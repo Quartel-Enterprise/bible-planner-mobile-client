@@ -3,11 +3,14 @@ package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.ChapterModel
-import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
+import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.plan.ScheduledDayModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
@@ -27,9 +30,12 @@ import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenera
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
+import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
+import com.quare.bibleplanner.feature.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -72,23 +78,17 @@ private val testPassages = listOf(
         chapterRanges = "1-3",
     ),
 )
-private val testDay = DayModel(
+private val testDay = ScheduledDayModel(
     number = 1,
     passages = testPassages,
-    isRead = true,
-    totalVerses = 0,
-    readVerses = 0,
-    readTimestamp = null,
     plannedReadDate = testPlannedReadDate,
-    notes = null,
-    isToday = true,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DayReadingCompleteViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var actions: List<DayReadingCompleteUiAction>
-    private lateinit var trackedEvents: MutableList<String>
+    private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var coordinator: FakeDayStudyGenerationCoordinator
 
     @BeforeTest
@@ -109,7 +109,7 @@ internal class DayReadingCompleteViewModelTest {
         val state = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(state)
         assertEquals(DayTimingState.ON_TIME, state.timing)
-        assertEquals(StudyCtaState.FreeWithQuota(remaining = 2, limit = 3), state.ctaState)
+        assertEquals(StudyCtaState.FreeWithQuota(remaining = 2, limit = 3), state.ctaState.valueOrNull())
     }
 
     @Test
@@ -119,7 +119,7 @@ internal class DayReadingCompleteViewModelTest {
 
         val state = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(state)
-        assertEquals(StudyCtaState.FreeExhausted(limit = 3), state.ctaState)
+        assertEquals(StudyCtaState.FreeExhausted(limit = 3), state.ctaState.valueOrNull())
     }
 
     @Test
@@ -129,7 +129,7 @@ internal class DayReadingCompleteViewModelTest {
 
         val state = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(state)
-        assertEquals(StudyCtaState.Pro, state.ctaState)
+        assertEquals(StudyCtaState.Pro, state.ctaState.valueOrNull())
     }
 
     @Test
@@ -199,6 +199,98 @@ internal class DayReadingCompleteViewModelTest {
     }
 
     @Test
+    fun `shows the celebration while the quota is still loading`() = runTest(testDispatcher) {
+        // Given
+        val quotaGate = CompletableDeferred<Unit>()
+        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1, quotaGate = quotaGate)
+
+        // When
+        runCurrent()
+
+        // Then
+        val state = viewModel.uiState.value
+        assertIs<DayReadingCompleteUiState.Loaded>(state)
+        assertEquals(DayTimingState.ON_TIME, state.timing)
+        assertEquals(Loadable.Loading, state.ctaState)
+        assertTrue(trackedEvents.isEmpty())
+
+        // When
+        quotaGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        val loadedState = viewModel.uiState.value
+        assertIs<DayReadingCompleteUiState.Loaded>(loadedState)
+        assertEquals(
+            expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
+            actual = loadedState.ctaState.valueOrNull(),
+        )
+    }
+
+    @Test
+    fun `shows a prefetched quota before the fresh one answers`() = runTest(testDispatcher) {
+        // Given
+        val quotaGate = CompletableDeferred<Unit>()
+        val viewModel = viewModel(
+            isPro = false,
+            freeLimit = 3,
+            usedCount = 3,
+            quotaGate = quotaGate,
+            prefetchedQuota = DayStudyQuotaModel(
+                freeLimit = 3,
+                remainingFree = 2,
+                isUnlockedForDay = false,
+                hasLocalStudy = false,
+            ),
+        )
+
+        // When
+        runCurrent()
+
+        // Then
+        val state = viewModel.uiState.value
+        assertIs<DayReadingCompleteUiState.Loaded>(state)
+        assertEquals(
+            expected = StudyCtaState.FreeWithQuota(remaining = 2, limit = 3),
+            actual = state.ctaState.valueOrNull(),
+        )
+
+        // When
+        quotaGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        val refreshedState = viewModel.uiState.value
+        assertIs<DayReadingCompleteUiState.Loaded>(refreshedState)
+        assertEquals(
+            expected = StudyCtaState.FreeExhausted(limit = 3),
+            actual = refreshedState.ctaState.valueOrNull(),
+        )
+    }
+
+    @Test
+    fun `tracks the shown event with the day, timing and account state`() = runTest(testDispatcher) {
+        // Given
+        viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+
+        // When
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = "day_reading_complete_shown" to mapOf<String, Any>(
+                "plan_type" to "chronological",
+                "week_number" to 1,
+                "day_number" to 1,
+                "timing" to "on_time",
+                "account_state" to "free",
+                "chapter_count" to 3,
+            ),
+            actual = trackedEvents.single { (name, _) -> name == "day_reading_complete_shown" },
+        )
+    }
+
+    @Test
     fun `dismissing navigates back`() = runTest(testDispatcher) {
         val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
         runCurrent()
@@ -210,15 +302,17 @@ internal class DayReadingCompleteViewModelTest {
             expected = DayReadingCompleteUiAction.NavigateBack,
             actual = actions.last(),
         )
-        assertTrue(trackedEvents.contains("day_reading_complete_dismissed"))
+        assertTrue(trackedEvents.any { (name, _) -> name == "day_reading_complete_dismissed" })
     }
 
     private fun TestScope.viewModel(
         isPro: Boolean,
         freeLimit: Int,
         usedCount: Int,
-        day: DayModel? = testDay,
+        day: ScheduledDayModel? = testDay,
         isLoggedIn: Boolean = true,
+        quotaGate: CompletableDeferred<Unit>? = null,
+        prefetchedQuota: DayStudyQuotaModel? = null,
     ): DayReadingCompleteViewModel {
         trackedEvents = mutableListOf()
         coordinator = FakeDayStudyGenerationCoordinator()
@@ -229,6 +323,7 @@ internal class DayReadingCompleteViewModelTest {
                 isUnlocked = false,
                 cacheToken = "token",
             ),
+            statusGate = quotaGate,
         )
         val bibleRepository = FakeBibleRepository()
         val getIntRemoteConfig = object : GetIntRemoteConfig {
@@ -239,7 +334,7 @@ internal class DayReadingCompleteViewModelTest {
         }
         val viewModel = DayReadingCompleteViewModel(
             route = testRoute,
-            getDay = { _, _, _ -> day },
+            getScheduledDay = { _, _, _ -> day },
             getDayStudyQuota = GetDayStudyQuotaUseCase(
                 repository = dayStudyRepository,
                 bibleRepository = bibleRepository,
@@ -256,8 +351,20 @@ internal class DayReadingCompleteViewModelTest {
                 localDateTimeProvider = { LocalDateTime(testPlannedReadDate, LocalTime(12, 0)) },
             ),
             resolveStudyCtaState = ResolveStudyCtaStateUseCase(),
+            quotaPrefetchStore = DayStudyQuotaPrefetchStore().apply {
+                prefetchedQuota?.let {
+                    put(
+                        day = PlanDayLocationModel(
+                            weekNumber = testRoute.weekNumber,
+                            dayNumber = testRoute.dayNumber,
+                            readingPlanType = ReadingPlanType.valueOf(testRoute.readingPlanType),
+                        ),
+                        quota = it,
+                    )
+                }
+            },
             generationCoordinator = coordinator,
-            trackEvent = { name, _ -> trackedEvents += name },
+            trackEvent = { name, params -> trackedEvents += name to params },
         )
         actions = mutableListOf<DayReadingCompleteUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
@@ -267,6 +374,7 @@ internal class DayReadingCompleteViewModelTest {
 
     private class FakeDayStudyRepository(
         private val status: DayStudyStatusModel?,
+        private val statusGate: CompletableDeferred<Unit>?,
     ) : DayStudyRepository {
         override fun getDayStudy(
             passages: List<PassageModel>,
@@ -278,7 +386,10 @@ internal class DayReadingCompleteViewModelTest {
             passages: List<PassageModel>,
             version: String,
             languageCode: String,
-        ): DayStudyStatusModel? = status
+        ): DayStudyStatusModel? {
+            statusGate?.await()
+            return status
+        }
 
         override suspend fun hasCachedStudy(
             passages: List<PassageModel>,

@@ -31,7 +31,7 @@ the day's data and account/quota state finish loading.
 ## Notes
 
 - Destination impression is also covered by [screen_view](screen_view.md) (`day_reading_complete`,
-  `bottom_sheet`); this event exists separately because `screen_view` doesn't carry `timing` or
+  `responsive`); this event exists separately because `screen_view` doesn't carry `timing` or
   `account_state`.
 - Funnel: `day_reading_complete_shown` → [day_reading_complete_cta_clicked](day_reading_complete_cta_clicked.md)
   or [day_reading_complete_dismissed](day_reading_complete_dismissed.md).

@@ -8,7 +8,7 @@ celebration moment converts into an AI study versus being dismissed outright.
 
 ## When it fires
 
-User dismisses the sheet — "Depois eu vejo" / "Agora não" link, scrim tap, or system back.
+User dismisses the sheet — close button, scrim tap, or system back.
 
 ## Trigger source
 
@@ -22,5 +22,5 @@ None.
 ## Notes
 
 - Destination impression for the sheet itself is covered by [screen_view](screen_view.md)
-  (`day_reading_complete`, `bottom_sheet`).
+  (`day_reading_complete`, `responsive`).
 - Related: [day_reading_complete_shown](day_reading_complete_shown.md).

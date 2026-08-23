@@ -4,14 +4,16 @@ import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.mark_as_read
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
-import com.quare.bibleplanner.core.model.plan.DayModel
+import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
-import com.quare.bibleplanner.core.plan.domain.usecase.GetDay
+import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
+import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
@@ -28,8 +30,10 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -44,6 +48,19 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+private val dayReadingCompleteAction = ReadUiAction.NavigateToRoute(
+    route = DayReadingCompleteNavRoute(
+        dayNumber = 2,
+        weekNumber = 1,
+        readingPlanType = "CHRONOLOGICAL",
+    ),
+    replace = false,
+)
+private val completedDay = PlanDayLocationModel(
+    weekNumber = 1,
+    dayNumber = 2,
+    readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+)
 private val testChapter = ChapterRef(
     bibleVersionId = "ACF",
     bookId = BookId.GEN,
@@ -56,6 +73,7 @@ internal class ReadViewModelTest {
     private lateinit var actions: List<ReadUiAction>
     private lateinit var selectionStore: FakeVerseSelectionStore
     private lateinit var trackedEvents: MutableList<String>
+    private lateinit var prefetchedDays: MutableList<PlanDayLocationModel>
 
     @BeforeTest
     fun setUp() {
@@ -180,11 +198,8 @@ internal class ReadViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                weekNumber = 1,
-                dayNumber = 2,
-                readingPlanType = ReadingPlanType.CHRONOLOGICAL,
                 toggleWholeChapterReadStatus = { _, _ -> true },
-                getDay = { _, _, _ -> dayModel(isRead = true) },
+                getCompletedDayForChapter = { _, _ -> completedDay },
             )
 
             // When
@@ -193,27 +208,96 @@ internal class ReadViewModelTest {
 
             // Then
             assertEquals(
-                expected = ReadUiAction.NavigateToRoute(
-                    route = DayReadingCompleteNavRoute(
-                        dayNumber = 2,
-                        weekNumber = 1,
-                        readingPlanType = "CHRONOLOGICAL",
-                    ),
-                    replace = false,
-                ),
+                expected = dayReadingCompleteAction,
                 actual = actions.last(),
             )
         }
 
     @Test
+    fun `opens the day-complete sheet on the tap itself when the chapter is a known candidate`() =
+        runTest(testDispatcher) {
+            // Given
+            val writeGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                toggleWholeChapterReadStatus = { _, _ ->
+                    writeGate.await()
+                    true
+                },
+                getCompletedDayForChapter = { _, _ -> error("unused") },
+                dayCompletionCandidates = mapOf(
+                    ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3) to completedDay,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf(dayReadingCompleteAction),
+                actual = actions,
+            )
+
+            // When
+            writeGate.complete(Unit)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf(dayReadingCompleteAction),
+                actual = actions,
+            )
+        }
+
+    @Test
+    fun `prefetches the study quota of a day the reader is about to finish`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            dayCompletionCandidates = mapOf(
+                ChapterLocationModel(bookId = BookId.GEN, chapterNumber = 3) to completedDay,
+            ),
+        )
+
+        // When
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf(completedDay),
+            actual = prefetchedDays,
+        )
+    }
+
+    @Test
+    fun `looks the day up by the chapter that was marked read`() = runTest(testDispatcher) {
+        // Given
+        var lookedUpChapter: Pair<BookId, Int>? = null
+        prepareScenario(
+            toggleWholeChapterReadStatus = { _, _ -> true },
+            getCompletedDayForChapter = { bookId, chapterNumber ->
+                lookedUpChapter = bookId to chapterNumber
+                null
+            },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.EXO, 7))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = BookId.EXO to 7,
+            actual = lookedUpChapter,
+        )
+    }
+
+    @Test
     fun `does not open the sheet while the day still has unread chapters`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            weekNumber = 1,
-            dayNumber = 2,
-            readingPlanType = ReadingPlanType.CHRONOLOGICAL,
             toggleWholeChapterReadStatus = { _, _ -> true },
-            getDay = { _, _, _ -> dayModel(isRead = false) },
+            getCompletedDayForChapter = { _, _ -> null },
         )
 
         // When
@@ -228,11 +312,8 @@ internal class ReadViewModelTest {
     fun `does not open the sheet when the chapter is unmarked instead of marked read`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            weekNumber = 1,
-            dayNumber = 2,
-            readingPlanType = ReadingPlanType.CHRONOLOGICAL,
             toggleWholeChapterReadStatus = { _, _ -> false },
-            getDay = { _, _, _ -> error("unused") },
+            getCompletedDayForChapter = { _, _ -> error("unused") },
         )
 
         // When
@@ -242,37 +323,6 @@ internal class ReadViewModelTest {
         // Then
         assertTrue(actions.isEmpty())
     }
-
-    @Test
-    fun `does not open the sheet when the route has no reading-plan day context`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            weekNumber = null,
-            dayNumber = null,
-            readingPlanType = null,
-            toggleWholeChapterReadStatus = { _, _ -> true },
-            getDay = { _, _, _ -> error("unused") },
-        )
-
-        // When
-        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
-        runCurrent()
-
-        // Then
-        assertTrue(actions.isEmpty())
-    }
-
-    private fun dayModel(isRead: Boolean): DayModel = DayModel(
-        number = 2,
-        passages = emptyList(),
-        isRead = isRead,
-        totalVerses = 0,
-        readVerses = 0,
-        readTimestamp = null,
-        plannedReadDate = null,
-        notes = null,
-        isToday = true,
-    )
 
     private fun selectedVerseNumbers(): List<Int> = (viewModel.uiState.value.content as ReadContentUiState.Success)
         .chapters
@@ -287,17 +337,18 @@ internal class ReadViewModelTest {
     )
 
     private fun TestScope.prepareScenario(
-        weekNumber: Int? = null,
-        dayNumber: Int? = null,
-        readingPlanType: ReadingPlanType? = null,
         toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus = ToggleWholeChapterReadStatus {
             _,
             _,
             ->
             error("unused")
         },
-        getDay: GetDay = GetDay { _, _, _ -> error("unused") },
+        getCompletedDayForChapter: GetCompletedDayForChapter = GetCompletedDayForChapter { _, _ ->
+            error("unused")
+        },
+        dayCompletionCandidates: Map<ChapterLocationModel, PlanDayLocationModel> = emptyMap(),
     ) {
+        prefetchedDays = mutableListOf()
         trackedEvents = mutableListOf()
         selectionStore = FakeVerseSelectionStore()
         val bookStringResource = Res.string.mark_as_read
@@ -349,14 +400,13 @@ internal class ReadViewModelTest {
                 chapterNumber = 3,
                 isChapterRead = false,
                 isFromBookDetails = false,
-                weekNumber = weekNumber,
-                dayNumber = dayNumber,
-                readingPlanType = readingPlanType?.name,
             ),
             observeReadData = FakeObserveReadData(data),
             toggleWholeChapterReadStatus = toggleWholeChapterReadStatus,
             isWholeChapterRead = { _, _ -> error("unused") },
-            getDay = getDay,
+            getCompletedDayForChapter = getCompletedDayForChapter,
+            observeDayCompletionCandidates = ObserveDayCompletionCandidates { flowOf(dayCompletionCandidates) },
+            prefetchDayStudyQuota = { day -> prefetchedDays += day },
             requestLoginNudgeIfNeeded = { },
             downloaderFacade = ThrowingBibleVersionDownloaderFacade,
             getSelectedVersionIdFlow = { error("unused") },

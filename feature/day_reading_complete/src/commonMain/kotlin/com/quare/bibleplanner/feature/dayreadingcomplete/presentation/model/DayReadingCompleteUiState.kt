@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model
 
+import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
@@ -14,7 +15,7 @@ sealed interface DayReadingCompleteUiState {
         val plannedReadDate: LocalDate?,
         val passages: List<PassageModel>,
         val chapterCount: Int,
-        val ctaState: StudyCtaState,
+        val ctaState: Loadable<StudyCtaState>,
         val language: Language,
     ) : DayReadingCompleteUiState
 }

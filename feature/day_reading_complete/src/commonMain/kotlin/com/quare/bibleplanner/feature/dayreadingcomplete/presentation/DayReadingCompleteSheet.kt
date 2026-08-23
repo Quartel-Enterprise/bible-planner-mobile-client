@@ -4,35 +4,35 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.TaskAlt
+import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import bibleplanner.feature.day_reading_complete.generated.resources.Res
@@ -42,15 +42,12 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_card_subtitle
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_card_title_other_day
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_card_title_today
-import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_close
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_generate_other_day
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_generate_today
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_subscribe
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_view_other_day
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_view_today
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_day_label
-import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_dismiss_default
-import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_dismiss_exhausted
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_kicker_other_day
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_kicker_today
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_quota_exhausted
@@ -59,123 +56,198 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_on_time
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_overdue
 import com.quare.bibleplanner.core.books.util.toReadingLabel
+import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
-import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-private val checkIconSize = 64.dp
-private val checkIconInnerSize = 34.dp
-private val cardIconSize = 40.dp
+private val checkIconBoxSize = 52.dp
+private val checkIconSize = 28.dp
+private val cardIconSize = 22.dp
+private val cardCornerRadius = 16.dp
+private val hintIconSize = 14.dp
+private val bodyMaxWidth = 310.dp
+private val ctaHeight = 50.dp
+private val eyebrowShimmerWidth = 190.dp
+private val eyebrowShimmerHeight = 12.dp
+private val titleShimmerWidth = 240.dp
+private val titleShimmerHeight = 20.dp
+private val bodyShimmerHeight = 14.dp
+private val cardShimmerHeight = 72.dp
+private val hintShimmerWidth = 210.dp
+private val hintShimmerHeight = 12.dp
+private val bodyShimmerWidthFractions = listOf(1f, 0.94f, 0.62f)
+private val titleFontSize = 19.sp
+private val eyebrowLetterSpacing = 0.5.sp
+private const val SOFT_PRIMARY_ALPHA = 0.12f
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun DayReadingCompleteBottomSheet(
+internal fun DayReadingCompleteSheet(
     uiState: DayReadingCompleteUiState,
     onEvent: (DayReadingCompleteUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
-        onDismissRequest = { onEvent(DayReadingCompleteUiEvent.OnDismiss) },
-        sheetState = sheetState,
-    ) {
-        when (uiState) {
-            DayReadingCompleteUiState.Loading -> LoadingContent()
-            is DayReadingCompleteUiState.Loaded -> LoadedContent(uiState, onEvent)
+    when (uiState) {
+        DayReadingCompleteUiState.Loading -> LoadingContent(modifier)
+
+        is DayReadingCompleteUiState.Loaded -> LoadedContent(
+            state = uiState,
+            onEvent = onEvent,
+            modifier = modifier,
+        )
+    }
+}
+
+/** The loaded layout with the copy taken out, so nothing moves when the day arrives. */
+@Composable
+private fun LoadingContent(modifier: Modifier = Modifier) {
+    SheetColumn(modifier = modifier) {
+        ShimmerBox(
+            modifier = Modifier.size(checkIconBoxSize),
+            shape = CircleShape,
+        )
+        VerticalSpacer(12)
+        ShimmerLine(width = eyebrowShimmerWidth, height = eyebrowShimmerHeight)
+        VerticalSpacer(8)
+        ShimmerLine(width = titleShimmerWidth, height = titleShimmerHeight)
+        VerticalSpacer(12)
+        bodyShimmerWidthFractions.forEachIndexed { index, fraction ->
+            if (index > 0) VerticalSpacer(8)
+            ShimmerBox(
+                modifier = Modifier
+                    .widthIn(max = bodyMaxWidth)
+                    .fillMaxWidth(fraction)
+                    .height(bodyShimmerHeight),
+            )
         }
+        VerticalSpacer(20)
+        ShimmerBox(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(cardShimmerHeight),
+            shape = RoundedCornerShape(cardCornerRadius),
+        )
+        VerticalSpacer(14)
+        ShimmerBox(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(ctaHeight),
+            shape = CircleShape,
+        )
+        VerticalSpacer(14)
+        ShimmerLine(width = hintShimmerWidth, height = hintShimmerHeight)
     }
 }
 
 @Composable
-private fun LoadingContent() {
-    Box(
+private fun ShimmerLine(
+    width: Dp,
+    height: Dp,
+) {
+    ShimmerBox(
         modifier = Modifier
+            .width(width)
+            .height(height),
+    )
+}
+
+@Composable
+private fun SheetColumn(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
             .fillMaxWidth()
-            .height(320.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
+            .padding(horizontal = 22.dp)
+            .padding(top = 12.dp, bottom = 26.dp),
+        content = content,
+    )
 }
 
 @Composable
 private fun LoadedContent(
     state: DayReadingCompleteUiState.Loaded,
     onEvent: (DayReadingCompleteUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val isToday = state.timing == DayTimingState.ON_TIME
     val dayLabel = state.plannedReadDate?.takeIf { !isToday }?.toDayLabel(state.language)
     val readingLabel = state.passages.toReadingLabel()
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .padding(top = 8.dp, bottom = 32.dp)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            CheckIcon()
-            VerticalSpacer(20.dp)
-            Text(
-                text = kickerText(state.timing, dayLabel),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.6.sp,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
+    SheetColumn(modifier = modifier) {
+        CheckIcon()
+        VerticalSpacer(12)
+        Text(
+            text = kickerText(state.timing, dayLabel),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = eyebrowLetterSpacing,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center,
+        )
+        VerticalSpacer(6)
+        Text(
+            text = titleText(state, readingLabel, dayLabel),
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = titleFontSize,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        VerticalSpacer(8)
+        Text(
+            modifier = Modifier.widthIn(max = bodyMaxWidth),
+            text = bodyText(state, dayLabel),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        VerticalSpacer(16)
+        StudyCard(
+            state = state,
+            isToday = isToday,
+            dayLabel = dayLabel,
+            readingLabel = readingLabel,
+        )
+        VerticalSpacer(14)
+        val ctaState = state.ctaState.valueOrNull()
+        if (ctaState == null) {
+            ShimmerBox(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(ctaHeight),
+                shape = CircleShape,
             )
-            VerticalSpacer(8.dp)
-            Text(
-                text = titleText(state, readingLabel, dayLabel),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            VerticalSpacer(12.dp)
-            Text(
-                text = bodyText(state, dayLabel),
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            VerticalSpacer(24.dp)
-            StudyCard(state = state, isToday = isToday, dayLabel = dayLabel, readingLabel = readingLabel)
-            VerticalSpacer(20.dp)
+        } else {
             Button(
                 onClick = { onEvent(DayReadingCompleteUiEvent.OnCtaClick(readingLabel)) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(ctaHeight),
             ) {
-                Text(text = ctaText(state.ctaState, isToday))
-            }
-            hintText(state.ctaState)?.let { hint ->
-                VerticalSpacer(8.dp)
-                Text(
-                    text = hint,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                Icon(
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                    imageVector = ctaState.toIcon(),
+                    contentDescription = null,
                 )
-            }
-            VerticalSpacer(12.dp)
-            TextButton(onClick = { onEvent(DayReadingCompleteUiEvent.OnDismiss) }) {
-                Text(text = dismissText(state.ctaState))
+                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+                Text(text = ctaText(ctaState, isToday))
             }
         }
-        CommonIconButton(
-            imageVector = Icons.Rounded.Close,
-            contentDescription = stringResource(Res.string.day_reading_complete_close),
-            onClick = { onEvent(DayReadingCompleteUiEvent.OnDismiss) },
-            modifier = Modifier.align(Alignment.TopEnd),
-        )
+        hintText(ctaState)?.let { hint ->
+            VerticalSpacer(10)
+            QuotaHint(hint)
+        }
     }
 }
 
@@ -183,17 +255,17 @@ private fun LoadedContent(
 private fun CheckIcon() {
     Box(
         modifier = Modifier
-            .size(checkIconSize)
+            .size(checkIconBoxSize)
             .background(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = SOFT_PRIMARY_ALPHA),
                 shape = CircleShape,
             ),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = Icons.Rounded.CheckCircle,
+            imageVector = Icons.Rounded.TaskAlt,
             contentDescription = null,
-            modifier = Modifier.size(checkIconInnerSize),
+            modifier = Modifier.size(checkIconSize),
             tint = MaterialTheme.colorScheme.primary,
         )
     }
@@ -206,51 +278,60 @@ private fun StudyCard(
     dayLabel: String?,
     readingLabel: String,
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(cardCornerRadius))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(cardIconSize)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                        shape = RoundedCornerShape(12.dp),
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.AutoAwesome,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    text = cardTitleText(isToday, dayLabel),
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    text = pluralStringResource(
-                        Res.plurals.day_reading_complete_card_subtitle,
-                        state.chapterCount,
-                        readingLabel,
-                        state.chapterCount,
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+        Icon(
+            imageVector = Icons.Rounded.AutoAwesome,
+            contentDescription = null,
+            modifier = Modifier.size(cardIconSize),
+            tint = MaterialTheme.colorScheme.primary,
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                text = cardTitleText(isToday, dayLabel),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = pluralStringResource(
+                    Res.plurals.day_reading_complete_card_subtitle,
+                    state.chapterCount,
+                    readingLabel,
+                    state.chapterCount,
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
+    }
+}
+
+@Composable
+private fun QuotaHint(hint: String) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Bolt,
+            contentDescription = null,
+            modifier = Modifier.size(hintIconSize),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = hint,
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -306,6 +387,12 @@ private fun cardTitleText(
     stringResource(Res.string.day_reading_complete_card_title_other_day, dayLabel)
 }
 
+private fun StudyCtaState.toIcon(): ImageVector = if (this is StudyCtaState.FreeExhausted) {
+    Icons.Rounded.WorkspacePremium
+} else {
+    Icons.Rounded.AutoAwesome
+}
+
 @Composable
 private fun ctaText(
     ctaState: StudyCtaState,
@@ -327,7 +414,7 @@ private fun ctaText(
 }
 
 @Composable
-private fun hintText(ctaState: StudyCtaState): String? = when (ctaState) {
+private fun hintText(ctaState: StudyCtaState?): String? = when (ctaState) {
     is StudyCtaState.FreeWithQuota -> pluralStringResource(
         Res.plurals.day_reading_complete_quota_hint,
         ctaState.remaining,
@@ -341,14 +428,7 @@ private fun hintText(ctaState: StudyCtaState): String? = when (ctaState) {
         ctaState.limit,
     )
 
-    StudyCtaState.Pro -> null
-}
-
-@Composable
-private fun dismissText(ctaState: StudyCtaState): String = if (ctaState is StudyCtaState.FreeExhausted) {
-    stringResource(Res.string.day_reading_complete_dismiss_exhausted)
-} else {
-    stringResource(Res.string.day_reading_complete_dismiss_default)
+    StudyCtaState.Pro, null -> null
 }
 
 @Composable

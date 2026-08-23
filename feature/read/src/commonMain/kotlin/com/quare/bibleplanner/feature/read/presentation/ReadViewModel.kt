@@ -8,14 +8,16 @@ import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadSt
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
-import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
-import com.quare.bibleplanner.core.plan.domain.usecase.GetDay
+import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
+import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -25,6 +27,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ClearVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleVerseSelection
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.PrefetchDayStudyQuota
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
@@ -61,11 +64,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private data class ChapterKey(
-    val bookId: BookId,
-    val chapterNumber: Int,
-)
-
 /**
  * The reader owns the chapter and the tapping; what can be *done* with the tapped verses belongs to
  * the selection panel, which is its own entry. The two meet at the shared selection store: this
@@ -77,7 +75,9 @@ class ReadViewModel(
     private val observeReadData: ObserveReadData,
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus,
     private val isWholeChapterRead: IsWholeChapterRead,
-    private val getDay: GetDay,
+    private val getCompletedDayForChapter: GetCompletedDayForChapter,
+    private val observeDayCompletionCandidates: ObserveDayCompletionCandidates,
+    private val prefetchDayStudyQuota: PrefetchDayStudyQuota,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
@@ -108,10 +108,28 @@ class ReadViewModel(
      * commits and re-emits. An entry is dropped once [dataFlow] reports the same value, so a write
      * that lands on a different value than guessed (or never lands) never leaves the UI stuck.
      */
-    private val pendingReadOverrides = MutableStateFlow<Map<ChapterKey, Boolean>>(emptyMap())
+    private val pendingReadOverrides = MutableStateFlow<Map<ChapterLocationModel, Boolean>>(emptyMap())
 
     private val _uiAction = MutableSharedFlow<ReadUiAction>()
     val uiAction: SharedFlow<ReadUiAction> = _uiAction
+
+    /**
+     * Which chapters on screen would finish a reading-plan day the moment they are marked read, kept
+     * up to date while the reader is open. Scoring the plan costs a trip through the whole read
+     * state, so it is paid while the user reads rather than on the tap that ends the day.
+     */
+    private val dayCompletionCandidates: StateFlow<Map<ChapterLocationModel, PlanDayLocationModel>> =
+        appendedChapters
+            .map { appended ->
+                listOf(ChapterLocationModel(bookId = bookId, chapterNumber = route.chapterNumber)) +
+                    appended.map { ChapterLocationModel(it.bookId, it.chapterNumber) }
+            }.distinctUntilChanged()
+            .flatMapLatest(observeDayCompletionCandidates::invoke)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = emptyMap(),
+            )
 
     private val dataFlow = combine(
         appendedChapters,
@@ -148,6 +166,7 @@ class ReadViewModel(
     )
 
     init {
+        prefetchStudyQuotaForDaysAboutToFinish()
         observeVerticalReading()
         /*
          * Pushing is driven by the store rather than by the tap so it survives any other way the
@@ -166,6 +185,21 @@ class ReadViewModel(
                     replace = false,
                 ),
             )
+        }
+    }
+
+    /**
+     * The day's study quota is a network round trip, so it is asked for while the reader is still on
+     * the chapter that would end the day. By the time the celebration opens, the answer is in hand.
+     */
+    private fun prefetchStudyQuotaForDaysAboutToFinish() {
+        observe(
+            dayCompletionCandidates
+                .map { candidates -> candidates.values.toSet() }
+                .distinctUntilChanged()
+                .filter { days -> days.isNotEmpty() },
+        ) { days ->
+            days.forEach { day -> prefetchDayStudyQuota(day) }
         }
     }
 
@@ -245,8 +279,11 @@ class ReadViewModel(
     }
 
     private fun toggleReadStatus(event: ReadUiEvent.ToggleReadStatus) {
-        val key = ChapterKey(bookId = event.bookId, chapterNumber = event.chapterNumber)
-        pendingReadOverrides.update { it + (key to !isCurrentlyRead(key)) }
+        val key = ChapterLocationModel(bookId = event.bookId, chapterNumber = event.chapterNumber)
+        val willBeRead = !isCurrentlyRead(key)
+        pendingReadOverrides.update { it + (key to willBeRead) }
+        val completedDay = dayCompletionCandidates.value[key]?.takeIf { willBeRead }
+        if (completedDay != null) emitAction(completedDay.toNavigationAction())
         viewModelScope.launch {
             val isRead = toggleWholeChapterReadStatus(
                 bookId = event.bookId,
@@ -263,11 +300,16 @@ class ReadViewModel(
                 ),
             )
             requestLoginNudgeIfNeeded()
-            if (isRead) checkDayCompletion()
+            if (isRead && completedDay == null) {
+                checkDayCompletion(
+                    bookId = event.bookId,
+                    chapterNumber = event.chapterNumber,
+                )
+            }
         }
     }
 
-    private fun isCurrentlyRead(key: ChapterKey): Boolean {
+    private fun isCurrentlyRead(key: ChapterLocationModel): Boolean {
         val state = uiState.value
         if (state.header.bookId == key.bookId && state.header.chapterNumber == key.chapterNumber) {
             return state.header.isChapterRead
@@ -279,28 +321,32 @@ class ReadViewModel(
             ?: false
     }
 
-    private suspend fun checkDayCompletion() {
-        val weekNumber = route.weekNumber ?: return
-        val dayNumber = route.dayNumber ?: return
-        val readingPlanType = route.readingPlanType ?: return
-        val day = getDay(
-            weekNumber = weekNumber,
-            dayNumber = dayNumber,
-            readingPlanType = ReadingPlanType.valueOf(readingPlanType),
-        )
-        if (day?.isRead == true) {
-            _uiAction.emit(
-                ReadUiAction.NavigateToRoute(
-                    route = DayReadingCompleteNavRoute(
-                        dayNumber = dayNumber,
-                        weekNumber = weekNumber,
-                        readingPlanType = readingPlanType,
-                    ),
-                    replace = false,
-                ),
-            )
-        }
+    /**
+     * The safety net for a tap that beat [dayCompletionCandidates] to it — a cold screen, or a
+     * chapter that was not on screen. It reaches the same sheet, just after the write instead of
+     * with it. The reader never learns which plan day it was opened for, so either way the day is
+     * looked up from the chapter itself: any chapter can be the one that finishes a day, no matter
+     * which screen led here.
+     */
+    private suspend fun checkDayCompletion(
+        bookId: BookId,
+        chapterNumber: Int,
+    ) {
+        val day = getCompletedDayForChapter(
+            bookId = bookId,
+            chapterNumber = chapterNumber,
+        ) ?: return
+        _uiAction.emit(day.toNavigationAction())
     }
+
+    private fun PlanDayLocationModel.toNavigationAction(): ReadUiAction.NavigateToRoute = ReadUiAction.NavigateToRoute(
+        route = DayReadingCompleteNavRoute(
+            dayNumber = dayNumber,
+            weekNumber = weekNumber,
+            readingPlanType = readingPlanType.name,
+        ),
+        replace = false,
+    )
 
     private fun navigateToSuggestion(suggestion: ReadNavigationSuggestionModel) {
         trackEvent(
@@ -322,9 +368,6 @@ class ReadViewModel(
                             bookId = suggestion.bookId,
                         ),
                         isFromBookDetails = route.isFromBookDetails,
-                        weekNumber = route.weekNumber,
-                        dayNumber = route.dayNumber,
-                        readingPlanType = route.readingPlanType,
                     ),
                     replace = true,
                 ),
@@ -397,35 +440,38 @@ class ReadViewModel(
     private fun ReadDataUiModel.toUiState(
         settings: ReaderSettingsModel,
         selection: VerseSelection?,
-        overrides: Map<ChapterKey, Boolean>,
+        overrides: Map<ChapterLocationModel, Boolean>,
     ): ReadUiState = ReadUiState(
         header = header.withReadOverride(overrides),
         content = content.withSelection(selection).withReadOverrides(overrides),
         settings = settings,
     )
 
-    private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterKey, Boolean>): ReadHeaderUiModel {
-        val override = overrides[ChapterKey(bookId = bookId, chapterNumber = chapterNumber)] ?: return this
+    private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterLocationModel, Boolean>): ReadHeaderUiModel {
+        val override = overrides[ChapterLocationModel(bookId = bookId, chapterNumber = chapterNumber)] ?: return this
         return copy(isChapterRead = override)
     }
 
-    private fun ReadContentUiState.withReadOverrides(overrides: Map<ChapterKey, Boolean>): ReadContentUiState =
-        if (this !is ReadContentUiState.Success || overrides.isEmpty()) {
-            this
-        } else {
-            copy(chapters = chapters.map { chapter -> chapter.withReadOverride(overrides) })
-        }
+    private fun ReadContentUiState.withReadOverrides(
+        overrides: Map<ChapterLocationModel, Boolean>,
+    ): ReadContentUiState = if (this !is ReadContentUiState.Success || overrides.isEmpty()) {
+        this
+    } else {
+        copy(chapters = chapters.map { chapter -> chapter.withReadOverride(overrides) })
+    }
 
-    private fun ReadChapterUiModel.withReadOverride(overrides: Map<ChapterKey, Boolean>): ReadChapterUiModel {
-        val key = ChapterKey(bookId = chapter.bookId, chapterNumber = chapter.chapterNumber)
+    private fun ReadChapterUiModel.withReadOverride(overrides: Map<ChapterLocationModel, Boolean>): ReadChapterUiModel {
+        val key = ChapterLocationModel(bookId = chapter.bookId, chapterNumber = chapter.chapterNumber)
         val override = overrides[key] ?: return this
         return copy(isRead = override)
     }
 
-    private fun Map<ChapterKey, Boolean>.dropReconciledOverrides(data: ReadDataUiModel): Map<ChapterKey, Boolean> =
+    private fun Map<ChapterLocationModel, Boolean>.dropReconciledOverrides(
+        data: ReadDataUiModel,
+    ): Map<ChapterLocationModel, Boolean> =
         if (isEmpty()) this else filterNot { (key, override) -> data.isAuthoritativelyRead(key) == override }
 
-    private fun ReadDataUiModel.isAuthoritativelyRead(key: ChapterKey): Boolean? {
+    private fun ReadDataUiModel.isAuthoritativelyRead(key: ChapterLocationModel): Boolean? {
         if (header.bookId == key.bookId && header.chapterNumber == key.chapterNumber) return header.isChapterRead
         return (content as? ReadContentUiState.Success)
             ?.chapters

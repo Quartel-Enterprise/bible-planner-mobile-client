@@ -4,12 +4,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiAction
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel.DayReadingCompleteViewModel
+import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
@@ -24,7 +27,9 @@ fun EntryProviderScope<NavKey>.dayReadingComplete(
     onNavigateBack: () -> Unit,
     onNavigateReplacingTop: (NavKey) -> Unit,
 ) {
-    entry<DayReadingCompleteNavRoute>(metadata = DialogSceneStrategy.dialog()) { route ->
+    entry<DayReadingCompleteNavRoute>(
+        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+    ) { route ->
         val viewModel = koinViewModel<DayReadingCompleteViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
 
@@ -35,10 +40,14 @@ fun EntryProviderScope<NavKey>.dayReadingComplete(
             onNavigateReplacingTop = onNavigateReplacingTop,
         )
 
-        DayReadingCompleteBottomSheet(
-            uiState = uiState,
-            onEvent = viewModel::onEvent,
-        )
+        ResponsiveDialogSheet(
+            onCloseClick = { viewModel.onEvent(DayReadingCompleteUiEvent.OnDismiss) },
+        ) {
+            DayReadingCompleteSheet(
+                uiState = uiState,
+                onEvent = viewModel::onEvent,
+            )
+        }
     }
 }
 

@@ -3,8 +3,11 @@ package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_reading_complete.generated.resources.Res
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_offline_message
+import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
+import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
@@ -12,7 +15,7 @@ import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.toDayNavRoute
-import com.quare.bibleplanner.core.plan.domain.usecase.GetDay
+import com.quare.bibleplanner.core.plan.domain.usecase.GetScheduledDay
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.toPlanTypeAnalyticsValue
@@ -29,6 +32,8 @@ import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayR
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
 import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
+import com.quare.bibleplanner.feature.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,7 +48,7 @@ import kotlinx.coroutines.launch
 
 class DayReadingCompleteViewModel(
     private val route: DayReadingCompleteNavRoute,
-    private val getDay: GetDay,
+    private val getScheduledDay: GetScheduledDay,
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,
     private val getAppLanguageFlow: GetAppLanguageFlow,
     private val observeIsProUser: ObserveIsProUser,
@@ -51,10 +56,16 @@ class DayReadingCompleteViewModel(
     private val isConnected: IsConnected,
     private val classifyDayTiming: ClassifyDayTimingUseCase,
     private val resolveStudyCtaState: ResolveStudyCtaStateUseCase,
+    private val quotaPrefetchStore: DayStudyQuotaPrefetchStore,
     private val generationCoordinator: DayStudyGenerationCoordinator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayReadingCompleteUiEvent>(trackEvent) {
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
+    private val dayLocation = PlanDayLocationModel(
+        weekNumber = route.weekNumber,
+        dayNumber = route.dayNumber,
+        readingPlanType = readingPlanType,
+    )
     private val _uiState = MutableStateFlow<DayReadingCompleteUiState>(DayReadingCompleteUiState.Loading)
     val uiState: StateFlow<DayReadingCompleteUiState> = _uiState.asStateFlow()
 
@@ -75,9 +86,14 @@ class DayReadingCompleteViewModel(
         }
     }
 
+    /**
+     * The celebration is shown as soon as the day is known; only the call to action waits for the
+     * quota, which needs the network. Blocking the whole sheet on it would trade a moment the reader
+     * earned for a spinner.
+     */
     private fun loadDay() {
         viewModelScope.launch {
-            val day = getDay(
+            val day = getScheduledDay(
                 weekNumber = route.weekNumber,
                 dayNumber = route.dayNumber,
                 readingPlanType = readingPlanType,
@@ -87,27 +103,62 @@ class DayReadingCompleteViewModel(
             val timing = classifyDayTiming(day.plannedReadDate)
             val chapterCount = day.passages.sumOf { it.chapters.size }
             val language = getAppLanguageFlow().first()
+            _uiState.update {
+                DayReadingCompleteUiState.Loaded(
+                    timing = timing,
+                    plannedReadDate = day.plannedReadDate,
+                    passages = day.passages,
+                    chapterCount = chapterCount,
+                    ctaState = Loadable.Loading,
+                    language = language,
+                )
+            }
             observeIsProUser().collectLatest { isPro ->
-                val quota = getDayStudyQuota(day.passages)
-                val ctaState = resolveStudyCtaState(isPro, quota)
-                _uiState.update {
-                    DayReadingCompleteUiState.Loaded(
+                quotaPrefetchStore.findQuota(dayLocation)?.let { prefetchedQuota ->
+                    showCta(
+                        quota = prefetchedQuota,
+                        isPro = isPro,
                         timing = timing,
-                        plannedReadDate = day.plannedReadDate,
-                        passages = day.passages,
                         chapterCount = chapterCount,
-                        ctaState = ctaState,
-                        language = language,
                     )
                 }
-                trackShownOnce(timing, ctaState)
+                showCta(
+                    quota = getDayStudyQuota(day.passages),
+                    isPro = isPro,
+                    timing = timing,
+                    chapterCount = chapterCount,
+                )
             }
         }
+    }
+
+    /**
+     * A prefetched quota is a head start, not the truth, so the fresh one always lands on top of it.
+     * What was tracked is what the reader actually saw first.
+     */
+    private fun showCta(
+        quota: DayStudyQuotaModel,
+        isPro: Boolean,
+        timing: DayTimingState,
+        chapterCount: Int,
+    ) {
+        val ctaState = resolveStudyCtaState(isPro, quota)
+        _uiState.update { state ->
+            (state as? DayReadingCompleteUiState.Loaded)
+                ?.copy(ctaState = Loadable.Loaded(ctaState))
+                ?: state
+        }
+        trackShownOnce(
+            timing = timing,
+            ctaState = ctaState,
+            chapterCount = chapterCount,
+        )
     }
 
     private fun trackShownOnce(
         timing: DayTimingState,
         ctaState: StudyCtaState,
+        chapterCount: Int,
     ) {
         if (hasTrackedShown) return
         hasTrackedShown = true
@@ -119,20 +170,24 @@ class DayReadingCompleteViewModel(
                 AnalyticsParams.DAY_NUMBER to route.dayNumber,
                 AnalyticsParams.TIMING to timing.name.lowercase(),
                 AnalyticsParams.ACCOUNT_STATE to ctaState.toAnalyticsValue(),
+                AnalyticsParams.CHAPTER_COUNT to chapterCount,
             ),
         )
     }
 
     private fun onCtaClick(readingLabel: String) {
-        val state = _uiState.value as? DayReadingCompleteUiState.Loaded ?: return
+        val ctaState = (_uiState.value as? DayReadingCompleteUiState.Loaded)
+            ?.ctaState
+            ?.valueOrNull()
+            ?: return
         trackEvent(
             name = AnalyticsEventNames.DAY_READING_COMPLETE_CTA_CLICKED,
             params = mapOf(
-                AnalyticsParams.ACCOUNT_STATE to state.ctaState.toAnalyticsValue(),
+                AnalyticsParams.ACCOUNT_STATE to ctaState.toAnalyticsValue(),
                 AnalyticsParams.SOURCE to SOURCE_VALUE,
             ),
         )
-        when (state.ctaState) {
+        when (ctaState) {
             is StudyCtaState.FreeExhausted -> emitAction(
                 DayReadingCompleteUiAction.NavigateToRoute(
                     route = PaywallNavRoute(PaywallEntrySource.DAY_STUDY),

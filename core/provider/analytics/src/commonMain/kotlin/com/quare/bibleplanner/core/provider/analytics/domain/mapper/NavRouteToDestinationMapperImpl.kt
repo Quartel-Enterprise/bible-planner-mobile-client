@@ -111,7 +111,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             ),
         )
 
-        is DayReadingCompleteNavRoute -> createBottomSheetDestination(
+        is DayReadingCompleteNavRoute -> createResponsiveDestination(
             name = "day_reading_complete",
             params = mapOf(
                 AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),

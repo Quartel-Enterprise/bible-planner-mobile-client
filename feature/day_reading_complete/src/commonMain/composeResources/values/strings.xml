@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="day_reading_complete_close">Close</string>
     <string name="day_reading_complete_kicker_today">TODAY'S READING COMPLETE</string>
     <string name="day_reading_complete_kicker_other_day">READING FOR %1$s COMPLETE</string>
 
@@ -43,8 +42,6 @@
         <item quantity="other">Your %1$d free analyses are used up</item>
     </plurals>
 
-    <string name="day_reading_complete_dismiss_default">Maybe later</string>
-    <string name="day_reading_complete_dismiss_exhausted">Not now</string>
 
     <string name="day_reading_complete_day_label">%2$s %1$d</string>
     <string name="day_reading_complete_offline_message">You're offline right now, so the study can't be generated.</string>

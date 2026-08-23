@@ -8,7 +8,4 @@ data class ReadNavRoute(
     val chapterNumber: Int,
     val isChapterRead: Boolean,
     val isFromBookDetails: Boolean,
-    val weekNumber: Int? = null,
-    val dayNumber: Int? = null,
-    val readingPlanType: String? = null,
 ) : NavRoute
