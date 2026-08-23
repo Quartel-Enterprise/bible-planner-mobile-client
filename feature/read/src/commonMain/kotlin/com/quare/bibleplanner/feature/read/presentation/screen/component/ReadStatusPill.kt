@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,10 +27,11 @@ import org.jetbrains.compose.resources.stringResource
 private val pillHeight = 44.dp
 private val compactPillHeight = 34.dp
 private val iconSize = 18.dp
+private const val SOFT_PRIMARY_ALPHA = 0.12f
 
 /**
- * The chapter's read state as a single pill that flips between an outlined "mark as read" and a
- * filled "read", so the two states never look like two different controls.
+ * The chapter's read state as a single pill that keeps the same outlined shape in both states and
+ * only swaps the neutral treatment for a soft primary one, so they never look like two controls.
  */
 @Composable
 internal fun ReadStatusPill(
@@ -41,12 +42,12 @@ internal fun ReadStatusPill(
     label: String? = null,
 ) {
     val containerColor = if (isRead) {
-        MaterialTheme.colorScheme.primaryContainer
+        MaterialTheme.colorScheme.primary.copy(alpha = SOFT_PRIMARY_ALPHA)
     } else {
         Color.Transparent
     }
     val contentColor = if (isRead) {
-        MaterialTheme.colorScheme.onPrimaryContainer
+        MaterialTheme.colorScheme.primary
     } else {
         MaterialTheme.colorScheme.onSurfaceVariant
     }
@@ -71,7 +72,7 @@ internal fun ReadStatusPill(
             Icon(
                 modifier = Modifier.size(iconSize),
                 imageVector = if (isRead) {
-                    Icons.Default.CheckCircle
+                    Icons.Outlined.CheckCircle
                 } else {
                     Icons.Outlined.RadioButtonUnchecked
                 },
