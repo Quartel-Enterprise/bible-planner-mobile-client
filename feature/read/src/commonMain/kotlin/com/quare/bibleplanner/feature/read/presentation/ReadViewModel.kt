@@ -61,6 +61,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private data class ChapterKey(
+    val bookId: BookId,
+    val chapterNumber: Int,
+)
+
 /**
  * The reader owns the chapter and the tapping; what can be *done* with the tapped verses belongs to
  * the selection panel, which is its own entry. The two meet at the shared selection store: this
@@ -98,6 +103,13 @@ class ReadViewModel(
      */
     private val appendedChapters = MutableStateFlow<List<ReadNavigationSuggestionModel>>(emptyList())
 
+    /**
+     * Read-status flips the user just tapped, shown before the Room write that backs [dataFlow]
+     * commits and re-emits. An entry is dropped once [dataFlow] reports the same value, so a write
+     * that lands on a different value than guessed (or never lands) never leaves the UI stuck.
+     */
+    private val pendingReadOverrides = MutableStateFlow<Map<ChapterKey, Boolean>>(emptyMap())
+
     private val _uiAction = MutableSharedFlow<ReadUiAction>()
     val uiAction: SharedFlow<ReadUiAction> = _uiAction
 
@@ -120,10 +132,14 @@ class ReadViewModel(
         dataFlow,
         observeReaderSettings(),
         observeVerseSelection(),
-    ) { data, settings, selection ->
+        pendingReadOverrides,
+    ) { data, settings, selection, overrides ->
+        val reconciledOverrides = overrides.dropReconciledOverrides(data)
+        if (reconciledOverrides != overrides) pendingReadOverrides.update { reconciledOverrides }
         data.toUiState(
             settings = settings,
             selection = selection,
+            overrides = reconciledOverrides,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -229,11 +245,14 @@ class ReadViewModel(
     }
 
     private fun toggleReadStatus(event: ReadUiEvent.ToggleReadStatus) {
+        val key = ChapterKey(bookId = event.bookId, chapterNumber = event.chapterNumber)
+        pendingReadOverrides.update { it + (key to !isCurrentlyRead(key)) }
         viewModelScope.launch {
             val isRead = toggleWholeChapterReadStatus(
                 bookId = event.bookId,
                 chapterNumber = event.chapterNumber,
             )
+            pendingReadOverrides.update { it + (key to isRead) }
             trackEvent(
                 name = AnalyticsEventNames.CHAPTER_READ_TOGGLED,
                 params = mapOf(
@@ -246,6 +265,18 @@ class ReadViewModel(
             requestLoginNudgeIfNeeded()
             if (isRead) checkDayCompletion()
         }
+    }
+
+    private fun isCurrentlyRead(key: ChapterKey): Boolean {
+        val state = uiState.value
+        if (state.header.bookId == key.bookId && state.header.chapterNumber == key.chapterNumber) {
+            return state.header.isChapterRead
+        }
+        return (state.content as? ReadContentUiState.Success)
+            ?.chapters
+            ?.firstOrNull { it.chapter.bookId == key.bookId && it.chapter.chapterNumber == key.chapterNumber }
+            ?.isRead
+            ?: false
     }
 
     private suspend fun checkDayCompletion() {
@@ -366,11 +397,41 @@ class ReadViewModel(
     private fun ReadDataUiModel.toUiState(
         settings: ReaderSettingsModel,
         selection: VerseSelection?,
+        overrides: Map<ChapterKey, Boolean>,
     ): ReadUiState = ReadUiState(
-        header = header,
-        content = content.withSelection(selection),
+        header = header.withReadOverride(overrides),
+        content = content.withSelection(selection).withReadOverrides(overrides),
         settings = settings,
     )
+
+    private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterKey, Boolean>): ReadHeaderUiModel {
+        val override = overrides[ChapterKey(bookId = bookId, chapterNumber = chapterNumber)] ?: return this
+        return copy(isChapterRead = override)
+    }
+
+    private fun ReadContentUiState.withReadOverrides(overrides: Map<ChapterKey, Boolean>): ReadContentUiState =
+        if (this !is ReadContentUiState.Success || overrides.isEmpty()) {
+            this
+        } else {
+            copy(chapters = chapters.map { chapter -> chapter.withReadOverride(overrides) })
+        }
+
+    private fun ReadChapterUiModel.withReadOverride(overrides: Map<ChapterKey, Boolean>): ReadChapterUiModel {
+        val key = ChapterKey(bookId = chapter.bookId, chapterNumber = chapter.chapterNumber)
+        val override = overrides[key] ?: return this
+        return copy(isRead = override)
+    }
+
+    private fun Map<ChapterKey, Boolean>.dropReconciledOverrides(data: ReadDataUiModel): Map<ChapterKey, Boolean> =
+        if (isEmpty()) this else filterNot { (key, override) -> data.isAuthoritativelyRead(key) == override }
+
+    private fun ReadDataUiModel.isAuthoritativelyRead(key: ChapterKey): Boolean? {
+        if (header.bookId == key.bookId && header.chapterNumber == key.chapterNumber) return header.isChapterRead
+        return (content as? ReadContentUiState.Success)
+            ?.chapters
+            ?.firstOrNull { it.chapter.bookId == key.bookId && it.chapter.chapterNumber == key.chapterNumber }
+            ?.isRead
+    }
 
     private fun ReadContentUiState.withSelection(selection: VerseSelection?): ReadContentUiState =
         if (this !is ReadContentUiState.Success) {
