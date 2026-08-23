@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.verse.addnote.presentation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
@@ -32,6 +33,7 @@ fun EntryProviderScope<NavKey>.verseNote(onNavigateBack: () -> Unit) {
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(VerseNoteUiEvent.OnDismiss) },
             title = stringResource(Res.string.verse_note_title),
+            sheetBottomBreathingRoom = 12.dp,
         ) {
             VerseNoteContent(
                 uiState = uiState,

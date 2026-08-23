@@ -42,6 +42,7 @@ fun EntryProviderScope<NavKey>.shareVerse(
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(ShareVerseUiEvent.OnDismiss) },
             title = stringResource(Res.string.share_verse_title),
+            sheetBottomBreathingRoom = 12.dp,
         ) {
             ShareVerseContent(
                 uiState = uiState,
@@ -74,6 +75,7 @@ fun EntryProviderScope<NavKey>.shareVerse(
             onCloseClick = { onEvent(ShareVerseUiEvent.OnDismiss) },
             title = if (isWide) null else stringResource(Res.string.share_verse_image_title),
             cardMaxWidth = if (isWide) wideShareImageDialogWidth else 460.dp,
+            sheetBottomBreathingRoom = 12.dp,
         ) {
             if (isWide) {
                 ShareVerseImageWideContent(

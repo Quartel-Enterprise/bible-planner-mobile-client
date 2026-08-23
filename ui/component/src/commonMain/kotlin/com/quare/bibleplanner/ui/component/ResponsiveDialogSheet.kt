@@ -44,7 +44,6 @@ private val wideLayoutMinWidth = 600.dp
 private val centredTitleHorizontalPadding = 56.dp
 private val defaultCardMaxWidth = 460.dp
 private val cardVerticalMargin = 24.dp
-private val sheetBottomBreathingRoom = 12.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +54,7 @@ fun ResponsiveDialogSheet(
     subtitle: String? = null,
     isTitleCentred: Boolean = false,
     cardMaxWidth: Dp = defaultCardMaxWidth,
+    sheetBottomBreathingRoom: Dp = 0.dp,
     content: @Composable () -> Unit,
 ) {
     DialogWindowDimEffect()
