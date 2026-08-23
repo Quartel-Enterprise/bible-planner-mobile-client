@@ -28,7 +28,25 @@ class GetPlansByWeekUseCase(
     private val currentTimestampProvider: CurrentTimestampProvider,
     private val localDateTimeProvider: LocalDateTimeProvider,
 ) {
-    operator fun invoke(): Flow<PlansModel> {
+    operator fun invoke(): Flow<PlansModel> = observeReadingProgress { books, startDate, today ->
+        PlansModel(
+            chronologicalOrder = weeksOf(ReadingPlanType.CHRONOLOGICAL, books, startDate, today),
+            booksOrder = weeksOf(ReadingPlanType.BOOKS, books, startDate, today),
+        )
+    }
+
+    /**
+     * The weeks of a single plan, for callers that already know which plan they are asking about —
+     * scoring the other plan's 52 weeks against the whole Bible is pure waste for them.
+     */
+    operator fun invoke(readingPlanType: ReadingPlanType): Flow<List<WeekPlanModel>> =
+        observeReadingProgress { books, startDate, today ->
+            weeksOf(readingPlanType, books, startDate, today)
+        }
+
+    private fun <T> observeReadingProgress(
+        transform: suspend (books: List<BookDataModel>, startDate: LocalDate?, today: LocalDate) -> T,
+    ): Flow<T> {
         val today = getTodayLocalDate()
         return combine(
             booksRepository.getBooksFlow(),
@@ -36,16 +54,18 @@ class GetPlansByWeekUseCase(
         ) { books, startDate ->
             books to startDate
         }.map { (books, startDate) ->
-            PlansModel(
-                chronologicalOrder = planRepository
-                    .getPlans(ReadingPlanType.CHRONOLOGICAL)
-                    .toUpdatedDayStatus(books, startDate, today),
-                booksOrder = planRepository
-                    .getPlans(ReadingPlanType.BOOKS)
-                    .toUpdatedDayStatus(books, startDate, today),
-            )
+            transform(books, startDate, today)
         }.flowOn(Dispatchers.Default)
     }
+
+    private suspend fun weeksOf(
+        readingPlanType: ReadingPlanType,
+        books: List<BookDataModel>,
+        startDate: LocalDate?,
+        today: LocalDate,
+    ): List<WeekPlanModel> = planRepository
+        .getPlans(readingPlanType)
+        .toUpdatedDayStatus(books, startDate, today)
 
     private fun getTodayLocalDate(): LocalDate = localDateTimeProvider
         .getLocalDateTime(currentTimestampProvider.getCurrentTimestamp())

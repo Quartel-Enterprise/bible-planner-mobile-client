@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="day_reading_complete_kicker_today">LEITURA DE HOJE CONCLUÍDA</string>
+    <string name="day_reading_complete_kicker_other_day">LEITURA DE %1$s CONCLUÍDA</string>
+
+    <string name="day_reading_complete_title_on_time">Você terminou %1$s</string>
+    <string name="day_reading_complete_title_overdue">Você colocou %1$s em dia</string>
+    <string name="day_reading_complete_title_early">Você se adiantou até %1$s</string>
+
+    <plurals name="day_reading_complete_body_on_time">
+        <item quantity="one">Este era o último capítulo programado para hoje. O estudo do dia reúne a passagem em um só lugar — ele é diferente do estudo deste capítulo.</item>
+        <item quantity="other">Este era o último capítulo programado para hoje. O estudo do dia reúne as %1$d passagens em um só lugar — ele é diferente do estudo deste capítulo.</item>
+    </plurals>
+    <plurals name="day_reading_complete_body_overdue">
+        <item quantity="one">Este era o último capítulo programado para %2$s, uma leitura que estava atrasada. O estudo daquele dia reúne a passagem em um só lugar — ele é diferente do estudo deste capítulo.</item>
+        <item quantity="other">Este era o último capítulo programado para %2$s, uma leitura que estava atrasada. O estudo daquele dia reúne as %1$d passagens em um só lugar — ele é diferente do estudo deste capítulo.</item>
+    </plurals>
+    <plurals name="day_reading_complete_body_early">
+        <item quantity="one">Este era o último capítulo programado para %2$s, uma leitura adiantada. O estudo daquele dia reúne a passagem em um só lugar — ele é diferente do estudo deste capítulo.</item>
+        <item quantity="other">Este era o último capítulo programado para %2$s, uma leitura adiantada. O estudo daquele dia reúne as %1$d passagens em um só lugar — ele é diferente do estudo deste capítulo.</item>
+    </plurals>
+
+    <string name="day_reading_complete_card_title_today">Estudo do dia</string>
+    <string name="day_reading_complete_card_title_other_day">Estudo de %1$s</string>
+    <plurals name="day_reading_complete_card_subtitle">
+        <item quantity="one">%1$s · resumo, contexto e reflexão do capítulo</item>
+        <item quantity="other">%1$s · resumo, contexto e reflexões dos %2$d capítulos</item>
+    </plurals>
+
+    <string name="day_reading_complete_cta_generate_today">Gerar estudo do dia</string>
+    <string name="day_reading_complete_cta_generate_other_day">Gerar estudo desse dia</string>
+    <string name="day_reading_complete_cta_view_today">Ver estudo do dia</string>
+    <string name="day_reading_complete_cta_view_other_day">Ver estudo desse dia</string>
+    <string name="day_reading_complete_cta_subscribe">Assinar o Pro</string>
+
+    <plurals name="day_reading_complete_quota_hint">
+        <item quantity="one">%1$d de %2$d análise grátis restante · gerar usa 1</item>
+        <item quantity="other">%1$d de %2$d análises grátis restantes · gerar usa 1</item>
+    </plurals>
+    <plurals name="day_reading_complete_quota_exhausted">
+        <item quantity="one">Sua %1$d análise grátis acabou</item>
+        <item quantity="other">Suas %1$d análises grátis acabaram</item>
+    </plurals>
+
+
+    <string name="day_reading_complete_day_label">%1$d de %2$s</string>
+    <string name="day_reading_complete_offline_message">Você está sem internet no momento, por isso não é possível gerar o estudo.</string>
+</resources>

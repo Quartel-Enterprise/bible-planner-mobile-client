@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -50,12 +48,12 @@ internal fun AppLanguageContent(
     Column(
         modifier = modifier.fillMaxWidth(),
     ) {
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
                 .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
         ) {
-            itemsIndexed(sortedLanguages) { index, language ->
+            sortedLanguages.forEachIndexed { index, language ->
                 AppLanguageItem(
                     code = language.toCode(),
                     name = languageNames[language].orEmpty(),

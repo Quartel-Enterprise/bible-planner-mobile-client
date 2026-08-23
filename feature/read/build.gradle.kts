@@ -20,9 +20,14 @@ kotlin {
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
             implementation(projects.core.loginNudge)
+            implementation(projects.core.provider.dataStore)
+            implementation(projects.core.verseAnnotations)
+            implementation(projects.core.utils)
+            implementation(projects.feature.dayStudy)
 
             // UI
             implementation(projects.ui.component)
+            implementation(projects.ui.theme)
             implementation(projects.ui.utils)
 
             // Navigation 3
@@ -43,6 +48,15 @@ kotlin {
             implementation(libs.compose.components.resources)
 
             implementation(libs.kotlinx.coroutines.core)
+
+            // DataStore
+            implementation(libs.datastore.preferences)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.kotlinx.datetime)
         }
     }
 }

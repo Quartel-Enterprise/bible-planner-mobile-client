@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="day_reading_complete_kicker_today">TODAY'S READING COMPLETE</string>
+    <string name="day_reading_complete_kicker_other_day">READING FOR %1$s COMPLETE</string>
+
+    <string name="day_reading_complete_title_on_time">You finished %1$s</string>
+    <string name="day_reading_complete_title_overdue">You caught up on %1$s</string>
+    <string name="day_reading_complete_title_early">You got ahead to %1$s</string>
+
+    <plurals name="day_reading_complete_body_on_time">
+        <item quantity="one">This was the last chapter planned for today. The daily study brings the passage together in one place — it's different from this chapter's study.</item>
+        <item quantity="other">This was the last chapter planned for today. The daily study brings the %1$d passages together in one place — it's different from this chapter's study.</item>
+    </plurals>
+    <plurals name="day_reading_complete_body_overdue">
+        <item quantity="one">This was the last chapter planned for %2$s, a reading that was overdue. That day's study brings the passage together in one place — it's different from this chapter's study.</item>
+        <item quantity="other">This was the last chapter planned for %2$s, a reading that was overdue. That day's study brings the %1$d passages together in one place — it's different from this chapter's study.</item>
+    </plurals>
+    <plurals name="day_reading_complete_body_early">
+        <item quantity="one">This was the last chapter planned for %2$s, a reading you got ahead on. That day's study brings the passage together in one place — it's different from this chapter's study.</item>
+        <item quantity="other">This was the last chapter planned for %2$s, a reading you got ahead on. That day's study brings the %1$d passages together in one place — it's different from this chapter's study.</item>
+    </plurals>
+
+    <string name="day_reading_complete_card_title_today">Daily study</string>
+    <string name="day_reading_complete_card_title_other_day">Study for %1$s</string>
+    <plurals name="day_reading_complete_card_subtitle">
+        <item quantity="one">%1$s · summary, context and reflection for the chapter</item>
+        <item quantity="other">%1$s · summary, context and reflections for the %2$d chapters</item>
+    </plurals>
+
+    <string name="day_reading_complete_cta_generate_today">Generate today's study</string>
+    <string name="day_reading_complete_cta_generate_other_day">Generate that day's study</string>
+    <string name="day_reading_complete_cta_view_today">View today's study</string>
+    <string name="day_reading_complete_cta_view_other_day">View that day's study</string>
+    <string name="day_reading_complete_cta_subscribe">Subscribe to Pro</string>
+
+    <plurals name="day_reading_complete_quota_hint">
+        <item quantity="one">%1$d of %2$d free analysis left · generating uses 1</item>
+        <item quantity="other">%1$d of %2$d free analyses left · generating uses 1</item>
+    </plurals>
+    <plurals name="day_reading_complete_quota_exhausted">
+        <item quantity="one">Your %1$d free analysis is used up</item>
+        <item quantity="other">Your %1$d free analyses are used up</item>
+    </plurals>
+
+
+    <string name="day_reading_complete_day_label">%2$s %1$d</string>
+    <string name="day_reading_complete_offline_message">You're offline right now, so the study can't be generated.</string>
+</resources>

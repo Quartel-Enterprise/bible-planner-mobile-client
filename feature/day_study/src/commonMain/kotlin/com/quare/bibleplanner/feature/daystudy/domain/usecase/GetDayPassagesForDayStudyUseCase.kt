@@ -13,11 +13,7 @@ class GetDayPassagesForDayStudyUseCase(
         weekNumber: Int,
         dayNumber: Int,
         readingPlanType: ReadingPlanType,
-    ): Flow<List<PassageModel>?> = getPlansByWeekUseCase().map { plans ->
-        val weeks = when (readingPlanType) {
-            ReadingPlanType.CHRONOLOGICAL -> plans.chronologicalOrder
-            ReadingPlanType.BOOKS -> plans.booksOrder
-        }
+    ): Flow<List<PassageModel>?> = getPlansByWeekUseCase(readingPlanType).map { weeks ->
         weeks
             .find { it.number == weekNumber }
             ?.days

@@ -21,6 +21,7 @@ The `source` is a required constructor parameter of `PaywallNavRoute`, so a new 
 | `day_study_detail` | `feature/day_study/.../DayStudyRouteViewModel.kt` — the same card on the day-study detail pane |
 | `notes_limit` | `feature/add_notes_free_warning/.../AddNotesFreeWarningUiActionCollector.kt` |
 | `chat` | `feature/chat/.../ChatViewModel.kt` — the locked input bar after the free question quota runs out |
+| `highlight_custom_color` | `feature/paywall_teaser/.../PaywallTeaserUiActionCollector.kt` — the paywall teaser sheet shown for `PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR` |
 
 ## Parameters
 
@@ -30,7 +31,7 @@ The `source` is a required constructor parameter of `PaywallNavRoute`, so a new 
 
 ## Notes
 
-- Fires on the paywall being **shown**, not on the gate being clicked. Each gate logs its own click separately ([notes_limit_subscribe_clicked](notes_limit_subscribe_clicked.md), [ai_chat_subscribe_clicked](ai_chat_subscribe_clicked.md), [day_study_card_clicked](day_study_card_clicked.md) with `card_mode=locked`, [profile_option_clicked](profile_option_clicked.md)), so click-through and impression stay separable — a gap between the two means navigation was cancelled or deduplicated.
+- Fires on the paywall being **shown**, not on the gate being clicked. Each gate logs its own click separately ([notes_limit_subscribe_clicked](notes_limit_subscribe_clicked.md), [ai_chat_subscribe_clicked](ai_chat_subscribe_clicked.md), [day_study_card_clicked](day_study_card_clicked.md) with `card_mode=locked`, [profile_option_clicked](profile_option_clicked.md), [paywall_teaser_subscribe_clicked](paywall_teaser_subscribe_clicked.md)), so click-through and impression stay separable — a gap between the two means navigation was cancelled or deduplicated.
 - Redundant with [screen_view](screen_view.md) (`screen_name=paywall`), which carries the same `source` via the route mapper. It is kept as a distinct event for funnel continuity with the data collected before the source became a route parameter.
 - `day_study` and `day_study_detail` are the same locked card rendered by two different ViewModels. They are kept apart so the historical meaning of `day_study` (Day screen only) stays intact.
 - Funnel: `paywall_viewed` → [paywall_plan_selected](paywall_plan_selected.md) → [purchase_started](purchase_started.md) → [purchase_completed](purchase_completed.md) / [purchase_failed](purchase_failed.md), all segmentable by `source`.

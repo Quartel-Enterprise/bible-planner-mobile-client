@@ -12,8 +12,8 @@ class RequestDownloadNotificationPermissionUseCase(
     private val notificationPermissionRequester: NotificationPermissionRequester,
     private val trackEvent: TrackEvent,
     private val navigationEventBus: NavigationEventBus,
-) {
-    suspend operator fun invoke() {
+) : RequestDownloadNotificationPermission {
+    override suspend fun invoke() {
         if (!notificationPermissionRequester.canPrompt()) return
         trackEvent(
             name = AnalyticsEventNames.NOTIFICATION_PERMISSION_PROMPTED,

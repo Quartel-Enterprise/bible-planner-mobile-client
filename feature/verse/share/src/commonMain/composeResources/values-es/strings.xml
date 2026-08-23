@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_verse_title">Compartir</string>
+    <string name="share_as_text">Como texto</string>
+    <string name="share_as_text_description">Enviar el pasaje por el menú de compartir del sistema</string>
+    <string name="share_as_image">Como imagen</string>
+    <string name="share_as_image_description">Tarjeta para Stories y estados de WhatsApp</string>
+    <string name="share_verse_image_title">Compartir como imagen</string>
+    <string name="share_typography">Tipografía</string>
+    <string name="share_background">Fondo</string>
+    <string name="share_action">Compartir</string>
+    <string name="app_name">Bible Planner</string>
+    <string name="close">Cerrar</string>
+</resources>

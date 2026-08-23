@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.bibleversion.presentation.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,45 +22,39 @@ internal fun BibleVersionsContent(
     uiState: BibleVersionsUiState,
     onEvent: (BibleVersionUiEvent) -> Unit,
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier.fillMaxWidth(),
     ) {
-        item {
-            VerticalSpacer(8)
-        }
+        VerticalSpacer(8)
         when (uiState) {
             BibleVersionsUiState.Error -> {
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    VerticalSpacer()
+                    Text(
+                        text = stringResource(Res.string.download_bible_versions_error),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    VerticalSpacer()
+                    Button(
+                        modifier = Modifier.fillMaxWidth(0.5f),
+                        onClick = { onEvent(BibleVersionUiEvent.TryToDownloadBibleVersionsAgain) },
                     ) {
-                        VerticalSpacer()
-                        Text(
-                            text = stringResource(Res.string.download_bible_versions_error),
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        VerticalSpacer()
-                        Button(
-                            modifier = Modifier.fillMaxWidth(0.5f),
-                            onClick = { onEvent(BibleVersionUiEvent.TryToDownloadBibleVersionsAgain) },
-                        ) {
-                            Text(text = stringResource(Res.string.try_again))
-                        }
+                        Text(text = stringResource(Res.string.try_again))
                     }
                 }
             }
 
-            BibleVersionsUiState.Loading -> bibleVersionsShimmer()
+            BibleVersionsUiState.Loading -> BibleVersionsShimmer()
 
             is BibleVersionsUiState.Success -> {
-                bibleVersionsListComponent(
+                BibleVersionsListComponent(
                     selectionMap = uiState.data,
                     onEvent = onEvent,
                 )
-                item {
-                    VerticalSpacer(8)
-                }
+                VerticalSpacer(8)
             }
         }
     }

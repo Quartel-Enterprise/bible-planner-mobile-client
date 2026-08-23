@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paywall_teaser_subscribe">Assinar o Pro</string>
+    <string name="paywall_teaser_highlight_custom_color_title">Cores personalizadas são Pro</string>
+    <string name="paywall_teaser_highlight_custom_color_body">A paleta padrão continua livre. Com o Pro você cria cores próprias para separar temas, promessas e orações.</string>
+    <string name="paywall_teaser_highlight_custom_color_dismiss">Usar a paleta padrão</string>
+</resources>

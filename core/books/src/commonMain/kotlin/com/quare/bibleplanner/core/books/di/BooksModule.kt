@@ -34,19 +34,24 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationB
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleNameFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
+import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContentUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.SyncBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
@@ -144,12 +149,13 @@ val booksModule = module {
     factoryOf(::UpdateSpecificRangeChapterReadStatusUseCase)
     factoryOf(::GetBookByIdFlowUseCase)
     factoryOf(::GetVersesWithTextsByChapterIdFlowUseCase)
-    factoryOf(::GetSelectedVersionIdFlowUseCase)
+    factoryOf(::GetSelectedVersionIdFlowUseCase).bind<GetSelectedVersionIdFlow>()
+    factoryOf(::GetVersesShareContentUseCase).bind<GetVersesShareContent>()
     factoryOf(::GetSelectedBibleFlowUseCase)
     factoryOf(::GetSelectedBibleNameFlowUseCase)
     factoryOf(::UpdatePassageReadStatusUseCase)
     factoryOf(::ResetAllProgressUseCase)
-    factoryOf(::ToggleWholeChapterReadStatusUseCase)
+    factoryOf(::ToggleWholeChapterReadStatusUseCase).bind<ToggleWholeChapterReadStatus>()
     factoryOf(::CalculateBibleProgressUseCase)
     factoryOf(::GetBooksWithInformationBoxVisibilityUseCase)
     factoryOf(::GetChapterIdUseCase)
@@ -158,6 +164,6 @@ val booksModule = module {
     factoryOf(::UpdateWholeBookReadStatusIfNeededUseCase)
     factoryOf(::UpdateWholeChapterReadStatusUseCase)
     factoryOf(::IsChapterReadUseCase)
-    factoryOf(::IsWholeChapterReadUseCase)
+    factoryOf(::IsWholeChapterReadUseCase).bind<IsWholeChapterRead>()
     factoryOf(::IsPassageReadUseCase)
 }

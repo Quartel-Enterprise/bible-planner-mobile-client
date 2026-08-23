@@ -13,10 +13,14 @@ import com.quare.bibleplanner.core.provider.room.dao.ChatDao
 import com.quare.bibleplanner.core.provider.room.dao.ChatDraftDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
 import com.quare.bibleplanner.core.provider.room.dao.DayStudyDao
+import com.quare.bibleplanner.core.provider.room.dao.HighlightPaletteColorDao
 import com.quare.bibleplanner.core.provider.room.dao.ProfileDao
+import com.quare.bibleplanner.core.provider.room.dao.SavedVerseDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.UserDeviceDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseHighlightDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseNoteDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
@@ -29,10 +33,15 @@ import com.quare.bibleplanner.core.provider.room.entity.DayStudyEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyFactEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyQuestionEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyTakeawayEntity
+import com.quare.bibleplanner.core.provider.room.entity.HighlightPaletteColorEntity
 import com.quare.bibleplanner.core.provider.room.entity.ProfileEntity
+import com.quare.bibleplanner.core.provider.room.entity.SavedVerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import com.quare.bibleplanner.core.provider.room.entity.UserDeviceEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
+import com.quare.bibleplanner.core.provider.room.entity.VerseHighlightEntity
+import com.quare.bibleplanner.core.provider.room.entity.VerseNoteEntity
+import com.quare.bibleplanner.core.provider.room.entity.VerseNoteVerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 
 @Database(
@@ -54,8 +63,13 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         ChatConversationEntity::class,
         ChatMessageEntity::class,
         ChatDraftEntity::class,
+        VerseHighlightEntity::class,
+        SavedVerseEntity::class,
+        VerseNoteEntity::class,
+        VerseNoteVerseEntity::class,
+        HighlightPaletteColorEntity::class,
     ],
-    version = 15,
+    version = 16,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
@@ -67,6 +81,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
+        AutoMigration(from = 15, to = 16),
     ],
     exportSchema = true,
 )
@@ -94,4 +109,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
 
     abstract fun chatDraftDao(): ChatDraftDao
+
+    abstract fun verseHighlightDao(): VerseHighlightDao
+
+    abstract fun savedVerseDao(): SavedVerseDao
+
+    abstract fun verseNoteDao(): VerseNoteDao
+
+    abstract fun highlightPaletteColorDao(): HighlightPaletteColorDao
 }

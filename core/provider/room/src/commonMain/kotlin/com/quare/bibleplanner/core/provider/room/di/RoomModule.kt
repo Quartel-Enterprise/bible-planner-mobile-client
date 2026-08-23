@@ -8,10 +8,14 @@ import com.quare.bibleplanner.core.provider.room.dao.ChatDao
 import com.quare.bibleplanner.core.provider.room.dao.ChatDraftDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
 import com.quare.bibleplanner.core.provider.room.dao.DayStudyDao
+import com.quare.bibleplanner.core.provider.room.dao.HighlightPaletteColorDao
 import com.quare.bibleplanner.core.provider.room.dao.ProfileDao
+import com.quare.bibleplanner.core.provider.room.dao.SavedVerseDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.UserDeviceDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseHighlightDao
+import com.quare.bibleplanner.core.provider.room.dao.VerseNoteDao
 import com.quare.bibleplanner.core.provider.room.db.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -37,4 +41,8 @@ val roomModule = module {
     single<ChatDraftDao> { get<AppDatabase>().chatDraftDao() }
     single<UserDeviceDao> { get<AppDatabase>().userDeviceDao() }
     single<ProfileDao> { get<AppDatabase>().profileDao() }
+    single<VerseHighlightDao> { get<AppDatabase>().verseHighlightDao() }
+    single<SavedVerseDao> { get<AppDatabase>().savedVerseDao() }
+    single<VerseNoteDao> { get<AppDatabase>().verseNoteDao() }
+    single<HighlightPaletteColorDao> { get<AppDatabase>().highlightPaletteColorDao() }
 }

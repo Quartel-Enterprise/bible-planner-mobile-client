@@ -17,6 +17,7 @@ import com.quare.bibleplanner.feature.chat.presentation.chat
 import com.quare.bibleplanner.feature.congrats.presentation.congrats
 import com.quare.bibleplanner.feature.contactsupport.presentation.contactSupport
 import com.quare.bibleplanner.feature.day.presentation.day
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.dayReadingComplete
 import com.quare.bibleplanner.feature.daystudy.presentation.dayStudy
 import com.quare.bibleplanner.feature.deleteaccount.presentation.deleteAccount
 import com.quare.bibleplanner.feature.deletenotes.presentation.deleteNotes
@@ -40,10 +41,14 @@ import com.quare.bibleplanner.feature.main.presentation.mainScreen
 import com.quare.bibleplanner.feature.materialyou.presentation.materialYou
 import com.quare.bibleplanner.feature.notificationpermission.presentation.notificationPermission
 import com.quare.bibleplanner.feature.paywall.presentation.paywall
+import com.quare.bibleplanner.feature.paywallteaser.presentation.paywallTeaser
 import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.subscriptionDetails
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
+import com.quare.bibleplanner.feature.verse.addnote.presentation.verseNote
+import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.verseSelection
+import com.quare.bibleplanner.feature.verse.share.presentation.shareVerse
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -78,6 +83,11 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
     )
+    dayReadingComplete(
+        onNavigate = onNavigate,
+        onNavigateBack = onNavigateBack,
+        onNavigateReplacingTop = onNavigateReplacingTop,
+    )
     chat(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
@@ -104,6 +114,10 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigateBack = onNavigateBack,
         onNavigateReplacingTop = onNavigateReplacingTop,
         sharedTransitionScope = sharedTransitionScope,
+    )
+    paywallTeaser(
+        onNavigateBack = onNavigateBack,
+        onNavigateReplacingTop = onNavigateReplacingTop,
     )
     congrats(onNavigateBack)
     donation(
@@ -151,7 +165,15 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
         onNavigateReplacingTop = onNavigateReplacingTop,
-        sharedTransitionScope = sharedTransitionScope,
+    )
+    verseNote(onNavigateBack)
+    verseSelection(
+        onNavigate = onNavigate,
+        onNavigateBack = onNavigateBack,
+    )
+    shareVerse(
+        onNavigate = onNavigate,
+        onNavigateBack = onNavigateBack,
     )
     notificationPermission(onNavigateBack)
     inAppUpdate(onNavigateBack)
