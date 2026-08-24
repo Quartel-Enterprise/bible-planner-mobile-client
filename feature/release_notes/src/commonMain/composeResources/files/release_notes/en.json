@@ -1,5 +1,7 @@
 {
   "2.7.1": [
+    "While a chapter loads, the reading screen now shows an outline of the text instead of a spinning circle — you can see the shape of the chapter that is coming, and the Bible version at the top is no longer blank before it loads.",
+    "With vertical reading on, the previous and next chapter arrows no longer appear at the end of the chapter — the next one is already right below, so only the mark-as-read button stays there.",
     "The reading screen no longer stutters while a Bible version is downloading: scrolling stays smooth from start to finish.",
     "Downloading a Bible version is now several times faster — what used to take minutes now finishes in seconds."
   ],

@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIf
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
+import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
@@ -511,7 +512,7 @@ class ReadViewModel(
                 previous = null,
                 next = null,
             ),
-            versionAbbreviation = "",
+            versionAbbreviation = Loadable.Loading,
         ),
         content = ReadContentUiState.Loading,
         settings = ReaderSettingsModel(

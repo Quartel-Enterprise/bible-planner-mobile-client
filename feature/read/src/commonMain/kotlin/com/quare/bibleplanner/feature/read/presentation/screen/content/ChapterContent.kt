@@ -12,13 +12,14 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * One chapter as list items: its header, its verses, and the end-of-chapter controls. Vertical
- * reading calls this once per chapter into the same list, which is what makes the text continue.
+ * reading calls this once per chapter into the same list, which is what makes the text continue, and
+ * drops the chapter arrows: the next chapter is already below, so the only decision left is the read
+ * status.
  */
 internal fun LazyListScope.chapterContent(
     chapter: ReadChapterUiModel,
     header: ReadHeaderUiModel,
     settings: ReaderSettingsModel,
-    isPrimaryChapter: Boolean,
     focusedVerseNumber: Int?,
     onEvent: (ReadUiEvent) -> Unit,
 ) {
@@ -51,8 +52,7 @@ internal fun LazyListScope.chapterContent(
     }
     item(key = "chapter-end-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
         ChapterEndNavigation(
-            previous = header.navigationSuggestions.previous.takeIf { isPrimaryChapter },
-            next = header.navigationSuggestions.next.takeIf { isPrimaryChapter },
+            suggestions = header.navigationSuggestions.takeIf { !settings.isVerticalReadingEnabled },
             isRead = chapter.isRead,
             onReadClick = {
                 onEvent(

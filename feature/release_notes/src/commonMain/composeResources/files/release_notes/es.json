@@ -1,5 +1,7 @@
 {
   "2.7.1": [
+    "Mientras el capítulo carga, la pantalla de lectura ahora muestra un esbozo del texto en lugar del círculo girando — se ve de inmediato la forma del capítulo que llega, y la versión de la Biblia arriba ya no aparece en blanco antes de cargar.",
+    "Con la lectura vertical activada, las flechas de capítulo anterior y siguiente ya no aparecen al final del capítulo — el siguiente ya viene justo abajo, así que allí queda solo el botón de marcar como leído.",
     "La pantalla de lectura ya no se traba mientras se descarga una versión de la Biblia: el desplazamiento sigue fluido de principio a fin.",
     "La descarga de las versiones de la Biblia es ahora varias veces más rápida — lo que antes tardaba minutos ahora termina en segundos."
   ],
