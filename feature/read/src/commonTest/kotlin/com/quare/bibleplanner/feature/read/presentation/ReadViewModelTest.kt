@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadSt
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
@@ -379,7 +380,7 @@ internal class ReadViewModelTest {
                         previous = null,
                         next = null,
                     ),
-                    versionAbbreviation = "ARC",
+                    versionAbbreviation = Loadable.Loaded("ARC"),
                 ),
                 content = ReadContentUiState.Success(chapters = listOf(chapter)),
             ),

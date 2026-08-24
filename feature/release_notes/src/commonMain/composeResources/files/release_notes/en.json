@@ -1,4 +1,7 @@
 {
+  "2.7.1": [
+    "While a chapter loads, the reading screen now shows an outline of the text instead of a spinning circle — you can see the shape of the chapter that is coming, and the Bible version at the top is no longer blank before it loads."
+  ],
   "2.7.0": [
     "Fixed a crash that prevented the app from opening on some devices. On those devices, Bible version downloads now happen while the app is open.",
     "The reading screen has been redesigned: a chapter now opens with the book name and the number in large type, the text has more room to breathe between lines, and the mark as read button is always within reach, next to the arrows for the previous and next chapters.",

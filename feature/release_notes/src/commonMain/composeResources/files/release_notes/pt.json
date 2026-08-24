@@ -1,4 +1,7 @@
 {
+  "2.7.1": [
+    "Enquanto o capítulo carrega, a tela de leitura agora mostra um esboço do texto no lugar do círculo girando — dá para ver de cara o formato do capítulo que está chegando, e a versão da Bíblia no topo não aparece mais em branco antes de carregar."
+  ],
   "2.7.0": [
     "Corrigido um travamento que impedia o app de abrir em alguns aparelhos. Nesses aparelhos, o download das versões da Bíblia agora acontece com o app aberto.",
     "A tela de leitura foi redesenhada: o capítulo agora abre com o nome do livro e o número em destaque, o texto ganhou mais espaço entre as linhas e o botão de marcar como lido fica sempre à mão, junto das setas para o capítulo anterior e o próximo.",
