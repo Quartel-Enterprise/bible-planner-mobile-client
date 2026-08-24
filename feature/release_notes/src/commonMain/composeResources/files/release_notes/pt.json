@@ -1,6 +1,7 @@
 {
   "2.7.1": [
-    "Enquanto o capítulo carrega, a tela de leitura agora mostra um esboço do texto no lugar do círculo girando — dá para ver de cara o formato do capítulo que está chegando, e a versão da Bíblia no topo não aparece mais em branco antes de carregar."
+    "Enquanto o capítulo carrega, a tela de leitura agora mostra um esboço do texto no lugar do círculo girando — dá para ver de cara o formato do capítulo que está chegando, e a versão da Bíblia no topo não aparece mais em branco antes de carregar.",
+    "Com a leitura vertical ligada, as setas de capítulo anterior e próximo não aparecem mais no fim do capítulo — o próximo já vem logo abaixo, então ali fica só o botão de marcar como lido."
   ],
   "2.7.0": [
     "Corrigido um travamento que impedia o app de abrir em alguns aparelhos. Nesses aparelhos, o download das versões da Bíblia agora acontece com o app aberto.",
