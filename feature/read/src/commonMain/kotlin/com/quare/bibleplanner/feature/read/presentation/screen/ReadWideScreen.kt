@@ -71,7 +71,13 @@ internal fun ReadWideScreen(
                 contentAlignment = Alignment.TopCenter,
             ) {
                 when (val content = state.content) {
-                    ReadContentUiState.Loading -> ReadLoadingContent(Modifier.fillMaxSize())
+                    ReadContentUiState.Loading -> {
+                        ReadLoadingContent(
+                            modifier = Modifier
+                                .widthIn(max = readingColumnMaxWidth)
+                                .fillMaxSize(),
+                        )
+                    }
 
                     is ReadContentUiState.Error -> {
                         ReadErrorContent(

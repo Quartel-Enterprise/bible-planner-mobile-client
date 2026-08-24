@@ -1,4 +1,7 @@
 {
+  "2.7.1": [
+    "Mientras el capítulo carga, la pantalla de lectura ahora muestra un esbozo del texto en lugar del círculo girando — se ve de inmediato la forma del capítulo que llega, y la versión de la Biblia arriba ya no aparece en blanco antes de cargar."
+  ],
   "2.7.0": [
     "Se corrigió un bloqueo que impedía abrir la app en algunos dispositivos. En esos dispositivos, la descarga de las versiones de la Biblia ahora ocurre con la app abierta.",
     "La pantalla de lectura fue rediseñada: el capítulo ahora se abre con el nombre del libro y el número en grande, el texto tiene más espacio entre las líneas y el botón de marcar como leído queda siempre a mano, junto a las flechas del capítulo anterior y el siguiente.",
