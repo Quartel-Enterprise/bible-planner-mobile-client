@@ -1,10 +1,12 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,10 +19,13 @@ import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestion
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 
+private val pillMaxWidth = 280.dp
+
 /**
  * Repeats the bottom bar's controls at the end of the text, naming the chapters this time: at the
  * end of a chapter the next step is the decision, not a bar the reader has scrolled past. A null
- * [suggestions] drops the arrows altogether, leaving the read pill alone across the row.
+ * [suggestions] drops the arrows altogether, leaving the read pill centred on its own: it keeps the
+ * width it had between the arrows rather than stretching over the whole column.
  */
 @Composable
 internal fun ChapterEndNavigation(
@@ -42,11 +47,16 @@ internal fun ChapterEndNavigation(
                 onEvent = onEvent,
             )
         }
-        ReadStatusPill(
+        Box(
             modifier = Modifier.weight(1f),
-            isRead = isRead,
-            onClick = onReadClick,
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            ReadStatusPill(
+                modifier = Modifier.widthIn(max = pillMaxWidth).fillMaxWidth(),
+                isRead = isRead,
+                onClick = onReadClick,
+            )
+        }
         suggestions?.let {
             ChapterEndButton(
                 suggestion = it.next,
