@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loadable.Loadable.Loaded
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
@@ -87,7 +88,7 @@ class ReadDataPresentationModelFactory(
                                 ?.version
                                 ?.id
                                 ?.uppercase()
-                                ?.let { abbreviation -> Loadable.Loaded(abbreviation) }
+                                ?.let(::Loaded)
                                 ?: Loadable.Loading,
                         ),
                         content = toContent(

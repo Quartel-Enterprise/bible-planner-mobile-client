@@ -18,17 +18,13 @@ class WeekPlanDtoToModelMapper(
         val weekNumber = weekPlanDto.week
         return WeekPlanModel(
             number = weekNumber,
-            days = weekPlanDto.days.map { dayDto ->
-                mapDay(dayDto)
-            },
+            days = weekPlanDto.days.map(::mapDay),
         )
     }
 
     private fun mapDay(dayDto: DayPlanDto): DayModel = DayModel(
         number = dayDto.day,
-        passages = dayDto.books.mapNotNull { bookDto ->
-            mapBook(bookDto)
-        },
+        passages = dayDto.books.mapNotNull(::mapBook),
         isRead = false,
         readVerses = 0,
         totalVerses = 0,
