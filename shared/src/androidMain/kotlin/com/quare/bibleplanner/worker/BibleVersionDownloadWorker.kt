@@ -6,9 +6,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownloadProgress
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
-import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
@@ -17,10 +17,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,8 +32,8 @@ internal class BibleVersionDownloadWorker(
     private val downloadBible: DownloadBibleUseCase by inject()
     private val notifier: AndroidBibleVersionDownloadNotifier by inject()
     private val bibleVersionDao: BibleVersionDao by inject()
-    private val verseDao: VerseDao by inject()
     private val bibleRepository: BibleRepository by inject()
+    private val observeDownloadProgress: ObserveBibleVersionDownloadProgress by inject()
 
     // Required for expedited work: used to run the worker as a foreground service / expedited job.
     override suspend fun getForegroundInfo(): ForegroundInfo {
@@ -69,11 +66,7 @@ internal class BibleVersionDownloadWorker(
         return try {
             val result = coroutineScope {
                 val progressObserver = launch {
-                    combine(
-                        bibleVersionDao.getAllVersionsFlow().mapNotNull { list -> list.find { it.id == versionId } },
-                        verseDao.countChaptersWithVersesByVersionFlow(versionId),
-                    ) { entity, count -> count.toFloat() / entity.totalChapters }
-                        .distinctUntilChanged()
+                    observeDownloadProgress(versionId)
                         .onEach { progress ->
                             lastProgress = progress
                             notifier.showProgress(versionId, versionName, progress)

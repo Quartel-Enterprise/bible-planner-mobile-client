@@ -1,4 +1,8 @@
 {
+  "2.7.1": [
+    "La pantalla de lectura ya no se traba mientras se descarga una versión de la Biblia: el desplazamiento sigue fluido de principio a fin.",
+    "La descarga de las versiones de la Biblia es ahora varias veces más rápida — lo que antes tardaba minutos ahora termina en segundos."
+  ],
   "2.7.0": [
     "Se corrigió un bloqueo que impedía abrir la app en algunos dispositivos. En esos dispositivos, la descarga de las versiones de la Biblia ahora ocurre con la app abierta.",
     "La pantalla de lectura fue rediseñada: el capítulo ahora se abre con el nombre del libro y el número en grande, el texto tiene más espacio entre las líneas y el botón de marcar como leído queda siempre a mano, junto a las flechas del capítulo anterior y el siguiente.",

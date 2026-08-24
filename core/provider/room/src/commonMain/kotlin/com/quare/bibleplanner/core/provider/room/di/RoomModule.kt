@@ -17,6 +17,8 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseHighlightDao
 import com.quare.bibleplanner.core.provider.room.dao.VerseNoteDao
 import com.quare.bibleplanner.core.provider.room.db.AppDatabase
+import com.quare.bibleplanner.core.provider.room.invalidation.RoomTableInvalidationObserver
+import com.quare.bibleplanner.core.provider.room.invalidation.TableInvalidationObserver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.dsl.module
@@ -45,4 +47,6 @@ val roomModule = module {
     single<SavedVerseDao> { get<AppDatabase>().savedVerseDao() }
     single<VerseNoteDao> { get<AppDatabase>().verseNoteDao() }
     single<HighlightPaletteColorDao> { get<AppDatabase>().highlightPaletteColorDao() }
+
+    single<TableInvalidationObserver> { RoomTableInvalidationObserver(get()) }
 }

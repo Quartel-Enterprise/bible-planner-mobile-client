@@ -1,4 +1,8 @@
 {
+  "2.7.1": [
+    "A tela de leitura não trava mais enquanto uma versão da Bíblia está sendo baixada: a rolagem continua fluida do começo ao fim do download.",
+    "O download das versões da Bíblia ficou várias vezes mais rápido — o que antes levava minutos agora termina em segundos."
+  ],
   "2.7.0": [
     "Corrigido um travamento que impedia o app de abrir em alguns aparelhos. Nesses aparelhos, o download das versões da Bíblia agora acontece com o app aberto.",
     "A tela de leitura foi redesenhada: o capítulo agora abre com o nome do livro e o número em destaque, o texto ganhou mais espaço entre as linhas e o botão de marcar como lido fica sempre à mão, junto das setas para o capítulo anterior e o próximo.",

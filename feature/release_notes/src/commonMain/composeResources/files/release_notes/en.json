@@ -1,4 +1,8 @@
 {
+  "2.7.1": [
+    "The reading screen no longer stutters while a Bible version is downloading: scrolling stays smooth from start to finish.",
+    "Downloading a Bible version is now several times faster — what used to take minutes now finishes in seconds."
+  ],
   "2.7.0": [
     "Fixed a crash that prevented the app from opening on some devices. On those devices, Bible version downloads now happen while the app is open.",
     "The reading screen has been redesigned: a chapter now opens with the book name and the number in large type, the text has more room to breathe between lines, and the mark as read button is always within reach, next to the arrows for the previous and next chapters.",

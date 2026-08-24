@@ -13,6 +13,8 @@ internal open class ThrowingVerseDao : VerseDao {
 
     override suspend fun getVersesByChapterId(chapterId: Long): List<VerseEntity> = error("Unexpected call")
 
+    override suspend fun getVersesByChapterIds(chapterIds: List<Long>): List<VerseEntity> = error("Unexpected call")
+
     override suspend fun getVersesWithTextsByChapterId(chapterId: Long): List<VerseWithTexts> = error("Unexpected call")
 
     override fun getVersesWithTextsByChapterIdFlow(chapterId: Long): Flow<List<VerseWithTexts>> =
@@ -31,7 +33,9 @@ internal open class ThrowingVerseDao : VerseDao {
 
     override suspend fun upsertVerses(verses: List<VerseEntity>): List<Long> = error("Unexpected call")
 
-    override suspend fun upsertVerseTexts(verseTexts: List<VerseTextEntity>): List<Long> = error("Unexpected call")
+    override suspend fun upsertVerseTexts(verseTexts: List<VerseTextEntity>) {
+        error("Unexpected call")
+    }
 
     override suspend fun updateVerse(verse: VerseEntity) {
         error("Unexpected call")
@@ -126,9 +130,12 @@ internal open class ThrowingVerseDao : VerseDao {
 
     override suspend fun countChaptersWithVersesByVersion(versionId: String): Int = error("Unexpected call")
 
-    override fun countChaptersWithVersesByVersionFlow(versionId: String): Flow<Int> = error("Unexpected call")
+    override suspend fun getDownloadedChaptersPerVersion(): List<VersionChapterCount> = error("Unexpected call")
 
-    override fun getDownloadedChaptersPerVersionFlow(): Flow<List<VersionChapterCount>> = error("Unexpected call")
+    override suspend fun getDownloadedChapterIds(
+        versionId: String,
+        chapterIds: List<Long>,
+    ): List<Long> = error("Unexpected call")
 
     override suspend fun deleteVerseTextsByVersion(versionId: String) {
         error("Unexpected call")

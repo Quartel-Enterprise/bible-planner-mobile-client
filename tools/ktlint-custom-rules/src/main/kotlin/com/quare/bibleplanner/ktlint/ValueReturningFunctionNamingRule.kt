@@ -25,7 +25,7 @@ private const val ALLOWED_VERB_PREFIXES =
         "prepare produce provide read receive refresh register reload remember remove render replace " +
         "report request require reset resolve respond restore retry rotate run sanitize save search " +
         "select send should show shows sign skip sort split start stop store stream suspend sync " +
-        "take to toggle track transform trim unbind unregister update upload upsert use validate " +
+        "take throttle to toggle track transform trim unbind unregister update upload upsert use validate " +
         "verify was were will with wrap write"
 private val allowedVerbPrefixes = ALLOWED_VERB_PREFIXES.split(' ').toSet()
 private val ignoredReturnTypes = setOf("Unit", "Nothing")

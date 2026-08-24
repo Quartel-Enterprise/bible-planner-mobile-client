@@ -43,9 +43,14 @@ class IosBackgroundDownloadBridge(
     internal suspend fun getPendingDownloads(versionId: String): List<ChapterDownloadTask> =
         BookId.entries.flatMap { bookId ->
             val bookAbb = supabaseBookAbbreviationMapper.map(bookId)
-            chapterDao
-                .getChaptersByBookId(bookId.name)
-                .filter { chapter -> verseDao.countVersesByChapterAndVersion(chapter.id, versionId) == 0 }
+            val chapters = chapterDao.getChaptersByBookId(bookId.name)
+            val downloadedChapterIds = verseDao
+                .getDownloadedChapterIds(
+                    versionId = versionId,
+                    chapterIds = chapters.map { it.id },
+                ).toSet()
+            chapters
+                .filterNot { chapter -> chapter.id in downloadedChapterIds }
                 .map { chapter ->
                     ChapterDownloadTask(
                         url = "$supabaseStorageBaseUrl/bible/${versionId.uppercase()}/$bookAbb/${chapter.number}.json",

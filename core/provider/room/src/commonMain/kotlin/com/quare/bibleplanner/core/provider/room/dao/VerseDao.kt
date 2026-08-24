@@ -34,6 +34,15 @@ interface VerseDao {
     suspend fun getVersesByChapterId(chapterId: Long): List<VerseEntity>
 
     /**
+     * Retrieves the verses of several chapters at once, ordered by chapter and then verse number.
+     *
+     * @param chapterIds The unique identifiers of the chapters.
+     * @return The list of verses belonging to any of the given chapters.
+     */
+    @Query("SELECT * FROM verses WHERE chapterId IN (:chapterIds) ORDER BY chapterId, number")
+    suspend fun getVersesByChapterIds(chapterIds: List<Long>): List<VerseEntity>
+
+    /**
      * Retrieves the list of verses with their texts for a specific chapter.
      */
     @Transaction
@@ -99,11 +108,13 @@ interface VerseDao {
     /**
      * Inserts or updates a list of verse texts.
      *
+     * Returns nothing on purpose: asking Room for the row ids costs a `last_insert_rowid()` round
+     * trip per row, and a Bible download writes tens of thousands of them for ids nobody reads.
+     *
      * @param verseTexts The list of verse text entities to be upserted.
-     * @return The list of row IDs for the upserted verse texts.
      */
     @Upsert
-    suspend fun upsertVerseTexts(verseTexts: List<VerseTextEntity>): List<Long>
+    suspend fun upsertVerseTexts(verseTexts: List<VerseTextEntity>)
 
     /**
      * Updates the content of an existing verse.
@@ -302,25 +313,31 @@ interface VerseDao {
     suspend fun countChaptersWithVersesByVersion(versionId: String): Int
 
     /**
-     * Observes how many distinct chapters have at least one verse downloaded for a specific version.
+     * Retrieves the downloaded chapter count for every Bible version that has at least one verse.
      *
-     * @param versionId The abbreviation of the Bible version.
-     * @return A [Flow] emitting the count of distinct chapters with at least one verse for the version.
-     */
-    @Query(
-        "SELECT COUNT(DISTINCT chapterId) FROM verses INNER JOIN verse_texts ON verses.id = verse_texts.verseId WHERE verse_texts.bibleVersionId = :versionId",
-    )
-    fun countChaptersWithVersesByVersionFlow(versionId: String): Flow<Int>
-
-    /**
-     * Observes the downloaded chapter count for every Bible version that has at least one verse.
-     *
-     * @return A [Flow] emitting a list of [VersionChapterCount], one entry per version.
+     * @return A list of [VersionChapterCount], one entry per version.
      */
     @Query(
         "SELECT verse_texts.bibleVersionId, COUNT(DISTINCT verses.chapterId) AS downloadedChapters FROM verse_texts INNER JOIN verses ON verses.id = verse_texts.verseId GROUP BY verse_texts.bibleVersionId",
     )
-    fun getDownloadedChaptersPerVersionFlow(): Flow<List<VersionChapterCount>>
+    suspend fun getDownloadedChaptersPerVersion(): List<VersionChapterCount>
+
+    /**
+     * Retrieves, among [chapterIds], the ones that already have verse texts for a specific version.
+     *
+     * Asking for a whole book at once keeps the download from paying one round trip per chapter.
+     *
+     * @param versionId The abbreviation of the Bible version.
+     * @param chapterIds The chapters to check.
+     * @return The identifiers of the chapters already downloaded for the version.
+     */
+    @Query(
+        "SELECT DISTINCT verses.chapterId FROM verse_texts INNER JOIN verses ON verses.id = verse_texts.verseId WHERE verse_texts.bibleVersionId = :versionId AND verses.chapterId IN (:chapterIds)",
+    )
+    suspend fun getDownloadedChapterIds(
+        versionId: String,
+        chapterIds: List<Long>,
+    ): List<Long>
 
     /**
      * Deletes all verse texts for a specific Bible version.
