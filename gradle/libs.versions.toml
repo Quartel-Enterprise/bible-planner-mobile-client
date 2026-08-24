@@ -1,6 +1,6 @@
 [versions]
 # Build tooling
-agp = "9.3.1"
+agp = "9.3.2"
 kotlin = "2.4.10"
 ksp = "2.3.11"
 buildkonfig = "0.22.0"
@@ -49,7 +49,7 @@ ktor = "3.5.2"
 play-app-update = "2.1.0"
 play-review = "2.0.2"
 play-services-time = "16.0.1"
-revenuecat = "3.5.0"
+revenuecat = "3.5.1"
 sentry = "8.53.0"
 supabase = "3.7.0"
 
