@@ -185,12 +185,11 @@ internal fun ReadNarrowScreen(
                             state = listState,
                             contentPadding = PaddingValues(bottom = 16.dp),
                         ) {
-                            content.chapters.forEachIndexed { index, chapter ->
+                            content.chapters.forEach { chapter ->
                                 chapterContent(
                                     chapter = chapter,
                                     header = state.header,
                                     settings = state.settings,
-                                    isPrimaryChapter = index == 0,
                                     focusedVerseNumber = null,
                                     onEvent = onEvent,
                                 )

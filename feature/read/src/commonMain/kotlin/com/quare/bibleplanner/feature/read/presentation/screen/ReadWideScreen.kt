@@ -97,12 +97,11 @@ internal fun ReadWideScreen(
                             state = rememberLazyListState(),
                             contentPadding = PaddingValues(bottom = 24.dp),
                         ) {
-                            content.chapters.forEachIndexed { index, chapter ->
+                            content.chapters.forEach { chapter ->
                                 chapterContent(
                                     chapter = chapter,
                                     header = state.header,
                                     settings = state.settings,
-                                    isPrimaryChapter = index == 0,
                                     focusedVerseNumber = null,
                                     onEvent = onEvent,
                                 )

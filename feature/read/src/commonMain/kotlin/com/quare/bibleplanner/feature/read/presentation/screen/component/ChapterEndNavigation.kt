@@ -14,16 +14,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 
 /**
  * Repeats the bottom bar's controls at the end of the text, naming the chapters this time: at the
- * end of a chapter the next step is the decision, not a bar the reader has scrolled past.
+ * end of a chapter the next step is the decision, not a bar the reader has scrolled past. A null
+ * [suggestions] drops the arrows altogether, leaving the read pill alone across the row.
  */
 @Composable
 internal fun ChapterEndNavigation(
-    previous: ReadNavigationSuggestionModel?,
-    next: ReadNavigationSuggestionModel?,
+    suggestions: ReadNavigationSuggestionsModel?,
     isRead: Boolean,
     onReadClick: () -> Unit,
     onEvent: (ReadUiEvent) -> Unit,
@@ -34,21 +35,25 @@ internal fun ChapterEndNavigation(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        ChapterEndButton(
-            suggestion = previous,
-            isNext = false,
-            onEvent = onEvent,
-        )
+        suggestions?.let {
+            ChapterEndButton(
+                suggestion = it.previous,
+                isNext = false,
+                onEvent = onEvent,
+            )
+        }
         ReadStatusPill(
             modifier = Modifier.weight(1f),
             isRead = isRead,
             onClick = onReadClick,
         )
-        ChapterEndButton(
-            suggestion = next,
-            isNext = true,
-            onEvent = onEvent,
-        )
+        suggestions?.let {
+            ChapterEndButton(
+                suggestion = it.next,
+                isNext = true,
+                onEvent = onEvent,
+            )
+        }
     }
 }
 

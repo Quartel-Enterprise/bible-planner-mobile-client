@@ -1,6 +1,7 @@
 {
   "2.7.1": [
-    "While a chapter loads, the reading screen now shows an outline of the text instead of a spinning circle — you can see the shape of the chapter that is coming, and the Bible version at the top is no longer blank before it loads."
+    "While a chapter loads, the reading screen now shows an outline of the text instead of a spinning circle — you can see the shape of the chapter that is coming, and the Bible version at the top is no longer blank before it loads.",
+    "With vertical reading on, the previous and next chapter arrows no longer appear at the end of the chapter — the next one is already right below, so only the mark-as-read button stays there."
   ],
   "2.7.0": [
     "Fixed a crash that prevented the app from opening on some devices. On those devices, Bible version downloads now happen while the app is open.",
