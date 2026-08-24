@@ -315,3 +315,37 @@ someUseCaseConsumer(onResult = GetUserUseCase { user -> ... })
 ```
 
 Best-effort enforcement by the custom ktlint rule `bible-planner-style:redundant-sam-constructor-argument`. Note this rule can only see fun interfaces declared in the *same file* as the call site (ktlint rules don't do cross-file type resolution), so it won't catch every case — treat it as a net, not a guarantee, when reviewing code that constructs a fun interface from a different module than where it's declared.
+
+## Method References
+
+When a lambda exists only to hand its parameter to a function, pass the function reference instead.
+
+```kotlin
+// Correct
+days = weekPlanDto.days.map(::mapDay)
+
+// Wrong — the lambda adds nothing but a name
+days = weekPlanDto.days.map { dayDto -> mapDay(dayDto) }
+```
+
+A reference cannot always replace the lambda. It has no way to carry a `suspend` modifier (`::save` has
+type `suspend (T) -> Unit`, which does not fit the plain `(T) -> Unit` that `let`, `map` and `forEach`
+declare), `@Composable` functions cannot be referenced at all, and a function reached through a receiver
+needs that receiver in the reference (`repository::delete`, `this::isVerseRead`). In those cases the
+lambda stays.
+
+For a nested class's constructor, the reference is the *simple* name plus an import — `Loadable::Loaded`
+does not compile, because `Loadable` is generic and `Loadable::x` is read as a member reference that wants
+its type argument:
+
+```kotlin
+import com.quare.bibleplanner.core.model.loadable.Loadable.Loaded
+
+versionAbbreviation = selectedBible?.version?.id?.uppercase()?.let(::Loaded) ?: Loadable.Loading
+```
+
+Partially enforced by the custom ktlint rule `bible-planner-style:prefer-method-reference`. Ktlint resolves
+no types, so the rule only fires when the called function is declared in the *same file* — there it can read
+the declaration and rule out the `suspend`, `@Composable` and receiver cases above. A forwarding lambda
+around a function from another file (including the `Loaded` example) is left alone rather than guessed at:
+treat the rule as a net for the cases it can prove, not as the definition of the convention.
