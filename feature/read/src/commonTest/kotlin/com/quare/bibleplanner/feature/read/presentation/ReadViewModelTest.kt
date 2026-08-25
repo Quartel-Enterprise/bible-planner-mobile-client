@@ -16,10 +16,12 @@ import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
 import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
 import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
+import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
 import com.quare.bibleplanner.feature.read.fake.FakeObserveReadData
 import com.quare.bibleplanner.feature.read.fake.FakeVerseSelectionStore
 import com.quare.bibleplanner.feature.read.fake.ThrowingBibleVersionDownloaderFacade
@@ -46,6 +48,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -337,6 +340,74 @@ internal class ReadViewModelTest {
         verseNumber = verseNumber,
     )
 
+    @Test
+    fun `shows the next chapter placeholder while vertical reading looks the next chapter up`() =
+        runTest(testDispatcher) {
+            // Given
+            val nextChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
+            prepareScenario(
+                isVerticalReadingEnabled = true,
+                getNextChapter = { _, _, _ -> nextChapter.await() },
+            )
+
+            // When
+            viewModel.onEvent(ReadUiEvent.OnReachedEnd)
+            runCurrent()
+
+            // Then
+            assertTrue(viewModel.uiState.value.isLoadingNextChapter)
+        }
+
+    @Test
+    fun `drops the placeholder once the next chapter is appended`() = runTest(testDispatcher) {
+        // Given
+        val nextChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
+        prepareScenario(
+            isVerticalReadingEnabled = true,
+            getNextChapter = { _, _, _ -> nextChapter.await() },
+        )
+        viewModel.onEvent(ReadUiEvent.OnReachedEnd)
+        runCurrent()
+
+        // When
+        nextChapter.complete(
+            ReadNavigationSuggestionModel(
+                bookId = BookId.GEN,
+                chapterNumber = 4,
+            ),
+        )
+        runCurrent()
+
+        // Then
+        assertFalse(viewModel.uiState.value.isLoadingNextChapter)
+    }
+
+    @Test
+    fun `keeps the placeholder away while vertical reading is off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(getNextChapter = { _, _, _ -> error("unused") })
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnReachedEnd)
+        runCurrent()
+
+        // Then
+        assertFalse(viewModel.uiState.value.isLoadingNextChapter)
+    }
+
+    @Test
+    fun `keeps the placeholder away at the end of the reading order`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isVerticalReadingEnabled = true)
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnReachedEnd)
+        runCurrent()
+
+        // Then
+        assertFalse(viewModel.uiState.value.isLoadingNextChapter)
+    }
+
     private fun TestScope.prepareScenario(
         toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus = ToggleWholeChapterReadStatus {
             _,
@@ -348,6 +419,8 @@ internal class ReadViewModelTest {
             error("unused")
         },
         dayCompletionCandidates: Map<ChapterLocationModel, PlanDayLocationModel> = emptyMap(),
+        isVerticalReadingEnabled: Boolean = false,
+        getNextChapter: GetNextChapter = GetNextChapter { _, _, _ -> null },
     ) {
         prefetchedDays = mutableListOf()
         trackedEvents = mutableListOf()
@@ -392,7 +465,7 @@ internal class ReadViewModelTest {
                 isRulerEnabled = false,
                 rulerLines = ReaderRulerLines.DEFAULT,
                 isFocusedVerseEnabled = false,
-                isVerticalReadingEnabled = false,
+                isVerticalReadingEnabled = isVerticalReadingEnabled,
             ),
         )
         viewModel = ReadViewModel(
@@ -414,7 +487,7 @@ internal class ReadViewModelTest {
             requestDownloadNotificationPermission = { error("unused") },
             observeReaderSettings = { settings },
             setReaderFocusAid = { error("unused") },
-            getNextChapter = { _, _, _ -> null },
+            getNextChapter = getNextChapter,
             observeVerseSelection = { selectionStore.selection },
             toggleVerseSelection = { chapter, verseNumber ->
                 selectionStore.toggle(
