@@ -38,30 +38,35 @@ class DownloadChaptersUseCase(
     ): Result<Unit> = suspendRunCatching {
         val supabaseBookDir = supabaseBookAbbreviationMapper.map(bookId)
         val chapters = chapterDao.getChaptersByBookId(bookId.name)
+        val downloadedChapterIds = verseDao
+            .getDownloadedChapterIds(
+                versionId = versionId,
+                chapterIds = chapters.map { it.id },
+            ).toSet()
         var failedChapters = 0
-        chapters.chunked(DOWNLOAD_CHAPTERS_CHUNK_SIZE).forEach { chunk ->
-            supervisorScope {
-                val results = chunk
-                    .map { chapter ->
-                        async {
-                            suspendRunCatching {
-                                val exists = verseDao.countVersesByChapterAndVersion(chapter.id, versionId) > 0
-                                if (!exists) {
+        chapters
+            .filterNot { it.id in downloadedChapterIds }
+            .chunked(DOWNLOAD_CHAPTERS_CHUNK_SIZE)
+            .forEach { chunk ->
+                supervisorScope {
+                    val results = chunk
+                        .map { chapter ->
+                            async {
+                                suspendRunCatching {
                                     val fileName =
                                         "bible/${versionId.uppercase()}/$supabaseBookDir/${chapter.number}.json"
                                     val bytes = downloadChapterBytes(fileName)
-                                    saveChapterToDatabase(
-                                        chapterId = chapter.id,
-                                        versionId = versionId,
-                                        chapterDto = json.decodeFromString<SyncChapterDto>(bytes.decodeToString()),
-                                    )
-                                }
-                            }.onFailure { Logger.e(it) { "Error syncing $bookId:${chapter.number}" } }
-                        }
-                    }.awaitAll()
-                failedChapters += results.count { it.isFailure }
+                                    chapter.id to json.decodeFromString<SyncChapterDto>(bytes.decodeToString())
+                                }.onFailure { Logger.e(it) { "Error syncing $bookId:${chapter.number}" } }
+                            }
+                        }.awaitAll()
+                    failedChapters += results.count { it.isFailure }
+                    saveChaptersToDatabase(
+                        versionId = versionId,
+                        chapters = results.mapNotNull { it.getOrNull() }.toMap(),
+                    )
+                }
             }
-        }
         check(failedChapters == 0) { "$failedChapters chapters of $bookId failed to download" }
     }.onFailure { Logger.e(it) { "Error downloading chapters for $bookId" } }
 
@@ -76,36 +81,43 @@ class DownloadChaptersUseCase(
         return downloadSemaphore.withPermit { bucketApi.downloadPublic(fileName) }
     }
 
-    private suspend fun saveChapterToDatabase(
-        chapterId: Long,
+    /**
+     * A whole chunk lands in one write. Every write wakes every screen observing the Bible tables, so
+     * saving chapter by chapter is what makes the app stutter while a version downloads.
+     */
+    private suspend fun saveChaptersToDatabase(
         versionId: String,
-        chapterDto: SyncChapterDto,
+        chapters: Map<Long, SyncChapterDto>,
     ) {
-        val verseTextEntities = getVerseTextEntities(chapterId, chapterDto, versionId)
-        verseDao.upsertVerseTexts(verseTextEntities)
-    }
-
-    private suspend fun getVerseTextEntities(
-        chapterId: Long,
-        chapterDto: SyncChapterDto,
-        versionId: String,
-    ): List<VerseTextEntity> {
-        val existingVerses = verseDao.getVersesByChapterId(chapterId).associateBy { it.number }
-        return chapterDto.verses.mapNotNull { verseDto ->
-            existingVerses[verseDto.number]?.let { verseEntity ->
-                VerseTextEntity(
-                    verseId = verseEntity.id,
-                    bibleVersionId = versionId,
-                    text = verseDto.text,
-                    heading = verseDto.heading,
-                )
+        if (chapters.isEmpty()) return
+        val versesByChapter = verseDao
+            .getVersesByChapterIds(chapters.keys.toList())
+            .groupBy { it.chapterId }
+        val verseTextEntities = chapters.flatMap { (chapterId, chapterDto) ->
+            val existingVerses = versesByChapter[chapterId].orEmpty().associateBy { it.number }
+            chapterDto.verses.mapNotNull { verseDto ->
+                existingVerses[verseDto.number]?.let { verseEntity ->
+                    VerseTextEntity(
+                        verseId = verseEntity.id,
+                        bibleVersionId = versionId,
+                        text = verseDto.text,
+                        heading = verseDto.heading,
+                    )
+                }
             }
         }
+        verseDao.upsertVerseTexts(verseTextEntities)
     }
 
     companion object {
         private const val DOWNLOAD_CHAPTERS_CHUNK_SIZE = 10
-        private const val MAX_CONCURRENT_DOWNLOADS = 10
+
+        /**
+         * The real ceiling on the download, kept below the HTTP client's own per-host limit so the
+         * app's other Supabase calls are never stuck behind a download burst. Supabase serves these
+         * chapters from the CDN edge and answered far more than this without throttling.
+         */
+        private const val MAX_CONCURRENT_DOWNLOADS = 24
         private const val MAX_DOWNLOAD_ATTEMPTS = 3
     }
 }

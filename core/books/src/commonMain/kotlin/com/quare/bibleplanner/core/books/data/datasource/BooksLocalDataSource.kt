@@ -50,7 +50,6 @@ class BooksLocalDataSource(
                         VerseModel(
                             number = verseNumber,
                             isRead = false,
-                            text = null,
                         )
                     },
                     isRead = false,

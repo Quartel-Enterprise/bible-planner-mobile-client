@@ -98,6 +98,7 @@ private class FakeBibleRepository(
                     chapters = 1189,
                     size = 8245560,
                 ),
+                downloadedChapters = 1189,
                 downloadStatus = DownloadStatusModel.Downloaded,
                 isSelected = false,
                 hasPendingUpdate = hasPendingUpdate,

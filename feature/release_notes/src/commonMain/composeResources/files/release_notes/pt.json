@@ -4,7 +4,9 @@
     "Com a leitura vertical ligada, as setas de capítulo anterior e próximo não aparecem mais no fim do capítulo — o próximo já vem logo abaixo, então ali fica só o botão de marcar como lido.",
     "Com a leitura vertical ligada, chegar ao fim do capítulo não trava mais a rolagem: o esboço do próximo capítulo aparece logo abaixo e o texto entra no lugar assim que carrega — e o capítulo seguinte já começa a ser buscado enquanto você lê.",
     "A leitura vertical agora também funciona em telas maiores, como tablets e computadores, onde antes a leitura parava no fim do capítulo aberto.",
-    "Em telas maiores, o nome do capítulo no topo e o botão de marcar como lido agora acompanham o capítulo que você está lendo, em vez de ficarem no capítulo em que a tela foi aberta."
+    "Em telas maiores, o nome do capítulo no topo e o botão de marcar como lido agora acompanham o capítulo que você está lendo, em vez de ficarem no capítulo em que a tela foi aberta.",
+    "A tela de leitura não trava mais enquanto uma versão da Bíblia está sendo baixada: a rolagem continua fluida do começo ao fim do download.",
+    "O download das versões da Bíblia ficou várias vezes mais rápido — o que antes levava minutos agora termina em segundos."
   ],
   "2.7.0": [
     "Corrigido um travamento que impedia o app de abrir em alguns aparelhos. Nesses aparelhos, o download das versões da Bíblia agora acontece com o app aberto.",

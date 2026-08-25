@@ -12,8 +12,11 @@ import com.quare.bibleplanner.core.books.fake.ThrowingBibleVersionDao
 import com.quare.bibleplanner.core.books.fake.ThrowingVerseDao
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusMapper
 import com.quare.bibleplanner.core.provider.language.domain.provider.LanguageProvider
+import com.quare.bibleplanner.core.provider.room.invalidation.TableInvalidationObserver
+import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -88,6 +91,8 @@ internal class BibleRepositoryImplTest {
             bibleMapper = BibleMapper(DownloadStatusMapper()),
             dataStore = FakePreferencesDataStore(preferences),
             languageProvider = FixedLanguageProvider(appLanguage),
+            observeTableInvalidation = TableInvalidationObserver { emptyFlow() },
+            applicationScope = ApplicationScope(),
         )
     }
 }

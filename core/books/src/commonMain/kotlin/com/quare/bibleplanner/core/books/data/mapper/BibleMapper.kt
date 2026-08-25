@@ -25,6 +25,7 @@ internal class BibleMapper(
         val downloadedChapters = downloadedChaptersMap[id] ?: 0
         return BibleModel(
             version = versionModel,
+            downloadedChapters = downloadedChapters,
             downloadStatus = toStatus(downloadedChapters),
             isSelected = false,
             hasPendingUpdate = hasPendingUpdate(

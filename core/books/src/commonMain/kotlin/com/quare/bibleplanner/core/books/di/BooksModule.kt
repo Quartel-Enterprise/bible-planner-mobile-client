@@ -46,6 +46,8 @@ import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownloadProgress
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownloadProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
@@ -152,6 +154,7 @@ val booksModule = module {
     factoryOf(::GetSelectedVersionIdFlowUseCase).bind<GetSelectedVersionIdFlow>()
     factoryOf(::GetVersesShareContentUseCase).bind<GetVersesShareContent>()
     factoryOf(::GetSelectedBibleFlowUseCase)
+    factoryOf(::ObserveBibleVersionDownloadProgressUseCase).bind<ObserveBibleVersionDownloadProgress>()
     factoryOf(::GetSelectedBibleNameFlowUseCase)
     factoryOf(::UpdatePassageReadStatusUseCase)
     factoryOf(::ResetAllProgressUseCase)
