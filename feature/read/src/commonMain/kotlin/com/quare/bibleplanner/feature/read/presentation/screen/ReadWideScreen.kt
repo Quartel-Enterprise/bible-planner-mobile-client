@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
@@ -38,6 +39,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadSta
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadErrorContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterContent
+import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterShimmerContent
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import org.jetbrains.compose.resources.stringResource
@@ -55,6 +57,17 @@ internal fun ReadWideScreen(
     state: ReadUiState,
     onEvent: (ReadUiEvent) -> Unit,
 ) {
+    val listState = rememberLazyListState()
+    val chapters = (state.content as? ReadContentUiState.Success)?.chapters.orEmpty()
+    val visibleChapter = rememberVisibleChapter(
+        chapters = chapters,
+        listState = listState,
+    )
+    ReachedEndEffect(
+        listState = listState,
+        chapters = chapters,
+        onReachedEnd = { onEvent(ReadUiEvent.OnReachedEnd) },
+    )
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -64,6 +77,7 @@ internal fun ReadWideScreen(
             ReadWideHeader(
                 platform = platform,
                 header = state.header,
+                visibleChapter = visibleChapter,
                 onEvent = onEvent,
             )
             Box(
@@ -94,7 +108,7 @@ internal fun ReadWideScreen(
                                 .widthIn(max = readingColumnMaxWidth)
                                 .fillMaxHeight()
                                 .padding(horizontal = 24.dp),
-                            state = rememberLazyListState(),
+                            state = listState,
                             contentPadding = PaddingValues(bottom = 24.dp),
                         ) {
                             content.chapters.forEach { chapter ->
@@ -105,6 +119,9 @@ internal fun ReadWideScreen(
                                     focusedVerseNumber = null,
                                     onEvent = onEvent,
                                 )
+                            }
+                            if (state.isLoadingNextChapter) {
+                                chapterShimmerContent()
                             }
                         }
                     }
@@ -118,9 +135,13 @@ internal fun ReadWideScreen(
 private fun ReadWideHeader(
     platform: Platform,
     header: ReadHeaderUiModel,
+    visibleChapter: ReadChapterUiModel?,
     onEvent: (ReadUiEvent) -> Unit,
 ) = BoxWithConstraints {
     val hasRoomForTitle = maxWidth >= titleMinColumnWidth
+    val bookStringResource = visibleChapter?.bookStringResource ?: header.bookStringResource
+    val bookId = visibleChapter?.chapter?.bookId ?: header.bookId
+    val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -133,7 +154,7 @@ private fun ReadWideHeader(
         if (hasRoomForTitle) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = "${stringResource(header.bookStringResource)} ${header.chapterNumber}",
+                text = "${stringResource(bookStringResource)} $chapterNumber",
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -142,13 +163,13 @@ private fun ReadWideHeader(
             Spacer(modifier = Modifier.weight(1f))
         }
         ReadStatusPill(
-            isRead = header.isChapterRead,
+            isRead = visibleChapter?.isRead ?: header.isChapterRead,
             isCompact = true,
             onClick = {
                 onEvent(
                     ReadUiEvent.ToggleReadStatus(
-                        bookId = header.bookId,
-                        chapterNumber = header.chapterNumber,
+                        bookId = bookId,
+                        chapterNumber = chapterNumber,
                     ),
                 )
             },
