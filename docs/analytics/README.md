@@ -78,7 +78,27 @@ Parameters shared across many events are defined once here; event files referenc
 
 ## Auto-collected events
 
-Firebase automatically logs `first_open`, `app_open`, `session_start`, `user_engagement`, `os_update`, `app_update` and `in_app_purchase` on Android and iOS — do not log these manually. The Desktop target gets **none** of these automatically (Measurement Protocol only sends what we post); this gap is accepted for now since desktop traffic is small.
+Firebase automatically logs `first_open`, `app_open`, `session_start`, `user_engagement`, `os_update` and `app_update` on Android and iOS — do not log these manually. The Desktop target gets **none** of these automatically (Measurement Protocol only sends what we post); this gap is accepted for now since desktop traffic is small.
+
+### Purchase revenue
+
+`in_app_purchase` is the exception: it is **not** automatically collected everywhere, and **the app never logs it itself**. GA4 does not de-duplicate a manually logged purchase against an automatically collected one, so exactly one producer per platform may report revenue.
+
+| Platform | Producer | Covers renewals |
+|---|---|---|
+| Android | Google Play, automatically, via the [Google Play link](https://support.google.com/firebase/answer/6392038) (already enabled on this project) | yes |
+| iOS | The RevenueCat → Firebase (GA4) integration, server-side, registered for the **iOS app only** | yes |
+| Desktop | Nobody — known gap | — |
+
+Why iOS needs the server-side path: the Firebase SDK only auto-collects StoreKit 1 transactions and the RevenueCat SDK purchases through StoreKit 2, so nothing arrives on its own. A client-side event was considered and rejected — it can only ever see the first transaction of a subscription, never a renewal, and can never reverse a refund.
+
+That integration is registered for the iOS app alone on purpose: registering Android too would double-count against the Play link, which is already working and needs no client cooperation.
+
+It delivers through the GA4 Measurement Protocol and depends on the `$firebaseAppInstanceId` subscriber attribute, which the app pushes to RevenueCat whenever the billing identity changes (`SyncBillingUserIdUseCase` in `core/provider/billing`). **If that attribute is missing or stale, iOS revenue silently stops arriving** — it is the single point of failure of this design. Two consequences of the Measurement Protocol delivery: these events cannot be used with Firebase A/B Testing, and they will not show up in DebugView.
+
+Desktop stays uncovered on both paths: RevenueCat's integration excludes Web Billing/Stripe, and `in_app_purchase` is only valid on App streams while the desktop target reports through a Web stream.
+
+Neither path reverses a refund, so GA4 revenue runs high by whatever was refunded. Revenue truth lives in RevenueCat; GA4 revenue is for attribution and cohorts.
 
 ## screen_view strategy
 

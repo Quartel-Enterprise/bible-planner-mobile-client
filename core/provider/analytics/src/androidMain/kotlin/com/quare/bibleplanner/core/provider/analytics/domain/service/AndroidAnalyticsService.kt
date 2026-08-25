@@ -2,6 +2,8 @@ package com.quare.bibleplanner.core.provider.analytics.domain.service
 
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 internal class AndroidAnalyticsService(
     private val firebaseAnalytics: FirebaseAnalytics,
@@ -18,6 +20,12 @@ internal class AndroidAnalyticsService(
         params: Map<String, Any>,
     ) {
         firebaseAnalytics.logEvent(name, params.toBundle())
+    }
+
+    override suspend fun getAppInstanceId(): String? = suspendCancellableCoroutine { continuation ->
+        firebaseAnalytics.appInstanceId
+            .addOnSuccessListener { appInstanceId -> continuation.resume(appInstanceId) }
+            .addOnFailureListener { continuation.resume(null) }
     }
 
     private fun Map<String, Any>.toBundle(): Bundle {

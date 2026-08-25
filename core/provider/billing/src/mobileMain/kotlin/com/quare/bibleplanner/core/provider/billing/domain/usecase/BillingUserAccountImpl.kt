@@ -14,4 +14,8 @@ internal class BillingUserAccountImpl(
     override suspend fun logOut() {
         purchases.awaitLogOutResult()
     }
+
+    override fun setFirebaseAppInstanceId(firebaseAppInstanceId: String?) {
+        purchases.setFirebaseAppInstanceID(firebaseAppInstanceId)
+    }
 }

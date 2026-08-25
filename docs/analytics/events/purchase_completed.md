@@ -23,7 +23,7 @@ Captures a successful Pro subscription purchase. This is the primary monetizatio
 
 ## Notes
 
-- Firebase already auto-logs the standard `in_app_purchase` event (with revenue) on Android and iOS; do **not** duplicate revenue reporting. This custom event exists to carry funnel context (`subscription_plan`, `package_id`, `store`) and to exist on Desktop, where nothing is auto-collected.
+- **This event carries no revenue.** `price` is a localized display string, and `purchase_completed` is not a reserved GA4 name, so nothing here reaches the "Total revenue" metric. Revenue never comes from the client at all — see [Purchase revenue](../README.md#purchase-revenue) for which producer reports it on each platform.
 - Revenue truth lives in RevenueCat; treat this event as a funnel marker, not an accounting source.
 - Follows [purchase_started](purchase_started.md); restores use [restore_completed](restore_completed.md) instead.
 - The Congrats screen impression that follows is covered by [screen_view](screen_view.md).

@@ -83,6 +83,8 @@ class ObserveTesterUserPropertyUseCaseTest {
             name: String,
             params: Map<String, Any>,
         ) = Unit
+
+        override suspend fun getAppInstanceId(): String? = null
     }
 
     private companion object {

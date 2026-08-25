@@ -12,4 +12,6 @@ internal class BillingUserAccountDesktop(
     override suspend fun logOut() {
         repository.clearSubscriptionStatus()
     }
+
+    override fun setFirebaseAppInstanceId(firebaseAppInstanceId: String?) = Unit
 }

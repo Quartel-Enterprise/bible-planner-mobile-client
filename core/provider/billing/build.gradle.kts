@@ -64,6 +64,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(projects.core.provider.analytics)
             implementation(projects.core.remoteConfig)
             implementation(projects.core.user)
             implementation(libs.kotlinx.datetime)
