@@ -24,6 +24,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -148,7 +149,13 @@ class ReadDataPresentationModelFactory(
              */
             getSelectedVersionIdFlow().flatMapLatest { versionId ->
                 combine(
-                    getVersesWithTextsByChapterIdFlow(chapterId),
+                    /*
+                     * Room re-runs the query on any write to the verse tables, so downloading a
+                     * version re-emits this chapter thousands of times over with the very same
+                     * rows. Dropping those here keeps the reader from rebuilding — on the main
+                     * thread — every verse on screen for a write that touched another chapter.
+                     */
+                    getVersesWithTextsByChapterIdFlow(chapterId).distinctUntilChanged(),
                     observeChapterAnnotations(
                         ChapterRef(
                             bibleVersionId = versionId,
