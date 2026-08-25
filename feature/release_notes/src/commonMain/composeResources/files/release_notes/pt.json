@@ -6,7 +6,8 @@
     "A leitura vertical agora também funciona em telas maiores, como tablets e computadores, onde antes a leitura parava no fim do capítulo aberto.",
     "Em telas maiores, o nome do capítulo no topo e o botão de marcar como lido agora acompanham o capítulo que você está lendo, em vez de ficarem no capítulo em que a tela foi aberta.",
     "A tela de leitura não trava mais enquanto uma versão da Bíblia está sendo baixada: a rolagem continua fluida do começo ao fim do download.",
-    "O download das versões da Bíblia ficou várias vezes mais rápido — o que antes levava minutos agora termina em segundos."
+    "O download das versões da Bíblia ficou várias vezes mais rápido — o que antes levava minutos agora termina em segundos.",
+    "Agora dá para excluir uma versão da Bíblia enquanto ela está baixando ou pausada: o download é interrompido na hora e a versão volta a aparecer como não baixada."
   ],
   "2.7.0": [
     "Corrigido um travamento que impedia o app de abrir em alguns aparelhos. Nesses aparelhos, o download das versões da Bíblia agora acontece com o app aberto.",

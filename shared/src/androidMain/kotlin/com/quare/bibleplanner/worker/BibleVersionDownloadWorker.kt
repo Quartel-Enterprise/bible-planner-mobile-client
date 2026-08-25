@@ -90,11 +90,29 @@ internal class BibleVersionDownloadWorker(
             if (result.isSuccess) Result.success() else Result.failure()
         } catch (_: CancellationException) {
             withContext(NonCancellable) {
-                notifier.showPaused(versionId, versionName, lastProgress)
-                bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
+                markAsPausedUnlessDeleted(
+                    versionId = versionId,
+                    versionName = versionName,
+                    progress = lastProgress,
+                )
             }
             Result.failure()
         }
+    }
+
+    private suspend fun markAsPausedUnlessDeleted(
+        versionId: String,
+        versionName: String,
+        progress: Float,
+    ) {
+        val wasDeleted = bibleVersionDao.getVersionById(versionId)?.status == DownloadStatus.NOT_STARTED
+        if (wasDeleted) return
+        notifier.showPaused(
+            versionId = versionId,
+            versionName = versionName,
+            progress = progress,
+        )
+        bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
     }
 
     companion object {

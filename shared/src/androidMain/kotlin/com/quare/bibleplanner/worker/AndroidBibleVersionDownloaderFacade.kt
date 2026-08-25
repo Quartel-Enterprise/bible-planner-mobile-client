@@ -40,19 +40,23 @@ internal class AndroidBibleVersionDownloaderFacade(
     }
 
     override suspend fun pauseDownload(versionId: String) {
-        withWorkManager(
-            onAvailable = { manager -> manager.cancelUniqueWork(BibleVersionDownloadWorker.workName(versionId)) },
-            onUnavailable = { inProcessDownloader.cancelDownload(versionId) },
-        )
+        cancelOngoingDownload(versionId)
         pauseBibleVersion(versionId)
     }
 
     override suspend fun deleteDownload(versionId: String) {
-        pauseDownload(versionId)
+        cancelOngoingDownload(versionId)
         deleteBibleVersion(versionId)
     }
 
-    private fun withWorkManager(
+    private suspend fun cancelOngoingDownload(versionId: String) {
+        withWorkManager(
+            onAvailable = { manager -> manager.cancelUniqueWork(BibleVersionDownloadWorker.workName(versionId)) },
+            onUnavailable = { inProcessDownloader.cancelDownload(versionId) },
+        )
+    }
+
+    private inline fun withWorkManager(
         onAvailable: (WorkManager) -> Unit,
         onUnavailable: () -> Unit,
     ) {

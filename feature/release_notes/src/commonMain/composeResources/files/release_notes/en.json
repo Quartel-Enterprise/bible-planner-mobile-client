@@ -6,7 +6,8 @@
     "Vertical reading now works on larger screens too, such as tablets and computers, where reading used to stop at the end of the chapter you opened.",
     "On larger screens, the chapter name at the top and the mark as read button now follow the chapter you are reading, instead of staying on the one the screen was opened at.",
     "The reading screen no longer stutters while a Bible version is downloading: scrolling stays smooth from start to finish.",
-    "Downloading a Bible version is now several times faster — what used to take minutes now finishes in seconds."
+    "Downloading a Bible version is now several times faster — what used to take minutes now finishes in seconds.",
+    "You can now delete a Bible version while it is downloading or paused: the download stops right away and the version goes back to not downloaded."
   ],
   "2.7.0": [
     "Fixed a crash that prevented the app from opening on some devices. On those devices, Bible version downloads now happen while the app is open.",
