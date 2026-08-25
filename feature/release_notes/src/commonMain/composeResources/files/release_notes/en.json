@@ -8,7 +8,12 @@
     "The reading screen no longer stutters while a Bible version is downloading: scrolling stays smooth from start to finish.",
     "Downloading a Bible version is now several times faster — what used to take minutes now finishes in seconds.",
     "You can now delete a Bible version while it is downloading or paused: the download stops right away and the version goes back to not downloaded.",
-    "The confirmation that appears when you delete a downloaded Bible version is now in your language — it used to show up in English for anyone reading in Portuguese or Spanish."
+    "The confirmation that appears when you delete a downloaded Bible version is now in your language — it used to show up in English for anyone reading in Portuguese or Spanish.",
+    "Fixed the huge gap that appeared between the text field and the keyboard in the AI chat: the field now sits right above the keyboard, and the top of the conversation no longer runs off screen.",
+    "In the AI chat, the conversation now follows the answer as it is being written, the way a messaging chat does — and if you scroll up to re-read something, it stops following and no longer pulls you back down.",
+    "Question suggestions now disappear as soon as you send your question, instead of staying on screen until the answer starts arriving.",
+    "The chat's text field now suggests a capital first letter, like messaging apps do.",
+    "On the day screen, the notes field is no longer hidden behind the keyboard: the screen adjusts and takes you straight to it."
   ],
   "2.7.0": [
     "Fixed a crash that prevented the app from opening on some devices. On those devices, Bible version downloads now happen while the app is open.",

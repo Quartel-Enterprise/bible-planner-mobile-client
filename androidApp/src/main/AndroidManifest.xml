@@ -27,10 +27,13 @@
             android:name="google_analytics_automatic_screen_reporting_enabled"
             android:value="false" />
 
+        <!-- Compose owns the keyboard inset through Modifier.imePadding(); without adjustResize the
+             system pans the whole window as well, stacking a second keyboard's worth of space. -->
         <activity
             android:exported="true"
             android:launchMode="singleTask"
-            android:name="com.quare.bibleplanner.MainActivity">
+            android:name="com.quare.bibleplanner.MainActivity"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

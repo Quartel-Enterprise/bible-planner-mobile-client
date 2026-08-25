@@ -454,6 +454,7 @@ internal class ChatViewModel(
                 input = "",
                 failure = null,
                 isSuggestionBarExpanded = false,
+                isAnswering = true,
             )
         }
         clearDraft()
