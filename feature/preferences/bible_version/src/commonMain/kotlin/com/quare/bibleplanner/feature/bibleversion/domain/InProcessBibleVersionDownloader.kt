@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -49,8 +50,8 @@ class InProcessBibleVersionDownloader(
         }
     }
 
-    fun cancelDownload(versionId: String) {
-        activeDownloads.remove(versionId)?.cancel()
+    suspend fun cancelDownload(versionId: String) {
+        activeDownloads.remove(versionId)?.cancelAndJoin()
     }
 
     fun cancelAllDownloads() {
