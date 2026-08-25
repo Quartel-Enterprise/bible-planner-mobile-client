@@ -1,18 +1,14 @@
 name: translations
 
+# No `paths` filter here on purpose: check-translations is a required status check,
+# and GitHub never reports a check for a workflow skipped by path filtering, which
+# would leave every PR that touches no strings.xml waiting forever. The job takes a
+# few seconds, so running it on every pull request is cheaper than the deadlock.
 on:
   pull_request:
-    paths:
-      - '.github/workflows/translations.yml'
-      - 'scripts/check_translations.py'
-      - '**/strings.xml'
   push:
     branches:
       - main
-    paths:
-      - '.github/workflows/translations.yml'
-      - 'scripts/check_translations.py'
-      - '**/strings.xml'
 
 permissions:
   contents: read
