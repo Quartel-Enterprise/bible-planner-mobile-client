@@ -8,7 +8,12 @@
     "La pantalla de lectura ya no se traba mientras se descarga una versión de la Biblia: el desplazamiento sigue fluido de principio a fin.",
     "La descarga de las versiones de la Biblia es ahora varias veces más rápida — lo que antes tardaba minutos ahora termina en segundos.",
     "Ahora puedes eliminar una versión de la Biblia mientras se está descargando o está pausada: la descarga se detiene al instante y la versión vuelve a aparecer como no descargada.",
-    "La confirmación que aparece al eliminar una versión de la Biblia descargada ahora está en tu idioma — antes aparecía en inglés para quienes leen en portugués o español."
+    "La confirmación que aparece al eliminar una versión de la Biblia descargada ahora está en tu idioma — antes aparecía en inglés para quienes leen en portugués o español.",
+    "Corregido el espacio enorme que aparecía entre el campo de escritura y el teclado en el chat con la IA: ahora el campo queda justo encima del teclado y la parte superior de la conversación ya no se sale de la pantalla.",
+    "En el chat con la IA, la conversación ahora sigue la respuesta mientras se va escribiendo, como en un chat de mensajes; y si subes para releer algo, deja de seguirla y ya no te arrastra hacia abajo.",
+    "Las sugerencias de preguntas ahora desaparecen apenas envías tu pregunta, en lugar de quedarse en pantalla hasta que empieza a llegar la respuesta.",
+    "El campo de escritura del chat ahora sugiere la primera letra en mayúscula, como en las apps de mensajería.",
+    "En la pantalla del día, el campo de notas ya no queda oculto detrás del teclado: la pantalla se ajusta y te lleva directo a él."
   ],
   "2.7.0": [
     "Se corrigió un bloqueo que impedía abrir la app en algunos dispositivos. En esos dispositivos, la descarga de las versiones de la Biblia ahora ocurre con la app abierta.",

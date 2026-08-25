@@ -389,6 +389,21 @@ internal class ChatViewModelTest {
     }
 
     @Test
+    fun `GIVEN a new conversation WHEN sending THEN the suggestions leave before the answer`() =
+        runTest(testDispatcher) {
+            val viewModel = createViewModelWithSuggestion()
+            advanceUntilIdle()
+            assertTrue(viewModel.uiState.value.showInitialSuggestions)
+
+            viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Abel foi morto?"))
+            viewModel.onEvent(ChatUiEvent.OnSendClick)
+
+            val state = viewModel.uiState.value
+            assertTrue(state.messages.isEmpty())
+            assertTrue(!state.showInitialSuggestions)
+        }
+
+    @Test
     fun `GIVEN a question is sent THEN the thread is scrolled to the bottom`() = runTest(testDispatcher) {
         val viewModel = createViewModel()
         val actions = mutableListOf<ChatUiAction>()

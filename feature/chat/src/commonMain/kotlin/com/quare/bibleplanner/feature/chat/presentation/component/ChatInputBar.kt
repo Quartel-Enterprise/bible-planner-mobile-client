@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Bolt
@@ -24,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.chat.generated.resources.Res
 import bibleplanner.feature.chat.generated.resources.chat_cooldown_input
@@ -100,6 +102,7 @@ private fun ComposerRow(
                         ?: stringResource(Res.string.chat_input_placeholder_generic),
                 )
             },
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             shape = fieldShape,
         )
         FilledIconButton(

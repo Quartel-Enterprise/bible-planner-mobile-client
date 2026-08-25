@@ -52,8 +52,11 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 internal class ChatRepositoryImpl(
     private val localDataSource: ChatLocalDataSource,
@@ -72,6 +75,7 @@ internal class ChatRepositoryImpl(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val json: Json,
 ) : ChatRepository {
+    private val cacheHandoverTimeout: Duration = 2.seconds
     private val streamingAnswer: MutableStateFlow<StreamingAnswer?> = MutableStateFlow(null)
     private val quota: MutableStateFlow<ChatQuotaModel?> = MutableStateFlow(null)
     private var currentUserId: String? = null
@@ -290,7 +294,6 @@ internal class ChatRepositoryImpl(
         messageId: String,
         content: String,
     ) {
-        streamingAnswer.value = null
         localDataSource.saveMessage(
             conversationId = conversationId,
             message = ChatMessageModel(
@@ -302,7 +305,28 @@ internal class ChatRepositoryImpl(
                 createdAt = Clock.System.now(),
             ),
         )
+        awaitCachedMessage(
+            conversationId = conversationId,
+            messageId = messageId,
+        )
+        streamingAnswer.value = null
         touchConversation(conversationId)
+    }
+
+    /**
+     * The room write lands asynchronously, so dropping the streamed answer the moment it is saved
+     * leaves the thread without an answer at all for a frame or two. Waiting for the cache to carry
+     * it keeps the handover invisible.
+     */
+    private suspend fun awaitCachedMessage(
+        conversationId: String,
+        messageId: String,
+    ) {
+        withTimeoutOrNull(cacheHandoverTimeout) {
+            localDataSource
+                .observeMessages(conversationId)
+                .first { messages -> messages.any { message -> message.id == messageId } }
+        }
     }
 
     private suspend fun onTitleGenerated(

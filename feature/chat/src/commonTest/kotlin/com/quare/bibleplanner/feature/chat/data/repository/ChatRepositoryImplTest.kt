@@ -81,6 +81,24 @@ internal class ChatRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a finishing answer WHEN observing THEN it never leaves the thread`() = runTest {
+        val repository = createRepository()
+        val send = launch(UnconfinedTestDispatcher(testScheduler)) { repository.sendMessage(request()).collect {} }
+        streamDataSource.emit(accepted())
+        streamDataSource.emit(ChatStreamEvent.Delta("Caim matou"))
+        val threads = mutableListOf<List<String>>()
+        val observation = launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeMessages("conversation-1").collect { thread -> threads += thread.map { it.id } }
+        }
+
+        streamDataSource.emit(done())
+
+        assertTrue(threads.all { thread -> thread.lastOrNull() == "answer-1" })
+        observation.cancel()
+        send.cancel()
+    }
+
+    @Test
     fun `GIVEN a failed generation WHEN it dies THEN the thread is re-read from the server`() = runTest {
         val repository = createRepository()
         messagesDataSource.remoteMessages = mapOf("conversation-1" to listOf(questionDto()))

@@ -23,7 +23,7 @@ data class ChatUiState(
         }
 
     val showInitialSuggestions: Boolean
-        get() = messages.isEmpty() && suggestions.isNotEmpty()
+        get() = messages.isEmpty() && !isAnswering && suggestions.isNotEmpty()
 
     val showSuggestionBar: Boolean
         get() = messages.isNotEmpty() && suggestions.isNotEmpty() && inputMode == ChatInputMode.ENABLED

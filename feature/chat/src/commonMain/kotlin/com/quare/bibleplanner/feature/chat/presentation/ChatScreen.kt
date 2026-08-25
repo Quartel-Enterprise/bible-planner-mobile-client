@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.chat.presentation
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -67,6 +69,7 @@ import bibleplanner.feature.chat.generated.resources.chat_new_conversation
 import bibleplanner.feature.chat.generated.resources.chat_title
 import bibleplanner.feature.chat.generated.resources.chat_welcome_generic
 import bibleplanner.feature.chat.generated.resources.chat_welcome_with_context
+import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendFailureModel
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatContextChip
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatContextPill
@@ -83,6 +86,9 @@ import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
@@ -107,10 +113,11 @@ internal fun ChatScreen(
     val listState = rememberLazyListState()
     var composerHeightPx by remember { mutableFloatStateOf(0f) }
     ReserveBottomOverlayHeight { composerHeightPx }
-    ScrollToBottomEffect(
+    ChatScrollEffect(
         requests = scrollToBottomRequests,
         listState = listState,
         hasThread = uiState.messages.isNotEmpty(),
+        isAnswering = uiState.isAnswering,
     )
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val safeAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
@@ -206,6 +213,7 @@ private fun ChatThread(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .consumeWindowInsets(padding)
                 .imePadding(),
         ) {
             ChatMessages(
@@ -432,12 +440,14 @@ private fun Modifier.centeredContent(): Modifier = this
     .fillMaxWidth()
 
 @Composable
-private fun ScrollToBottomEffect(
+private fun ChatScrollEffect(
     requests: Flow<Unit>,
     listState: LazyListState,
     hasThread: Boolean,
+    isAnswering: Boolean,
 ) {
     var hasLanded by rememberSaveable { mutableStateOf(false) }
+    var isFollowing by remember { mutableStateOf(true) }
     // Opening a thread lands on its newest message, and lands there rather than travelling: the
     // reader is coming back to what was last said. Driven by the thread itself, because the scroll
     // request the view model sends is a passing event that the screen is not yet listening for.
@@ -448,8 +458,49 @@ private fun ScrollToBottomEffect(
         listState.settleAtEnd()
         hasLanded = true
     }
+    // Dragging up is the reader letting go of the end to read further back, and returning to the
+    // end is them taking hold of it again. Everything below follows that hold, so an answer being
+    // written never drags the list out from under someone reading above it.
+    LaunchedEffect(listState) {
+        listState.interactionSource.interactions.collect { interaction ->
+            if (interaction is DragInteraction.Start) isFollowing = false
+        }
+    }
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }.collect { isScrolling ->
+            if (!isScrolling) isFollowing = listState.getEndOvershoot() <= 0f
+        }
+    }
+    // An answer arrives a few words at a time, and the thread stays at its end as they land, the
+    // way a chat does: the reader watches the words appear instead of chasing them.
+    LaunchedEffect(
+        listState,
+        isAnswering,
+    ) {
+        if (!isAnswering) return@LaunchedEffect
+        isFollowing = true
+        snapshotFlow { listState.getEndOvershoot() }.collect { overshoot ->
+            if (isFollowing && overshoot > 0f) listState.ignoringInterruption { scrollBy(overshoot) }
+        }
+    }
     LaunchedEffect(requests) {
-        requests.collect { listState.animateToEnd() }
+        requests.collect {
+            if (isFollowing) listState.ignoringInterruption { animateToEnd() }
+        }
+    }
+}
+
+/**
+ * A reader scrolling by hand, or another scroll of our own, takes the list away from the one in
+ * flight and cancels it. That cancellation must not reach the collector around it: it would end the
+ * collector for the rest of the screen's life, and no later answer would reach the end again.
+ */
+private suspend fun LazyListState.ignoringInterruption(scroll: suspend LazyListState.() -> Unit) {
+    try {
+        scroll()
+    } catch (interruption: CancellationException) {
+        currentCoroutineContext().ensureActive()
+        Logger.d(interruption) { "A scroll to the end of the chat was interrupted" }
     }
 }
 
@@ -463,6 +514,7 @@ private suspend fun LazyListState.animateToEnd() {
     animateScrollToItem(lastIndex)
     val overshoot = getEndOvershoot()
     if (overshoot > 0f) animateScrollBy(overshoot)
+    settleAtEnd()
 }
 
 private suspend fun LazyListState.settleAtEnd() {
