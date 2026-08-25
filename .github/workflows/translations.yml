@@ -1,0 +1,33 @@
+name: translations
+
+# No `paths` filter here on purpose: check-translations is a required status check,
+# and GitHub never reports a check for a workflow skipped by path filtering, which
+# would leave every PR that touches no strings.xml waiting forever. The job takes a
+# few seconds, so running it on every pull request is cheaper than the deadlock.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# Cancels in-progress runs if a new commit is pushed to the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-translations:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      # python3 ships with the runner image and the script has no dependencies,
+      # so there is nothing to set up or cache here
+      - name: Check translations
+        run: python3 scripts/check_translations.py
