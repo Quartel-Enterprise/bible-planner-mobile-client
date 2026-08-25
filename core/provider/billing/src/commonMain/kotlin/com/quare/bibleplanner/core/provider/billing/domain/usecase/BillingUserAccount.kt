@@ -4,4 +4,6 @@ interface BillingUserAccount {
     suspend fun logIn(userId: String)
 
     suspend fun logOut()
+
+    fun setFirebaseAppInstanceId(firebaseAppInstanceId: String?)
 }

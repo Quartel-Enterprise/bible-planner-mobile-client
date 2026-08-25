@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.provider.billing.domain.usecase
 
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.GetAppInstanceId
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -7,6 +8,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class SyncBillingUserIdUseCaseTest {
     private val billingUserAccount = FakeBillingUserAccount()
@@ -39,13 +41,44 @@ class SyncBillingUserIdUseCaseTest {
         assertEquals(1, billingUserAccount.logOutCount)
     }
 
-    private fun createUseCase(userId: String?): SyncBillingUserIdUseCase = SyncBillingUserIdUseCase(
+    @Test
+    fun `GIVEN an app instance id WHEN syncing THEN attaches it after the identity change`() = runTest {
+        // Given
+        val useCase = createUseCase(userId = "user-1", appInstanceId = "abc123")
+
+        // When
+        backgroundScope.launch { useCase() }
+        runCurrent()
+
+        // Then
+        assertEquals("abc123", billingUserAccount.firebaseAppInstanceIds.single())
+    }
+
+    @Test
+    fun `GIVEN analytics has no app instance id WHEN syncing THEN clears the attribute`() = runTest {
+        // Given
+        val useCase = createUseCase(userId = "user-1", appInstanceId = null)
+
+        // When
+        backgroundScope.launch { useCase() }
+        runCurrent()
+
+        // Then
+        assertNull(billingUserAccount.firebaseAppInstanceIds.single())
+    }
+
+    private fun createUseCase(
+        userId: String?,
+        appInstanceId: String? = "app-instance-id",
+    ): SyncBillingUserIdUseCase = SyncBillingUserIdUseCase(
         observeAuthenticatedUserId = ObserveAuthenticatedUserId { MutableStateFlow(userId) },
+        getAppInstanceId = GetAppInstanceId { appInstanceId },
         billingUserAccount = billingUserAccount,
     )
 
     private class FakeBillingUserAccount : BillingUserAccount {
         val loggedInUserIds = mutableListOf<String>()
+        val firebaseAppInstanceIds = mutableListOf<String?>()
         var logOutCount = 0
 
         override suspend fun logIn(userId: String) {
@@ -54,6 +87,10 @@ class SyncBillingUserIdUseCaseTest {
 
         override suspend fun logOut() {
             logOutCount++
+        }
+
+        override fun setFirebaseAppInstanceId(firebaseAppInstanceId: String?) {
+            firebaseAppInstanceIds += firebaseAppInstanceId
         }
     }
 }

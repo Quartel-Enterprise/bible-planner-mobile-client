@@ -2,9 +2,11 @@ package com.quare.bibleplanner.core.provider.analytics.di
 
 import com.quare.bibleplanner.core.provider.analytics.domain.mapper.NavRouteToDestinationMapper
 import com.quare.bibleplanner.core.provider.analytics.domain.mapper.NavRouteToDestinationMapperImpl
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.GetAppInstanceId
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.ObserveTesterUserProperty
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.impl.GetAppInstanceIdUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.impl.ObserveTesterUserPropertyUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.impl.TrackDestinationUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.impl.TrackEventUseCase
@@ -17,6 +19,7 @@ val analyticsModule = module {
     includes(platformAnalyticsModule)
     factoryOf(::ObserveTesterUserPropertyUseCase).bind<ObserveTesterUserProperty>()
     factoryOf(::TrackEventUseCase).bind<TrackEvent>()
+    factoryOf(::GetAppInstanceIdUseCase).bind<GetAppInstanceId>()
     factoryOf(::NavRouteToDestinationMapperImpl).bind<NavRouteToDestinationMapper>()
     factoryOf(::TrackDestinationUseCase).bind<TrackDestination>()
 }

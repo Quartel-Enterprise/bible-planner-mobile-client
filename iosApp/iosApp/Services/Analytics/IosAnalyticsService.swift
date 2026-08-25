@@ -9,4 +9,8 @@ class IosAnalyticsService: AnalyticsService {
     func logEvent(name: String, params: [String: Any]) {
         Analytics.logEvent(name, parameters: params)
     }
+
+    func getAppInstanceId() async throws -> String? {
+        Analytics.appInstanceID()
+    }
 }

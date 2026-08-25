@@ -77,6 +77,26 @@ When either value is blank the desktop app treats the user as **Free** and purch
 Because the entitlement is store-agnostic, a subscription bought on Google Play or the App Store unlocks
 Pro on desktop for the same account (the RevenueCat `app_user_id` is the Supabase `user.id`).
 
+## 5. Firebase (GA4) revenue integration
+
+iOS purchase revenue reaches Google Analytics through RevenueCat, not through the app — see
+[Purchase revenue](analytics/README.md#purchase-revenue) for why. The app half is already wired:
+`SyncBillingUserIdUseCase` pushes the `$firebaseAppInstanceId` subscriber attribute on every billing
+identity change. The dashboard half has to be done by hand, once:
+
+1. In the Firebase console, open **Project settings > Data Streams > iOS** and copy the **Firebase App ID**.
+2. On the same screen, create a **Measurement Protocol API secret** and copy it.
+3. In the RevenueCat dashboard, open **Integrations > Firebase** and enable Google Analytics.
+4. Register **the iOS app only**. Registering the Android app as well would double-count against the
+   Google Play link, which already reports Android revenue on its own and needs no client cooperation.
+
+Verifying it: the events arrive through the Measurement Protocol, so they never show up in DebugView.
+Check **Realtime** or the **In-app purchases** report a few hours after a real (non-sandbox) purchase.
+
+If iOS revenue stops arriving, suspect `$firebaseAppInstanceId` first — a customer with a missing or
+stale value is dropped silently. It is visible per customer in the RevenueCat dashboard under
+**Attributes**.
+
 ## Troubleshooting
 - **Warning in Build Output**: If you see `⚠️ REVENUECAT_API_KEY not found...` or  `⚠️ REVENUECAT_PRO_KEY not found...`, ensure the key name matches exactly and the file is saved.
 - **Paywall Fails to Load**: Verify your key is correct and that you have configured **Offerings** in the RevenueCat dashboard.
