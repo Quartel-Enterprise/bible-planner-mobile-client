@@ -50,6 +50,7 @@ import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -92,7 +93,8 @@ class ReadViewModel(
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<ReadUiEvent>(trackEvent) {
-    private var isAppendingChapter = false
+    private val isAppendRequested = MutableStateFlow(false)
+    private val nextChapter = MutableStateFlow<Loadable<ReadNavigationSuggestionModel?>>(Loadable.Loading)
     private val bookId = BookId.valueOf(route.bookId)
     private val bookStringResource = bookId.toBookNameResource()
     private val retryCount = MutableStateFlow(0)
@@ -144,21 +146,30 @@ class ReadViewModel(
                 isInitiallyRead = route.isChapterRead,
                 isFromBookDetails = route.isFromBookDetails,
                 appendedChapters = chapters,
-            )
+            ).map { data -> chapters.size to data }
         }
+
+    private val requestedChapterCount: Flow<Int> = combine(
+        appendedChapters,
+        isAppendRequested,
+    ) { chapters, isRequested ->
+        chapters.size + if (isRequested) 1 else 0
+    }
 
     val uiState: StateFlow<ReadUiState> = combine(
         dataFlow,
         observeReaderSettings(),
         observeVerseSelection(),
         pendingReadOverrides,
-    ) { data, settings, selection, overrides ->
+        requestedChapterCount,
+    ) { (settledChapterCount, data), settings, selection, overrides, requestedCount ->
         val reconciledOverrides = overrides.dropReconciledOverrides(data)
         if (reconciledOverrides != overrides) pendingReadOverrides.update { reconciledOverrides }
         data.toUiState(
             settings = settings,
             selection = selection,
             overrides = reconciledOverrides,
+            isLoadingNextChapter = settings.isVerticalReadingEnabled && requestedCount > settledChapterCount,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -204,15 +215,24 @@ class ReadViewModel(
         }
     }
 
-    /** Nothing to keep reading into once the setting is off. */
+    /**
+     * The chapter after the last one on screen is resolved while the user is still reading, so
+     * reaching the end appends it right away instead of waiting on a walk through the whole plan.
+     * Nothing is kept, or looked up, once the setting is off.
+     */
     private fun observeVerticalReading() {
         observe(
             observeReaderSettings()
                 .map { it.isVerticalReadingEnabled }
-                .distinctUntilChanged()
-                .filter { isEnabled -> !isEnabled },
-        ) {
-            appendedChapters.update { emptyList() }
+                .distinctUntilChanged(),
+        ) { isEnabled ->
+            if (isEnabled) {
+                resolveNextChapter()
+            } else {
+                appendedChapters.update { emptyList() }
+                isAppendRequested.update { false }
+                nextChapter.update { Loadable.Loading }
+            }
         }
     }
 
@@ -377,30 +397,35 @@ class ReadViewModel(
     }
 
     /**
-     * Walks the reading order from the last chapter on screen. Only one append is in flight at a
-     * time, because the end of the list stays visible while the next chapter loads and would
-     * otherwise ask for it again on every frame.
+     * The request stands until the reading order answers it, so an end reached before the lookup
+     * settles is served the moment it does instead of stalling until the reader scrolls again.
      */
     private fun appendNextChapter() {
-        if (isAppendingChapter) return
-        isAppendingChapter = true
-        viewModelScope.launch {
-            val isVerticalReadingEnabled = observeReaderSettings().first().isVerticalReadingEnabled
-            val lastChapter = appendedChapters.value.lastOrNull()
-            val next = if (!isVerticalReadingEnabled) {
-                null
-            } else {
-                getNextChapter(
-                    bookId = lastChapter?.bookId ?: bookId,
-                    chapterNumber = lastChapter?.chapterNumber ?: route.chapterNumber,
-                    shouldForceCanonOrder = route.isFromBookDetails,
-                )
-            }
-            if (next != null) {
-                appendedChapters.update { it + next }
-            }
-            isAppendingChapter = false
-        }
+        if (!uiState.value.settings.isVerticalReadingEnabled) return
+        isAppendRequested.update { true }
+        consumeNextChapter()
+    }
+
+    private fun consumeNextChapter() {
+        val resolvedNextChapter = nextChapter.value
+        if (resolvedNextChapter !is Loadable.Loaded || !isAppendRequested.value) return
+        isAppendRequested.update { false }
+        val chapter = resolvedNextChapter.value ?: return
+        nextChapter.update { Loadable.Loading }
+        appendedChapters.update { it + chapter }
+        viewModelScope.launch { resolveNextChapter() }
+    }
+
+    private suspend fun resolveNextChapter() {
+        val lastChapter = appendedChapters.value.lastOrNull()
+        nextChapter.update { Loadable.Loading }
+        val next = getNextChapter(
+            bookId = lastChapter?.bookId ?: bookId,
+            chapterNumber = lastChapter?.chapterNumber ?: route.chapterNumber,
+            shouldForceCanonOrder = route.isFromBookDetails,
+        )
+        nextChapter.update { Loadable.Loaded(next) }
+        consumeNextChapter()
     }
 
     private fun dismissRuler() {
@@ -442,10 +467,12 @@ class ReadViewModel(
         settings: ReaderSettingsModel,
         selection: VerseSelection?,
         overrides: Map<ChapterLocationModel, Boolean>,
+        isLoadingNextChapter: Boolean,
     ): ReadUiState = ReadUiState(
         header = header.withReadOverride(overrides),
         content = content.withSelection(selection).withReadOverrides(overrides),
         settings = settings,
+        isLoadingNextChapter = isLoadingNextChapter,
     )
 
     private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterLocationModel, Boolean>): ReadHeaderUiModel {
@@ -523,6 +550,7 @@ class ReadViewModel(
             isFocusedVerseEnabled = false,
             isVerticalReadingEnabled = false,
         ),
+        isLoadingNextChapter = false,
     )
 
     private companion object {
