@@ -431,6 +431,7 @@ jobs:
       && !contains(needs.*.result, 'cancelled') }}
     runs-on: ubuntu-latest
     permissions:
+      checks: write
       contents: write
       pull-requests: write
     steps:
@@ -458,6 +459,22 @@ jobs:
           fi
           git push -u origin "${{ needs.plan.outputs.branch }}"
 
+      # A PR opened with GITHUB_TOKEN never triggers the translations workflow,
+      # so the required check-translations context would never be reported and
+      # the merge-back would stay blocked forever. Running the same script here
+      # and publishing the result keeps the guard real, and GITHUB_TOKEN reports
+      # it as the very GitHub Actions app the ruleset pins the context to.
+      - name: Report check-translations for the merge-back branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/check_translations.py
+          gh api --method POST "repos/${{ github.repository }}/check-runs" \
+            -f name=check-translations \
+            -f head_sha="$(git rev-parse HEAD)" \
+            -f status=completed \
+            -f conclusion=success
+
       - name: Open merge-back PR and squash into main
         env:
           GH_TOKEN: ${{ github.token }}
@@ -469,7 +486,16 @@ jobs:
             --body "Merges the ${{ needs.plan.outputs.display_version }} release (build ${{ needs.plan.outputs.version_code }}) back into main." \
             --label bump \
             --assignee "${{ github.actor }}"
-          gh pr merge "${{ needs.plan.outputs.branch }}" --squash --delete-branch
+          # GitHub recomputes mergeability asynchronously, so the merge right
+          # after the create can still read the PR as blocked. Retry instead of
+          # failing the release on a race that resolves itself in seconds.
+          for _ in 1 2 3 4 5; do
+            if gh pr merge "${{ needs.plan.outputs.branch }}" --squash --delete-branch; then
+              exit 0
+            fi
+            sleep 10
+          done
+          exit 1
 
       # Nothing to download on a mobile-only run: the step would fail on the
       # missing artifacts, and the release goes out without desktop assets.
