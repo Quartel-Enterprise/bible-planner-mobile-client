@@ -79,7 +79,6 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         }
     }
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-    val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarController = koinInject<AppSnackbarController>()
     val trackDestination = koinInject<TrackDestination>()
     val dayStudyPanelViewModel = koinViewModel<DayStudyPanelViewModel>()
@@ -96,7 +95,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     )
     ActionCollector(appSnackbarController.messages) { message ->
         message.run {
-            appSnackbarHostState.showSnackbar(
+            snackbarHostState.showSnackbar(
                 message = getString(stringResource),
                 withDismissAction = isDismissible,
             )
@@ -149,7 +148,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         }
         DayStudyBackgroundGenerationOverlay(onNavigate = onNavigate)
         SnackbarHost(
-            hostState = appSnackbarHostState,
+            hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = mainContentBottomInset()),

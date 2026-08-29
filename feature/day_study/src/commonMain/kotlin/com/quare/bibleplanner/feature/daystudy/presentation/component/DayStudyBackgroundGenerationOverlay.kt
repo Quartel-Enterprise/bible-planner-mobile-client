@@ -68,6 +68,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgr
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
+import com.quare.bibleplanner.ui.utils.HideMainFabEffect
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -110,6 +111,7 @@ fun DayStudyBackgroundGenerationOverlay(
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
         ) {
+            HideMainFabEffect()
             val cardModifier = if (isWide) {
                 Modifier
                     .padding(desktopEdgePadding)
