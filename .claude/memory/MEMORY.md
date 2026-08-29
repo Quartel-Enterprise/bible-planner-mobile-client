@@ -38,3 +38,4 @@
 - [Version catalog convention](project_version_catalog_convention.md) — libs.versions.toml standardized on producer-first kebab-case (versions/libraries/plugins) + always `module = "g:a"`; no naming lint exists for TOML.
 - [Mac App Store distribution](project_mas_sandbox_spike.md) — #204: proven viable (build accepted, TestFlight OK); the quarantined JNI dylib deadlocked Room under the sandbox, OAuth needs network.server, and packaging requires a self-contained JDK (never Homebrew's).
 - [Storage list() is anon-only](project_storage_list_rls_anon_only.md) — bucketApi.list passes through RLS even on public buckets; the content bucket's SELECT policy targeted only `anon`, so signed-in users silently listed zero Bible versions.
+- [Play link → GA4 confirmed](project_play_link_ga4_confirmed.md) — Android in_app_purchase revenue does arrive via the Play link, but stamped ~48h late on the export date, not the purchase date.
