@@ -32,6 +32,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadBottomBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadingRulerOverlay
+import com.quare.bibleplanner.feature.read.presentation.screen.content.CHAPTER_SHIMMER_ITEM_COUNT
+import com.quare.bibleplanner.feature.read.presentation.screen.content.ChapterShimmerPosition
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadErrorContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterContent
@@ -59,14 +61,21 @@ internal fun ReadNarrowScreen(
         derivedStateOf { listState.firstVisibleItemIndex >= TITLE_VISIBLE_ITEM_INDEX }
     }
     val chapters = (state.content as? ReadContentUiState.Success)?.chapters.orEmpty()
+    val leadingItemCount = if (state.isLoadingPreviousChapter) CHAPTER_SHIMMER_ITEM_COUNT else 0
     val visibleChapter = rememberVisibleChapter(
         chapters = chapters,
         listState = listState,
+        leadingItemCount = leadingItemCount,
     )
     ReachedEndEffect(
         listState = listState,
         chapters = chapters,
         onReachedEnd = { onEvent(ReadUiEvent.OnReachedEnd) },
+    )
+    ReachedStartEffect(
+        listState = listState,
+        chapters = chapters,
+        onReachedStart = { onEvent(ReadUiEvent.OnReachedStart) },
     )
     ReserveBottomOverlayHeight {
         (bottomOverlayHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
@@ -144,6 +153,9 @@ internal fun ReadNarrowScreen(
                             state = listState,
                             contentPadding = PaddingValues(bottom = 16.dp),
                         ) {
+                            if (state.isLoadingPreviousChapter) {
+                                chapterShimmerContent(ChapterShimmerPosition.LEADING)
+                            }
                             content.chapters.forEach { chapter ->
                                 chapterContent(
                                     chapter = chapter,
@@ -154,7 +166,7 @@ internal fun ReadNarrowScreen(
                                 )
                             }
                             if (state.isLoadingNextChapter) {
-                                chapterShimmerContent()
+                                chapterShimmerContent(ChapterShimmerPosition.TRAILING)
                             }
                         }
                     }

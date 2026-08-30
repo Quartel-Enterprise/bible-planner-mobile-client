@@ -8,8 +8,9 @@ import org.jetbrains.compose.resources.StringResource
 
 fun interface ObserveReadData {
     /**
-     * [appendedChapters] are the chapters vertical reading has already pulled in behind this one, in
-     * reading order. The reader grows that list as it reaches the end, so the chain has no limit.
+     * [prependedChapters] and [appendedChapters] are the chapters vertical reading has already pulled
+     * in before and behind this one, both in reading order. The reader grows either list as it
+     * reaches that end, so the chain has no limit in either direction.
      */
     operator fun invoke(
         bookId: BookId,
@@ -17,6 +18,7 @@ fun interface ObserveReadData {
         bookStringResource: StringResource,
         isInitiallyRead: Boolean,
         isFromBookDetails: Boolean,
+        prependedChapters: List<ReadNavigationSuggestionModel>,
         appendedChapters: List<ReadNavigationSuggestionModel>,
     ): Flow<ReadDataUiModel>
 }

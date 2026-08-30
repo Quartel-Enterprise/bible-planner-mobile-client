@@ -36,6 +36,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.component.BibleVersionChip
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadStatusPill
+import com.quare.bibleplanner.feature.read.presentation.screen.content.CHAPTER_SHIMMER_ITEM_COUNT
+import com.quare.bibleplanner.feature.read.presentation.screen.content.ChapterShimmerPosition
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadErrorContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterContent
@@ -59,14 +61,21 @@ internal fun ReadWideScreen(
 ) {
     val listState = rememberLazyListState()
     val chapters = (state.content as? ReadContentUiState.Success)?.chapters.orEmpty()
+    val leadingItemCount = if (state.isLoadingPreviousChapter) CHAPTER_SHIMMER_ITEM_COUNT else 0
     val visibleChapter = rememberVisibleChapter(
         chapters = chapters,
         listState = listState,
+        leadingItemCount = leadingItemCount,
     )
     ReachedEndEffect(
         listState = listState,
         chapters = chapters,
         onReachedEnd = { onEvent(ReadUiEvent.OnReachedEnd) },
+    )
+    ReachedStartEffect(
+        listState = listState,
+        chapters = chapters,
+        onReachedStart = { onEvent(ReadUiEvent.OnReachedStart) },
     )
     Row(
         modifier = Modifier
@@ -111,6 +120,9 @@ internal fun ReadWideScreen(
                             state = listState,
                             contentPadding = PaddingValues(bottom = 24.dp),
                         ) {
+                            if (state.isLoadingPreviousChapter) {
+                                chapterShimmerContent(ChapterShimmerPosition.LEADING)
+                            }
                             content.chapters.forEach { chapter ->
                                 chapterContent(
                                     chapter = chapter,
@@ -121,7 +133,7 @@ internal fun ReadWideScreen(
                                 )
                             }
                             if (state.isLoadingNextChapter) {
-                                chapterShimmerContent()
+                                chapterShimmerContent(ChapterShimmerPosition.TRAILING)
                             }
                         }
                     }

@@ -17,6 +17,7 @@ internal class FakeObserveReadData(
         bookStringResource: StringResource,
         isInitiallyRead: Boolean,
         isFromBookDetails: Boolean,
+        prependedChapters: List<ReadNavigationSuggestionModel>,
         appendedChapters: List<ReadNavigationSuggestionModel>,
     ): Flow<ReadDataUiModel> = data
 }

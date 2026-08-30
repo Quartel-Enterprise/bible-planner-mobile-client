@@ -78,6 +78,10 @@ sealed interface ReadUiEvent : UiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
 
+    data object OnReachedStart : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
+
     data object OnRulerDismissClick : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.READER_FOCUS_AID_CHANGED,

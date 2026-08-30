@@ -55,6 +55,7 @@ internal class BibleVersionRepositoryImpl(
     }
 
     override fun observeVersions(): Flow<List<VersionModel>> = flow {
+        localDataSource.getCachedVersions()?.let { cached -> emit(cached.map(versionMapper::map)) }
         emit(getVersions(forceRefresh = false).getOrDefault(emptyList()))
         emitAll(
             localDataSource
