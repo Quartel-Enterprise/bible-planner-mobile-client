@@ -2,6 +2,7 @@ package com.quare.bibleplanner
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.AppForegroundStateHolder
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
 import com.quare.bibleplanner.feature.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
@@ -19,6 +20,7 @@ class AppViewModel(
     getContrastTypeFlow: GetContrastTypeFlow,
     initializeAppContent: InitializeAppContent,
     private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
+    private val appForegroundStateHolder: AppForegroundStateHolder,
 ) : ViewModel() {
     init {
         initializeAppContent(viewModelScope)
@@ -29,9 +31,14 @@ class AppViewModel(
     val contrastState: StateFlow<ContrastType> = getContrastTypeFlow().toStateFlow(ContrastType.Standard)
 
     fun onAppForegrounded() {
+        appForegroundStateHolder.onForegrounded()
         viewModelScope.launch {
             requestUpdatePromptIfNeeded()
         }
+    }
+
+    fun onAppBackgrounded() {
+        appForegroundStateHolder.onBackgrounded()
     }
 
     private fun <T> Flow<T>.toStateFlow(initialValue: T): StateFlow<T> = stateIn(

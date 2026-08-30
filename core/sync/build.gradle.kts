@@ -12,6 +12,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.model)
             implementation(projects.core.user)
             implementation(projects.core.date)
             implementation(projects.core.utils)
