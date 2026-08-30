@@ -14,6 +14,6 @@ internal fun ReadLoadingContent(modifier: Modifier = Modifier) {
         modifier = modifier.padding(horizontal = contentHorizontalPadding),
         userScrollEnabled = false,
     ) {
-        chapterShimmerContent()
+        chapterShimmerContent(ChapterShimmerPosition.LEADING)
     }
 }

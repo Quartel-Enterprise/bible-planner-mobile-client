@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.read.presentation.factory
 
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
@@ -28,6 +29,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import org.jetbrains.compose.resources.StringResource
 
 /**
@@ -44,8 +47,9 @@ class ReadDataPresentationModelFactory(
     private val observeChapterAnnotations: ObserveChapterAnnotations,
 ) : ObserveReadData {
     /**
-     * Every chapter in [appendedChapters] is observed alongside this one and laid out after it, so
-     * vertical reading keeps going for as long as the reader asks for more.
+     * Every chapter in [prependedChapters] and [appendedChapters] is observed alongside this one and
+     * laid out before or after it, so vertical reading keeps going in both directions for as long as
+     * the reader asks for more.
      */
     override fun invoke(
         bookId: BookId,
@@ -53,6 +57,7 @@ class ReadDataPresentationModelFactory(
         bookStringResource: StringResource,
         isInitiallyRead: Boolean,
         isFromBookDetails: Boolean,
+        prependedChapters: List<ReadNavigationSuggestionModel>,
         appendedChapters: List<ReadNavigationSuggestionModel>,
     ): Flow<ReadDataUiModel> = flow {
         getReadNavigationSuggestionsModelFlow(
@@ -60,23 +65,19 @@ class ReadDataPresentationModelFactory(
             currentBookId = bookId,
             currentChapterNumber = chapterNumber,
         ).collect { navigationSuggestions ->
-            val chapterFlows = listOf(
+            val chapterFlows = prependedChapters.map(::observeChapter) +
                 observeChapter(
                     bookId = bookId,
                     chapterNumber = chapterNumber,
-                ),
-            ) + appendedChapters.map { appended ->
-                observeChapter(
-                    bookId = appended.bookId,
-                    chapterNumber = appended.chapterNumber,
-                )
-            }
+                ) +
+                appendedChapters.map(::observeChapter)
             emitAll(
                 combine(
                     combine(chapterFlows) { results -> results.toList() },
-                    getSelectedBibleFlow(),
-                ) { chapterResults, selectedBible ->
-                    val chapterResult = chapterResults.first()
+                    getSelectedVersionIdFlow(),
+                    observeSelectedBible(),
+                ) { chapterResults, versionId, selectedBible ->
+                    val chapterResult = chapterResults[prependedChapters.size]
                     val chapter = (chapterResult as? ChapterLoadResult.Loaded)?.chapter
                     ReadDataUiModel(
                         header = ReadHeaderUiModel(
@@ -85,21 +86,17 @@ class ReadDataPresentationModelFactory(
                             chapterNumber = chapterNumber,
                             isChapterRead = chapter?.isRead ?: isInitiallyRead,
                             navigationSuggestions = navigationSuggestions,
-                            versionAbbreviation = selectedBible
-                                ?.version
-                                ?.id
-                                ?.uppercase()
-                                ?.let(::Loaded)
-                                ?: Loadable.Loading,
+                            versionAbbreviation = Loaded(versionId.uppercase()),
                         ),
                         content = toContent(
                             chapterResult = chapterResult,
-                            appendedChapters = chapterResults
-                                .drop(1)
+                            precedingChapters = chapterResults
+                                .take(prependedChapters.size)
                                 .mapNotNull { (it as? ChapterLoadResult.Loaded)?.chapter },
-                            selectedBibleVersionName = selectedBible?.version?.name.orEmpty(),
-                            downloadStatus = selectedBible?.downloadStatus ?: DownloadStatusModel.NotStarted,
-                            versionSizeInBytes = selectedBible?.version?.size,
+                            followingChapters = chapterResults
+                                .drop(prependedChapters.size + 1)
+                                .mapNotNull { (it as? ChapterLoadResult.Loaded)?.chapter },
+                            selectedBible = selectedBible,
                         ),
                     )
                 },
@@ -107,28 +104,45 @@ class ReadDataPresentationModelFactory(
         }
     }
 
+    /**
+     * The listing the version chip and the download card are built from is remote-backed, so it is
+     * only waited on where it is actually needed: text already on the device renders without it.
+     */
+    private fun observeSelectedBible(): Flow<Loadable<BibleModel?>> = getSelectedBibleFlow()
+        .map<BibleModel?, Loadable<BibleModel?>>(::Loaded)
+        .onStart { emit(Loadable.Loading) }
+
     private fun toContent(
         chapterResult: ChapterLoadResult,
-        appendedChapters: List<ReadChapterUiModel>,
-        selectedBibleVersionName: String,
-        downloadStatus: DownloadStatusModel,
-        versionSizeInBytes: Long?,
+        precedingChapters: List<ReadChapterUiModel>,
+        followingChapters: List<ReadChapterUiModel>,
+        selectedBible: Loadable<BibleModel?>,
     ): ReadContentUiState = when (chapterResult) {
         ChapterLoadResult.ChapterMissing -> ReadContentUiState.Error.Unknown(
             errorUiEvent = ReadUiEvent.OnRetryClick,
         )
 
-        ChapterLoadResult.TextMissing -> ReadContentUiState.Error.ChapterNotFound(
-            errorUiEvent = ReadUiEvent.ManageBibleVersions,
-            selectedBibleVersionName = selectedBibleVersionName,
-            downloadStatus = downloadStatus,
-            versionSizeInBytes = versionSizeInBytes,
-        )
+        ChapterLoadResult.TextMissing -> if (selectedBible is Loaded) {
+            val bible = selectedBible.value
+            ReadContentUiState.Error.ChapterNotFound(
+                errorUiEvent = ReadUiEvent.ManageBibleVersions,
+                selectedBibleVersionName = bible?.version?.name.orEmpty(),
+                downloadStatus = bible?.downloadStatus ?: DownloadStatusModel.NotStarted,
+                versionSizeInBytes = bible?.version?.size,
+            )
+        } else {
+            ReadContentUiState.Loading
+        }
 
         is ChapterLoadResult.Loaded -> ReadContentUiState.Success(
-            chapters = listOf(chapterResult.chapter) + appendedChapters,
+            chapters = precedingChapters + chapterResult.chapter + followingChapters,
         )
     }
+
+    private fun observeChapter(chapter: ReadNavigationSuggestionModel): Flow<ChapterLoadResult> = observeChapter(
+        bookId = chapter.bookId,
+        chapterNumber = chapter.chapterNumber,
+    )
 
     private fun observeChapter(
         bookId: BookId,

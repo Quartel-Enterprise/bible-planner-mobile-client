@@ -4,11 +4,13 @@ import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataS
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
 import com.quare.bibleplanner.core.books.data.dto.VersionDto
 import com.quare.bibleplanner.core.books.data.mapper.VersionMapper
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -188,7 +190,41 @@ internal class BibleVersionRepositoryImplTest {
         // Then
         assertEquals(expected = 1, actual = remoteDataSource.callCount)
         assertEquals(
-            expected = listOf(listOf(REMOTE_CONTENT_VERSION)),
+            expected = listOf(listOf(CACHED_CONTENT_VERSION), listOf(REMOTE_CONTENT_VERSION)),
+            actual = emissions,
+        )
+    }
+
+    @Test
+    fun `should serve the cached versions before the refresh answers`() = runTest {
+        // Given
+        val remoteGate = CompletableDeferred<Unit>()
+        prepareScenario(
+            cacheAge = staleCacheAge,
+            remoteGate = remoteGate,
+        )
+
+        // When
+        val emissions = mutableListOf<List<String>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeVersions().collect { versions ->
+                emissions.add(versions.map { it.version })
+            }
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(listOf(CACHED_CONTENT_VERSION)),
+            actual = emissions,
+        )
+
+        // When
+        remoteGate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf(listOf(CACHED_CONTENT_VERSION), listOf(REMOTE_CONTENT_VERSION)),
             actual = emissions,
         )
     }
@@ -196,8 +232,12 @@ internal class BibleVersionRepositoryImplTest {
     private fun prepareScenario(
         cacheAge: Duration,
         remoteResult: Result<List<VersionDto>> = Result.success(listOf(versionDto(REMOTE_CONTENT_VERSION))),
+        remoteGate: CompletableDeferred<Unit>? = null,
     ) {
-        remoteDataSource = FakeBibleVersionsRemoteDataSource(result = remoteResult)
+        remoteDataSource = FakeBibleVersionsRemoteDataSource(
+            result = remoteResult,
+            gate = remoteGate,
+        )
         localDataSource = FakeBibleVersionsLocalDataSource(
             cachedVersions = listOf(versionDto(CACHED_CONTENT_VERSION)),
             cacheTimestamp = NOW - cacheAge.inWholeMilliseconds,
@@ -223,12 +263,14 @@ private fun versionDto(version: String): VersionDto = VersionDto(
 
 private class FakeBibleVersionsRemoteDataSource(
     private val result: Result<List<VersionDto>>,
+    private val gate: CompletableDeferred<Unit>?,
 ) : BibleVersionsRemoteDataSource {
     var callCount = 0
         private set
 
     override suspend fun getVersions(): Result<List<VersionDto>> {
         callCount++
+        gate?.await()
         return result
     }
 }

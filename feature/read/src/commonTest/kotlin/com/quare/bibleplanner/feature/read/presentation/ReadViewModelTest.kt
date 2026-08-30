@@ -22,6 +22,7 @@ import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
 import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
+import com.quare.bibleplanner.feature.read.domain.usecase.GetPreviousChapter
 import com.quare.bibleplanner.feature.read.fake.FakeObserveReadData
 import com.quare.bibleplanner.feature.read.fake.FakeVerseSelectionStore
 import com.quare.bibleplanner.feature.read.fake.ThrowingBibleVersionDownloaderFacade
@@ -408,6 +409,99 @@ internal class ReadViewModelTest {
         assertFalse(viewModel.uiState.value.isLoadingNextChapter)
     }
 
+    @Test
+    fun `shows the previous chapter placeholder while vertical reading looks it up`() = runTest(testDispatcher) {
+        // Given
+        val previousChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
+        prepareScenario(
+            isVerticalReadingEnabled = true,
+            getPreviousChapter = { _, _, _ -> previousChapter.await() },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnReachedStart)
+        runCurrent()
+
+        // Then
+        assertTrue(viewModel.uiState.value.isLoadingPreviousChapter)
+    }
+
+    @Test
+    fun `drops the placeholder once the previous chapter is prepended`() = runTest(testDispatcher) {
+        // Given
+        val previousChapter = CompletableDeferred<ReadNavigationSuggestionModel?>()
+        prepareScenario(
+            isVerticalReadingEnabled = true,
+            getPreviousChapter = { _, _, _ -> previousChapter.await() },
+        )
+        viewModel.onEvent(ReadUiEvent.OnReachedStart)
+        runCurrent()
+
+        // When
+        previousChapter.complete(
+            ReadNavigationSuggestionModel(
+                bookId = BookId.GEN,
+                chapterNumber = 2,
+            ),
+        )
+        runCurrent()
+
+        // Then
+        assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
+    }
+
+    @Test
+    fun `asks for the chapter before the earliest one already prepended`() = runTest(testDispatcher) {
+        // Given
+        val requestedChapters = mutableListOf<Int>()
+        prepareScenario(
+            isVerticalReadingEnabled = true,
+            getPreviousChapter = { _, chapterNumber, _ ->
+                requestedChapters += chapterNumber
+                ReadNavigationSuggestionModel(
+                    bookId = BookId.GEN,
+                    chapterNumber = chapterNumber - 1,
+                )
+            },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnReachedStart)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf(3, 2),
+            actual = requestedChapters,
+        )
+    }
+
+    @Test
+    fun `keeps the previous chapter placeholder away while vertical reading is off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(getPreviousChapter = { _, _, _ -> error("unused") })
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnReachedStart)
+        runCurrent()
+
+        // Then
+        assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
+    }
+
+    @Test
+    fun `keeps the previous chapter placeholder away at the start of the reading order`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isVerticalReadingEnabled = true)
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnReachedStart)
+        runCurrent()
+
+        // Then
+        assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
+    }
+
     private fun TestScope.prepareScenario(
         toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus = ToggleWholeChapterReadStatus {
             _,
@@ -421,6 +515,7 @@ internal class ReadViewModelTest {
         dayCompletionCandidates: Map<ChapterLocationModel, PlanDayLocationModel> = emptyMap(),
         isVerticalReadingEnabled: Boolean = false,
         getNextChapter: GetNextChapter = GetNextChapter { _, _, _ -> null },
+        getPreviousChapter: GetPreviousChapter = GetPreviousChapter { _, _, _ -> null },
     ) {
         prefetchedDays = mutableListOf()
         trackedEvents = mutableListOf()
@@ -488,6 +583,7 @@ internal class ReadViewModelTest {
             observeReaderSettings = { settings },
             setReaderFocusAid = { error("unused") },
             getNextChapter = getNextChapter,
+            getPreviousChapter = getPreviousChapter,
             observeVerseSelection = { selectionStore.selection },
             toggleVerseSelection = { chapter, verseNumber ->
                 selectionStore.toggle(

@@ -27,7 +27,7 @@
     <string name="reader_focused_verse">Focused verse</string>
     <string name="reader_focused_verse_description">Dims the rest of the chapter while you read a verse</string>
     <string name="reader_vertical_reading">Vertical reading</string>
-    <string name="reader_vertical_reading_description">Keep going into the next chapter without leaving the screen</string>
+    <string name="reader_vertical_reading_description">Keep going into the next or previous chapter without leaving the screen</string>
     <string name="reader_font_lora">Lora</string>
     <string name="reader_font_literata">Literata</string>
     <string name="reader_font_garamond">Garamond</string>

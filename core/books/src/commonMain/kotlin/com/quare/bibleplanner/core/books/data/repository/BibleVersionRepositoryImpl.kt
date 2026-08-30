@@ -54,7 +54,13 @@ internal class BibleVersionRepositoryImpl(
         }
     }
 
+    /**
+     * The cached listing goes out before the network is even asked, because everything that shows a
+     * Bible — the reader included — waits on this flow: revalidating first means a slow or offline
+     * connection holds back scripture that is already on the device.
+     */
     override fun observeVersions(): Flow<List<VersionModel>> = flow {
+        localDataSource.getCachedVersions()?.let { cached -> emit(cached.map(versionMapper::map)) }
         emit(getVersions(forceRefresh = false).getOrDefault(emptyList()))
         emitAll(
             localDataSource

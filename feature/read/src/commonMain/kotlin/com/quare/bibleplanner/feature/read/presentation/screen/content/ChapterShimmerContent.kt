@@ -16,6 +16,9 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 
 private const val VERSE_SHIMMER_COUNT = 8
 private const val CHAPTER_SHIMMER_KEY = "chapter-shimmer"
+
+/** The header plus its verse lines, so the list can tell where the real chapters start. */
+internal const val CHAPTER_SHIMMER_ITEM_COUNT = VERSE_SHIMMER_COUNT + 1
 private val verseLineWidthFractions = listOf(
     listOf(1f, 0.96f, 0.58f),
     listOf(1f, 0.71f),
@@ -32,13 +35,13 @@ private val verseLineHeight = 14.dp
 private val verseLineSpacing = 14.dp
 private val verseVerticalPadding = 6.dp
 
-internal fun LazyListScope.chapterShimmerContent() {
-    item(key = "$CHAPTER_SHIMMER_KEY-header") {
+internal fun LazyListScope.chapterShimmerContent(position: ChapterShimmerPosition) {
+    item(key = "$CHAPTER_SHIMMER_KEY-${position.name}-header") {
         ChapterHeaderShimmer()
     }
     items(
         count = VERSE_SHIMMER_COUNT,
-        key = { index -> "$CHAPTER_SHIMMER_KEY-verse-$index" },
+        key = { index -> "$CHAPTER_SHIMMER_KEY-${position.name}-verse-$index" },
     ) { index ->
         VerseShimmerRow(
             lineWidthFractions = verseLineWidthFractions[index % verseLineWidthFractions.size],

@@ -27,7 +27,7 @@
     <string name="reader_focused_verse">Versículo em foco</string>
     <string name="reader_focused_verse_description">Escurece o restante do capítulo enquanto você lê um versículo</string>
     <string name="reader_vertical_reading">Leitura vertical</string>
-    <string name="reader_vertical_reading_description">Continue no próximo capítulo sem sair da tela</string>
+    <string name="reader_vertical_reading_description">Continue no capítulo seguinte ou no anterior sem sair da tela</string>
     <string name="reader_font_lora">Lora</string>
     <string name="reader_font_literata">Literata</string>
     <string name="reader_font_garamond">Garamond</string>

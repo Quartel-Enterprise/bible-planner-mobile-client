@@ -6,5 +6,6 @@ data class ReadUiState(
     val header: ReadHeaderUiModel,
     val content: ReadContentUiState,
     val settings: ReaderSettingsModel,
+    val isLoadingPreviousChapter: Boolean,
     val isLoadingNextChapter: Boolean,
 )
