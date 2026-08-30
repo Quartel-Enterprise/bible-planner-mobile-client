@@ -16,4 +16,6 @@ Do not add comments to production Kotlin source code — not inline `//`, not bl
 
 **Why:** In production code the user considers added comments noise and wants the code to stand on its own; build config, the catalog, and tests use comments as helpful structure.
 
-**How to apply:** In production Kotlin, rely on clear names instead of comments and don't narrate code; leave pre-existing comments in untouched code alone. In gradle/catalog/test files, comments are fine — follow the file's existing convention. If documentation of production code seems genuinely necessary, ask first. Related: [[feedback_kdoc_simple_name_links]].
+**How to apply:** In production Kotlin, rely on clear names instead of comments and don't narrate code; leave pre-existing comments in untouched code alone.
+
+**Heavily documented neighbours are not an exception.** Parts of this repo (e.g. `feature/read`) are full of KDoc shipped after this rule was stated, so matching the surrounding comment density is the wrong instinct here — the user confirmed on 2026-08-30 (PR #384) that new code stays comment-free even when every sibling file has KDoc. Editing an existing KDoc that a signature change would otherwise make stale is fine; adding a new one is not. In gradle/catalog/test files, comments are fine — follow the file's existing convention. If documentation of production code seems genuinely necessary, ask first. Related: [[feedback_kdoc_simple_name_links]].
