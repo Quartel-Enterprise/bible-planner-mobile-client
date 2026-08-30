@@ -48,6 +48,10 @@ fun App(
         event = Lifecycle.Event.ON_START,
         onEvent = viewModel::onAppForegrounded,
     )
+    LifecycleEventEffect(
+        event = Lifecycle.Event.ON_STOP,
+        onEvent = viewModel::onAppBackgrounded,
+    )
     ApplyAppLocaleEffect()
     ProvideCompositionLocals(
         theme = theme,

@@ -25,6 +25,7 @@ val syncModule = module {
             ),
             realtime = get(),
             currentTimestampProvider = get(),
+            appForegroundStateHolder = get(),
         )
     }
     single<PushAllPending> {
