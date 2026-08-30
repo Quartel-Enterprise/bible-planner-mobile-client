@@ -37,6 +37,9 @@ kotlin {
 
         iosMain {
             dependsOn(commonMain.get())
+            dependencies {
+                implementation(libs.crashkios.crashlytics)
+            }
         }
         iosArm64Main {
             dependsOn(iosMain.get())
