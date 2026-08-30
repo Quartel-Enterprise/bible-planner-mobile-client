@@ -111,11 +111,6 @@ class ReadViewModel(
      */
     private val appendedChapters = MutableStateFlow<List<ReadNavigationSuggestionModel>>(emptyList())
 
-    /**
-     * The mirror of [appendedChapters] for the chapters that come before this one, kept in reading
-     * order so the earliest is first. It grows as the reader scrolls back past the top, which is
-     * what lets vertical reading go up as far as it goes down.
-     */
     private val prependedChapters = MutableStateFlow<List<ReadNavigationSuggestionModel>>(emptyList())
 
     /**
@@ -463,7 +458,6 @@ class ReadViewModel(
         consumeNextChapter()
     }
 
-    /** The same standing request as [appendNextChapter], for the top of the text instead. */
     private fun prependPreviousChapter() {
         if (!uiState.value.settings.isVerticalReadingEnabled) return
         isPrependRequested.update { true }

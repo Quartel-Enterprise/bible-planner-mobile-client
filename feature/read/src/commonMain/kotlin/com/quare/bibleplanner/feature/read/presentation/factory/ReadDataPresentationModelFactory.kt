@@ -104,10 +104,6 @@ class ReadDataPresentationModelFactory(
         }
     }
 
-    /**
-     * The listing the version chip and the download card are built from is remote-backed, so it is
-     * only waited on where it is actually needed: text already on the device renders without it.
-     */
     private fun observeSelectedBible(): Flow<Loadable<BibleModel?>> = getSelectedBibleFlow()
         .map<BibleModel?, Loadable<BibleModel?>>(::Loaded)
         .onStart { emit(Loadable.Loading) }

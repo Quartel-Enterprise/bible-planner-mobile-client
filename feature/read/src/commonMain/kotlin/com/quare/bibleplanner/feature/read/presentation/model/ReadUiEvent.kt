@@ -78,10 +78,6 @@ sealed interface ReadUiEvent : UiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
 
-    /**
-     * The start of the loaded text came into view, so vertical reading pulls in the chapter before
-     * it and the reader can keep scrolling backwards.
-     */
     data object OnReachedStart : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }

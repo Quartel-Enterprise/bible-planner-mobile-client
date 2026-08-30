@@ -12,12 +12,6 @@ import kotlinx.coroutines.flow.map
 
 private const val PREFETCH_ITEM_COUNT = 6
 
-/**
- * The mirror of [ReachedEndEffect]: the chapter before the text on screen is pulled in one screen
- * early, so scrolling back reads as one continuous text instead of stopping at the chapter the
- * reader happened to open. It fires on arrival too, which is what puts the previous chapter within
- * reach of a scroll up from the very first verse.
- */
 @Composable
 internal fun ReachedStartEffect(
     listState: LazyListState,

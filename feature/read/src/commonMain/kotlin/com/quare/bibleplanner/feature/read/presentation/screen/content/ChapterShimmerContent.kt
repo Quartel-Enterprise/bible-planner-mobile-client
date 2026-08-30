@@ -17,7 +17,6 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 private const val VERSE_SHIMMER_COUNT = 8
 private const val CHAPTER_SHIMMER_KEY = "chapter-shimmer"
 
-/** The header plus its verse lines, so the list can tell where the real chapters start. */
 internal const val CHAPTER_SHIMMER_ITEM_COUNT = VERSE_SHIMMER_COUNT + 1
 private val verseLineWidthFractions = listOf(
     listOf(1f, 0.96f, 0.58f),
