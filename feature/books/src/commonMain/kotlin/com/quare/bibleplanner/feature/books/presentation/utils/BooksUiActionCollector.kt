@@ -6,11 +6,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.UriHandler
-import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.open_site
 import bibleplanner.feature.books.generated.resources.reading_not_available_yet
-import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiAction
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +25,6 @@ internal fun BooksUiActionCollector(
     newTestamentListState: LazyGridState,
     uriHandler: UriHandler,
     snackbarHostState: SnackbarHostState,
-    onNavigate: (NavKey) -> Unit,
 ) {
     ActionCollector(uiAction) { action ->
         when (action) {
@@ -54,8 +51,6 @@ internal fun BooksUiActionCollector(
                     uriHandler.openUri(action.url)
                 }
             }
-
-            is BooksUiAction.NavigateToBookDetails -> onNavigate(BookDetailsNavRoute(action.bookId))
         }
     }
 }

@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseC
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
@@ -16,15 +17,12 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
 import com.quare.bibleplanner.core.review.domain.usecase.RequestReviewIfNeeded
-import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiAction
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiEvent
 import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetailsUiState
 import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,6 +35,7 @@ class BookDetailsViewModel(
     private val markBookRead: UpdateBookReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val requestReviewIfNeeded: RequestReviewIfNeeded,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     getBookByIdFlow: GetBookByIdFlowUseCase,
     val platform: Platform,
@@ -45,9 +44,6 @@ class BookDetailsViewModel(
 
     private val _uiState = MutableStateFlow<BookDetailsUiState>(BookDetailsUiState.Loading)
     val uiState: StateFlow<BookDetailsUiState> = _uiState
-
-    private val _uiAction = MutableSharedFlow<BookDetailsUiAction>()
-    val uiAction: SharedFlow<BookDetailsUiAction> = _uiAction
 
     private val successState get() = uiState.value as? BookDetailsUiState.Success
 
@@ -92,11 +88,7 @@ class BookDetailsViewModel(
 
     override fun handleEvent(event: BookDetailsUiEvent) {
         when (event) {
-            BookDetailsUiEvent.OnBackClick -> {
-                viewModelScope.launch {
-                    _uiAction.emit(BookDetailsUiAction.NavigateBack)
-                }
-            }
+            BookDetailsUiEvent.OnBackClick -> navigator.navigateBack()
 
             BookDetailsUiEvent.OnToggleFavorite -> {
                 successState?.let {
@@ -160,17 +152,15 @@ class BookDetailsViewModel(
             is BookDetailsUiEvent.OnChapterClick -> {
                 successState?.let {
                     viewModelScope.launch {
-                        _uiAction.emit(
-                            BookDetailsUiAction.NavigateToRoute(
-                                route = ReadNavRoute(
-                                    bookId = bookId.name,
-                                    chapterNumber = event.chapterNumber,
-                                    isChapterRead = it.chapters
-                                        .find { chapterModel ->
-                                            chapterModel.number == event.chapterNumber
-                                        }?.isRead ?: return@launch,
-                                    isFromBookDetails = true,
-                                ),
+                        navigator.navigate(
+                            ReadNavRoute(
+                                bookId = bookId.name,
+                                chapterNumber = event.chapterNumber,
+                                isChapterRead = it.chapters
+                                    .find { chapterModel ->
+                                        chapterModel.number == event.chapterNumber
+                                    }?.isRead ?: return@launch,
+                                isFromBookDetails = true,
                             ),
                         )
                     }

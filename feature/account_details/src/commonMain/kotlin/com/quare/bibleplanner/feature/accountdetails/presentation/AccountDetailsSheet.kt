@@ -9,9 +9,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.account_details.generated.resources.Res
 import bibleplanner.feature.account_details.generated.resources.account_details_title
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.accountdetails.presentation.content.AccountInfoSection
 import com.quare.bibleplanner.feature.accountdetails.presentation.content.ConnectedDevicesSection
@@ -22,23 +22,17 @@ import com.quare.bibleplanner.feature.accountdetails.presentation.utils.AccountD
 import com.quare.bibleplanner.feature.accountdetails.presentation.viewmodel.AccountDetailsViewModel
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun AccountDetailsSheet(
-    onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (NavKey) -> Unit,
-    onNavigate: (NavKey) -> Unit,
-) {
+internal fun AccountDetailsSheet() {
     val viewModel = koinViewModel<AccountDetailsViewModel>()
+    val navigator = koinInject<Navigator>()
     val uiState by viewModel.uiState.collectAsState()
-    AccountDetailsUiActionCollector(
-        uiActionFlow = viewModel.uiAction,
-        onNavigateReplacingTop = onNavigateReplacingTop,
-        onNavigate = onNavigate,
-    )
+    AccountDetailsUiActionCollector(uiActionFlow = viewModel.uiAction)
     ResponsiveDialogSheet(
-        onCloseClick = onNavigateBack,
+        onCloseClick = navigator::navigateBack,
         title = stringResource(Res.string.account_details_title),
     ) {
         AccountDetailsContent(uiState = uiState, onEvent = viewModel::onEvent)

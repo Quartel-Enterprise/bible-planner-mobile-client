@@ -7,6 +7,7 @@ import bibleplanner.feature.account_details.generated.resources.account_details_
 import com.quare.bibleplanner.core.devices.domain.model.DeviceModel
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDevices
 import com.quare.bibleplanner.core.devices.domain.usecase.SignOutDevice
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
@@ -41,6 +42,7 @@ internal class AccountDetailsViewModel(
     observeDevices: ObserveDevices,
     private val deviceUiModelMapper: DeviceUiModelMapper,
     private val signOutDevice: SignOutDevice,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AccountDetailsUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<AccountDetailsUiAction>()
@@ -79,15 +81,13 @@ internal class AccountDetailsViewModel(
         when (event) {
             AccountDetailsUiEvent.OnToggleDevices -> toggleDevices()
 
-            is AccountDetailsUiEvent.OnRenameDeviceClick -> emitAction(
-                AccountDetailsUiAction.NavigateToRoute(
-                    RenameDeviceNavRoute(deviceRowId = event.device.id, currentName = event.device.name),
-                ),
+            is AccountDetailsUiEvent.OnRenameDeviceClick -> navigator.navigate(
+                RenameDeviceNavRoute(deviceRowId = event.device.id, currentName = event.device.name),
             )
 
             is AccountDetailsUiEvent.OnSignOutDeviceClick -> signOutDeviceClick(event.device)
 
-            AccountDetailsUiEvent.OnLogoutClick -> emitAction(AccountDetailsUiAction.ReplaceWithRoute(LogoutNavRoute))
+            AccountDetailsUiEvent.OnLogoutClick -> navigator.navigateReplacingTop(LogoutNavRoute)
         }
     }
 
@@ -102,7 +102,7 @@ internal class AccountDetailsViewModel(
 
     private fun signOutDeviceClick(device: DeviceUiModel) {
         if (device.isCurrentDevice) {
-            emitAction(AccountDetailsUiAction.ReplaceWithRoute(LogoutNavRoute))
+            navigator.navigateReplacingTop(LogoutNavRoute)
             return
         }
         if (device.id in signingOutDeviceIds.value) return

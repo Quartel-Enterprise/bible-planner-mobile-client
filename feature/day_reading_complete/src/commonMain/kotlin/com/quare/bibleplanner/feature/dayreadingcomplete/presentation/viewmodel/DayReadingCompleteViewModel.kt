@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_reading_complete.generated.resources.Res
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_offline_message
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
@@ -58,6 +59,7 @@ class DayReadingCompleteViewModel(
     private val resolveStudyCtaState: ResolveStudyCtaStateUseCase,
     private val quotaPrefetchStore: DayStudyQuotaPrefetchStore,
     private val generationCoordinator: DayStudyGenerationCoordinator,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayReadingCompleteUiEvent>(trackEvent) {
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
@@ -82,7 +84,7 @@ class DayReadingCompleteViewModel(
     override fun handleEvent(event: DayReadingCompleteUiEvent) {
         when (event) {
             is DayReadingCompleteUiEvent.OnCtaClick -> onCtaClick(event.readingLabel)
-            DayReadingCompleteUiEvent.OnDismiss -> emitAction(DayReadingCompleteUiAction.NavigateBack)
+            DayReadingCompleteUiEvent.OnDismiss -> navigator.navigateBack()
         }
     }
 
@@ -188,11 +190,8 @@ class DayReadingCompleteViewModel(
             ),
         )
         when (ctaState) {
-            is StudyCtaState.FreeExhausted -> emitAction(
-                DayReadingCompleteUiAction.NavigateToRoute(
-                    route = PaywallNavRoute(PaywallEntrySource.DAY_STUDY),
-                    replace = false,
-                ),
+            is StudyCtaState.FreeExhausted -> navigator.navigate(
+                PaywallNavRoute(PaywallEntrySource.DAY_STUDY),
             )
 
             is StudyCtaState.FreeWithQuota, StudyCtaState.Pro -> startGeneration(readingLabel)
@@ -208,23 +207,15 @@ class DayReadingCompleteViewModel(
                 return@launch
             }
             if (observeAuthenticatedUserId().first() == null) {
-                emitAction(
-                    DayReadingCompleteUiAction.NavigateToRoute(
-                        route = LoginWarningNavRoute(LoginWarningReason.DayStudy.key),
-                        replace = false,
-                    ),
-                )
+                navigator.navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key))
                 return@launch
             }
             generationCoordinator.start(passages, route.toDayNavRoute(), readingLabel)
-            emitAction(
-                DayReadingCompleteUiAction.NavigateToRoute(
-                    route = DayStudyNavRoute(
-                        dayNumber = route.dayNumber,
-                        weekNumber = route.weekNumber,
-                        readingPlanType = route.readingPlanType,
-                    ),
-                    replace = true,
+            navigator.navigateReplacingTop(
+                DayStudyNavRoute(
+                    dayNumber = route.dayNumber,
+                    weekNumber = route.weekNumber,
+                    readingPlanType = route.readingPlanType,
                 ),
             )
         }

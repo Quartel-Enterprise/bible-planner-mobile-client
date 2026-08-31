@@ -75,11 +75,7 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
     )
-    dayReadingComplete(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-        onNavigateReplacingTop = onNavigateReplacingTop,
-    )
+    dayReadingComplete()
     chat()
     themeSettings()
     materialYou(onNavigateBack)
@@ -99,20 +95,12 @@ internal fun SharedTransitionScope.toEntryProvider(
     congrats(onNavigateBack)
     donation()
     pixQr()
-    bookDetails(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-        sharedTransitionScope = sharedTransitionScope,
-    )
+    bookDetails(sharedTransitionScope)
     appLanguage()
     bibleVersionSelectionRoot()
     deleteVersion(onNavigateBack)
     subscriptionDetails(onNavigateBack)
-    accountDetails(
-        onNavigateBack = onNavigateBack,
-        onNavigateReplacingTop = onNavigateReplacingTop,
-        onNavigate = onNavigate,
-    )
+    accountDetails()
     renameDevice(onNavigateBack)
     editProfile(
         onNavigateReplacingTop = onNavigateReplacingTop,

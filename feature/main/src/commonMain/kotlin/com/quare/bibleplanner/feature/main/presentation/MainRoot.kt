@@ -132,7 +132,6 @@ private fun EntryProviderScope<NavKey>.toMainEntries(
         animatedContentScope = animatedContentScope,
     )
     booksScreen(
-        onNavigate = onNavigate,
         navigationBar = navigationBar,
         navigationRail = navigationRail,
         sharedTransitionScope = sharedTransitionScope,

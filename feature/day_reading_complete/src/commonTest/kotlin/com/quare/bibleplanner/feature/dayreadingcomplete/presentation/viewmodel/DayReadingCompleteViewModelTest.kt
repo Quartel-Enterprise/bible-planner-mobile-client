@@ -2,6 +2,8 @@ package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel
 
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
@@ -88,6 +90,8 @@ private val testDay = ScheduledDayModel(
 internal class DayReadingCompleteViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var actions: List<DayReadingCompleteUiAction>
+    private val navigator = Navigator()
+    private lateinit var commands: List<NavigationCommand>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var coordinator: FakeDayStudyGenerationCoordinator
 
@@ -139,6 +143,7 @@ internal class DayReadingCompleteViewModelTest {
 
         assertEquals(DayReadingCompleteUiState.Loading, viewModel.uiState.value)
         assertTrue(actions.isEmpty())
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -150,11 +155,8 @@ internal class DayReadingCompleteViewModelTest {
         runCurrent()
 
         assertEquals(
-            expected = DayReadingCompleteUiAction.NavigateToRoute(
-                route = PaywallNavRoute(PaywallEntrySource.DAY_STUDY),
-                replace = false,
-            ),
-            actual = actions.last(),
+            expected = NavigationCommand.Navigate(PaywallNavRoute(PaywallEntrySource.DAY_STUDY)),
+            actual = commands.last(),
         )
     }
 
@@ -168,15 +170,14 @@ internal class DayReadingCompleteViewModelTest {
 
         assertNotNull(coordinator.startedWith)
         assertEquals(
-            expected = DayReadingCompleteUiAction.NavigateToRoute(
-                route = DayStudyNavRoute(
+            expected = NavigationCommand.NavigateReplacingTop(
+                DayStudyNavRoute(
                     dayNumber = testRoute.dayNumber,
                     weekNumber = testRoute.weekNumber,
                     readingPlanType = testRoute.readingPlanType,
                 ),
-                replace = true,
             ),
-            actual = actions.last(),
+            actual = commands.last(),
         )
     }
 
@@ -190,11 +191,8 @@ internal class DayReadingCompleteViewModelTest {
 
         assertNull(coordinator.startedWith)
         assertEquals(
-            expected = DayReadingCompleteUiAction.NavigateToRoute(
-                route = LoginWarningNavRoute(LoginWarningReason.DayStudy.key),
-                replace = false,
-            ),
-            actual = actions.last(),
+            expected = NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key)),
+            actual = commands.last(),
         )
     }
 
@@ -299,8 +297,8 @@ internal class DayReadingCompleteViewModelTest {
         runCurrent()
 
         assertEquals(
-            expected = DayReadingCompleteUiAction.NavigateBack,
-            actual = actions.last(),
+            expected = NavigationCommand.NavigateBack,
+            actual = commands.last(),
         )
         assertTrue(trackedEvents.any { (name, _) -> name == "day_reading_complete_dismissed" })
     }
@@ -364,10 +362,14 @@ internal class DayReadingCompleteViewModelTest {
                 }
             },
             generationCoordinator = coordinator,
+            navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         actions = mutableListOf<DayReadingCompleteUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
+        }
+        commands = mutableListOf<NavigationCommand>().also { collected ->
+            backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
         return viewModel
     }
