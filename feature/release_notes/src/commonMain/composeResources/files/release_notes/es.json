@@ -2,7 +2,8 @@
   "2.8.0": [
     "Con la lectura vertical activada, ahora puedes desplazarte hacia arriba y continuar en el capítulo anterior — antes la lectura solo seguía hacia adelante y se detenía al comienzo del capítulo con el que se abrió la pantalla.",
     "La pantalla de lectura abre mucho más rápido: el texto que ya está en tu dispositivo aparece al instante, sin esperar a que la lista de versiones de la Biblia responda por internet. Con conexión lenta o sin internet, eso dejaba la pantalla detenida por decenas de segundos.",
-    "La app ya no se cierra en raras situaciones al volver después de mucho tiempo en segundo plano: la sincronización en tiempo real ahora se pausa cuando sales de la app y se reconecta al volver, trayendo las novedades al instante — lo que también reduce el consumo de batería y datos en segundo plano."
+    "La app ya no se cierra en raras situaciones al volver después de mucho tiempo en segundo plano: la sincronización en tiempo real ahora se pausa cuando sales de la app y se reconecta al volver, trayendo las novedades al instante — lo que también reduce el consumo de batería y datos en segundo plano.",
+    "Se corrigió el botón de color personalizado en el menú de resaltado, que aparecía sin fondo para los usuarios Pro."
   ],
   "2.7.1": [
     "Mientras el capítulo carga, la pantalla de lectura ahora muestra un esbozo del texto en lugar del círculo girando — se ve de inmediato la forma del capítulo que llega, y la versión de la Biblia arriba ya no aparece en blanco antes de cargar.",
