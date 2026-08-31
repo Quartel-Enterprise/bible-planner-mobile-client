@@ -42,3 +42,4 @@
 - [Play link → GA4 confirmed](project_play_link_ga4_confirmed.md) — Android in_app_purchase revenue does arrive via the Play link, but stamped ~48h late on the export date, not the purchase date.
 - [iOS Kotlin exception hook](project_ios_kotlin_exception_hook.md) — Crashlytics issue 98f22a15 (KotlinNumber/SIGABRT) is the unhandled-Kotlin-exception catch-all; CrashKiOS hook (PR #385) makes post-2.7.1 releases report real Kotlin stacks as separate issues.
 - [Realtime foreground gate](project_realtime_foreground_gate.md) — realtime channels foreground-only since PR #386 (unfixable supabase-kt background setAuth crashes); Aug/2026 Crashlytics triage: broken-ROM NoSuchMethodErrors muted, OOM fixed by #372, dup-key fixed by nav3 1.1.6.
+- [Navigator migration](project_navigator_migration.md) — navigation is one injected Navigator (core/model) called from ViewModels; UiAction never carries navigation (2 documented exceptions).
