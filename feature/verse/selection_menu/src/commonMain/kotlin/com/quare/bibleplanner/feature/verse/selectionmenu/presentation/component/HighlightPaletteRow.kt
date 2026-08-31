@@ -128,21 +128,28 @@ internal fun HighlightPaletteRow(
                 Box(
                     modifier = Modifier
                         .size(swatchSize)
-                        .clip(CircleShape)
-                        .background(if (isCustomLocked) lockedCustomSwatchBrush else customSwatchBrush)
-                        .border(
-                            width = customSwatchRingWidth,
-                            color = Color.White.copy(alpha = CUSTOM_SWATCH_RING_ALPHA),
-                            shape = CircleShape,
-                        ).alpha(if (isCustomLocked) lockedCustomSwatchAlpha else 1f),
+                        .alpha(if (isCustomLocked) lockedCustomSwatchAlpha else 1f),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        modifier = Modifier.size(checkSize),
-                        imageVector = Icons.Outlined.Palette,
-                        contentDescription = null,
-                        tint = Color.White,
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(swatchSize)
+                            .clip(CircleShape)
+                            .background(if (isCustomLocked) lockedCustomSwatchBrush else customSwatchBrush)
+                            .border(
+                                width = customSwatchRingWidth,
+                                color = Color.White.copy(alpha = CUSTOM_SWATCH_RING_ALPHA),
+                                shape = CircleShape,
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(checkSize),
+                            imageVector = Icons.Outlined.Palette,
+                            contentDescription = null,
+                            tint = Color.White,
+                        )
+                    }
                 }
                 if (isCustomLocked) {
                     Box(
