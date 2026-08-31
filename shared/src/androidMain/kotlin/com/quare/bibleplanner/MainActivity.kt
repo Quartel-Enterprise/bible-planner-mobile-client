@@ -80,7 +80,7 @@ class MainActivity : ComponentActivity() {
                 name = AnalyticsEventNames.NOTIFICATION_OPENED,
                 params = mapOf(AnalyticsParams.TYPE to NotificationAnalyticsType.VERSION_DOWNLOAD_COMPLETE),
             )
-            viewModel.navigationEventBus.send(BibleVersionSelectorRoute)
+            viewModel.navigator.navigate(BibleVersionSelectorRoute)
         }
     }
 

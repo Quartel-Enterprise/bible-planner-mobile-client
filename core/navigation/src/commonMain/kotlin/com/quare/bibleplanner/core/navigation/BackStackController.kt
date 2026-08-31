@@ -3,7 +3,7 @@ package com.quare.bibleplanner.core.navigation
 import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.navigation.utils.popBackEntries
 
-internal class AppNavigator(
+internal class BackStackController(
     private val backStack: MutableList<NavKey>,
     private val forwardStack: MutableList<List<NavKey>>,
 ) {

@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.inappupdate.domain.usecase.impl
 
-import com.quare.bibleplanner.core.model.NavigationEventBus
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -8,16 +9,20 @@ import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.feature.inappupdate.fake.FakeUpdatePromptPreferences
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class ShowUpdatePromptUseCaseTest {
-    private val navigationEventBus = NavigationEventBus()
+    private val navigator = Navigator()
+    private val commands = mutableListOf<NavigationCommand>()
     private val preferences = FakeUpdatePromptPreferences(lastPromptedAt = null)
     private var didStartUpdate = false
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
@@ -32,7 +37,7 @@ internal class ShowUpdatePromptUseCaseTest {
         )
 
         assertTrue(didStartUpdate)
-        assertNull(navigationEventBus.events.replayCache.firstOrNull())
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -64,8 +69,12 @@ internal class ShowUpdatePromptUseCaseTest {
             )
 
             assertEquals(
-                InAppUpdateNavRoute(versionName = "2.0.0", source = UpdatePromptSource.STARTUP),
-                navigationEventBus.events.first(),
+                listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        InAppUpdateNavRoute(versionName = "2.0.0", source = UpdatePromptSource.STARTUP),
+                    ),
+                ),
+                commands,
             )
             assertFalse(didStartUpdate)
         }
@@ -82,14 +91,19 @@ internal class ShowUpdatePromptUseCaseTest {
         assertEquals(NOW, preferences.getLastPromptedAt())
     }
 
-    private fun prepareScenario(platform: Platform): ShowUpdatePromptUseCase = ShowUpdatePromptUseCase(
-        platform = platform,
-        startUpdate = { didStartUpdate = true },
-        navigationEventBus = navigationEventBus,
-        updatePromptPreferences = preferences,
-        currentTimestampProvider = { NOW },
-        trackEvent = { name, params -> trackedEvents += name to params },
-    )
+    private fun TestScope.prepareScenario(platform: Platform): ShowUpdatePromptUseCase {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            navigator.commands.collect { commands += it }
+        }
+        return ShowUpdatePromptUseCase(
+            platform = platform,
+            startUpdate = { didStartUpdate = true },
+            navigator = navigator,
+            updatePromptPreferences = preferences,
+            currentTimestampProvider = { NOW },
+            trackEvent = { name, params -> trackedEvents += name to params },
+        )
+    }
 
     private companion object {
         const val NOW = 1_700_000_000_000L

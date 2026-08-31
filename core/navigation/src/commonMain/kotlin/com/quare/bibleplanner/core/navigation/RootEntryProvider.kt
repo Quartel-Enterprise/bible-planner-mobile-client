@@ -59,10 +59,7 @@ internal fun SharedTransitionScope.toEntryProvider(
 ): (NavKey) -> NavEntry<NavKey> = entryProvider {
     val sharedTransitionScope = this@toEntryProvider
     loginRoot(onNavigateBack)
-    loginWarning(
-        onNavigateBack = onNavigateBack,
-        onNavigateReplacingTop = onNavigateReplacingTop,
-    )
+    loginWarning()
     loginSyncNudge(
         onNavigateBack = onNavigateBack,
         onNavigateReplacingTop = onNavigateReplacingTop,

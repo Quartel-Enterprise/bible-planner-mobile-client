@@ -1,20 +1,25 @@
 package com.quare.bibleplanner.core.provider.platform.domain.usecase
 
-import com.quare.bibleplanner.core.model.NavigationEventBus
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.platform.notification.NotificationPermissionPromptResult
 import com.quare.bibleplanner.core.provider.platform.notification.NotificationPermissionRequester
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class RequestDownloadNotificationPermissionUseCaseTest {
-    private val navigationEventBus = NavigationEventBus()
+    private val navigator = Navigator()
+    private val commands = mutableListOf<NavigationCommand>()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
 
     @Test
@@ -27,7 +32,7 @@ internal class RequestDownloadNotificationPermissionUseCaseTest {
         useCase()
 
         assertTrue(trackedEvents.isEmpty())
-        assertNull(navigationEventBus.events.replayCache.firstOrNull())
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -64,7 +69,7 @@ internal class RequestDownloadNotificationPermissionUseCaseTest {
             ),
             trackedEvents.last().second,
         )
-        assertNull(navigationEventBus.events.replayCache.firstOrNull())
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -83,7 +88,7 @@ internal class RequestDownloadNotificationPermissionUseCaseTest {
             ),
             trackedEvents.last().second,
         )
-        assertNull(navigationEventBus.events.replayCache.firstOrNull())
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -102,19 +107,24 @@ internal class RequestDownloadNotificationPermissionUseCaseTest {
             ),
             trackedEvents.last().second,
         )
-        assertEquals(NotificationPermissionNavRoute, navigationEventBus.events.first())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(NotificationPermissionNavRoute)), commands)
     }
 
-    private fun prepareScenario(
+    private fun TestScope.prepareScenario(
         canPrompt: Boolean,
         result: NotificationPermissionPromptResult,
-    ): RequestDownloadNotificationPermissionUseCase = RequestDownloadNotificationPermissionUseCase(
-        notificationPermissionRequester = object : NotificationPermissionRequester {
-            override suspend fun canPrompt(): Boolean = canPrompt
+    ): RequestDownloadNotificationPermissionUseCase {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            navigator.commands.collect { commands += it }
+        }
+        return RequestDownloadNotificationPermissionUseCase(
+            notificationPermissionRequester = object : NotificationPermissionRequester {
+                override suspend fun canPrompt(): Boolean = canPrompt
 
-            override suspend fun request(): NotificationPermissionPromptResult = result
-        },
-        trackEvent = { name, params -> trackedEvents += name to params },
-        navigationEventBus = navigationEventBus,
-    )
+                override suspend fun request(): NotificationPermissionPromptResult = result
+            },
+            trackEvent = { name, params -> trackedEvents += name to params },
+            navigator = navigator,
+        )
+    }
 }

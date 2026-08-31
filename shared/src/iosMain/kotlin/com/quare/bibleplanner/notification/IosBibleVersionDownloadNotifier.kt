@@ -6,17 +6,17 @@ import bibleplanner.shared.generated.resources.notification_complete_title
 import bibleplanner.shared.generated.resources.notification_error_message
 import bibleplanner.shared.generated.resources.notification_error_title
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
-import com.quare.bibleplanner.core.model.NavigationEventBus
+import com.quare.bibleplanner.core.model.Navigator
 import org.jetbrains.compose.resources.getString
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNUserNotificationCenter
 
 internal class IosBibleVersionDownloadNotifier(
-    navigationEventBus: NavigationEventBus,
+    navigator: Navigator,
 ) : BibleVersionDownloadNotifier {
     init {
-        NotificationTapRouter.setNavigationEventBus(navigationEventBus)
+        NotificationTapRouter.setNavigator(navigator)
     }
 
     private val center = UNUserNotificationCenter.currentNotificationCenter()
