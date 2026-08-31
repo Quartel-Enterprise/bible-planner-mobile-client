@@ -10,4 +10,16 @@ interface StudySuggestionSettingsRepository {
     suspend fun setEnabled(isEnabled: Boolean)
 
     suspend fun setMode(mode: StudySuggestionMode)
+
+    fun getSyncEnabledFlow(): Flow<Boolean>
+
+    suspend fun setSyncEnabled(enabled: Boolean)
+
+    fun observeSyncedEnabled(): Flow<Boolean?>
+
+    fun observeSyncedMode(): Flow<StudySuggestionMode?>
+
+    suspend fun applySyncedEnabled(isEnabled: Boolean)
+
+    suspend fun applySyncedMode(mode: StudySuggestionMode)
 }

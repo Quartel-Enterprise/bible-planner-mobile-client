@@ -63,6 +63,7 @@ kotlin {
             api(projects.feature.inAppUpdate)
             api(projects.feature.notificationPermission)
             api(projects.feature.preferences.themeSelection)
+            api(projects.feature.preferences.studySuggestion)
             api(projects.feature.readingPlan)
             api(projects.feature.day)
             api(projects.feature.deleteProgress)

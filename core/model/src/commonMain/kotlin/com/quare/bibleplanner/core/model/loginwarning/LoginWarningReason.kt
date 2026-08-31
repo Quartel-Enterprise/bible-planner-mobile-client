@@ -29,6 +29,10 @@ sealed interface LoginWarningReason {
         data object Language : Preferences {
             override val key: String = "preferences_language"
         }
+
+        data object StudySuggestion : Preferences {
+            override val key: String = "preferences_study_suggestion"
+        }
     }
 
     companion object {
@@ -38,6 +42,7 @@ sealed interface LoginWarningReason {
             AiChat,
             Preferences.Theme,
             Preferences.Language,
+            Preferences.StudySuggestion,
         )
 
         fun fromKey(key: String): LoginWarningReason = entries.first { it.key == key }

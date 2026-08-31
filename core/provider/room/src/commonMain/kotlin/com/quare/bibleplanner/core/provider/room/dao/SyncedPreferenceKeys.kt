@@ -16,4 +16,8 @@ object SyncedPreferenceKeys {
 
     const val LANGUAGE_SYNC_ENABLED = "language_sync_enabled"
     const val APP_LANGUAGE = "app_language"
+
+    const val STUDY_SUGGESTION_SYNC_ENABLED = "study_suggestion_sync_enabled"
+    const val STUDY_SUGGESTION_ENABLED = "study_suggestion_enabled"
+    const val STUDY_SUGGESTION_MODE = "study_suggestion_mode"
 }

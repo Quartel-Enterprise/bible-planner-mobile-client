@@ -16,6 +16,9 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.dataStore)
+            implementation(projects.core.provider.room)
+            implementation(projects.core.date)
+            implementation(projects.core.user)
 
             // UI
             implementation(projects.ui.component)

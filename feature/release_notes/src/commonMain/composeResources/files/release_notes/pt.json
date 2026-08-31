@@ -5,7 +5,8 @@
     "O app não trava mais em raras situações ao voltar de um longo tempo em segundo plano: a sincronização em tempo real agora pausa quando você sai do app e reconecta ao voltar, buscando as novidades na hora — o que também reduz o consumo de bateria e internet em segundo plano.",
     "Corrigido o botão de cor personalizada no menu de destaque, que ficava sem fundo para usuários Pro.",
     "Você agora escolhe como o app sugere o estudo do dia ao terminar o último capítulo programado: com o aviso em destaque de sempre ou com um novo banner discreto no rodapé, que não interrompe a leitura. A escolha fica em Perfil › Preferências › Sugestão de estudo.",
-    "O aviso de leitura do dia concluída ganhou a opção \"Não mostrar novamente\" — a sugestão pode ser reativada quando quiser pelas preferências."
+    "O aviso de leitura do dia concluída ganhou a opção \"Não mostrar novamente\" — a sugestão pode ser reativada quando quiser pelas preferências.",
+    "A sugestão de estudo agora pode ser sincronizada entre seus dispositivos: ative \"Sincronizar entre dispositivos\" na configuração dela e a escolha (ativada ou não e como aparece) acompanha sua conta em tempo real."
   ],
   "2.7.1": [
     "Enquanto o capítulo carrega, a tela de leitura agora mostra um esboço do texto no lugar do círculo girando — dá para ver de cara o formato do capítulo que está chegando, e a versão da Bíblia no topo não aparece mais em branco antes de carregar.",

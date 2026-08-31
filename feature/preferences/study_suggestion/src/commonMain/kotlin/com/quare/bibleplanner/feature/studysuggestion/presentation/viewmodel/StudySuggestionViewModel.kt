@@ -6,38 +6,40 @@ import bibleplanner.feature.preferences.study_suggestion.generated.resources.stu
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_enabled_message
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_mode_blocked_message
 import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
-import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.ObserveStudySuggestionSettings
 import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.SetStudySuggestionEnabled
 import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.SetStudySuggestionMode
+import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.SetStudySuggestionSyncEnabled
+import com.quare.bibleplanner.feature.studysuggestion.presentation.factory.StudySuggestionUiStateFactory
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiAction
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
+import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 
 internal class StudySuggestionViewModel(
-    observeStudySuggestionSettings: ObserveStudySuggestionSettings,
+    uiStateFactory: StudySuggestionUiStateFactory,
     private val setStudySuggestionEnabled: SetStudySuggestionEnabled,
     private val setStudySuggestionMode: SetStudySuggestionMode,
+    private val setStudySuggestionSyncEnabled: SetStudySuggestionSyncEnabled,
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<StudySuggestionUiEvent>(trackEvent) {
-    val uiState: StateFlow<Loadable<StudySuggestionSettingsModel>> = observeStudySuggestionSettings()
-        .map<StudySuggestionSettingsModel, Loadable<StudySuggestionSettingsModel>> { Loadable.Loaded(it) }
+    val uiState: StateFlow<StudySuggestionUiState> = uiStateFactory
+        .create()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
-            initialValue = Loadable.Loading,
+            initialValue = uiStateFactory.createInitialState(),
         )
 
     private val _uiAction = MutableSharedFlow<StudySuggestionUiAction>()
@@ -51,6 +53,12 @@ internal class StudySuggestionViewModel(
 
             StudySuggestionUiEvent.OnBlockedModeClick -> showSnackbar(
                 Res.string.study_suggestion_mode_blocked_message,
+            )
+
+            is StudySuggestionUiEvent.SyncToggleClicked -> toggleSync(event.isNewValueOn)
+
+            StudySuggestionUiEvent.SyncToggleBlockedClicked -> navigator.navigate(
+                LoginWarningNavRoute(LoginWarningReason.Preferences.StudySuggestion.key),
             )
 
             StudySuggestionUiEvent.OnDismiss -> navigator.navigateBack()
@@ -72,6 +80,12 @@ internal class StudySuggestionViewModel(
     private fun selectMode(mode: StudySuggestionMode) {
         viewModelScope.launch {
             setStudySuggestionMode(mode)
+        }
+    }
+
+    private fun toggleSync(isNewValueOn: Boolean) {
+        viewModelScope.launch {
+            setStudySuggestionSyncEnabled(isNewValueOn)
         }
     }
 

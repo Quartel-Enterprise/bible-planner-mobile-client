@@ -6,20 +6,21 @@ Captures the user tapping a sync toggle that is disabled/blocked (e.g. because t
 
 ## When it fires
 
-User taps a sync toggle (theme or app-language preference) while it is in a blocked state and cannot actually be switched on.
+User taps a sync toggle (theme, app-language or study-suggestion preference) while it is in a blocked state and cannot actually be switched on.
 
 ## Trigger source
 
-Two trigger points:
+Three trigger points:
 
 - `feature/preferences/theme_selection/src/commonMain/kotlin/com/quare/bibleplanner/feature/themeselection/presentation/ThemeSelectionViewModel.kt` — `ThemeSelectionUiEvent.SyncToggleBlockedClicked`
 - `feature/preferences/app_language/src/commonMain/kotlin/com/quare/bibleplanner/feature/applanguage/presentation/AppLanguageViewModel.kt` — `AppLanguageUiEvent.SyncToggleBlockedClicked`
+- `feature/preferences/study_suggestion/src/commonMain/kotlin/com/quare/bibleplanner/feature/studysuggestion/presentation/viewmodel/StudySuggestionViewModel.kt` — `StudySuggestionUiEvent.SyncToggleBlockedClicked`
 
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `source` | string | `theme_selection` | Which surface hosted the blocked toggle: `theme_selection` \| `app_language` |
+| `source` | string | `theme_selection` | Which surface hosted the blocked toggle: `theme_selection` \| `app_language` \| `study_suggestion` |
 
 ## Notes
 
