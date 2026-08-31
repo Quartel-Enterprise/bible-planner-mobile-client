@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.notificationpermission.presentation.viewmodel
 
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.notificationpermission.presentation.model.NotificationPermissionUiEvent
 import kotlinx.coroutines.Dispatchers
@@ -102,6 +103,7 @@ internal class NotificationPermissionViewModelTest {
         val collected = mutableListOf<Pair<String, Map<String, Any>>>()
         trackedEvents = collected
         viewModel = NotificationPermissionViewModel(
+            navigator = Navigator(),
             trackEvent = TrackEvent { name, params -> collected += name to params },
         )
     }

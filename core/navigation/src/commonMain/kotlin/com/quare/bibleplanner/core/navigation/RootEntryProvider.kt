@@ -158,8 +158,8 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
     )
-    notificationPermission(onNavigateBack)
-    inAppUpdate(onNavigateBack)
-    updateDownloaded(onNavigateBack)
+    notificationPermission()
+    inAppUpdate()
+    updateDownloaded()
     pendingBibleUpdates(onNavigateBack)
 }

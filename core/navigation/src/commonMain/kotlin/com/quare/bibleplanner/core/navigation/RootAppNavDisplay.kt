@@ -143,7 +143,6 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                 .padding(bottom = mainContentBottomInset()),
         )
         InAppUpdateDownloadOverlay(
-            onNavigate = backStackController::navigate,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = mainContentBottomInset()),
