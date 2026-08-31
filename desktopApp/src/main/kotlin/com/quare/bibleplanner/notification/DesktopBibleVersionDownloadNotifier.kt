@@ -8,7 +8,7 @@ import bibleplanner.shared.generated.resources.notification_error_title
 import bibleplanner.shared.generated.resources.notification_preparing_starting
 import bibleplanner.shared.generated.resources.notification_preparing_title
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
-import com.quare.bibleplanner.core.model.NavigationEventBus
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import org.jetbrains.compose.resources.getString
 import java.awt.SystemTray
@@ -17,7 +17,7 @@ import java.awt.TrayIcon.MessageType
 import java.awt.image.BufferedImage
 
 internal class DesktopBibleVersionDownloadNotifier(
-    private val navigationEventBus: NavigationEventBus,
+    private val navigator: Navigator,
 ) : BibleVersionDownloadNotifier {
     private val trayIcon: TrayIcon? by lazy { createTrayIconIfSupported() }
 
@@ -73,7 +73,7 @@ internal class DesktopBibleVersionDownloadNotifier(
         val image = BufferedImage(iconSize.width, iconSize.height, BufferedImage.TYPE_INT_ARGB)
         val icon = TrayIcon(image).apply {
             isImageAutoSize = true
-            addActionListener { navigationEventBus.send(BibleVersionSelectorRoute) }
+            addActionListener { navigator.navigate(BibleVersionSelectorRoute) }
         }
         runCatching { tray.add(icon) }
         return icon

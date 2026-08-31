@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.provider.platform.domain.usecase
 
-import com.quare.bibleplanner.core.model.NavigationEventBus
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -11,7 +11,7 @@ import com.quare.bibleplanner.core.provider.platform.notification.NotificationPe
 class RequestDownloadNotificationPermissionUseCase(
     private val notificationPermissionRequester: NotificationPermissionRequester,
     private val trackEvent: TrackEvent,
-    private val navigationEventBus: NavigationEventBus,
+    private val navigator: Navigator,
 ) : RequestDownloadNotificationPermission {
     override suspend fun invoke() {
         if (!notificationPermissionRequester.canPrompt()) return
@@ -28,7 +28,7 @@ class RequestDownloadNotificationPermissionUseCase(
             ),
         )
         if (result == NotificationPermissionPromptResult.PERMANENTLY_DENIED) {
-            navigationEventBus.send(NotificationPermissionNavRoute)
+            navigator.navigate(NotificationPermissionNavRoute)
         }
     }
 }

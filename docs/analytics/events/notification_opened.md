@@ -12,7 +12,7 @@ User taps a notification and the app routes the tap to a destination — today a
 
 Platform tap-routing glue, not a ViewModel:
 
-- Android: `shared/src/androidMain/kotlin/com/quare/bibleplanner/MainActivity.kt` — `handleNotificationIntent` (checks the `EXTRA_NAVIGATE_TO_BIBLE_VERSIONS` extra, sends `BibleVersionSelectorRoute` on the `NavigationEventBus`)
+- Android: `shared/src/androidMain/kotlin/com/quare/bibleplanner/MainActivity.kt` — `handleNotificationIntent` (checks the `EXTRA_NAVIGATE_TO_BIBLE_VERSIONS` extra, sends `BibleVersionSelectorRoute` on the `Navigator`)
 - iOS: `iosApp/iosApp/NotificationDelegate.swift` — `didReceive` → `NotificationTapRouter.routeToBibleVersions()` (`shared/src/iosMain/kotlin/com/quare/bibleplanner/notification/NotificationTapRouter.kt`)
 
 ## Parameters

@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-internal class AppNavigatorTest {
+internal class BackStackControllerTest {
     private val mainRoute: NavKey = MainNavRoute
     private val themeRoute: NavKey = ThemeNavRoute
     private val logoutRoute: NavKey = LogoutNavRoute
@@ -24,7 +24,7 @@ internal class AppNavigatorTest {
     )
     private val dayStudyRoute: NavKey = dayRoute.toDayStudyNavRoute()
 
-    private lateinit var navigator: AppNavigator
+    private lateinit var backStackController: BackStackController
     private lateinit var backStack: MutableList<NavKey>
     private lateinit var forwardStack: MutableList<List<NavKey>>
 
@@ -34,7 +34,7 @@ internal class AppNavigatorTest {
         prepareScenario()
 
         // When
-        navigator.navigate(themeRoute)
+        backStackController.navigate(themeRoute)
 
         // Then
         assertEquals(listOf(mainRoute, themeRoute), backStack)
@@ -46,7 +46,7 @@ internal class AppNavigatorTest {
         prepareScenario(backStack = listOf(mainRoute, themeRoute, logoutRoute))
 
         // When
-        navigator.navigate(themeRoute)
+        backStackController.navigate(themeRoute)
 
         // Then
         assertEquals(listOf(mainRoute, themeRoute, logoutRoute), backStack)
@@ -58,7 +58,7 @@ internal class AppNavigatorTest {
         prepareScenario(forwardStack = listOf(listOf(themeRoute)))
 
         // When
-        navigator.navigate(logoutRoute)
+        backStackController.navigate(logoutRoute)
 
         // Then
         assertEquals(emptyList(), forwardStack)
@@ -73,7 +73,7 @@ internal class AppNavigatorTest {
         )
 
         // When
-        navigator.navigate(logoutRoute)
+        backStackController.navigate(logoutRoute)
 
         // Then
         assertEquals(listOf(listOf(themeRoute)), forwardStack)
@@ -88,7 +88,7 @@ internal class AppNavigatorTest {
         )
 
         // When
-        navigator.navigateReplacingTop(releaseNotesRoute)
+        backStackController.navigateReplacingTop(releaseNotesRoute)
 
         // Then
         assertEquals(listOf(mainRoute, releaseNotesRoute), backStack)
@@ -104,7 +104,7 @@ internal class AppNavigatorTest {
         )
 
         // When
-        navigator.navigateReplacingTop(themeRoute)
+        backStackController.navigateReplacingTop(themeRoute)
 
         // Then
         assertEquals(listOf(mainRoute, themeRoute), backStack)
@@ -117,7 +117,7 @@ internal class AppNavigatorTest {
         prepareScenario(backStack = listOf(mainRoute, themeRoute))
 
         // When
-        navigator.navigateBack(isWide = false)
+        backStackController.navigateBack(isWide = false)
 
         // Then
         assertEquals(listOf(mainRoute), backStack)
@@ -130,7 +130,7 @@ internal class AppNavigatorTest {
         prepareScenario()
 
         // When
-        navigator.navigateBack(isWide = false)
+        backStackController.navigateBack(isWide = false)
 
         // Then
         assertEquals(listOf(mainRoute), backStack)
@@ -143,7 +143,7 @@ internal class AppNavigatorTest {
         prepareScenario(backStack = listOf(mainRoute, dayRoute, dayStudyRoute))
 
         // When
-        navigator.navigateBack(isWide = true)
+        backStackController.navigateBack(isWide = true)
 
         // Then
         assertEquals(listOf(mainRoute), backStack)
@@ -156,7 +156,7 @@ internal class AppNavigatorTest {
         prepareScenario(backStack = listOf(mainRoute, dayRoute, dayStudyRoute))
 
         // When
-        navigator.navigateBack(isWide = false)
+        backStackController.navigateBack(isWide = false)
 
         // Then
         assertEquals(listOf(mainRoute, dayRoute), backStack)
@@ -179,7 +179,7 @@ internal class AppNavigatorTest {
         )
 
         // When
-        navigator.navigateBack(isWide = true)
+        backStackController.navigateBack(isWide = true)
 
         // Then
         assertEquals(listOf(mainRoute, dayRoute), backStack)
@@ -189,10 +189,10 @@ internal class AppNavigatorTest {
     fun `GIVEN a popped pair of panes WHEN navigating forward THEN restores them in their original order`() {
         // Given
         prepareScenario(backStack = listOf(mainRoute, dayRoute, dayStudyRoute))
-        navigator.navigateBack(isWide = true)
+        backStackController.navigateBack(isWide = true)
 
         // When
-        navigator.navigateForward()
+        backStackController.navigateForward()
 
         // Then
         assertEquals(listOf(mainRoute, dayRoute, dayStudyRoute), backStack)
@@ -203,11 +203,11 @@ internal class AppNavigatorTest {
     fun `GIVEN several popped entries WHEN navigating forward THEN restores only the last popped one`() {
         // Given
         prepareScenario(backStack = listOf(mainRoute, themeRoute, logoutRoute))
-        navigator.navigateBack(isWide = false)
-        navigator.navigateBack(isWide = false)
+        backStackController.navigateBack(isWide = false)
+        backStackController.navigateBack(isWide = false)
 
         // When
-        navigator.navigateForward()
+        backStackController.navigateForward()
 
         // Then
         assertEquals(listOf(mainRoute, themeRoute), backStack)
@@ -220,7 +220,7 @@ internal class AppNavigatorTest {
         prepareScenario()
 
         // When
-        navigator.navigateForward()
+        backStackController.navigateForward()
 
         // Then
         assertEquals(listOf(mainRoute), backStack)
@@ -232,7 +232,7 @@ internal class AppNavigatorTest {
         prepareScenario(backStack = listOf(mainRoute, themeRoute))
 
         // When
-        val canNavigateForward = navigator.canNavigateForward
+        val canNavigateForward = backStackController.canNavigateForward
 
         // Then
         assertFalse(canNavigateForward)
@@ -242,10 +242,10 @@ internal class AppNavigatorTest {
     fun `GIVEN a popped entry WHEN checking the forward availability THEN reports it as available`() {
         // Given
         prepareScenario(backStack = listOf(mainRoute, themeRoute))
-        navigator.navigateBack(isWide = false)
+        backStackController.navigateBack(isWide = false)
 
         // When
-        val canNavigateForward = navigator.canNavigateForward
+        val canNavigateForward = backStackController.canNavigateForward
 
         // Then
         assertTrue(canNavigateForward)
@@ -257,7 +257,7 @@ internal class AppNavigatorTest {
     ) {
         this.backStack = backStack.toMutableList()
         this.forwardStack = forwardStack.toMutableList()
-        navigator = AppNavigator(
+        backStackController = BackStackController(
             backStack = this.backStack,
             forwardStack = this.forwardStack,
         )
