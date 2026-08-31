@@ -6,6 +6,7 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.util.getReadingLabel
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
@@ -82,6 +83,7 @@ internal class DayStudyRouteViewModel(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val cardUiModelFactory: DayStudyCardUiModelFactory,
     platform: Platform,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayStudyRouteUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<DayStudyRouteUiState> = MutableStateFlow(
@@ -129,14 +131,12 @@ internal class DayStudyRouteViewModel(
             name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
             params = mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_STUDY_QUESTIONS.key),
         )
-        emitAction(
-            DayStudyRouteUiAction.NavigateToRoute(
-                ChatNavRoute(
-                    source = ChatEntrySource.DAY_STUDY_QUESTIONS,
-                    dayNumber = dayRoute.dayNumber,
-                    weekNumber = dayRoute.weekNumber,
-                    readingPlanType = dayRoute.readingPlanType,
-                ),
+        navigator.navigate(
+            ChatNavRoute(
+                source = ChatEntrySource.DAY_STUDY_QUESTIONS,
+                dayNumber = dayRoute.dayNumber,
+                weekNumber = dayRoute.weekNumber,
+                readingPlanType = dayRoute.readingPlanType,
             ),
         )
     }
@@ -311,12 +311,9 @@ internal class DayStudyRouteViewModel(
         )
         if (_uiState.value.openStudy != null || _uiState.value.generation != null) return
         when (card.mode) {
-            DayStudyCardMode.LOCKED ->
-                emitAction(
-                    DayStudyRouteUiAction.NavigateToRoute(
-                        PaywallNavRoute(PaywallEntrySource.DAY_STUDY_DETAIL),
-                    ),
-                )
+            DayStudyCardMode.LOCKED -> navigator.navigate(
+                PaywallNavRoute(PaywallEntrySource.DAY_STUDY_DETAIL),
+            )
 
             DayStudyCardMode.GENERATE -> generateIfLoggedIn()
 
@@ -328,11 +325,7 @@ internal class DayStudyRouteViewModel(
         viewModelScope.launch {
             withOpeningIndicator {
                 if (observeAuthenticatedUserId().first() == null) {
-                    _uiAction.emit(
-                        DayStudyRouteUiAction.NavigateToRoute(
-                            LoginWarningNavRoute(LoginWarningReason.DayStudy.key),
-                        ),
-                    )
+                    navigator.navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key))
                 } else {
                     startGenerationOrCachedOpen()
                 }

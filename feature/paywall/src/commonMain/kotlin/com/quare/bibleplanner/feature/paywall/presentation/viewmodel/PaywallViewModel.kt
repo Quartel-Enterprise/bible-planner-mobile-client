@@ -1,8 +1,10 @@
 package com.quare.bibleplanner.feature.paywall.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -42,6 +44,7 @@ internal class PaywallViewModel(
     private val exceptionMapper: PaywallExceptionMapper,
     private val analyticsReasonMapper: PaywallAnalyticsReasonMapper,
     private val observeIsProUser: ObserveIsProUser,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<PaywallUiEvent>(trackEvent) {
@@ -88,7 +91,7 @@ internal class PaywallViewModel(
                 .filter { it }
                 .collect {
                     if (!purchaseInitiated) {
-                        _uiAction.emit(PaywallUiAction.NavigateBack)
+                        navigator.navigateBack()
                     }
                 }
         }
@@ -96,7 +99,7 @@ internal class PaywallViewModel(
 
     private suspend fun ensureLoggedIn(): Boolean {
         if (getAuthenticatedUserId() != null) return true
-        _uiAction.emit(PaywallUiAction.NavigateToLoginWarning(LoginWarningReason.Purchase.key))
+        navigator.navigate(LoginWarningNavRoute(LoginWarningReason.Purchase.key))
         return false
     }
 
@@ -108,7 +111,7 @@ internal class PaywallViewModel(
                     params = getSelectedPlanParams(),
                 )
                 viewModelScope.launch {
-                    _uiAction.emit(PaywallUiAction.NavigateBack)
+                    navigator.navigateBack()
                 }
             }
 
@@ -147,7 +150,7 @@ internal class PaywallViewModel(
                                         storePackage = packageToPurchase,
                                     )
                                     _uiState.update { currentState.copy(isPurchasing = false) }
-                                    _uiAction.emit(PaywallUiAction.NavigateTo(CongratsNavRoute))
+                                    navigator.navigateReplacingTop(CongratsNavRoute)
                                 }.onFailure { error ->
                                     trackEvent(
                                         name = AnalyticsEventNames.PURCHASE_FAILED,
@@ -204,7 +207,7 @@ internal class PaywallViewModel(
                             if (currentState is PaywallUiState.Success) {
                                 _uiState.update { currentState.copy(isPurchasing = false) }
                             }
-                            _uiAction.emit(PaywallUiAction.NavigateTo(CongratsNavRoute))
+                            navigator.navigateReplacingTop(CongratsNavRoute)
                         }.onFailure { error ->
                             trackEvent(
                                 name = AnalyticsEventNames.RESTORE_FAILED,

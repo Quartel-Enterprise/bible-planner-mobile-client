@@ -16,21 +16,13 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderScope<NavKey>.paywall(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (NavKey) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-) {
+fun EntryProviderScope<NavKey>.paywall(sharedTransitionScope: SharedTransitionScope) {
     entry<PaywallNavRoute> { route ->
         val viewModel = koinViewModel<PaywallViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         PaywallUiActionCollector(
             actionsFlow = viewModel.uiAction,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
-            onNavigateReplacingTop = onNavigateReplacingTop,
             snackbarHostState = snackbarHostState,
         )
 
