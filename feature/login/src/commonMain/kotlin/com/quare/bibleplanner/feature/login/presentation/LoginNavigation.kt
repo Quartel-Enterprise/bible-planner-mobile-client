@@ -20,7 +20,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.loginRoot(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.loginRoot() {
     entry<LoginNavRoute>(metadata = DialogSceneStrategy.dialog()) { route ->
         val notifyResultViaSnackbar = route.notifyResultViaSnackbar
         val appSnackbarController = koinInject<AppSnackbarController>()
@@ -40,7 +40,6 @@ fun EntryProviderScope<NavKey>.loginRoot(onNavigateBack: () -> Unit) {
         val state by viewModel.state.collectAsState()
         LoginUiActionCollector(
             uiActionFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
             sheetState = sheetState,
             onLoginResult = { message ->
                 if (notifyResultViaSnackbar) {

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.login.generated.resources.Res
 import bibleplanner.feature.login.generated.resources.login_result_error
 import bibleplanner.feature.login.generated.resources.login_result_success
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -38,6 +39,7 @@ internal class LoginViewModel(
     private val throwableToLoginErrorMapper: ThrowableToLoginErrorMapper,
     private val noGoogleAccountClassifier: NoGoogleAccountClassifier,
     private val addGoogleAccountLauncher: AddGoogleAccountLauncher,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LoginUiEvent>(trackEvent) {
     val composeAuth: ComposeAuth = supabaseClient.composeAuth
@@ -57,11 +59,7 @@ internal class LoginViewModel(
 
     override fun handleEvent(uiEvent: LoginUiEvent) {
         when (uiEvent) {
-            LoginUiEvent.DismissClick -> {
-                viewModelScope.launch {
-                    navigateBack()
-                }
-            }
+            LoginUiEvent.DismissClick -> navigator.navigateBack()
 
             is LoginUiEvent.SocialLoginClick -> {
                 _state.update { it.copy(loadingProvider = uiEvent.provider, error = null) }
@@ -200,7 +198,7 @@ internal class LoginViewModel(
         navigateBack()
     }
 
-    private suspend fun navigateBack() {
-        _uiAction.emit(LoginUiAction.NavigateBack)
+    private fun navigateBack() {
+        navigator.navigateBack()
     }
 }

@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.contactsupport.presentation.viewmodel
 
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
 import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
@@ -167,6 +168,7 @@ internal class ContactSupportViewModelTest {
                 platform = Platform.Android,
             ),
             mailtoFactory = FakeContactSupportMailtoFactory(),
+            navigator = Navigator(),
             trackEvent = TrackEvent { name, params -> collected += name to params },
         )
     }

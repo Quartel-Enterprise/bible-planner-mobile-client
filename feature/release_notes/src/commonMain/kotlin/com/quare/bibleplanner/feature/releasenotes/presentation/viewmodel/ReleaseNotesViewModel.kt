@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.releasenotes.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.releasenotes.presentation.factory.ReleaseNotesUiStateFactory
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class ReleaseNotesViewModel(
     private val uiStateFactory: ReleaseNotesUiStateFactory,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<ReleaseNotesUiEvent>(trackEvent) {
@@ -43,8 +45,7 @@ class ReleaseNotesViewModel(
                 }
             }
 
-            ReleaseNotesUiEvent.OnBackClicked ->
-                viewModelScope.launch { _uiAction.send(ReleaseNotesUiAction.NavigateBack) }
+            ReleaseNotesUiEvent.OnBackClicked -> navigator.navigateBack()
 
             ReleaseNotesUiEvent.OnGithubAllReleasesClicked -> {
                 viewModelScope.launch {

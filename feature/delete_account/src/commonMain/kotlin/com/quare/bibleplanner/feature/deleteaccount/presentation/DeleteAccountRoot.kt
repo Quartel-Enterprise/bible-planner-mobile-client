@@ -11,7 +11,7 @@ import com.quare.bibleplanner.feature.deleteaccount.presentation.utils.DeleteAcc
 import com.quare.bibleplanner.feature.deleteaccount.presentation.viewmodel.DeleteAccountViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun EntryProviderScope<NavKey>.deleteAccount(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.deleteAccount() {
     entry<DeleteAccountNavRoute>(
         metadata = DialogSceneStrategy.dialog(
             DialogProperties(
@@ -22,10 +22,7 @@ fun EntryProviderScope<NavKey>.deleteAccount(onNavigateBack: () -> Unit) {
     ) {
         val viewModel = koinViewModel<DeleteAccountViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        DeleteAccountUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
-        )
+        DeleteAccountUiActionCollector(uiActionFlow = viewModel.uiAction)
         DeleteAccountDialog(
             uiState = uiState,
             onEvent = viewModel::onEvent,

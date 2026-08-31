@@ -58,7 +58,7 @@ internal fun SharedTransitionScope.toEntryProvider(
     onNavigate: (NavKey) -> Unit,
 ): (NavKey) -> NavEntry<NavKey> = entryProvider {
     val sharedTransitionScope = this@toEntryProvider
-    loginRoot(onNavigateBack)
+    loginRoot()
     loginWarning()
     loginSyncNudge(
         onNavigateBack = onNavigateBack,
@@ -95,17 +95,14 @@ internal fun SharedTransitionScope.toEntryProvider(
     )
     materialYou(onNavigateBack)
     deleteProgress(onNavigateBack)
-    deleteAccount(onNavigateBack)
+    deleteAccount()
     deleteNotes(onNavigateBack)
     addNotesFreeWarning(
         onNavigateBack = onNavigateBack,
         onNavigateReplacingTop = onNavigateReplacingTop,
     )
     editPlanStartDate(onNavigateBack)
-    releaseNotes(
-        onNavigateBack = onNavigateBack,
-        sharedTransitionScope = sharedTransitionScope,
-    )
+    releaseNotes(sharedTransitionScope)
     paywall(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
@@ -121,7 +118,7 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
     )
-    pixQr(onNavigateBack)
+    pixQr()
     bookDetails(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
@@ -157,7 +154,7 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigateBack = onNavigateBack,
     )
     cropPhoto(onNavigateBack)
-    contactSupport(onNavigateBack)
+    contactSupport()
     read(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,

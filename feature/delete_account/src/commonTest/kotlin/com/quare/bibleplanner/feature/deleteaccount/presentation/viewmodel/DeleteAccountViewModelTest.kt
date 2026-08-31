@@ -2,6 +2,8 @@ package com.quare.bibleplanner.feature.deleteaccount.presentation.viewmodel
 
 import bibleplanner.feature.delete_account.generated.resources.Res
 import bibleplanner.feature.delete_account.generated.resources.delete_account_store_google_play
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
@@ -42,12 +44,15 @@ internal class DeleteAccountViewModelTest {
     private lateinit var viewModel: DeleteAccountViewModel
     private lateinit var actions: List<DeleteAccountUiAction>
     private lateinit var states: List<DeleteAccountUiState>
+    private val navigator = Navigator()
+    private val commands = mutableListOf<NavigationCommand>()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         trackedEvents.clear()
+        commands.clear()
     }
 
     @AfterTest
@@ -129,7 +134,7 @@ internal class DeleteAccountViewModelTest {
         }
 
     @Test
-    fun `GIVEN a successful deletion WHEN confirming THEN notifies success then emits NavigateBack`() =
+    fun `GIVEN a successful deletion WHEN confirming THEN notifies success then navigates back`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -140,9 +145,9 @@ internal class DeleteAccountViewModelTest {
             advanceUntilIdle()
 
             // Then
-            assertEquals(2, actions.size)
+            assertEquals(1, actions.size)
             assertIs<DeleteAccountUiAction.NotifySuccess>(actions[0])
-            assertEquals(DeleteAccountUiAction.NavigateBack, actions[1])
+            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         }
 
     @Test
@@ -202,7 +207,7 @@ internal class DeleteAccountViewModelTest {
     }
 
     @Test
-    fun `GIVEN the idle dialog WHEN cancelling THEN emits NavigateBack`() = runTest(testDispatcher) {
+    fun `GIVEN the idle dialog WHEN cancelling THEN navigates back`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -210,7 +215,7 @@ internal class DeleteAccountViewModelTest {
         viewModel.onEvent(DeleteAccountUiEvent.OnCancel)
 
         // Then
-        assertEquals(listOf(DeleteAccountUiAction.NavigateBack), actions)
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
     }
 
     @Test
@@ -272,8 +277,10 @@ internal class DeleteAccountViewModelTest {
             getConfirmationKeyword = { CONFIRMATION_KEYWORD },
             getSubscriptionStatusFlow = { flowOf(subscriptionStatus) },
             storeNameMapper = StoreNameMapper(),
+            navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },
         )
+        backgroundScope.launch { navigator.commands.collect { commands += it } }
         actions = mutableListOf<DeleteAccountUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
         }

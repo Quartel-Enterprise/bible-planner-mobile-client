@@ -14,7 +14,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ReleaseNotesRoot(
-    navigateBack: () -> Unit,
     openUrl: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
@@ -24,7 +23,6 @@ fun ReleaseNotesRoot(
 
     ActionCollector(viewModel.uiAction) { action ->
         when (action) {
-            ReleaseNotesUiAction.NavigateBack -> navigateBack()
             is ReleaseNotesUiAction.OpenUrl -> openUrl(action.url)
         }
     }

@@ -11,16 +11,11 @@ import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 
 @Composable
-internal fun DeleteAccountUiActionCollector(
-    uiActionFlow: Flow<DeleteAccountUiAction>,
-    onNavigateBack: () -> Unit,
-) {
+internal fun DeleteAccountUiActionCollector(uiActionFlow: Flow<DeleteAccountUiAction>) {
     val snackbarHostState = LocalSnackbarHostState.current
     val appSnackbarController = koinInject<AppSnackbarController>()
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            DeleteAccountUiAction.NavigateBack -> onNavigateBack()
-
             is DeleteAccountUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
                 getString(action.message),
                 withDismissAction = true,
