@@ -1,9 +1,8 @@
 package com.quare.bibleplanner.core.navigation.utils
 
-import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
-internal fun NavBackStack<NavKey>.popBackEntries(isWide: Boolean): List<NavKey> {
+internal fun MutableList<NavKey>.popBackEntries(isWide: Boolean): List<NavKey> {
     val removed = mutableListOf<NavKey>()
     if (isWide && hasDayStudyCompanionOnTop() && canPopEntry) {
         removeLastOrNull()?.let(removed::add)
