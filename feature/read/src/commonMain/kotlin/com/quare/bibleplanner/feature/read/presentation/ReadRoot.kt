@@ -22,7 +22,6 @@ import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighli
 import com.quare.bibleplanner.feature.read.presentation.screen.ReadScreen
 import com.quare.bibleplanner.feature.read.presentation.utils.DeleteHighlightColorUiActionCollector
 import com.quare.bibleplanner.feature.read.presentation.utils.ReadUiActionCollector
-import com.quare.bibleplanner.feature.read.presentation.utils.ReaderAppearanceUiActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -55,10 +54,6 @@ fun EntryProviderScope<NavKey>.read(
     ) {
         val viewModel = koinViewModel<ReaderAppearanceViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        ReaderAppearanceUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
-        )
         val onEvent = viewModel::onEvent
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(ReaderAppearanceUiEvent.OnDismiss) },
@@ -75,10 +70,7 @@ fun EntryProviderScope<NavKey>.read(
 
     entry<DeleteHighlightColorNavRoute>(metadata = DialogSceneStrategy.dialog()) { route ->
         val viewModel = koinViewModel<DeleteHighlightColorViewModel> { parametersOf(route) }
-        DeleteHighlightColorUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
-        )
+        DeleteHighlightColorUiActionCollector(uiActionFlow = viewModel.uiAction)
         DeleteHighlightColorDialog(
             color = viewModel.color,
             onEvent = viewModel::onEvent,

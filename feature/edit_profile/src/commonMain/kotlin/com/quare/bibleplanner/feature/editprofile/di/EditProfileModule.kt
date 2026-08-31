@@ -38,6 +38,7 @@ val editProfileModule = module {
             decodeImageBitmap = get(),
             cropImage = get(),
             setProfilePhoto = get(),
+            navigator = get(),
             trackEvent = get(),
         )
     }

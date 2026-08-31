@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.highlight_color_removed
 import bibleplanner.feature.read.generated.resources.highlight_color_removed_kept
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 internal class DeleteHighlightColorViewModel(
     route: DeleteHighlightColorNavRoute,
     private val removeCustomHighlightColor: RemoveCustomHighlightColor,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteHighlightColorUiEvent>(trackEvent) {
     private val colorKey = route.colorKey
@@ -30,9 +32,7 @@ internal class DeleteHighlightColorViewModel(
     override fun handleEvent(event: DeleteHighlightColorUiEvent) {
         when (event) {
             is DeleteHighlightColorUiEvent.OnConfirmClick -> confirmDeletion(event.shouldKeepHighlights)
-
-            DeleteHighlightColorUiEvent.OnCancelClick ->
-                viewModelScope.launch { _uiAction.emit(DeleteHighlightColorUiAction.NavigateBack) }
+            DeleteHighlightColorUiEvent.OnCancelClick -> navigator.navigateBack()
         }
     }
 
@@ -50,7 +50,7 @@ internal class DeleteHighlightColorViewModel(
                 shouldKeepHighlights = shouldKeepHighlights,
             )
             _uiAction.emit(
-                DeleteHighlightColorUiAction.NavigateBackWithMessage(
+                DeleteHighlightColorUiAction.NotifyDeletion(
                     if (shouldKeepHighlights) {
                         Res.string.highlight_color_removed_kept
                     } else {

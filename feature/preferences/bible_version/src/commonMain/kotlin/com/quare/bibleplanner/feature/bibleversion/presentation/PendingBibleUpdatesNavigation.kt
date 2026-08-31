@@ -13,25 +13,18 @@ import bibleplanner.feature.preferences.bible_version.generated.resources.update
 import bibleplanner.feature.preferences.bible_version.generated.resources.update_available_title
 import com.quare.bibleplanner.core.model.route.PendingBibleUpdatesNavRoute
 import com.quare.bibleplanner.feature.bibleversion.presentation.component.PendingBibleUpdatesContent
-import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
-import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.pendingBibleUpdates(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.pendingBibleUpdates() {
     entry<PendingBibleUpdatesNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
         val viewModel = koinViewModel<PendingBibleUpdatesViewModel>()
         val pendingUpdates by viewModel.pendingUpdates.collectAsState()
-        ActionCollector(viewModel.uiAction) { action ->
-            when (action) {
-                PendingBibleUpdatesUiAction.NavigateBack -> onNavigateBack()
-            }
-        }
         if (pendingUpdates.isNotEmpty()) {
             val title = if (pendingUpdates.size > 1) {
                 stringResource(Res.string.update_available_title)

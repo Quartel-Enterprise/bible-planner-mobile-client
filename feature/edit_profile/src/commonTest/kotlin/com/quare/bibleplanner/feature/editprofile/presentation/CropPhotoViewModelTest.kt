@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.editprofile.presentation
 
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiEvent
@@ -22,12 +24,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class CropPhotoViewModelTest {
+    private val navigator = Navigator()
+    private val commands = mutableListOf<NavigationCommand>()
     private lateinit var savedPhotos: MutableList<ByteArray>
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(StandardTestDispatcher())
         savedPhotos = mutableListOf()
+        commands.clear()
     }
 
     @AfterTest
@@ -92,7 +97,8 @@ class CropPhotoViewModelTest {
         val actions = actionsAfter(CropPhotoUiEvent.OnCancelClick)
 
         // Then
-        assertEquals(listOf<CropPhotoUiAction>(CropPhotoUiAction.NavigateBack), actions)
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
     }
 
     @Test
@@ -103,13 +109,16 @@ class CropPhotoViewModelTest {
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiAction.collect { actions.add(it) }
         }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            navigator.commands.collect(commands::add)
+        }
 
         // When
         advanceUntilIdle()
         job.cancel()
 
         // Then
-        assertEquals(CropPhotoUiAction.NavigateBack, actions.first())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         assertTrue(actions.any { it is CropPhotoUiAction.ShowSnackbar })
     }
 
@@ -119,6 +128,7 @@ class CropPhotoViewModelTest {
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiAction.collect { actions.add(it) }
         }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { navigator.commands.collect(commands::add) }
         viewModel.onEvent(event)
         advanceUntilIdle()
         job.cancel()
@@ -131,6 +141,7 @@ class CropPhotoViewModelTest {
             decodeImageBitmap = decode,
             cropImage = { _, _ -> byteArrayOf(9) },
             setProfilePhoto = { savedPhotos.add(it) },
+            navigator = navigator,
             trackEvent = { _, _ -> },
         )
 }

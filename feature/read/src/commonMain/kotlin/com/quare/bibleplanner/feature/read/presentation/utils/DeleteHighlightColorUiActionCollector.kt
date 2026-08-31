@@ -9,17 +9,11 @@ import kotlinx.coroutines.flow.Flow
 import org.koin.compose.koinInject
 
 @Composable
-internal fun DeleteHighlightColorUiActionCollector(
-    uiActionFlow: Flow<DeleteHighlightColorUiAction>,
-    onNavigateBack: () -> Unit,
-) {
+internal fun DeleteHighlightColorUiActionCollector(uiActionFlow: Flow<DeleteHighlightColorUiAction>) {
     val appSnackbarController = koinInject<AppSnackbarController>()
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
-            DeleteHighlightColorUiAction.NavigateBack -> onNavigateBack()
-
-            is DeleteHighlightColorUiAction.NavigateBackWithMessage -> {
-                onNavigateBack()
+            is DeleteHighlightColorUiAction.NotifyDeletion -> {
                 appSnackbarController.show(
                     AppSnackbarMessage(
                         stringResource = uiAction.stringResource,
