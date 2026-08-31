@@ -1,20 +1,21 @@
 package com.quare.bibleplanner.feature.themeselection.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.SetIsDynamicColorsEnabled
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetContrastType
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetThemeOption
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetThemeSyncEnabled
 import com.quare.bibleplanner.feature.themeselection.presentation.factory.ThemeSelectionUiStateFactory
-import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiAction
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiState
 import com.quare.bibleplanner.ui.theme.model.ContrastType
 import com.quare.bibleplanner.ui.theme.model.Theme
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -25,12 +26,10 @@ internal class ThemeSelectionViewModel(
     private val setDynamicColorsEnabledFlow: SetIsDynamicColorsEnabled,
     private val setContrastType: SetContrastType,
     private val setThemeSyncEnabled: SetThemeSyncEnabled,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     factory: ThemeSelectionUiStateFactory,
 ) : TrackedViewModel<ThemeSelectionUiEvent>(trackEvent) {
-    private val _uiAction: MutableSharedFlow<ThemeSelectionUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<ThemeSelectionUiAction> = _uiAction
-
     val uiState: StateFlow<ThemeSelectionUiState> = factory.create().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -45,7 +44,7 @@ internal class ThemeSelectionViewModel(
 
     override fun handleEvent(event: ThemeSelectionUiEvent) {
         when (event) {
-            ThemeSelectionUiEvent.MaterialYouInfoClicked -> emitUiAction(ThemeSelectionUiAction.NavigateToMaterialYou)
+            ThemeSelectionUiEvent.MaterialYouInfoClicked -> navigator.navigate(MaterialYouBottomSheetNavRoute)
 
             is ThemeSelectionUiEvent.MaterialYouToggleClicked -> {
                 viewModelScope.launch {
@@ -53,7 +52,7 @@ internal class ThemeSelectionViewModel(
                 }
             }
 
-            ThemeSelectionUiEvent.OnDismiss -> emitUiAction(ThemeSelectionUiAction.NavigateBack)
+            ThemeSelectionUiEvent.OnDismiss -> navigator.navigateBack()
 
             is ThemeSelectionUiEvent.OnThemeSelected -> setTheme(event.theme)
 
@@ -65,8 +64,9 @@ internal class ThemeSelectionViewModel(
                 }
             }
 
-            ThemeSelectionUiEvent.SyncToggleBlockedClicked ->
-                emitUiAction(ThemeSelectionUiAction.NavigateToLoginWarning)
+            ThemeSelectionUiEvent.SyncToggleBlockedClicked -> navigator.navigate(
+                LoginWarningNavRoute(LoginWarningReason.Preferences.Theme.key),
+            )
         }
     }
 
@@ -79,12 +79,6 @@ internal class ThemeSelectionViewModel(
     private fun setContrast(contrastType: ContrastType) {
         viewModelScope.launch {
             setContrastType(contrastType)
-        }
-    }
-
-    private fun emitUiAction(uiAction: ThemeSelectionUiAction) {
-        viewModelScope.launch {
-            _uiAction.emit(uiAction)
         }
     }
 }

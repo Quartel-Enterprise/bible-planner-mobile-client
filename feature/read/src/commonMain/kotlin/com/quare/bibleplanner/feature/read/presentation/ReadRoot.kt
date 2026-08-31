@@ -21,27 +21,16 @@ import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighli
 import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighlightColorViewModel
 import com.quare.bibleplanner.feature.read.presentation.screen.ReadScreen
 import com.quare.bibleplanner.feature.read.presentation.utils.DeleteHighlightColorUiActionCollector
-import com.quare.bibleplanner.feature.read.presentation.utils.ReadUiActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.read(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (NavKey) -> Unit,
-) {
+fun EntryProviderScope<NavKey>.read() {
     entry<ReadNavRoute>(metadata = getReaderPane()) { route ->
         val viewModel = koinViewModel<ReadViewModel> { parametersOf(route) }
         val state by viewModel.uiState.collectAsState()
-        ReadUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
-            onNavigateReplacingTop = onNavigateReplacingTop,
-        )
         ReadScreen(
             platform = viewModel.platform,
             state = state,

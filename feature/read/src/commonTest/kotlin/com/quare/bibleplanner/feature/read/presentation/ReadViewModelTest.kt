@@ -3,6 +3,8 @@ package com.quare.bibleplanner.feature.read.presentation
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.mark_as_read
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
@@ -30,7 +32,6 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
@@ -53,13 +54,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private val dayReadingCompleteAction = ReadUiAction.NavigateToRoute(
-    route = DayReadingCompleteNavRoute(
+private val dayReadingCompleteCommand: NavigationCommand = NavigationCommand.Navigate(
+    DayReadingCompleteNavRoute(
         dayNumber = 2,
         weekNumber = 1,
         readingPlanType = "CHRONOLOGICAL",
     ),
-    replace = false,
 )
 private val completedDay = PlanDayLocationModel(
     weekNumber = 1,
@@ -75,7 +75,8 @@ private val testChapter = ChapterRef(
 internal class ReadViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: ReadViewModel
-    private lateinit var actions: List<ReadUiAction>
+    private val navigator = Navigator()
+    private lateinit var commands: List<NavigationCommand>
     private lateinit var selectionStore: FakeVerseSelectionStore
     private lateinit var trackedEvents: MutableList<String>
     private lateinit var prefetchedDays: MutableList<PlanDayLocationModel>
@@ -118,13 +119,8 @@ internal class ReadViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf(
-                ReadUiAction.NavigateToRoute(
-                    route = VerseSelectionNavRoute,
-                    replace = false,
-                ),
-            ),
-            actual = actions,
+            expected = listOf<NavigationCommand>(NavigationCommand.Navigate(VerseSelectionNavRoute)),
+            actual = commands,
         )
     }
 
@@ -141,7 +137,7 @@ internal class ReadViewModelTest {
         // Then
         assertEquals(
             expected = 1,
-            actual = actions.size,
+            actual = commands.size,
         )
     }
 
@@ -172,8 +168,8 @@ internal class ReadViewModelTest {
 
         // Then
         assertEquals(
-            expected = ReadUiAction.NavigateBack,
-            actual = actions.last(),
+            expected = NavigationCommand.NavigateBack,
+            actual = commands.last(),
         )
     }
 
@@ -188,13 +184,8 @@ internal class ReadViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf(
-                ReadUiAction.NavigateToRoute(
-                    route = ReaderAppearanceNavRoute,
-                    replace = false,
-                ),
-            ),
-            actual = actions,
+            expected = listOf<NavigationCommand>(NavigationCommand.Navigate(ReaderAppearanceNavRoute)),
+            actual = commands,
         )
     }
 
@@ -213,8 +204,8 @@ internal class ReadViewModelTest {
 
             // Then
             assertEquals(
-                expected = dayReadingCompleteAction,
-                actual = actions.last(),
+                expected = dayReadingCompleteCommand,
+                actual = commands.last(),
             )
         }
 
@@ -240,8 +231,8 @@ internal class ReadViewModelTest {
 
             // Then
             assertEquals(
-                expected = listOf(dayReadingCompleteAction),
-                actual = actions,
+                expected = listOf(dayReadingCompleteCommand),
+                actual = commands,
             )
 
             // When
@@ -250,8 +241,8 @@ internal class ReadViewModelTest {
 
             // Then
             assertEquals(
-                expected = listOf(dayReadingCompleteAction),
-                actual = actions,
+                expected = listOf(dayReadingCompleteCommand),
+                actual = commands,
             )
         }
 
@@ -310,7 +301,7 @@ internal class ReadViewModelTest {
         runCurrent()
 
         // Then
-        assertTrue(actions.none { it is ReadUiAction.NavigateToRoute && it.route is DayReadingCompleteNavRoute })
+        assertTrue(commands.none { it is NavigationCommand.Navigate && it.route is DayReadingCompleteNavRoute })
     }
 
     @Test
@@ -326,7 +317,7 @@ internal class ReadViewModelTest {
         runCurrent()
 
         // Then
-        assertTrue(actions.isEmpty())
+        assertTrue(commands.isEmpty())
     }
 
     private fun selectedVerseNumbers(): List<Int> = (viewModel.uiState.value.content as ReadContentUiState.Success)
@@ -592,11 +583,12 @@ internal class ReadViewModelTest {
                 )
             },
             clearVerseSelection = { selectionStore.clear() },
+            navigator = navigator,
             trackEvent = { name, _ -> trackedEvents += name },
             platform = Platform.Android,
         )
-        actions = mutableListOf<ReadUiAction>().also { collected ->
-            backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
+        commands = mutableListOf<NavigationCommand>().also { collected ->
+            backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
     }
 }

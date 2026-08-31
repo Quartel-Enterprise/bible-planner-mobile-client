@@ -11,26 +11,17 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.Res
 import bibleplanner.feature.preferences.theme_selection.generated.resources.select_theme
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
-import com.quare.bibleplanner.feature.themeselection.presentation.utils.ThemeSettingsUiActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.themeSettings(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-) {
+fun EntryProviderScope<NavKey>.themeSettings() {
     entry<ThemeNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
         val viewModel = koinViewModel<ThemeSelectionViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        ThemeSettingsUiActionCollector(
-            actionsFlow = viewModel.uiAction,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
-        )
         val onEvent = viewModel::onEvent
 
         ResponsiveDialogSheet(

@@ -20,20 +20,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.appLanguage(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-) {
+fun EntryProviderScope<NavKey>.appLanguage() {
     entry<AppLanguageNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
         val viewModel = koinViewModel<AppLanguageViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        AppLanguageActionCollector(
-            actionsFlow = viewModel.uiAction,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
-        )
+        AppLanguageActionCollector(actionsFlow = viewModel.uiAction)
         val onEvent = viewModel::onEvent
 
         ResponsiveDialogSheet(
