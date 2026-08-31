@@ -12,13 +12,11 @@ import org.jetbrains.compose.resources.StringResource
 @Composable
 internal fun LoginUiActionCollector(
     uiActionFlow: Flow<LoginUiAction>,
-    onNavigateBack: () -> Unit,
     sheetState: SheetState,
     onLoginResult: (StringResource) -> Unit,
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
-            LoginUiAction.NavigateBack -> onNavigateBack()
             LoginUiAction.CloseBottomSheet -> sheetState.hide()
             is LoginUiAction.NotifyLoginResult -> onLoginResult(uiAction.message)
         }

@@ -5,6 +5,7 @@ import bibleplanner.feature.delete_account.generated.resources.Res
 import bibleplanner.feature.delete_account.generated.resources.delete_account_error_message
 import bibleplanner.feature.delete_account.generated.resources.delete_account_success_message
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -38,6 +39,7 @@ internal class DeleteAccountViewModel(
     getConfirmationKeyword: GetConfirmationKeyword,
     getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase,
     private val storeNameMapper: StoreNameMapper,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteAccountUiEvent>(trackEvent) {
     private val logger = Logger.withTag(LOG_TAG)
@@ -74,8 +76,8 @@ internal class DeleteAccountViewModel(
         when (event) {
             is DeleteAccountUiEvent.OnConfirmationTextChange -> updateConfirmationText(event.text)
             DeleteAccountUiEvent.OnConfirmDelete -> performDeletion()
-            DeleteAccountUiEvent.OnCancel -> navigateBack()
-            DeleteAccountUiEvent.OnDismiss -> if (isIdle) navigateBack()
+            DeleteAccountUiEvent.OnCancel -> navigator.navigateBack()
+            DeleteAccountUiEvent.OnDismiss -> if (isIdle) navigator.navigateBack()
         }
     }
 
@@ -122,7 +124,7 @@ internal class DeleteAccountViewModel(
             _uiState.update { it.copy(status = DeleteAccountUiStatus.Deleted) }
             delay(successFeedbackDuration)
             _uiAction.emit(DeleteAccountUiAction.NotifySuccess(Res.string.delete_account_success_message))
-            _uiAction.emit(DeleteAccountUiAction.NavigateBack)
+            navigator.navigateBack()
         }.onFailure { throwable ->
             val reason = getFailureReason()
             logger.e(throwable) { "Account deletion failed during $reason" }
@@ -147,12 +149,6 @@ internal class DeleteAccountViewModel(
     private fun String.matchesKeyword(): Boolean {
         val keyword = confirmationKeyword ?: return false
         return trim().equals(keyword, ignoreCase = true)
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _uiAction.emit(DeleteAccountUiAction.NavigateBack)
-        }
     }
 
     private companion object {

@@ -9,14 +9,10 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderScope<NavKey>.releaseNotes(
-    onNavigateBack: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-) {
+fun EntryProviderScope<NavKey>.releaseNotes(sharedTransitionScope: SharedTransitionScope) {
     entry<ReleaseNotesNavRoute> {
         val uriHandler = LocalUriHandler.current
         ReleaseNotesRoot(
-            navigateBack = onNavigateBack,
             openUrl = { url -> uriHandler.openUri(url) },
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = LocalNavAnimatedContentScope.current,

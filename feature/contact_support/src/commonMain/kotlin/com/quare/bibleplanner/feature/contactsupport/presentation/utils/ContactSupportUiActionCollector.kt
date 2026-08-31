@@ -13,14 +13,12 @@ import org.jetbrains.compose.resources.getString
 @Composable
 internal fun ContactSupportUiActionCollector(
     actionsFlow: Flow<ContactSupportUiAction>,
-    onNavigateBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
 ) {
     val uriHandler = LocalUriHandler.current
     val clipboard = LocalClipboard.current
     ActionCollector(actionsFlow) { action ->
         when (action) {
-            ContactSupportUiAction.NavigateBack -> onNavigateBack()
             is ContactSupportUiAction.OpenLink -> uriHandler.openUri(action.url)
             is ContactSupportUiAction.Copy -> clipboard.setClipEntry(action.text.toClipEntry())
             is ContactSupportUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(getString(action.message))
