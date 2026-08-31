@@ -94,6 +94,7 @@ internal class DayReadingCompleteViewModelTest {
     private lateinit var commands: List<NavigationCommand>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var coordinator: FakeDayStudyGenerationCoordinator
+    private lateinit var disabledSuggestions: MutableList<Boolean>
 
     @BeforeTest
     fun setUp() {
@@ -289,6 +290,28 @@ internal class DayReadingCompleteViewModelTest {
     }
 
     @Test
+    fun `never show again disables the suggestion, confirms it and closes the sheet`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
+        runCurrent()
+
+        // When
+        viewModel.onEvent(DayReadingCompleteUiEvent.OnNeverShowAgainClick)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf(false),
+            actual = disabledSuggestions,
+        )
+        assertIs<DayReadingCompleteUiAction.ShowSnackBar>(actions.last())
+        assertEquals(
+            expected = NavigationCommand.NavigateBack,
+            actual = commands.last(),
+        )
+    }
+
+    @Test
     fun `dismissing navigates back`() = runTest(testDispatcher) {
         val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 1)
         runCurrent()
@@ -313,6 +336,7 @@ internal class DayReadingCompleteViewModelTest {
         prefetchedQuota: DayStudyQuotaModel? = null,
     ): DayReadingCompleteViewModel {
         trackedEvents = mutableListOf()
+        disabledSuggestions = mutableListOf()
         coordinator = FakeDayStudyGenerationCoordinator()
         val dayStudyRepository = FakeDayStudyRepository(
             status = DayStudyStatusModel(
@@ -362,6 +386,7 @@ internal class DayReadingCompleteViewModelTest {
                 }
             },
             generationCoordinator = coordinator,
+            setStudySuggestionEnabled = { isEnabled -> disabledSuggestions += isEnabled },
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },
         )

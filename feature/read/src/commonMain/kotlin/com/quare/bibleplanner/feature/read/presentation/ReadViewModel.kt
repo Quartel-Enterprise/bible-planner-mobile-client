@@ -48,6 +48,9 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerticalChapterCounts
+import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.ObserveStudySuggestionSettings
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -80,6 +83,7 @@ class ReadViewModel(
     private val getCompletedDayForChapter: GetCompletedDayForChapter,
     private val observeDayCompletionCandidates: ObserveDayCompletionCandidates,
     private val prefetchDayStudyQuota: PrefetchDayStudyQuota,
+    observeStudySuggestionSettings: ObserveStudySuggestionSettings,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
@@ -118,6 +122,20 @@ class ReadViewModel(
      * that lands on a different value than guessed (or never lands) never leaves the UI stuck.
      */
     private val pendingReadOverrides = MutableStateFlow<Map<ChapterLocationModel, Boolean>>(emptyMap())
+
+    private val dayCompletionBanner = MutableStateFlow<PlanDayLocationModel?>(null)
+
+    /**
+     * How the reader celebrates a finished plan day is the user's call: the full sheet, the quiet
+     * banner, or nothing. Kept warm so the tap that ends the day never waits on the preference.
+     */
+    private val studySuggestionSettings: StateFlow<StudySuggestionSettingsModel?> =
+        observeStudySuggestionSettings()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = null,
+            )
 
     /**
      * Which chapters on screen would finish a reading-plan day the moment they are marked read, kept
@@ -174,23 +192,28 @@ class ReadViewModel(
     }
 
     val uiState: StateFlow<ReadUiState> = combine(
-        dataFlow,
-        observeReaderSettings(),
-        observeVerseSelection(),
-        pendingReadOverrides,
-        requestedChapterCounts,
-    ) { (settledCounts, data), settings, selection, overrides, requestedCounts ->
-        val reconciledOverrides = overrides.dropReconciledOverrides(data)
-        if (reconciledOverrides != overrides) pendingReadOverrides.update { reconciledOverrides }
-        data.toUiState(
-            settings = settings,
-            selection = selection,
-            overrides = reconciledOverrides,
-            isLoadingPreviousChapter = settings.isVerticalReadingEnabled &&
-                requestedCounts.prepended > settledCounts.prepended,
-            isLoadingNextChapter = settings.isVerticalReadingEnabled &&
-                requestedCounts.appended > settledCounts.appended,
-        )
+        combine(
+            dataFlow,
+            observeReaderSettings(),
+            observeVerseSelection(),
+            pendingReadOverrides,
+            requestedChapterCounts,
+        ) { (settledCounts, data), settings, selection, overrides, requestedCounts ->
+            val reconciledOverrides = overrides.dropReconciledOverrides(data)
+            if (reconciledOverrides != overrides) pendingReadOverrides.update { reconciledOverrides }
+            data.toUiState(
+                settings = settings,
+                selection = selection,
+                overrides = reconciledOverrides,
+                isLoadingPreviousChapter = settings.isVerticalReadingEnabled &&
+                    requestedCounts.prepended > settledCounts.prepended,
+                isLoadingNextChapter = settings.isVerticalReadingEnabled &&
+                    requestedCounts.appended > settledCounts.appended,
+            )
+        },
+        dayCompletionBanner,
+    ) { state, banner ->
+        state.copy(dayCompletionBanner = banner)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -274,6 +297,7 @@ class ReadViewModel(
             ReadUiEvent.OnRulerDismissClick -> dismissRuler()
             ReadUiEvent.OnReachedEnd -> appendNextChapter()
             ReadUiEvent.OnReachedStart -> prependPreviousChapter()
+            ReadUiEvent.OnDayCompletionBannerDismissed -> dayCompletionBanner.update { null }
         }
     }
 
@@ -301,7 +325,7 @@ class ReadViewModel(
         val willBeRead = !isCurrentlyRead(key)
         pendingReadOverrides.update { it + (key to willBeRead) }
         val completedDay = dayCompletionCandidates.value[key]?.takeIf { willBeRead }
-        if (completedDay != null) navigator.navigate(completedDay.toDayReadingCompleteRoute())
+        if (completedDay != null) presentCompletedDay(completedDay)
         viewModelScope.launch {
             val isRead = toggleWholeChapterReadStatus(
                 bookId = event.bookId,
@@ -354,7 +378,21 @@ class ReadViewModel(
             bookId = bookId,
             chapterNumber = chapterNumber,
         ) ?: return
-        navigator.navigate(day.toDayReadingCompleteRoute())
+        presentCompletedDay(day)
+    }
+
+    /**
+     * Settings not yet loaded fall back to the sheet, the long-standing default, rather than
+     * swallowing a celebration the reader just earned.
+     */
+    private fun presentCompletedDay(day: PlanDayLocationModel) {
+        val settings = studySuggestionSettings.value
+        when {
+            settings == null -> navigator.navigate(day.toDayReadingCompleteRoute())
+            !settings.isEnabled -> Unit
+            settings.mode == StudySuggestionMode.BANNER -> dayCompletionBanner.update { day }
+            else -> navigator.navigate(day.toDayReadingCompleteRoute())
+        }
     }
 
     private fun PlanDayLocationModel.toDayReadingCompleteRoute(): DayReadingCompleteNavRoute =
@@ -491,6 +529,7 @@ class ReadViewModel(
         settings = settings,
         isLoadingPreviousChapter = isLoadingPreviousChapter,
         isLoadingNextChapter = isLoadingNextChapter,
+        dayCompletionBanner = null,
     )
 
     private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterLocationModel, Boolean>): ReadHeaderUiModel {
@@ -570,6 +609,7 @@ class ReadViewModel(
         ),
         isLoadingPreviousChapter = false,
         isLoadingNextChapter = false,
+        dayCompletionBanner = null,
     )
 
     private companion object {

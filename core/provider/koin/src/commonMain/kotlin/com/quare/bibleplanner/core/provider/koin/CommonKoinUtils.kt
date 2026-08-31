@@ -57,6 +57,7 @@ import com.quare.bibleplanner.feature.paywallteaser.di.paywallTeaserModule
 import com.quare.bibleplanner.feature.profile.di.featureProfileModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.releasenotes.di.releaseNotesModule
+import com.quare.bibleplanner.feature.studysuggestion.di.studySuggestionModule
 import com.quare.bibleplanner.feature.subscriptiondetails.di.subscriptionDetailsModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
 import com.quare.bibleplanner.feature.verse.addnote.di.verseNoteModule
@@ -77,6 +78,7 @@ object CommonKoinUtils {
         connectivityModule,
         dataStoreProviderModule,
         themeSelectionDomainModule,
+        studySuggestionModule,
         materialYouModule,
         readingPlanModule,
         dayModule,

@@ -45,4 +45,11 @@
 
     <string name="day_reading_complete_day_label">%1$d de %2$s</string>
     <string name="day_reading_complete_offline_message">Ahora mismo no tienes conexión, así que no es posible generar el estudio.</string>
+
+    <string name="day_reading_complete_never_show">No mostrar de nuevo</string>
+    <string name="day_reading_complete_never_show_confirmation">Ya no verás esta sugerencia. Puedes reactivarla en Perfil › Preferencias.</string>
+
+    <string name="day_reading_complete_banner_title_today">Lectura de hoy completada · %1$s</string>
+    <string name="day_reading_complete_banner_title_other_day">Lectura del %1$s completada</string>
+    <string name="day_reading_complete_banner_cta_subscribe">El estudio del día es Pro · suscribirse</string>
 </resources>

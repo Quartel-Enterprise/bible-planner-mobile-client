@@ -63,4 +63,8 @@
     <string name="delete_account_option">Delete account</string>
     <string name="delete_account_option_subtitle">Permanently removes your account and all data</string>
     <string name="delete_account_requires_internet">Connect to the internet to delete your account</string>
+    <string name="study_suggestion_option">Study suggestion</string>
+    <string name="study_suggestion_enabled_dialog">Enabled · prominent notice</string>
+    <string name="study_suggestion_enabled_banner">Enabled · discreet banner</string>
+    <string name="study_suggestion_disabled">Disabled</string>
 </resources>

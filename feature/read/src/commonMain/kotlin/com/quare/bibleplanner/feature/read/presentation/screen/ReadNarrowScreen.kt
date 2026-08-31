@@ -3,8 +3,10 @@ package com.quare.bibleplanner.feature.read.presentation.screen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -21,11 +23,14 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.DayReadingCompleteBanner
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
@@ -45,6 +50,8 @@ private const val LINE_HEIGHT_RATIO = 1.75f
 private val contentPadding = 20.dp
 private val rulerContentPadding = 32.dp
 private val bandOffsetBelowTopBar = 24.dp
+private val bannerHorizontalPadding = 12.dp
+private val bannerBottomSpacing = 12.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -183,6 +190,20 @@ internal fun ReadNarrowScreen(
                 lines = state.settings.rulerLines,
                 initialBandOffset = contentTopOffset + bandOffsetBelowTopBar,
                 onDismiss = { onEvent(ReadUiEvent.OnRulerDismissClick) },
+            )
+        }
+        state.dayCompletionBanner?.let { day ->
+            val bottomBarHeight = with(LocalDensity.current) { bottomOverlayHeightPx.toDp() }
+            val navigationBarPadding = WindowInsets.navigationBars
+                .asPaddingValues()
+                .calculateBottomPadding()
+            DayReadingCompleteBanner(
+                day = day,
+                onDismissRequest = { onEvent(ReadUiEvent.OnDayCompletionBannerDismissed) },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = bannerHorizontalPadding)
+                    .padding(bottom = maxOf(bottomBarHeight, navigationBarPadding) + bannerBottomSpacing),
             )
         }
     }

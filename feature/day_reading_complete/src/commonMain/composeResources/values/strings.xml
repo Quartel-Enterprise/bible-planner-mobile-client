@@ -45,4 +45,11 @@
 
     <string name="day_reading_complete_day_label">%2$s %1$d</string>
     <string name="day_reading_complete_offline_message">You're offline right now, so the study can't be generated.</string>
+
+    <string name="day_reading_complete_never_show">Don't show again</string>
+    <string name="day_reading_complete_never_show_confirmation">You won't see this suggestion anymore. You can turn it back on in Profile › Preferences.</string>
+
+    <string name="day_reading_complete_banner_title_today">Today's reading complete · %1$s</string>
+    <string name="day_reading_complete_banner_title_other_day">Reading for %1$s complete</string>
+    <string name="day_reading_complete_banner_cta_subscribe">Daily study is Pro · subscribe</string>
 </resources>

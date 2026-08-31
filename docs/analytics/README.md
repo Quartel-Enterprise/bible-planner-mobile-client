@@ -168,6 +168,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `ShareVerseImageNavRoute` | `share_verse_image` | `responsive` | — |
 | `ReleaseNotesNavRoute` | `release_notes` | `screen` | — |
 | `RenameDeviceNavRoute` | `rename_device` | `dialog` | — |
+| `StudySuggestionNavRoute` | `study_suggestion` | `responsive` | — |
 | `SubscriptionDetailsNavRoute` | `subscription_details` | `dialog` | — |
 | `ThemeNavRoute` | `theme_selection` | `responsive` | — |
 | `UpdateDownloadedNavRoute` | `update_downloaded` | `dialog` | — |
@@ -309,6 +310,9 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_reading_complete_shown](events/day_reading_complete_shown.md) | P1 | DayReadingComplete |
 | [day_reading_complete_cta_clicked](events/day_reading_complete_cta_clicked.md) | P1 | DayReadingComplete |
 | [day_reading_complete_dismissed](events/day_reading_complete_dismissed.md) | P2 | DayReadingComplete |
+| [day_reading_complete_banner_shown](events/day_reading_complete_banner_shown.md) | P1 | DayReadingComplete |
+| [day_reading_complete_banner_cta_clicked](events/day_reading_complete_banner_cta_clicked.md) | P1 | DayReadingComplete |
+| [day_reading_complete_banner_dismissed](events/day_reading_complete_banner_dismissed.md) | P2 | DayReadingComplete |
 
 ### AI Chat
 
@@ -442,6 +446,10 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [sync_toggle_blocked_clicked](events/sync_toggle_blocked_clicked.md) | P2 | Settings |
 | [app_language_dismissed](events/app_language_dismissed.md) | P2 | Settings |
 | [edit_plan_start_date_dismissed](events/edit_plan_start_date_dismissed.md) | P2 | Settings |
+| [study_suggestion_toggled](events/study_suggestion_toggled.md) | P1 | Settings |
+| [study_suggestion_mode_changed](events/study_suggestion_mode_changed.md) | P2 | Settings |
+| [study_suggestion_mode_blocked_clicked](events/study_suggestion_mode_blocked_clicked.md) | P2 | Settings |
+| [study_suggestion_dismissed](events/study_suggestion_dismissed.md) | P2 | Settings |
 | [pro_card_clicked](events/pro_card_clicked.md) | P2 | Settings |
 | [account_card_clicked](events/account_card_clicked.md) | P2 | Settings |
 | [login_row_clicked](events/login_row_clicked.md) | P2 | Settings |

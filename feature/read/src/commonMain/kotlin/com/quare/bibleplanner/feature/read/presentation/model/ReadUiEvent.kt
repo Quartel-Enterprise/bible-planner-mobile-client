@@ -87,4 +87,9 @@ sealed interface ReadUiEvent : UiEvent {
             AnalyticsEventNames.READER_FOCUS_AID_CHANGED,
         )
     }
+
+    /** Bridge for the banner's own dismissal, which the banner tracks itself. */
+    data object OnDayCompletionBannerDismissed : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
 }

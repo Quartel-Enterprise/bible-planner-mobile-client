@@ -29,6 +29,7 @@ import com.quare.bibleplanner.feature.profile.domain.usecase.GetSelectedVersionD
 import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
+import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.ObserveStudySuggestionSettings
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
 import com.quare.bibleplanner.ui.theme.model.ContrastType
@@ -65,6 +66,7 @@ internal class ProfileUiStateFactory(
     private val getSelectedVersionDownloadedChapters: GetSelectedVersionDownloadedChaptersFlowUseCase,
     private val getSelectedBible: GetSelectedBibleFlowUseCase,
     private val getAppLanguageFlow: GetAppLanguageFlow,
+    private val observeStudySuggestionSettings: ObserveStudySuggestionSettings,
     private val platform: Platform,
 ) {
     fun createInitialState(): ProfileUiState = ProfileUiState(
@@ -81,6 +83,7 @@ internal class ProfileUiStateFactory(
         bibleVersionName = Loadable.Loading,
         bibleDownloadProgress = Loadable.Loading,
         planStartDate = Loadable.Loading,
+        studySuggestion = Loadable.Loading,
         currentDate = getCurrentDate(),
         appVersion = ProfileBuildKonfig.APP_VERSION,
         isUpdateRowVisible = platform !is Platform.Desktop,
@@ -111,6 +114,9 @@ internal class ProfileUiStateFactory(
         },
         getPlanStartDate().map { startDate ->
             { state: ProfileUiState -> state.copy(planStartDate = Loadable.Loaded(startDate)) }
+        },
+        observeStudySuggestionSettings().map { settings ->
+            { state: ProfileUiState -> state.copy(studySuggestion = Loadable.Loaded(settings)) }
         },
         observeSubscriptionStatus().map { subscriptionStatus ->
             { state: ProfileUiState -> state.copy(subscriptionStatus = Loadable.Loaded(subscriptionStatus)) }

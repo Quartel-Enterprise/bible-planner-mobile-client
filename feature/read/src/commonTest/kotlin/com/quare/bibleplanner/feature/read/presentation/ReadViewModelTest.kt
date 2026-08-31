@@ -34,6 +34,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
+import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -208,6 +210,73 @@ internal class ReadViewModelTest {
                 actual = commands.last(),
             )
         }
+
+    @Test
+    fun `shows the banner instead of the sheet when the suggestion is set to banner mode`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            toggleWholeChapterReadStatus = { _, _ -> true },
+            getCompletedDayForChapter = { _, _ -> completedDay },
+            studySuggestionSettings = StudySuggestionSettingsModel(
+                isEnabled = true,
+                mode = StudySuggestionMode.BANNER,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+        runCurrent()
+
+        // Then
+        assertTrue(commands.none { it == dayReadingCompleteCommand })
+        assertEquals(
+            expected = completedDay,
+            actual = viewModel.uiState.value.dayCompletionBanner,
+        )
+    }
+
+    @Test
+    fun `dismissing the banner clears it from the state`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            toggleWholeChapterReadStatus = { _, _ -> true },
+            getCompletedDayForChapter = { _, _ -> completedDay },
+            studySuggestionSettings = StudySuggestionSettingsModel(
+                isEnabled = true,
+                mode = StudySuggestionMode.BANNER,
+            ),
+        )
+        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+        runCurrent()
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnDayCompletionBannerDismissed)
+        runCurrent()
+
+        // Then
+        assertNull(viewModel.uiState.value.dayCompletionBanner)
+    }
+
+    @Test
+    fun `keeps quiet about the finished day when the suggestion is disabled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            toggleWholeChapterReadStatus = { _, _ -> true },
+            getCompletedDayForChapter = { _, _ -> completedDay },
+            studySuggestionSettings = StudySuggestionSettingsModel(
+                isEnabled = false,
+                mode = StudySuggestionMode.DIALOG,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.ToggleReadStatus(BookId.GEN, 3))
+        runCurrent()
+
+        // Then
+        assertTrue(commands.none { it == dayReadingCompleteCommand })
+        assertNull(viewModel.uiState.value.dayCompletionBanner)
+    }
 
     @Test
     fun `opens the day-complete sheet on the tap itself when the chapter is a known candidate`() =
@@ -504,6 +573,10 @@ internal class ReadViewModelTest {
             error("unused")
         },
         dayCompletionCandidates: Map<ChapterLocationModel, PlanDayLocationModel> = emptyMap(),
+        studySuggestionSettings: StudySuggestionSettingsModel = StudySuggestionSettingsModel(
+            isEnabled = true,
+            mode = StudySuggestionMode.DIALOG,
+        ),
         isVerticalReadingEnabled: Boolean = false,
         getNextChapter: GetNextChapter = GetNextChapter { _, _, _ -> null },
         getPreviousChapter: GetPreviousChapter = GetPreviousChapter { _, _, _ -> null },
@@ -567,6 +640,7 @@ internal class ReadViewModelTest {
             getCompletedDayForChapter = getCompletedDayForChapter,
             observeDayCompletionCandidates = ObserveDayCompletionCandidates { flowOf(dayCompletionCandidates) },
             prefetchDayStudyQuota = { day -> prefetchedDays += day },
+            observeStudySuggestionSettings = { flowOf(studySuggestionSettings) },
             requestLoginNudgeIfNeeded = { },
             downloaderFacade = ThrowingBibleVersionDownloaderFacade,
             getSelectedVersionIdFlow = { error("unused") },

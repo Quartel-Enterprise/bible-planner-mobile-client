@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.DayReadingCompleteBanner
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
@@ -48,6 +49,7 @@ import org.jetbrains.compose.resources.stringResource
 
 private val readingColumnMaxWidth = 640.dp
 private val titleMinColumnWidth = 520.dp
+private val bannerMaxWidth = 560.dp
 
 /**
  * On a wide window the selection tools move into a panel beside the text instead of covering it, so
@@ -77,68 +79,83 @@ internal fun ReadWideScreen(
         chapters = chapters,
         onReachedStart = { onEvent(ReadUiEvent.OnReachedStart) },
     )
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars),
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            ReadWideHeader(
-                platform = platform,
-                header = state.header,
-                visibleChapter = visibleChapter,
-                onEvent = onEvent,
-            )
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                when (val content = state.content) {
-                    ReadContentUiState.Loading -> {
-                        ReadLoadingContent(
-                            modifier = Modifier
-                                .widthIn(max = readingColumnMaxWidth)
-                                .fillMaxSize(),
-                        )
-                    }
+        Row(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.weight(1f)) {
+                ReadWideHeader(
+                    platform = platform,
+                    header = state.header,
+                    visibleChapter = visibleChapter,
+                    onEvent = onEvent,
+                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.TopCenter,
+                ) {
+                    when (val content = state.content) {
+                        ReadContentUiState.Loading -> {
+                            ReadLoadingContent(
+                                modifier = Modifier
+                                    .widthIn(max = readingColumnMaxWidth)
+                                    .fillMaxSize(),
+                            )
+                        }
 
-                    is ReadContentUiState.Error -> {
-                        ReadErrorContent(
-                            modifier = Modifier.fillMaxSize(),
-                            header = state.header,
-                            content = content,
-                            onEvent = onEvent,
-                        )
-                    }
+                        is ReadContentUiState.Error -> {
+                            ReadErrorContent(
+                                modifier = Modifier.fillMaxSize(),
+                                header = state.header,
+                                content = content,
+                                onEvent = onEvent,
+                            )
+                        }
 
-                    is ReadContentUiState.Success -> {
-                        LazyColumn(
-                            modifier = Modifier
-                                .widthIn(max = readingColumnMaxWidth)
-                                .fillMaxHeight()
-                                .padding(horizontal = 24.dp),
-                            state = listState,
-                            contentPadding = PaddingValues(bottom = 24.dp),
-                        ) {
-                            if (state.isLoadingPreviousChapter) {
-                                chapterShimmerContent(ChapterShimmerPosition.LEADING)
-                            }
-                            content.chapters.forEach { chapter ->
-                                chapterContent(
-                                    chapter = chapter,
-                                    header = state.header,
-                                    settings = state.settings,
-                                    focusedVerseNumber = null,
-                                    onEvent = onEvent,
-                                )
-                            }
-                            if (state.isLoadingNextChapter) {
-                                chapterShimmerContent(ChapterShimmerPosition.TRAILING)
+                        is ReadContentUiState.Success -> {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .widthIn(max = readingColumnMaxWidth)
+                                    .fillMaxHeight()
+                                    .padding(horizontal = 24.dp),
+                                state = listState,
+                                contentPadding = PaddingValues(bottom = 24.dp),
+                            ) {
+                                if (state.isLoadingPreviousChapter) {
+                                    chapterShimmerContent(ChapterShimmerPosition.LEADING)
+                                }
+                                content.chapters.forEach { chapter ->
+                                    chapterContent(
+                                        chapter = chapter,
+                                        header = state.header,
+                                        settings = state.settings,
+                                        focusedVerseNumber = null,
+                                        onEvent = onEvent,
+                                    )
+                                }
+                                if (state.isLoadingNextChapter) {
+                                    chapterShimmerContent(ChapterShimmerPosition.TRAILING)
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+        state.dayCompletionBanner?.let { day ->
+            DayReadingCompleteBanner(
+                day = day,
+                onDismissRequest = { onEvent(ReadUiEvent.OnDayCompletionBannerDismissed) },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .widthIn(max = bannerMaxWidth)
+                    .padding(
+                        horizontal = 24.dp,
+                        vertical = 20.dp,
+                    ),
+            )
         }
     }
 }

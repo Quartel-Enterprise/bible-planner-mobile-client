@@ -43,6 +43,7 @@ import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
@@ -206,6 +207,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is ReleaseNotesNavRoute -> createScreenDestination("release_notes")
 
         is RenameDeviceNavRoute -> createDialogDestination("rename_device")
+
+        is StudySuggestionNavRoute -> createResponsiveDestination("study_suggestion")
 
         is SubscriptionDetailsNavRoute -> createDialogDestination("subscription_details")
 

@@ -17,6 +17,7 @@ kotlin {
             implementation(projects.core.plan)
             implementation(projects.core.model)
             implementation(projects.feature.dayStudy)
+            implementation(projects.feature.preferences.studySuggestion)
             implementation(projects.core.utils)
             implementation(projects.core.date)
             implementation(projects.core.user)

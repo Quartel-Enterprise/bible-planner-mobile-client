@@ -4,6 +4,7 @@ enum class ProfileOptionItemType {
     BECOME_PRO,
     THEME,
     APP_LANGUAGE,
+    STUDY_SUGGESTION,
     INSTAGRAM,
     PRIVACY_POLICY,
     TERMS,
