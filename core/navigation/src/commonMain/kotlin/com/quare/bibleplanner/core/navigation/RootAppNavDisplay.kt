@@ -135,7 +135,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                 )
             }
         }
-        DayStudyBackgroundGenerationOverlay(onNavigate = backStackController::navigate)
+        DayStudyBackgroundGenerationOverlay()
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier

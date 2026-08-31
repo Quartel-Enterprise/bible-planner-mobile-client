@@ -47,7 +47,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_bg_done_subtitle
 import bibleplanner.feature.day_study.generated.resources.ai_study_bg_done_title
@@ -64,10 +63,8 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_phase_reading
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
-import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiAction
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
-import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.HideMainFabEffect
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
 import org.jetbrains.compose.resources.StringResource
@@ -89,18 +86,9 @@ private const val PULSE_HALF_CYCLE_MILLIS = 950
  * currently shown in a foreground sheet/pane on the day). Rendered once at the root over any screen.
  */
 @Composable
-fun DayStudyBackgroundGenerationOverlay(
-    onNavigate: (NavKey) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
     val viewModel = koinViewModel<DayStudyBackgroundGenerationViewModel>()
     val uiState by viewModel.uiState.collectAsState()
-
-    ActionCollector(viewModel.uiAction) { action ->
-        when (action) {
-            is DayStudyBackgroundGenerationUiAction.NavigateToRoute -> onNavigate(action.route)
-        }
-    }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         val isWide = maxWidth > wideMinWidth

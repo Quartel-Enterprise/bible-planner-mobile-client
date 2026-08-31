@@ -23,16 +23,10 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderScope<NavKey>.day(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-) {
+fun EntryProviderScope<NavKey>.day(sharedTransitionScope: SharedTransitionScope) {
     entry<DayNavRoute>(metadata = getDayStudyMainPane()) { route ->
         DayRootContent(
             route = route,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
             sharedTransitionScope = sharedTransitionScope,
         )
     }
@@ -42,8 +36,6 @@ fun EntryProviderScope<NavKey>.day(
 @Composable
 private fun DayRootContent(
     route: DayNavRoute,
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
 ) {
     val viewModel = koinViewModel<DayViewModel> { parametersOf(route) }
@@ -58,8 +50,6 @@ private fun DayRootContent(
     DayUiActionCollector(
         uiActionFlow = viewModel.uiAction,
         snackbarHostState = snackbarHostState,
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
     )
     (uiState as? DayUiState.Loaded)?.run {
         datePickerUiState.visiblePicker?.let {

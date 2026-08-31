@@ -66,15 +66,8 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
         sharedTransitionScope = sharedTransitionScope,
     )
-    day(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-        sharedTransitionScope = sharedTransitionScope,
-    )
-    dayStudy(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-    )
+    day(sharedTransitionScope)
+    dayStudy()
     dayReadingComplete()
     chat()
     themeSettings()
@@ -85,12 +78,7 @@ internal fun SharedTransitionScope.toEntryProvider(
     addNotesFreeWarning()
     editPlanStartDate(onNavigateBack)
     releaseNotes(sharedTransitionScope)
-    paywall(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-        onNavigateReplacingTop = onNavigateReplacingTop,
-        sharedTransitionScope = sharedTransitionScope,
-    )
+    paywall(sharedTransitionScope)
     paywallTeaser()
     congrats(onNavigateBack)
     donation()
