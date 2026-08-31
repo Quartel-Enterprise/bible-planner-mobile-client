@@ -80,10 +80,7 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigateBack = onNavigateBack,
         onNavigateReplacingTop = onNavigateReplacingTop,
     )
-    chat(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-    )
+    chat()
     themeSettings()
     materialYou(onNavigateBack)
     deleteProgress(onNavigateBack)
@@ -108,10 +105,7 @@ internal fun SharedTransitionScope.toEntryProvider(
         sharedTransitionScope = sharedTransitionScope,
     )
     appLanguage()
-    bibleVersionSelectionRoot(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-    )
+    bibleVersionSelectionRoot()
     deleteVersion(onNavigateBack)
     subscriptionDetails(onNavigateBack)
     accountDetails(
@@ -137,14 +131,8 @@ internal fun SharedTransitionScope.toEntryProvider(
     contactSupport()
     read()
     verseNote(onNavigateBack)
-    verseSelection(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-    )
-    shareVerse(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-    )
+    verseSelection()
+    shareVerse()
     notificationPermission()
     inAppUpdate()
     updateDownloaded()

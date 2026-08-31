@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.chat.presentation.viewmodel
 
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
@@ -67,6 +69,7 @@ internal class ChatViewModelTest {
     private val repository = FakeChatRepository()
     private val coordinator = FakeChatStreamCoordinator()
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val navigator = Navigator()
     private val authenticatedUserId = MutableStateFlow<String?>("user-1")
     private var chatContext: ChatContextModel? = null
     private var chatSuggestions: List<String> = emptyList()
@@ -101,16 +104,18 @@ internal class ChatViewModelTest {
     fun `GIVEN a signed-out reader WHEN sending THEN login is asked`() = runTest(testDispatcher) {
         authenticatedUserId.value = null
         val viewModel = createViewModel()
-        val actions = mutableListOf<ChatUiAction>()
-        val collection = launch { viewModel.uiAction.collect(actions::add) }
+        val commands = mutableListOf<NavigationCommand>()
+        val collection = launch { navigator.commands.collect(commands::add) }
 
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
         viewModel.onEvent(ChatUiEvent.OnSendClick)
 
         assertTrue(coordinator.startedRequests.isEmpty())
         assertEquals(
-            listOf(LoginWarningNavRoute(LoginWarningReason.AiChat.key)),
-            actions.filterIsInstance<ChatUiAction.NavigateToRoute>().map { it.route },
+            listOf<NavigationCommand>(
+                NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.AiChat.key)),
+            ),
+            commands,
         )
         assertTrue(trackedEvents.none { it.first == AnalyticsEventNames.AI_CHAT_MESSAGE_SENT })
         collection.cancel()
@@ -671,6 +676,7 @@ internal class ChatViewModelTest {
         coordinator = coordinator,
         messageUiMapper = ChatMessageUiMapper(),
         conversationGroupMapper = ChatConversationGroupMapper(),
+        navigator = navigator,
         trackEvent = { name, params -> trackedEvents += name to params },
     )
 }

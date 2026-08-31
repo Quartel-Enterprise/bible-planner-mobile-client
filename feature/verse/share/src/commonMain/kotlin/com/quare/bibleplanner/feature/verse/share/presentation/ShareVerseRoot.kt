@@ -24,20 +24,13 @@ import org.koin.core.parameter.parametersOf
 private val wideShareImageDialogWidth = 760.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.shareVerse(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-) {
+fun EntryProviderScope<NavKey>.shareVerse() {
     entry<ShareVerseNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) { route ->
         val viewModel = koinViewModel<ShareVerseViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
-        ShareVerseUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
-        )
+        ShareVerseUiActionCollector(uiActionFlow = viewModel.uiAction)
         val onEvent = viewModel::onEvent
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(ShareVerseUiEvent.OnDismiss) },
@@ -64,11 +57,7 @@ fun EntryProviderScope<NavKey>.shareVerse(
             )
         }
         val uiState by viewModel.uiState.collectAsState()
-        ShareVerseUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
-        )
+        ShareVerseUiActionCollector(uiActionFlow = viewModel.uiAction)
         val onEvent = viewModel::onEvent
         val isWide = LocalIsWideLayout.current
         ResponsiveDialogSheet(

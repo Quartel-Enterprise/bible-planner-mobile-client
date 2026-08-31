@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.verse.share.presentation
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
@@ -27,6 +28,7 @@ internal class ShareVerseViewModel(
     route: ShareVerseNavRoute,
     private val getVersesShareContent: GetVersesShareContent,
     val platform: Platform,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ShareVerseUiEvent>(trackEvent) {
     private val bookId = BookId.valueOf(route.bookId)
@@ -72,8 +74,7 @@ internal class ShareVerseViewModel(
 
             is ShareVerseUiEvent.OnShareImageReady -> shareImage(event.imageBytes)
 
-            ShareVerseUiEvent.OnDismiss ->
-                viewModelScope.launch { _uiAction.emit(ShareVerseUiAction.NavigateBack) }
+            ShareVerseUiEvent.OnDismiss -> navigator.navigateBack()
         }
     }
 
@@ -109,17 +110,13 @@ internal class ShareVerseViewModel(
             name = AnalyticsEventNames.VERSE_SHARE_IMAGE_OPENED,
             params = mapOf(AnalyticsParams.VERSE_COUNT to verseNumbers.size),
         )
-        viewModelScope.launch {
-            _uiAction.emit(
-                ShareVerseUiAction.NavigateToRoute(
-                    ShareVerseImageNavRoute(
-                        bookId = bookId.name,
-                        chapterNumber = chapterNumber,
-                        verseNumbers = verseNumbers,
-                    ),
-                ),
-            )
-        }
+        navigator.navigate(
+            ShareVerseImageNavRoute(
+                bookId = bookId.name,
+                chapterNumber = chapterNumber,
+                verseNumbers = verseNumbers,
+            ),
+        )
     }
 
     private fun shareImage(imageBytes: ByteArray) {

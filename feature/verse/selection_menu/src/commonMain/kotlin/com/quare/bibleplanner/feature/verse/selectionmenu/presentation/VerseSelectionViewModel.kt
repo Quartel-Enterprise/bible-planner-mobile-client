@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.verse.selection_menu.generated.resources.Res
 import bibleplanner.feature.verse.selection_menu.generated.resources.copied_to_clipboard
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
@@ -61,6 +62,7 @@ internal class VerseSelectionViewModel(
     private val getVersesShareContent: GetVersesShareContent,
     private val observeIsProUser: ObserveIsProUser,
     val platform: Platform,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<VerseSelectionUiEvent>(trackEvent) {
     private val defaultCustomColor = CustomColorUiModel(
@@ -156,13 +158,9 @@ internal class VerseSelectionViewModel(
 
             VerseSelectionUiEvent.OnCustomColorCancelClick -> customColorPicker.update { null }
 
-            is VerseSelectionUiEvent.OnCustomColorLongClick -> {
-                emitAction(
-                    VerseSelectionUiAction.NavigateToRoute(
-                        DeleteHighlightColorNavRoute(colorKey = event.color.key),
-                    ),
-                )
-            }
+            is VerseSelectionUiEvent.OnCustomColorLongClick -> navigator.navigate(
+                DeleteHighlightColorNavRoute(colorKey = event.color.key),
+            )
 
             VerseSelectionUiEvent.OnToggleSavedClick -> toggleSaved()
 
@@ -176,7 +174,7 @@ internal class VerseSelectionViewModel(
 
     private fun close() {
         clearVerseSelection()
-        emitAction(VerseSelectionUiAction.NavigateBack)
+        navigator.navigateBack()
     }
 
     private fun openCustomColorPicker() {
@@ -196,11 +194,7 @@ internal class VerseSelectionViewModel(
             name = AnalyticsEventNames.HIGHLIGHT_CUSTOM_COLOR_LOCKED_CLICKED,
             params = emptyMap(),
         )
-        emitAction(
-            VerseSelectionUiAction.NavigateToRoute(
-                PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
-            ),
-        )
+        navigator.navigate(PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR))
     }
 
     private fun applyColor(color: HighlightColor) {
@@ -266,15 +260,13 @@ internal class VerseSelectionViewModel(
                 AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size,
             ),
         )
-        emitAction(
-            VerseSelectionUiAction.NavigateToRoute(
-                VerseNoteNavRoute(
-                    bibleVersionId = selection.chapter.bibleVersionId,
-                    bookId = selection.chapter.bookId.name,
-                    chapterNumber = selection.chapter.chapterNumber,
-                    verseNumbers = selection.verseNumbers,
-                    noteId = noteId,
-                ),
+        navigator.navigate(
+            VerseNoteNavRoute(
+                bibleVersionId = selection.chapter.bibleVersionId,
+                bookId = selection.chapter.bookId.name,
+                chapterNumber = selection.chapter.chapterNumber,
+                verseNumbers = selection.verseNumbers,
+                noteId = noteId,
             ),
         )
     }
@@ -304,13 +296,11 @@ internal class VerseSelectionViewModel(
             name = AnalyticsEventNames.VERSE_SHARE_OPENED,
             params = mapOf(AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size),
         )
-        emitAction(
-            VerseSelectionUiAction.NavigateToRoute(
-                ShareVerseNavRoute(
-                    bookId = selection.chapter.bookId.name,
-                    chapterNumber = selection.chapter.chapterNumber,
-                    verseNumbers = selection.verseNumbers,
-                ),
+        navigator.navigate(
+            ShareVerseNavRoute(
+                bookId = selection.chapter.bookId.name,
+                chapterNumber = selection.chapter.chapterNumber,
+                verseNumbers = selection.verseNumbers,
             ),
         )
     }
