@@ -8,4 +8,5 @@
     <string name="login_warning_dismiss">Agora não</string>
     <string name="login_warning_message_day_study">Faça login primeiro para que suas análises grátis de IA fiquem vinculadas à sua conta em todos os seus dispositivos.</string>
     <string name="login_warning_message_ai_chat">Faça login primeiro para que suas conversas com a IA fiquem salvas na sua conta em todos os seus dispositivos.</string>
+    <string name="login_warning_message_study_suggestion">Faça login primeiro para manter sua sugestão de estudo sincronizada em todos os seus dispositivos.</string>
 </resources>

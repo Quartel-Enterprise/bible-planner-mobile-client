@@ -42,7 +42,28 @@ internal sealed interface StudySuggestionUiEvent : UiEvent {
         )
     }
 
+    data class SyncToggleClicked(
+        val isNewValueOn: Boolean,
+    ) : StudySuggestionUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.SETTING_SYNC_TOGGLED,
+            params = mapOf(
+                AnalyticsParams.SETTING to SYNC_SETTING,
+                AnalyticsParams.IS_ENABLED to isNewValueOn,
+            ),
+        )
+    }
+
+    data object SyncToggleBlockedClicked : StudySuggestionUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.SYNC_TOGGLE_BLOCKED_CLICKED,
+            params = mapOf(AnalyticsParams.SOURCE to SYNC_BLOCKED_SOURCE),
+        )
+    }
+
     private companion object {
         const val SOURCE_SETTINGS = "settings"
+        const val SYNC_SETTING = "study_suggestion"
+        const val SYNC_BLOCKED_SOURCE = "study_suggestion"
     }
 }

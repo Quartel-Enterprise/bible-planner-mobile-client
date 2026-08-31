@@ -18,6 +18,7 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelecte
 import com.quare.bibleplanner.feature.logout.domain.usecase.HandleCurrentDeviceRevoked
 import com.quare.bibleplanner.feature.logout.domain.usecase.ObserveSessionLoss
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.ObserveDynamicColorsSync
+import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.ObserveStudySuggestionSync
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -35,6 +36,7 @@ internal class InitializeAppContentUseCase(
     private val observeThemeSync: ObserveThemeSync,
     private val observeDynamicColorsSync: ObserveDynamicColorsSync,
     private val observeLanguageSync: ObserveLanguageSync,
+    private val observeStudySuggestionSync: ObserveStudySuggestionSync,
     private val observeSync: ObserveSync,
     private val observeTesterUserProperty: ObserveTesterUserProperty,
     private val observeDeviceRegistration: ObserveDeviceRegistration,
@@ -61,6 +63,7 @@ internal class InitializeAppContentUseCase(
             launch { observeThemeSync() }
             launch { observeDynamicColorsSync() }
             launch { observeLanguageSync() }
+            launch { observeStudySuggestionSync() }
             launch { observeTesterUserProperty() }
             launch { observeDeviceRegistration() }
             // A remote sign-out deletes this device's row; end the local session as soon as we see it.

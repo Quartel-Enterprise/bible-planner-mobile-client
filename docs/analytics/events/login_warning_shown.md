@@ -16,7 +16,7 @@ The login-warning dialog appears after a logged-out user attempts a login-gated 
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `reason` | string | `purchase` | `LoginWarningReason` key: `purchase` \| `day_study` \| `preferences_theme` \| `preferences_language` |
+| `reason` | string | `purchase` | `LoginWarningReason` key: `purchase` \| `day_study` \| `ai_chat` \| `preferences_theme` \| `preferences_language` \| `preferences_study_suggestion` |
 
 ## Notes
 

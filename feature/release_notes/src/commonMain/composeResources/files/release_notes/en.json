@@ -5,7 +5,8 @@
     "The app no longer crashes in rare situations after a long time in the background: real-time sync now pauses when you leave the app and reconnects when you come back, fetching what's new right away — which also reduces battery and data use in the background.",
     "Fixed the custom color button in the highlight menu showing no background for Pro users.",
     "You now choose how the app suggests the daily study when you finish the day's last planned chapter: with the usual prominent notice or with a new discreet banner at the bottom that doesn't interrupt your reading. The choice lives in Profile › Preferences › Study suggestion.",
-    "The day-complete notice gained a \"Don't show again\" option — you can turn the suggestion back on anytime from the preferences."
+    "The day-complete notice gained a \"Don't show again\" option — you can turn the suggestion back on anytime from the preferences.",
+    "The study suggestion can now sync across your devices: turn on \"Sync across devices\" in its settings and your choice (on or off, and how it appears) follows your account in real time."
   ],
   "2.7.1": [
     "While a chapter loads, the reading screen now shows an outline of the text instead of a spinning circle — you can see the shape of the chapter that is coming, and the Bible version at the top is no longer blank before it loads.",

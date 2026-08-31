@@ -7,8 +7,11 @@ import bibleplanner.feature.preferences.study_suggestion.generated.resources.stu
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.feature.studysuggestion.presentation.factory.StudySuggestionUiStateFactory
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiAction
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +37,7 @@ internal class StudySuggestionViewModelTest {
     private lateinit var actions: List<StudySuggestionUiAction>
     private lateinit var enabledCalls: MutableList<Boolean>
     private lateinit var modeCalls: MutableList<StudySuggestionMode>
+    private lateinit var syncCalls: MutableList<Boolean>
 
     @BeforeTest
     fun setUp() {
@@ -53,12 +57,15 @@ internal class StudySuggestionViewModelTest {
                 isEnabled = true,
                 mode = StudySuggestionMode.BANNER,
             ),
+            isSyncEnabled = true,
+            isLoggedIn = true,
         )
 
         // When
         runCurrent()
 
         // Then
+        val state = viewModel.uiState.value
         assertEquals(
             expected = Loadable.Loaded(
                 StudySuggestionSettingsModel(
@@ -66,8 +73,10 @@ internal class StudySuggestionViewModelTest {
                     mode = StudySuggestionMode.BANNER,
                 ),
             ),
-            actual = viewModel.uiState.value,
+            actual = state.settings,
         )
+        assertTrue(state.isSyncEnabled)
+        assertTrue(state.isLoggedIn)
     }
 
     @Test
@@ -147,6 +156,42 @@ internal class StudySuggestionViewModelTest {
         }
 
     @Test
+    fun `GIVEN a logged in user WHEN flipping the sync toggle THEN persists the sync flag`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(StudySuggestionUiEvent.SyncToggleClicked(true))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf(true),
+            actual = syncCalls,
+        )
+    }
+
+    @Test
+    fun `GIVEN a logged out user WHEN tapping the blocked sync toggle THEN opens the login warning`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isLoggedIn = false)
+
+            // When
+            viewModel.onEvent(StudySuggestionUiEvent.SyncToggleBlockedClicked)
+            runCurrent()
+
+            // Then
+            assertTrue(syncCalls.isEmpty())
+            assertEquals(
+                expected = NavigationCommand.Navigate(
+                    LoginWarningNavRoute(LoginWarningReason.Preferences.StudySuggestion.key),
+                ),
+                actual = commands.last(),
+            )
+        }
+
+    @Test
     fun `GIVEN the sheet WHEN dismissing THEN navigates back`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -167,13 +212,21 @@ internal class StudySuggestionViewModelTest {
             isEnabled = true,
             mode = StudySuggestionMode.DIALOG,
         ),
+        isSyncEnabled: Boolean = false,
+        isLoggedIn: Boolean = true,
     ) {
         enabledCalls = mutableListOf()
         modeCalls = mutableListOf()
+        syncCalls = mutableListOf()
         viewModel = StudySuggestionViewModel(
-            observeStudySuggestionSettings = { flowOf(settings) },
+            uiStateFactory = StudySuggestionUiStateFactory(
+                observeStudySuggestionSettings = { flowOf(settings) },
+                getStudySuggestionSyncEnabledFlow = { flowOf(isSyncEnabled) },
+                observeAuthenticatedUserId = { flowOf(if (isLoggedIn) "user-id" else null) },
+            ),
             setStudySuggestionEnabled = { isEnabled -> enabledCalls += isEnabled },
             setStudySuggestionMode = { mode -> modeCalls += mode },
+            setStudySuggestionSyncEnabled = { enabled -> syncCalls += enabled },
             navigator = navigator,
             trackEvent = { _, _ -> },
         )

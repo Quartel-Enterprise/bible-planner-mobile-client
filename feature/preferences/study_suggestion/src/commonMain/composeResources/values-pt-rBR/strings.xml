@@ -14,4 +14,6 @@
     <string name="study_suggestion_enabled_message">Sugestão de estudo ativada</string>
     <string name="study_suggestion_disabled_message">Você não verá mais a sugestão ao concluir o dia</string>
     <string name="study_suggestion_mode_blocked_message">Ative a sugestão para escolher como ela aparece</string>
+    <string name="sync_across_devices_title">Sincronizar entre dispositivos</string>
+    <string name="sync_across_devices_description">Salva sua sugestão de estudo na conta e aplica em todos os aparelhos</string>
 </resources>

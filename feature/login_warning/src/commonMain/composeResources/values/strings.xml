@@ -8,4 +8,5 @@
     <string name="login_warning_dismiss">Not now</string>
     <string name="login_warning_message_day_study">Log in first so your free AI analyses stay linked to your account across all your devices.</string>
     <string name="login_warning_message_ai_chat">Log in first so your conversations with the AI stay saved in your account across all your devices.</string>
+    <string name="login_warning_message_study_suggestion">Log in first to keep your study suggestion setting synced across all your devices.</string>
 </resources>
