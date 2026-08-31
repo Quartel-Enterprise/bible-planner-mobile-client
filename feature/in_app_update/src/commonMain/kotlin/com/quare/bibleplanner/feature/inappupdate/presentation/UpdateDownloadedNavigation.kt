@@ -8,20 +8,15 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.feature.inappupdate.presentation.content.UpdateDownloadedContent
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.UpdateDownloadedUiEvent
-import com.quare.bibleplanner.feature.inappupdate.presentation.utils.UpdateDownloadedUiActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.updateDownloaded(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.updateDownloaded() {
     entry<UpdateDownloadedNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
         val viewModel = koinViewModel<UpdateDownloadedViewModel>()
-        UpdateDownloadedUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
-        )
         ResponsiveDialogSheet(
             onCloseClick = { viewModel.onEvent(UpdateDownloadedUiEvent.OnLaterClick) },
         ) {

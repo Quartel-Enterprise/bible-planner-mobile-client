@@ -6,6 +6,7 @@ import bibleplanner.feature.notification_permission.generated.resources.notifica
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_explanation
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_open_settings
 import bibleplanner.feature.notification_permission.generated.resources.notification_permission_settings_message
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class NotificationPermissionViewModel(
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<NotificationPermissionUiEvent>(trackEvent) {
     private var hasRequestedSystemPermission = false
@@ -44,7 +46,7 @@ internal class NotificationPermissionViewModel(
         when (event) {
             NotificationPermissionUiEvent.OnConfirm -> handleConfirm()
 
-            NotificationPermissionUiEvent.OnDecline -> emit(NotificationPermissionUiAction.NavigateBack)
+            NotificationPermissionUiEvent.OnDecline -> navigator.navigateBack()
 
             is NotificationPermissionUiEvent.OnPermissionResult ->
                 handlePermissionResult(event.granted, event.canAskAgain)
@@ -88,7 +90,7 @@ internal class NotificationPermissionViewModel(
                 )
             }
         } else {
-            emit(NotificationPermissionUiAction.NavigateBack)
+            navigator.navigateBack()
         }
     }
 
