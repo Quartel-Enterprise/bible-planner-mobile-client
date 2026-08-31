@@ -76,5 +76,8 @@ kotlin {
             implementation(libs.navigation3.ui)
             implementation(libs.androidx.lifecycle.viewmodelNavigation3)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
     }
 }
