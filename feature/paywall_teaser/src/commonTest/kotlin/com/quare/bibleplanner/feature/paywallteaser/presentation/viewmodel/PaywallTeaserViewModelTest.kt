@@ -1,8 +1,11 @@
 package com.quare.bibleplanner.feature.paywallteaser.presentation.viewmodel
 
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
+import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
-import com.quare.bibleplanner.feature.paywallteaser.presentation.model.PaywallTeaserUiAction
 import com.quare.bibleplanner.feature.paywallteaser.presentation.model.PaywallTeaserUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,7 +23,8 @@ import kotlin.test.assertEquals
 internal class PaywallTeaserViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: PaywallTeaserViewModel
-    private lateinit var actions: List<PaywallTeaserUiAction>
+    private val navigator = Navigator()
+    private val commands = mutableListOf<NavigationCommand>()
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
 
     @BeforeTest
@@ -44,8 +48,12 @@ internal class PaywallTeaserViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf(PaywallTeaserUiAction.NavigateToPaywall),
-            actual = actions,
+            expected = listOf<NavigationCommand>(
+                NavigationCommand.NavigateReplacingTop(
+                    PaywallNavRoute(PaywallEntrySource.HIGHLIGHT_CUSTOM_COLOR),
+                ),
+            ),
+            actual = commands,
         )
         assertEquals(
             expected = "paywall_teaser_subscribe_clicked" to mapOf("reason" to "highlight_custom_color"),
@@ -64,8 +72,8 @@ internal class PaywallTeaserViewModelTest {
 
         // Then
         assertEquals(
-            expected = listOf(PaywallTeaserUiAction.NavigateBack),
-            actual = actions,
+            expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+            actual = commands,
         )
         assertEquals(
             expected = "paywall_teaser_dismissed" to mapOf("reason" to "highlight_custom_color"),
@@ -77,10 +85,9 @@ internal class PaywallTeaserViewModelTest {
         trackedEvents = mutableListOf()
         viewModel = PaywallTeaserViewModel(
             route = PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
+            navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },
         )
-        actions = mutableListOf<PaywallTeaserUiAction>().also { collected ->
-            backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
-        }
+        backgroundScope.launch { navigator.commands.collect { commands += it } }
     }
 }

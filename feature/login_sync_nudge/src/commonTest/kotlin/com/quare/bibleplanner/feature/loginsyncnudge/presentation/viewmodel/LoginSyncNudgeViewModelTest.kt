@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.loginsyncnudge.presentation.viewmodel
 
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.feature.loginsyncnudge.presentation.model.LoginSyncNudgeUiEvent
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,7 @@ internal class LoginSyncNudgeViewModelTest {
         viewModel = LoginSyncNudgeViewModel(
             snoozeLoginNudge = { snoozeCount++ },
             dismissLoginNudgePermanently = { dismissPermanentlyCount++ },
+            navigator = Navigator(),
             trackEvent = { name, _ -> trackedEvents += name },
         )
     }

@@ -60,13 +60,8 @@ internal fun SharedTransitionScope.toEntryProvider(
     val sharedTransitionScope = this@toEntryProvider
     loginRoot()
     loginWarning()
-    loginSyncNudge(
-        onNavigateBack = onNavigateBack,
-        onNavigateReplacingTop = onNavigateReplacingTop,
-    )
-    logout(
-        onNavigateBack = onNavigateBack,
-    )
+    loginSyncNudge()
+    logout()
     mainScreen(
         onNavigate = onNavigate,
         sharedTransitionScope = sharedTransitionScope,
@@ -97,10 +92,7 @@ internal fun SharedTransitionScope.toEntryProvider(
     deleteProgress(onNavigateBack)
     deleteAccount()
     deleteNotes(onNavigateBack)
-    addNotesFreeWarning(
-        onNavigateBack = onNavigateBack,
-        onNavigateReplacingTop = onNavigateReplacingTop,
-    )
+    addNotesFreeWarning()
     editPlanStartDate(onNavigateBack)
     releaseNotes(sharedTransitionScope)
     paywall(
@@ -109,10 +101,7 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigateReplacingTop = onNavigateReplacingTop,
         sharedTransitionScope = sharedTransitionScope,
     )
-    paywallTeaser(
-        onNavigateBack = onNavigateBack,
-        onNavigateReplacingTop = onNavigateReplacingTop,
-    )
+    paywallTeaser()
     congrats(onNavigateBack)
     donation(
         onNavigate = onNavigate,
