@@ -68,7 +68,8 @@ so macOS Gatekeeper and Windows SmartScreen warn on first launch.
 
 Alternatively, run `./scripts/release/release.sh` from the terminal — it asks for the same inputs
 as a menu (with the same defaults) and prints the link to the dispatched run. For a full
-production release on every platform with no prompts, run `./scripts/release/release-prod.sh`;
+production release on every platform with no prompts, run `./scripts/release/prod/release-prod-all.sh`;
+for a mobile-only (android + ios) production release, run `./scripts/release/prod/release-prod-mobile.sh`;
 for a pre-release beta with no prompts, run `./scripts/release/release-beta.sh`.
 4. Click **Run workflow**.
 5. The `plan` job runs and prints the resolved version in the run summary. The run then pauses
