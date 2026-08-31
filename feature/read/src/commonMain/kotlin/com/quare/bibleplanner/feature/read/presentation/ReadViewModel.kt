@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
@@ -44,7 +45,6 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
-import com.quare.bibleplanner.feature.read.presentation.model.ReadUiAction
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerticalChapterCounts
@@ -53,9 +53,7 @@ import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -93,6 +91,7 @@ class ReadViewModel(
     private val observeVerseSelection: ObserveVerseSelection,
     private val toggleVerseSelection: ToggleVerseSelection,
     private val clearVerseSelection: ClearVerseSelection,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<ReadUiEvent>(trackEvent) {
@@ -119,9 +118,6 @@ class ReadViewModel(
      * that lands on a different value than guessed (or never lands) never leaves the UI stuck.
      */
     private val pendingReadOverrides = MutableStateFlow<Map<ChapterLocationModel, Boolean>>(emptyMap())
-
-    private val _uiAction = MutableSharedFlow<ReadUiAction>()
-    val uiAction: SharedFlow<ReadUiAction> = _uiAction
 
     /**
      * Which chapters on screen would finish a reading-plan day the moment they are marked read, kept
@@ -215,12 +211,7 @@ class ReadViewModel(
                 .distinctUntilChanged()
                 .filter { hasSelection -> hasSelection },
         ) {
-            _uiAction.emit(
-                ReadUiAction.NavigateToRoute(
-                    route = VerseSelectionNavRoute,
-                    replace = false,
-                ),
-            )
+            navigator.navigate(VerseSelectionNavRoute)
         }
     }
 
@@ -272,40 +263,16 @@ class ReadViewModel(
 
     override fun handleEvent(event: ReadUiEvent) {
         when (event) {
-            ReadUiEvent.OnArrowBackClick -> emitAction(ReadUiAction.NavigateBack)
-
+            ReadUiEvent.OnArrowBackClick -> navigator.navigateBack()
             ReadUiEvent.OnRetryClick -> retryCount.update { it + 1 }
-
             is ReadUiEvent.ToggleReadStatus -> toggleReadStatus(event)
-
             ReadUiEvent.OnDownloadSelectedVersionClick -> downloadSelectedVersion()
-
-            ReadUiEvent.ManageBibleVersions -> {
-                emitAction(
-                    ReadUiAction.NavigateToRoute(
-                        route = BibleVersionSelectorRoute,
-                        replace = false,
-                    ),
-                )
-            }
-
+            ReadUiEvent.ManageBibleVersions -> navigator.navigate(BibleVersionSelectorRoute)
             is ReadUiEvent.OnNavigationSuggestionClick -> navigateToSuggestion(event.suggestion)
-
             is ReadUiEvent.OnVerseClick -> selectVerse(event)
-
-            ReadUiEvent.OnAppearanceClick -> {
-                emitAction(
-                    ReadUiAction.NavigateToRoute(
-                        route = ReaderAppearanceNavRoute,
-                        replace = false,
-                    ),
-                )
-            }
-
+            ReadUiEvent.OnAppearanceClick -> navigator.navigate(ReaderAppearanceNavRoute)
             ReadUiEvent.OnRulerDismissClick -> dismissRuler()
-
             ReadUiEvent.OnReachedEnd -> appendNextChapter()
-
             ReadUiEvent.OnReachedStart -> prependPreviousChapter()
         }
     }
@@ -318,7 +285,7 @@ class ReadViewModel(
         val verseNumbers = selection?.verseNumbers.orEmpty()
         if (selection == null) {
             // The last verse was deselected, so the panel has nothing left to act on.
-            emitAction(ReadUiAction.NavigateBack)
+            navigator.navigateBack()
         }
         trackEvent(
             name = AnalyticsEventNames.VERSE_SELECTION_TOGGLED,
@@ -334,7 +301,7 @@ class ReadViewModel(
         val willBeRead = !isCurrentlyRead(key)
         pendingReadOverrides.update { it + (key to willBeRead) }
         val completedDay = dayCompletionCandidates.value[key]?.takeIf { willBeRead }
-        if (completedDay != null) emitAction(completedDay.toNavigationAction())
+        if (completedDay != null) navigator.navigate(completedDay.toDayReadingCompleteRoute())
         viewModelScope.launch {
             val isRead = toggleWholeChapterReadStatus(
                 bookId = event.bookId,
@@ -387,17 +354,15 @@ class ReadViewModel(
             bookId = bookId,
             chapterNumber = chapterNumber,
         ) ?: return
-        _uiAction.emit(day.toNavigationAction())
+        navigator.navigate(day.toDayReadingCompleteRoute())
     }
 
-    private fun PlanDayLocationModel.toNavigationAction(): ReadUiAction.NavigateToRoute = ReadUiAction.NavigateToRoute(
-        route = DayReadingCompleteNavRoute(
+    private fun PlanDayLocationModel.toDayReadingCompleteRoute(): DayReadingCompleteNavRoute =
+        DayReadingCompleteNavRoute(
             dayNumber = dayNumber,
             weekNumber = weekNumber,
             readingPlanType = readingPlanType.name,
-        ),
-        replace = false,
-    )
+        )
 
     private fun navigateToSuggestion(suggestion: ReadNavigationSuggestionModel) {
         trackEvent(
@@ -409,18 +374,15 @@ class ReadViewModel(
             ),
         )
         viewModelScope.launch {
-            _uiAction.emit(
-                ReadUiAction.NavigateToRoute(
-                    route = ReadNavRoute(
-                        bookId = suggestion.bookId.name,
+            navigator.navigateReplacingTop(
+                ReadNavRoute(
+                    bookId = suggestion.bookId.name,
+                    chapterNumber = suggestion.chapterNumber,
+                    isChapterRead = isWholeChapterRead(
                         chapterNumber = suggestion.chapterNumber,
-                        isChapterRead = isWholeChapterRead(
-                            chapterNumber = suggestion.chapterNumber,
-                            bookId = suggestion.bookId,
-                        ),
-                        isFromBookDetails = route.isFromBookDetails,
+                        bookId = suggestion.bookId,
                     ),
-                    replace = true,
+                    isFromBookDetails = route.isFromBookDetails,
                 ),
             )
         }
@@ -515,10 +477,6 @@ class ReadViewModel(
             )
             requestDownloadNotificationPermission()
         }
-    }
-
-    private fun emitAction(action: ReadUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
     }
 
     private fun ReadDataUiModel.toUiState(

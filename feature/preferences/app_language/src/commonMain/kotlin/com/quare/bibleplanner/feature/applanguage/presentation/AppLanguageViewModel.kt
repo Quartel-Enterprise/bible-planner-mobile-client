@@ -1,6 +1,9 @@
 package com.quare.bibleplanner.feature.applanguage.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.SetAppLanguage
@@ -20,6 +23,7 @@ import kotlinx.coroutines.launch
 internal class AppLanguageViewModel(
     private val setAppLanguage: SetAppLanguage,
     private val setLanguageSyncEnabled: SetLanguageSyncEnabled,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     factory: AppLanguageUiStateFactory,
 ) : TrackedViewModel<AppLanguageUiEvent>(trackEvent) {
@@ -35,7 +39,7 @@ internal class AppLanguageViewModel(
     override fun handleEvent(event: AppLanguageUiEvent) {
         when (event) {
             is AppLanguageUiEvent.OnLanguageSelected -> selectLanguage(event.language)
-            AppLanguageUiEvent.OnDismiss -> emitAction(AppLanguageUiAction.NavigateUp)
+            AppLanguageUiEvent.OnDismiss -> navigator.navigateBack()
             is AppLanguageUiEvent.SyncToggleClicked -> setSyncEnabled(event.isNewValueOn)
             AppLanguageUiEvent.SyncToggleBlockedClicked -> showLoginWarning()
         }
@@ -48,13 +52,14 @@ internal class AppLanguageViewModel(
     }
 
     private fun showLoginWarning() {
-        emitAction(AppLanguageUiAction.NavigateToLoginWarning)
+        navigator.navigate(LoginWarningNavRoute(LoginWarningReason.Preferences.Language.key))
     }
 
     private fun selectLanguage(language: Language) {
         viewModelScope.launch {
             setAppLanguage(language)
-            emitAction(AppLanguageUiAction.ApplyAndNavigateUp(language))
+            _uiAction.emit(AppLanguageUiAction.ApplyLanguage(language))
+            navigator.navigateBack()
         }
     }
 
