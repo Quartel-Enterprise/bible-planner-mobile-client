@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.date.toLocalDate
 import com.quare.bibleplanner.core.date.toTimestampUTC
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -15,9 +16,7 @@ import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditP
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,13 +30,12 @@ internal class EditPlanStartDateViewModel(
     private val currentTimestampProvider: CurrentTimestampProvider,
     private val localDateTimeProvider: LocalDateTimeProvider,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<EditPlanStartDateUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<EditPlanStartDateUiState> =
         MutableStateFlow(EditPlanStartDateUiState.Loading)
     val uiState: StateFlow<EditPlanStartDateUiState> = _uiState.asStateFlow()
-    private val _dismissUiAction: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val dismissUiAction: SharedFlow<Unit> = _dismissUiAction
 
     init {
         loadInitialState()
@@ -67,7 +65,7 @@ internal class EditPlanStartDateViewModel(
 
     private fun dismissDialog() {
         viewModelScope.launch {
-            _dismissUiAction.emit(Unit)
+            navigator.navigateBack()
         }
     }
 

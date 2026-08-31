@@ -8,6 +8,7 @@ import bibleplanner.feature.profile.generated.resources.login_requires_internet
 import bibleplanner.feature.profile.generated.resources.logout_requires_internet
 import bibleplanner.feature.profile.generated.resources.up_to_date_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
@@ -62,6 +63,7 @@ internal class ProfileViewModel(
     private val isConnected: IsConnected,
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<ProfileUiAction>()
@@ -177,13 +179,11 @@ internal class ProfileViewModel(
     private fun deleteProgressClick() {
         viewModelScope.launch {
             val progress = calculateBibleProgress().first()
-            _uiAction.emit(
-                if (progress > 0) {
-                    ProfileUiAction.GoToRoute(DeleteAllProgressNavRoute)
-                } else {
-                    ProfileUiAction.ShowNoProgressToDelete
-                },
-            )
+            if (progress > 0) {
+                navigator.navigate(DeleteAllProgressNavRoute)
+            } else {
+                _uiAction.emit(ProfileUiAction.ShowNoProgressToDelete)
+            }
         }
     }
 
@@ -192,17 +192,16 @@ internal class ProfileViewModel(
         offlineMessage: StringResource,
     ) {
         viewModelScope.launch {
-            val action = if (isConnected()) {
-                ProfileUiAction.GoToRoute(route)
+            if (isConnected()) {
+                navigator.navigate(route)
             } else {
-                ProfileUiAction.ShowSnackbar(offlineMessage)
+                _uiAction.emit(ProfileUiAction.ShowSnackbar(offlineMessage))
             }
-            _uiAction.emit(action)
         }
     }
 
     private fun goToRoute(route: NavKey) {
-        emitAction(ProfileUiAction.GoToRoute(route))
+        navigator.navigate(route)
     }
 
     private fun emitAction(action: ProfileUiAction) {

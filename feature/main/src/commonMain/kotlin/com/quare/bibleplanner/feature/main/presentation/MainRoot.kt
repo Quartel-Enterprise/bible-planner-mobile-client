@@ -41,13 +41,9 @@ import org.koin.compose.viewmodel.koinViewModel
 private const val TAB_TRANSITION_DURATION_MILLIS = 300
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderScope<NavKey>.mainScreen(
-    onNavigate: (NavKey) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-) {
+fun EntryProviderScope<NavKey>.mainScreen(sharedTransitionScope: SharedTransitionScope) {
     entry<MainNavRoute> {
         MainRootContent(
-            onNavigate = onNavigate,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = LocalNavAnimatedContentScope.current,
         )
@@ -57,7 +53,6 @@ fun EntryProviderScope<NavKey>.mainScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun MainRootContent(
-    onNavigate: (NavKey) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
@@ -86,7 +81,6 @@ private fun MainRootContent(
         entries = tabState.toDecoratedEntries(
             entryProvider {
                 toMainEntries(
-                    onNavigate = onNavigate,
                     navigationBar = { modifier ->
                         MainNavigationBar(
                             modifier = modifier,
@@ -118,14 +112,12 @@ private fun MainRootContent(
 }
 
 private fun EntryProviderScope<NavKey>.toMainEntries(
-    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable ((Modifier) -> Unit),
     navigationRail: @Composable (() -> Unit),
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
     readingPlan(
-        onNavigate = onNavigate,
         navigationBar = navigationBar,
         navigationRail = navigationRail,
         sharedTransitionScope = sharedTransitionScope,
@@ -138,7 +130,6 @@ private fun EntryProviderScope<NavKey>.toMainEntries(
         animatedVisibilityScope = animatedContentScope,
     )
     profile(
-        onNavigate = onNavigate,
         navigationBar = navigationBar,
         navigationRail = navigationRail,
         sharedTransitionScope = sharedTransitionScope,

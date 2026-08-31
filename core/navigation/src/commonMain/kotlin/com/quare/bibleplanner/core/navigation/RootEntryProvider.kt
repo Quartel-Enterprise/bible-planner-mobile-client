@@ -52,61 +52,45 @@ import com.quare.bibleplanner.feature.verse.share.presentation.shareVerse
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun SharedTransitionScope.toEntryProvider(
-    onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (NavKey) -> Unit,
-    onNavigate: (NavKey) -> Unit,
-): (NavKey) -> NavEntry<NavKey> = entryProvider {
+internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKey> = entryProvider {
     val sharedTransitionScope = this@toEntryProvider
     loginRoot()
     loginWarning()
     loginSyncNudge()
     logout()
-    mainScreen(
-        onNavigate = onNavigate,
-        sharedTransitionScope = sharedTransitionScope,
-    )
+    mainScreen(sharedTransitionScope)
     day(sharedTransitionScope)
     dayStudy()
     dayReadingComplete()
     chat()
     themeSettings()
-    materialYou(onNavigateBack)
-    deleteProgress(onNavigateBack)
+    materialYou()
+    deleteProgress()
     deleteAccount()
-    deleteNotes(onNavigateBack)
+    deleteNotes()
     addNotesFreeWarning()
-    editPlanStartDate(onNavigateBack)
+    editPlanStartDate()
     releaseNotes(sharedTransitionScope)
     paywall(sharedTransitionScope)
     paywallTeaser()
-    congrats(onNavigateBack)
+    congrats()
     donation()
     pixQr()
     bookDetails(sharedTransitionScope)
     appLanguage()
     bibleVersionSelectionRoot()
-    deleteVersion(onNavigateBack)
-    subscriptionDetails(onNavigateBack)
+    deleteVersion()
+    subscriptionDetails()
     accountDetails()
-    renameDevice(onNavigateBack)
-    editProfile(
-        onNavigateReplacingTop = onNavigateReplacingTop,
-        onNavigateBack = onNavigateBack,
-    )
+    renameDevice()
+    editProfile()
     editName()
-    editPhotoSource(
-        onNavigateReplacingTop = onNavigateReplacingTop,
-        onNavigateBack = onNavigateBack,
-    )
-    expandedPhoto(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-    )
+    editPhotoSource()
+    expandedPhoto()
     cropPhoto()
     contactSupport()
     read()
-    verseNote(onNavigateBack)
+    verseNote()
     verseSelection()
     shareVerse()
     notificationPermission()
