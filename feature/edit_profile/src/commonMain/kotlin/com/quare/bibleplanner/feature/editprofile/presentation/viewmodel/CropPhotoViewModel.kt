@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.image.AvatarImageCropper
 import com.quare.bibleplanner.core.image.CropParams
 import com.quare.bibleplanner.core.image.PhotoOrientation
 import com.quare.bibleplanner.core.image.getMaxPanOffset
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.suspendRunCatching
@@ -35,6 +36,7 @@ internal class CropPhotoViewModel(
     private val decodeImageBitmap: DecodeImageBitmap,
     private val cropImage: AvatarImageCropper,
     private val setProfilePhoto: SetProfilePhoto,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     private val encodeDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : TrackedViewModel<CropPhotoUiEvent>(trackEvent) {
@@ -83,7 +85,7 @@ internal class CropPhotoViewModel(
             CropPhotoUiEvent.OnFlipHorizontalClick -> updateOrientation(PhotoOrientation::flipHorizontally)
             CropPhotoUiEvent.OnFlipVerticalClick -> updateOrientation(PhotoOrientation::flipVertically)
             CropPhotoUiEvent.OnRotateClick -> updateOrientation(PhotoOrientation::rotateQuarterTurn)
-            CropPhotoUiEvent.OnCancelClick -> emit(CropPhotoUiAction.NavigateBack)
+            CropPhotoUiEvent.OnCancelClick -> navigator.navigateBack()
             CropPhotoUiEvent.OnConfirmClick -> confirmCrop()
         }
     }
@@ -141,7 +143,7 @@ internal class CropPhotoViewModel(
     }
 
     private suspend fun finishWith(message: StringResource) {
-        _uiAction.emit(CropPhotoUiAction.NavigateBack)
+        navigator.navigateBack()
         _uiAction.emit(CropPhotoUiAction.ShowSnackbar(message))
     }
 

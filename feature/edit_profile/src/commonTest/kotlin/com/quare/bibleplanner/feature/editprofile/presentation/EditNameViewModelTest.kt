@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.editprofile.presentation
 
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
 import com.quare.bibleplanner.core.profile.domain.model.UserProfile
 import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
@@ -23,12 +25,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class EditNameViewModelTest {
+    private val navigator = Navigator()
+    private val commands = mutableListOf<NavigationCommand>()
     private lateinit var updatedNames: MutableList<String>
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(StandardTestDispatcher())
         updatedNames = mutableListOf()
+        commands.clear()
     }
 
     @AfterTest
@@ -42,7 +47,7 @@ class EditNameViewModelTest {
         val actions = actionsAfter(EditNameUiEvent.OnSaveClick("  Outro Nome  "))
 
         // Then
-        assertEquals(EditNameUiAction.NavigateBack, actions.first())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         assertEquals(listOf("Outro Nome"), updatedNames)
     }
 
@@ -52,7 +57,8 @@ class EditNameViewModelTest {
         val actions = actionsAfter(EditNameUiEvent.OnSaveClick(CURRENT_NAME))
 
         // Then
-        assertEquals(listOf(EditNameUiAction.NavigateBack), actions)
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         assertTrue(updatedNames.isEmpty())
     }
 
@@ -62,7 +68,8 @@ class EditNameViewModelTest {
         val actions = actionsAfter(EditNameUiEvent.OnSaveClick("  $CURRENT_NAME  "))
 
         // Then
-        assertEquals(listOf(EditNameUiAction.NavigateBack), actions)
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         assertTrue(updatedNames.isEmpty())
     }
 
@@ -72,7 +79,8 @@ class EditNameViewModelTest {
         val actions = actionsAfter(EditNameUiEvent.OnSaveClick("   "))
 
         // Then
-        assertEquals(listOf(EditNameUiAction.NavigateBack), actions)
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         assertTrue(updatedNames.isEmpty())
     }
 
@@ -80,8 +88,10 @@ class EditNameViewModelTest {
         val viewModel = EditNameViewModel(
             observeUserProfile = ObserveUserProfile { flowOf(profile()) },
             updateDisplayName = { name -> updatedNames.add(name) },
+            navigator = navigator,
             trackEvent = { _, _ -> },
         )
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { navigator.commands.collect(commands::add) }
         val actions = mutableListOf<EditNameUiAction>()
         val job = launch(UnconfinedTestDispatcher(testScheduler)) {
             viewModel.uiAction.collect(actions::add)

@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.appearance
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -15,9 +16,7 @@ import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderVerticalReading
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -32,12 +31,10 @@ internal class ReaderAppearanceViewModel(
     private val setReaderFocusAid: SetReaderFocusAid,
     private val setReaderRulerLines: SetReaderRulerLines,
     private val setReaderVerticalReading: SetReaderVerticalReading,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ReaderAppearanceUiEvent>(trackEvent) {
     private val isFontMenuExpanded = MutableStateFlow(false)
-
-    private val _uiAction = MutableSharedFlow<ReaderAppearanceUiAction>()
-    val uiAction: SharedFlow<ReaderAppearanceUiAction> = _uiAction
 
     val uiState: StateFlow<ReaderAppearanceUiState> = combine(
         observeReaderSettings(),
@@ -118,8 +115,7 @@ internal class ReaderAppearanceViewModel(
                 viewModelScope.launch { setReaderVerticalReading(event.isEnabled) }
             }
 
-            ReaderAppearanceUiEvent.OnDismiss ->
-                viewModelScope.launch { _uiAction.emit(ReaderAppearanceUiAction.NavigateBack) }
+            ReaderAppearanceUiEvent.OnDismiss -> navigator.navigateBack()
         }
     }
 

@@ -103,10 +103,7 @@ internal fun SharedTransitionScope.toEntryProvider(
     )
     paywallTeaser()
     congrats(onNavigateBack)
-    donation(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-    )
+    donation()
     pixQr()
     bookDetails(
         onNavigate = onNavigate,
@@ -133,7 +130,7 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigateReplacingTop = onNavigateReplacingTop,
         onNavigateBack = onNavigateBack,
     )
-    editName(onNavigateBack)
+    editName()
     editPhotoSource(
         onNavigateReplacingTop = onNavigateReplacingTop,
         onNavigateBack = onNavigateBack,
@@ -142,7 +139,7 @@ internal fun SharedTransitionScope.toEntryProvider(
         onNavigate = onNavigate,
         onNavigateBack = onNavigateBack,
     )
-    cropPhoto(onNavigateBack)
+    cropPhoto()
     contactSupport()
     read(
         onNavigate = onNavigate,
@@ -161,5 +158,5 @@ internal fun SharedTransitionScope.toEntryProvider(
     notificationPermission()
     inAppUpdate()
     updateDownloaded()
-    pendingBibleUpdates(onNavigateBack)
+    pendingBibleUpdates()
 }

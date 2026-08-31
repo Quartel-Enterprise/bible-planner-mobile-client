@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -9,12 +10,9 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DismissBibleUp
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPendingBibleUpdatesUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdateItem
-import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,11 +22,9 @@ internal class PendingBibleUpdatesViewModel(
     private val updateBibleVersion: UpdateBibleVersionUseCase,
     private val dismissBibleUpdatePrompt: DismissBibleUpdatePromptUseCase,
     private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PendingBibleUpdatesUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<PendingBibleUpdatesUiAction>()
-    val uiAction: SharedFlow<PendingBibleUpdatesUiAction> = _uiAction
-
     private val _pendingUpdates = MutableStateFlow<List<PendingBibleUpdateItem>>(emptyList())
     val pendingUpdates: StateFlow<List<PendingBibleUpdateItem>> = _pendingUpdates
 
@@ -78,14 +74,14 @@ internal class PendingBibleUpdatesViewModel(
             if (selectedUpdates.isNotEmpty()) {
                 requestDownloadNotificationPermission()
             }
-            _uiAction.emit(PendingBibleUpdatesUiAction.NavigateBack)
+            navigator.navigateBack()
         }
     }
 
     private fun dismiss() {
         viewModelScope.launch {
             dismissBibleUpdatePrompt()
-            _uiAction.emit(PendingBibleUpdatesUiAction.NavigateBack)
+            navigator.navigateBack()
         }
     }
 }

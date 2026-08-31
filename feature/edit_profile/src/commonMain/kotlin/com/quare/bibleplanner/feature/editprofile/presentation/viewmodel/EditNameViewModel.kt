@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.editprofile.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.edit_profile.generated.resources.Res
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_name_updated
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 internal class EditNameViewModel(
     private val observeUserProfile: ObserveUserProfile,
     private val updateDisplayName: UpdateDisplayName,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<EditNameUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<EditNameUiAction>()
@@ -53,17 +55,17 @@ internal class EditNameViewModel(
         }
         viewModelScope.launch {
             if (trimmed == observeUserProfile().first()?.displayName) {
-                _uiAction.emit(EditNameUiAction.NavigateBack)
+                navigator.navigateBack()
                 return@launch
             }
             updateDisplayName(trimmed)
-            _uiAction.emit(EditNameUiAction.NavigateBack)
+            navigator.navigateBack()
             _uiAction.emit(EditNameUiAction.ShowSnackbar(Res.string.edit_profile_name_updated))
         }
     }
 
     private fun navigateBack() {
-        viewModelScope.launch { _uiAction.emit(EditNameUiAction.NavigateBack) }
+        navigator.navigateBack()
     }
 
     private companion object {
