@@ -54,6 +54,7 @@ kotlin {
             implementation(projects.feature.deleteAccount)
             implementation(projects.feature.deleteVersion)
             implementation(projects.feature.preferences.themeSelection)
+            implementation(projects.feature.preferences.studySuggestion)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
             implementation(projects.feature.dayStudy)

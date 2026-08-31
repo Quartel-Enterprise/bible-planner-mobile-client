@@ -11,6 +11,7 @@ internal class ProfileOptionItemTypeAnalyticsTest {
             ProfileOptionItemType.BECOME_PRO to "become_pro",
             ProfileOptionItemType.THEME to "theme",
             ProfileOptionItemType.APP_LANGUAGE to "app_language",
+            ProfileOptionItemType.STUDY_SUGGESTION to "study_suggestion",
             ProfileOptionItemType.INSTAGRAM to "instagram",
             ProfileOptionItemType.PRIVACY_POLICY to "privacy_policy",
             ProfileOptionItemType.TERMS to "terms",

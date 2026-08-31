@@ -63,4 +63,8 @@
     <string name="delete_account_option">Excluir conta</string>
     <string name="delete_account_option_subtitle">Remove permanentemente sua conta e todos os dados</string>
     <string name="delete_account_requires_internet">Conecte-se à internet para excluir sua conta</string>
+    <string name="study_suggestion_option">Sugestão de estudo</string>
+    <string name="study_suggestion_enabled_dialog">Ativada · aviso em destaque</string>
+    <string name="study_suggestion_enabled_banner">Ativada · banner discreto</string>
+    <string name="study_suggestion_disabled">Desativada</string>
 </resources>

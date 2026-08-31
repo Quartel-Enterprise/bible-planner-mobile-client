@@ -33,6 +33,9 @@ object AnalyticsEventNames {
     const val DAY_READING_COMPLETE_SHOWN = "day_reading_complete_shown"
     const val DAY_READING_COMPLETE_CTA_CLICKED = "day_reading_complete_cta_clicked"
     const val DAY_READING_COMPLETE_DISMISSED = "day_reading_complete_dismissed"
+    const val DAY_READING_COMPLETE_BANNER_SHOWN = "day_reading_complete_banner_shown"
+    const val DAY_READING_COMPLETE_BANNER_CTA_CLICKED = "day_reading_complete_banner_cta_clicked"
+    const val DAY_READING_COMPLETE_BANNER_DISMISSED = "day_reading_complete_banner_dismissed"
 
     const val NOTE_SAVED = "note_saved"
     const val NOTE_DELETED = "note_deleted"
@@ -170,6 +173,10 @@ object AnalyticsEventNames {
     const val MATERIAL_YOU_GOT_IT_CLICKED = "material_you_got_it_clicked"
     const val SYNC_TOGGLE_BLOCKED_CLICKED = "sync_toggle_blocked_clicked"
     const val APP_LANGUAGE_DISMISSED = "app_language_dismissed"
+    const val STUDY_SUGGESTION_TOGGLED = "study_suggestion_toggled"
+    const val STUDY_SUGGESTION_MODE_CHANGED = "study_suggestion_mode_changed"
+    const val STUDY_SUGGESTION_MODE_BLOCKED_CLICKED = "study_suggestion_mode_blocked_clicked"
+    const val STUDY_SUGGESTION_DISMISSED = "study_suggestion_dismissed"
     const val EDIT_PLAN_START_DATE_DISMISSED = "edit_plan_start_date_dismissed"
     const val BOTTOM_TAB_CLICKED = "bottom_tab_clicked"
 

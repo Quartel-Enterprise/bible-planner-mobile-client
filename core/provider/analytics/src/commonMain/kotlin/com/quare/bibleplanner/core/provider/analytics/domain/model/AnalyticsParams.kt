@@ -37,6 +37,7 @@ object AnalyticsParams {
     const val PERCENT = "percent"
     const val STREAK_DAYS = "streak_days"
     const val CARD_MODE = "card_mode"
+    const val MODE = "mode"
     const val COUNT = "count"
     const val REMAINING_FREE = "remaining_free"
     const val SUBSCRIPTION_PLAN = "subscription_plan"

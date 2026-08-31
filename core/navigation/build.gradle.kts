@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.feature.inAppUpdate)
             implementation(projects.feature.main)
             implementation(projects.feature.preferences.themeSelection)
+            implementation(projects.feature.preferences.studySuggestion)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
             implementation(projects.feature.deleteProgress)

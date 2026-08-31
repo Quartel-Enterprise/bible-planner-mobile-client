@@ -25,6 +25,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,9 +48,9 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_subscribe
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_view_other_day
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_view_today
-import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_day_label
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_kicker_other_day
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_kicker_today
+import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_never_show
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_quota_exhausted
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_quota_hint
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_early
@@ -57,15 +58,12 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_overdue
 import com.quare.bibleplanner.core.books.util.toReadingLabel
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
-import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
-import com.quare.bibleplanner.ui.utils.toStringResource
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -181,7 +179,7 @@ private fun LoadedContent(
     modifier: Modifier = Modifier,
 ) {
     val isToday = state.timing == DayTimingState.ON_TIME
-    val dayLabel = state.plannedReadDate?.takeIf { !isToday }?.toDayLabel(state.language)
+    val dayLabel = state.plannedReadDate?.takeIf { !isToday }?.toDayReadingCompleteDayLabel(state.language)
     val readingLabel = state.passages.toReadingLabel()
 
     SheetColumn(modifier = modifier) {
@@ -248,6 +246,19 @@ private fun LoadedContent(
             VerticalSpacer(10)
             QuotaHint(hint)
         }
+        VerticalSpacer(6)
+        NeverShowAgainButton(onClick = { onEvent(DayReadingCompleteUiEvent.OnNeverShowAgainClick) })
+    }
+}
+
+@Composable
+private fun NeverShowAgainButton(onClick: () -> Unit) {
+    TextButton(onClick = onClick) {
+        Text(
+            text = stringResource(Res.string.day_reading_complete_never_show),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -429,11 +440,4 @@ private fun hintText(ctaState: StudyCtaState?): String? = when (ctaState) {
     )
 
     StudyCtaState.Pro, null -> null
-}
-
-@Composable
-private fun LocalDate.toDayLabel(language: Language): String {
-    val rawMonthName = stringResource(month.toStringResource())
-    val monthName = if (language == Language.ENGLISH) rawMonthName else rawMonthName.lowercase()
-    return stringResource(Res.string.day_reading_complete_day_label, day, monthName)
 }

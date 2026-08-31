@@ -44,6 +44,7 @@ import com.quare.bibleplanner.feature.paywall.presentation.paywall
 import com.quare.bibleplanner.feature.paywallteaser.presentation.paywallTeaser
 import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
+import com.quare.bibleplanner.feature.studysuggestion.presentation.studySuggestionSettings
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.subscriptionDetails
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.feature.verse.addnote.presentation.verseNote
@@ -64,6 +65,7 @@ internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKe
     dayReadingComplete()
     chat()
     themeSettings()
+    studySuggestionSettings()
     materialYou()
     deleteProgress()
     deleteAccount()

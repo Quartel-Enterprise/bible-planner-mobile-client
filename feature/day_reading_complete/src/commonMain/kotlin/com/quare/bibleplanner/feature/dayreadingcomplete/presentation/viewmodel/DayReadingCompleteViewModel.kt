@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day_reading_complete.generated.resources.Res
+import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_never_show_confirmation
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_offline_message
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
@@ -36,6 +37,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenera
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.feature.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
+import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.SetStudySuggestionEnabled
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,6 +61,7 @@ class DayReadingCompleteViewModel(
     private val resolveStudyCtaState: ResolveStudyCtaStateUseCase,
     private val quotaPrefetchStore: DayStudyQuotaPrefetchStore,
     private val generationCoordinator: DayStudyGenerationCoordinator,
+    private val setStudySuggestionEnabled: SetStudySuggestionEnabled,
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayReadingCompleteUiEvent>(trackEvent) {
@@ -85,6 +88,17 @@ class DayReadingCompleteViewModel(
         when (event) {
             is DayReadingCompleteUiEvent.OnCtaClick -> onCtaClick(event.readingLabel)
             DayReadingCompleteUiEvent.OnDismiss -> navigator.navigateBack()
+            DayReadingCompleteUiEvent.OnNeverShowAgainClick -> disableSuggestion()
+        }
+    }
+
+    private fun disableSuggestion() {
+        viewModelScope.launch {
+            setStudySuggestionEnabled(false)
+            _uiAction.emit(
+                DayReadingCompleteUiAction.ShowSnackBar(Res.string.day_reading_complete_never_show_confirmation),
+            )
+            navigator.navigateBack()
         }
     }
 
@@ -228,10 +242,4 @@ class DayReadingCompleteViewModel(
     private companion object {
         const val SOURCE_VALUE = "day_reading_complete"
     }
-}
-
-private fun StudyCtaState.toAnalyticsValue(): String = when (this) {
-    is StudyCtaState.FreeWithQuota -> "free"
-    is StudyCtaState.FreeExhausted -> "free_exhausted"
-    StudyCtaState.Pro -> "pro"
 }

@@ -25,6 +25,7 @@ import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
+import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -87,6 +88,8 @@ internal class ProfileViewModel(
                     ProfileOptionItemType.THEME -> goToRoute(ThemeNavRoute)
 
                     ProfileOptionItemType.APP_LANGUAGE -> goToRoute(AppLanguageNavRoute)
+
+                    ProfileOptionItemType.STUDY_SUGGESTION -> goToRoute(StudySuggestionNavRoute)
 
                     ProfileOptionItemType.PRIVACY_POLICY -> emitAction(OpenLink(LegalUrl.PRIVACY_POLICY))
 

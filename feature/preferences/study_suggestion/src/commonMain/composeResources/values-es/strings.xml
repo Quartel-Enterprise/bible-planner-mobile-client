@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="study_suggestion_title">Sugerencia de estudio</string>
+    <string name="study_suggestion_scope_note">Vale solo para la pantalla de lectura del capítulo.</string>
+    <string name="study_suggestion_description">Al marcar el último capítulo programado para el día, la app ofrece el estudio de ese día. Es un análisis que reúne todos los pasajes leídos, diferente del estudio de cada capítulo.</string>
+    <string name="study_suggestion_toggle_title">Mostrar la sugerencia</string>
+    <string name="study_suggestion_toggle_subtitle_on">Al concluir el último capítulo del día</string>
+    <string name="study_suggestion_toggle_subtitle_off">No verás la sugerencia</string>
+    <string name="study_suggestion_how_it_appears">CÓMO APARECE</string>
+    <string name="study_suggestion_mode_dialog_title">Aviso destacado</string>
+    <string name="study_suggestion_mode_dialog_description">Una ventana cubre la pantalla con el resumen del día y el botón para generar el estudio.</string>
+    <string name="study_suggestion_mode_banner_title">Banner discreto</string>
+    <string name="study_suggestion_mode_banner_description">Una franja en la parte inferior que no interrumpe la lectura y desaparece al descartarla.</string>
+    <string name="study_suggestion_enabled_message">Sugerencia de estudio activada</string>
+    <string name="study_suggestion_disabled_message">Ya no verás la sugerencia al concluir el día</string>
+    <string name="study_suggestion_mode_blocked_message">Activa la sugerencia para elegir cómo aparece</string>
+</resources>
