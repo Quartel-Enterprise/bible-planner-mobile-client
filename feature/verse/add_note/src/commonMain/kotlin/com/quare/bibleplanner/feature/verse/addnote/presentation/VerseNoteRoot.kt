@@ -12,23 +12,18 @@ import bibleplanner.feature.verse.add_note.generated.resources.Res
 import bibleplanner.feature.verse.add_note.generated.resources.verse_note_title
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiEvent
-import com.quare.bibleplanner.feature.verse.addnote.presentation.utils.VerseNoteUiActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.verseNote(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.verseNote() {
     entry<VerseNoteNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) { route ->
         val viewModel = koinViewModel<VerseNoteViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
-        VerseNoteUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
-        )
         val onEvent = viewModel::onEvent
         ResponsiveDialogSheet(
             onCloseClick = { onEvent(VerseNoteUiEvent.OnDismiss) },

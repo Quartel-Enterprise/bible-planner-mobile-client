@@ -28,7 +28,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.profile(
-    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -36,7 +35,6 @@ fun EntryProviderScope<NavKey>.profile(
 ) {
     entry<MainNavRouteDestination.Profile> {
         ProfileTabContent(
-            onNavigate = onNavigate,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
             sharedTransitionScope = sharedTransitionScope,
@@ -48,7 +46,6 @@ fun EntryProviderScope<NavKey>.profile(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ProfileTabContent(
-    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -57,7 +54,6 @@ private fun ProfileTabContent(
     val viewModel = koinViewModel<ProfileViewModel>()
     ProfileUiActionCollector(
         uiActionFlow = viewModel.uiAction,
-        onNavigate = onNavigate,
         snackbarHostState = LocalSnackbarHostState.current,
     )
     val uiState by viewModel.uiState.collectAsState()

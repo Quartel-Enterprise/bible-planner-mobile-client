@@ -32,7 +32,6 @@ private const val HERO_ITEM_KEY = "hero"
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.readingPlan(
-    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -40,7 +39,6 @@ fun EntryProviderScope<NavKey>.readingPlan(
 ) {
     entry<MainNavRouteDestination.Plans> {
         ReadingPlanTabContent(
-            onNavigate = onNavigate,
             navigationBar = navigationBar,
             navigationRail = navigationRail,
             sharedTransitionScope = sharedTransitionScope,
@@ -52,7 +50,6 @@ fun EntryProviderScope<NavKey>.readingPlan(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ReadingPlanTabContent(
-    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
@@ -69,7 +66,6 @@ private fun ReadingPlanTabContent(
         uiActionFlow = viewModel.uiAction,
         snackbarHostState = snackbarHostState,
         uiState = uiState,
-        onNavigate = onNavigate,
         onEvent = onEvent,
     )
     MainTabScaffold(
@@ -98,7 +94,6 @@ private fun ReadingPlanScreenObserver(
     snackbarHostState: SnackbarHostState,
     uiActionFlow: Flow<ReadingPlanUiAction>,
     uiState: ReadingPlanUiState,
-    onNavigate: (NavKey) -> Unit,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
     val scrollToTop = uiState.scrollToTop
@@ -126,6 +121,5 @@ private fun ReadingPlanScreenObserver(
     ReadingPlanUiActionCollector(
         snackbarHostState = snackbarHostState,
         flow = uiActionFlow,
-        onNavigate = onNavigate,
     )
 }

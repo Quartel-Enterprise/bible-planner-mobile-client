@@ -3,9 +3,13 @@ package com.quare.bibleplanner.feature.readingplan.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
+import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
+import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -54,6 +58,7 @@ internal class ReadingPlanViewModel(
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val requestReviewIfNeeded: RequestReviewIfNeeded,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     private val bibleProgressMilestoneTracker: BibleProgressMilestoneTracker,
     private val readingStreakMilestoneTracker: ReadingStreakMilestoneTracker,
@@ -176,15 +181,13 @@ internal class ReadingPlanViewModel(
 
             is ReadingPlanUiEvent.OnDayReadClick -> onDayReadClick(event)
 
-            is ReadingPlanUiEvent.OnDayClick -> {
-                emitUiAction(
-                    ReadingPlanUiAction.GoToDay(
-                        dayNumber = event.dayNumber,
-                        weekNumber = event.weekNumber,
-                        readingPlanType = uiState.value.selectedReadingPlan,
-                    ),
-                )
-            }
+            is ReadingPlanUiEvent.OnDayClick -> navigator.navigate(
+                DayNavRoute(
+                    dayNumber = event.dayNumber,
+                    weekNumber = event.weekNumber,
+                    readingPlanType = uiState.value.selectedReadingPlan.name,
+                ),
+            )
 
             ReadingPlanUiEvent.OnOverflowClick -> changeMenuVisibility(true)
 
@@ -196,7 +199,7 @@ internal class ReadingPlanViewModel(
 
             is ReadingPlanUiEvent.OnOverflowOptionClick -> {
                 changeMenuVisibility(false)
-                event.option.toUiAction()?.let(::emitUiAction)
+                onOverflowOptionClick(event.option)
             }
 
             ReadingPlanUiEvent.OnToggleUpcomingExpanded -> {
@@ -285,7 +288,7 @@ internal class ReadingPlanViewModel(
                 }
             }
 
-            ReadingPlanUiEvent.OnEditPlanClick -> emitUiAction(ReadingPlanUiAction.GoToChangeStartDate)
+            ReadingPlanUiEvent.OnEditPlanClick -> navigator.navigate(EditPlanStartDateNavRoute)
         }
     }
 
@@ -529,9 +532,17 @@ internal class ReadingPlanViewModel(
         ReadingPlanType.BOOKS -> booksOrder
     }
 
-    private fun OverflowOption.toUiAction(): ReadingPlanUiAction? = when (this) {
-        OverflowOption.DELETE_PROGRESS -> deleteProgressMapper.map(uiState.value)
-        OverflowOption.EDIT_START_DAY -> ReadingPlanUiAction.GoToChangeStartDate
+    private fun onOverflowOptionClick(option: OverflowOption) = when (option) {
+        OverflowOption.DELETE_PROGRESS -> onDeleteProgressClick()
+        OverflowOption.EDIT_START_DAY -> navigator.navigate(EditPlanStartDateNavRoute)
+    }
+
+    private fun onDeleteProgressClick() {
+        when (deleteProgressMapper.map(uiState.value)) {
+            true -> navigator.navigate(DeleteAllProgressNavRoute)
+            false -> emitUiAction(ReadingPlanUiAction.ShowNoProgressToDelete)
+            null -> Unit
+        }
     }
 
     private fun List<WeekPlanModel>.mapToPresentation(): List<WeekPlanPresentationModel> =

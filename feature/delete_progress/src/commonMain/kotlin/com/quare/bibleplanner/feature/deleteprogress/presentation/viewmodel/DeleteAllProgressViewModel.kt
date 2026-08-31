@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.deleteprogress.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.suspendRunCatching
@@ -9,9 +10,7 @@ import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAl
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,6 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 internal class DeleteAllProgressViewModel(
     private val resetAllProgress: ResetAllProgressUseCase,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteAllProgressUiEvent>(trackEvent) {
     private val successFeedbackDuration: Duration = 700.milliseconds
@@ -28,9 +28,6 @@ internal class DeleteAllProgressViewModel(
     private val _uiState: MutableStateFlow<DeleteAllProgressUiState> =
         MutableStateFlow(DeleteAllProgressUiState.Idle)
     val uiState: StateFlow<DeleteAllProgressUiState> = _uiState.asStateFlow()
-
-    private val _backUiAction: MutableSharedFlow<Unit> = MutableSharedFlow()
-    val backUiAction: SharedFlow<Unit> = _backUiAction
 
     override fun handleEvent(event: DeleteAllProgressUiEvent) {
         when (event) {
@@ -45,7 +42,7 @@ internal class DeleteAllProgressViewModel(
                             )
                             _uiState.update { DeleteAllProgressUiState.Success }
                             delay(successFeedbackDuration)
-                            _backUiAction.emit(Unit)
+                            navigator.navigateBack()
                         }.onFailure {
                             _uiState.update { DeleteAllProgressUiState.Idle }
                         }
@@ -54,7 +51,7 @@ internal class DeleteAllProgressViewModel(
 
             DeleteAllProgressUiEvent.OnCancel -> {
                 viewModelScope.launch {
-                    _backUiAction.emit(Unit)
+                    navigator.navigateBack()
                 }
             }
         }

@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.verse.addnote.presentation
 
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
@@ -32,7 +34,8 @@ internal class VerseNoteViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val verseNumbers = listOf(1, 2)
     private lateinit var viewModel: VerseNoteViewModel
-    private lateinit var actions: List<Unit>
+    private val navigator = Navigator()
+    private lateinit var commands: List<NavigationCommand>
     private lateinit var savedNotes: MutableList<Pair<String?, String>>
     private lateinit var trackedEvents: MutableList<String>
 
@@ -111,8 +114,8 @@ internal class VerseNoteViewModelTest {
             actual = savedText,
         )
         assertEquals(
-            expected = listOf(Unit),
-            actual = actions,
+            expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+            actual = commands,
         )
         assertTrue(trackedEvents.contains("verse_note_saved"))
     }
@@ -129,8 +132,8 @@ internal class VerseNoteViewModelTest {
         // Then
         assertTrue(savedNotes.isEmpty())
         assertEquals(
-            expected = listOf(Unit),
-            actual = actions,
+            expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+            actual = commands,
         )
     }
 
@@ -165,10 +168,11 @@ internal class VerseNoteViewModelTest {
                     versionAbbreviation = "ARC",
                 )
             },
+            navigator = navigator,
             trackEvent = { name, _ -> trackedEvents += name },
         )
-        actions = mutableListOf<Unit>().also { collected ->
-            backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
+        commands = mutableListOf<NavigationCommand>().also { collected ->
+            backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
     }
 }

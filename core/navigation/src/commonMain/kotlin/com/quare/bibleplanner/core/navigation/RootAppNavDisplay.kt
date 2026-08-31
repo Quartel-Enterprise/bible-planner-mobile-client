@@ -127,11 +127,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                         rememberSaveableStateHolderNavEntryDecorator(),
                         rememberViewModelStoreNavEntryDecorator(),
                     ),
-                    entryProvider = toEntryProvider(
-                        onNavigateBack = onNavigateBack,
-                        onNavigateReplacingTop = backStackController::navigateReplacingTop,
-                        onNavigate = backStackController::navigate,
-                    ),
+                    entryProvider = toEntryProvider(),
                 )
             }
         }
@@ -147,7 +143,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                 .align(Alignment.BottomCenter)
                 .padding(bottom = mainContentBottomInset()),
         )
-        PendingBibleUpdatesPromptOverlay(onNavigate = backStackController::navigate)
+        PendingBibleUpdatesPromptOverlay()
     }
 }
 

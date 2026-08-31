@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.verse.addnote.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
@@ -13,9 +14,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiEvent
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,6 +24,7 @@ internal class VerseNoteViewModel(
     private val getVerseNote: GetVerseNote,
     private val saveVerseNote: SaveVerseNote,
     private val getVersesShareContent: GetVersesShareContent,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<VerseNoteUiEvent>(trackEvent) {
     private val noteId = route.noteId
@@ -47,9 +47,6 @@ internal class VerseNoteViewModel(
     )
     val uiState: StateFlow<VerseNoteUiState> = _uiState
 
-    private val _uiAction = MutableSharedFlow<Unit>()
-    val uiAction: SharedFlow<Unit> = _uiAction
-
     init {
         loadNote()
         loadQuote()
@@ -69,7 +66,7 @@ internal class VerseNoteViewModel(
             VerseNoteUiEvent.OnSaveClick -> saveNote()
 
             VerseNoteUiEvent.OnDismiss ->
-                viewModelScope.launch { _uiAction.emit(Unit) }
+                navigator.navigateBack()
         }
     }
 
@@ -114,7 +111,7 @@ internal class VerseNoteViewModel(
                 verseNumbers = verseNumbers,
                 text = text,
             )
-            _uiAction.emit(Unit)
+            navigator.navigateBack()
         }
     }
 }
