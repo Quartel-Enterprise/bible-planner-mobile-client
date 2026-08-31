@@ -8,18 +8,10 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.accountDetails(
-    onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (NavKey) -> Unit,
-    onNavigate: (NavKey) -> Unit,
-) {
+fun EntryProviderScope<NavKey>.accountDetails() {
     entry<AccountDetailsNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
-        AccountDetailsSheet(
-            onNavigateBack = onNavigateBack,
-            onNavigateReplacingTop = onNavigateReplacingTop,
-            onNavigate = onNavigate,
-        )
+        AccountDetailsSheet()
     }
 }

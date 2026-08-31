@@ -22,23 +22,14 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.dayReadingComplete(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (NavKey) -> Unit,
-) {
+fun EntryProviderScope<NavKey>.dayReadingComplete() {
     entry<DayReadingCompleteNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) { route ->
         val viewModel = koinViewModel<DayReadingCompleteViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
 
-        DayReadingCompleteUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
-            onNavigateReplacingTop = onNavigateReplacingTop,
-        )
+        DayReadingCompleteUiActionCollector(uiActionFlow = viewModel.uiAction)
 
         ResponsiveDialogSheet(
             onCloseClick = { viewModel.onEvent(DayReadingCompleteUiEvent.OnDismiss) },
@@ -52,25 +43,10 @@ fun EntryProviderScope<NavKey>.dayReadingComplete(
 }
 
 @Composable
-private fun DayReadingCompleteUiActionCollector(
-    uiActionFlow: Flow<DayReadingCompleteUiAction>,
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-    onNavigateReplacingTop: (NavKey) -> Unit,
-) {
+private fun DayReadingCompleteUiActionCollector(uiActionFlow: Flow<DayReadingCompleteUiAction>) {
     val appSnackbarController = koinInject<AppSnackbarController>()
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            DayReadingCompleteUiAction.NavigateBack -> onNavigateBack()
-
-            is DayReadingCompleteUiAction.NavigateToRoute -> {
-                if (action.replace) {
-                    onNavigateReplacingTop(action.route)
-                } else {
-                    onNavigate(action.route)
-                }
-            }
-
             is DayReadingCompleteUiAction.ShowSnackBar -> {
                 appSnackbarController.show(
                     AppSnackbarMessage(
