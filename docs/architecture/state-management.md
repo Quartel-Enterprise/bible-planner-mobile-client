@@ -55,20 +55,24 @@ sealed interface DayUiEvent {
 }
 ```
 
-### UiAction — one-shot side effects (navigation, scroll)
+### UiAction — one-shot side effects the UI layer performs
 
 ```kotlin
 sealed interface DayUiAction {
-    data class NavigateTo(val route: SomeNavRoute) : DayUiAction
+    data class ShowSnackBar(val message: StringResource) : DayUiAction
     data object ScrollToTop : DayUiAction
 }
 ```
+
+Navigation is **not** a `UiAction` — inject `Navigator` and call it from the ViewModel. See
+[navigation.md](navigation.md).
 
 ### ViewModel structure
 
 ```kotlin
 class DayViewModel(
     private val useCases: DayUseCases,
+    private val navigator: Navigator,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -86,7 +90,7 @@ class DayViewModel(
 
     fun onEvent(event: DayUiEvent) = when (event) {
         is DayUiEvent.OnChapterClicked -> handleChapterClicked(event.chapterNumber)
-        DayUiEvent.OnBackClicked -> emitAction(DayUiAction.NavigateBack)
+        DayUiEvent.OnBackClicked -> navigator.navigateBack()
     }
 
     private fun observeSomething() {
