@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.verse.selectionmenu.presentation
 
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
@@ -43,6 +45,8 @@ internal class VerseSelectionViewModelTest {
     private val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
     private lateinit var viewModel: VerseSelectionViewModel
     private lateinit var actions: List<VerseSelectionUiAction>
+    private val navigator = Navigator()
+    private lateinit var commands: List<NavigationCommand>
     private lateinit var selection: MutableStateFlow<VerseSelection?>
     private lateinit var appliedHighlights: MutableList<Pair<List<VerseRef>, HighlightColor>>
     private lateinit var clearedCount: MutableList<Unit>
@@ -136,6 +140,7 @@ internal class VerseSelectionViewModelTest {
         // Then
         assertTrue(viewModel.uiState.value?.customColorPicker != null)
         assertTrue(actions.isEmpty())
+        assertTrue(commands.isEmpty())
         assertTrue(trackedEvents.contains("highlight_color_picker_opened"))
     }
 
@@ -151,10 +156,10 @@ internal class VerseSelectionViewModelTest {
         // Then
         assertNull(viewModel.uiState.value?.customColorPicker)
         assertEquals(
-            expected = VerseSelectionUiAction.NavigateToRoute(
+            expected = NavigationCommand.Navigate(
                 PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
             ),
-            actual = actions.single(),
+            actual = commands.single(),
         )
         assertTrue(trackedEvents.contains("highlight_custom_color_locked_clicked"))
     }
@@ -171,10 +176,10 @@ internal class VerseSelectionViewModelTest {
         // Then
         assertTrue(appliedHighlights.isEmpty())
         assertEquals(
-            expected = VerseSelectionUiAction.NavigateToRoute(
+            expected = NavigationCommand.Navigate(
                 PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
             ),
-            actual = actions.single(),
+            actual = commands.single(),
         )
         assertTrue(trackedEvents.contains("highlight_custom_color_locked_clicked"))
     }
@@ -194,8 +199,8 @@ internal class VerseSelectionViewModelTest {
             actual = clearedCount.size,
         )
         assertEquals(
-            expected = VerseSelectionUiAction.NavigateBack,
-            actual = actions.single(),
+            expected = NavigationCommand.NavigateBack,
+            actual = commands.single(),
         )
     }
 
@@ -210,6 +215,7 @@ internal class VerseSelectionViewModelTest {
 
         // Then
         assertTrue(actions.isEmpty())
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -239,7 +245,7 @@ internal class VerseSelectionViewModelTest {
 
         // Then
         assertEquals(
-            expected = VerseSelectionUiAction.NavigateToRoute(
+            expected = NavigationCommand.Navigate(
                 VerseNoteNavRoute(
                     bibleVersionId = testChapter.bibleVersionId,
                     bookId = testChapter.bookId.name,
@@ -248,7 +254,7 @@ internal class VerseSelectionViewModelTest {
                     noteId = null,
                 ),
             ),
-            actual = actions.single(),
+            actual = commands.single(),
         )
     }
 
@@ -263,14 +269,14 @@ internal class VerseSelectionViewModelTest {
 
         // Then
         assertEquals(
-            expected = VerseSelectionUiAction.NavigateToRoute(
+            expected = NavigationCommand.Navigate(
                 ShareVerseNavRoute(
                     bookId = BookId.GEN.name,
                     chapterNumber = 3,
                     verseNumbers = listOf(1, 2),
                 ),
             ),
-            actual = actions.single(),
+            actual = commands.single(),
         )
     }
 
@@ -312,10 +318,14 @@ internal class VerseSelectionViewModelTest {
                 )
             },
             platform = Platform.Android,
+            navigator = navigator,
             trackEvent = { name, _ -> trackedEvents += name },
         )
         actions = mutableListOf<VerseSelectionUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
+        }
+        commands = mutableListOf<NavigationCommand>().also { collected ->
+            backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
     }
 }

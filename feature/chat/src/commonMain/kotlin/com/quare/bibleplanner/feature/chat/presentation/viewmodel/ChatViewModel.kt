@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.chat.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
@@ -61,6 +62,7 @@ internal class ChatViewModel(
     private val coordinator: ChatStreamCoordinator,
     private val messageUiMapper: ChatMessageUiMapper,
     private val conversationGroupMapper: ChatConversationGroupMapper,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ChatUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
@@ -152,7 +154,7 @@ internal class ChatViewModel(
             ChatUiEvent.OnRetryClick -> onRetryClick()
 
             ChatUiEvent.OnSubscribeClick ->
-                emitAction(ChatUiAction.NavigateToRoute(PaywallNavRoute(PaywallEntrySource.CHAT)))
+                navigator.navigate(PaywallNavRoute(PaywallEntrySource.CHAT))
 
             ChatUiEvent.OnHistoryClick -> onHistoryClick()
 
@@ -436,7 +438,7 @@ internal class ChatViewModel(
         val trimmed = message.trim()
         if (trimmed.isEmpty()) return false
         if (!isLoggedIn) {
-            emitAction(ChatUiAction.NavigateToRoute(LoginWarningNavRoute(LoginWarningReason.AiChat.key)))
+            navigator.navigate(LoginWarningNavRoute(LoginWarningReason.AiChat.key))
             return false
         }
         if (_uiState.value.inputMode != ChatInputMode.ENABLED) return false

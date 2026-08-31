@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -28,6 +29,7 @@ class BibleVersionViewModel(
     private val initializeBibleVersions: InitializeBibleVersionsUseCase,
     private val updateBibleVersion: UpdateBibleVersionUseCase,
     private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     uiStateFactory: BibleVersionsUiStateFactory,
 ) : TrackedViewModel<BibleVersionUiEvent>(trackEvent) {
@@ -97,7 +99,7 @@ class BibleVersionViewModel(
     }
 
     private fun deleteVersion(id: String) {
-        emitUiAction(BibleVersionUiAction.NavigateToRoute(DeleteVersionNavRoute(id)))
+        navigator.navigate(DeleteVersionNavRoute(id))
     }
 
     private fun selectVersion(id: String) {
@@ -119,7 +121,7 @@ class BibleVersionViewModel(
         ?.any { it.version.id == id && it.isSelected } == true
 
     private fun dismiss() {
-        emitUiAction(BibleVersionUiAction.BackToPreviousRoute)
+        navigator.navigateBack()
     }
 
     private fun emitUiAction(uiAction: BibleVersionUiAction) {

@@ -24,10 +24,7 @@ private val instantTransition: ContentTransform = EnterTransition.None togetherW
  * because the reader is movable content it can only be composed in one of the two scenes at a
  * time, so it vanishes for the duration. The sheet animates itself into place instead.
  */
-fun EntryProviderScope<NavKey>.verseSelection(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-) {
+fun EntryProviderScope<NavKey>.verseSelection() {
     entry<VerseSelectionNavRoute>(
         metadata = getVerseSelectionPane() +
             NavDisplay.transitionSpec { instantTransition } +
@@ -36,11 +33,7 @@ fun EntryProviderScope<NavKey>.verseSelection(
     ) {
         val viewModel = koinViewModel<VerseSelectionViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        VerseSelectionUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
-        )
+        VerseSelectionUiActionCollector(uiActionFlow = viewModel.uiAction)
         uiState?.let { safeUiState ->
             SelectionSheet(
                 selection = safeUiState,

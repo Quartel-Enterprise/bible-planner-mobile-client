@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.verse.share.presentation
 
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
@@ -27,6 +29,8 @@ internal class ShareVerseViewModelTest {
     private val verseNumbers = listOf(1, 2)
     private lateinit var viewModel: ShareVerseViewModel
     private lateinit var actions: List<ShareVerseUiAction>
+    private val navigator = Navigator()
+    private lateinit var commands: List<NavigationCommand>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
 
     @BeforeTest
@@ -91,14 +95,14 @@ internal class ShareVerseViewModelTest {
 
         // Then
         assertEquals(
-            expected = ShareVerseUiAction.NavigateToRoute(
+            expected = NavigationCommand.Navigate(
                 ShareVerseImageNavRoute(
                     bookId = BookId.GEN.name,
                     chapterNumber = 3,
                     verseNumbers = verseNumbers,
                 ),
             ),
-            actual = actions.single(),
+            actual = commands.single(),
         )
     }
 
@@ -156,10 +160,14 @@ internal class ShareVerseViewModelTest {
                 )
             },
             platform = Platform.Android,
+            navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         actions = mutableListOf<ShareVerseUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
+        }
+        commands = mutableListOf<NavigationCommand>().also { collected ->
+            backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
     }
 }
