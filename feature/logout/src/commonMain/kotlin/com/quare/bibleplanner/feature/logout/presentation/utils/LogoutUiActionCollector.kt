@@ -11,16 +11,11 @@ import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 
 @Composable
-internal fun LogoutUiActionCollector(
-    uiActionFlow: Flow<LogoutUiAction>,
-    onNavigateBack: () -> Unit,
-) {
+internal fun LogoutUiActionCollector(uiActionFlow: Flow<LogoutUiAction>) {
     val snackbarHostState = LocalSnackbarHostState.current
     val appSnackbarController = koinInject<AppSnackbarController>()
     ActionCollector(uiActionFlow) { action ->
         when (action) {
-            LogoutUiAction.NavigateBack -> onNavigateBack()
-
             is LogoutUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
                 getString(action.message),
                 withDismissAction = true,

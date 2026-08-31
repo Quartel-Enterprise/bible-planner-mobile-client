@@ -11,7 +11,7 @@ import com.quare.bibleplanner.feature.logout.presentation.utils.LogoutUiActionCo
 import com.quare.bibleplanner.feature.logout.presentation.viewmodel.LogoutViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
-fun EntryProviderScope<NavKey>.logout(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.logout() {
     entry<LogoutNavRoute>(
         metadata = DialogSceneStrategy.dialog(
             DialogProperties(
@@ -22,10 +22,7 @@ fun EntryProviderScope<NavKey>.logout(onNavigateBack: () -> Unit) {
     ) {
         val viewModel = koinViewModel<LogoutViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-        LogoutUiActionCollector(
-            uiActionFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
-        )
+        LogoutUiActionCollector(uiActionFlow = viewModel.uiAction)
         LogoutDialog(
             uiState = uiState,
             onEvent = viewModel::onEvent,
