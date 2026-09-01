@@ -4,6 +4,8 @@ import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
@@ -27,6 +29,11 @@ import com.quare.bibleplanner.ui.theme.font.ReaderFont
  * wording a Portuguese user reads; only the layout is representative.
  */
 private const val CHAPTER = 1
+private val highlightsByVerse = mapOf(
+    1 to HighlightColor.Preset(PresetHighlightColor.YELLOW),
+    3 to HighlightColor.Preset(PresetHighlightColor.TEAL),
+    10 to HighlightColor.Preset(PresetHighlightColor.GREEN),
+)
 private val versionByLocale = mapOf(
     "en-US" to "WEB",
     "pt-BR" to "ACF",
@@ -97,7 +104,14 @@ private val versesByLocale = mapOf(
     ),
 )
 
-internal fun readUiState(locale: String): ReadUiState {
+/**
+ * [areVersesHighlighted] paints the three verses in [highlightsByVerse], for the README shot of the
+ * highlights: the listing shot leaves the chapter clean.
+ */
+internal fun readUiState(
+    locale: String,
+    areVersesHighlighted: Boolean = false,
+): ReadUiState {
     val bookStringResource = BookId.GEN.toBookNameResource()
     return ReadUiState(
         header = ReadHeaderUiModel(
@@ -131,7 +145,7 @@ internal fun readUiState(locale: String): ReadUiState {
                             heading = null,
                             text = text,
                             isSelected = false,
-                            highlightColor = null,
+                            highlightColor = highlightsByVerse[index + 1].takeIf { areVersesHighlighted },
                             isSaved = false,
                             noteId = null,
                         )

@@ -28,6 +28,8 @@ private val bannerCopy = mapOf(
     ),
 )
 private const val BACKGROUND = 0xFF141C3D
+private const val README_SUBDIR = "readme"
+private const val README_LOCALE = "en-US"
 
 /**
  * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
@@ -96,3 +98,44 @@ internal class IPad11ReadScreenshots :
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
     )
+
+/** The README grid's reader shots. See docs/store-listing-screenshots.md for the variant. */
+internal class ReadmeReadScreenshots :
+    StoreScreenshotsTest(
+        formFactor = FormFactor.Phone,
+        style = ScreenshotStyle(edgeToEdge = false),
+    ) {
+    @Test
+    fun reader() = readmeScreenshot(
+        fileName = "reader",
+        areVersesHighlighted = false,
+    )
+
+    @Test
+    fun highlights() = readmeScreenshot(
+        fileName = "highlights",
+        areVersesHighlighted = true,
+    )
+
+    private fun readmeScreenshot(
+        fileName: String,
+        areVersesHighlighted: Boolean,
+    ) = screenshot(
+        backgroundColor = Color(BACKGROUND),
+        subdir = README_SUBDIR,
+        fileName = fileName,
+    ) {
+        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+            AppTheme {
+                ReadNarrowScreen(
+                    platform = Platform.Android,
+                    state = readUiState(
+                        locale = README_LOCALE,
+                        areVersesHighlighted = areVersesHighlighted,
+                    ),
+                    onEvent = {},
+                )
+            }
+        }
+    }
+}

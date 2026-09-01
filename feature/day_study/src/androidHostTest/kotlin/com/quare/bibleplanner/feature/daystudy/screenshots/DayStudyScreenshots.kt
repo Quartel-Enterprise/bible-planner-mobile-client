@@ -69,6 +69,8 @@ private val questionsBannerCopy = mapOf(
     ),
 )
 private const val BACKGROUND = 0xFF141C3D
+private const val README_SUBDIR = "readme"
+private const val README_LOCALE = "en-US"
 
 /**
  * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
@@ -261,3 +263,36 @@ internal class IPad11DayStudyScreenshots :
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
     )
+
+/** The README grid's study shot. See docs/store-listing-screenshots.md for the variant. */
+internal class ReadmeDayStudyScreenshots :
+    StoreScreenshotsTest(
+        formFactor = FormFactor.Phone,
+        style = ScreenshotStyle(edgeToEdge = false),
+    ) {
+    @Test
+    fun study() = screenshot(
+        backgroundColor = Color(BACKGROUND),
+        subdir = README_SUBDIR,
+        fileName = "study",
+    ) {
+        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+            AppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
+                    DayStudyScreen(
+                        uiState = dayStudyUiState(README_LOCALE, Platform.Android),
+                        isWide = false,
+                        snackbarHostState = SnackbarHostState(),
+                        onCardClick = {},
+                        onRetryClick = {},
+                        onAskAiClick = {},
+                        onNavigateBack = {},
+                    )
+                }
+            }
+        }
+    }
+}

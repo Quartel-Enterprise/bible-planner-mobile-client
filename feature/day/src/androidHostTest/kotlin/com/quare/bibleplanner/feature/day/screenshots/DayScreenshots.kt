@@ -37,6 +37,8 @@ private val bannerCopy = mapOf(
     ),
 )
 private const val BACKGROUND = 0xFF141C3D
+private const val README_SUBDIR = "readme"
+private const val README_LOCALE = "en-US"
 private const val FREE_LIMIT = 3
 
 /**
@@ -100,6 +102,24 @@ internal class IPad11DayScreenshots :
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
     )
+
+/** The README grid's day shot. See docs/store-listing-screenshots.md for the variant. */
+internal class ReadmeDayScreenshots :
+    StoreScreenshotsTest(
+        formFactor = FormFactor.Phone,
+        style = ScreenshotStyle(edgeToEdge = false),
+    ) {
+    @Test
+    fun day() = screenshot(
+        backgroundColor = Color(BACKGROUND),
+        subdir = README_SUBDIR,
+        fileName = "day",
+    ) {
+        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+            AppTheme { DayContent(README_LOCALE, Platform.Android) }
+        }
+    }
+}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
