@@ -42,6 +42,7 @@ private val bannerCopy = mapOf(
     ),
 )
 private const val BACKGROUND = 0xFF141C3D
+private const val README_SUBDIR = "readme"
 private val pentateuch = listOf(
     SampleBook(
         id = BookId.GEN,
@@ -119,25 +120,7 @@ internal abstract class BooksScreenshots(
             fileName = "05_books",
         ) {
             CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-                AppTheme {
-                    SharedTransitionLayout {
-                        AnimatedVisibility(visible = true) {
-                            BooksScreen(
-                                state = rememberBooksUiState(),
-                                isScrolled = false,
-                                searchGridState = rememberLazyGridState(),
-                                searchListState = rememberLazyGridState(),
-                                oldTestamentGridState = rememberLazyGridState(),
-                                oldTestamentListState = rememberLazyGridState(),
-                                newTestamentGridState = rememberLazyGridState(),
-                                newTestamentListState = rememberLazyGridState(),
-                                sharedTransitionScope = this@SharedTransitionLayout,
-                                animatedVisibilityScope = this@AnimatedVisibility,
-                                onEvent = {},
-                            )
-                        }
-                    }
-                }
+                AppTheme { BooksContent() }
             }
         }
     }
@@ -162,6 +145,46 @@ internal class IPad11BooksScreenshots :
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
     )
+
+/** The README grid's books shot. See docs/store-listing-screenshots.md for the variant. */
+internal class ReadmeBooksScreenshots :
+    StoreScreenshotsTest(
+        formFactor = FormFactor.Phone,
+        style = ScreenshotStyle(edgeToEdge = false),
+    ) {
+    @Test
+    fun books() = screenshot(
+        backgroundColor = Color(BACKGROUND),
+        subdir = README_SUBDIR,
+        fileName = "books",
+    ) {
+        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+            AppTheme { BooksContent() }
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun BooksContent() {
+    SharedTransitionLayout {
+        AnimatedVisibility(visible = true) {
+            BooksScreen(
+                state = rememberBooksUiState(),
+                isScrolled = false,
+                searchGridState = rememberLazyGridState(),
+                searchListState = rememberLazyGridState(),
+                oldTestamentGridState = rememberLazyGridState(),
+                oldTestamentListState = rememberLazyGridState(),
+                newTestamentGridState = rememberLazyGridState(),
+                newTestamentListState = rememberLazyGridState(),
+                sharedTransitionScope = this@SharedTransitionLayout,
+                animatedVisibilityScope = this@AnimatedVisibility,
+                onEvent = {},
+            )
+        }
+    }
+}
 
 @Composable
 private fun rememberBooksUiState(): BooksUiState.Success {

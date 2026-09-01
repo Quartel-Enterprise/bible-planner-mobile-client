@@ -27,6 +27,7 @@ import org.junit.Test
  * and the checks are painted in, so it out-glows the product it is framing.
  */
 private const val BACKGROUND = 0xFF141C3D
+private const val README_SUBDIR = "readme"
 private val bannerCopy = mapOf(
     "en-US" to
         ("Your whole Bible, one day at a time" to "A plan that keeps its place, so you always know what to read next"),
@@ -121,6 +122,35 @@ internal class IPad11ReadingPlanScreenshots :
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
     )
+
+/** The README grid's two plan shots. See docs/store-listing-screenshots.md for the variant. */
+internal class ReadmeReadingPlanScreenshots :
+    StoreScreenshotsTest(
+        formFactor = FormFactor.Phone,
+        style = ScreenshotStyle(edgeToEdge = false),
+    ) {
+    @Test
+    fun plan() = screenshot(
+        backgroundColor = Color(BACKGROUND),
+        subdir = README_SUBDIR,
+        fileName = "plan",
+    ) {
+        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+            AppTheme { ReadingPlanContent() }
+        }
+    }
+
+    @Test
+    fun planLight() = screenshot(
+        backgroundColor = Color(BACKGROUND),
+        subdir = README_SUBDIR,
+        fileName = "plan_light",
+    ) {
+        CompositionLocalProvider(LocalTheme provides Theme.LIGHT) {
+            AppTheme { ReadingPlanContent() }
+        }
+    }
+}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

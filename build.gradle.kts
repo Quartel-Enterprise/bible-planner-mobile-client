@@ -2,6 +2,9 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -108,13 +111,17 @@ private val storeScreenshotModules = listOf(
     ":feature:chat",
 )
 
+// The README grid carries one screen the listings do not — the book details — so that module runs
+// for the README task alone; every other generator produces both sets from the same fixtures.
+private val readmeScreenshotModules = storeScreenshotModules + ":feature:book_details"
+
 // The generators all write into one shared directory and never clean it, so a screen that gets
 // renamed would otherwise leave its old file there and be collected forever.
 private val clearGeneratedStoreScreenshots = tasks.register<Delete>("clearGeneratedStoreScreenshots") {
     delete(layout.buildDirectory.dir("outputs/store-screenshots"))
 }
 
-storeScreenshotModules.forEach { modulePath ->
+readmeScreenshotModules.forEach { modulePath ->
     project(modulePath).tasks.matching { task -> task.name == "testAndroidHostTest" }.configureEach {
         dependsOn(clearGeneratedStoreScreenshots)
     }
@@ -237,5 +244,72 @@ tasks.register("stageStoreScreenshots") {
             }
         }
         logger.lifecycle("stageStoreScreenshots: staged $staged screenshot(s) for fastlane")
+    }
+}
+
+// The README's screenshots are versioned, unlike the listings' — a reader has to see them without
+// running anything — so they are written small enough to be worth committing: the phone shots at
+// three to a row of GitHub's content column, the landscape one at its full width.
+private val readmePortraitWidth = 460
+private val readmeLandscapeWidth = 1200
+
+tasks.register("updateReadmeScreenshots") {
+    group = "store-screenshots"
+    description = "Regenerates the screenshots the README shows and commits them to docs/screenshots/."
+    dependsOn(readmeScreenshotModules.map { modulePath -> "$modulePath:testAndroidHostTest" })
+    val generatedDir = layout.buildDirectory.dir("outputs/store-screenshots")
+    val screenshotsDir = layout.projectDirectory.dir("docs/screenshots")
+    val portraitWidth = readmePortraitWidth
+    val landscapeWidth = readmeLandscapeWidth
+    doLast {
+        // Drawn down in halving steps before the last one: a single draw straight from 1242px to
+        // 460px samples too few of the pixels it skips and leaves the app's hairline dividers and
+        // small text ragged.
+        fun BufferedImage.renderAt(targetWidth: Int): BufferedImage {
+            val targetHeight = (height.toLong() * targetWidth / width).toInt()
+            val scaled = BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB)
+            val graphics = scaled.createGraphics()
+            graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+            graphics.drawImage(this, 0, 0, targetWidth, targetHeight, null)
+            graphics.dispose()
+            return scaled
+        }
+
+        fun BufferedImage.renderScaledTo(targetWidth: Int): BufferedImage {
+            var current = this
+            while (current.width > targetWidth * 2) {
+                current = current.renderAt(current.width / 2)
+            }
+            return if (current.width == targetWidth) current else current.renderAt(targetWidth)
+        }
+
+        val generated = generatedDir
+            .get()
+            .asFile
+            .listFiles()
+            .orEmpty()
+            .sortedBy { module -> module.name }
+            .flatMap { module ->
+                module
+                    .resolve("en-US/images/readme")
+                    .listFiles { file -> file.extension == "png" }
+                    .orEmpty()
+                    .sortedBy { png -> png.name }
+            }
+        // Collected before anything is deleted: the folder is versioned, and a filtered test run
+        // that produced nothing would otherwise empty it and take the README's images with it.
+        check(generated.isNotEmpty()) {
+            "No README screenshots were generated under ${generatedDir.get().asFile}."
+        }
+        // Wiped so a shot that was renamed or dropped cannot stay in the folder — and in the
+        // README — forever.
+        screenshotsDir.asFile.deleteRecursively()
+        screenshotsDir.asFile.mkdirs()
+        generated.forEach { png ->
+            val image = ImageIO.read(png)
+            val targetWidth = if (image.width > image.height) landscapeWidth else portraitWidth
+            ImageIO.write(image.renderScaledTo(targetWidth), "png", screenshotsDir.asFile.resolve(png.name))
+        }
+        logger.lifecycle("updateReadmeScreenshots: wrote ${generated.size} screenshot(s) into docs/screenshots/")
     }
 }

@@ -28,6 +28,8 @@ private val bannerCopy = mapOf(
     ),
 )
 private const val BACKGROUND = 0xFF141C3D
+private const val README_SUBDIR = "readme"
+private const val README_LOCALE = "en-US"
 
 internal abstract class ChatScreenshots(
     formFactor: FormFactor,
@@ -82,3 +84,28 @@ internal class IPad11ChatScreenshots :
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
     )
+
+/** The README grid's chat shot. See docs/store-listing-screenshots.md for the variant. */
+internal class ReadmeChatScreenshots :
+    StoreScreenshotsTest(
+        formFactor = FormFactor.Phone,
+        style = ScreenshotStyle(edgeToEdge = false),
+    ) {
+    @Test
+    fun chat() = screenshot(
+        backgroundColor = Color(BACKGROUND),
+        subdir = README_SUBDIR,
+        fileName = "chat",
+    ) {
+        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+            AppTheme {
+                ChatScreen(
+                    uiState = chatUiState(README_LOCALE),
+                    scrollToBottomRequests = emptyFlow(),
+                    onEvent = {},
+                    onNavigateBack = {},
+                )
+            }
+        }
+    }
+}

@@ -3,8 +3,9 @@
 The screenshots on the Google Play and App Store listings are **generated, not captured**. Each
 one renders a real screen of the app under Robolectric, inside a device frame drawn by the
 [store-screenshots](https://github.com/lucianosantosdev/store-screenshots) library, with a title
-and description in the listing's three locales (`en-US`, `pt-BR`, `es`). Nothing is versioned:
-every image is rebuilt from source, locally or in CI.
+and description in the listing's three locales (`en-US`, `pt-BR`, `es`). None of the listing images
+is versioned: every one is rebuilt from source, locally or in CI. The same generators also produce
+the [README's grid](#the-readme-grid), which *is* committed.
 
 ## Regenerating locally
 
@@ -77,8 +78,9 @@ feature/<module>/src/androidHostTest/kotlin/.../screenshots/
     <Screen>SampleData.kt    # the UiState the screen renders, hand-written per locale
 ```
 
-Generators: `reading_plan`, `day`, `day_study`, `books`, `read`, `chat`. Adding a module means one
-new entry in `storeScreenshotModules` in the root `build.gradle.kts` plus the same three additions
+Generators: `reading_plan`, `day`, `day_study`, `books`, `read`, `chat`, and `book_details` for the
+README only. Adding a module means one new entry in `storeScreenshotModules` (or
+`readmeScreenshotModules`) in the root `build.gradle.kts` plus the same three additions
 to the module's `build.gradle.kts` the others have (`withHostTest`, the `androidHostTest`
 dependencies, the `Test` task's output directory).
 
@@ -96,6 +98,47 @@ Things that bite:
 - **Apple slots render at the slot's logical size** since store-screenshots 1.5.8 (428×926,
   430×932, 1024×1366). On 1.5.7 and earlier the Apple frames measured content at the bezel's
   on-canvas footprint (~348dp on the 6.5" slot), which drew everything ~20% too large.
+
+## The README grid
+
+The [README](../README.md)'s ten images come out of the same generators, from the same fixtures, as
+a second variant:
+
+```bash
+./gradlew updateReadmeScreenshots
+```
+
+It rewrites `docs/screenshots/`, which — unlike `store_listings/` — **is versioned**: a reader has
+to see the app without running anything. Committing the result is part of the change that moved the
+screen.
+
+What the variant does differently:
+
+- **No banner copy.** `FramedLayout` guards the title and description on `isNotEmpty()`, so the
+  `screenshot()` call simply passes neither and the device takes the whole canvas.
+- **English only.** The file is committed once and read in one language, so there is no locale loop.
+- **One form factor.** The phone frame for the grid; a landscape 10" tablet, through
+  `ScreenshotStyle.mockupFrame` with `MockupOrientation.Landscape`, for the one wide shot.
+- **Written small.** The task scales each PNG down before writing it — 460px wide for the phone
+  shots, 1200px for the landscape one — in halving steps, since a single draw from 1242px leaves
+  hairlines ragged. All ten weigh about 750 KB.
+
+The classes are named `Readme*Screenshots` and sit in the same file as the listing generators for
+that screen. Two of the screens have no listing counterpart — the book details, and the chapter with
+its verses highlighted:
+
+| File | Generator | Note |
+|---|---|---|
+| `plan.png`, `plan_light.png` | `reading_plan` | |
+| `day.png` | `day` | |
+| `study.png` | `day_study` | The summary tab only. |
+| `books.png` | `books` | |
+| `book.png`, `wide_book.png` | `book_details` | README-only module: Psalms, half read, synopsis open — 150 chapters is what fills the landscape shot's column. |
+| `reader.png`, `highlights.png` | `read` | `highlights` is the same chapter with `areVersesHighlighted`. |
+| `chat.png` | `chat` | |
+
+`:feature:book_details` is therefore in `readmeScreenshotModules` but not in `storeScreenshotModules`
+in the root `build.gradle.kts`; every other generator feeds both.
 
 ## How they reach the stores
 
