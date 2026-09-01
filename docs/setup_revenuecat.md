@@ -105,6 +105,29 @@ If iOS revenue stops arriving, suspect `$firebaseAppInstanceId` first — a cust
 stale value is dropped silently. It is visible per customer in the RevenueCat dashboard under
 **Attributes**.
 
+## 6. Custom paywall impressions
+
+The paywall is a custom Compose screen, not a RevenueCat paywall, so RevenueCat sees none of the three
+paywall events it collects on its own (`IMPRESSION`, `CANCEL`, `CLOSE` — those need RevenueCatUI). The
+only one reportable from a custom paywall is the impression, and `PaywallViewModel` reports it on init,
+right next to the [paywall_viewed](analytics/events/paywall_viewed.md) GA4 event, through
+`TrackCustomPaywallImpression` (`TrackCustomPaywallImpressionMobileUseCase` on mobile, a no-op on
+desktop, where the SDK does not run).
+
+This is not an analytics source — the GA4 funnel already covers the paywall with more dimensions. It
+exists so that RevenueCat has exposure data: without it, an A/B test of offerings or prices run from
+**Experiments** only counts customers who purchased as exposed to a variant, and the results skew.
+
+It only fires in release builds: debug builds configure the SDK with `REVENUECAT_TEST_API_KEY`, whose
+Test Store app lives in the same RevenueCat project, so impressions from development would land in the
+project's data. `TrackCustomPaywallImpressionMobileUseCase` returns early when `IsDebugBuild` says the
+build is debuggable (`FLAG_DEBUGGABLE` on Android, `Platform.isDebugBinary` on iOS — the same signals the
+entry points use to pick the API key).
+
+Nothing has to be configured in the dashboard for it. The impression carries `paywall_id=main_paywall`
+and no offering, which makes the SDK attribute it to the current offering — the one
+`GetOfferingsResultMobileUseCase` always reads.
+
 ## Troubleshooting
 - **Warning in Build Output**: If you see `⚠️ REVENUECAT_API_KEY not found...` or  `⚠️ REVENUECAT_PRO_KEY not found...`, ensure the key name matches exactly and the file is saved.
 - **Paywall Fails to Load**: Verify your key is correct and that you have configured **Offerings** in the RevenueCat dashboard.

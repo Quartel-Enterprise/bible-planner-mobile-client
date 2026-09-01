@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePack
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetPurchaseResultUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetRestorePurchaseResultUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.TrackCustomPaywallImpression
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.isApple
 import com.quare.bibleplanner.core.provider.platform.isDesktop
@@ -45,6 +46,7 @@ internal class PaywallViewModel(
     private val analyticsReasonMapper: PaywallAnalyticsReasonMapper,
     private val observeIsProUser: ObserveIsProUser,
     private val navigator: Navigator,
+    trackCustomPaywallImpression: TrackCustomPaywallImpression,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<PaywallUiEvent>(trackEvent) {
@@ -75,6 +77,7 @@ internal class PaywallViewModel(
             name = AnalyticsEventNames.PAYWALL_VIEWED,
             params = mapOf(AnalyticsParams.SOURCE to route.source.key),
         )
+        trackCustomPaywallImpression()
         viewModelScope.launch {
             _uiState.update { PaywallUiState.Loading }
             val initializationResult = factory.create(storeName)

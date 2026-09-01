@@ -42,6 +42,7 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreS
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.OpenUrl
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserIdUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.TrackCustomPaywallImpression
 import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import com.quare.bibleplanner.core.provider.platform.isDebugBuild
 import kotlinx.coroutines.flow.flowOf
@@ -87,5 +88,9 @@ actual val billingProviderModule = module {
     }
     factory {
         ObserveInstagramLinkVisible { flowOf(true) }
+    }
+    factory {
+        TrackCustomPaywallImpression {
+        }
     }
 }

@@ -25,6 +25,8 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreS
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveStoreSubscriptionStatusUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserIdUseCase
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.TrackCustomPaywallImpression
+import com.quare.bibleplanner.core.provider.billing.domain.usecase.TrackCustomPaywallImpressionMobileUseCase
 import com.quare.bibleplanner.core.provider.billing.mapper.PackageMapper
 import com.quare.bibleplanner.core.provider.billing.mapper.ProPlanTypeMapper
 import com.revenuecat.purchases.kmp.Purchases
@@ -50,4 +52,5 @@ actual val billingProviderModule = module {
     factoryOf(::ObserveIsProUserUseCase).bind<ObserveIsProUser>()
     factoryOf(::BillingUserAccountImpl).bind<BillingUserAccount>()
     factoryOf(::SyncBillingUserIdUseCase).bind<SyncBillingUserId>()
+    factoryOf(::TrackCustomPaywallImpressionMobileUseCase).bind<TrackCustomPaywallImpression>()
 }
