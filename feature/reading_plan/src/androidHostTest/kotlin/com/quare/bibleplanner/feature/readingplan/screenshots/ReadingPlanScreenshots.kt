@@ -35,7 +35,7 @@ private val bannerCopy = mapOf(
                 "Un plan que guarda tu lugar, para que siempre sepas qué leer después"
         ),
 )
-private val darkBannerCopy = mapOf(
+private val lightBannerCopy = mapOf(
     "en-US" to (
         "Light or dark, it follows you" to
             "The same plan, in the theme you actually read in"
@@ -49,8 +49,8 @@ private val darkBannerCopy = mapOf(
             "El mismo plan, en el tema en que de verdad lees"
     ),
 )
-private const val BACKGROUND = 0xFF1B1B1F
-private const val DARK_BACKGROUND = 0xFF5C5F70
+private const val BACKGROUND = 0xFF2A2A30
+private const val LIGHT_SHOT_BACKGROUND = 0xFF1B1B1F
 
 internal abstract class ReadingPlanScreenshots(
     formFactor: FormFactor,
@@ -74,24 +74,26 @@ internal abstract class ReadingPlanScreenshots(
             subdir = outputSubdir,
             fileName = "01_reading_plan",
         ) {
-            AppTheme { ReadingPlanContent() }
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme { ReadingPlanContent() }
+            }
         }
     }
 
     @Test
-    fun readingPlanDark() = darkBannerCopy.forEach { (locale, copy) ->
+    fun readingPlanLight() = lightBannerCopy.forEach { (locale, copy) ->
         val (title, description) = copy
         screenshot(
             locales = listOf(locale),
             title = title,
             description = description,
-            // A lighter banner than the other shots so the dark device still reads as a device
-            // instead of dissolving into the background.
-            backgroundColor = Color(DARK_BACKGROUND),
+            // The one light device on the shelf, so it takes the darker banner the other shots
+            // gave up — a dark frame around it instead of dissolving into one.
+            backgroundColor = Color(LIGHT_SHOT_BACKGROUND),
             subdir = outputSubdir,
-            fileName = "02_reading_plan_dark",
+            fileName = "02_reading_plan_light",
         ) {
-            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+            CompositionLocalProvider(LocalTheme provides Theme.LIGHT) {
                 AppTheme { ReadingPlanContent() }
             }
         }

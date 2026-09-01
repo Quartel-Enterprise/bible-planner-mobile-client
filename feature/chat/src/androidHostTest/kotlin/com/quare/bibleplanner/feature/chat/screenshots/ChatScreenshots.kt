@@ -1,8 +1,11 @@
 package com.quare.bibleplanner.feature.chat.screenshots
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.feature.chat.presentation.ChatScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
+import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.ui.theme.model.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -24,7 +27,7 @@ private val bannerCopy = mapOf(
             "El chat ya conoce el pasaje, así que vas directo a la pregunta"
     ),
 )
-private const val BACKGROUND = 0xFF1B1B1F
+private const val BACKGROUND = 0xFF2A2A30
 
 internal abstract class ChatScreenshots(
     formFactor: FormFactor,
@@ -46,13 +49,15 @@ internal abstract class ChatScreenshots(
             subdir = outputSubdir,
             fileName = "09_chat",
         ) {
-            AppTheme {
-                ChatScreen(
-                    uiState = chatUiState(locale),
-                    scrollToBottomRequests = emptyFlow(),
-                    onEvent = {},
-                    onNavigateBack = {},
-                )
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    ChatScreen(
+                        uiState = chatUiState(locale),
+                        scrollToBottomRequests = emptyFlow(),
+                        onEvent = {},
+                        onNavigateBack = {},
+                    )
+                }
             }
         }
     }

@@ -1,9 +1,12 @@
 package com.quare.bibleplanner.feature.read.screenshots
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.screen.ReadNarrowScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
+import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.ui.theme.model.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -24,7 +27,7 @@ private val bannerCopy = mapOf(
             "El pasaje del día, sin alejarte del plan"
     ),
 )
-private const val BACKGROUND = 0xFF1B1B1F
+private const val BACKGROUND = 0xFF2A2A30
 
 /**
  * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
@@ -61,12 +64,14 @@ internal abstract class ReadScreenshots(
             subdir = outputSubdir,
             fileName = "06_read",
         ) {
-            AppTheme {
-                ReadNarrowScreen(
-                    platform = formFactor.platform,
-                    state = readUiState(locale),
-                    onEvent = {},
-                )
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    ReadNarrowScreen(
+                        platform = formFactor.platform,
+                        state = readUiState(locale),
+                        onEvent = {},
+                    )
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.platform.Platform
@@ -13,6 +14,8 @@ import com.quare.bibleplanner.feature.daystudy.presentation.component.AiStudyEnt
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.ui.theme.AppTheme
+import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.ui.theme.model.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -33,7 +36,7 @@ private val bannerCopy = mapOf(
             "Abre el día, lee y ve marcando cada capítulo"
     ),
 )
-private const val BACKGROUND = 0xFF1B1B1F
+private const val BACKGROUND = 0xFF2A2A30
 private const val FREE_LIMIT = 3
 
 /**
@@ -71,7 +74,9 @@ internal abstract class DayScreenshots(
             subdir = outputSubdir,
             fileName = "03_day",
         ) {
-            AppTheme { DayContent(locale, formFactor.platform) }
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme { DayContent(locale, formFactor.platform) }
+            }
         }
     }
 }

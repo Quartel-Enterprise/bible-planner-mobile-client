@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.onNodeWithText
@@ -14,6 +15,8 @@ import bibleplanner.feature.day_study.generated.resources.ai_tab_questions
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.daystudy.presentation.DayStudyScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
+import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.ui.theme.model.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -65,7 +68,7 @@ private val questionsBannerCopy = mapOf(
             "Respuestas directas a lo que más preguntan los lectores sobre esta lectura"
     ),
 )
-private const val BACKGROUND = 0xFF1B1B1F
+private const val BACKGROUND = 0xFF2A2A30
 
 /**
  * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
@@ -111,22 +114,24 @@ internal abstract class DayStudyScreenshots(
             subdir = outputSubdir,
             fileName = "04_day_study",
         ) {
-            AppTheme {
-                // The wide layout is a bare pane with no Scaffold, so without a Surface the
-                // frame's bezel shows through behind the text.
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    DayStudyScreen(
-                        uiState = dayStudyUiState(locale, formFactor.platform),
-                        isWide = isWide,
-                        snackbarHostState = SnackbarHostState(),
-                        onCardClick = {},
-                        onRetryClick = {},
-                        onAskAiClick = {},
-                        onNavigateBack = {},
-                    )
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    // The wide layout is a bare pane with no Scaffold, so without a Surface the
+                    // frame's bezel shows through behind the text.
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                    ) {
+                        DayStudyScreen(
+                            uiState = dayStudyUiState(locale, formFactor.platform),
+                            isWide = isWide,
+                            snackbarHostState = SnackbarHostState(),
+                            onCardClick = {},
+                            onRetryClick = {},
+                            onAskAiClick = {},
+                            onNavigateBack = {},
+                        )
+                    }
                 }
             }
         }
@@ -153,20 +158,22 @@ internal abstract class DayStudyScreenshots(
                 rule.onNodeWithText(runBlocking { getString(Res.string.ai_tab_context) }).performClick()
             },
         ) {
-            AppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    DayStudyScreen(
-                        uiState = dayStudyUiState(locale, formFactor.platform),
-                        isWide = isWide,
-                        snackbarHostState = SnackbarHostState(),
-                        onCardClick = {},
-                        onRetryClick = {},
-                        onAskAiClick = {},
-                        onNavigateBack = {},
-                    )
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                    ) {
+                        DayStudyScreen(
+                            uiState = dayStudyUiState(locale, formFactor.platform),
+                            isWide = isWide,
+                            snackbarHostState = SnackbarHostState(),
+                            onCardClick = {},
+                            onRetryClick = {},
+                            onAskAiClick = {},
+                            onNavigateBack = {},
+                        )
+                    }
                 }
             }
         }
@@ -188,20 +195,22 @@ internal abstract class DayStudyScreenshots(
                 rule.onNodeWithText(firstQuestion(locale)).performClick()
             },
         ) {
-            AppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    DayStudyScreen(
-                        uiState = dayStudyUiState(locale, formFactor.platform),
-                        isWide = isWide,
-                        snackbarHostState = SnackbarHostState(),
-                        onCardClick = {},
-                        onRetryClick = {},
-                        onAskAiClick = {},
-                        onNavigateBack = {},
-                    )
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                    ) {
+                        DayStudyScreen(
+                            uiState = dayStudyUiState(locale, formFactor.platform),
+                            isWide = isWide,
+                            snackbarHostState = SnackbarHostState(),
+                            onCardClick = {},
+                            onRetryClick = {},
+                            onAskAiClick = {},
+                            onNavigateBack = {},
+                        )
+                    }
                 }
             }
         }

@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
@@ -16,6 +17,8 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.theme.AppTheme
+import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.ui.theme.model.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -38,7 +41,7 @@ private val bannerCopy = mapOf(
             "Sigue tu progreso en los 66 libros de la Biblia"
     ),
 )
-private const val BACKGROUND = 0xFF1B1B1F
+private const val BACKGROUND = 0xFF2A2A30
 private val pentateuch = listOf(
     SampleBook(
         id = BookId.GEN,
@@ -115,22 +118,24 @@ internal abstract class BooksScreenshots(
             subdir = outputSubdir,
             fileName = "05_books",
         ) {
-            AppTheme {
-                SharedTransitionLayout {
-                    AnimatedVisibility(visible = true) {
-                        BooksScreen(
-                            state = rememberBooksUiState(),
-                            isScrolled = false,
-                            searchGridState = rememberLazyGridState(),
-                            searchListState = rememberLazyGridState(),
-                            oldTestamentGridState = rememberLazyGridState(),
-                            oldTestamentListState = rememberLazyGridState(),
-                            newTestamentGridState = rememberLazyGridState(),
-                            newTestamentListState = rememberLazyGridState(),
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedVisibilityScope = this@AnimatedVisibility,
-                            onEvent = {},
-                        )
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    SharedTransitionLayout {
+                        AnimatedVisibility(visible = true) {
+                            BooksScreen(
+                                state = rememberBooksUiState(),
+                                isScrolled = false,
+                                searchGridState = rememberLazyGridState(),
+                                searchListState = rememberLazyGridState(),
+                                oldTestamentGridState = rememberLazyGridState(),
+                                oldTestamentListState = rememberLazyGridState(),
+                                newTestamentGridState = rememberLazyGridState(),
+                                newTestamentListState = rememberLazyGridState(),
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedVisibilityScope = this@AnimatedVisibility,
+                                onEvent = {},
+                            )
+                        }
                     }
                 }
             }
