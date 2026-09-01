@@ -10,7 +10,7 @@ ktlint = "1.8.0"
 ktlint-gradle = "14.2.0"
 google-services = "4.5.0"
 firebase-crashlytics-plugin = "3.0.8"
-store-screenshots = "1.5.7"
+store-screenshots = "1.5.8"
 
 # Android SDK levels
 android-minSdk = "26"
