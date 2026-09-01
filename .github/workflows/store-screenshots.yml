@@ -66,12 +66,17 @@ jobs:
           VALIDATE_ONLY: ${{ inputs.validate_only }}
 
       # Kept so a failed upload can be diagnosed from what was actually rendered, and so the images
-      # can be eyeballed after a validate-only run.
+      # can be eyeballed after a validate-only run. The lane stages into the fastlane trees and
+      # never builds store_listings/ — that is collectStoreScreenshots' local-inspection layout —
+      # so this uploads the Play tree that was actually sent, plus the Apple staging the same
+      # Gradle task fills alongside it.
       - name: Upload the rendered screenshots as a build artifact
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: store-screenshots
-          path: store_listings/
+          path: |
+            fastlane/metadata/android
+            fastlane/screenshots
           retention-days: 7
           if-no-files-found: warn
