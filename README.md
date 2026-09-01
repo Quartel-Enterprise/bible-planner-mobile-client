@@ -6,7 +6,8 @@ plans, progress tracking, and a beautiful, customizable interface.
 
 [![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/docs/multiplatform.html)
 [![Compose Multiplatform](https://img.shields.io/badge/Compose-Multiplatform-4285F4?logo=jetpackcompose&logoColor=white)](https://www.jetbrains.com/compose-multiplatform/)
-[![static-analysis](https://github.com/Quartel-Enterprise/bible-planner-mobile-client/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/Quartel-Enterprise/bible-planner-mobile-client/actions/workflows/static-analysis.yml)
+[![supabase-kt](https://img.shields.io/badge/supabase--kt-3FCF8E?logo=supabase&logoColor=white)](https://github.com/supabase-community/supabase-kt)
+[![Firebase](https://img.shields.io/badge/Firebase-DD2C00?logo=firebase&logoColor=white)](https://firebase.google.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE.md)
 
 | Android | iOS | Web | Desktop |
