@@ -173,6 +173,15 @@ store "What's New":
 If no JSON entry exists for the version, the build still ships — the store "What's New" is just
 left unchanged.
 
+## Store listing screenshots
+
+A production release also refreshes both stores' listing screenshots: the iOS set is uploaded
+to the editable version before the build is submitted for review, and the Play set goes up
+through the `store screenshots` workflow once the AAB is on the production track with a
+completed rollout. Every screenshot step is non-blocking, so a failure never holds the binary.
+How the images are generated, edited and republished between releases is covered in
+[Store listing screenshots](store-listing-screenshots.md).
+
 ## Approval gate
 
 The `android` and `ios` jobs target the `Production` GitHub Environment, which has **required
