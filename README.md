@@ -70,6 +70,13 @@ The script downloads the ktlint CLI once (cached in `~/.cache/ktlint`) and rebui
 ruleset jar only when its sources change. `./gradlew ktlintCheck` still works but is much slower,
 because it drags KSP and Kotlin/Native compilation into the task graph.
 
+## 🖼️ Store Listing Screenshots
+
+The Play and App Store screenshots are generated from the real screens, never captured by hand.
+`./gradlew collectStoreScreenshots` rebuilds all of them into `store_listings/`; see
+[Store listing screenshots](docs/store-listing-screenshots.md) for the layout, what each image
+shows and how they reach the stores.
+
 ## 📄 License
 
 This project is licensed under the MIT License. See [LICENSE.md](./LICENSE.md) for details.
