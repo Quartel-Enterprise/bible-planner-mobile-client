@@ -2,9 +2,18 @@ name: store screenshots
 
 # Play keeps the store listing separate from the release, so its screenshots can be replaced at any
 # time without shipping a build. The App Store does not: a live version's screenshots are read-only,
-# so those are uploaded from the release workflow instead, once the new version exists.
+# so those are uploaded from within the release workflow instead, once the new version exists.
+#
+# The release workflow calls this one too, so a release refreshes both listings. Run it on its own
+# to republish the Play listing between releases, or to validate a change to the generators.
 on:
   workflow_dispatch:
+    inputs:
+      validate_only:
+        description: 'Validate against Play without publishing'
+        type: boolean
+        default: true
+  workflow_call:
     inputs:
       validate_only:
         description: 'Validate against Play without publishing'
