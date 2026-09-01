@@ -18,13 +18,15 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPre
 import kotlinx.datetime.LocalDate
 
 /**
- * The week the plan screenshot shows: 1 Kings walked three chapters a day, which is roughly where a
- * whole-Bible year plan sits at week 16.
+ * The week the plan screenshot shows: Genesis three chapters a day, which is where a whole-Bible
+ * year plan opens. Nothing is read yet, so the card carries the invitation the app shows a reader
+ * on their first morning rather than a progress figure.
  */
 private const val TOTAL_WEEKS = 52
 private const val DAYS_PER_WEEK = 7
-private const val CURRENT_WEEK = 16
-private const val DAYS_READ_THIS_WEEK = 3
+private const val CURRENT_WEEK = 1
+private const val DAYS_READ_THIS_WEEK = 0
+private const val TOTAL_VERSES_PER_DAY = 80
 private const val TOTAL_DAYS = TOTAL_WEEKS * DAYS_PER_WEEK
 private const val READ_DAYS = (CURRENT_WEEK - 1) * DAYS_PER_WEEK + DAYS_READ_THIS_WEEK
 private val weekStartDate = LocalDate(year = 2026, monthNumber = 7, dayOfMonth = 20)
@@ -35,20 +37,20 @@ private val currentWeekChapters = listOf(
     10 to 12,
     13 to 15,
     16 to 18,
-    19 to 22,
+    19 to 21,
 )
 
 private fun passage(
     firstChapter: Int,
     lastChapter: Int,
 ) = PassageModel(
-    bookId = BookId.FIRST_KI,
+    bookId = BookId.GEN,
     chapters = (firstChapter..lastChapter).map { chapter ->
         ChapterModel(
             number = chapter,
             startVerse = null,
             endVerse = null,
-            bookId = BookId.FIRST_KI,
+            bookId = BookId.GEN,
         )
     },
     isRead = false,
@@ -66,8 +68,8 @@ private fun currentWeekDays(): List<DayPlanPresentationModel> =
                 number = dayInWeek,
                 passages = listOf(passage(firstChapter, lastChapter)),
                 isRead = isRead,
-                totalVerses = 96,
-                readVerses = if (isRead) 96 else 0,
+                totalVerses = TOTAL_VERSES_PER_DAY,
+                readVerses = if (isRead) TOTAL_VERSES_PER_DAY else 0,
                 readTimestamp = null,
                 plannedReadDate = weekStartDate.plusDays(index),
                 notes = null,
@@ -139,7 +141,7 @@ private fun planStatus(): PlanStatus {
         todayDay = nextDay,
         totalDays = TOTAL_DAYS,
         readDays = READ_DAYS,
-        streakDays = 14,
+        streakDays = 0,
         daysAhead = 0,
         daysBehind = 0,
         daysSinceLastRead = 0,
@@ -149,7 +151,7 @@ private fun planStatus(): PlanStatus {
 internal fun readingPlanUiState(): ReadingPlanUiState.Loaded = ReadingPlanUiState.Loaded(
     weekPlans = weekPlans(),
     progress = READ_DAYS.toFloat() / TOTAL_DAYS * 100,
-    motivationMessage = PlanMotivationMessage.Streak.Day14,
+    motivationMessage = PlanMotivationMessage.OverallProgress.Zero,
     planStatus = planStatus(),
     upcomingExpanded = false,
     completedExpanded = false,

@@ -13,7 +13,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUi
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiState
 
 /**
- * Study text for 1 Kings 10-12 — the same reading the plan and day screenshots land on.
+ * Study text for Genesis 1-3 — the same reading the plan and day screenshots land on.
  *
  * Written by hand rather than captured from the model, which the team accepted for the store
  * listing on the grounds that it is representative. If the generated studies ever change shape —
@@ -22,178 +22,188 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteU
  */
 private val studyByLocale = mapOf(
     "en-US" to DayStudyModel(
-        passageLabel = "1 Kings 10-12",
-        overview = "Solomon's reign reaches its height and then unravels. The wealth and wisdom " +
-            "that draw a foreign queen to Jerusalem are the same things his heart drifts away " +
-            "with, and within a single generation the kingdom his father united splits in two.",
+        passageLabel = "Genesis 1-3",
+        overview = "The Bible opens by speaking a world into order and then watching trust break " +
+            "inside it. Six days end with a verdict that everything is good; by the third chapter " +
+            "a question about God's motive has been answered wrongly, and the garden closes " +
+            "behind the man and the woman.",
         chapterSummaries = listOf(
             ChapterSummaryModel(
-                title = "Chapter 10 — The queen of Sheba",
-                body = "A visiting queen tests Solomon with hard questions and leaves overwhelmed " +
-                    "by his wisdom and his court. The chapter piles up gold, ivory and horses, " +
-                    "describing a prosperity the earlier warnings about kings had cautioned against.",
+                title = "Chapter 1 — Order out of the formless",
+                body = "God speaks and the world takes shape day by day: light, sky, land, lights, " +
+                    "creatures. Each day ends with the same verdict, and the sixth adds humanity, " +
+                    "made in God's image and handed the world to look after.",
             ),
             ChapterSummaryModel(
-                title = "Chapter 11 — A divided heart",
-                body = "Solomon's foreign wives turn him toward other gods, and the narrator names " +
-                    "this plainly as the failure of his old age. God raises up adversaries and " +
-                    "announces that the kingdom will be torn away from his son.",
+                title = "Chapter 2 — The garden and the first limit",
+                body = "The account narrows from the cosmos to one garden, one man and one tree. " +
+                    "Work, a boundary and companionship arrive together, and being alone is the " +
+                    "first thing the story calls not good.",
             ),
             ChapterSummaryModel(
-                title = "Chapter 12 — The kingdom splits",
-                body = "Rehoboam rejects the elders' counsel to lighten his father's burden and " +
-                    "answers the northern tribes harshly. Ten tribes follow Jeroboam instead, and " +
-                    "Israel and Judah go their separate ways.",
+                title = "Chapter 3 — What the question cost",
+                body = "The serpent reframes the one command as something withheld, and the couple " +
+                    "eats. What follows is not a thunderbolt but a chain of consequences — shame, " +
+                    "blame, pain, thorns, and the way back barred.",
             ),
         ),
         takeaways = listOf(
-            "Prosperity did not protect Solomon from drifting.",
-            "The split had a slow cause and a sudden trigger.",
-            "Refusing counsel cost Rehoboam most of a kingdom.",
+            "The world is spoken into order, not fought into it.",
+            "The first freedom arrived with the first limit.",
+            "The fall begins as a question about God's motive.",
         ),
         context = HistoricalContextModel(
-            body = "These chapters close the united monarchy. Written from Judah's perspective, " +
-                "they explain a division their first readers already lived under.",
+            body = "Genesis opens the Torah for readers who knew exile first-hand. Its account " +
+                "answers the origin stories around it, where the world is made out of a battle " +
+                "and people are made to do the gods' work.",
             facts = listOf(
-                FactModel(label = "Period", value = "10th century BC"),
-                FactModel(label = "Place", value = "Jerusalem and Shechem"),
-                FactModel(label = "Genre", value = "Historical narrative"),
+                FactModel(label = "Period", value = "Origins"),
+                FactModel(label = "Place", value = "Eden"),
+                FactModel(label = "Genre", value = "Narrative prologue"),
             ),
         ),
         commonQuestions = listOf(
             QaModel(
-                question = "Why is Solomon's wealth described as a problem?",
-                answer = "Deuteronomy had warned that a king should not multiply gold, horses or " +
-                    "wives. Chapter 10 lists all three, so the abundance reads as a warning.",
+                question = "Are the six days meant as calendar days?",
+                answer = "The chapter is built as a week and reads like a liturgy. Readers have " +
+                    "taken the days literally and figuratively since long before the modern " +
+                    "argument, and the text's own concern is who made the world.",
             ),
             QaModel(
-                question = "Was the division a punishment or a political failure?",
-                answer = "The text presents both: God announces it in chapter 11, and Rehoboam " +
-                    "brings it about through his own decision in chapter 12.",
+                question = "Why are there two creation accounts?",
+                answer = "Chapter 1 moves from the cosmos inward and chapter 2 from one garden " +
+                    "outward. They are two angles on the same beginning, and the second is what " +
+                    "sets up the third.",
             ),
             QaModel(
-                question = "What happened to the two kingdoms afterwards?",
-                answer = "Judah kept Jerusalem and David's line; Israel, the ten northern tribes, " +
-                    "set up its own worship at Bethel and Dan. They stay separate for the rest of " +
-                    "the book.",
+                question = "What is the serpent?",
+                answer = "Genesis calls it a creature of the field and says no more. Later " +
+                    "tradition identifies it with the accuser, but chapter 3 keeps the weight on " +
+                    "the choice the couple make.",
             ),
         ),
     ),
     "pt-BR" to DayStudyModel(
-        passageLabel = "1 Reis 10-12",
-        overview = "O reinado de Salomão chega ao auge e então se desfaz. A riqueza e a sabedoria " +
-            "que atraem uma rainha estrangeira a Jerusalém são as mesmas coisas com que o coração " +
-            "dele se desvia, e em uma única geração o reino que seu pai uniu se parte em dois.",
+        passageLabel = "Gênesis 1-3",
+        overview = "A Bíblia começa falando um mundo em ordem e depois vendo a confiança se " +
+            "romper dentro dele. Seis dias terminam com o veredito de que tudo é bom; no terceiro " +
+            "capítulo uma pergunta sobre a intenção de Deus é respondida errado, e o jardim se " +
+            "fecha atrás do homem e da mulher.",
         chapterSummaries = listOf(
             ChapterSummaryModel(
-                title = "Capítulo 10 — A rainha de Sabá",
-                body = "Uma rainha visitante testa Salomão com perguntas difíceis e sai " +
-                    "impressionada com sua sabedoria e sua corte. O capítulo acumula ouro, marfim " +
-                    "e cavalos, descrevendo a prosperidade contra a qual os antigos avisos sobre " +
-                    "reis já alertavam.",
+                title = "Capítulo 1 — Ordem a partir do informe",
+                body = "Deus fala e o mundo toma forma dia a dia: luz, céu, terra, luminares, " +
+                    "criaturas. Cada dia termina com o mesmo veredito, e o sexto acrescenta a " +
+                    "humanidade, feita à imagem de Deus e encarregada de cuidar do mundo.",
             ),
             ChapterSummaryModel(
-                title = "Capítulo 11 — Um coração dividido",
-                body = "As mulheres estrangeiras de Salomão o inclinam a outros deuses, e o " +
-                    "narrador nomeia isso como o fracasso da sua velhice. Deus levanta adversários " +
-                    "e anuncia que o reino será arrancado do filho dele.",
+                title = "Capítulo 2 — O jardim e o primeiro limite",
+                body = "O relato se estreita do cosmos para um jardim, um homem e uma árvore. " +
+                    "Trabalho, fronteira e companhia chegam juntos, e estar sozinho é a primeira " +
+                    "coisa que a história chama de não boa.",
             ),
             ChapterSummaryModel(
-                title = "Capítulo 12 — O reino se divide",
-                body = "Roboão rejeita o conselho dos anciãos de aliviar o fardo do pai e responde " +
-                    "com dureza às tribos do norte. Dez tribos seguem Jeroboão, e Israel e Judá " +
-                    "tomam caminhos separados.",
+                title = "Capítulo 3 — O preço da pergunta",
+                body = "A serpente reapresenta a única ordem como algo negado, e o casal come. O " +
+                    "que vem depois não é um raio, mas uma sequência de consequências — vergonha, " +
+                    "acusação, dor, espinhos e o caminho de volta fechado.",
             ),
         ),
         takeaways = listOf(
-            "A prosperidade não impediu Salomão de se desviar.",
-            "A divisão teve causa lenta e estopim repentino.",
-            "Recusar conselho custou a Roboão quase todo o reino.",
+            "O mundo é falado em ordem, não conquistado à força.",
+            "A primeira liberdade veio junto com o primeiro limite.",
+            "A queda começa como dúvida sobre a intenção de Deus.",
         ),
         context = HistoricalContextModel(
-            body = "Estes capítulos encerram a monarquia unida. Escritos da perspectiva de Judá, " +
-                "explicam uma divisão que seus primeiros leitores já viviam.",
+            body = "Gênesis abre a Torá para leitores que conheciam o exílio de perto. Seu relato " +
+                "responde às histórias de origem ao redor, em que o mundo nasce de uma batalha e " +
+                "as pessoas são feitas para o trabalho dos deuses.",
             facts = listOf(
-                FactModel(label = "Período", value = "Século X a.C."),
-                FactModel(label = "Lugar", value = "Jerusalém e Siquém"),
-                FactModel(label = "Gênero", value = "Narrativa histórica"),
+                FactModel(label = "Período", value = "Origens"),
+                FactModel(label = "Lugar", value = "Éden"),
+                FactModel(label = "Gênero", value = "Prólogo narrativo"),
             ),
         ),
         commonQuestions = listOf(
             QaModel(
-                question = "Por que a riqueza de Salomão é descrita como problema?",
-                answer = "Deuteronômio advertia que um rei não deveria multiplicar ouro, cavalos " +
-                    "nem mulheres. O capítulo 10 lista os três, então a abundância soa como alerta.",
+                question = "Os seis dias são dias de calendário?",
+                answer = "O capítulo é construído como uma semana e soa como uma liturgia. " +
+                    "Leitores tomaram os dias ao pé da letra e em sentido figurado muito antes da " +
+                    "discussão moderna, e a preocupação do texto é quem fez o mundo.",
             ),
             QaModel(
-                question = "A divisão foi castigo ou falha política?",
-                answer = "O texto apresenta as duas coisas: Deus a anuncia no capítulo 11, e Roboão " +
-                    "a provoca por decisão própria no capítulo 12.",
+                question = "Por que existem dois relatos da criação?",
+                answer = "O capítulo 1 vai do cosmos para dentro e o capítulo 2 vai de um jardim " +
+                    "para fora. São dois ângulos do mesmo começo, e o segundo é o que prepara o " +
+                    "terceiro.",
             ),
             QaModel(
-                question = "O que aconteceu com os dois reinos depois?",
-                answer = "Judá ficou com Jerusalém e a linhagem de Davi; Israel, as dez tribos do " +
-                    "norte, montou seu próprio culto em Betel e Dã. Seguem separados pelo resto " +
-                    "do livro.",
+                question = "O que é a serpente?",
+                answer = "Gênesis a chama de animal do campo e não diz mais. A tradição posterior " +
+                    "a identifica com o acusador, mas o capítulo 3 mantém o peso sobre a escolha " +
+                    "do casal.",
             ),
         ),
     ),
     "es" to DayStudyModel(
-        passageLabel = "1 Reyes 10-12",
-        overview = "El reinado de Salomón llega a su apogeo y luego se deshace. La riqueza y la " +
-            "sabiduría que atraen a una reina extranjera a Jerusalén son aquello con lo que su " +
-            "corazón se desvía, y en una sola generación el reino que unió su padre se parte en dos.",
+        passageLabel = "Génesis 1-3",
+        overview = "La Biblia empieza hablando un mundo en orden y luego viendo cómo la confianza " +
+            "se rompe dentro de él. Seis días terminan con el veredicto de que todo es bueno; en " +
+            "el tercer capítulo una pregunta sobre la intención de Dios se responde mal, y el " +
+            "jardín se cierra detrás del hombre y la mujer.",
         chapterSummaries = listOf(
             ChapterSummaryModel(
-                title = "Capítulo 10 — La reina de Sabá",
-                body = "Una reina de visita pone a prueba a Salomón con preguntas difíciles y se " +
-                    "marcha asombrada por su sabiduría y su corte. El capítulo acumula oro, marfil " +
-                    "y caballos, describiendo la prosperidad contra la que ya advertían los " +
-                    "antiguos avisos sobre los reyes.",
+                title = "Capítulo 1 — Orden a partir de lo informe",
+                body = "Dios habla y el mundo toma forma día a día: luz, cielo, tierra, lumbreras, " +
+                    "criaturas. Cada día termina con el mismo veredicto, y el sexto añade a la " +
+                    "humanidad, hecha a imagen de Dios y encargada de cuidar el mundo.",
             ),
             ChapterSummaryModel(
-                title = "Capítulo 11 — Un corazón dividido",
-                body = "Las mujeres extranjeras de Salomón lo inclinan hacia otros dioses, y el " +
-                    "narrador lo señala como el fracaso de su vejez. Dios levanta adversarios y " +
-                    "anuncia que el reino le será arrancado a su hijo.",
+                title = "Capítulo 2 — El jardín y el primer límite",
+                body = "El relato se estrecha del cosmos a un jardín, un hombre y un árbol. El " +
+                    "trabajo, el límite y la compañía llegan juntos, y estar solo es lo primero " +
+                    "que la historia llama no bueno.",
             ),
             ChapterSummaryModel(
-                title = "Capítulo 12 — El reino se divide",
-                body = "Roboam rechaza el consejo de los ancianos de aliviar la carga de su padre " +
-                    "y responde con dureza a las tribus del norte. Diez tribus siguen a Jeroboam, " +
-                    "e Israel y Judá toman caminos separados.",
+                title = "Capítulo 3 — Lo que costó la pregunta",
+                body = "La serpiente presenta el único mandato como algo negado, y la pareja come. " +
+                    "Lo que sigue no es un rayo, sino una cadena de consecuencias — vergüenza, " +
+                    "acusación, dolor, espinos y el camino de vuelta cerrado.",
             ),
         ),
         takeaways = listOf(
-            "La prosperidad no impidió que Salomón se desviara.",
-            "La división tuvo causa lenta y detonante repentino.",
-            "Rechazar el consejo le costó a Roboam casi todo el reino.",
+            "El mundo se habla en orden, no se conquista a la fuerza.",
+            "La primera libertad llegó junto con el primer límite.",
+            "La caída empieza como duda sobre la intención de Dios.",
         ),
         context = HistoricalContextModel(
-            body = "Estos capítulos cierran la monarquía unida. Escritos desde la perspectiva de " +
-                "Judá, explican una división que sus primeros lectores ya vivían.",
+            body = "Génesis abre la Torá para lectores que conocían el exilio de cerca. Su relato " +
+                "responde a las historias de origen de alrededor, donde el mundo nace de una " +
+                "batalla y las personas se hacen para el trabajo de los dioses.",
             facts = listOf(
-                FactModel(label = "Período", value = "Siglo X a.C."),
-                FactModel(label = "Lugar", value = "Jerusalén y Siquem"),
-                FactModel(label = "Género", value = "Narrativa histórica"),
+                FactModel(label = "Período", value = "Orígenes"),
+                FactModel(label = "Lugar", value = "Edén"),
+                FactModel(label = "Género", value = "Prólogo narrativo"),
             ),
         ),
         commonQuestions = listOf(
             QaModel(
-                question = "¿Por qué la riqueza de Salomón se describe como un problema?",
-                answer = "Deuteronomio advertía que un rey no debía multiplicar oro, caballos ni " +
-                    "mujeres. El capítulo 10 enumera los tres, así que la abundancia suena a aviso.",
+                question = "¿Los seis días son días de calendario?",
+                answer = "El capítulo está construido como una semana y suena a liturgia. Hubo " +
+                    "lectores que tomaron los días al pie de la letra y en sentido figurado mucho " +
+                    "antes del debate moderno, y lo que al texto le importa es quién hizo el mundo.",
             ),
             QaModel(
-                question = "¿La división fue castigo o fallo político?",
-                answer = "El texto presenta ambas cosas: Dios la anuncia en el capítulo 11, y " +
-                    "Roboam la provoca por decisión propia en el capítulo 12.",
+                question = "¿Por qué hay dos relatos de la creación?",
+                answer = "El capítulo 1 va del cosmos hacia dentro y el capítulo 2 va de un jardín " +
+                    "hacia fuera. Son dos ángulos del mismo comienzo, y el segundo es el que " +
+                    "prepara el tercero.",
             ),
             QaModel(
-                question = "¿Qué pasó después con los dos reinos?",
-                answer = "Judá conservó Jerusalén y la línea de David; Israel, las diez tribus del " +
-                    "norte, montó su propio culto en Betel y Dan. Siguen separados el resto del " +
-                    "libro.",
+                question = "¿Qué es la serpiente?",
+                answer = "Génesis la llama animal del campo y no dice más. La tradición posterior " +
+                    "la identifica con el acusador, pero el capítulo 3 mantiene el peso sobre la " +
+                    "elección de la pareja.",
             ),
         ),
     ),
