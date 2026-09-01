@@ -5,9 +5,13 @@ import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemote
 class GetMaxFreeNotesAmountUseCase(
     private val getIntRemoteConfig: GetIntRemoteConfig,
 ) {
-    suspend operator fun invoke(): Int = getIntRemoteConfig(MAX_FREE_NOTES_KEY)
+    suspend operator fun invoke(): Int = getIntRemoteConfig(
+        key = MAX_FREE_NOTES_KEY,
+        default = MAX_FREE_NOTES_FALLBACK,
+    )
 
     companion object {
         private const val MAX_FREE_NOTES_KEY = "max_free_notes"
+        private const val MAX_FREE_NOTES_FALLBACK = 3
     }
 }
