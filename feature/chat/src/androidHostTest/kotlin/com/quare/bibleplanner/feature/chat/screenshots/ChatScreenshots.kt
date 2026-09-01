@@ -27,7 +27,7 @@ private val bannerCopy = mapOf(
             "El chat ya conoce el pasaje, así que vas directo a la pregunta"
     ),
 )
-private const val BACKGROUND = 0xFF2A2A30
+private const val BACKGROUND = 0xFF141C3D
 
 internal abstract class ChatScreenshots(
     formFactor: FormFactor,

@@ -21,6 +21,12 @@ import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.junit.Test
 
+/**
+ * The logo's blue, dimmed to a depth the app's own accents can still outshine. The full-strength
+ * #4A6CF7 separates a dark device beautifully but is the same blue the day card, the progress ring
+ * and the checks are painted in, so it out-glows the product it is framing.
+ */
+private const val BACKGROUND = 0xFF141C3D
 private val bannerCopy = mapOf(
     "en-US" to
         ("Your whole Bible, one day at a time" to "A plan that keeps its place, so you always know what to read next"),
@@ -49,8 +55,6 @@ private val lightBannerCopy = mapOf(
             "El mismo plan, en el tema en que de verdad lees"
     ),
 )
-private const val BACKGROUND = 0xFF2A2A30
-private const val LIGHT_SHOT_BACKGROUND = 0xFF1B1B1F
 
 internal abstract class ReadingPlanScreenshots(
     formFactor: FormFactor,
@@ -87,9 +91,7 @@ internal abstract class ReadingPlanScreenshots(
             locales = listOf(locale),
             title = title,
             description = description,
-            // The one light device on the shelf, so it takes the darker banner the other shots
-            // gave up — a dark frame around it instead of dissolving into one.
-            backgroundColor = Color(LIGHT_SHOT_BACKGROUND),
+            backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
             fileName = "02_reading_plan_light",
         ) {

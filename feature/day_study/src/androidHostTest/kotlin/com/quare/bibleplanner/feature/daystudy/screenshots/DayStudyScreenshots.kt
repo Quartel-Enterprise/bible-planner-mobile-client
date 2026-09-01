@@ -68,7 +68,7 @@ private val questionsBannerCopy = mapOf(
             "Respuestas directas a lo que más preguntan los lectores sobre esta lectura"
     ),
 )
-private const val BACKGROUND = 0xFF2A2A30
+private const val BACKGROUND = 0xFF141C3D
 
 /**
  * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and

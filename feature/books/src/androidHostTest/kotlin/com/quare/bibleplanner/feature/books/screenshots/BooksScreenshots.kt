@@ -41,7 +41,7 @@ private val bannerCopy = mapOf(
             "Sigue tu progreso en los 66 libros de la Biblia"
     ),
 )
-private const val BACKGROUND = 0xFF2A2A30
+private const val BACKGROUND = 0xFF141C3D
 private val pentateuch = listOf(
     SampleBook(
         id = BookId.GEN,

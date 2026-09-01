@@ -27,7 +27,7 @@ private val bannerCopy = mapOf(
             "El pasaje del día, sin alejarte del plan"
     ),
 )
-private const val BACKGROUND = 0xFF2A2A30
+private const val BACKGROUND = 0xFF141C3D
 
 /**
  * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
