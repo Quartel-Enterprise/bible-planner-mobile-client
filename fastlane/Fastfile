@@ -405,6 +405,57 @@ platform :ios do
       precheck_include_in_app_purchases: false,
       overwrite_screenshots: true,
     )
+
+    dedupe_app_store_screenshots
+  end
+
+  desc "Remove duplicate screenshots from the editable App Store version, keeping each shelf's first."
+  desc "deliver re-uploads a screenshot when App Store Connect has not yet published its checksum,"
+  desc "so an upload that in fact landed comes out twice; upload_screenshots runs this itself."
+  lane :dedupe_screenshots do
+    app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_P8"),
+      is_key_content_base64: true,
+      set_spaceship_token: true,
+    )
+    dedupe_app_store_screenshots
+  end
+end
+
+# App Store Connect publishes a screenshot's checksum asynchronously, and deliver's post-upload check
+# reads that checksum to decide what landed. When it lags, deliver calls the screenshot missing and
+# uploads it again — so a shelf ends up with the same file twice (2.9.0 shipped four such pairs, all
+# in pt-BR). Screenshot order is the shelf order, so the later copy is the stray; dropping it keeps
+# the listing exactly as staged. Idempotent: a clean version is a no-op.
+def dedupe_app_store_screenshots
+  app = Spaceship::ConnectAPI::App.find(APP_BUNDLE_ID)
+  version = app.get_edit_app_store_version
+  UI.user_error!("No editable App Store version to dedupe screenshots on") if version.nil?
+
+  removed = 0
+  version.get_app_store_version_localizations.each do |localization|
+    localization.get_app_screenshot_sets.each do |set|
+      seen = {}
+      set.app_screenshots.each do |screenshot|
+        if seen[screenshot.file_name]
+          UI.important(
+            "Removing duplicate #{localization.locale}/#{set.screenshot_display_type}/#{screenshot.file_name}",
+          )
+          screenshot.delete!
+          removed += 1
+        else
+          seen[screenshot.file_name] = true
+        end
+      end
+    end
+  end
+
+  if removed.zero?
+    UI.success("No duplicate screenshots on App Store Connect")
+  else
+    UI.success("Removed #{removed} duplicate screenshot(s) from App Store Connect")
   end
 end
 
