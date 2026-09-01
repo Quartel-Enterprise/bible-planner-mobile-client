@@ -17,8 +17,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 
 /**
- * Genesis 1:1-12, the opening of the chapter the plan, day and study screenshots all point at, in
- * the three listing locales, along with the version each locale's reader chip names.
+ * Genesis 1:1-12, the opening of the chapter the day and study screenshots also land on, in the
+ * three listing locales, along with the version each locale's reader chip names.
  *
  * The app downloads its Bible versions, so no verse text ships in this repo: these verses are
  * transcribed from public-domain translations (World English Bible, Almeida 1911, Reina-Valera

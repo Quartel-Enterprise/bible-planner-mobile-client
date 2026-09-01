@@ -13,7 +13,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUi
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyRouteUiState
 
 /**
- * Study text for Genesis 1-3 — the same reading the plan and day screenshots land on.
+ * Study text for Genesis 1-3 — the same reading the day and read screenshots land on.
  *
  * Written by hand rather than captured from the model, which the team accepted for the store
  * listing on the grounds that it is representative. If the generated studies ever change shape —
