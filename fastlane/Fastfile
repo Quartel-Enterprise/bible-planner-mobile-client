@@ -374,8 +374,8 @@ platform :ios do
 
   desc "Upload only the store listing screenshots to App Store Connect — no build, no submission."
   desc "Regenerates them first, so what is uploaded always matches the current app."
-  desc "Only runs while a version is editable: a live version's screenshots are read-only, so this"
-  desc "belongs right after a new build reaches App Store Connect, not on its own."
+  desc "A live version's screenshots are read-only and a submitted one's are locked, so this runs"
+  desc "before the release submits. APP_VERSION names the editable version, created if missing."
   lane :upload_screenshots do
     repo_root = File.expand_path("..")
 
@@ -392,6 +392,9 @@ platform :ios do
     upload_to_app_store(
       api_key: api_key,
       app_identifier: APP_BUNDLE_ID,
+      # Names the version so deliver creates it when the screenshots arrive ahead of the binary;
+      # unset, deliver falls back to the latest editable version.
+      app_version: ENV["APP_VERSION"],
       screenshots_path: File.join(repo_root, "fastlane/screenshots"),
       # Listing assets only: no binary, no metadata, no review submission.
       skip_binary_upload: true,
