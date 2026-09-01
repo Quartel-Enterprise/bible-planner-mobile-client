@@ -1,9 +1,11 @@
 package com.quare.bibleplanner.core.provider.platform.di
 
+import android.content.pm.ApplicationInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.quare.bibleplanner.core.provider.platform.AndroidRequestInAppReview
 import com.quare.bibleplanner.core.provider.platform.CurrentActivityProvider
+import com.quare.bibleplanner.core.provider.platform.domain.usecase.IsDebugBuild
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestInAppReview
 import com.quare.bibleplanner.core.provider.platform.notification.AndroidNotificationPermissionRequester
 import com.quare.bibleplanner.core.provider.platform.notification.NotificationPermissionRequester
@@ -22,4 +24,11 @@ internal actual val platformReviewModule: Module = module {
 
 internal actual val platformNotificationPermissionModule: Module = module {
     factoryOf(::AndroidNotificationPermissionRequester).bind<NotificationPermissionRequester>()
+}
+
+internal actual val platformDebugBuildModule: Module = module {
+    factory<IsDebugBuild> {
+        val applicationInfo = androidContext().applicationInfo
+        IsDebugBuild { applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0 }
+    }
 }

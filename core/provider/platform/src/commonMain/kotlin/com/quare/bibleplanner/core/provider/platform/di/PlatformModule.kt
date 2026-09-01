@@ -12,6 +12,7 @@ import org.koin.dsl.module
 val platformModule = module {
     includes(platformReviewModule)
     includes(platformNotificationPermissionModule)
+    includes(platformDebugBuildModule)
     factoryOf(::getPlatform)
     factoryOf(::GetAppStoreLinkUseCase)
     factoryOf(::RequestDownloadNotificationPermissionUseCase).bind<RequestDownloadNotificationPermission>()
@@ -20,3 +21,5 @@ val platformModule = module {
 internal expect val platformReviewModule: Module
 
 internal expect val platformNotificationPermissionModule: Module
+
+internal expect val platformDebugBuildModule: Module

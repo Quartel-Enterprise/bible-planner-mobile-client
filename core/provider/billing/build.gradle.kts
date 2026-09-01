@@ -81,6 +81,7 @@ kotlin {
             dependencies {
                 api(libs.revenuecat.core)
                 api(libs.revenuecat.result)
+                implementation(projects.core.provider.platform)
             }
         }
 
