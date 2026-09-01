@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.style.TextOverflow
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.content_description_clear_search
 import bibleplanner.feature.books.generated.resources.content_description_search
@@ -41,6 +42,8 @@ internal fun BooksSearchBar(
                     Text(
                         text = stringResource(Res.string.search_books),
                         modifier = Modifier.alpha(0.6f).fillMaxWidth(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 },
                 leadingIcon = {
