@@ -105,6 +105,7 @@ private val storeScreenshotModules = listOf(
     ":feature:day_study",
     ":feature:books",
     ":feature:read",
+    ":feature:chat",
 )
 
 // The generators all write into one shared directory and never clean it, so a screen that gets

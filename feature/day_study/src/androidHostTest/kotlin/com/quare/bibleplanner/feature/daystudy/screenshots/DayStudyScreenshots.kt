@@ -20,6 +20,7 @@ import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.getString
+import org.junit.Assume.assumeTrue
 import org.junit.Test
 
 private val bannerCopy = mapOf(
@@ -81,6 +82,14 @@ private val FormFactor.platform: Platform
         else -> Platform.Android
     }
 
+/**
+ * Play caps a store listing at eight screenshots per device and the App Store at ten. The chat
+ * screen takes the eighth Play slot, so the context tab — the thinnest of the study's three, half
+ * a screen of white under three short facts — is the one that fills an Apple slot only.
+ */
+private val FormFactor.isAppleSlot: Boolean
+    get() = platform == Platform.Ios
+
 internal abstract class DayStudyScreenshots(
     private val formFactor: FormFactor,
     private val isWide: Boolean,
@@ -124,7 +133,12 @@ internal abstract class DayStudyScreenshots(
     }
 
     @Test
-    fun dayStudyContext() = contextBannerCopy.forEach { (locale, copy) ->
+    fun dayStudyContext() {
+        assumeTrue(formFactor.isAppleSlot)
+        captureContext()
+    }
+
+    private fun captureContext() = contextBannerCopy.forEach { (locale, copy) ->
         val (title, description) = copy
         screenshot(
             locales = listOf(locale),
