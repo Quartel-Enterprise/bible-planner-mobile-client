@@ -8,8 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import bibleplanner.feature.paywall.generated.resources.Res
+import bibleplanner.feature.paywall.generated.resources.feature_ai_chat
+import bibleplanner.feature.paywall.generated.resources.feature_ai_chat_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_ai_day_study
 import bibleplanner.feature.paywall.generated.resources.feature_ai_day_study_subtext
+import bibleplanner.feature.paywall.generated.resources.feature_highlight_colors
+import bibleplanner.feature.paywall.generated.resources.feature_highlight_colors_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes
 import bibleplanner.feature.paywall.generated.resources.feature_unlimited_notes_subtext
 import org.jetbrains.compose.resources.stringResource
@@ -35,8 +39,22 @@ internal fun PremiumFeaturesList(
             iconSize = iconSize,
         )
         PremiumFeatureItem(
+            text = stringResource(Res.string.feature_ai_chat),
+            subtext = stringResource(Res.string.feature_ai_chat_subtext),
+            titleColor = titleColor,
+            subtitleColor = subtitleColor,
+            iconSize = iconSize,
+        )
+        PremiumFeatureItem(
             text = stringResource(Res.string.feature_unlimited_notes),
             subtext = maxFreeNotes?.let { stringResource(Res.string.feature_unlimited_notes_subtext, it) },
+            titleColor = titleColor,
+            subtitleColor = subtitleColor,
+            iconSize = iconSize,
+        )
+        PremiumFeatureItem(
+            text = stringResource(Res.string.feature_highlight_colors),
+            subtext = stringResource(Res.string.feature_highlight_colors_subtext),
             titleColor = titleColor,
             subtitleColor = subtitleColor,
             iconSize = iconSize,

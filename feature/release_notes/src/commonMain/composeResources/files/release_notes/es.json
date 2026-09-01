@@ -1,4 +1,8 @@
 {
+  "2.8.1": [
+    "La pantalla Pro ahora muestra todos los beneficios de la suscripción, incluidos el chat con IA sin límites y la paleta completa de colores de resaltado.",
+    "Se corrigió un problema que podía impedir crear notas en el plan gratuito cuando la app no lograba cargar su configuración."
+  ],
   "2.8.0": [
     "Con la lectura vertical activada, ahora puedes desplazarte hacia arriba y continuar en el capítulo anterior — antes la lectura solo seguía hacia adelante y se detenía al comienzo del capítulo con el que se abrió la pantalla.",
     "La pantalla de lectura abre mucho más rápido: el texto que ya está en tu dispositivo aparece al instante, sin esperar a que la lista de versiones de la Biblia responda por internet. Con conexión lenta o sin internet, eso dejaba la pantalla detenida por decenas de segundos.",

@@ -1,4 +1,8 @@
 {
+  "2.8.1": [
+    "The Pro screen now lists every benefit of the subscription, including unlimited AI chat and the full highlight color palette.",
+    "Fixed a problem that could stop you from creating notes on the free plan when the app failed to load its settings."
+  ],
   "2.8.0": [
     "With vertical reading on, you can now scroll up and keep going into the previous chapter — reading used to move forward only, stopping at the beginning of the chapter the screen was opened at.",
     "The reading screen opens much faster: text already on your device shows up right away, without waiting for the Bible version list to answer over the internet. On a slow connection or offline, that used to leave the screen waiting for tens of seconds.",
