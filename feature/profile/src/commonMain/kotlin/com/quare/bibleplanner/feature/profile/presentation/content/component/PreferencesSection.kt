@@ -12,6 +12,9 @@ import bibleplanner.feature.preferences.app_language.generated.resources.languag
 import bibleplanner.feature.preferences.app_language.generated.resources.language_spanish
 import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.preferences
+import bibleplanner.feature.profile.generated.resources.study_suggestion_disabled
+import bibleplanner.feature.profile.generated.resources.study_suggestion_enabled_banner
+import bibleplanner.feature.profile.generated.resources.study_suggestion_enabled_dialog
 import bibleplanner.feature.profile.generated.resources.today
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
@@ -20,6 +23,8 @@ import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileMenuOp
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
+import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
@@ -65,8 +70,23 @@ internal fun PreferencesSection(
                 isSubtitleLoading = state.planStartDate is Loadable.Loading,
                 onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.EDIT_PLAN_START_DAY)) },
             )
+            HorizontalDivider()
+            ProfileMenuItem(
+                itemModel = ProfileMenuOptionsFactory.studySuggestion,
+                subtitle = state.studySuggestion.valueOrNull()?.let { settings ->
+                    stringResource(settings.toSubtitleResource())
+                },
+                isSubtitleLoading = state.studySuggestion is Loadable.Loading,
+                onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.STUDY_SUGGESTION)) },
+            )
         }
     }
+}
+
+private fun StudySuggestionSettingsModel.toSubtitleResource(): StringResource = when {
+    !isEnabled -> Res.string.study_suggestion_disabled
+    mode == StudySuggestionMode.BANNER -> Res.string.study_suggestion_enabled_banner
+    else -> Res.string.study_suggestion_enabled_dialog
 }
 
 @Composable

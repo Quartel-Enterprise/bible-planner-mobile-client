@@ -22,19 +22,25 @@ internal open class ThrowingChapterDao : ChapterDao {
 
     override suspend fun insertChapters(chapters: List<ChapterEntity>): List<Long> = error("Unexpected call")
 
-    override suspend fun updateChapter(chapter: ChapterEntity): Unit = error("Unexpected call")
+    override suspend fun updateChapter(chapter: ChapterEntity) {
+        error("Unexpected call")
+    }
 
     override suspend fun updateChapterReadStatus(
         chapterId: Long,
         isRead: Boolean,
         updatedAt: Long,
-    ): Unit = error("Unexpected call")
+    ) {
+        error("Unexpected call")
+    }
 
     override suspend fun updateChaptersReadStatusByBook(
         bookId: String,
         isRead: Boolean,
         updatedAt: Long,
-    ): Unit = error("Unexpected call")
+    ) {
+        error("Unexpected call")
+    }
 
     override fun getPendingReadSyncChaptersFlow(): Flow<List<ChapterEntity>> = error("Unexpected call")
 
@@ -44,7 +50,9 @@ internal open class ThrowingChapterDao : ChapterDao {
         bookId: String,
         chapterNumber: Int,
         syncedUpdatedAt: Long,
-    ): Unit = error("Unexpected call")
+    ) {
+        error("Unexpected call")
+    }
 
     override suspend fun applyRemoteChapterRead(
         bookId: String,
@@ -53,15 +61,27 @@ internal open class ThrowingChapterDao : ChapterDao {
         remoteUpdatedAt: Long,
     ): Int = error("Unexpected call")
 
-    override suspend fun markLegacyChapterReadsPending(now: Long): Unit = error("Unexpected call")
+    override suspend fun markLegacyChapterReadsPending(now: Long) {
+        error("Unexpected call")
+    }
 
-    override suspend fun clearAllChapterReadSync(): Unit = error("Unexpected call")
+    override suspend fun clearAllChapterReadSync() {
+        error("Unexpected call")
+    }
 
-    override suspend fun resetAllChapterReadsForSync(now: Long): Unit = error("Unexpected call")
+    override suspend fun resetAllChapterReadsForSync(now: Long) {
+        error("Unexpected call")
+    }
 
-    override suspend fun deleteChapter(chapterId: Long): Unit = error("Unexpected call")
+    override suspend fun deleteChapter(chapterId: Long) {
+        error("Unexpected call")
+    }
 
-    override suspend fun deleteChaptersByBookId(bookId: String): Unit = error("Unexpected call")
+    override suspend fun deleteChaptersByBookId(bookId: String) {
+        error("Unexpected call")
+    }
 
-    override suspend fun deleteAllChapters(): Unit = error("Unexpected call")
+    override suspend fun deleteAllChapters() {
+        error("Unexpected call")
+    }
 }

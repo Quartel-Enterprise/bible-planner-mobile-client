@@ -14,8 +14,10 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.provider.platform)
+            implementation(projects.core.verseAnnotations)
 
             // UI
+            implementation(projects.ui.theme)
             implementation(projects.ui.utils)
 
             implementation(libs.compose.runtime)

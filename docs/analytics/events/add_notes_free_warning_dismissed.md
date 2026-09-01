@@ -21,6 +21,6 @@ No parameters.
 
 ## Notes
 
-- Dialog impressions are covered by [destination_view](destination_view.md) (`destination_name=add_notes_free_warning` with `max_free_notes`).
+- Dialog impressions are covered by [screen_view](screen_view.md) (`screen_name=add_notes_free_warning` with `max_free_notes`).
 - The alternative path (`AddNotesFreeWarningUiEvent.OnSubscribeToPro`) logs [paywall_viewed](paywall_viewed.md) with `source=notes_limit` instead of this event.
 - Related: [notes_limit_reached](notes_limit_reached.md).

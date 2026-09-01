@@ -7,7 +7,6 @@ import com.quare.bibleplanner.core.sync.domain.usecase.ClearAllSyncedLocalDataUs
 import com.quare.bibleplanner.core.sync.domain.usecase.ObserveSync
 import com.quare.bibleplanner.core.sync.domain.usecase.PushAllPending
 import com.quare.bibleplanner.core.sync.domain.usecase.PushAllPendingUseCase
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -26,6 +25,7 @@ val syncModule = module {
             ),
             realtime = get(),
             currentTimestampProvider = get(),
+            appForegroundStateHolder = get(),
         )
     }
     single<PushAllPending> {

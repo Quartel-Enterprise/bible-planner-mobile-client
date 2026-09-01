@@ -62,7 +62,7 @@ internal fun DeviceRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = device.formFactor.icon(),
+            imageVector = device.formFactor.toIcon(),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.alpha(contentAlpha),
@@ -185,7 +185,7 @@ private fun DeviceUiModel.detailLine(): String {
     return locationLine?.let { location -> "$location · $relative" } ?: relative
 }
 
-private fun DeviceFormFactor.icon(): ImageVector = when (this) {
+private fun DeviceFormFactor.toIcon(): ImageVector = when (this) {
     DeviceFormFactor.PHONE -> Icons.Default.Smartphone
     DeviceFormFactor.TABLET -> Icons.Default.TabletMac
     DeviceFormFactor.COMPUTER -> Icons.Default.Computer

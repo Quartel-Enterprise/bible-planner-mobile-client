@@ -23,7 +23,7 @@ fun BookChapterModel.isRangeRead(
     startVerse: Int?,
     endVerse: Int?,
 ): Boolean = when {
-    startVerse != null && endVerse != null -> (startVerse..endVerse).all { isVerseRead(it) }
+    startVerse != null && endVerse != null -> (startVerse..endVerse).all(::isVerseRead)
     startVerse != null -> verses.filter { it.number >= startVerse }.all { isVerseRead(it.number) }
     else -> isRead
 }

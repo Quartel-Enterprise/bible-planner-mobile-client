@@ -14,15 +14,13 @@ import org.jetbrains.compose.resources.getString
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun EntryProviderScope<NavKey>.cropPhoto(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.cropPhoto() {
     entry<CropPhotoNavRoute> { route ->
         val viewModel = koinViewModel<CropPhotoViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
         val snackbarHostState = LocalSnackbarHostState.current
         ActionCollector(viewModel.uiAction) { action ->
             when (action) {
-                CropPhotoUiAction.NavigateBack -> onNavigateBack()
-
                 is CropPhotoUiAction.ShowSnackbar -> snackbarHostState.showSnackbar(
                     getString(action.message),
                     withDismissAction = true,

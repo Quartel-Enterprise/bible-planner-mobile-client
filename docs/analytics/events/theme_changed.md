@@ -21,5 +21,5 @@ User selects a theme option (light, dark or system) in the theme-selection sheet
 ## Notes
 
 - Fires on every selection, including re-selecting the current theme — instrumentation may skip no-op selections.
-- Related: [contrast_changed](contrast_changed.md), [dynamic_colors_toggled](dynamic_colors_toggled.md), [setting_sync_toggled](setting_sync_toggled.md). Sheet impressions are covered by [destination_view](destination_view.md) (`theme_selection`).
+- Related: [contrast_changed](contrast_changed.md), [dynamic_colors_toggled](dynamic_colors_toggled.md), [setting_sync_toggled](setting_sync_toggled.md). Sheet impressions are covered by [screen_view](screen_view.md) (`theme_selection`).
 - Should also refresh the proposed `app_theme` user property (see README).

@@ -43,6 +43,8 @@ kotlin {
             // WorkManager
             implementation(libs.androidx.work.runtime.ktx)
 
+            implementation(libs.kermit)
+
             // Room: framework SQLite driver, so the Android app does not ship the
             // bundled libsqliteJni.so native library (missing-ABI-split crashes).
             implementation(libs.androidx.sqlite.framework)
@@ -52,10 +54,8 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
         }
 
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.androidx.sqlite.bundled)
-            }
+        jvmMain.dependencies {
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonMain.dependencies {
             // Feature
@@ -63,9 +63,11 @@ kotlin {
             api(projects.feature.inAppUpdate)
             api(projects.feature.notificationPermission)
             api(projects.feature.preferences.themeSelection)
+            api(projects.feature.preferences.studySuggestion)
             api(projects.feature.readingPlan)
             api(projects.feature.day)
             api(projects.feature.deleteProgress)
+            api(projects.feature.deleteAccount)
             api(projects.feature.login)
             api(projects.feature.logout)
             api(projects.feature.preferences.editPlanStartDate)

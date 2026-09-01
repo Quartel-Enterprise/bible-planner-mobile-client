@@ -12,8 +12,10 @@ import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -50,6 +52,7 @@ class BooksViewModel(
     private val bookGroupMapper: BookGroupMapper,
     private val bookCategorizationMapper: BookCategorizationMapper,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
 ) : TrackedViewModel<BooksUiEvent>(trackEvent) {
@@ -260,9 +263,7 @@ class BooksViewModel(
     }
 
     private fun onBookClick(book: BookPresentationModel) {
-        viewModelScope.launch {
-            _uiAction.emit(BooksUiAction.NavigateToBookDetails(book.id.name))
-        }
+        navigator.navigate(BookDetailsNavRoute(book.id.name))
     }
 
     private fun updateState(

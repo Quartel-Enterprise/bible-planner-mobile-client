@@ -22,7 +22,7 @@ import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.contactSupport(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.contactSupport() {
     entry<ContactSupportNavRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
@@ -32,7 +32,6 @@ fun EntryProviderScope<NavKey>.contactSupport(onNavigateBack: () -> Unit) {
         val snackbarHostState = remember { SnackbarHostState() }
         ContactSupportUiActionCollector(
             actionsFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
             snackbarHostState = snackbarHostState,
         )
         ResponsiveDialogSheet(

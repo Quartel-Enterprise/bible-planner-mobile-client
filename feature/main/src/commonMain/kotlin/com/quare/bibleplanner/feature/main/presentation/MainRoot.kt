@@ -32,7 +32,6 @@ import com.quare.bibleplanner.feature.main.presentation.navhost.rememberNavTabSt
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationBar
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationRail
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
-import com.quare.bibleplanner.feature.notificationpermission.presentation.NotificationPermissionStartEffect
 import com.quare.bibleplanner.feature.profile.presentation.profile
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.ui.utils.ActionCollector
@@ -42,13 +41,9 @@ import org.koin.compose.viewmodel.koinViewModel
 private const val TAB_TRANSITION_DURATION_MILLIS = 300
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderScope<NavKey>.mainScreen(
-    onNavigate: (NavKey) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-) {
+fun EntryProviderScope<NavKey>.mainScreen(sharedTransitionScope: SharedTransitionScope) {
     entry<MainNavRoute> {
         MainRootContent(
-            onNavigate = onNavigate,
             sharedTransitionScope = sharedTransitionScope,
             animatedContentScope = LocalNavAnimatedContentScope.current,
         )
@@ -58,7 +53,6 @@ fun EntryProviderScope<NavKey>.mainScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun MainRootContent(
-    onNavigate: (NavKey) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
@@ -69,7 +63,6 @@ private fun MainRootContent(
     LaunchedEffect(selectedTab) {
         trackDestination(selectedTab)
     }
-    NotificationPermissionStartEffect(onNavigate)
     ActionCollector(mainViewModel.uiAction) { uiAction ->
         when (uiAction) {
             is MainScreenUiAction.NavigateToBottomRoute ->
@@ -88,7 +81,6 @@ private fun MainRootContent(
         entries = tabState.toDecoratedEntries(
             entryProvider {
                 toMainEntries(
-                    onNavigate = onNavigate,
                     navigationBar = { modifier ->
                         MainNavigationBar(
                             modifier = modifier,
@@ -113,35 +105,31 @@ private fun MainRootContent(
         ),
         modifier = Modifier.fillMaxSize(),
         onBack = tabState::goBack,
-        transitionSpec = { tabTransitionSpec() },
-        popTransitionSpec = { tabTransitionSpec() },
-        predictivePopTransitionSpec = { tabTransitionSpec() },
+        transitionSpec = { createTabTransitionSpec() },
+        popTransitionSpec = { createTabTransitionSpec() },
+        predictivePopTransitionSpec = { createTabTransitionSpec() },
     )
 }
 
 private fun EntryProviderScope<NavKey>.toMainEntries(
-    onNavigate: (NavKey) -> Unit,
     navigationBar: @Composable ((Modifier) -> Unit),
     navigationRail: @Composable (() -> Unit),
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
     readingPlan(
-        onNavigate = onNavigate,
         navigationBar = navigationBar,
         navigationRail = navigationRail,
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = animatedContentScope,
     )
     booksScreen(
-        onNavigate = onNavigate,
         navigationBar = navigationBar,
         navigationRail = navigationRail,
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedContentScope,
     )
     profile(
-        onNavigate = onNavigate,
         navigationBar = navigationBar,
         navigationRail = navigationRail,
         sharedTransitionScope = sharedTransitionScope,
@@ -149,6 +137,6 @@ private fun EntryProviderScope<NavKey>.toMainEntries(
     )
 }
 
-private fun tabTransitionSpec(): ContentTransform =
+private fun createTabTransitionSpec(): ContentTransform =
     fadeIn(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS)) togetherWith
         fadeOut(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS))

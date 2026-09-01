@@ -15,7 +15,7 @@ class TrackDestinationUseCaseTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
 
     @Test
-    fun `GIVEN a route the mapper resolves WHEN invoked THEN fires destination_view with name and type`() {
+    fun `GIVEN a route the mapper resolves WHEN invoked THEN fires screen_view with name and class`() {
         // Given
         val useCase = createUseCase(
             mapper = NavRouteToDestinationMapper {
@@ -33,10 +33,10 @@ class TrackDestinationUseCaseTest {
         // Then
         assertEquals(
             listOf(
-                "destination_view" to mapOf<String, Any>(
+                "screen_view" to mapOf<String, Any>(
                     AnalyticsParams.BOOK_ID to "genesis",
-                    AnalyticsParams.DESTINATION_NAME to "book_details",
-                    AnalyticsParams.DESTINATION_TYPE to "screen",
+                    AnalyticsParams.SCREEN_NAME to "book_details",
+                    AnalyticsParams.SCREEN_CLASS to "screen",
                 ),
             ),
             trackedEvents,
@@ -44,7 +44,7 @@ class TrackDestinationUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a dialog route WHEN invoked THEN destination_type is lowercased dialog`() {
+    fun `GIVEN a dialog route WHEN invoked THEN screen_class is lowercased dialog`() {
         // Given
         val useCase = createUseCase(
             mapper = NavRouteToDestinationMapper {
@@ -56,7 +56,7 @@ class TrackDestinationUseCaseTest {
         useCase(LogoutNavRoute)
 
         // Then
-        assertEquals("dialog", trackedEvents.single().second[AnalyticsParams.DESTINATION_TYPE])
+        assertEquals("dialog", trackedEvents.single().second[AnalyticsParams.SCREEN_CLASS])
     }
 
     @Test

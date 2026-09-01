@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.inappupdate.domain.usecase.impl
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
-import com.quare.bibleplanner.core.model.NavigationEventBus
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -16,7 +16,7 @@ import com.quare.bibleplanner.feature.inappupdate.domain.usecase.StartUpdate
 internal class ShowUpdatePromptUseCase(
     private val platform: Platform,
     private val startUpdate: StartUpdate,
-    private val navigationEventBus: NavigationEventBus,
+    private val navigator: Navigator,
     private val updatePromptPreferences: UpdatePromptPreferences,
     private val currentTimestampProvider: CurrentTimestampProvider,
     private val trackEvent: TrackEvent,
@@ -33,7 +33,7 @@ internal class ShowUpdatePromptUseCase(
             )
             startUpdate()
         } else {
-            navigationEventBus.send(
+            navigator.navigate(
                 InAppUpdateNavRoute(
                     versionName = availability.versionName,
                     source = source,

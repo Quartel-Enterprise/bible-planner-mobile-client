@@ -47,7 +47,10 @@ end
 
 # Reads the in-app release notes JSON files and returns the notes for the given
 # version as { "en" => [items], "pt" => [items], "es" => [items] }.
+# The JSON files are keyed by plain X.Y.Z, so a pre-release versionName such as
+# 2.4.0-beta-1 is normalized to its X.Y.Z prefix before the lookup.
 def release_notes_for_version(version, repo_root)
+  version = version[/\A\d+\.\d+\.\d+/] || version
   notes = {}
   { "en" => "en.json", "pt" => "pt.json", "es" => "es.json" }.each do |lang, file|
     path = File.join(repo_root, RELEASE_NOTES_DIR, file)

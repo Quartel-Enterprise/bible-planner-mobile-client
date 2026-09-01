@@ -27,10 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-) {
+fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot() {
     entry<BibleVersionSelectorRoute>(
         metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
     ) {
@@ -39,8 +36,6 @@ fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot(
         val uiState by viewModel.uiState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         BibleVersionsActionCollector(
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
             uiActionFlow = viewModel.uiAction,
             snackbarHostState = snackbarHostState,
         )

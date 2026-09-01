@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
+import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
 
@@ -21,6 +22,7 @@ internal data class ProfileUiState(
     val bibleVersionName: Loadable<String?>,
     val bibleDownloadProgress: Loadable<Float?>,
     val planStartDate: Loadable<LocalDate?>,
+    val studySuggestion: Loadable<StudySuggestionSettingsModel>,
     val currentDate: LocalDate,
     val appVersion: String,
     val isUpdateRowVisible: Boolean,

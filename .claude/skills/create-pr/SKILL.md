@@ -27,13 +27,19 @@ Check whether any `.kt` or `.kts` files are among the changed files gathered in 
 If there are Kotlin files changed, run from the project root:
 
 ```bash
-./gradlew ktlintFormat
+./scripts/ktlint.sh --format
 ```
+
+This is the ktlint CLI, which is exactly what the `static-analysis` workflow runs in CI. Do **not** use
+`./gradlew ktlintFormat` — the Gradle plugin path is far slower and is no longer what CI checks.
 
 If the command exits with a non-zero code, stop and notify the user:
 > "ktlint found issues it couldn't fix automatically. Please review and fix the reported errors, then try again."
 
 Do not proceed until the formatter succeeds.
+
+Formatting rewrites files in place, so re-run `git status -s` afterwards if you need an up-to-date list of
+changed files for the steps below.
 
 ### 3. Check the current branch
 
@@ -267,7 +273,7 @@ If the user declines, skip this step entirely and end the workflow.
 
 ## Edge cases
 
-- If ktlint fails, stop immediately — do not commit or push
+- If `./scripts/ktlint.sh --format` fails, stop immediately — do not commit or push. The remaining errors are ones ktlint cannot autocorrect (e.g. custom `bible-planner-style:*` rules), so they must be fixed by hand
 - If the user is already on a correctly prefixed branch, skip branch creation
 - If there is nothing to commit and the branch is already pushed, go directly to PR creation
 - If the branch already has an open PR, notify the user instead of creating a duplicate

@@ -14,6 +14,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.date)
+            implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.platform)
             implementation(projects.core.provider.room)
@@ -63,6 +65,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

@@ -18,14 +18,17 @@ kotlin {
             implementation(projects.feature.inAppUpdate)
             implementation(projects.feature.main)
             implementation(projects.feature.preferences.themeSelection)
+            implementation(projects.feature.preferences.studySuggestion)
             implementation(projects.feature.materialYou)
             implementation(projects.feature.day)
             implementation(projects.feature.deleteProgress)
+            implementation(projects.feature.deleteAccount)
             implementation(projects.feature.deleteVersion)
             implementation(projects.feature.deleteNotes)
             implementation(projects.feature.addNotesFreeWarning)
             implementation(projects.feature.preferences.editPlanStartDate)
             implementation(projects.feature.paywall)
+            implementation(projects.feature.paywallTeaser)
             implementation(projects.feature.congrats)
             implementation(projects.feature.releaseNotes)
             implementation(projects.feature.donation)
@@ -37,8 +40,13 @@ kotlin {
             implementation(projects.feature.preferences.bibleVersion)
             implementation(projects.feature.preferences.appLanguage)
             implementation(projects.feature.read)
+            implementation(projects.feature.verse.share)
+            implementation(projects.feature.verse.addNote)
+            implementation(projects.feature.verse.selectionMenu)
             implementation(projects.feature.notificationPermission)
             implementation(projects.feature.dayStudy)
+            implementation(projects.feature.dayReadingComplete)
+            implementation(projects.feature.chat)
             implementation(projects.feature.subscriptionDetails)
             implementation(projects.feature.accountDetails)
             implementation(projects.feature.editProfile)
@@ -68,6 +76,9 @@ kotlin {
             // Navigation 3
             implementation(libs.navigation3.ui)
             implementation(libs.androidx.lifecycle.viewmodelNavigation3)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }

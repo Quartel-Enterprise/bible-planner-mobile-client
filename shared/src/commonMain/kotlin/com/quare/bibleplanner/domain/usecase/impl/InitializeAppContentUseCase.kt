@@ -2,6 +2,7 @@ package com.quare.bibleplanner.domain.usecase.impl
 
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveCurrentDeviceRevoked
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDeviceRegistration
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
@@ -17,6 +18,7 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelecte
 import com.quare.bibleplanner.feature.logout.domain.usecase.HandleCurrentDeviceRevoked
 import com.quare.bibleplanner.feature.logout.domain.usecase.ObserveSessionLoss
 import com.quare.bibleplanner.feature.materialyou.domain.usecase.ObserveDynamicColorsSync
+import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.ObserveStudySuggestionSync
 import com.quare.bibleplanner.feature.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -26,6 +28,7 @@ import kotlinx.coroutines.launch
 internal class InitializeAppContentUseCase(
     private val initializeBooksIfNeeded: InitializeBooksIfNeededUseCase,
     private val initializeBibleVersions: InitializeBibleVersionsUseCase,
+    private val observeBibleVersions: ObserveBibleVersionsUseCase,
     private val migratePlanPreferencesToSyncStore: MigratePlanPreferencesToSyncStoreUseCase,
     private val ensureDefaultPlanStartDate: EnsureDefaultPlanStartDateUseCase,
     private val observeSelectedVersion: ObserveSelectedVersionUseCase,
@@ -33,6 +36,7 @@ internal class InitializeAppContentUseCase(
     private val observeThemeSync: ObserveThemeSync,
     private val observeDynamicColorsSync: ObserveDynamicColorsSync,
     private val observeLanguageSync: ObserveLanguageSync,
+    private val observeStudySuggestionSync: ObserveStudySuggestionSync,
     private val observeSync: ObserveSync,
     private val observeTesterUserProperty: ObserveTesterUserProperty,
     private val observeDeviceRegistration: ObserveDeviceRegistration,
@@ -54,10 +58,12 @@ internal class InitializeAppContentUseCase(
                 initializeBibleVersionsDeferred,
                 ensureStartDateDeferred,
             ).joinAll()
+            launch { observeBibleVersions() }
             launch { observeAppLocale() }
             launch { observeThemeSync() }
             launch { observeDynamicColorsSync() }
             launch { observeLanguageSync() }
+            launch { observeStudySuggestionSync() }
             launch { observeTesterUserProperty() }
             launch { observeDeviceRegistration() }
             // A remote sign-out deletes this device's row; end the local session as soon as we see it.

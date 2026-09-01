@@ -2,11 +2,13 @@ package com.quare.bibleplanner.feature.profile.presentation.factory
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.PersonRemove
 import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SupportAgent
@@ -18,13 +20,17 @@ import bibleplanner.feature.profile.generated.resources.become_pro
 import bibleplanner.feature.profile.generated.resources.bible_version_option
 import bibleplanner.feature.profile.generated.resources.check_for_updates_option
 import bibleplanner.feature.profile.generated.resources.contact_support_option
+import bibleplanner.feature.profile.generated.resources.delete_account_option
+import bibleplanner.feature.profile.generated.resources.delete_account_option_subtitle
 import bibleplanner.feature.profile.generated.resources.delete_progress_option
+import bibleplanner.feature.profile.generated.resources.delete_progress_option_subtitle
 import bibleplanner.feature.profile.generated.resources.ic_instagram
 import bibleplanner.feature.profile.generated.resources.instagram
 import bibleplanner.feature.profile.generated.resources.rate_app_option
 import bibleplanner.feature.profile.generated.resources.release_notes_option
 import bibleplanner.feature.profile.generated.resources.release_notes_subtitle
 import bibleplanner.feature.profile.generated.resources.start_date
+import bibleplanner.feature.profile.generated.resources.study_suggestion_option
 import bibleplanner.feature.profile.generated.resources.theme_option
 import bibleplanner.feature.profile.generated.resources.web_app
 import bibleplanner.feature.profile.generated.resources.web_app_subtitle
@@ -61,8 +67,20 @@ internal object ProfileMenuOptionsFactory {
     )
     val deleteProgress = ProfileMenuItemPresentationModel(
         name = Res.string.delete_progress_option,
-        icon = ProfileIcon.ImageVectorIcon(Icons.Default.Delete),
+        subtitle = Res.string.delete_progress_option_subtitle,
+        icon = ProfileIcon.ImageVectorIcon(Icons.Default.DeleteSweep),
         type = ProfileOptionItemType.DELETE_PROGRESS,
+    )
+    val deleteAccount = ProfileMenuItemPresentationModel(
+        name = Res.string.delete_account_option,
+        subtitle = Res.string.delete_account_option_subtitle,
+        icon = ProfileIcon.ImageVectorIcon(Icons.Default.PersonRemove),
+        type = ProfileOptionItemType.DELETE_ACCOUNT,
+    )
+    val studySuggestion = ProfileMenuItemPresentationModel(
+        name = Res.string.study_suggestion_option,
+        icon = ProfileIcon.ImageVectorIcon(Icons.Default.AutoAwesome),
+        type = ProfileOptionItemType.STUDY_SUGGESTION,
     )
     val editStartDate = ProfileMenuItemPresentationModel(
         name = Res.string.start_date,

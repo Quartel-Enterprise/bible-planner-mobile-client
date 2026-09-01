@@ -198,7 +198,6 @@ private val studyByLocale = mapOf(
         ),
     ),
 )
-
 private const val FREE_LIMIT = 3
 
 internal fun dayStudyUiState(

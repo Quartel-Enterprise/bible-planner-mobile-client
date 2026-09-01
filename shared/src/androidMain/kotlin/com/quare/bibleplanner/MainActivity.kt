@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
         handleNotificationIntent(intent)
 
         setContent {
-            val isDynamicColorsOn by viewModel.isDynamicColorsEnabledFlow.collectAsState(true)
+            val isDynamicColorsOn by viewModel.isDynamicColorsEnabled.collectAsState()
             App(
                 getSpecificColors = { isAppInDarkTheme ->
                     getAndroidSpecificColorScheme(
@@ -80,7 +80,7 @@ class MainActivity : ComponentActivity() {
                 name = AnalyticsEventNames.NOTIFICATION_OPENED,
                 params = mapOf(AnalyticsParams.TYPE to NotificationAnalyticsType.VERSION_DOWNLOAD_COMPLETE),
             )
-            viewModel.navigationEventBus.send(BibleVersionSelectorRoute)
+            viewModel.navigator.navigate(BibleVersionSelectorRoute)
         }
     }
 

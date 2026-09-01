@@ -52,11 +52,10 @@ class BooksWithChapterMapper {
 
     private fun computeModel(bookWithChapters: BookWithChapters): BookDataModel = bookWithChapters.run {
         val chaptersModel = chapters.map { chapterWithVerses ->
-            val versesModel = chapterWithVerses.verses.map { verseWithTexts ->
+            val versesModel = chapterWithVerses.verses.map { verse ->
                 VerseModel(
-                    number = verseWithTexts.verse.number,
-                    isRead = verseWithTexts.verse.isRead,
-                    text = verseWithTexts.texts.firstOrNull()?.text,
+                    number = verse.number,
+                    isRead = verse.isRead,
                 )
             }
 
@@ -67,7 +66,7 @@ class BooksWithChapterMapper {
 
             val readUpdatedAt = (
                 listOfNotNull(chapterWithVerses.chapter.readUpdatedAt) +
-                    chapterWithVerses.verses.mapNotNull { it.verse.readUpdatedAt }
+                    chapterWithVerses.verses.mapNotNull { it.readUpdatedAt }
             ).maxOrNull()
 
             BookChapterModel(

@@ -11,6 +11,7 @@ internal class SubscriptionStatusMapper(
     private val proPlanTypeMapper: ProPlanTypeMapper,
     private val proEntitlementMapper: ProEntitlementMapper,
     private val epochMillisMapper: EpochMillisMapper,
+    private val purchaseStoreMapper: PurchaseStoreMapper,
 ) {
     fun map(response: SubscriberResponseDto?): SubscriptionStatus {
         val entitlement = response
@@ -23,6 +24,9 @@ internal class SubscriptionStatusMapper(
             willRenew = proEntitlementMapper.mapWillRenew(
                 response = response,
                 productIdentifier = entitlement.productIdentifier,
+            ),
+            store = purchaseStoreMapper.map(
+                response.subscriber.subscriptions[entitlement.productIdentifier]?.store,
             ),
         )
     }

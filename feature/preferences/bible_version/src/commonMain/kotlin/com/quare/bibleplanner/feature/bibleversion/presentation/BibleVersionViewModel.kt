@@ -3,11 +3,14 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestDownloadNotificationPermissionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
@@ -24,6 +27,9 @@ class BibleVersionViewModel(
     private val setSelectedVersion: SetSelectedVersionUseCase,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val initializeBibleVersions: InitializeBibleVersionsUseCase,
+    private val updateBibleVersion: UpdateBibleVersionUseCase,
+    private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     uiStateFactory: BibleVersionsUiStateFactory,
 ) : TrackedViewModel<BibleVersionUiEvent>(trackEvent) {
@@ -46,6 +52,8 @@ class BibleVersionViewModel(
 
             is BibleVersionUiEvent.OnResume -> resumeDownload(event.id)
 
+            is BibleVersionUiEvent.OnUpdate -> updateVersion(event.id)
+
             is BibleVersionUiEvent.OnDelete -> deleteVersion(event.id)
 
             is BibleVersionUiEvent.OnSelect -> selectVersion(event.id)
@@ -65,6 +73,9 @@ class BibleVersionViewModel(
         if (downloaderFacade.shouldShowDownloadTip) {
             emitUiAction(BibleVersionUiAction.ShowDownloadTip)
         }
+        viewModelScope.launch {
+            requestDownloadNotificationPermission()
+        }
     }
 
     private fun pauseDownload(id: String) {
@@ -76,11 +87,19 @@ class BibleVersionViewModel(
     private fun resumeDownload(id: String) {
         viewModelScope.launch {
             downloaderFacade.downloadVersion(id)
+            requestDownloadNotificationPermission()
+        }
+    }
+
+    private fun updateVersion(id: String) {
+        viewModelScope.launch {
+            updateBibleVersion(id)
+            requestDownloadNotificationPermission()
         }
     }
 
     private fun deleteVersion(id: String) {
-        emitUiAction(BibleVersionUiAction.NavigateToRoute(DeleteVersionNavRoute(id)))
+        navigator.navigate(DeleteVersionNavRoute(id))
     }
 
     private fun selectVersion(id: String) {
@@ -102,7 +121,7 @@ class BibleVersionViewModel(
         ?.any { it.version.id == id && it.isSelected } == true
 
     private fun dismiss() {
-        emitUiAction(BibleVersionUiAction.BackToPreviousRoute)
+        navigator.navigateBack()
     }
 
     private fun emitUiAction(uiAction: BibleVersionUiAction) {

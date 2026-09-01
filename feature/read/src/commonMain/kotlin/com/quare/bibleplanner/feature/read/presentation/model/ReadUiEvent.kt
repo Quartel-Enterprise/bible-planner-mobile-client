@@ -1,18 +1,14 @@
 package com.quare.bibleplanner.feature.read.presentation.model
 
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
-/**
- * Represents actions that can be performed by the user on the Read screen.
- */
 sealed interface ReadUiEvent : UiEvent {
-    /**
-     * Event triggered when the user wants to navigate back.
-     */
     data object OnArrowBackClick : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.READ_BACK_CLICKED,
@@ -20,9 +16,6 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
-    /**
-     * Event triggered to retry loading the chapter content if it failed.
-     */
     data object OnRetryClick : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.READ_RETRY_CLICKED,
@@ -31,17 +24,24 @@ sealed interface ReadUiEvent : UiEvent {
     }
 
     /**
-     * Event triggered to toggle the read status of the current chapter.
+     * Carries the chapter because vertical reading keeps two chapters — and two read pills — on the
+     * same screen.
      */
-    data object ToggleReadStatus : ReadUiEvent {
+    data class ToggleReadStatus(
+        val bookId: BookId,
+        val chapterNumber: Int,
+    ) : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.CHAPTER_READ_TOGGLED,
         )
     }
 
-    /**
-     * Event triggered when the user wants to change the Bible version.
-     */
+    data object OnDownloadSelectedVersionClick : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_STARTED,
+        )
+    }
+
     data object ManageBibleVersions : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.BIBLE_VERSION_MANAGE_CLICKED,
@@ -55,5 +55,41 @@ sealed interface ReadUiEvent : UiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.READING_SUGGESTION_CLICKED,
         )
+    }
+
+    data class OnVerseClick(
+        val chapter: ChapterRef,
+        val verseNumber: Int,
+    ) : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.VERSE_SELECTION_TOGGLED,
+        )
+    }
+
+    data object OnAppearanceClick : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.READER_APPEARANCE_OPENED,
+            params = emptyMap(),
+        )
+    }
+
+    /** The end of the loaded text came into view, so vertical reading pulls in the next chapter. */
+    data object OnReachedEnd : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
+
+    data object OnReachedStart : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
+
+    data object OnRulerDismissClick : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.READER_FOCUS_AID_CHANGED,
+        )
+    }
+
+    /** Bridge for the banner's own dismissal, which the banner tracks itself. */
+    data object OnDayCompletionBannerDismissed : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
 }

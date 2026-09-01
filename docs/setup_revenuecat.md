@@ -77,6 +77,34 @@ When either value is blank the desktop app treats the user as **Free** and purch
 Because the entitlement is store-agnostic, a subscription bought on Google Play or the App Store unlocks
 Pro on desktop for the same account (the RevenueCat `app_user_id` is the Supabase `user.id`).
 
+## 5. Firebase (GA4) revenue integration
+
+iOS purchase revenue reaches Google Analytics through RevenueCat, not through the app — see
+[Purchase revenue](analytics/README.md#purchase-revenue) for why. The app half is already wired:
+`SyncBillingUserIdUseCase` pushes the `$firebaseAppInstanceId` subscriber attribute on every billing
+identity change. The dashboard half has to be done by hand, once:
+
+1. In **Google Analytics > Admin > Data Streams > iOS**, copy the **Firebase App ID** and create a
+   **Measurement Protocol API secret**.
+2. In the RevenueCat dashboard, open **Integrations > Firebase > Google Analytics** and fill in
+   **iOS API Secret** and **iOS Firebase App ID**.
+3. Leave the **Android** pair blank. The form takes each platform independently, and filling Android in
+   would double-count against the Google Play link, which already reports Android revenue on its own and
+   needs no client cooperation.
+4. Keep **Sales Reporting** on `Gross revenue`, so the number is comparable with what the Play link
+   reports on the Android side. Leave **Enable sandbox events** off.
+
+The form also takes a **Web Measurement ID / Web API Secret** pair, which the desktop target's Web stream
+could in principle use. It is left empty for now: a Web stream is keyed by `client_id`, and the desktop
+app has no way to hand its GA client id to RevenueCat today, so those purchases would land unattributed.
+
+Verifying it: the events arrive through the Measurement Protocol, so they never show up in DebugView.
+Check **Realtime** or the **In-app purchases** report a few hours after a real (non-sandbox) purchase.
+
+If iOS revenue stops arriving, suspect `$firebaseAppInstanceId` first — a customer with a missing or
+stale value is dropped silently. It is visible per customer in the RevenueCat dashboard under
+**Attributes**.
+
 ## Troubleshooting
 - **Warning in Build Output**: If you see `⚠️ REVENUECAT_API_KEY not found...` or  `⚠️ REVENUECAT_PRO_KEY not found...`, ensure the key name matches exactly and the file is saved.
 - **Paywall Fails to Load**: Verify your key is correct and that you have configured **Offerings** in the RevenueCat dashboard.

@@ -1,17 +1,22 @@
 package com.quare.bibleplanner.core.loginnudge.domain.usecase.impl
 
-import com.quare.bibleplanner.core.model.NavigationEventBus
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class RequestLoginNudgeIfNeededUseCaseTest {
-    private val navigationEventBus = NavigationEventBus()
+    private val navigator = Navigator()
+    private val commands = mutableListOf<NavigationCommand>()
     private val trackedEvents = mutableListOf<String>()
 
     @Test
@@ -20,7 +25,7 @@ internal class RequestLoginNudgeIfNeededUseCaseTest {
 
         useCase()
 
-        assertEquals(LoginSyncNudgeNavRoute, navigationEventBus.events.first())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(LoginSyncNudgeNavRoute)), commands)
     }
 
     @Test
@@ -38,7 +43,7 @@ internal class RequestLoginNudgeIfNeededUseCaseTest {
 
         useCase()
 
-        assertNull(navigationEventBus.events.replayCache.firstOrNull())
+        assertTrue(commands.isEmpty())
     }
 
     @Test
@@ -50,10 +55,14 @@ internal class RequestLoginNudgeIfNeededUseCaseTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
-    private fun prepareScenario(shouldShow: Boolean): RequestLoginNudgeIfNeededUseCase =
-        RequestLoginNudgeIfNeededUseCase(
+    private fun TestScope.prepareScenario(shouldShow: Boolean): RequestLoginNudgeIfNeededUseCase {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            navigator.commands.collect { commands += it }
+        }
+        return RequestLoginNudgeIfNeededUseCase(
             shouldShowLoginNudge = { shouldShow },
-            navigationEventBus = navigationEventBus,
+            navigator = navigator,
             trackEvent = { name, _ -> trackedEvents += name },
         )
+    }
 }

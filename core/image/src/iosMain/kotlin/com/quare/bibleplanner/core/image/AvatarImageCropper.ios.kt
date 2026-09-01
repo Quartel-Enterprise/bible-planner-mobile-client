@@ -4,20 +4,27 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.useContents
 import kotlinx.cinterop.usePinned
+import platform.CoreGraphics.CGContextRotateCTM
+import platform.CoreGraphics.CGContextScaleCTM
+import platform.CoreGraphics.CGContextTranslateCTM
 import platform.CoreGraphics.CGRectMake
 import platform.CoreGraphics.CGSizeMake
 import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.UIKit.UIGraphicsBeginImageContextWithOptions
 import platform.UIKit.UIGraphicsEndImageContext
+import platform.UIKit.UIGraphicsGetCurrentContext
 import platform.UIKit.UIGraphicsGetImageFromCurrentImageContext
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageJPEGRepresentation
 import platform.posix.memcpy
+import kotlin.math.PI
 
 private const val QUALITY_SCALE = 100.0
+private const val HALF = 2.0
+private const val STRAIGHT_ANGLE_DEGREES = 180.0
 
-actual fun avatarImageCropper(): AvatarImageCropper = IosAvatarImageCropper()
+actual fun createAvatarImageCropper(): AvatarImageCropper = IosAvatarImageCropper()
 
 @OptIn(ExperimentalForeignApi::class)
 internal class IosAvatarImageCropper : AvatarImageCropper {
@@ -26,7 +33,8 @@ internal class IosAvatarImageCropper : AvatarImageCropper {
         params: CropParams,
     ): ByteArray {
         val crop = computeCropRect(params)
-        val image = UIImage.imageWithData(source.toNsData()) ?: throw UnsupportedImageFormatException()
+        val decoded = UIImage.imageWithData(source.toNsData()) ?: throw UnsupportedImageFormatException()
+        val image = decoded.orient(params.orientation)
         val width = image.size.useContents { width }
         val height = image.size.useContents { height }
         val side = crop.size * minOf(width, height)
@@ -48,6 +56,35 @@ internal class IosAvatarImageCropper : AvatarImageCropper {
         val jpeg = cropped?.let { UIImageJPEGRepresentation(it, AVATAR_JPEG_QUALITY / QUALITY_SCALE) }
             ?: throw UnsupportedImageFormatException()
         return jpeg.toByteArray()
+    }
+
+    private fun UIImage.orient(orientation: PhotoOrientation): UIImage {
+        if (orientation.isOriginal) return this
+        val width = size.useContents { width }
+        val height = size.useContents { height }
+        val targetWidth = if (orientation.isQuarterTurned) height else width
+        val targetHeight = if (orientation.isQuarterTurned) width else height
+
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(targetWidth, targetHeight), true, 1.0)
+        val context = UIGraphicsGetCurrentContext()
+        CGContextTranslateCTM(context, targetWidth / HALF, targetHeight / HALF)
+        CGContextRotateCTM(context, orientation.rotationDegrees * PI / STRAIGHT_ANGLE_DEGREES)
+        CGContextScaleCTM(
+            context,
+            orientation.horizontalScale.toDouble(),
+            orientation.verticalScale.toDouble(),
+        )
+        drawInRect(
+            CGRectMake(
+                x = -width / HALF,
+                y = -height / HALF,
+                width = width,
+                height = height,
+            ),
+        )
+        val rotated = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return rotated ?: this
     }
 
     private fun ByteArray.toNsData(): NSData = usePinned { pinned ->

@@ -1,13 +1,15 @@
 [versions]
 # Build tooling
-agp = "9.3.1"
+agp = "9.3.2"
 kotlin = "2.4.10"
-ksp = "2.3.6"
+ksp = "2.3.11"
 buildkonfig = "0.22.0"
+junit-bom = "6.1.3"
+slf4j = "2.0.18"
 ktlint = "1.8.0"
 ktlint-gradle = "14.2.0"
 google-services = "4.5.0"
-firebase-crashlytics-plugin = "3.0.7"
+firebase-crashlytics-plugin = "3.0.8"
 store-screenshots = "1.5.4-fixes-SNAPSHOT"
 
 # Android SDK levels
@@ -23,9 +25,9 @@ androidx-core = "1.19.0"
 androidx-credentials = "1.6.0"
 androidx-lifecycle = "2.11.0"
 datastore = "1.2.1"
-navigation3-runtime = "1.1.4"
+navigation3-runtime = "1.1.7"
 navigation3-ui = "1.1.1"
-room = "3.0.0"
+room = "3.0.2"
 sqlite = "2.7.0"
 work = "2.11.2"
 
@@ -35,25 +37,26 @@ kotlinx-datetime = "0.8.0"
 kotlinx-serialization = "1.11.0"
 
 # Compose Multiplatform
-compose-multiplatform = "1.11.1"
+compose-multiplatform = "1.12.0"
 compose-hotReload = "1.2.0"
 compose-material3 = "1.9.0"
 compose-materialIconsExtended = "1.7.3"
 compose-shimmer = "1.5.0"
 
 # Third party
-coil = "3.5.0"
-filekit = "0.14.2"
-firebase-bom = "34.16.0"
+coil = "3.6.0"
+crashkios = "0.9.0"
+filekit = "0.15.0"
+firebase-bom = "34.18.0"
 kermit = "2.1.0"
 koin = "4.2.2"
-ktor = "3.5.1"
+ktor = "3.5.2"
 play-app-update = "2.1.0"
 play-review = "2.0.2"
 play-services-time = "16.0.1"
-revenuecat = "3.3.1"
-sentry = "8.50.1"
-supabase = "3.7.0"
+revenuecat = "3.6.0"
+sentry = "8.54.0"
+supabase = "3.8.0"
 
 [libraries]
 # Gradle plugins consumed as libraries (build-logic)
@@ -150,6 +153,9 @@ play-services-time = { module = "com.google.android.gms:play-services-time", ver
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
+# CrashKiOS
+crashkios-crashlytics = { module = "co.touchlab.crashkios:crashlytics", version.ref = "crashkios" }
+
 # FileKit
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
@@ -165,6 +171,10 @@ sentry = { module = "io.sentry:sentry", version.ref = "sentry" }
 # Ktlint custom rule set
 ktlint-cli-ruleset-core = { module = "com.pinterest.ktlint:ktlint-cli-ruleset-core", version.ref = "ktlint" }
 ktlint-rule-engine-core = { module = "com.pinterest.ktlint:ktlint-rule-engine-core", version.ref = "ktlint" }
+ktlint-test = { module = "com.pinterest.ktlint:ktlint-test", version.ref = "ktlint" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+slf4j-nop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

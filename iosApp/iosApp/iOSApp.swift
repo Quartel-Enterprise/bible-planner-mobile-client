@@ -36,13 +36,6 @@ struct iOSApp: App {
 
         dlog("Koin initialized", tag: "INIT")
 
-        // Request notification permission
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: [.alert, .sound, .badge]
-        ) { granted, error in
-            dlog("Notification permission — granted: \(granted), error: \(String(describing: error))", tag: "NOTIF")
-        }
-
         // Allow notifications to appear while app is in foreground
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
     }

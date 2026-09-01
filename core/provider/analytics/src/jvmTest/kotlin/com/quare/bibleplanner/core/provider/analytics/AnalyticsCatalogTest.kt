@@ -8,7 +8,8 @@ import kotlin.test.fail
  * Static, repo-wide checks that give `EventAnalytics.Track.Manual` and `EventAnalytics.Track.Automatic`
  * teeth beyond the compiler's exhaustiveness guarantee: every name a `UiEvent` declares as tracked
  * must actually be wired to a `trackEvent` call in its own module, and must have a catalog entry
- * under `docs/analytics/events/`.
+ * under `docs/analytics/events/`. The catalog itself is then checked against the event index in
+ * `docs/analytics/README.md`, so a documented event cannot stay invisible to anyone reading the index.
  *
  * Scope: only names declared through `analytics = EventAnalytics.Track.Automatic/Manual(...)` are
  * checked. Secondary events fired manually alongside an already-`Automatic`ed case (e.g. a paywall
@@ -61,6 +62,42 @@ class AnalyticsCatalogTest {
         if (violations.isNotEmpty()) {
             fail("Uncataloged analytics events:\n" + violations.joinToString("\n"))
         }
+    }
+
+    @Test
+    fun `every docs analytics events catalog entry is listed in the README index and vice versa`() {
+        val documented = eventsDir
+            .listFiles()
+            .orEmpty()
+            .filter { it.isFile && it.extension == "md" }
+            .map { it.nameWithoutExtension }
+            .toSet()
+        val indexed = indexedEventNames()
+
+        val violations = (documented - indexed).sorted().map {
+            "$it: docs/analytics/events/$it.md has no row in the README event index"
+        } + (indexed - documented).sorted().map {
+            "$it: README event index links to docs/analytics/events/$it.md, which does not exist"
+        }
+        if (violations.isNotEmpty()) {
+            fail("README event index out of sync with the catalog:\n" + violations.joinToString("\n"))
+        }
+    }
+
+    private fun indexedEventNames(): Set<String> {
+        val readme = File(repoRoot, "docs/analytics/README.md").readText()
+        val heading = EVENT_INDEX_HEADING_REGEX.find(readme)
+            ?: fail("Heading \"$EVENT_INDEX_HEADING\" not found in docs/analytics/README.md")
+        val start = heading.range.last
+        val end = SECTION_HEADING_REGEX
+            .find(readme, startIndex = start)
+            ?.range
+            ?.first
+            ?: readme.length
+        return INDEX_ROW_REGEX
+            .findAll(readme.substring(start, end))
+            .map { it.groupValues[1] }
+            .toSet()
     }
 
     private fun uiEventDeclarationFiles(): List<File> = File(repoRoot, "feature")
@@ -116,8 +153,21 @@ class AnalyticsCatalogTest {
     }
 
     private companion object {
+        const val EVENT_INDEX_HEADING = "## Event index"
         val ANALYTICS_EVENT_NAME_REGEX = Regex("""AnalyticsEventNames\.([A-Z0-9_]+)""")
         val TRACK_NAME_REGEX = Regex("""name\s*=\s*AnalyticsEventNames\.([A-Z0-9_]+)""")
         val CONST_VAL_REGEX = Regex("""const val ([A-Z0-9_]+) = "([a-z0-9_]+)"""")
+        val EVENT_INDEX_HEADING_REGEX = Regex(
+            pattern = """^## Event index$""",
+            option = RegexOption.MULTILINE,
+        )
+        val SECTION_HEADING_REGEX = Regex(
+            pattern = """^## """,
+            option = RegexOption.MULTILINE,
+        )
+        val INDEX_ROW_REGEX = Regex(
+            pattern = """^\|\s*\[[a-z0-9_]+]\(events/([a-z0-9_]+)\.md\)""",
+            option = RegexOption.MULTILINE,
+        )
     }
 }

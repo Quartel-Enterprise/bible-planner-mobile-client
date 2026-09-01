@@ -3,15 +3,18 @@ package com.quare.bibleplanner.feature.profile.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation3.runtime.NavKey
 import bibleplanner.feature.profile.generated.resources.Res
+import bibleplanner.feature.profile.generated.resources.delete_account_requires_internet
 import bibleplanner.feature.profile.generated.resources.login_requires_internet
 import bibleplanner.feature.profile.generated.resources.logout_requires_internet
 import bibleplanner.feature.profile.generated.resources.up_to_date_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteAccountNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
@@ -19,12 +22,12 @@ import com.quare.bibleplanner.core.model.route.EditProfileNavRoute
 import com.quare.bibleplanner.core.model.route.ExpandedPhotoNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
+import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
-import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
-import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
@@ -61,6 +64,7 @@ internal class ProfileViewModel(
     private val isConnected: IsConnected,
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<ProfileUiAction>()
@@ -74,7 +78,7 @@ internal class ProfileViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
-        initialValue = uiStateFactory.initialState(),
+        initialValue = uiStateFactory.createInitialState(),
     )
 
     override fun handleEvent(event: ProfileUiEvent) {
@@ -85,23 +89,27 @@ internal class ProfileViewModel(
 
                     ProfileOptionItemType.APP_LANGUAGE -> goToRoute(AppLanguageNavRoute)
 
+                    ProfileOptionItemType.STUDY_SUGGESTION -> goToRoute(StudySuggestionNavRoute)
+
                     ProfileOptionItemType.PRIVACY_POLICY -> emitAction(OpenLink(LegalUrl.PRIVACY_POLICY))
 
                     ProfileOptionItemType.TERMS -> emitAction(OpenLink(LegalUrl.TERMS_OF_SERVICE))
 
-                    ProfileOptionItemType.BECOME_PRO -> {
-                        trackEvent(
-                            name = AnalyticsEventNames.PAYWALL_VIEWED,
-                            params = mapOf(AnalyticsParams.SOURCE to PAYWALL_SOURCE),
-                        )
-                        goToRoute(PaywallNavRoute)
-                    }
+                    ProfileOptionItemType.BECOME_PRO ->
+                        goToRoute(PaywallNavRoute(PaywallEntrySource.PROFILE_MENU))
 
                     ProfileOptionItemType.INSTAGRAM -> emitAction(OpenLink(getInstagramUrl()))
 
                     ProfileOptionItemType.EDIT_PLAN_START_DAY -> goToRoute(EditPlanStartDateNavRoute)
 
                     ProfileOptionItemType.DELETE_PROGRESS -> deleteProgressClick()
+
+                    ProfileOptionItemType.DELETE_ACCOUNT -> {
+                        navigateIfOnline(
+                            route = DeleteAccountNavRoute,
+                            offlineMessage = Res.string.delete_account_requires_internet,
+                        )
+                    }
 
                     ProfileOptionItemType.DONATE -> goToRoute(DonationNavRoute)
 
@@ -174,13 +182,11 @@ internal class ProfileViewModel(
     private fun deleteProgressClick() {
         viewModelScope.launch {
             val progress = calculateBibleProgress().first()
-            _uiAction.emit(
-                if (progress > 0) {
-                    ProfileUiAction.GoToRoute(DeleteAllProgressNavRoute)
-                } else {
-                    ProfileUiAction.ShowNoProgressToDelete
-                },
-            )
+            if (progress > 0) {
+                navigator.navigate(DeleteAllProgressNavRoute)
+            } else {
+                _uiAction.emit(ProfileUiAction.ShowNoProgressToDelete)
+            }
         }
     }
 
@@ -189,17 +195,16 @@ internal class ProfileViewModel(
         offlineMessage: StringResource,
     ) {
         viewModelScope.launch {
-            val action = if (isConnected()) {
-                ProfileUiAction.GoToRoute(route)
+            if (isConnected()) {
+                navigator.navigate(route)
             } else {
-                ProfileUiAction.ShowSnackbar(offlineMessage)
+                _uiAction.emit(ProfileUiAction.ShowSnackbar(offlineMessage))
             }
-            _uiAction.emit(action)
         }
     }
 
     private fun goToRoute(route: NavKey) {
-        emitAction(ProfileUiAction.GoToRoute(route))
+        navigator.navigate(route)
     }
 
     private fun emitAction(action: ProfileUiAction) {
@@ -209,7 +214,6 @@ internal class ProfileViewModel(
     }
 
     private companion object {
-        const val PAYWALL_SOURCE = "profile_menu"
         const val STOP_TIMEOUT_MILLIS = 5_000L
     }
 }

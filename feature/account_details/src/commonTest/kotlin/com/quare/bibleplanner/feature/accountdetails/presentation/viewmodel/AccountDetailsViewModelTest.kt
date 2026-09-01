@@ -2,17 +2,14 @@ package com.quare.bibleplanner.feature.accountdetails.presentation.viewmodel
 
 import com.quare.bibleplanner.core.devices.domain.model.DeviceFormFactor
 import com.quare.bibleplanner.core.devices.domain.model.DeviceModel
-import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDevices
-import com.quare.bibleplanner.core.devices.domain.usecase.SignOutDevice
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
-import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.user.domain.model.UserModel
-import com.quare.bibleplanner.core.user.domain.usecase.ObserveCurrentUser
 import com.quare.bibleplanner.feature.accountdetails.presentation.mapper.DeviceUiModelMapper
-import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiAction
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiEvent
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiState
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountInfo
@@ -33,7 +30,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
@@ -45,6 +41,7 @@ internal class AccountDetailsViewModelTest {
     private val devicesFlow = MutableStateFlow<List<DeviceModel>>(emptyList())
     private val signedOutIds = mutableListOf<String>()
     private val trackedEvents = mutableListOf<String>()
+    private val navigator = Navigator()
     private lateinit var viewModel: AccountDetailsViewModel
 
     @BeforeTest
@@ -58,6 +55,7 @@ internal class AccountDetailsViewModelTest {
                 signedOutIds += deviceRowId
                 Result.success(Unit)
             },
+            navigator = navigator,
             trackEvent = { name, _ -> trackedEvents += name },
         )
     }
@@ -104,7 +102,7 @@ internal class AccountDetailsViewModelTest {
     fun `GIVEN a rename click WHEN handling THEN navigates to the rename destination`() = runTest(testDispatcher) {
         // Given
         val device = mapper.map(device(id = "row-9", isCurrent = false))
-        val actions = collectActions()
+        val commands = collectCommands()
 
         // When
         viewModel.onEvent(AccountDetailsUiEvent.OnRenameDeviceClick(device))
@@ -112,10 +110,10 @@ internal class AccountDetailsViewModelTest {
 
         // Then
         assertEquals(
-            AccountDetailsUiAction.NavigateToRoute(
+            NavigationCommand.Navigate(
                 RenameDeviceNavRoute(deviceRowId = "row-9", currentName = device.name),
             ),
-            actions.last(),
+            commands.last(),
         )
     }
 
@@ -123,14 +121,14 @@ internal class AccountDetailsViewModelTest {
     fun `GIVEN the current device WHEN signing out THEN routes to logout without revoking`() = runTest(testDispatcher) {
         // Given
         val current = mapper.map(device(id = "row-1", isCurrent = true))
-        val actions = collectActions()
+        val commands = collectCommands()
 
         // When
         viewModel.onEvent(AccountDetailsUiEvent.OnSignOutDeviceClick(current))
         runCurrent()
 
         // Then
-        assertEquals(AccountDetailsUiAction.ReplaceWithRoute(LogoutNavRoute), actions.last())
+        assertEquals(NavigationCommand.NavigateReplacingTop(LogoutNavRoute), commands.last())
         assertTrue(signedOutIds.isEmpty())
     }
 
@@ -171,10 +169,10 @@ internal class AccountDetailsViewModelTest {
         return states
     }
 
-    private fun TestScope.collectActions(): List<AccountDetailsUiAction> {
-        val actions = mutableListOf<AccountDetailsUiAction>()
-        backgroundScope.launch { viewModel.uiAction.collect { actions += it } }
-        return actions
+    private fun TestScope.collectCommands(): List<NavigationCommand> {
+        val commands = mutableListOf<NavigationCommand>()
+        backgroundScope.launch { navigator.commands.collect { commands += it } }
+        return commands
     }
 
     private fun user(provider: String) = UserModel(

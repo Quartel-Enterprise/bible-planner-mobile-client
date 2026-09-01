@@ -11,6 +11,7 @@ internal fun proSubscriberResponse(
     gracePeriodExpiresDate: String? = null,
     unsubscribeDetectedAt: String? = null,
     productIdentifier: String = TEST_MONTHLY_PRODUCT_ID,
+    store: String? = "stripe",
 ): SubscriberResponseDto = SubscriberResponseDto(
     requestDateMillis = TEST_REQUEST_DATE_MILLIS,
     subscriber = SubscriberDto(
@@ -26,6 +27,7 @@ internal fun proSubscriberResponse(
             productIdentifier to SubscriptionDto(
                 unsubscribeDetectedAt = unsubscribeDetectedAt,
                 billingIssuesDetectedAt = null,
+                store = store,
             ),
         ),
         originalAppUserId = TEST_APP_USER_ID,

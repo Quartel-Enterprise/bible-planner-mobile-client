@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface SyncLocalStore<E, D> {
     /** Rows with local changes not yet acknowledged by the backend. */
-    fun pendingFlow(): Flow<List<E>>
+    fun observePending(): Flow<List<E>>
 
     /** Snapshot of the currently pending rows (for a one-shot flush, e.g. before logout). */
     suspend fun getPending(): List<E>
@@ -41,6 +41,8 @@ interface SyncLocalStore<E, D> {
      * current wall-clock timestamp. Default: no-op.
      */
     suspend fun seed(now: Long) = Unit
+
+    suspend fun adoptProvisionalDefaults(now: Long) = Unit
 
     /** Wipes this dataset's local state on logout, without scheduling a push. */
     suspend fun clearLocal()

@@ -3,13 +3,18 @@ package com.quare.bibleplanner.feature.readingplan.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.plan.PlansModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
+import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
+import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.review.domain.model.ReviewTrigger
 import com.quare.bibleplanner.core.review.domain.usecase.RequestReviewIfNeeded
@@ -53,6 +58,7 @@ internal class ReadingPlanViewModel(
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val requestReviewIfNeeded: RequestReviewIfNeeded,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     private val bibleProgressMilestoneTracker: BibleProgressMilestoneTracker,
     private val readingStreakMilestoneTracker: ReadingStreakMilestoneTracker,
@@ -162,7 +168,7 @@ internal class ReadingPlanViewModel(
                 if (event.type != uiState.value.selectedReadingPlan) {
                     trackEvent(
                         name = AnalyticsEventNames.PLAN_SELECTED,
-                        params = mapOf(AnalyticsParams.PLAN_TYPE to event.type.name.lowercase()),
+                        params = mapOf(AnalyticsParams.PLAN_TYPE to event.type.toAnalyticsValue()),
                     )
                 }
                 changeOrderMenuVisibility(false)
@@ -175,15 +181,13 @@ internal class ReadingPlanViewModel(
 
             is ReadingPlanUiEvent.OnDayReadClick -> onDayReadClick(event)
 
-            is ReadingPlanUiEvent.OnDayClick -> {
-                emitUiAction(
-                    ReadingPlanUiAction.GoToDay(
-                        dayNumber = event.dayNumber,
-                        weekNumber = event.weekNumber,
-                        readingPlanType = uiState.value.selectedReadingPlan,
-                    ),
-                )
-            }
+            is ReadingPlanUiEvent.OnDayClick -> navigator.navigate(
+                DayNavRoute(
+                    dayNumber = event.dayNumber,
+                    weekNumber = event.weekNumber,
+                    readingPlanType = uiState.value.selectedReadingPlan.name,
+                ),
+            )
 
             ReadingPlanUiEvent.OnOverflowClick -> changeMenuVisibility(true)
 
@@ -195,11 +199,11 @@ internal class ReadingPlanViewModel(
 
             is ReadingPlanUiEvent.OnOverflowOptionClick -> {
                 changeMenuVisibility(false)
-                event.option.toUiAction()?.let(::emitUiAction)
+                onOverflowOptionClick(event.option)
             }
 
             ReadingPlanUiEvent.OnToggleUpcomingExpanded -> {
-                loadedState()?.let { state ->
+                getLoadedState()?.let { state ->
                     val isExpanded = !state.upcomingExpanded
                     updateLoaded { it.copy(upcomingExpanded = isExpanded) }
                     trackGroupToggled(
@@ -210,7 +214,7 @@ internal class ReadingPlanViewModel(
             }
 
             ReadingPlanUiEvent.OnToggleCompletedExpanded -> {
-                loadedState()?.let { state ->
+                getLoadedState()?.let { state ->
                     val isExpanded = !state.completedExpanded
                     updateLoaded { it.copy(completedExpanded = isExpanded) }
                     trackGroupToggled(
@@ -221,10 +225,10 @@ internal class ReadingPlanViewModel(
             }
 
             ReadingPlanUiEvent.OnGoToActiveRowClick ->
-                scrollAndFlashToDay(loadedState()?.planStatus?.nextDay)
+                scrollAndFlashToDay(getLoadedState()?.planStatus?.nextDay)
 
             ReadingPlanUiEvent.OnSkipToTodayClick ->
-                scrollAndFlashToDay(loadedState()?.planStatus?.todayDay)
+                scrollAndFlashToDay(getLoadedState()?.planStatus?.todayDay)
 
             ReadingPlanUiEvent.OnScrollToTopClick -> {
                 updateState { state ->
@@ -284,7 +288,7 @@ internal class ReadingPlanViewModel(
                 }
             }
 
-            ReadingPlanUiEvent.OnEditPlanClick -> emitUiAction(ReadingPlanUiAction.GoToChangeStartDate)
+            ReadingPlanUiEvent.OnEditPlanClick -> navigator.navigate(EditPlanStartDateNavRoute)
         }
     }
 
@@ -351,7 +355,7 @@ internal class ReadingPlanViewModel(
         trackEvent(
             name = AnalyticsEventNames.DAY_READ_TOGGLED,
             params = mapOf(
-                AnalyticsParams.PLAN_TYPE to selectedPlan.name.lowercase(),
+                AnalyticsParams.PLAN_TYPE to selectedPlan.toAnalyticsValue(),
                 AnalyticsParams.WEEK_NUMBER to event.weekNumber,
                 AnalyticsParams.DAY_NUMBER to event.dayNumber,
                 AnalyticsParams.IS_READ to newReadStatus,
@@ -508,7 +512,7 @@ internal class ReadingPlanViewModel(
         )
     }
 
-    private fun loadedState(): ReadingPlanUiState.Loaded? = _uiState.value as? ReadingPlanUiState.Loaded
+    private fun getLoadedState(): ReadingPlanUiState.Loaded? = _uiState.value as? ReadingPlanUiState.Loaded
 
     private fun updateLoaded(transform: (ReadingPlanUiState.Loaded) -> ReadingPlanUiState.Loaded) {
         _uiState.update { state ->
@@ -528,9 +532,17 @@ internal class ReadingPlanViewModel(
         ReadingPlanType.BOOKS -> booksOrder
     }
 
-    private fun OverflowOption.toUiAction(): ReadingPlanUiAction? = when (this) {
-        OverflowOption.DELETE_PROGRESS -> deleteProgressMapper.map(uiState.value)
-        OverflowOption.EDIT_START_DAY -> ReadingPlanUiAction.GoToChangeStartDate
+    private fun onOverflowOptionClick(option: OverflowOption) = when (option) {
+        OverflowOption.DELETE_PROGRESS -> onDeleteProgressClick()
+        OverflowOption.EDIT_START_DAY -> navigator.navigate(EditPlanStartDateNavRoute)
+    }
+
+    private fun onDeleteProgressClick() {
+        when (deleteProgressMapper.map(uiState.value)) {
+            true -> navigator.navigate(DeleteAllProgressNavRoute)
+            false -> emitUiAction(ReadingPlanUiAction.ShowNoProgressToDelete)
+            null -> Unit
+        }
     }
 
     private fun List<WeekPlanModel>.mapToPresentation(): List<WeekPlanPresentationModel> =

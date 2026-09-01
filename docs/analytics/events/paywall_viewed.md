@@ -2,28 +2,36 @@
 
 **Tier:** P1 | **Domain:** Monetization
 
-Captures every paywall impression together with the surface that drove the user there. This is the top of the purchase funnel: conversion rate per entry point (`profile_menu` vs `day_study` vs `notes_limit`) tells which feature gate actually sells Pro.
+Captures every paywall impression together with the surface that drove the user there. This is the top of the purchase funnel: conversion rate per entry point (`profile_menu` vs `day_study` vs `notes_limit` vs `chat`) tells which feature gate actually sells Pro.
 
 ## When it fires
 
-The paywall screen is shown, regardless of which flow navigated to it.
+The paywall screen is shown, regardless of which flow navigated to it — once per `PaywallViewModel` instance.
 
 ## Trigger source
 
-`PaywallNavRoute` carries no arguments today, so the `source` cannot be read on the paywall side. Either add a `source` param to the route or log the event caller-side at each navigation point:
+`feature/paywall/.../presentation/viewmodel/PaywallViewModel.kt` — the `init` block, reading `PaywallNavRoute.source`.
 
-- `feature/profile/.../viewmodel/ProfileViewModel.kt` — `ProfileUiEvent.OnItemClick` with `ProfileOptionItemType.BECOME_PRO` (`source=profile_menu`)
-- `feature/day/.../viewmodel/DayViewModel.kt` — `DayUiEvent.OnDayStudySubscribeClick` → `navigateToPaywall()` (`source=day_study`; originates from `DayStudyUiAction.NavigateToPaywall` when the locked card is clicked)
-- `feature/add_notes_free_warning/.../utils/AddNotesFreeWarningUiActionCollector.kt` — `AddNotesFreeWarningUiAction.NavigateToPro` (`source=notes_limit`)
+The `source` is a required constructor parameter of `PaywallNavRoute`, so a new way into the paywall cannot be added without declaring where it came from — it is a compile error, not a silent gap. Current callers:
+
+| `source` | Caller |
+|---|---|
+| `profile_menu` | `feature/profile/.../ProfileViewModel.kt` — `ProfileOptionItemType.BECOME_PRO` |
+| `day_study` | `feature/day/.../DayViewModel.kt` — the locked AI-study card on the Day screen |
+| `day_study_detail` | `feature/day_study/.../DayStudyRouteViewModel.kt` — the same card on the day-study detail pane |
+| `notes_limit` | `feature/add_notes_free_warning/.../AddNotesFreeWarningUiActionCollector.kt` |
+| `chat` | `feature/chat/.../ChatViewModel.kt` — the locked input bar after the free question quota runs out |
+| `highlight_custom_color` | `feature/paywall_teaser/.../PaywallTeaserUiActionCollector.kt` — the paywall teaser sheet shown for `PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR` |
 
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `source` | string | `day_study` | Entry point: `profile_menu` \| `day_study` \| `notes_limit` |
+| `source` | string | `day_study` | Entry point: `PaywallEntrySource` in `core/model/.../route/`, lowercased |
 
 ## Notes
 
-- The bare paywall impression is also covered by [destination_view](destination_view.md) (`destination_name=paywall`); this event exists to carry `source`, which `destination_view` cannot know.
-- Funnel: `paywall_viewed` → [paywall_plan_selected](paywall_plan_selected.md) → [purchase_started](purchase_started.md) → [purchase_completed](purchase_completed.md) / [purchase_failed](purchase_failed.md), all segmentable by `source` once it is a route param.
-- If a new caller of `PaywallNavRoute` is added, extend the `source` enum here.
+- Fires on the paywall being **shown**, not on the gate being clicked. Each gate logs its own click separately ([notes_limit_subscribe_clicked](notes_limit_subscribe_clicked.md), [ai_chat_subscribe_clicked](ai_chat_subscribe_clicked.md), [day_study_card_clicked](day_study_card_clicked.md) with `card_mode=locked`, [profile_option_clicked](profile_option_clicked.md), [paywall_teaser_subscribe_clicked](paywall_teaser_subscribe_clicked.md)), so click-through and impression stay separable — a gap between the two means navigation was cancelled or deduplicated.
+- Redundant with [screen_view](screen_view.md) (`screen_name=paywall`), which carries the same `source` via the route mapper. It is kept as a distinct event for funnel continuity with the data collected before the source became a route parameter.
+- `day_study` and `day_study_detail` are the same locked card rendered by two different ViewModels. They are kept apart so the historical meaning of `day_study` (Day screen only) stays intact.
+- Funnel: `paywall_viewed` → [paywall_plan_selected](paywall_plan_selected.md) → [purchase_started](purchase_started.md) → [purchase_completed](purchase_completed.md) / [purchase_failed](purchase_failed.md), all segmentable by `source`.

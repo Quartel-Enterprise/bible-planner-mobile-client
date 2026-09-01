@@ -22,7 +22,7 @@ internal class DesktopBibleVersionDownloaderFacade(
     }
 
     override suspend fun deleteDownload(versionId: String) {
-        pauseDownload(versionId)
+        downloader.cancelDownload(versionId)
         deleteBibleVersion(versionId)
     }
 }

@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.sync.data
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
+import com.quare.bibleplanner.core.model.AppForegroundStateHolder
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import com.quare.bibleplanner.core.sync.domain.usecase.ObserveSync
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
@@ -22,6 +23,12 @@ import kotlinx.coroutines.launch
  *
  * Pull-on-connect is centralized here because [Realtime.status] is shared across datasets: on every
  * CONNECTED transition (cold start + reconnections) every synchronizer pulls its full snapshot.
+ *
+ * Realtime channels only stay subscribed while the app is foregrounded ([AppForegroundStateHolder]):
+ * with no subscribed channel the Supabase client disconnects the websocket, so a background session
+ * refresh no longer reaches Realtime's internal setAuth, whose unsupervised coroutine crashes the
+ * app when the socket died meanwhile ("Websocket not yet initialized" / TokenExpiredException).
+ * Anything missed while backgrounded is covered by the snapshot pull on the reconnect that follows.
  */
 internal class SyncCoordinator(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
@@ -29,6 +36,7 @@ internal class SyncCoordinator(
     private val snapshotPuller: SnapshotPuller,
     private val realtime: Realtime,
     private val currentTimestampProvider: CurrentTimestampProvider,
+    private val appForegroundStateHolder: AppForegroundStateHolder,
 ) : ObserveSync {
     override suspend fun invoke() {
         var previousUserId: String? = null
@@ -46,9 +54,17 @@ internal class SyncCoordinator(
                 synchronizers.forEach { it.seed(now) }
                 synchronizers.forEach { synchronizer ->
                     launch { synchronizer.runPushLoop() }
-                    launch { synchronizer.observeRealtime() }
+                    launch { observeRealtimeWhileForegrounded(synchronizer) }
                 }
                 launch { pullOnConnected() }
+            }
+        }
+    }
+
+    private suspend fun observeRealtimeWhileForegrounded(synchronizer: Synchronizer) {
+        appForegroundStateHolder.isForeground.collectLatest { isForeground ->
+            if (isForeground) {
+                synchronizer.observeRealtime()
             }
         }
     }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="study_suggestion_title">Study suggestion</string>
+    <string name="study_suggestion_scope_note">Applies only to the chapter reading screen.</string>
+    <string name="study_suggestion_description">When you mark the last chapter planned for the day, the app offers that day's study. It's an analysis that brings together all the passages you read, different from each chapter's study.</string>
+    <string name="study_suggestion_toggle_title">Show the suggestion</string>
+    <string name="study_suggestion_toggle_subtitle_on">When you finish the day's last chapter</string>
+    <string name="study_suggestion_toggle_subtitle_off">You won't see the suggestion</string>
+    <string name="study_suggestion_how_it_appears">HOW IT APPEARS</string>
+    <string name="study_suggestion_mode_dialog_title">Prominent notice</string>
+    <string name="study_suggestion_mode_dialog_description">A window covers the screen with the day's summary and the button to generate the study.</string>
+    <string name="study_suggestion_mode_banner_title">Discreet banner</string>
+    <string name="study_suggestion_mode_banner_description">A strip at the bottom that doesn't interrupt your reading and goes away when dismissed.</string>
+    <string name="study_suggestion_enabled_message">Study suggestion enabled</string>
+    <string name="study_suggestion_disabled_message">You won't see the suggestion anymore when you finish the day</string>
+    <string name="study_suggestion_mode_blocked_message">Enable the suggestion to choose how it appears</string>
+    <string name="sync_across_devices_title">Sync across devices</string>
+    <string name="sync_across_devices_description">Saves your study suggestion setting to your account and applies it to all your devices</string>
+</resources>

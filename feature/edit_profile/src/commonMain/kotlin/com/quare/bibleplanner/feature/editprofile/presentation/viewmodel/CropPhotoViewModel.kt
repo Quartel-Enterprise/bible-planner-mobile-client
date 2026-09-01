@@ -6,7 +6,9 @@ import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_photo_updated
 import com.quare.bibleplanner.core.image.AvatarImageCropper
 import com.quare.bibleplanner.core.image.CropParams
-import com.quare.bibleplanner.core.image.maxPanOffset
+import com.quare.bibleplanner.core.image.PhotoOrientation
+import com.quare.bibleplanner.core.image.getMaxPanOffset
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.suspendRunCatching
@@ -34,6 +36,7 @@ internal class CropPhotoViewModel(
     private val decodeImageBitmap: DecodeImageBitmap,
     private val cropImage: AvatarImageCropper,
     private val setProfilePhoto: SetProfilePhoto,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     private val encodeDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : TrackedViewModel<CropPhotoUiEvent>(trackEvent) {
@@ -47,6 +50,11 @@ internal class CropPhotoViewModel(
             zoomRange = MIN_ZOOM..MAX_ZOOM,
             offsetX = 0f,
             offsetY = 0f,
+            orientation = PhotoOrientation(
+                rotationDegrees = PhotoOrientation.NO_ROTATION,
+                isFlippedHorizontally = false,
+                isFlippedVertically = false,
+            ),
         ),
     )
     val uiState: StateFlow<CropPhotoUiState> = _uiState
@@ -61,7 +69,7 @@ internal class CropPhotoViewModel(
                 .onSuccess { bitmap ->
                     imageWidth = bitmap.width
                     imageHeight = bitmap.height
-                    _uiState.update { it.copy(image = ImageResult.Loaded(bitmap)).clamped() }
+                    _uiState.update { it.copy(image = ImageResult.Loaded(bitmap)).clamp() }
                 }.onFailure {
                     _uiState.update { it.copy(image = ImageResult.Failed) }
                     finishWith(Res.string.edit_profile_photo_unreadable)
@@ -74,14 +82,21 @@ internal class CropPhotoViewModel(
             is CropPhotoUiEvent.OnViewportMeasured -> onViewportMeasured(event)
             is CropPhotoUiEvent.OnTransform -> onTransform(event)
             is CropPhotoUiEvent.OnZoomChanged -> setZoom(event.zoom)
-            CropPhotoUiEvent.OnCancelClick -> emit(CropPhotoUiAction.NavigateBack)
+            CropPhotoUiEvent.OnFlipHorizontalClick -> updateOrientation(PhotoOrientation::flipHorizontally)
+            CropPhotoUiEvent.OnFlipVerticalClick -> updateOrientation(PhotoOrientation::flipVertically)
+            CropPhotoUiEvent.OnRotateClick -> updateOrientation(PhotoOrientation::rotateQuarterTurn)
+            CropPhotoUiEvent.OnCancelClick -> navigator.navigateBack()
             CropPhotoUiEvent.OnConfirmClick -> confirmCrop()
         }
     }
 
+    private fun updateOrientation(transform: (PhotoOrientation) -> PhotoOrientation) {
+        _uiState.update { state -> state.copy(orientation = transform(state.orientation)).clamp() }
+    }
+
     private fun onViewportMeasured(event: CropPhotoUiEvent.OnViewportMeasured) {
         circleDiameter = event.circleDiameter
-        _uiState.update { it.clamped() }
+        _uiState.update { it.clamp() }
     }
 
     private fun onTransform(event: CropPhotoUiEvent.OnTransform) {
@@ -91,12 +106,12 @@ internal class CropPhotoViewModel(
                     zoom = (state.zoom * event.zoomChange).coerceIn(MIN_ZOOM, MAX_ZOOM),
                     offsetX = state.offsetX + event.panX,
                     offsetY = state.offsetY + event.panY,
-                ).clamped()
+                ).clamp()
         }
     }
 
     private fun setZoom(zoom: Float) {
-        _uiState.update { it.copy(zoom = zoom.coerceIn(MIN_ZOOM, MAX_ZOOM)).clamped() }
+        _uiState.update { it.copy(zoom = zoom.coerceIn(MIN_ZOOM, MAX_ZOOM)).clamp() }
     }
 
     private fun confirmCrop() {
@@ -113,6 +128,7 @@ internal class CropPhotoViewModel(
                             zoom = _uiState.value.zoom,
                             offsetX = _uiState.value.offsetX,
                             offsetY = _uiState.value.offsetY,
+                            orientation = _uiState.value.orientation,
                         ),
                     )
                 }
@@ -127,7 +143,7 @@ internal class CropPhotoViewModel(
     }
 
     private suspend fun finishWith(message: StringResource) {
-        _uiAction.emit(CropPhotoUiAction.NavigateBack)
+        navigator.navigateBack()
         _uiAction.emit(CropPhotoUiAction.ShowSnackbar(message))
     }
 
@@ -135,13 +151,14 @@ internal class CropPhotoViewModel(
         viewModelScope.launch { _uiAction.emit(action) }
     }
 
-    private fun CropPhotoUiState.clamped(): CropPhotoUiState {
+    private fun CropPhotoUiState.clamp(): CropPhotoUiState {
         if (imageWidth <= 0 || imageHeight <= 0) return this
-        val (maxX, maxY) = maxPanOffset(
+        val (maxX, maxY) = getMaxPanOffset(
             imageWidth = imageWidth,
             imageHeight = imageHeight,
             circleDiameter = circleDiameter,
             zoom = zoom,
+            orientation = orientation,
         )
         return copy(
             offsetX = offsetX.coerceIn(-maxX, maxX),

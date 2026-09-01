@@ -1,0 +1,33 @@
+package com.quare.bibleplanner.core.books.data.datasource
+
+import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.books.data.dto.VersionDto
+import io.github.jan.supabase.storage.BucketApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.serialization.json.Json
+
+internal class BibleVersionsRemoteDataSourceImpl(
+    private val bucketApi: BucketApi,
+    private val json: Json,
+) : BibleVersionsRemoteDataSource {
+    override suspend fun getVersions(): Result<List<VersionDto>> = runCatching {
+        coroutineScope {
+            val folders = bucketApi.list("bible")
+
+            folders
+                .map { folder ->
+                    async {
+                        runCatching {
+                            val path = "bible/${folder.name}/metadata.json"
+                            val bytes = bucketApi.downloadPublic(path)
+                            json.decodeFromString<VersionDto>(bytes.decodeToString())
+                        }.onFailure { Logger.e(it) { "Failed to load version metadata for ${folder.name}" } }
+                            .getOrNull()
+                    }
+                }.awaitAll()
+                .filterNotNull()
+        }
+    }.onFailure { Logger.e(it) { "Failed to list the remote Bible versions" } }
+}

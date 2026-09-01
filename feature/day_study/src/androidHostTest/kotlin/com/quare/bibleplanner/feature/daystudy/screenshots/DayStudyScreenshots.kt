@@ -36,7 +36,6 @@ private val bannerCopy = mapOf(
             "Una visión general, el contexto histórico y las preguntas que plantea el pasaje"
     ),
 )
-
 private val contextBannerCopy = mapOf(
     "en-US" to (
         "The world the passage happened in" to
@@ -51,7 +50,6 @@ private val contextBannerCopy = mapOf(
             "Quién escribía, cuándo, y qué sabían ya los primeros lectores"
     ),
 )
-
 private val questionsBannerCopy = mapOf(
     "en-US" to (
         "The questions the passage raises" to
@@ -66,7 +64,6 @@ private val questionsBannerCopy = mapOf(
             "Respuestas directas a lo que más preguntan los lectores sobre esta lectura"
     ),
 )
-
 private const val BACKGROUND = 0xFF1B1B1F
 
 /**
@@ -118,6 +115,7 @@ internal abstract class DayStudyScreenshots(
                         snackbarHostState = SnackbarHostState(),
                         onCardClick = {},
                         onRetryClick = {},
+                        onAskAiClick = {},
                         onNavigateBack = {},
                     )
                 }
@@ -152,6 +150,7 @@ internal abstract class DayStudyScreenshots(
                         snackbarHostState = SnackbarHostState(),
                         onCardClick = {},
                         onRetryClick = {},
+                        onAskAiClick = {},
                         onNavigateBack = {},
                     )
                 }
@@ -186,6 +185,7 @@ internal abstract class DayStudyScreenshots(
                         snackbarHostState = SnackbarHostState(),
                         onCardClick = {},
                         onRetryClick = {},
+                        onAskAiClick = {},
                         onNavigateBack = {},
                     )
                 }

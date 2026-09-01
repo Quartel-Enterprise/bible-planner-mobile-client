@@ -10,7 +10,7 @@ Captures an impression of the login-sync nudge — the dialog that suggests sign
 
 ## Trigger source
 
-`core/login_nudge/.../RequestLoginNudgeIfNeededUseCase.kt` — the `navigationEventBus.send(LoginSyncNudgeNavRoute)` branch. Not a ViewModel `UiEvent`: the use case is invoked after qualifying actions by `ReadViewModel`, `DayViewModel`, `BooksViewModel`, `BookDetailsViewModel`, `ReadingPlanViewModel` and `EditPlanStartDateViewModel`.
+`core/login_nudge/.../RequestLoginNudgeIfNeededUseCase.kt` — the `navigator.navigate(LoginSyncNudgeNavRoute)` branch. Not a ViewModel `UiEvent`: the use case is invoked after qualifying actions by `ReadViewModel`, `DayViewModel`, `BooksViewModel`, `BookDetailsViewModel`, `ReadingPlanViewModel` and `EditPlanStartDateViewModel`.
 
 ## Parameters
 
@@ -21,5 +21,5 @@ None.
 
 ## Notes
 
-- Logging inside the use case (rather than in each calling ViewModel) keeps one trigger point; the impression is also visible as `destination_view` with `destination_name=login_sync_nudge`, but this dedicated event anchors the nudge funnel.
+- Logging inside the use case (rather than in each calling ViewModel) keeps one trigger point; the impression is also visible as `screen_view` with `screen_name=login_sync_nudge`, but this dedicated event anchors the nudge funnel.
 - Outcomes: [login_nudge_accepted](login_nudge_accepted.md), [login_nudge_snoozed](login_nudge_snoozed.md), [login_nudge_disabled](login_nudge_disabled.md).

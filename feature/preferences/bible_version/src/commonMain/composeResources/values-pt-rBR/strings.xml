@@ -4,15 +4,23 @@
     <string name="pause">Pausar</string>
     <string name="resume">Retomar</string>
     <string name="delete">Excluir</string>
-    <string name="bible_versions">Versões da Bíblia</string>
-    <string name="manage_bible_versions_description">Gerencie suas versões da Bíblia baixadas e selecione uma para ler.</string>
+    <string name="bible_versions">Versão da Bíblia</string>
+    <string name="manage_bible_versions_description">Baixe para ler offline e escolha sua versão padrão.</string>
     <string name="english">Inglês</string>
     <string name="portuguese_brazil">Português (Brasil)</string>
     <string name="spanish">Espanhol</string>
     <string name="downloaded">Baixado</string>
-    <string name="downloading_progress">Baixando: %1$s%</string>
-    <string name="paused_progress">Download pausado em %1$s%</string>
+    <string name="downloading_progress">Baixando %1$s%</string>
+    <string name="paused_progress">Pausado %1$s%</string>
     <string name="download_bible_versions_error">Não foi possível baixar as versões da Bíblia para o seu dispositivo. Verifique sua conexão com a internet e tente novamente.</string>
     <string name="try_again">Tentar Novamente</string>
     <string name="download_tip_keep_app_open">Mantenha o app aberto para otimizar o download.</string>
+    <string name="update">Atualizar</string>
+    <string name="update_available_title">Atualizações disponíveis</string>
+    <string name="update_available_description">Novas revisões para versões que você baixou. Escolha quais atualizar.</string>
+    <string name="tap_to_download">Toque para baixar</string>
+    <string name="update_available">Atualização disponível</string>
+    <string name="update_count">Atualizar (%1$d)</string>
+    <string name="status_with_size">%1$s · %2$s</string>
+    <string name="size_progress">%1$s de %2$s</string>
 </resources>

@@ -8,4 +8,5 @@ data class VersionModel(
     val version: String,
     val language: Language,
     val chapters: Int,
+    val size: Long?,
 )

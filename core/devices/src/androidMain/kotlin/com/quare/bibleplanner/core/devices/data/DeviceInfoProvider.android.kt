@@ -4,13 +4,16 @@ import android.os.Build
 import com.quare.bibleplanner.core.devices.domain.model.DeviceFormFactor
 
 internal actual class DeviceInfoProvider actual constructor() {
-    actual fun deviceName(): String = Build.MODEL?.takeIf { it.isNotBlank() }
-        ?: Build.MANUFACTURER?.takeIf { it.isNotBlank() }
-        ?: FALLBACK_NAME
+    actual val deviceName: String
+        get() = Build.MODEL?.takeIf { it.isNotBlank() }
+            ?: Build.MANUFACTURER?.takeIf { it.isNotBlank() }
+            ?: FALLBACK_NAME
 
-    actual fun platform(): String = PLATFORM_ANDROID
+    actual val platform: String
+        get() = PLATFORM_ANDROID
 
-    actual fun formFactor(): DeviceFormFactor = DeviceFormFactor.PHONE
+    actual val formFactor: DeviceFormFactor
+        get() = DeviceFormFactor.PHONE
 
     private companion object {
         const val PLATFORM_ANDROID = "android"

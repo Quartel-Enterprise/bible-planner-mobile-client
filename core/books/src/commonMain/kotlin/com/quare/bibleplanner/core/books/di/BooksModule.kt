@@ -1,11 +1,14 @@
 package com.quare.bibleplanner.core.books.di
 
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataSource
+import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsLocalDataSourceImpl
 import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSource
+import com.quare.bibleplanner.core.books.data.datasource.BibleVersionsRemoteDataSourceImpl
 import com.quare.bibleplanner.core.books.data.datasource.BooksLocalDataSource
 import com.quare.bibleplanner.core.books.data.mapper.BibleMapper
 import com.quare.bibleplanner.core.books.data.mapper.BookFavoriteMapper
 import com.quare.bibleplanner.core.books.data.mapper.BooksWithChapterMapper
+import com.quare.bibleplanner.core.books.data.mapper.CachedVersionsJsonMapper
 import com.quare.bibleplanner.core.books.data.mapper.ChapterReadMapper
 import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
 import com.quare.bibleplanner.core.books.data.mapper.VerseReadMapper
@@ -31,16 +34,26 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationB
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleNameFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
+import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContentUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsChapterReadUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.IsPassageReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterReadUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownloadProgress
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownloadProgressUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.SyncBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusUseCase
@@ -60,13 +73,14 @@ import org.koin.dsl.module
 val booksModule = module {
     // Data sources
     singleOf(::BooksLocalDataSource)
-    factory {
-        BibleVersionsRemoteDataSource(
+    factory<BibleVersionsRemoteDataSource> {
+        BibleVersionsRemoteDataSourceImpl(
             bucketApi = get(named(CONTENT_BUCKET)),
             json = get(),
         )
     }
-    factoryOf(::BibleVersionsLocalDataSource)
+    factoryOf(::BibleVersionsLocalDataSourceImpl).bind<BibleVersionsLocalDataSource>()
+    factoryOf(::CachedVersionsJsonMapper)
     factoryOf(::VersionMapper)
     factoryOf(::BookFavoriteMapper)
     factoryOf(::FavoritesLocalStore)
@@ -99,6 +113,7 @@ val booksModule = module {
             remoteStore = get<FavoritesRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "FavoritesSync",
         )
     }
@@ -108,6 +123,7 @@ val booksModule = module {
             remoteStore = get<ChapterReadRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "ChapterReadSync",
         )
     }
@@ -117,6 +133,7 @@ val booksModule = module {
             remoteStore = get<VerseReadRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "VerseReadSync",
         )
     }
@@ -126,18 +143,22 @@ val booksModule = module {
     factoryOf(::BookGroupMapper)
 
     // Use cases
+    factoryOf(::SyncBibleVersionsUseCase)
     factoryOf(::InitializeBibleVersionsUseCaseImpl).bind<InitializeBibleVersionsUseCase>()
+    factoryOf(::ObserveBibleVersionsUseCaseImpl).bind<ObserveBibleVersionsUseCase>()
     factoryOf(::InitializeBooksIfNeededUseCase)
     factoryOf(::AreAllPassagesReadUseCase)
     factoryOf(::UpdateSpecificRangeChapterReadStatusUseCase)
     factoryOf(::GetBookByIdFlowUseCase)
     factoryOf(::GetVersesWithTextsByChapterIdFlowUseCase)
-    factoryOf(::GetSelectedVersionIdFlowUseCase)
+    factoryOf(::GetSelectedVersionIdFlowUseCase).bind<GetSelectedVersionIdFlow>()
+    factoryOf(::GetVersesShareContentUseCase).bind<GetVersesShareContent>()
     factoryOf(::GetSelectedBibleFlowUseCase)
+    factoryOf(::ObserveBibleVersionDownloadProgressUseCase).bind<ObserveBibleVersionDownloadProgress>()
     factoryOf(::GetSelectedBibleNameFlowUseCase)
     factoryOf(::UpdatePassageReadStatusUseCase)
     factoryOf(::ResetAllProgressUseCase)
-    factoryOf(::ToggleWholeChapterReadStatusUseCase)
+    factoryOf(::ToggleWholeChapterReadStatusUseCase).bind<ToggleWholeChapterReadStatus>()
     factoryOf(::CalculateBibleProgressUseCase)
     factoryOf(::GetBooksWithInformationBoxVisibilityUseCase)
     factoryOf(::GetChapterIdUseCase)
@@ -146,6 +167,6 @@ val booksModule = module {
     factoryOf(::UpdateWholeBookReadStatusIfNeededUseCase)
     factoryOf(::UpdateWholeChapterReadStatusUseCase)
     factoryOf(::IsChapterReadUseCase)
-    factoryOf(::IsWholeChapterReadUseCase)
+    factoryOf(::IsWholeChapterReadUseCase).bind<IsWholeChapterRead>()
     factoryOf(::IsPassageReadUseCase)
 }

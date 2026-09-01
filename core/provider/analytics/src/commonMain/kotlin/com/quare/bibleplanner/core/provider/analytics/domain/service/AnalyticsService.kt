@@ -10,4 +10,6 @@ interface AnalyticsService {
         name: String,
         params: Map<String, Any>,
     )
+
+    suspend fun getAppInstanceId(): String?
 }

@@ -91,7 +91,11 @@ compose.desktop {
             // installer file names stay shell- and GitHub-release-friendly; the spaced name
             // users actually see comes from CFBundleDisplayName below.
             packageName = "BiblePlanner"
-            packageVersion = project.property("versionName").toString()
+            // jpackage requires a plain MAJOR.MINOR.PATCH and validates it at Gradle
+            // configuration time, which runs even on Android-only builds. Pre-release
+            // versionNames carry a -beta-N suffix that desktop never ships, so it is
+            // stripped here.
+            packageVersion = project.property("versionName").toString().substringBefore("-")
 
             // Output of `./gradlew :desktopApp:suggestRuntimeModules` (jdeps). Without
             // jdk.unsupported the jlink image has no sun.misc.Unsafe, and DataStore's

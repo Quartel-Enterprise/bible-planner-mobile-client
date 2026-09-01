@@ -44,4 +44,7 @@
         <item quantity="one">Wait for the current analysis to finish before generating a new one.</item>
         <item quantity="other">Wait for the %1$d ongoing analyses to finish before generating a new one.</item>
     </plurals>
+    <string name="ai_chat_entry_title">Ask about this reading</string>
+    <string name="ai_chat_entry_placeholder">Ask anything about %1$s…</string>
+    <string name="ai_chat_entry_hint">The chat already knows today's context</string>
 </resources>

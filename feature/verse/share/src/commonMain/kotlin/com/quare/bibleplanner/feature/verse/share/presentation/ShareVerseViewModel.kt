@@ -1,0 +1,160 @@
+package com.quare.bibleplanner.feature.verse.share.presentation
+
+import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
+import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
+import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
+import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareCardBackground
+import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiAction
+import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiEvent
+import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiState
+import com.quare.bibleplanner.ui.theme.font.ShareCardFont
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+internal class ShareVerseViewModel(
+    route: ShareVerseNavRoute,
+    private val getVersesShareContent: GetVersesShareContent,
+    val platform: Platform,
+    private val navigator: Navigator,
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ShareVerseUiEvent>(trackEvent) {
+    private val bookId = BookId.valueOf(route.bookId)
+    private val chapterNumber = route.chapterNumber
+    private val verseNumbers = route.verseNumbers
+
+    private var shareContent: VersesShareContentModel? = null
+
+    private val _uiState = MutableStateFlow(
+        ShareVerseUiState(
+            quote = "",
+            reference = "",
+            versionAbbreviation = "",
+            background = ShareCardBackground.VIOLET,
+            font = ShareCardFont.LORA,
+            isReady = false,
+        ),
+    )
+    val uiState: StateFlow<ShareVerseUiState> = _uiState
+
+    private val _uiAction = MutableSharedFlow<ShareVerseUiAction>()
+    val uiAction: SharedFlow<ShareVerseUiAction> = _uiAction
+
+    init {
+        loadContent()
+    }
+
+    override fun handleEvent(event: ShareVerseUiEvent) {
+        when (event) {
+            ShareVerseUiEvent.OnShareAsTextClick -> shareAsText()
+
+            ShareVerseUiEvent.OnShareAsImageClick -> openImageComposer()
+
+            is ShareVerseUiEvent.OnBackgroundClick -> {
+                _uiState.update { it.copy(background = event.background) }
+                trackStyleChange()
+            }
+
+            is ShareVerseUiEvent.OnFontClick -> {
+                _uiState.update { it.copy(font = event.font) }
+                trackStyleChange()
+            }
+
+            is ShareVerseUiEvent.OnShareImageReady -> shareImage(event.imageBytes)
+
+            ShareVerseUiEvent.OnDismiss -> navigator.navigateBack()
+        }
+    }
+
+    private fun loadContent() {
+        viewModelScope.launch {
+            val content = getVersesShareContent(
+                bookId = bookId,
+                chapterNumber = chapterNumber,
+                verseNumbers = verseNumbers,
+            ) ?: return@launch
+            shareContent = content
+            _uiState.update {
+                it.copy(
+                    quote = content.text,
+                    reference = content.reference,
+                    versionAbbreviation = content.versionAbbreviation,
+                    isReady = true,
+                )
+            }
+        }
+    }
+
+    private fun shareAsText() {
+        val content = shareContent ?: return
+        trackShared(FORMAT_TEXT)
+        viewModelScope.launch {
+            _uiAction.emit(ShareVerseUiAction.ShareText(content))
+        }
+    }
+
+    private fun openImageComposer() {
+        trackEvent(
+            name = AnalyticsEventNames.VERSE_SHARE_IMAGE_OPENED,
+            params = mapOf(AnalyticsParams.VERSE_COUNT to verseNumbers.size),
+        )
+        navigator.navigate(
+            ShareVerseImageNavRoute(
+                bookId = bookId.name,
+                chapterNumber = chapterNumber,
+                verseNumbers = verseNumbers,
+            ),
+        )
+    }
+
+    private fun shareImage(imageBytes: ByteArray) {
+        val content = shareContent ?: return
+        trackShared(FORMAT_IMAGE)
+        viewModelScope.launch {
+            _uiAction.emit(
+                ShareVerseUiAction.ShareImage(
+                    content = content,
+                    imageBytes = imageBytes,
+                ),
+            )
+        }
+    }
+
+    private fun trackShared(format: String) {
+        trackEvent(
+            name = AnalyticsEventNames.VERSE_SHARED,
+            params = mapOf(
+                AnalyticsParams.FORMAT to format,
+                AnalyticsParams.VERSE_COUNT to verseNumbers.size,
+            ),
+        )
+    }
+
+    private fun trackStyleChange() {
+        val state = uiState.value
+        trackEvent(
+            name = AnalyticsEventNames.VERSE_SHARE_STYLE_CHANGED,
+            params = mapOf(
+                AnalyticsParams.BACKGROUND to state.background.name.lowercase(),
+                AnalyticsParams.FONT to state.font.name.lowercase(),
+            ),
+        )
+    }
+
+    private companion object {
+        const val FORMAT_TEXT = "text"
+        const val FORMAT_IMAGE = "image"
+    }
+}

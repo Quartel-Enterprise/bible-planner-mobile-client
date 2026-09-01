@@ -1,17 +1,11 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.mapper
 
-import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiAction
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 
 internal class DeleteProgressMapper {
-    fun map(state: ReadingPlanUiState): ReadingPlanUiAction? = when (state) {
-        is ReadingPlanUiState.Loaded -> if (state.weekPlans.containsReadDay()) {
-            ReadingPlanUiAction.GoToDeleteAllProgress
-        } else {
-            ReadingPlanUiAction.ShowNoProgressToDelete
-        }
-
+    fun map(state: ReadingPlanUiState): Boolean? = when (state) {
+        is ReadingPlanUiState.Loaded -> state.weekPlans.containsReadDay()
         is ReadingPlanUiState.Loading -> null
     }
 

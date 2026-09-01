@@ -24,5 +24,5 @@ No parameters.
 
 ## Notes
 
-- Dialog impressions are covered by [destination_view](destination_view.md) (`destination_name=logout`).
+- Dialog impressions are covered by [screen_view](screen_view.md) (`screen_name=logout`).
 - Pair: [logout_confirmed](logout_confirmed.md).

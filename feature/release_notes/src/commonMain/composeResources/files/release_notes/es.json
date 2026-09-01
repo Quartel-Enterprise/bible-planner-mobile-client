@@ -1,4 +1,72 @@
 {
+  "2.8.0": [
+    "Con la lectura vertical activada, ahora puedes desplazarte hacia arriba y continuar en el capítulo anterior — antes la lectura solo seguía hacia adelante y se detenía al comienzo del capítulo con el que se abrió la pantalla.",
+    "La pantalla de lectura abre mucho más rápido: el texto que ya está en tu dispositivo aparece al instante, sin esperar a que la lista de versiones de la Biblia responda por internet. Con conexión lenta o sin internet, eso dejaba la pantalla detenida por decenas de segundos.",
+    "La app ya no se cierra en raras situaciones al volver después de mucho tiempo en segundo plano: la sincronización en tiempo real ahora se pausa cuando sales de la app y se reconecta al volver, trayendo las novedades al instante — lo que también reduce el consumo de batería y datos en segundo plano.",
+    "Se corrigió el botón de color personalizado en el menú de resaltado, que aparecía sin fondo para los usuarios Pro.",
+    "Ahora eliges cómo la app sugiere el estudio del día al terminar el último capítulo programado: con el aviso destacado de siempre o con un nuevo banner discreto en la parte inferior que no interrumpe tu lectura. La elección está en Perfil › Preferencias › Sugerencia de estudio.",
+    "El aviso de lectura del día completada ganó la opción \"No mostrar de nuevo\" — puedes reactivar la sugerencia cuando quieras desde las preferencias.",
+    "La sugerencia de estudio ahora puede sincronizarse entre tus dispositivos: activa \"Sincronizar entre dispositivos\" en su configuración y tu elección (activada o no y cómo aparece) sigue tu cuenta en tiempo real."
+  ],
+  "2.7.1": [
+    "Mientras el capítulo carga, la pantalla de lectura ahora muestra un esbozo del texto en lugar del círculo girando — se ve de inmediato la forma del capítulo que llega, y la versión de la Biblia arriba ya no aparece en blanco antes de cargar.",
+    "Con la lectura vertical activada, las flechas de capítulo anterior y siguiente ya no aparecen al final del capítulo — el siguiente ya viene justo abajo, así que allí queda solo el botón de marcar como leído.",
+    "Con la lectura vertical activada, llegar al final del capítulo ya no detiene el desplazamiento: el esbozo del siguiente capítulo aparece justo abajo y el texto ocupa su lugar apenas carga — y el capítulo siguiente ya se empieza a buscar mientras lees.",
+    "La lectura vertical ahora también funciona en pantallas más grandes, como tabletas y computadoras, donde antes la lectura se detenía al final del capítulo abierto.",
+    "En pantallas más grandes, el nombre del capítulo arriba y el botón de marcar como leído ahora siguen el capítulo que estás leyendo, en lugar de quedarse en aquel con el que se abrió la pantalla.",
+    "La pantalla de lectura ya no se traba mientras se descarga una versión de la Biblia: el desplazamiento sigue fluido de principio a fin.",
+    "La descarga de las versiones de la Biblia es ahora varias veces más rápida — lo que antes tardaba minutos ahora termina en segundos.",
+    "Ahora puedes eliminar una versión de la Biblia mientras se está descargando o está pausada: la descarga se detiene al instante y la versión vuelve a aparecer como no descargada.",
+    "La confirmación que aparece al eliminar una versión de la Biblia descargada ahora está en tu idioma — antes aparecía en inglés para quienes leen en portugués o español.",
+    "Corregido el espacio enorme que aparecía entre el campo de escritura y el teclado en el chat con la IA: ahora el campo queda justo encima del teclado y la parte superior de la conversación ya no se sale de la pantalla.",
+    "En el chat con la IA, la conversación ahora sigue la respuesta mientras se va escribiendo, como en un chat de mensajes; y si subes para releer algo, deja de seguirla y ya no te arrastra hacia abajo.",
+    "Las sugerencias de preguntas ahora desaparecen apenas envías tu pregunta, en lugar de quedarse en pantalla hasta que empieza a llegar la respuesta.",
+    "El campo de escritura del chat ahora sugiere la primera letra en mayúscula, como en las apps de mensajería.",
+    "En la pantalla del día, el campo de notas ya no queda oculto detrás del teclado: la pantalla se ajusta y te lleva directo a él."
+  ],
+  "2.7.0": [
+    "Se corrigió un bloqueo que impedía abrir la app en algunos dispositivos. En esos dispositivos, la descarga de las versiones de la Biblia ahora ocurre con la app abierta.",
+    "La pantalla de lectura fue rediseñada: el capítulo ahora se abre con el nombre del libro y el número en grande, el texto tiene más espacio entre las líneas y el botón de marcar como leído queda siempre a mano, junto a las flechas del capítulo anterior y el siguiente.",
+    "Toca un versículo para seleccionarlo — puedes elegir varios — y aparece un panel con todo lo que puedes hacer con el pasaje.",
+    "Ahora puedes resaltar versículos en seis colores, o crear el tuyo mezclando el que quieras. Para quitar el resaltado, solo toca de nuevo el color ya aplicado; y al mantener pulsado un color personalizado eliges si quieres quitar solo el color de la paleta o también los resaltados hechos con él.",
+    "Puedes guardar versículos, escribir una nota sobre un pasaje y copiarlo con la referencia y la versión ya incluidas.",
+    "Compartir mejoró: además del texto, puedes crear una tarjeta con el versículo para Stories y estados de WhatsApp, eligiendo entre seis tipografías y ocho fondos.",
+    "Tus resaltados, versículos guardados y notas quedan en tu cuenta y aparecen en todos tus dispositivos.",
+    "Un nuevo botón \"Aa\" en la pantalla de lectura abre la apariencia de la lectura: ajusta el tamaño del texto, elige entre nueve fuentes — incluida una pensada para personas con dislexia — activa la regla de lectura para mantener el foco en la línea y activa la lectura vertical para seguir en el próximo capítulo sin salir de la pantalla.",
+    "En pantallas más grandes, como tabletas y computadoras, el texto queda en una columna y las herramientas del versículo seleccionado aparecen en un panel al lado, sin tapar la lectura."
+  ],
+  "2.6.0": [
+    "La solicitud de permiso para notificaciones ya no aparece al abrir la app: ahora solo se pide cuando empiezas a descargar una versión de la Biblia, que es cuando se usan las notificaciones de progreso de la descarga."
+  ],
+  "2.5.0": [
+    "Ahora puedes eliminar tu cuenta desde la propia app, en Perfil › Cuenta y datos. Antes de confirmar, la app muestra todo lo que se borrará y te recuerda cancelar la suscripción en la tienda donde te suscribiste.",
+    "La pantalla para eliminar todo el progreso es más clara: ahora muestra qué se elimina y qué se mantiene, como tu cuenta, tu suscripción y tus preferencias.",
+    "Se corrigieron problemas al tomar la foto de perfil con la cámara en iPhone: la pantalla de ajuste ya no se ve borrosa y los toques siguen funcionando después de cerrar las ventanas de edición.",
+    "Ahora aparece un indicador de carga mientras la cámara se abre.",
+    "Se corrigió un problema que hacía que el plan empezara en fechas distintas en cada dispositivo cuando nunca habías elegido la fecha de inicio: ahora esa fecha vale para toda tu cuenta y se ve igual en todos tus dispositivos.",
+    "Se corrigió un bloqueo poco frecuente que podía ocurrir al tocar rápidamente la sugerencia de siguiente capítulo en la pantalla de lectura.",
+    "Ahora puedes conversar con la IA sobre la lectura del día: toca \"Pregúntale a la IA\" en la pantalla del día, o la tarjeta \"Pregunta sobre esta lectura\" dentro de la pestaña Preguntas, y el asistente ya sabe qué capítulos estás leyendo. La respuesta aparece poco a poco, mientras se escribe.",
+    "Tus conversaciones con la IA quedan guardadas en tu cuenta: puedes volver a cualquiera desde el historial, buscar por tema, renombrarlas o eliminarlas — y todo aparece al instante en tus otros dispositivos.",
+    "Tus conversaciones con la IA ahora quedan guardadas en el dispositivo: incluso sin internet puedes abrir el historial y releer lo que ya fue respondido — solo necesitas conexión para hacer preguntas nuevas."
+  ],
+  "2.4.0": [
+    "Se corrigió un problema que podía mostrar un error en la pantalla de versiones de la Biblia incluso con internet funcionando.",
+    "Cuando una versión de la Biblia que descargaste recibe correcciones de texto, la app ahora te avisa al abrirla y muestra un botón de actualizar en la lista de versiones — tú eliges cuándo descargar el texto nuevo.",
+    "La lista de versiones de la Biblia ahora muestra el tamaño de cada versión, y las descargas en curso o en pausa muestran cuánto se descargó y una barra de progreso.",
+    "El aviso de actualización de las versiones de la Biblia quedó más claro, con el tamaño de cada versión junto al nombre.",
+    "La app ya no descarga una versión de la Biblia por su cuenta la primera vez que la abres: ahora tú eliges cuándo descargarla, con un botón directo en la pantalla de lectura (que muestra el tamaño y el progreso) o en la pantalla de versiones — una descarga a medias se sigue reanudando.",
+    "Cuando la versión de la Biblia incluye títulos de sección (como \"La Creación\" antes de Génesis 1:1), ahora aparecen en la pantalla de lectura.",
+    "Se corrigió un problema que podía impedir que la app te avisara que una versión de la Biblia que ya descargaste tiene texto nuevo, como los títulos de sección.",
+    "En la pantalla de ajustar la foto de perfil, además de arrastrar y hacer zoom, ahora puedes reflejar la foto en horizontal o en vertical y girarla un cuarto de vuelta en cada toque.",
+    "En Android, los colores dinámicos, que dan a la app los colores de tu fondo de pantalla, ahora vienen desactivados — si te gustan, solo actívalos en la pantalla de tema.",
+    "En Android, el ícono de la app ahora sigue el tema de íconos del sistema: si eliges íconos con color personalizado, el ícono de Planner Bíblico también cambia de color.",
+    "Se corrigió un problema que hacía que una versión de la Biblia ya descargada y actualizada volviera a mostrar el aviso de actualización disponible.",
+    "Se corrigió un problema que hacía que la descarga de una versión de la Biblia se detuviera a la mitad y solo avanzara de nuevo después de pausar y reanudar; las descargas ahora también reintentan solas cuando falla la conexión.",
+    "Las nuevas versiones de la Biblia ahora aparecen en la lista apenas están disponibles, sin necesidad de cerrar y volver a abrir la app.",
+    "Se corrigió un problema que podía dejar la lista de versiones de la Biblia detenida y desactualizada cuando el reloj del dispositivo se atrasaba.",
+    "La etiqueta con la sigla de la versión ahora muestra hasta tres letras y ya no se parte en dos líneas, como RVR para la Reina-Valera 1960.",
+    "Para quienes usan la app en español, la versión de la Biblia que viene ya elegida ahora es la Reina-Valera 1960, en lugar de una versión en inglés."
+  ],
   "2.3.0": [
     "Se corrigió el selector de orden en la parte superior del plan de lectura, que en algunos dispositivos mostraba el texto pegado a los bordes; ahora cambia al formato compacto cuando falta espacio y queda junto al botón de opciones.",
     "En el formato compacto, el selector de orden ahora abre una lista con los dos órdenes de lectura y marca el que está en uso, en lugar de cambiar de inmediato al tocarlo.",

@@ -3,11 +3,14 @@ package com.quare.bibleplanner.core.image
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Rect
 import androidx.core.graphics.createBitmap
 import java.io.ByteArrayOutputStream
 
-actual fun avatarImageCropper(): AvatarImageCropper = AndroidAvatarImageCropper()
+private const val HALF = 2f
+
+actual fun createAvatarImageCropper(): AvatarImageCropper = AndroidAvatarImageCropper()
 
 internal class AndroidAvatarImageCropper : AvatarImageCropper {
     override fun invoke(
@@ -18,17 +21,19 @@ internal class AndroidAvatarImageCropper : AvatarImageCropper {
         val decoded = BitmapFactory
             .decodeByteArray(source, 0, source.size, decodeOptions(source))
             ?: throw UnsupportedImageFormatException()
+        val oriented = decoded.orient(params.orientation)
+        if (oriented !== decoded) decoded.recycle()
         val output = createBitmap(
             width = AVATAR_OUTPUT_SIZE_PX,
             height = AVATAR_OUTPUT_SIZE_PX,
         )
         Canvas(output).drawBitmap(
-            decoded,
-            decoded.cropRect(crop),
+            oriented,
+            oriented.getCropRect(crop),
             Rect(0, 0, AVATAR_OUTPUT_SIZE_PX, AVATAR_OUTPUT_SIZE_PX),
             null,
         )
-        decoded.recycle()
+        oriented.recycle()
         return ByteArrayOutputStream().use { stream ->
             output.compress(Bitmap.CompressFormat.JPEG, AVATAR_JPEG_QUALITY, stream)
             output.recycle()
@@ -36,7 +41,21 @@ internal class AndroidAvatarImageCropper : AvatarImageCropper {
         }
     }
 
-    private fun Bitmap.cropRect(crop: NormalizedCropRect): Rect {
+    private fun Bitmap.orient(orientation: PhotoOrientation): Bitmap {
+        if (orientation.isOriginal) return this
+        val matrix = Matrix().apply {
+            postScale(
+                orientation.horizontalScale,
+                orientation.verticalScale,
+                width / HALF,
+                height / HALF,
+            )
+            postRotate(orientation.rotationDegrees.toFloat())
+        }
+        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
+
+    private fun Bitmap.getCropRect(crop: NormalizedCropRect): Rect {
         val left = (crop.left * width).toInt()
         val top = (crop.top * height).toInt()
         val side = (crop.size * minOf(width, height)).toInt().coerceAtLeast(1)

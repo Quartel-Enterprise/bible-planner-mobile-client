@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashRepo
 fun CrashReporter.configure(isDebug: Boolean) {
     setCollectionEnabled(enabled = !isDebug)
     if (!isDebug) {
+        configureUnhandledExceptionReporting()
         Logger.addLogWriter(CrashReporterLogWriter(this))
     }
 }

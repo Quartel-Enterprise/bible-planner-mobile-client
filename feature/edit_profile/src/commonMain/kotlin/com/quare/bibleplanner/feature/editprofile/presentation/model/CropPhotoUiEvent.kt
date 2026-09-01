@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.editprofile.presentation.model
 
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
@@ -25,6 +26,27 @@ internal sealed interface CropPhotoUiEvent : UiEvent {
         val zoom: Float,
     ) : CropPhotoUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
+
+    data object OnFlipHorizontalClick : CropPhotoUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PROFILE_PHOTO_CROP_TRANSFORMED,
+            params = mapOf(AnalyticsParams.TRANSFORM to "flip_horizontal"),
+        )
+    }
+
+    data object OnFlipVerticalClick : CropPhotoUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PROFILE_PHOTO_CROP_TRANSFORMED,
+            params = mapOf(AnalyticsParams.TRANSFORM to "flip_vertical"),
+        )
+    }
+
+    data object OnRotateClick : CropPhotoUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.PROFILE_PHOTO_CROP_TRANSFORMED,
+            params = mapOf(AnalyticsParams.TRANSFORM to "rotate"),
+        )
     }
 
     data object OnCancelClick : CropPhotoUiEvent {

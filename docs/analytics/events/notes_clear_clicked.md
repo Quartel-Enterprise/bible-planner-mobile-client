@@ -2,7 +2,7 @@
 
 **Tier:** P2 | **Domain:** Notes
 
-Captures the user tapping the clear-notes control on the Day screen. This click also triggers navigation to the delete-notes confirmation dialog (which `destination_view` logs separately), so this event isolates click-through intent from the resulting screen-view/confirmation funnel.
+Captures the user tapping the clear-notes control on the Day screen. This click also triggers navigation to the delete-notes confirmation dialog (which `screen_view` logs separately), so this event isolates click-through intent from the resulting screen-view/confirmation funnel.
 
 ## When it fires
 
@@ -18,4 +18,4 @@ None.
 
 ## Notes
 
-- Related: [destination_view](destination_view.md) (`delete_notes` with `plan_type`, `week_number`, `day_number`) fires separately once the confirmation dialog becomes visible; the actual deletion is [note_deleted](note_deleted.md) or its cancellation is [note_delete_cancelled](note_delete_cancelled.md).
+- Related: [screen_view](screen_view.md) (`delete_notes` with `plan_type`, `week_number`, `day_number`) fires separately once the confirmation dialog becomes visible; the actual deletion is [note_deleted](note_deleted.md) or its cancellation is [note_delete_cancelled](note_delete_cancelled.md).

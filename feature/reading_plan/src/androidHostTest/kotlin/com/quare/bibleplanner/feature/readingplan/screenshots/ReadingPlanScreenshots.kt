@@ -35,7 +35,6 @@ private val bannerCopy = mapOf(
                 "Un plan que guarda tu lugar, para que siempre sepas qué leer después"
         ),
 )
-
 private val darkBannerCopy = mapOf(
     "en-US" to (
         "Light or dark, it follows you" to
@@ -50,7 +49,6 @@ private val darkBannerCopy = mapOf(
             "El mismo plan, en el tema en que de verdad lees"
     ),
 )
-
 private const val BACKGROUND = 0xFF1B1B1F
 private const val DARK_BACKGROUND = 0xFF5C5F70
 

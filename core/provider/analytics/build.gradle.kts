@@ -48,14 +48,14 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
 
-        val iosMain by creating {
+        iosMain {
             dependsOn(commonMain.get())
         }
-        val iosArm64Main by getting {
-            dependsOn(iosMain)
+        iosArm64Main {
+            dependsOn(iosMain.get())
         }
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
+        iosSimulatorArm64Main {
+            dependsOn(iosMain.get())
         }
     }
 }
@@ -73,6 +73,10 @@ tasks.withType<Test>().configureEach {
         inputs
             .dir(rootProject.layout.projectDirectory.dir("docs/analytics/events"))
             .withPropertyName("analyticsEventsCatalog")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+        inputs
+            .file(rootProject.layout.projectDirectory.file("docs/analytics/README.md"))
+            .withPropertyName("analyticsEventIndex")
             .withPathSensitivity(PathSensitivity.RELATIVE)
     }
 }

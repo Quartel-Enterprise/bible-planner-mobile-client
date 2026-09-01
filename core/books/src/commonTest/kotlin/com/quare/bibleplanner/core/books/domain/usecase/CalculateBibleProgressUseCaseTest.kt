@@ -51,7 +51,7 @@ internal class CalculateBibleProgressUseCaseTest {
     private fun verse(
         number: Int,
         isRead: Boolean,
-    ): VerseModel = VerseModel(number = number, isRead = isRead, text = null)
+    ): VerseModel = VerseModel(number = number, isRead = isRead)
 
     private class FakeBooksRepository(
         private val booksFlow: Flow<List<BookDataModel>>,

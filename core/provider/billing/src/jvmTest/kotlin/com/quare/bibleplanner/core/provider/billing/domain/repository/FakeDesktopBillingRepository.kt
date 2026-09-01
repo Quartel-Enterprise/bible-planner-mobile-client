@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.provider.billing.domain.repository
 
 import com.quare.bibleplanner.core.provider.billing.domain.model.BillingUnavailableException
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
+import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,8 @@ internal class FakeDesktopBillingRepository(
                 planType = ProPlanType.MONTHLY,
                 purchaseDate = null,
                 expirationDate = null,
+                willRenew = true,
+                store = PurchaseStore.WEB,
             )
         } else {
             SubscriptionStatus.Free

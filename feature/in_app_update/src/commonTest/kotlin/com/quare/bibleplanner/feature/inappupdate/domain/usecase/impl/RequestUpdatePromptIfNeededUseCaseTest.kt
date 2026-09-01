@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.inappupdate.domain.usecase.impl
 
+import com.quare.bibleplanner.core.date.HasCooldownElapsedUseCase
 import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.feature.inappupdate.fake.FakeUpdatePromptPreferences
@@ -81,7 +82,7 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
             availability
         },
         updatePromptPreferences = FakeUpdatePromptPreferences(lastPromptedAt = lastPromptedAt),
-        currentTimestampProvider = { NOW },
+        hasCooldownElapsed = HasCooldownElapsedUseCase { NOW },
         showUpdatePrompt = ::onShowUpdatePrompt,
     )
 

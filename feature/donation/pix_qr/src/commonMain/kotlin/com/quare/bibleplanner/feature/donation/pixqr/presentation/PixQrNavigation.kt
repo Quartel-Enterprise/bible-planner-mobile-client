@@ -11,14 +11,11 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
-fun EntryProviderScope<NavKey>.pixQr(onNavigateBack: () -> Unit) {
+fun EntryProviderScope<NavKey>.pixQr() {
     entry<PixQrNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<PixQrViewModel>()
 
-        PixQrActionCollector(
-            onNavigateBack = onNavigateBack,
-            flow = viewModel.uiAction,
-        )
+        PixQrActionCollector(flow = viewModel.uiAction)
 
         PixQrDialog(
             onEvent = viewModel::onEvent,
@@ -27,14 +24,9 @@ fun EntryProviderScope<NavKey>.pixQr(onNavigateBack: () -> Unit) {
 }
 
 @Composable
-private fun PixQrActionCollector(
-    onNavigateBack: () -> Unit,
-    flow: Flow<PixQrUiAction>,
-) {
+private fun PixQrActionCollector(flow: Flow<PixQrUiAction>) {
     ActionCollector(flow) { action ->
         when (action) {
-            PixQrUiAction.NavigateBack -> onNavigateBack()
-
             is PixQrUiAction.ShareQrCode -> {
                 val bytes = Res.readBytes("drawable/qr_code_pix_share.png")
                 shareContent(action.message, bytes)

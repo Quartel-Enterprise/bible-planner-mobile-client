@@ -20,5 +20,5 @@ User taps one of the three tabs on the release-notes screen.
 
 ## Notes
 
-- The initially selected tab does not fire this event — screen entry is covered by [destination_view](destination_view.md) (`release_notes`).
+- The initially selected tab does not fire this event — screen entry is covered by [screen_view](screen_view.md) (`release_notes`).
 - Related: [github_release_opened](github_release_opened.md), [profile_option_clicked](profile_option_clicked.md) (`option=release_notes`).

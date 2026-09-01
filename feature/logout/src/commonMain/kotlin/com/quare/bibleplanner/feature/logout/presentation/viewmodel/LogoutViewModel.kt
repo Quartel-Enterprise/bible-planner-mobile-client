@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.logout.generated.resources.Res
 import bibleplanner.feature.logout.generated.resources.logout_pending_favorites
 import bibleplanner.feature.logout.generated.resources.logout_success_message
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -24,11 +25,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 internal class LogoutViewModel(
     private val logout: Logout,
     private val logoutErrorMapper: LogoutErrorMapper,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LogoutUiEvent>(trackEvent) {
     private val _uiState: MutableStateFlow<LogoutUiState> = MutableStateFlow(LogoutUiState.Idle)
@@ -40,8 +41,8 @@ internal class LogoutViewModel(
     override fun handleEvent(event: LogoutUiEvent) {
         when (event) {
             is LogoutUiEvent.ConfirmLogoutClick -> performLogout(shouldFlushPending = event.shouldFlushPending)
-            LogoutUiEvent.OnCancel -> navigateBack()
-            LogoutUiEvent.OnDismiss -> if (_uiState.value !is LogoutUiState.Loading) navigateBack()
+            LogoutUiEvent.OnCancel -> navigator.navigateBack()
+            LogoutUiEvent.OnDismiss -> if (_uiState.value !is LogoutUiState.Loading) navigator.navigateBack()
         }
     }
 
@@ -58,7 +59,7 @@ internal class LogoutViewModel(
     private suspend fun Result<Unit>.handleLogout() {
         onSuccess {
             _uiAction.emit(LogoutUiAction.NotifySuccess(Res.string.logout_success_message))
-            _uiAction.emit(LogoutUiAction.NavigateBack)
+            navigator.navigateBack()
         }.onFailure { throwable ->
             if (throwable is LogoutFlushFailedException) {
                 trackLogoutFailed(reason = REASON_PENDING_CHANGES)
@@ -76,12 +77,6 @@ internal class LogoutViewModel(
             name = AnalyticsEventNames.LOGOUT_FAILED,
             params = mapOf(AnalyticsParams.REASON to reason),
         )
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _uiAction.emit(LogoutUiAction.NavigateBack)
-        }
     }
 
     private companion object {

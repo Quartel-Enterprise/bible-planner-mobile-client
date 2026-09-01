@@ -8,7 +8,7 @@ class CropGeometryTest {
     @Test
     fun `fits the shorter side of the image exactly into the circle at rest`() {
         // When
-        val scale = circleCoverScale(
+        val scale = getCircleCoverScale(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
@@ -52,13 +52,25 @@ class CropGeometryTest {
     }
 
     @Test
+    fun `selects the full image height once the portrait photo is turned sideways`() {
+        // When
+        val crop = computeCropRect(params(zoom = 1f, orientation = quarterTurned()))
+
+        // Then
+        assertEquals(1f, crop.size, TOLERANCE)
+        assertEquals(0.25f, crop.left, TOLERANCE)
+        assertEquals(0f, crop.top, TOLERANCE)
+    }
+
+    @Test
     fun `blocks sideways panning at minimum zoom so the image never leaves the circle`() {
         // When
-        val (maxX, maxY) = maxPanOffset(
+        val (maxX, maxY) = getMaxPanOffset(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
             zoom = 1f,
+            orientation = original(),
         )
 
         // Then
@@ -69,11 +81,12 @@ class CropGeometryTest {
     @Test
     fun `unlocks sideways panning once the user zooms in`() {
         // When
-        val (maxX, maxY) = maxPanOffset(
+        val (maxX, maxY) = getMaxPanOffset(
             imageWidth = 1000,
             imageHeight = 2000,
             circleDiameter = 900f,
             zoom = 1.5f,
+            orientation = original(),
         )
 
         // Then
@@ -81,10 +94,27 @@ class CropGeometryTest {
         assertEquals(900f, maxY, TOLERANCE)
     }
 
+    @Test
+    fun `swaps the panning axes when the photo is turned sideways`() {
+        // When
+        val (maxX, maxY) = getMaxPanOffset(
+            imageWidth = 1000,
+            imageHeight = 2000,
+            circleDiameter = 900f,
+            zoom = 1f,
+            orientation = quarterTurned(),
+        )
+
+        // Then
+        assertEquals(450f, maxX, TOLERANCE)
+        assertEquals(0f, maxY, TOLERANCE)
+    }
+
     private fun params(
         zoom: Float,
         offsetX: Float = 0f,
         offsetY: Float = 0f,
+        orientation: PhotoOrientation = original(),
     ) = CropParams(
         imageWidth = 1000,
         imageHeight = 2000,
@@ -92,7 +122,16 @@ class CropGeometryTest {
         zoom = zoom,
         offsetX = offsetX,
         offsetY = offsetY,
+        orientation = orientation,
     )
+
+    private fun original(): PhotoOrientation = PhotoOrientation(
+        rotationDegrees = PhotoOrientation.NO_ROTATION,
+        isFlippedHorizontally = false,
+        isFlippedVertically = false,
+    )
+
+    private fun quarterTurned(): PhotoOrientation = original().rotateQuarterTurn()
 
     private companion object {
         const val TOLERANCE = 0.001f

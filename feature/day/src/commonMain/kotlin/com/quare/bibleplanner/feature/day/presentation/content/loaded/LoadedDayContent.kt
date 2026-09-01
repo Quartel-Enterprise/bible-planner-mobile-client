@@ -6,10 +6,10 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.day.presentation.component.askAiFabClearance
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.LoadedDayLandscapeContent
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.portrait.loadedDayPortraitScreenContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
@@ -42,7 +42,7 @@ internal fun LoadedDayContent(
     } else {
         ResponsiveColumn(
             modifier = modifier,
-            contentPadding = PaddingValues(bottom = 16.dp),
+            contentPadding = PaddingValues(bottom = askAiFabClearance),
             portraitContent = {
                 loadedDayPortraitScreenContent(
                     day = day,

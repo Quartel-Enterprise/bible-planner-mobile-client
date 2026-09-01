@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.logout.presentation.viewmodel
 
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutFlushFailedException
@@ -32,6 +34,8 @@ internal class LogoutViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: LogoutViewModel
     private lateinit var actions: List<LogoutUiAction>
+    private val navigator = Navigator()
+    private val commands = mutableListOf<NavigationCommand>()
     private lateinit var states: List<LogoutUiState>
     private var requestedShouldFlush: Boolean? = null
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
@@ -47,7 +51,7 @@ internal class LogoutViewModelTest {
     }
 
     @Test
-    fun `GIVEN a successful logout WHEN confirming THEN notifies success then emits NavigateBack`() =
+    fun `GIVEN a successful logout WHEN confirming THEN notifies success then navigates back`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(result = Result.success(Unit))
@@ -56,9 +60,9 @@ internal class LogoutViewModelTest {
             viewModel.onEvent(LogoutUiEvent.ConfirmLogoutClick.OnConfirmLogout)
 
             // Then
-            assertEquals(2, actions.size)
+            assertEquals(1, actions.size)
             assertIs<LogoutUiAction.NotifySuccess>(actions[0])
-            assertEquals(LogoutUiAction.NavigateBack, actions[1])
+            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         }
 
     @Test
@@ -141,7 +145,7 @@ internal class LogoutViewModelTest {
         }
 
     @Test
-    fun `GIVEN a logout WHEN cancelling THEN emits NavigateBack`() = runTest(testDispatcher) {
+    fun `GIVEN a logout WHEN cancelling THEN navigates back`() = runTest(testDispatcher) {
         // Given
         prepareScenario(result = Result.success(Unit))
 
@@ -149,7 +153,7 @@ internal class LogoutViewModelTest {
         viewModel.onEvent(LogoutUiEvent.OnCancel)
 
         // Then
-        assertEquals(listOf(LogoutUiAction.NavigateBack), actions)
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
     }
 
     @Test
@@ -215,10 +219,12 @@ internal class LogoutViewModelTest {
 
     private fun TestScope.prepareScenario(result: Result<Unit>) {
         viewModel = LogoutViewModel(
+            navigator = navigator,
             logout = { shouldFlush -> fakeLogout(shouldFlush, result) },
             logoutErrorMapper = LogoutErrorMapper(),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
+        backgroundScope.launch { navigator.commands.collect { commands += it } }
         actions = mutableListOf<LogoutUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
         }

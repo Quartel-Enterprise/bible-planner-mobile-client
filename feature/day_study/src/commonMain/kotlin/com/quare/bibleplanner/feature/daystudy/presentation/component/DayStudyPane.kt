@@ -64,6 +64,7 @@ internal fun DayStudyPane(
     isOpeningStudy: Boolean,
     onCardClick: () -> Unit,
     onRetryClick: () -> Unit,
+    onAskAiClick: () -> Unit,
     showStudyHeader: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -90,6 +91,7 @@ internal fun DayStudyPane(
             openStudy != null -> DayStudyInlinePane(
                 study = openStudy,
                 showHeader = showStudyHeader,
+                onAskAiClick = onAskAiClick,
                 modifier = Modifier.fillMaxSize(),
             )
 
@@ -257,7 +259,7 @@ private fun HeroButton(
             )
         } else {
             Icon(
-                imageVector = heroButtonIcon(mode),
+                imageVector = getHeroButtonIcon(mode),
                 contentDescription = null,
                 modifier = Modifier.size(ButtonDefaults.IconSize),
             )
@@ -267,7 +269,7 @@ private fun HeroButton(
     }
 }
 
-private fun heroButtonIcon(mode: DayStudyCardMode?): ImageVector = when (mode) {
+private fun getHeroButtonIcon(mode: DayStudyCardMode?): ImageVector = when (mode) {
     DayStudyCardMode.LOCKED -> Icons.Rounded.LockOpen
     null, DayStudyCardMode.GENERATE, DayStudyCardMode.VIEW -> Icons.Rounded.AutoAwesome
 }

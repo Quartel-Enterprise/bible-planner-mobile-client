@@ -20,5 +20,5 @@ The user taps the "Connected devices" row header in the Account details sheet, t
 
 ## Notes
 
-- The Account details sheet impression itself is covered by [destination_view](destination_view.md) (`destination_name=account_details`).
+- The Account details sheet impression itself is covered by [screen_view](screen_view.md) (`screen_name=account_details`).
 - Per the toggle convention this is one event with an `is_*` boolean, not separate open/close events.

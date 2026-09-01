@@ -17,8 +17,9 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
 
         // Configure Kotlin Multiplatform extension
         extensions.configure<KotlinMultiplatformExtension> {
-
-            (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension>("androidLibrary") {
+            (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension>(
+                "androidLibrary",
+            ) {
                 compileSdk = sdkVersions.compileSdk
                 minSdk = sdkVersions.minSdk
                 experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
@@ -34,7 +35,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                 }
             }
 
-            //remove expect actual warning
+            // remove expect actual warning
             compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
 

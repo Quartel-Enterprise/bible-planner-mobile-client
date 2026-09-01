@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the sheet itself is covered by [destination_view](destination_view.md) (`congrats`, `bottom_sheet`).
+- Destination impression for the sheet itself is covered by [screen_view](screen_view.md) (`congrats`, `bottom_sheet`).
 - Related: [congrats_dismissed](congrats_dismissed.md).

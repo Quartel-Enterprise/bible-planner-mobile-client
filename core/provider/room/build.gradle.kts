@@ -9,7 +9,7 @@ kotlin {
         namespace = "com.quare.bibleplanner.core.provider.room"
     }
 
-    jvm("desktop")
+    jvm()
     sourceSets {
         commonMain.dependencies {
             // Core
@@ -37,11 +37,9 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
         }
 
-        val desktopMain by getting {
-            dependencies {
-                implementation(libs.androidx.sqlite.bundled)
-                implementation(projects.core.utils)
-            }
+        jvmMain.dependencies {
+            implementation(libs.androidx.sqlite.bundled)
+            implementation(projects.core.utils)
         }
 
         commonTest.dependencies {
@@ -77,5 +75,5 @@ dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
-    add("kspDesktop", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
 }

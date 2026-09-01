@@ -54,18 +54,14 @@ kotlin {
             implementation(libs.supabase.auth)
         }
 
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.kotlinx.coroutines.test)
-            }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
 
-        val jvmTest by getting {
-            dependencies {
-                // Skiko native library, required by compose-resources' getString() on the JVM target
-                implementation(compose.desktop.currentOs)
-            }
+        jvmTest.dependencies {
+            // Skiko native library, required by compose-resources' getString() on the JVM target
+            implementation(compose.desktop.currentOs)
         }
     }
 }

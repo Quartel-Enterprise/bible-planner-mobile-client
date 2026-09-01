@@ -194,7 +194,7 @@ private fun unknownValue(): String = stringResource(Res.string.account_details_v
 private fun Instant.toLastLoginLabel(): String {
     val dateTime = toLocalDateTime(TimeZone.currentSystemDefault())
     val dateLabel = dateTime.date.toDateRepresentation().format()
-    val time = "${dateTime.hour.padded()}:${dateTime.minute.padded()}"
+    val time = "${dateTime.hour.toPadded()}:${dateTime.minute.toPadded()}"
     return "$dateLabel, $time"
 }
 
@@ -202,4 +202,4 @@ private fun Instant.toLastLoginLabel(): String {
 private fun Instant.toCreatedAtLabel(): String =
     DateRepresentation.Custom(toLocalDateTime(TimeZone.currentSystemDefault()).date).format()
 
-private fun Int.padded(): String = toString().padStart(length = 2, padChar = '0')
+private fun Int.toPadded(): String = toString().padStart(length = 2, padChar = '0')

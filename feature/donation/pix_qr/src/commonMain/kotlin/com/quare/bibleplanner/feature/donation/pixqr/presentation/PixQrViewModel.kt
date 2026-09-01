@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.donation.pixqr.presentation
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.donation.pix_qr.generated.resources.Res
 import bibleplanner.feature.donation.pix_qr.generated.resources.pix_qr_share_message
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
@@ -13,6 +14,7 @@ import org.jetbrains.compose.resources.getString
 
 class PixQrViewModel(
     private val getAppStoreLink: GetAppStoreLinkUseCase,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PixQrUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<PixQrUiAction>()
@@ -20,11 +22,7 @@ class PixQrViewModel(
 
     override fun handleEvent(event: PixQrUiEvent) {
         when (event) {
-            PixQrUiEvent.Dismiss -> {
-                viewModelScope.launch {
-                    _uiAction.emit(PixQrUiAction.NavigateBack)
-                }
-            }
+            PixQrUiEvent.Dismiss -> navigator.navigateBack()
 
             PixQrUiEvent.Share -> {
                 viewModelScope.launch {

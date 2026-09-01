@@ -39,6 +39,15 @@ sealed interface BibleVersionUiEvent : UiEvent {
         )
     }
 
+    data class OnUpdate(
+        val id: String,
+    ) : BibleVersionUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.BIBLE_VERSION_UPDATE_CLICKED,
+            params = mapOf(AnalyticsParams.VERSION_ID to id),
+        )
+    }
+
     data class OnDelete(
         val id: String,
     ) : BibleVersionUiEvent {

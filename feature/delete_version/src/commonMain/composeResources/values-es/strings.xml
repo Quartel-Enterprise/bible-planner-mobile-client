@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_version_title">Eliminar Versión de la Biblia</string>
+    <string name="delete_version_message">¿Estás seguro de que deseas eliminar esta versión descargada?</string>
+    <string name="delete">Eliminar</string>
+    <string name="cancel">Cancelar</string>
+</resources>

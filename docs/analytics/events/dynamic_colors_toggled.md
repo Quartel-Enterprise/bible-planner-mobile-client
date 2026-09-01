@@ -26,4 +26,4 @@ Two trigger points:
 
 - Android-only: the toggle is not rendered on iOS/desktop.
 - The dynamic-colors value is mirrored to synced preferences under the theme sync toggle — there is no separate sync switch for it (see [setting_sync_toggled](setting_sync_toggled.md)).
-- Related: [theme_changed](theme_changed.md); Material You sheet impressions are covered by [destination_view](destination_view.md) (`material_you`).
+- Related: [theme_changed](theme_changed.md); Material You sheet impressions are covered by [screen_view](screen_view.md) (`material_you`).

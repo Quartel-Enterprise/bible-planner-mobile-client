@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.provider.supabase
 
 import com.quare.bibleplanner.core.provider.supabase.session.DataStoreSessionAuditStore
+import com.quare.bibleplanner.core.provider.supabase.session.ExpectedSessionDeletion
 import com.quare.bibleplanner.core.provider.supabase.session.MonitoredSessionManager
 import com.quare.bibleplanner.core.provider.supabase.session.SessionAuditStore
 import com.quare.bibleplanner.core.provider.supabase.session.createPlatformSessionManager
@@ -35,15 +36,17 @@ val supabaseModule = module {
             currentTimestampProvider = get(),
         )
     }
+    single { ExpectedSessionDeletion() }
     single<SessionManager> {
         MonitoredSessionManager(
             delegate = createPlatformSessionManager(),
             auditStore = get(),
+            expectedSessionDeletion = get(),
         )
     }
     single<SupabaseClient> { getSupabaseClient(get()) }
     single<Auth> { get<SupabaseClient>().auth }
-    single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.ignoringTransientInitializing() }
+    single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.filterTransientInitializing() }
     single<Realtime> { get<SupabaseClient>().realtime }
     single<Functions> { get<SupabaseClient>().functions }
     single<BucketApi>(named(CONTENT_BUCKET)) {
@@ -54,7 +57,7 @@ val supabaseModule = module {
     }
 }
 
-private fun StateFlow<SessionStatus>.ignoringTransientInitializing(): StateFlow<SessionStatus> =
+private fun StateFlow<SessionStatus>.filterTransientInitializing(): StateFlow<SessionStatus> =
     runningReduce { resolved, next ->
         if (next is SessionStatus.Initializing) resolved else next
     }.stateIn(

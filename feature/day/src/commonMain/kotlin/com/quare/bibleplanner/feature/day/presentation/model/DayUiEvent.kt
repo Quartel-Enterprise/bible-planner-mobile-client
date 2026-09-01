@@ -25,6 +25,12 @@ internal sealed interface DayUiEvent : UiEvent {
         )
     }
 
+    data object OnAskAiClick : DayUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+        )
+    }
+
     data object OnDayReadToggle : DayUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.DAY_READ_TOGGLED,
@@ -99,10 +105,7 @@ internal sealed interface DayUiEvent : UiEvent {
     }
 
     data object OnDayStudySubscribeClick : DayUiEvent {
-        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.PAYWALL_VIEWED,
-            params = mapOf(AnalyticsParams.SOURCE to SOURCE_DAY_STUDY),
-        )
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
 
     data object OnDayStudyLoginRequired : DayUiEvent {
@@ -126,9 +129,5 @@ internal sealed interface DayUiEvent : UiEvent {
         val isWide: Boolean,
     ) : DayUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
-    }
-
-    companion object {
-        private const val SOURCE_DAY_STUDY = "day_study"
     }
 }

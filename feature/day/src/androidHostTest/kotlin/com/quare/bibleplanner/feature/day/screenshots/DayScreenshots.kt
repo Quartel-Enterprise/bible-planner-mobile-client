@@ -33,7 +33,6 @@ private val bannerCopy = mapOf(
             "Abre el día, lee y ve marcando cada capítulo"
     ),
 )
-
 private const val BACKGROUND = 0xFF1B1B1F
 private const val FREE_LIMIT = 3
 

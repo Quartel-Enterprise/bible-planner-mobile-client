@@ -13,17 +13,13 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
-import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.toClipEntry
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.donation(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-) {
+fun EntryProviderScope<NavKey>.donation() {
     entry<DonationNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<DonationViewModel>()
         val state by viewModel.uiState.collectAsState()
@@ -32,8 +28,6 @@ fun EntryProviderScope<NavKey>.donation(
 
         DonationActionCollector(
             sheetState = sheetState,
-            onNavigate = onNavigate,
-            onNavigateBack = onNavigateBack,
             flow = viewModel.uiAction,
         )
 
@@ -53,16 +47,12 @@ fun EntryProviderScope<NavKey>.donation(
 @Composable
 private fun DonationActionCollector(
     sheetState: SheetState,
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
     flow: Flow<DonationUiAction>,
 ) {
     val clipboardManager = LocalClipboard.current
     val uriHandler = LocalUriHandler.current
     ActionCollector(flow) { action ->
         when (action) {
-            DonationUiAction.NavigateBack -> onNavigateBack()
-
             is DonationUiAction.Copy -> {
                 clipboardManager.setClipEntry(
                     clipEntry = action.text.toClipEntry(),
@@ -72,8 +62,6 @@ private fun DonationActionCollector(
             is DonationUiAction.OpenUrl -> uriHandler.openUri(action.url)
 
             DonationUiAction.Close -> sheetState.hide()
-
-            DonationUiAction.NavigateToPixQr -> onNavigate(PixQrNavRoute)
         }
     }
 }

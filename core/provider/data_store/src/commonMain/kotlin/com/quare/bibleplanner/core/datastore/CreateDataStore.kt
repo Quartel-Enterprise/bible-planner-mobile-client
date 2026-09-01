@@ -9,7 +9,7 @@ private const val DATA_STORE_FILE_NAME = "prefs.preferences_pb"
 
 expect fun createDataStore(): DataStore<Preferences>
 
-fun commonCreateDataStore(producePath: (dataStoreFileName: String) -> String): DataStore<Preferences> =
+fun createCommonDataStore(producePath: (dataStoreFileName: String) -> String): DataStore<Preferences> =
     PreferenceDataStoreFactory.createWithPath(
         produceFile = { producePath(DATA_STORE_FILE_NAME).toPath() },
     )

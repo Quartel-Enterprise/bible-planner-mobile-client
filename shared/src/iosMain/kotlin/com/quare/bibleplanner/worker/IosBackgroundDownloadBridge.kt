@@ -12,12 +12,17 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.core.provider.supabase.generated.SupabaseBuildKonfig
 import com.quare.bibleplanner.feature.bibleversion.data.dto.SyncChapterDto
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
+import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.milliseconds
 
 class IosBackgroundDownloadBridge(
     private val supabaseBookAbbreviationMapper: SupabaseBookAbbreviationMapper,
@@ -26,19 +31,46 @@ class IosBackgroundDownloadBridge(
     private val bibleVersionDao: BibleVersionDao,
     private val notifier: BibleVersionDownloadNotifier,
     private val bibleRepository: BibleRepository,
-    private val json: Json,
+    private val getRemoteContentVersion: GetRemoteContentVersionUseCase,
 ) {
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
+
+    /**
+     * How many chapters of each version are on disk, kept in step with the writes instead of being
+     * counted again per chapter: counting walks every downloaded verse of every version, and a
+     * download would pay for that walk once per chapter. Seeded when the download is planned, and
+     * again on the first chapter of a session iOS resumed on its own after the app was relaunched.
+     */
+    private val downloadedChapters = mutableMapOf<String, Int>()
+    private val downloadedChaptersMutex = Mutex()
 
     val supabaseStorageBaseUrl: String =
         "${SupabaseBuildKonfig.SUPABASE_URL}/storage/v1/object/public/content"
 
-    internal suspend fun getPendingDownloads(versionId: String): List<ChapterDownloadTask> =
+    internal suspend fun getPendingDownloads(versionId: String): List<ChapterDownloadTask> {
+        val tasks = findPendingDownloads(versionId)
+        val totalChapters = bibleVersionDao.getVersionById(versionId)?.totalChapters ?: 0
+        downloadedChaptersMutex.withLock {
+            downloadedChapters[versionId] = totalChapters - tasks.size
+        }
+        return tasks
+    }
+
+    private suspend fun findPendingDownloads(versionId: String): List<ChapterDownloadTask> =
         BookId.entries.flatMap { bookId ->
             val bookAbb = supabaseBookAbbreviationMapper.map(bookId)
-            chapterDao
-                .getChaptersByBookId(bookId.name)
-                .filter { chapter -> verseDao.countVersesByChapterAndVersion(chapter.id, versionId) == 0 }
+            val chapters = chapterDao.getChaptersByBookId(bookId.name)
+            val downloadedChapterIds = verseDao
+                .getDownloadedChapterIds(
+                    versionId = versionId,
+                    chapterIds = chapters.map { it.id },
+                ).toSet()
+            chapters
+                .filterNot { chapter -> chapter.id in downloadedChapterIds }
                 .map { chapter ->
                     ChapterDownloadTask(
                         url = "$supabaseStorageBaseUrl/bible/${versionId.uppercase()}/$bookAbb/${chapter.number}.json",
@@ -67,12 +99,16 @@ class IosBackgroundDownloadBridge(
                             verseId = verseEntity.id,
                             bibleVersionId = versionId,
                             text = verseDto.text,
+                            heading = verseDto.heading,
                         )
                     }
                 }
                 verseDao.upsertVerseTexts(verseTextEntities)
-                val dbDownloaded = verseDao.countChaptersWithVersesByVersion(versionId)
                 val totalChapters = bibleVersionDao.getVersionById(versionId)?.totalChapters ?: 0
+                val dbDownloaded = countDownloadedChapters(
+                    versionId = versionId,
+                    totalChapters = totalChapters,
+                )
                 dbProgress = if (totalChapters > 0) dbDownloaded.toFloat() / totalChapters else 0f
                 Logger.d("PROGRESS") { "DB progress for $versionId: $dbDownloaded/$totalChapters = $dbProgress" }
             } catch (e: Exception) {
@@ -97,11 +133,18 @@ class IosBackgroundDownloadBridge(
                 // may briefly observe a stale snapshot. If we're within 1 chapter of the total,
                 // retry once after a short delay before deciding the version isn't fully done.
                 if (downloaded == entity.totalChapters - 1) {
-                    kotlinx.coroutines.delay(300)
+                    delay(300.milliseconds)
                     downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
                 }
                 val name = resolveVersionName(versionId)
                 if (downloaded >= entity.totalChapters) {
+                    val remoteContentVersion = getRemoteContentVersion(versionId)
+                    if (remoteContentVersion.isNotEmpty()) {
+                        bibleVersionDao.updateContentVersion(
+                            id = versionId,
+                            contentVersion = remoteContentVersion,
+                        )
+                    }
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
                     notifier.showComplete(versionId, name)
                 } else {
@@ -114,9 +157,27 @@ class IosBackgroundDownloadBridge(
             } catch (e: Exception) {
                 Logger.e(e) { "Error finalizing version $versionId" }
             } finally {
+                forgetDownloadedChapters(versionId)
                 onComplete()
             }
         }
+    }
+
+    private suspend fun countDownloadedChapters(
+        versionId: String,
+        totalChapters: Int,
+    ): Int = downloadedChaptersMutex.withLock {
+        val counted = downloadedChapters[versionId]
+            ?.let { previous -> previous + 1 }
+            ?: verseDao.countChaptersWithVersesByVersion(versionId)
+        val clamped = if (totalChapters > 0) counted.coerceAtMost(totalChapters) else counted
+        downloadedChapters[versionId] = clamped
+        clamped
+    }
+
+    private suspend fun forgetDownloadedChapters(versionId: String) = downloadedChaptersMutex.withLock {
+        downloadedChapters.remove(versionId)
+        Unit
     }
 
     private suspend fun resolveVersionName(versionId: String): String = bibleRepository

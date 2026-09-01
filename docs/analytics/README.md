@@ -24,7 +24,7 @@ interface UiEvent {
 }
 ```
 
-Because the member is abstract, **adding a new `UiEvent` case that doesn't declare `analytics` is a compile error** — the same guarantee `NavRouteToDestinationMapper` gives for `destination_view`. The top-level split (`EventAnalytics`, in `core/provider/analytics/.../domain/model/`) answers whether the event is tracked at all:
+Because the member is abstract, **adding a new `UiEvent` case that doesn't declare `analytics` is a compile error** — the same guarantee `NavRouteToDestinationMapper` gives for `screen_view`. The top-level split (`EventAnalytics`, in `core/provider/analytics/.../domain/model/`) answers whether the event is tracked at all:
 
 - `Track` — the event is tracked. Splits on *how*:
   - `Track.Automatic(name, params)` — the event and its params are fully known from the event itself. The base ViewModel emits it automatically; do **not** also call `trackEvent` manually.
@@ -32,10 +32,10 @@ Because the member is abstract, **adding a new `UiEvent` case that doesn't decla
 - `NotTracked` — genuinely not a trackable action: UI plumbing only (scroll, menu open/close, animation callbacks, retry; see "Explicitly not tracked" below). No business action should ever be classified this way — if a case neither navigates nor calls `trackEvent`, that's a gap, not a `NotTracked`.
 
 **Every click gets its own event, even when it also triggers navigation.** A click and the
-resulting `destination_view` are different funnel signals — click-through rate vs. screen-view
+resulting `screen_view` are different funnel signals — click-through rate vs. screen-view
 rate are not the same number, and collapsing them loses the distinction. There is no "covered by
 navigation" opt-out: a click that opens a screen/dialog/sheet gets its own `Track` event in
-addition to whatever `destination_view` also logs. This applies uniformly, including bottom-tab/
+addition to whatever `screen_view` also logs. This applies uniformly, including bottom-tab/
 nav-rail clicks (`bottom_tab_clicked`).
 
 ViewModels that receive user intents extend `TrackedViewModel<XxxUiEvent>` (`ui/utils/.../presentation/TrackedViewModel.kt`), passing `TrackEvent` to the base and implementing `handleEvent` instead of `onEvent`. The base reads `event.analytics`, auto-emits any `Track.Automatic`, then delegates to `handleEvent`.
@@ -45,9 +45,10 @@ ViewModels that receive user intents extend `TrackedViewModel<XxxUiEvent>` (`ui/
 Declaring a decision doesn't prove it's true, so `AnalyticsCatalogTest` (`core/provider/analytics/src/jvmTest/.../AnalyticsCatalogTest.kt`) statically checks the whole repo on every run of that module's `jvmTest`:
 
 - every name listed in a `Track.Manual(names)` must appear in an actual `trackEvent(...)` call somewhere else in the same Gradle module (proof the wiring exists, not just the declaration);
-- every name declared via `Track.Automatic` or `Track.Manual` anywhere must have a matching `docs/analytics/events/<name>.md` catalog entry.
+- every name declared via `Track.Automatic` or `Track.Manual` anywhere must have a matching `docs/analytics/events/<name>.md` catalog entry;
+- the catalog and the [event index](#event-index) below must match exactly, in both directions — an event file with no index row is as much a failure as an index row pointing at a file that doesn't exist. Only rows under `## Event index` count, so prose links elsewhere in this README don't accidentally satisfy the check.
 
-Because this test reads files outside its own module's normal Gradle inputs, `core/provider/analytics/build.gradle.kts` explicitly declares `feature/` and `docs/analytics/events/` as task inputs for `jvmTest` — without that, Gradle's up-to-date check wouldn't notice changes to other modules and the guarantee would silently stop firing.
+Because this test reads files outside its own module's normal Gradle inputs, `core/provider/analytics/build.gradle.kts` explicitly declares `feature/`, `docs/analytics/events/` and this README as task inputs for `jvmTest` — without that, Gradle's up-to-date check wouldn't notice changes to other modules and the guarantee would silently stop firing.
 
 ## Naming conventions
 
@@ -63,8 +64,8 @@ Parameters shared across many events are defined once here; event files referenc
 
 | Parameter | Type | Values / example | Description |
 |---|---|---|---|
-| `destination_name` | string | `read` | Stable destination identifier (see mapping below) |
-| `destination_type` | string | `screen` \| `dialog` \| `bottom_sheet` \| `responsive` | What kind of destination is being shown (see mapping below) |
+| `screen_name` | string | `read` | Stable destination identifier (see mapping below) |
+| `screen_class` | string | `screen` \| `dialog` \| `bottom_sheet` \| `responsive` | What kind of destination is being shown (see mapping below) |
 | `plan_type` | string | `chronological` \| `books` | Active reading plan |
 | `week_number` | int | `12` | 1-based week within the plan |
 | `day_number` | int | `3` | 1-based day within the week |
@@ -77,29 +78,51 @@ Parameters shared across many events are defined once here; event files referenc
 
 ## Auto-collected events
 
-Firebase automatically logs `first_open`, `app_open`, `session_start`, `user_engagement`, `os_update`, `app_update` and `in_app_purchase` on Android and iOS — do not log these manually. The Desktop target gets **none** of these automatically (Measurement Protocol only sends what we post); this gap is accepted for now since desktop traffic is small.
+Firebase automatically logs `first_open`, `app_open`, `session_start`, `user_engagement`, `os_update` and `app_update` on Android and iOS — do not log these manually. The Desktop target gets **none** of these automatically (Measurement Protocol only sends what we post); this gap is accepted for now since desktop traffic is small.
 
-## destination_view strategy
+### Purchase revenue
 
-`destination_view` is not automatic in a Compose Multiplatform single-activity app, so it is emitted centrally by observing the Navigation 3 back stacks:
+`in_app_purchase` is the exception: it is **not** automatically collected everywhere, and **the app never logs it itself**. GA4 does not de-duplicate a manually logged purchase against an automatically collected one, so exactly one producer per platform may report revenue.
+
+| Platform | Producer | Covers renewals |
+|---|---|---|
+| Android | Google Play, automatically, via the [Google Play link](https://support.google.com/firebase/answer/6392038) (already enabled on this project) | yes |
+| iOS | The RevenueCat → Firebase (GA4) integration, server-side, registered for the **iOS app only** | yes |
+| Desktop | Nobody — known gap | — |
+
+Why iOS needs the server-side path: the Firebase SDK only auto-collects StoreKit 1 transactions and the RevenueCat SDK purchases through StoreKit 2, so nothing arrives on its own. A client-side event was considered and rejected — it can only ever see the first transaction of a subscription, never a renewal, and can never reverse a refund.
+
+That integration is registered for the iOS app alone on purpose: registering Android too would double-count against the Play link, which is already working and needs no client cooperation.
+
+It delivers through the GA4 Measurement Protocol and depends on the `$firebaseAppInstanceId` subscriber attribute, which the app pushes to RevenueCat whenever the billing identity changes (`SyncBillingUserIdUseCase` in `core/provider/billing`). **If that attribute is missing or stale, iOS revenue silently stops arriving** — it is the single point of failure of this design. Two consequences of the Measurement Protocol delivery: these events cannot be used with Firebase A/B Testing, and they will not show up in DebugView.
+
+Desktop stays uncovered on both paths: RevenueCat's integration excludes Web Billing/Stripe, and `in_app_purchase` is only valid on App streams while the desktop target reports through a Web stream.
+
+Neither path reverses a refund, so GA4 revenue runs high by whatever was refunded. Revenue truth lives in RevenueCat; GA4 revenue is for attribution and cohorts.
+
+## screen_view strategy
+
+Firebase's automatic screen tracking is useless in a Compose Multiplatform single-activity app — it reports `MainActivity` as the `screen_class` and never sets `screen_name` at all — so it is **disabled** on both platforms (`google_analytics_automatic_screen_reporting_enabled=false` in the Android manifest, `FirebaseAutomaticScreenReportingEnabled=false` in the iOS `Info.plist`). `screen_view` is emitted manually instead, centrally, by observing the Navigation 3 back stacks:
 
 - the **root** back stack in `core/navigation/.../RootAppNavDisplay.kt`, and
 - the **per-tab** back stacks in `feature/main/.../navhost/BottomNavTabState.kt` (each bottom tab owns its own stack).
 
-Whenever the top entry of the visible stack changes, log `destination_view` with the `destination_name` and `destination_type` mapped from the NavKey below. Route arguments become event parameters. Tab clicks are covered by this mechanism, so there is no separate tab-selection event.
+Whenever the top entry of the visible stack changes, log `screen_view` with the `screen_name` and `screen_class` mapped from the NavKey below. Route arguments become event parameters. Tab clicks are covered by this mechanism, so there is no separate tab-selection event.
+
+The event and both parameters use GA4's reserved names on purpose: they are the only ones that populate the `unifiedScreenName` / `unifiedScreenClass` dimensions, which the built-in "Screens" report, path exploration and funnel exploration are built on. Any other naming leaves those dimensions `(not set)`. The `destination_*` vocabulary is kept in the code (`Destination`, `DestinationType`, `NavRouteToDestinationMapper`, `TrackDestination`); only the wire names follow GA4.
 
 Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavKey` interface. `NavRouteToDestinationMapper.map(route: NavRoute)` switches on it exhaustively — no `else` branch — so adding a new route that forgets to update the mapper is a compile error, not a silent gap. `TrackDestinationUseCase` receives the raw `NavKey` from the back stack (the Navigation 3 API is invariant on `NavKey`) and casts it to `NavRoute` at that single boundary before calling the mapper.
 
-`destination_type` is:
+`screen_class` is:
 
 - `screen` for a full NavDisplay entry.
 - `dialog` for a route that renders as an `AlertDialog`/`Dialog`/`DatePickerDialog`.
 - `bottom_sheet` for a route that renders as a `ModalBottomSheet`.
 - `responsive` for a route that renders as a dialog on wide layouts and a bottom sheet on narrow ones, via the shared `ResponsiveDialogSheet` component (`ui/component/.../ResponsiveDialogSheet.kt`) — the actual shape depends on window width at render time, which the NavKey mapping can't see, so these get their own value instead of being forced into `dialog` or `bottom_sheet`.
 
-### NavKey → destination_name / destination_type mapping
+### NavKey → screen_name / screen_class mapping
 
-| NavKey (`core/model/.../route/`) | `destination_name` | `destination_type` | Route args → params |
+| NavKey (`core/model/.../route/`) | `screen_name` | `screen_class` | Route args → params |
 |---|---|---|---|
 | `MainNavRoute` | *(not logged — shell container; tabs log instead)* | — | — |
 | `MainNavRouteDestination.Plans` | `plans` | `screen` | — |
@@ -115,6 +138,8 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `CropPhotoNavRoute` | `crop_profile_photo` | `screen` | — |
 | `DayNavRoute` | `day` | `screen` | `plan_type`, `week_number`, `day_number` |
 | `DayStudyNavRoute` | `day_study` | `screen` | `plan_type`, `week_number`, `day_number` |
+| `DayReadingCompleteNavRoute` | `day_reading_complete` | `responsive` | `plan_type`, `week_number`, `day_number` |
+| `ChatNavRoute` | `ai_chat` | `screen` | `source`, and `plan_type`, `week_number`, `day_number` when opened from a reading |
 | `DeleteAllProgressNavRoute` | `delete_all_progress` | `dialog` | — |
 | `DeleteNotesRoute` | `delete_notes` | `dialog` | `plan_type`, `week_number`, `day_number` |
 | `DeleteVersionNavRoute` | `delete_version` | `dialog` | `version_id` |
@@ -131,20 +156,28 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `LogoutNavRoute` | `logout` | `dialog` | — |
 | `MaterialYouBottomSheetNavRoute` | `material_you` | `dialog` | — |
 | `NotificationPermissionNavRoute` | `notification_permission` | `dialog` | — |
-| `PaywallNavRoute` | `paywall` | `screen` | — |
+| `PaywallNavRoute` | `paywall` | `screen` | `source` |
+| `PendingBibleUpdatesNavRoute` | `pending_bible_updates` | `dialog` | — |
 | `PixQrNavRoute` | `pix_qr` | `dialog` | — |
 | `ReadNavRoute` | `read` | `screen` | `book_id`, `chapter_number` |
+| `ReaderAppearanceNavRoute` | `reader_appearance` | `responsive` | — |
+| `DeleteHighlightColorNavRoute` | `delete_highlight_color` | `dialog` | — |
+| `VerseNoteNavRoute` | `verse_note` | `responsive` | — |
+| `VerseSelectionNavRoute` | `verse_selection` | `responsive` | — |
+| `ShareVerseNavRoute` | `share_verse` | `responsive` | — |
+| `ShareVerseImageNavRoute` | `share_verse_image` | `responsive` | — |
 | `ReleaseNotesNavRoute` | `release_notes` | `screen` | — |
 | `RenameDeviceNavRoute` | `rename_device` | `dialog` | — |
+| `StudySuggestionNavRoute` | `study_suggestion` | `responsive` | — |
 | `SubscriptionDetailsNavRoute` | `subscription_details` | `dialog` | — |
 | `ThemeNavRoute` | `theme_selection` | `responsive` | — |
 | `UpdateDownloadedNavRoute` | `update_downloaded` | `dialog` | — |
 
-`InAppUpdateNavRoute` carries `version_name` and `source` args, but — like `LoginNavRoute` — they are not mapped onto `destination_view`; the richer funnel parameters live on the dedicated [update_prompt_shown](events/update_prompt_shown.md) event instead. The route is only reached on iOS: Android hands straight over to the Google Play in-app update flow, so it produces `update_prompt_shown` without a matching `destination_view`.
+`InAppUpdateNavRoute` carries `version_name` and `source` args, but — like `LoginNavRoute` — they are not mapped onto `screen_view`; the richer funnel parameters live on the dedicated [update_prompt_shown](events/update_prompt_shown.md) event instead. The route is only reached on iOS: Android hands straight over to the Google Play in-app update flow, so it produces `update_prompt_shown` without a matching `screen_view`.
 
 `MaterialYouBottomSheetNavRoute` is named after an earlier bottom-sheet implementation but currently renders as a centered `Dialog` (`feature/material_you/.../MaterialYouDialog.kt`) — classified by actual rendering, not by route name.
 
-The authoritative NavKey registry is `core/model/.../route/Nav3SavedStateConfiguration.kt`; keep this table in sync when routes are added. Since `NavRouteToDestinationMapper` is an exhaustive `when` over the sealed `NavRoute`, forgetting to add a new route there fails the build immediately rather than silently missing a `destination_view`.
+The authoritative NavKey registry is `core/model/.../route/Nav3SavedStateConfiguration.kt`; keep this table in sync when routes are added. Since `NavRouteToDestinationMapper` is an exhaustive `when` over the sealed `NavRoute`, forgetting to add a new route there fails the build immediately rather than silently missing a `screen_view`.
 
 ## User properties
 
@@ -169,7 +202,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 
 | Event | Tier | Domain |
 |---|---|---|
-| [destination_view](events/destination_view.md) | P1 | Navigation |
+| [screen_view](events/screen_view.md) | P1 | Navigation |
 
 ### Reading
 
@@ -203,6 +236,45 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_date_picker_dismissed](events/day_date_picker_dismissed.md) | P2 | Reading |
 | [day_date_selected](events/day_date_selected.md) | P2 | Reading |
 
+### Verse annotations
+
+| Event | Tier | Domain |
+|---|---|---|
+| [verse_selection_toggled](events/verse_selection_toggled.md) | P2 | Verse annotations |
+| [verse_selection_cleared](events/verse_selection_cleared.md) | P2 | Verse annotations |
+| [verse_highlight_applied](events/verse_highlight_applied.md) | P1 | Verse annotations |
+| [verse_highlight_removed](events/verse_highlight_removed.md) | P1 | Verse annotations |
+| [highlight_color_picker_opened](events/highlight_color_picker_opened.md) | P2 | Verse annotations |
+| [highlight_color_picker_dismissed](events/highlight_color_picker_dismissed.md) | P2 | Verse annotations |
+| [highlight_custom_color_locked_clicked](events/highlight_custom_color_locked_clicked.md) | P2 | Verse annotations |
+| [highlight_custom_color_created](events/highlight_custom_color_created.md) | P1 | Verse annotations |
+| [highlight_custom_color_delete_opened](events/highlight_custom_color_delete_opened.md) | P2 | Verse annotations |
+| [highlight_custom_color_deleted](events/highlight_custom_color_deleted.md) | P1 | Verse annotations |
+| [highlight_custom_color_delete_cancelled](events/highlight_custom_color_delete_cancelled.md) | P2 | Verse annotations |
+| [verse_saved_toggled](events/verse_saved_toggled.md) | P1 | Verse annotations |
+| [verse_note_opened](events/verse_note_opened.md) | P1 | Verse annotations |
+| [verse_note_saved](events/verse_note_saved.md) | P1 | Verse annotations |
+| [verse_note_dismissed](events/verse_note_dismissed.md) | P2 | Verse annotations |
+| [verses_copied](events/verses_copied.md) | P1 | Verse annotations |
+| [verse_share_opened](events/verse_share_opened.md) | P1 | Verse annotations |
+| [verse_shared](events/verse_shared.md) | P1 | Verse annotations |
+| [verse_share_image_opened](events/verse_share_image_opened.md) | P2 | Verse annotations |
+| [verse_share_style_changed](events/verse_share_style_changed.md) | P2 | Verse annotations |
+| [verse_share_dismissed](events/verse_share_dismissed.md) | P2 | Verse annotations |
+
+### Reader
+
+| Event | Tier | Domain |
+|---|---|---|
+| [reader_appearance_opened](events/reader_appearance_opened.md) | P2 | Reader |
+| [reader_appearance_dismissed](events/reader_appearance_dismissed.md) | P2 | Reader |
+| [reader_font_size_changed](events/reader_font_size_changed.md) | P2 | Reader |
+| [reader_font_changed](events/reader_font_changed.md) | P2 | Reader |
+| [reader_font_menu_toggled](events/reader_font_menu_toggled.md) | P2 | Reader |
+| [reader_focus_aid_changed](events/reader_focus_aid_changed.md) | P2 | Reader |
+| [reader_ruler_height_changed](events/reader_ruler_height_changed.md) | P2 | Reader |
+| [reader_vertical_reading_toggled](events/reader_vertical_reading_toggled.md) | P2 | Reader |
+
 ### Notes
 
 | Event | Tier | Domain |
@@ -212,6 +284,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [note_delete_cancelled](events/note_delete_cancelled.md) | P2 | Notes |
 | [notes_limit_reached](events/notes_limit_reached.md) | P1 | Notes |
 | [add_notes_free_warning_dismissed](events/add_notes_free_warning_dismissed.md) | P2 | Notes |
+| [notes_limit_subscribe_clicked](events/notes_limit_subscribe_clicked.md) | P1 | Notes |
 | [notes_clear_clicked](events/notes_clear_clicked.md) | P2 | Notes |
 
 ### Day Study (AI)
@@ -230,6 +303,33 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_study_bg_card_opened](events/day_study_bg_card_opened.md) | P2 | DayStudy |
 | [day_study_bg_card_dismissed](events/day_study_bg_card_dismissed.md) | P2 | DayStudy |
 
+### Day Reading Complete
+
+| Event | Tier | Domain |
+|---|---|---|
+| [day_reading_complete_shown](events/day_reading_complete_shown.md) | P1 | DayReadingComplete |
+| [day_reading_complete_cta_clicked](events/day_reading_complete_cta_clicked.md) | P1 | DayReadingComplete |
+| [day_reading_complete_dismissed](events/day_reading_complete_dismissed.md) | P2 | DayReadingComplete |
+| [day_reading_complete_banner_shown](events/day_reading_complete_banner_shown.md) | P1 | DayReadingComplete |
+| [day_reading_complete_banner_cta_clicked](events/day_reading_complete_banner_cta_clicked.md) | P1 | DayReadingComplete |
+| [day_reading_complete_banner_dismissed](events/day_reading_complete_banner_dismissed.md) | P2 | DayReadingComplete |
+
+### AI Chat
+
+| Event | Tier | Domain |
+|---|---|---|
+| [ai_chat_message_sent](events/ai_chat_message_sent.md) | P0 | AiChat |
+| [ai_chat_entry_clicked](events/ai_chat_entry_clicked.md) | P1 | AiChat |
+| [ai_chat_answer_failed](events/ai_chat_answer_failed.md) | P1 | AiChat |
+| [ai_chat_subscribe_clicked](events/ai_chat_subscribe_clicked.md) | P1 | AiChat |
+| [ai_chat_suggestion_clicked](events/ai_chat_suggestion_clicked.md) | P2 | AiChat |
+| [ai_chat_retry_clicked](events/ai_chat_retry_clicked.md) | P2 | AiChat |
+| [ai_chat_history_opened](events/ai_chat_history_opened.md) | P2 | AiChat |
+| [ai_chat_new_conversation_clicked](events/ai_chat_new_conversation_clicked.md) | P2 | AiChat |
+| [ai_chat_conversation_selected](events/ai_chat_conversation_selected.md) | P2 | AiChat |
+| [ai_chat_conversation_deleted](events/ai_chat_conversation_deleted.md) | P2 | AiChat |
+| [ai_chat_conversation_renamed](events/ai_chat_conversation_renamed.md) | P3 | AiChat |
+
 ### Bible versions
 
 | Event | Tier | Domain |
@@ -245,12 +345,18 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [bible_version_delete_clicked](events/bible_version_delete_clicked.md) | P2 | BibleVersions |
 | [bible_version_manager_dismissed](events/bible_version_manager_dismissed.md) | P2 | BibleVersions |
 | [bible_version_download_retry_clicked](events/bible_version_download_retry_clicked.md) | P2 | BibleVersions |
+| [bible_version_update_clicked](events/bible_version_update_clicked.md) | P1 | BibleVersions |
+| [bible_update_prompt_update_clicked](events/bible_update_prompt_update_clicked.md) | P1 | BibleVersions |
+| [bible_update_prompt_dismissed](events/bible_update_prompt_dismissed.md) | P2 | BibleVersions |
+| [bible_update_prompt_version_toggled](events/bible_update_prompt_version_toggled.md) | P2 | BibleVersions |
 
 ### Monetization
 
 | Event | Tier | Domain |
 |---|---|---|
 | [paywall_viewed](events/paywall_viewed.md) | P1 | Monetization |
+| [paywall_teaser_subscribe_clicked](events/paywall_teaser_subscribe_clicked.md) | P1 | Monetization |
+| [paywall_teaser_dismissed](events/paywall_teaser_dismissed.md) | P2 | Monetization |
 | [paywall_plan_selected](events/paywall_plan_selected.md) | P1 | Monetization |
 | [purchase_started](events/purchase_started.md) | P1 | Monetization |
 | [purchase_completed](events/purchase_completed.md) | P1 | Monetization |
@@ -282,6 +388,9 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [logout_confirmed](events/logout_confirmed.md) | P1 | Auth |
 | [logout_cancelled](events/logout_cancelled.md) | P2 | Auth |
 | [logout_failed](events/logout_failed.md) | P1 | Auth |
+| [account_delete_confirmed](events/account_delete_confirmed.md) | P1 | Auth |
+| [account_delete_cancelled](events/account_delete_cancelled.md) | P2 | Auth |
+| [account_delete_failed](events/account_delete_failed.md) | P1 | Auth |
 | [login_nudge_shown](events/login_nudge_shown.md) | P1 | Auth |
 | [login_nudge_accepted](events/login_nudge_accepted.md) | P1 | Auth |
 | [login_nudge_snoozed](events/login_nudge_snoozed.md) | P2 | Auth |
@@ -295,6 +404,10 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [session_lost](events/session_lost.md) | P1 | Auth |
 | [current_device_revoked](events/current_device_revoked.md) | P1 | Auth |
 | [rename_device_clicked](events/rename_device_clicked.md) | P2 | Auth |
+| [device_signed_out](events/device_signed_out.md) | P1 | Auth |
+| [connected_devices_toggled](events/connected_devices_toggled.md) | P2 | Account |
+| [device_renamed](events/device_renamed.md) | P2 | Account |
+| [device_rename_cancelled](events/device_rename_cancelled.md) | P3 | Account |
 
 ### Settings & shell
 
@@ -310,6 +423,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [profile_photo_removed](events/profile_photo_removed.md) | P2 | Settings |
 | [profile_photo_updated](events/profile_photo_updated.md) | P1 | Settings |
 | [profile_photo_crop_cancelled](events/profile_photo_crop_cancelled.md) | P2 | Settings |
+| [profile_photo_crop_transformed](events/profile_photo_crop_transformed.md) | P2 | Settings |
 | [theme_changed](events/theme_changed.md) | P1 | Settings |
 | [contrast_changed](events/contrast_changed.md) | P2 | Settings |
 | [dynamic_colors_toggled](events/dynamic_colors_toggled.md) | P2 | Settings |
@@ -332,6 +446,10 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [sync_toggle_blocked_clicked](events/sync_toggle_blocked_clicked.md) | P2 | Settings |
 | [app_language_dismissed](events/app_language_dismissed.md) | P2 | Settings |
 | [edit_plan_start_date_dismissed](events/edit_plan_start_date_dismissed.md) | P2 | Settings |
+| [study_suggestion_toggled](events/study_suggestion_toggled.md) | P1 | Settings |
+| [study_suggestion_mode_changed](events/study_suggestion_mode_changed.md) | P2 | Settings |
+| [study_suggestion_mode_blocked_clicked](events/study_suggestion_mode_blocked_clicked.md) | P2 | Settings |
+| [study_suggestion_dismissed](events/study_suggestion_dismissed.md) | P2 | Settings |
 | [pro_card_clicked](events/pro_card_clicked.md) | P2 | Settings |
 | [account_card_clicked](events/account_card_clicked.md) | P2 | Settings |
 | [login_row_clicked](events/login_row_clicked.md) | P2 | Settings |
@@ -388,14 +506,18 @@ low-signal-sounding names):
   `OnFlashCompleted`) — fired when a programmatic animation finishes, not user-initiated.
 - VM lifecycle hooks not triggered by the user (`DayStudyUiEvent.OnStart`) and incoming
   messages/snackbar bridges (`DayUiEvent.OnDayStudyMessage`).
+- Navigation bridges that relay a child ViewModel's action rather than a tap
+  (`DayUiEvent.OnDayStudySubscribeClick`) — the tap itself is already logged by the child that
+  raised the action, as [day_study_card_clicked](events/day_study_card_clicked.md) with
+  `card_mode=locked`.
 
 ## Adding a new event
 
 Prefer running the `add-analytics-event` skill, which walks these steps:
 
-1. Decide whether the action needs an event at all. Every click gets its own event — even one that only opens a screen/dialog/sheet, since `destination_view` measures screen-view rate, not click-through rate. Only genuine UI plumbing (see "Explicitly not tracked" above) is exempt, classified as `NotTracked`. A business action — including navigation — should never end up `NotTracked`.
+1. Decide whether the action needs an event at all. Every click gets its own event — even one that only opens a screen/dialog/sheet, since `screen_view` measures screen-view rate, not click-through rate. Only genuine UI plumbing (see "Explicitly not tracked" above) is exempt, classified as `NotTracked`. A business action — including navigation — should never end up `NotTracked`.
 2. Add the event name as a `const val` in `AnalyticsEventNames.kt` and any new parameter keys in `AnalyticsParams.kt`.
 3. Classify the `UiEvent` case: `Track.Automatic(name, params)` for static params (auto-emitted), or `Track.Manual(names)` (keep the `trackEvent(...)` call in the branch) for params only known post-domain / from `UiState`.
 4. Create `events/<event_name>.md` following the template used by the existing files (Tier/Domain header, When it fires, Trigger source, Parameters, Notes).
 5. Add the event to the index table above, in its domain section.
-6. Run `:core:provider:analytics:jvmTest` — `AnalyticsCatalogTest` fails if a `Track.Manual` name isn't actually wired to a `trackEvent` call, or if any declared name is missing its catalog entry.
+6. Run `:core:provider:analytics:jvmTest` — `AnalyticsCatalogTest` fails if a `Track.Manual` name isn't actually wired to a `trackEvent` call, if any declared name is missing its catalog entry, or if step 5 was skipped and the catalog no longer matches the index.

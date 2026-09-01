@@ -145,7 +145,7 @@ private fun OrderChip(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
-                    text = stringResource(selectedReadingPlan.labelResource()),
+                    text = stringResource(selectedReadingPlan.toLabelResource()),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                 )
@@ -181,7 +181,7 @@ private fun OrderDropdownMenu(
     ) {
         ReadingPlanType.entries.forEach { type ->
             DropdownMenuItem(
-                text = { Text(text = stringResource(type.labelResource())) },
+                text = { Text(text = stringResource(type.toLabelResource())) },
                 onClick = { onEvent(ReadingPlanUiEvent.OnPlanClick(type)) },
                 trailingIcon = {
                     if (type == selectedReadingPlan) {
@@ -223,7 +223,7 @@ private enum class OrderSelectorSlot {
     Content,
 }
 
-private fun ReadingPlanType.labelResource(): StringResource = when (this) {
+private fun ReadingPlanType.toLabelResource(): StringResource = when (this) {
     ReadingPlanType.CHRONOLOGICAL -> Res.string.chronological_order
     ReadingPlanType.BOOKS -> Res.string.book_order
 }

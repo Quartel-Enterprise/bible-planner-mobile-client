@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.contactsupport.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.contact_support.generated.resources.Res
 import bibleplanner.feature.contact_support.generated.resources.support_email_copied_message
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
@@ -26,11 +27,12 @@ import kotlinx.coroutines.launch
 internal class ContactSupportViewModel(
     uiStateFactory: ContactSupportUiStateFactory,
     private val mailtoFactory: ContactSupportMailtoFactory,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactSupportUiEvent>(trackEvent) {
     private val _uiAction = MutableSharedFlow<ContactSupportUiAction>()
     val uiAction: SharedFlow<ContactSupportUiAction> = _uiAction
-    private val _uiState = MutableStateFlow(uiStateFactory.initialState())
+    private val _uiState = MutableStateFlow(uiStateFactory.createInitialState())
     val uiState: StateFlow<ContactSupportUiState> = _uiState
 
     init {
@@ -41,7 +43,7 @@ internal class ContactSupportViewModel(
 
     override fun handleEvent(event: ContactSupportUiEvent) {
         when (event) {
-            ContactSupportUiEvent.OnDismiss -> emitAction(ContactSupportUiAction.NavigateBack)
+            ContactSupportUiEvent.OnDismiss -> navigator.navigateBack()
 
             ContactSupportUiEvent.OnSendEmailClick -> sendSupportEmailClick()
 

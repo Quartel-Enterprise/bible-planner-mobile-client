@@ -19,4 +19,4 @@ None.
 ## Notes
 
 - Distinct from [edit_profile_clicked](edit_profile_clicked.md): tapping the avatar jumps straight to the photo shortcuts, while the edit button opens the full edit sheet.
-- Navigates to `ExpandedPhotoNavRoute`; destination impression is covered by [destination_view](destination_view.md) (`profile_photo_expanded`, `dialog`).
+- Navigates to `ExpandedPhotoNavRoute`; destination impression is covered by [screen_view](screen_view.md) (`profile_photo_expanded`, `dialog`).

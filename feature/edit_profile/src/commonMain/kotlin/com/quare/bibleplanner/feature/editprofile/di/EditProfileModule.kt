@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.editprofile.di
 
 import com.quare.bibleplanner.core.image.AvatarImageCropper
-import com.quare.bibleplanner.core.image.avatarImageCropper
+import com.quare.bibleplanner.core.image.createAvatarImageCropper
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.RemoveProfilePhoto
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.SetProfilePhoto
 import com.quare.bibleplanner.feature.editprofile.domain.usecase.UpdateDisplayName
@@ -31,13 +31,14 @@ val editProfileModule = module {
     viewModelOf(::EditNameViewModel)
     viewModelOf(::ProfilePhotoViewModel)
     factory<DecodeImageBitmap> { DecodeImageBitmapImpl() }
-    factory<AvatarImageCropper> { avatarImageCropper() }
+    factory<AvatarImageCropper> { createAvatarImageCropper() }
     viewModel { params ->
         CropPhotoViewModel(
             route = params.get(),
             decodeImageBitmap = get(),
             cropImage = get(),
             setProfilePhoto = get(),
+            navigator = get(),
             trackEvent = get(),
         )
     }

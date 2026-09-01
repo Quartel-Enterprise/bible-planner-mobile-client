@@ -14,9 +14,9 @@ class AndroidNotificationBuilderProvider(
         navigationExtraKey: String,
     ): NotificationCompat.Builder = NotificationCompat
         .Builder(context, channelId)
-        .setContentIntent(tapPendingIntent(navigationExtraKey))
+        .setContentIntent(createTapPendingIntent(navigationExtraKey))
 
-    private fun tapPendingIntent(navigationExtraKey: String): PendingIntent {
+    private fun createTapPendingIntent(navigationExtraKey: String): PendingIntent {
         val intent = Intent(context, activityClass).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(navigationExtraKey, true)

@@ -1,27 +1,23 @@
 package com.quare.bibleplanner.feature.materialyou.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.feature.materialyou.domain.model.MaterialYouUseCases
-import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiAction
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiEvent
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class AndroidColorSchemeViewModel(
     private val useCases: MaterialYouUseCases,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AndroidColorSchemeUiEvent>(trackEvent) {
-    private val _uiAction: Channel<AndroidColorSchemeUiAction> = Channel()
-    val uiAction = _uiAction.receiveAsFlow()
-
     private val _uiState = MutableStateFlow(false)
     val uiState: StateFlow<Boolean> = _uiState.asStateFlow()
 
@@ -42,7 +38,7 @@ class AndroidColorSchemeViewModel(
 
                 AndroidColorSchemeUiEvent.OnInformationDialogDismiss,
                 AndroidColorSchemeUiEvent.BottomSheetGotItClick,
-                -> _uiAction.send(AndroidColorSchemeUiAction.CloseBottomSheet)
+                -> navigator.navigateBack()
             }
         }
     }

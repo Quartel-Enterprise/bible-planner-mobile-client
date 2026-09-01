@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -34,13 +35,15 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.NavigationForwardHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
-import com.quare.bibleplanner.core.model.NavigationEventBus
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
 import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrategy
-import com.quare.bibleplanner.core.navigation.utils.back
+import com.quare.bibleplanner.core.navigation.strategy.VerseSelectionSceneStrategy
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
+import com.quare.bibleplanner.feature.bibleversion.presentation.PendingBibleUpdatesPromptOverlay
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyBackgroundGenerationOverlay
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyPanelViewModel
 import com.quare.bibleplanner.feature.inappupdate.presentation.InAppUpdateDownloadOverlay
@@ -60,22 +63,13 @@ private val dayStudyPanelMinWidth = 700.dp
 fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     val backStack = rememberNavBackStack(navigationSavedStateConfiguration, MainNavRoute)
     val forwardStack = remember { mutableStateListOf<List<NavKey>>() }
-    val onNavigate: (NavKey) -> Unit = { route ->
-        if (route !in backStack) {
-            backStack.add(route)
-            forwardStack.clear()
-        }
-    }
-    val onNavigateForward: () -> Unit = {
-        forwardStack.removeLastOrNull()?.asReversed()?.forEach(backStack::add)
-    }
-    val onNavigateReplacingTop: (NavKey) -> Unit = { route ->
-        backStack.removeLastOrNull()
-        backStack.add(route)
-        forwardStack.clear()
+    val backStackController = remember {
+        BackStackController(
+            backStack = backStack,
+            forwardStack = forwardStack,
+        )
     }
     val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-    val appSnackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
     val appSnackbarController = koinInject<AppSnackbarController>()
     val trackDestination = koinInject<TrackDestination>()
     val dayStudyPanelViewModel = koinViewModel<DayStudyPanelViewModel>()
@@ -84,15 +78,14 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     LaunchedEffect(currentNavKey) {
         currentNavKey?.let(trackDestination::invoke)
     }
-    EventBusNavigationListener(onNavigate)
     NavigationForwardHandler(
         state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
-        isForwardEnabled = forwardStack.isNotEmpty(),
-        onForwardCompleted = onNavigateForward,
+        isForwardEnabled = backStackController.canNavigateForward,
+        onForwardCompleted = backStackController::navigateForward,
     )
     ActionCollector(appSnackbarController.messages) { message ->
         message.run {
-            appSnackbarHostState.showSnackbar(
+            snackbarHostState.showSnackbar(
                 message = getString(stringResource),
                 withDismissAction = isDismissible,
             )
@@ -105,12 +98,11 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
-        val onNavigateBack: () -> Unit = {
-            val removed = backStack.back(isWide = isWide)
-            if (removed.isNotEmpty()) {
-                forwardStack.add(removed)
-            }
-        }
+        val onNavigateBack: () -> Unit = { backStackController.navigateBack(isWide) }
+        NavigationCommandCollector(
+            backStackController = backStackController,
+            isWide = isWide,
+        )
         CompositionLocalProvider(
             LocalSnackbarHostState provides snackbarHostState,
             LocalIsWideLayout provides isWide,
@@ -128,42 +120,46 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                                 onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,
                             )
                         },
+                        remember(isWide) { VerseSelectionSceneStrategy(isWide = isWide) },
                     ),
                     sharedTransitionScope = this@SharedTransitionLayout,
                     entryDecorators = listOf(
                         rememberSaveableStateHolderNavEntryDecorator(),
                         rememberViewModelStoreNavEntryDecorator(),
                     ),
-                    entryProvider = toEntryProvider(
-                        onNavigateBack = onNavigateBack,
-                        onNavigateReplacingTop = onNavigateReplacingTop,
-                        onNavigate = onNavigate,
-                    ),
+                    entryProvider = toEntryProvider(),
                 )
             }
         }
-        DayStudyBackgroundGenerationOverlay(onNavigate = onNavigate)
+        DayStudyBackgroundGenerationOverlay()
         SnackbarHost(
-            hostState = appSnackbarHostState,
+            hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = mainContentBottomInset()),
         )
         InAppUpdateDownloadOverlay(
-            onNavigate = onNavigate,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = mainContentBottomInset()),
         )
+        PendingBibleUpdatesPromptOverlay()
     }
 }
 
 @Composable
-private fun EventBusNavigationListener(onNavigate: (NavKey) -> Unit) {
-    val navigationEventBus: NavigationEventBus = koinInject()
-    ActionCollector(navigationEventBus.events) { route ->
-        onNavigate(route)
-        navigationEventBus.reset()
+private fun NavigationCommandCollector(
+    backStackController: BackStackController,
+    isWide: Boolean,
+) {
+    val navigator: Navigator = koinInject()
+    val currentIsWide by rememberUpdatedState(isWide)
+    ActionCollector(navigator.commands) { command ->
+        when (command) {
+            is NavigationCommand.Navigate -> backStackController.navigate(command.route)
+            is NavigationCommand.NavigateReplacingTop -> backStackController.navigateReplacingTop(command.route)
+            NavigationCommand.NavigateBack -> backStackController.navigateBack(currentIsWide)
+        }
     }
 }
 

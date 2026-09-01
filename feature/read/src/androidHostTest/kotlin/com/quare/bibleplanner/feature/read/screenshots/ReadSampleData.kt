@@ -2,23 +2,37 @@ package com.quare.bibleplanner.feature.read.screenshots
 
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
+import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
+import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
+import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
-
-private const val CHAPTER = 10
-private const val LAST_CHAPTER_OF_PREVIOUS_BOOK = 22
+import com.quare.bibleplanner.ui.theme.font.ReaderFont
 
 /**
- * 1 Kings 10:1-12, the chapter the plan, day and study screenshots all point at.
+ * 1 Kings 10:1-12, the chapter the plan, day and study screenshots all point at, in the three
+ * listing locales, along with the version each locale's reader chip names.
  *
  * The app downloads its Bible versions, so no verse text ships in this repo: these verses are
  * transcribed from public-domain translations (World English Bible, Almeida 1911, Reina-Valera
- * 1909) rather than from the app's own data, which the team accepted for the store listing. Note
- * that the shipped default for Portuguese is ACF, so the wording here is not the wording a
- * Portuguese user reads — only the layout is representative.
+ * 1909) rather than from the app's own data, which the team accepted for the store listing. The
+ * chip still names the version the app ships — ACF for Portuguese — so the wording here is not the
+ * wording a Portuguese user reads; only the layout is representative.
  */
+private const val CHAPTER = 10
+private const val LAST_CHAPTER_OF_PREVIOUS_BOOK = 22
+private val versionByLocale = mapOf(
+    "en-US" to "WEB",
+    "pt-BR" to "ACF",
+    "es" to "RVR",
+)
 private val versesByLocale = mapOf(
     "en-US" to listOf(
         "When the queen of Sheba heard of the fame of Solomon concerning the name of Yahweh, she " +
@@ -84,25 +98,60 @@ private val versesByLocale = mapOf(
     ),
 )
 
-internal fun readUiState(locale: String): ReadUiState.Success = ReadUiState.Success(
-    chapterNumber = CHAPTER,
-    bookStringResource = BookId.FIRST_KI.toBookNameResource(),
-    isChapterRead = false,
-    navigationSuggestions = ReadNavigationSuggestionsModel(
-        previous = ReadNavigationSuggestionModel(
-            bookId = BookId.SECOND_SA,
-            chapterNumber = LAST_CHAPTER_OF_PREVIOUS_BOOK,
-        ),
-        next = ReadNavigationSuggestionModel(
+internal fun readUiState(locale: String): ReadUiState {
+    val bookStringResource = BookId.FIRST_KI.toBookNameResource()
+    return ReadUiState(
+        header = ReadHeaderUiModel(
             bookId = BookId.FIRST_KI,
-            chapterNumber = CHAPTER + 1,
+            bookStringResource = bookStringResource,
+            chapterNumber = CHAPTER,
+            isChapterRead = false,
+            navigationSuggestions = ReadNavigationSuggestionsModel(
+                previous = ReadNavigationSuggestionModel(
+                    bookId = BookId.SECOND_SA,
+                    chapterNumber = LAST_CHAPTER_OF_PREVIOUS_BOOK,
+                ),
+                next = ReadNavigationSuggestionModel(
+                    bookId = BookId.FIRST_KI,
+                    chapterNumber = CHAPTER + 1,
+                ),
+            ),
+            versionAbbreviation = Loadable.Loaded(versionByLocale.getValue(locale)),
         ),
-    ),
-    verses = versesByLocale.getValue(locale).mapIndexed { index, text ->
-        VerseUiModel(
-            number = index + 1,
-            text = text,
-            isSelected = false,
-        )
-    },
-)
+        content = ReadContentUiState.Success(
+            chapters = listOf(
+                ReadChapterUiModel(
+                    chapter = ChapterRef(
+                        bibleVersionId = versionByLocale.getValue(locale),
+                        bookId = BookId.FIRST_KI,
+                        chapterNumber = CHAPTER,
+                    ),
+                    bookStringResource = bookStringResource,
+                    isRead = false,
+                    verses = versesByLocale.getValue(locale).mapIndexed { index, text ->
+                        VerseUiModel(
+                            number = index + 1,
+                            heading = null,
+                            text = text,
+                            isSelected = false,
+                            highlightColor = null,
+                            isSaved = false,
+                            noteId = null,
+                        )
+                    },
+                ),
+            ),
+        ),
+        settings = ReaderSettingsModel(
+            fontSizeSp = ReaderFontSize.DEFAULT,
+            font = ReaderFont.LORA,
+            isRulerEnabled = false,
+            rulerLines = ReaderRulerLines.DEFAULT,
+            isFocusedVerseEnabled = false,
+            isVerticalReadingEnabled = false,
+        ),
+        isLoadingPreviousChapter = false,
+        isLoadingNextChapter = false,
+        dayCompletionBanner = null,
+    )
+}

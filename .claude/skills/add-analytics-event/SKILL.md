@@ -28,7 +28,7 @@ For each user action added or changed (each `UiEvent` case):
   screen/dialog/sheet, goes back, switches a bottom tab) **or seems low-value** (a menu
   open/close, a retry button, an intermediate picker step). There is no "covered by navigation"
   or "too minor to matter" opt-out: every discrete user click gets its own event. A click and the
-  `destination_view` it triggers are different funnel signals (click-through rate vs. screen-view
+  `screen_view` it triggers are different funnel signals (click-through rate vs. screen-view
   rate). **Never classify a real user click as `NotTracked`**; if it isn't trackable yet, that's a
   gap to fix now, not a reason to leave it untracked. `NotTracked` is reserved for things that are
   not clicks at all.
@@ -70,8 +70,11 @@ Example (`feature/more`): `OnItemClick` carries its `type`, so its params are st
 ### 5. Verify
 
 Compile the affected module (`./gradlew :feature:<name>:compileCommonMainKotlinMetadata`) and run
-`./gradlew :feature:<name>:ktlintFormat`. A missing `analytics` declaration fails the build.
+`./scripts/ktlint.sh --format` — the ktlint CLI, which is what the `static-analysis` workflow runs in
+CI. It formats the whole repo rather than a single module (there is no per-module scoping), and is still
+much faster than `./gradlew ktlintFormat`. A missing `analytics` declaration fails the build.
 
 Then run `./gradlew :core:provider:analytics:jvmTest` — `AnalyticsCatalogTest` fails if a
-`Track.Manual` name isn't wired to an actual `trackEvent` call in the same module, or if any
-`Track.Automatic`/`Track.Manual` name is missing its `docs/analytics/events/<name>.md` entry.
+`Track.Manual` name isn't wired to an actual `trackEvent` call in the same module, if any
+`Track.Automatic`/`Track.Manual` name is missing its `docs/analytics/events/<name>.md` entry, or
+if the catalog and the README event index don't match each other exactly (both directions).

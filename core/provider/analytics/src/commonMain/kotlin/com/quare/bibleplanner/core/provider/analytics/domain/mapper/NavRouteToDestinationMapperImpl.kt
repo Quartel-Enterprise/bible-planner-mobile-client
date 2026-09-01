@@ -5,12 +5,16 @@ import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteAccountNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
@@ -30,117 +34,155 @@ import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
 import com.quare.bibleplanner.core.model.route.NavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
+import com.quare.bibleplanner.core.model.route.PendingBibleUpdatesNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
+import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
+import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
+import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
+import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.Destination
 import com.quare.bibleplanner.core.provider.analytics.domain.model.DestinationType
+import com.quare.bibleplanner.core.provider.analytics.domain.model.toPlanTypeAnalyticsValue
 
 internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
     override fun map(route: NavRoute): Destination? = when (route) {
         is MainNavRoute -> null
 
-        is MainNavRouteDestination.Plans -> screen("plans")
+        is MainNavRouteDestination.Plans -> createScreenDestination("plans")
 
-        is MainNavRouteDestination.Books -> screen("books")
+        is MainNavRouteDestination.Books -> createScreenDestination("books")
 
-        is MainNavRouteDestination.Profile -> screen("profile")
+        is MainNavRouteDestination.Profile -> createScreenDestination("profile")
 
-        is AccountDetailsNavRoute -> responsive("account_details")
+        is AccountDetailsNavRoute -> createResponsiveDestination("account_details")
 
-        is EditProfileNavRoute -> responsive("edit_profile")
+        is EditProfileNavRoute -> createResponsiveDestination("edit_profile")
 
-        is CropPhotoNavRoute -> screen("crop_profile_photo")
+        is CropPhotoNavRoute -> createScreenDestination("crop_profile_photo")
 
-        is EditPhotoSourceNavRoute -> responsive("edit_profile_photo_source")
+        is EditPhotoSourceNavRoute -> createResponsiveDestination("edit_profile_photo_source")
 
-        is EditNameNavRoute -> dialog("edit_profile_name")
+        is EditNameNavRoute -> createDialogDestination("edit_profile_name")
 
-        is ExpandedPhotoNavRoute -> dialog("profile_photo_expanded")
+        is ExpandedPhotoNavRoute -> createDialogDestination("profile_photo_expanded")
 
-        is AddNotesFreeWarningNavRoute -> dialog(
+        is AddNotesFreeWarningNavRoute -> createDialogDestination(
             name = "add_notes_free_warning",
             params = mapOf(AnalyticsParams.MAX_FREE_NOTES to route.maxFreeNotesAmount),
         )
 
-        is AppLanguageNavRoute -> responsive("app_language")
+        is AppLanguageNavRoute -> createResponsiveDestination("app_language")
 
-        is BibleVersionSelectorRoute -> responsive("bible_version_selector")
+        is BibleVersionSelectorRoute -> createResponsiveDestination("bible_version_selector")
 
-        is BookDetailsNavRoute -> screen(
+        is BookDetailsNavRoute -> createScreenDestination(
             name = "book_details",
             params = mapOf(AnalyticsParams.BOOK_ID to route.bookId),
         )
 
-        is CongratsNavRoute -> bottomSheet("congrats")
+        is CongratsNavRoute -> createBottomSheetDestination("congrats")
 
-        is ContactSupportNavRoute -> responsive("contact_support")
+        is ContactSupportNavRoute -> createResponsiveDestination("contact_support")
 
-        is DayNavRoute -> screen(
+        is DayNavRoute -> createScreenDestination(
             name = "day",
             params = mapOf(
-                AnalyticsParams.PLAN_TYPE to route.readingPlanType,
+                AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
                 AnalyticsParams.WEEK_NUMBER to route.weekNumber,
                 AnalyticsParams.DAY_NUMBER to route.dayNumber,
             ),
         )
 
-        is DayStudyNavRoute -> screen(
+        is DayStudyNavRoute -> createScreenDestination(
             name = "day_study",
             params = mapOf(
-                AnalyticsParams.PLAN_TYPE to route.readingPlanType,
+                AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
                 AnalyticsParams.WEEK_NUMBER to route.weekNumber,
                 AnalyticsParams.DAY_NUMBER to route.dayNumber,
             ),
         )
 
-        is DeleteAllProgressNavRoute -> dialog("delete_all_progress")
+        is DayReadingCompleteNavRoute -> createResponsiveDestination(
+            name = "day_reading_complete",
+            params = mapOf(
+                AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
+                AnalyticsParams.WEEK_NUMBER to route.weekNumber,
+                AnalyticsParams.DAY_NUMBER to route.dayNumber,
+            ),
+        )
 
-        is DeleteNotesRoute -> dialog(
+        is ChatNavRoute -> createScreenDestination(
+            name = "ai_chat",
+            params = buildMap {
+                put(AnalyticsParams.SOURCE, route.source.key)
+                route.readingPlanType?.let { put(AnalyticsParams.PLAN_TYPE, it.toPlanTypeAnalyticsValue()) }
+                route.weekNumber?.let { put(AnalyticsParams.WEEK_NUMBER, it) }
+                route.dayNumber?.let { put(AnalyticsParams.DAY_NUMBER, it) }
+            },
+        )
+
+        is DeleteAllProgressNavRoute -> createDialogDestination("delete_all_progress")
+
+        is DeleteAccountNavRoute -> createDialogDestination("delete_account")
+
+        is DeleteNotesRoute -> createDialogDestination(
             name = "delete_notes",
             params = mapOf(
-                AnalyticsParams.PLAN_TYPE to route.readingPlanType,
+                AnalyticsParams.PLAN_TYPE to route.readingPlanType.toPlanTypeAnalyticsValue(),
                 AnalyticsParams.WEEK_NUMBER to route.week,
                 AnalyticsParams.DAY_NUMBER to route.day,
             ),
         )
 
-        is DeleteVersionNavRoute -> dialog(
+        is DeleteVersionNavRoute -> createDialogDestination(
             name = "delete_version",
             params = mapOf(AnalyticsParams.VERSION_ID to route.versionId),
         )
 
-        is DonationNavRoute -> bottomSheet("donation")
+        is DonationNavRoute -> createBottomSheetDestination("donation")
 
-        is EditPlanStartDateNavRoute -> dialog("edit_plan_start_date")
+        is EditPlanStartDateNavRoute -> createDialogDestination("edit_plan_start_date")
 
-        is InAppUpdateNavRoute -> responsive("in_app_update")
+        is InAppUpdateNavRoute -> createResponsiveDestination("in_app_update")
 
-        is LoginNavRoute -> bottomSheet("login")
+        is LoginNavRoute -> createBottomSheetDestination("login")
 
-        is LoginSyncNudgeNavRoute -> dialog("login_sync_nudge")
+        is LoginSyncNudgeNavRoute -> createDialogDestination("login_sync_nudge")
 
-        is LoginWarningNavRoute -> dialog(
+        is LoginWarningNavRoute -> createDialogDestination(
             name = "login_warning",
             params = mapOf(AnalyticsParams.REASON to route.reason),
         )
 
-        is LogoutNavRoute -> dialog("logout")
+        is LogoutNavRoute -> createDialogDestination("logout")
 
-        is MaterialYouBottomSheetNavRoute -> dialog("material_you")
+        is MaterialYouBottomSheetNavRoute -> createDialogDestination("material_you")
 
-        is NotificationPermissionNavRoute -> dialog("notification_permission")
+        is NotificationPermissionNavRoute -> createDialogDestination("notification_permission")
 
-        is PaywallNavRoute -> screen("paywall")
+        is PaywallNavRoute -> createScreenDestination(
+            name = "paywall",
+            params = mapOf(AnalyticsParams.SOURCE to route.source.key),
+        )
 
-        is PixQrNavRoute -> dialog("pix_qr")
+        is PaywallTeaserNavRoute -> createResponsiveDestination(
+            name = "paywall_teaser",
+            params = mapOf(AnalyticsParams.REASON to route.reason.key),
+        )
 
-        is ReadNavRoute -> screen(
+        is PixQrNavRoute -> createDialogDestination("pix_qr")
+
+        is ReadNavRoute -> createScreenDestination(
             name = "read",
             params = mapOf(
                 AnalyticsParams.BOOK_ID to route.bookId,
@@ -148,18 +190,34 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             ),
         )
 
-        is ReleaseNotesNavRoute -> screen("release_notes")
+        is ReaderAppearanceNavRoute -> createResponsiveDestination("reader_appearance")
 
-        is RenameDeviceNavRoute -> dialog("rename_device")
+        is DeleteHighlightColorNavRoute -> createDialogDestination("delete_highlight_color")
 
-        is SubscriptionDetailsNavRoute -> dialog("subscription_details")
+        is VerseNoteNavRoute -> createResponsiveDestination("verse_note")
 
-        is ThemeNavRoute -> responsive("theme_selection")
+        is VerseSelectionNavRoute -> createResponsiveDestination("verse_selection")
 
-        is UpdateDownloadedNavRoute -> dialog("update_downloaded")
+        is ShareVerseNavRoute -> createResponsiveDestination("share_verse")
+
+        is ShareVerseImageNavRoute -> createResponsiveDestination("share_verse_image")
+
+        is PendingBibleUpdatesNavRoute -> createDialogDestination("pending_bible_updates")
+
+        is ReleaseNotesNavRoute -> createScreenDestination("release_notes")
+
+        is RenameDeviceNavRoute -> createDialogDestination("rename_device")
+
+        is StudySuggestionNavRoute -> createResponsiveDestination("study_suggestion")
+
+        is SubscriptionDetailsNavRoute -> createDialogDestination("subscription_details")
+
+        is ThemeNavRoute -> createResponsiveDestination("theme_selection")
+
+        is UpdateDownloadedNavRoute -> createDialogDestination("update_downloaded")
     }
 
-    private fun screen(
+    private fun createScreenDestination(
         name: String,
         params: Map<String, Any> = emptyMap(),
     ): Destination = Destination(
@@ -168,7 +226,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         params = params,
     )
 
-    private fun dialog(
+    private fun createDialogDestination(
         name: String,
         params: Map<String, Any> = emptyMap(),
     ): Destination = Destination(
@@ -177,7 +235,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         params = params,
     )
 
-    private fun bottomSheet(
+    private fun createBottomSheetDestination(
         name: String,
         params: Map<String, Any> = emptyMap(),
     ): Destination = Destination(
@@ -186,7 +244,7 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         params = params,
     )
 
-    private fun responsive(
+    private fun createResponsiveDestination(
         name: String,
         params: Map<String, Any> = emptyMap(),
     ): Destination = Destination(

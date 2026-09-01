@@ -3,7 +3,9 @@ package com.quare.bibleplanner.feature.day.presentation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -16,6 +18,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.day.presentation.component.AskAiFab
 import com.quare.bibleplanner.feature.day.presentation.component.DayScreenTopBarComponent
 import com.quare.bibleplanner.feature.day.presentation.component.DayStudySectionForDay
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.DayContent
@@ -58,6 +61,11 @@ internal fun DayScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
+        floatingActionButton = {
+            if (uiState is DayUiState.Loaded) {
+                AskAiFab(onClick = { onEvent(DayUiEvent.OnAskAiClick) })
+            }
+        },
         topBar = {
             if (!isLandscape) {
                 DayScreenTopBarComponent(
@@ -74,7 +82,9 @@ internal fun DayScreen(
         DayContent(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
+                .imePadding(),
             uiState = uiState,
             onEvent = onEvent,
             sharedTransitionScope = sharedTransitionScope,

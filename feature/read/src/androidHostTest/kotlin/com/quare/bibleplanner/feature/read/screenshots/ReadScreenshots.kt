@@ -1,11 +1,8 @@
 package com.quare.bibleplanner.feature.read.screenshots
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.feature.read.presentation.screen.ReadPortraitScreen
+import com.quare.bibleplanner.feature.read.presentation.screen.ReadNarrowScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
@@ -27,7 +24,6 @@ private val bannerCopy = mapOf(
             "El pasaje del día, sin alejarte del plan"
     ),
 )
-
 private const val BACKGROUND = 0xFF1B1B1F
 
 /**
@@ -45,7 +41,6 @@ private val FormFactor.platform: Platform
         else -> Platform.Android
     }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 internal abstract class ReadScreenshots(
     private val formFactor: FormFactor,
     private val outputSubdir: String? = null,
@@ -67,17 +62,11 @@ internal abstract class ReadScreenshots(
             fileName = "06_read",
         ) {
             AppTheme {
-                SharedTransitionLayout {
-                    AnimatedVisibility(visible = true) {
-                        ReadPortraitScreen(
-                            platform = formFactor.platform,
-                            state = readUiState(locale),
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedVisibilityScope = this@AnimatedVisibility,
-                            onEvent = {},
-                        )
-                    }
-                }
+                ReadNarrowScreen(
+                    platform = formFactor.platform,
+                    state = readUiState(locale),
+                    onEvent = {},
+                )
             }
         }
     }

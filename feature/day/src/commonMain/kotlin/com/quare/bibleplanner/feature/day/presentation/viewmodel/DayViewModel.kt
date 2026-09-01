@@ -3,19 +3,24 @@ package com.quare.bibleplanner.feature.day.presentation.viewmodel
 import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
-import co.touchlab.kermit.Logger
+import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.toDayStudyNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
@@ -57,6 +62,7 @@ internal class DayViewModel(
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val applicationScope: ApplicationScope,
     private val generationCoordinator: DayStudyGenerationCoordinator,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<DayUiEvent>(trackEvent) {
@@ -125,7 +131,7 @@ internal class DayViewModel(
 
     private fun pushStudyRoute(route: DayNavRoute) {
         isStudyRoutePushedByUs = true
-        viewModelScope.launch { _uiAction.emit(DayUiAction.NavigateToRoute(route.toDayStudyNavRoute())) }
+        navigator.navigate(route.toDayStudyNavRoute())
     }
 
     private fun updateDatePickerState(transform: (DatePickerUiState) -> DatePickerUiState) {
@@ -150,6 +156,7 @@ internal class DayViewModel(
             is DayUiEvent.OnNotesFocus -> onNotesFocus()
             is DayUiEvent.OnBackClick -> backToPreviousScreen()
             is DayUiEvent.OnChapterClick -> onChapterClick(event.strategy)
+            is DayUiEvent.OnAskAiClick -> onAskAiClick()
             is DayUiEvent.OnDayStudySubscribeClick -> navigateToPaywall()
             is DayUiEvent.OnDayStudyLoginRequired -> navigateToDayStudyLoginWarning()
             is DayUiEvent.OnDayStudyMessage -> showSnackBarText(event.message)
@@ -158,16 +165,27 @@ internal class DayViewModel(
         }
     }
 
+    private fun onAskAiClick() {
+        trackEvent(
+            name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+            params = mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key),
+        )
+        navigator.navigate(
+            ChatNavRoute(
+                source = ChatEntrySource.DAY_FAB,
+                dayNumber = dayNumber,
+                weekNumber = weekNumber,
+                readingPlanType = readingPlanType.name,
+            ),
+        )
+    }
+
     private fun navigateToPaywall() {
-        viewModelScope.launch {
-            _uiAction.emit(DayUiAction.NavigateToRoute(PaywallNavRoute))
-        }
+        navigator.navigate(PaywallNavRoute(PaywallEntrySource.DAY_STUDY))
     }
 
     private fun navigateToDayStudyLoginWarning() {
-        viewModelScope.launch {
-            _uiAction.emit(DayUiAction.NavigateToRoute(LoginWarningNavRoute(LoginWarningReason.DayStudy.key)))
-        }
+        navigator.navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key))
     }
 
     private fun showSnackBarText(message: String) {
@@ -181,18 +199,14 @@ internal class DayViewModel(
             is ChapterClickStrategy.NavigateToChapter -> strategy.chapterNumber
             is ChapterClickStrategy.NavigateToFirstChapterOfTheBook -> 1
         }
-        viewModelScope.launch {
-            _uiAction.emit(
-                DayUiAction.NavigateToRoute(
-                    ReadNavRoute(
-                        bookId = strategy.bookId.name,
-                        chapterNumber = chapterNumber,
-                        isChapterRead = strategy.isChapterRead,
-                        isFromBookDetails = false,
-                    ),
-                ),
-            )
-        }
+        navigator.navigate(
+            ReadNavRoute(
+                bookId = strategy.bookId.name,
+                chapterNumber = chapterNumber,
+                isChapterRead = strategy.isChapterRead,
+                isFromBookDetails = false,
+            ),
+        )
     }
 
     private fun onDateSelected(event: DayUiEvent.OnDateSelected) {
@@ -225,7 +239,7 @@ internal class DayViewModel(
 
         trackEvent(
             name = AnalyticsEventNames.READ_DATE_EDITED,
-            params = dayParams(),
+            params = getDayParams(),
         )
 
         viewModelScope.launch {
@@ -245,7 +259,7 @@ internal class DayViewModel(
 
         trackEvent(
             name = AnalyticsEventNames.DAY_READ_TOGGLED,
-            params = dayParams() + mapOf(
+            params = getDayParams() + mapOf(
                 AnalyticsParams.IS_READ to newReadStatus,
                 AnalyticsParams.SOURCE to SOURCE_DAY_SCREEN,
             ),
@@ -306,7 +320,7 @@ internal class DayViewModel(
                 val chapterNumber = passage.chapters.getOrNull(strategy.chapterIndex)?.number ?: return
                 trackEvent(
                     name = AnalyticsEventNames.CHAPTER_READ_TOGGLED,
-                    params = dayParams() + mapOf(
+                    params = getDayParams() + mapOf(
                         AnalyticsParams.BOOK_ID to passage.bookId.name.lowercase(),
                         AnalyticsParams.CHAPTER_NUMBER to chapterNumber,
                         AnalyticsParams.IS_READ to isRead,
@@ -351,22 +365,25 @@ internal class DayViewModel(
         sanitizedNotes?.let { savedNotes ->
             trackEvent(
                 name = AnalyticsEventNames.NOTE_SAVED,
-                params = dayParams() + mapOf(AnalyticsParams.NOTE_LENGTH to savedNotes.length),
+                params = getDayParams() + mapOf(AnalyticsParams.NOTE_LENGTH to savedNotes.length),
             )
         }
     }
 
     private fun onNotesClear() {
         val loadedState = safeLoadedState ?: return
+        val deleteNotesRoute = deleteRouteNotesMapper.map(
+            hasNotes = loadedState.hasNotes(),
+            readingPlanType = readingPlanType,
+            weekNumber = weekNumber,
+            dayNumber = dayNumber,
+        )
+        if (deleteNotesRoute != null) {
+            navigator.navigate(deleteNotesRoute)
+            return
+        }
         viewModelScope.launch {
-            _uiAction.emit(
-                deleteRouteNotesMapper.map(
-                    hasNotes = loadedState.hasNotes(),
-                    readingPlanType = readingPlanType,
-                    weekNumber = weekNumber,
-                    dayNumber = dayNumber,
-                ),
-            )
+            _uiAction.emit(DayUiAction.ShowSnackBar(Res.string.nothing_to_delete_message))
         }
     }
 
@@ -402,10 +419,8 @@ internal class DayViewModel(
             name = AnalyticsEventNames.NOTES_LIMIT_REACHED,
             params = mapOf(AnalyticsParams.MAX_FREE_NOTES to maxFreeNotes),
         )
-        _uiAction.run {
-            emit(DayUiAction.ClearFocus)
-            emit(DayUiAction.NavigateToRoute(AddNotesFreeWarningNavRoute(maxFreeNotes)))
-        }
+        _uiAction.emit(DayUiAction.ClearFocus)
+        navigator.navigate(AddNotesFreeWarningNavRoute(maxFreeNotes))
     }
 
     private fun updateLoadedState(transform: (DayUiState.Loaded) -> DayUiState.Loaded) {
@@ -421,13 +436,11 @@ internal class DayViewModel(
     private fun DayUiState.Loaded.hasNotes(): Boolean = !day.notes.isNullOrEmpty()
 
     private fun backToPreviousScreen() {
-        viewModelScope.launch {
-            _uiAction.emit(DayUiAction.NavigateBack)
-        }
+        navigator.navigateBack()
     }
 
-    private fun dayParams(): Map<String, Any> = mapOf(
-        AnalyticsParams.PLAN_TYPE to readingPlanType.name.lowercase(),
+    private fun getDayParams(): Map<String, Any> = mapOf(
+        AnalyticsParams.PLAN_TYPE to readingPlanType.toAnalyticsValue(),
         AnalyticsParams.WEEK_NUMBER to weekNumber,
         AnalyticsParams.DAY_NUMBER to dayNumber,
     )

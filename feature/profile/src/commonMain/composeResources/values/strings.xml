@@ -20,7 +20,7 @@
     <string name="pro_section">Pro</string>
     <string name="support_section">Support</string>
     <string name="preferences">Preferences</string>
-    <string name="data_section">Data</string>
+    <string name="account_data_section">Account and data</string>
     <string name="legal_section">Legal</string>
     <string name="social_section">Social</string>
     <string name="support_comments_section">Support &amp; comments</string>
@@ -59,4 +59,12 @@
     <string name="logout_button">Sign out</string>
     <string name="login_requires_internet">You need an internet connection to sign in</string>
     <string name="logout_requires_internet">You need an internet connection to sign out safely</string>
+    <string name="delete_progress_option_subtitle">Your account and subscription are kept</string>
+    <string name="delete_account_option">Delete account</string>
+    <string name="delete_account_option_subtitle">Permanently removes your account and all data</string>
+    <string name="delete_account_requires_internet">Connect to the internet to delete your account</string>
+    <string name="study_suggestion_option">Study suggestion</string>
+    <string name="study_suggestion_enabled_dialog">Enabled · prominent notice</string>
+    <string name="study_suggestion_enabled_banner">Enabled · discreet banner</string>
+    <string name="study_suggestion_disabled">Disabled</string>
 </resources>

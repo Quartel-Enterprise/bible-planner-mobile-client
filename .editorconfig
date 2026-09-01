@@ -20,8 +20,14 @@ ktlint_standard_function-naming = disabled
 ktlint_standard_filename = disabled
 ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_when-entry-bracing = disabled
+ktlint_standard_no-unused-imports = enabled
 ktlint_function_signature_body_expression_wrapping = default
 
+
+# Test sources: fixtures and fakes are named after the value they produce
+# (versionDto(), passage(), day()), which is intentional and reads well in Given/When/Then.
+[**/src/{commonTest,jvmTest,androidHostTest,iosSimulatorArm64Test}/**]
+ktlint_bible-planner-style_value-returning-function-naming = disabled
 
 # Markdown files
 [*.md]

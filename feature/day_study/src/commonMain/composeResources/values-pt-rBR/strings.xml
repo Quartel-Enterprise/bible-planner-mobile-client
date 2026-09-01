@@ -44,4 +44,7 @@
         <item quantity="one">Aguarde a análise em andamento terminar antes de gerar uma nova.</item>
         <item quantity="other">Aguarde as %1$d análises em andamento terminarem antes de gerar uma nova.</item>
     </plurals>
+    <string name="ai_chat_entry_title">Pergunte sobre esta leitura</string>
+    <string name="ai_chat_entry_placeholder">Pergunte qualquer coisa sobre %1$s…</string>
+    <string name="ai_chat_entry_hint">O chat já conhece o contexto de hoje</string>
 </resources>

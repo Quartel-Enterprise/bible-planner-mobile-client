@@ -17,12 +17,15 @@ import com.quare.bibleplanner.feature.daystudy.domain.mapper.BookIdWireNameMappe
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyPanelRatioRepository
 import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
+import com.quare.bibleplanner.feature.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.ClearDayStudyLocalDataUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.ObserveDayStudyPanelReadingFractionUseCase
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.PrefetchDayStudyQuota
+import com.quare.bibleplanner.feature.daystudy.domain.usecase.PrefetchDayStudyQuotaUseCase
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.SetDayStudyPanelReadingFractionUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
@@ -50,10 +53,12 @@ val dayStudyModule = module {
     singleOf(::DayStudyRepositoryImpl).bind<DayStudyRepository>()
     singleOf(::DayStudyPanelRatioRepositoryImpl).bind<DayStudyPanelRatioRepository>()
     singleOf(::DayStudyGenerationCoordinatorImpl).bind<DayStudyGenerationCoordinator>()
+    singleOf(::DayStudyQuotaPrefetchStore)
 
     factoryOf(::GetDayStudyUseCase)
     factoryOf(::GetDayStudyQuotaUseCase)
     factoryOf(::GetDayPassagesForDayStudyUseCase)
+    factoryOf(::PrefetchDayStudyQuotaUseCase).bind<PrefetchDayStudyQuota>()
     factoryOf(::HasCachedStudyUseCase)
     factoryOf(::ClearDayStudyLocalDataUseCase).bind<ClearDayStudyLocalData>()
     factoryOf(::ObserveDayStudyPanelReadingFractionUseCase)

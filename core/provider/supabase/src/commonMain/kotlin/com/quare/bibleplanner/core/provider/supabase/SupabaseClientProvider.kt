@@ -16,14 +16,15 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 private val realtimeHeartbeatInterval: Duration = 10.seconds
-
 private val realtimeReconnectDelay: Duration = 3.seconds
+private val supabaseRequestTimeout: Duration = 30.seconds
 
 internal fun getSupabaseClient(monitoredSessionManager: SessionManager): SupabaseClient = createSupabaseClient(
     supabaseUrl = SupabaseBuildKonfig.SUPABASE_URL,
     supabaseKey = SupabaseBuildKonfig.SUPABASE_API_KEY,
 ) {
     httpEngine = createPlatformHttpEngine()
+    requestTimeout = supabaseRequestTimeout
     defaultLoggingFactory = ::KermitSupabaseLoggingProcessor
     install(Auth) {
         platformConfig()

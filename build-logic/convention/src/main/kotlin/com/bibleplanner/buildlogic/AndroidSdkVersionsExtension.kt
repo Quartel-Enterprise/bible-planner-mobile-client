@@ -11,9 +11,21 @@ fun Project.getAndroidSdkVersions(): AndroidSdkVersions {
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
     return AndroidSdkVersions(
-        compileSdk = libs.findVersion("android-compileSdk").get().requiredVersion.toInt(),
-        minSdk = libs.findVersion("android-minSdk").get().requiredVersion.toInt(),
-        targetSdk = libs.findVersion("android-targetSdk").get().requiredVersion.toInt()
+        compileSdk = libs
+            .findVersion("android-compileSdk")
+            .get()
+            .requiredVersion
+            .toInt(),
+        minSdk = libs
+            .findVersion("android-minSdk")
+            .get()
+            .requiredVersion
+            .toInt(),
+        targetSdk = libs
+            .findVersion("android-targetSdk")
+            .get()
+            .requiredVersion
+            .toInt(),
     )
 }
 
@@ -23,5 +35,5 @@ fun Project.getAndroidSdkVersions(): AndroidSdkVersions {
 data class AndroidSdkVersions(
     val compileSdk: Int,
     val minSdk: Int,
-    val targetSdk: Int
+    val targetSdk: Int,
 )

@@ -1,41 +1,17 @@
 package com.quare.bibleplanner.core.books.data.datasource
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.data.dto.VersionDto
-import com.quare.bibleplanner.core.datastore.read
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.Flow
 
-internal class BibleVersionsLocalDataSource(
-    private val dataStore: DataStore<Preferences>,
-    private val json: Json,
-) {
-    suspend fun getCachedVersions(): List<VersionDto>? {
-        val cachedData = dataStore.read(stringPreferencesKey(CACHE_KEY)) ?: return null
-        return runCatching {
-            json.decodeFromString<List<VersionDto>>(cachedData)
-        }.onFailure { Logger.e(it) { "Failed to parse cached Bible versions" } }
-            .getOrNull()
-    }
+internal interface BibleVersionsLocalDataSource {
+    suspend fun getCachedVersions(): List<VersionDto>?
 
-    suspend fun getCacheTimestamp(): Long? = dataStore.read(longPreferencesKey(TIMESTAMP_KEY))
+    fun observeCachedVersions(): Flow<List<VersionDto>?>
+
+    suspend fun getCacheTimestamp(): Long?
 
     suspend fun saveToCache(
         versions: List<VersionDto>,
         timestamp: Long,
-    ) {
-        dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(CACHE_KEY)] = json.encodeToString(versions)
-            preferences[longPreferencesKey(TIMESTAMP_KEY)] = timestamp
-        }
-    }
-
-    companion object {
-        private const val CACHE_KEY = "bible_versions_cache"
-        private const val TIMESTAMP_KEY = "bible_versions_timestamp"
-    }
+    )
 }

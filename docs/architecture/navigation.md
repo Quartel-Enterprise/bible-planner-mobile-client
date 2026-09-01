@@ -1,7 +1,8 @@
 ## Navigation
 
 The app uses Navigation 3 (`org.jetbrains.androidx.navigation3:navigation3-ui`). The back stack is a
-`NavBackStack<NavKey>` owned by `RootAppNavDisplay` and mutated directly; there is no `NavController`.
+`NavBackStack<NavKey>` owned by `RootAppNavDisplay` and driven by `BackStackController`; there is no
+`NavController`.
 
 ### 1. Define a type-safe route in `core/model/src/.../route/`
 
@@ -28,32 +29,51 @@ non-JVM targets):
 subclass(SomeFeatureNavRoute::class, SomeFeatureNavRoute.serializer())
 ```
 
-### 2. Create an `EntryProviderScope` extension in `presentation/`
+### 2. Navigate through the `Navigator`
 
-Navigation is expressed through lambdas instead of a `NavController`. Take only the ones the
-feature needs:
+Navigation is a single injectable dependency, not a `NavController` and not lambdas threaded down
+from the root. Inject `Navigator` (`core/model`) into the ViewModel and call it:
 
-- `onNavigate: (NavKey) -> Unit` — push a route
-- `onNavigateBack: () -> Unit` — pop the top entry
-- `onNavigateReplacingTop: (NavKey) -> Unit` — pop the current entry and push a route (the old
+- `navigate(route: NavKey)` — push a route
+- `navigateBack()` — pop the top entry
+- `navigateReplacingTop(route: NavKey)` — pop the current entry and push a route (the old
   `popUpTo(current) { inclusive = true }` pattern)
 
 ```kotlin
+internal class SomeFeatureViewModel(
+    route: SomeFeatureNavRoute,
+    private val navigator: Navigator,
+    trackEvent: TrackEvent,
+) : TrackedViewModel<SomeFeatureUiEvent>(trackEvent) {
+    override fun handleEvent(event: SomeFeatureUiEvent) = when (event) {
+        SomeFeatureUiEvent.OnBackClick -> navigator.navigateBack()
+        SomeFeatureUiEvent.OnDetailsClick -> navigator.navigate(SomeDetailsNavRoute)
+    }
+}
+```
+
+Each call sends a `NavigationCommand` over a buffered channel; `RootAppNavDisplay` collects the
+commands and applies them to the back stack, so the back stack is only ever mutated from inside the
+composition.
+
+**Navigation never belongs in a `UiAction`.** `UiAction` is for effects the UI layer has to perform
+itself — snackbars, clipboard, share sheets, scrolling, focus. The exceptions are effects that are
+not root navigation at all: switching a bottom tab (`feature/main`) and a child screen calling back
+into the parent that hosts it.
+
+When a back callback is pure UI and never passes through a `UiEvent` — a dialog's close button, for
+example — resolve the `Navigator` in the entry with `koinInject<Navigator>()` and pass
+`navigator::navigateBack` down. Do not reach into DI from leaf composables; they keep their lambda
+parameters.
+
+### 3. Create an `EntryProviderScope` extension in `presentation/`
+
+```kotlin
 // SomeFeatureRoot.kt
-fun EntryProviderScope<NavKey>.someFeature(
-    onNavigate: (NavKey) -> Unit,
-    onNavigateBack: () -> Unit,
-) {
+fun EntryProviderScope<NavKey>.someFeature() {
     entry<SomeFeatureNavRoute> { route ->
         val viewModel = koinViewModel<SomeFeatureViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-        ActionCollector(viewModel.uiAction) { action ->
-            when (action) {
-                SomeFeatureUiAction.NavigateBack -> onNavigateBack()
-                is SomeFeatureUiAction.NavigateTo -> onNavigate(action.route)
-            }
-        }
 
         SomeFeatureContent(
             uiState = uiState,
@@ -78,17 +98,14 @@ entry<SomeDialogNavRoute>(
 
 For shared-element transitions, the entry's animation scope is `LocalNavAnimatedContentScope.current`.
 
-### 3. Register in `RootAppNavDisplay`
+### 4. Register in `RootEntryProvider`
 
 ```kotlin
-// core/navigation/src/.../RootAppNavDisplay.kt
-entryProvider = entryProvider {
-    mainScreen(...)
-    day(...)
-    someFeature(
-        onNavigate = onNavigate,
-        onNavigateBack = onNavigateBack,
-    )
+// core/navigation/src/.../RootEntryProvider.kt
+internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKey> = entryProvider {
+    mainScreen(sharedTransitionScope)
+    day(sharedTransitionScope)
+    someFeature()
 }
 ```
 

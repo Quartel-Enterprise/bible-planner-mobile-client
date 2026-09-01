@@ -17,19 +17,17 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 import kotlinx.datetime.LocalDate
 
+/**
+ * The week the plan screenshot shows: 1 Kings walked three chapters a day, which is roughly where a
+ * whole-Bible year plan sits at week 16.
+ */
 private const val TOTAL_WEEKS = 52
 private const val DAYS_PER_WEEK = 7
 private const val CURRENT_WEEK = 16
 private const val DAYS_READ_THIS_WEEK = 3
 private const val TOTAL_DAYS = TOTAL_WEEKS * DAYS_PER_WEEK
 private const val READ_DAYS = (CURRENT_WEEK - 1) * DAYS_PER_WEEK + DAYS_READ_THIS_WEEK
-
 private val weekStartDate = LocalDate(year = 2026, monthNumber = 7, dayOfMonth = 20)
-
-/**
- * The seven readings of the week on screen: 1 Kings walked three chapters a day, which is roughly
- * where a whole-Bible year plan sits at week 16.
- */
 private val currentWeekChapters = listOf(
     1 to 3,
     4 to 6,

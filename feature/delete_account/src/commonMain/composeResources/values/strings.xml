@@ -1,0 +1,21 @@
+<resources>
+    <string name="delete_account_title">Delete your account?</string>
+    <string name="delete_account_message">This action is permanent and cannot be undone. The following will be deleted:</string>
+    <string name="delete_account_removes_progress">Progress, streak and reading plans</string>
+    <string name="delete_account_removes_notes">Highlights, notes and AI conversations</string>
+    <string name="delete_account_removes_preferences">Preferences and synced data</string>
+    <string name="delete_account_subscription_warning">Your Pro subscription is not cancelled automatically. Cancel it %1$s before deleting your account.</string>
+    <string name="delete_account_store_google_play">on Google Play</string>
+    <string name="delete_account_store_app_store">on the App Store</string>
+    <string name="delete_account_store_web">on the website where you subscribed</string>
+    <string name="delete_account_servers_note">Your data is permanently removed from our servers the moment you delete the account.</string>
+    <string name="delete_account_confirmation_label">Type %1$s to confirm</string>
+    <string name="delete_account_confirmation_keyword">DELETE</string>
+    <string name="delete_account_deleting_data">Removing your data…</string>
+    <string name="delete_account_closing">Closing your account…</string>
+    <string name="delete_account_deleted">Account deleted</string>
+    <string name="delete_account_confirm">Delete account</string>
+    <string name="delete_account_cancel">Cancel</string>
+    <string name="delete_account_success_message">Account deleted. We will miss you.</string>
+    <string name="delete_account_error_message">We could not delete your account. Please try again.</string>
+</resources>

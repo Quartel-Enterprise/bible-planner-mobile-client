@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paywall_teaser_subscribe">Subscribe to Pro</string>
+    <string name="paywall_teaser_highlight_custom_color_title">Custom colors are Pro</string>
+    <string name="paywall_teaser_highlight_custom_color_body">The default palette stays free. With Pro you can mix your own colors to tell topics, promises and prayers apart.</string>
+    <string name="paywall_teaser_highlight_custom_color_dismiss">Use the default palette</string>
+</resources>

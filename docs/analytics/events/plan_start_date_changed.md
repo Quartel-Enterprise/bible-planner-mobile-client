@@ -27,4 +27,4 @@ The dialog is opened from two places:
 
 - Discrepancy with the plan table: `EditPlanStartDateNavRoute` is a `data object` with no arguments, so the dialog's ViewModel cannot know its caller. To log `source`, either add a source argument to the route or log the event caller-side; until then the parameter cannot be populated from inside the dialog.
 - Dismissing the dialog without picking a date (`OnDismissDialog`) is intentionally not tracked (picker dismissals are excluded, see README).
-- Dialog impressions are covered by [destination_view](destination_view.md) (`edit_plan_start_date`).
+- Dialog impressions are covered by [screen_view](screen_view.md) (`edit_plan_start_date`).

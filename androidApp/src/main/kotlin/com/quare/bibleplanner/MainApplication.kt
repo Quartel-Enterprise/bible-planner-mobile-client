@@ -2,6 +2,7 @@ package com.quare.bibleplanner
 
 import android.app.Application
 import android.content.pm.ApplicationInfo
+import androidx.work.Configuration
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.crashlytics.configure
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
@@ -20,10 +21,14 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 
-class MainApplication : Application() {
+class MainApplication :
+    Application(),
+    Configuration.Provider {
     private val mainApplicationModule = module {
         singleOf(::AndroidNotificationStringProvider).bind<NotificationStringProvider>()
     }
+
+    override val workManagerConfiguration: Configuration = Configuration.Builder().build()
 
     override fun onCreate() {
         super.onCreate()

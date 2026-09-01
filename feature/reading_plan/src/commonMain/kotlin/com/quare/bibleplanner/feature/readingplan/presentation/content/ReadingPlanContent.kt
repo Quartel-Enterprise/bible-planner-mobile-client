@@ -183,7 +183,7 @@ private fun ResponsiveContentScope.weekItems(
     val items = buildReadingPlanWeekItems(loadedUiState)
     responsiveItems(
         items = items,
-        key = { item -> readingPlanItemKey(item) },
+        key = { item -> getReadingPlanItemKey(item) },
         animateItem = true,
     ) { item ->
         when (item) {
@@ -223,7 +223,7 @@ private fun SectionHeaderRow(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 4.dp),
-        text = stringResource(group.sectionResource(isBehind = isBehind)),
+        text = stringResource(group.toSectionResource(isBehind = isBehind)),
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,
         letterSpacing = 0.6.sp,
@@ -269,7 +269,7 @@ private fun ShowMoreButton(
     }
 }
 
-private fun WeekGroup.sectionResource(isBehind: Boolean): StringResource = when (this) {
+private fun WeekGroup.toSectionResource(isBehind: Boolean): StringResource = when (this) {
     WeekGroup.Current -> if (isBehind) Res.string.section_current_behind else Res.string.section_current
     WeekGroup.Upcoming -> Res.string.section_upcoming
     WeekGroup.Completed -> Res.string.section_completed

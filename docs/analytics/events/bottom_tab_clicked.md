@@ -2,7 +2,7 @@
 
 **Tier:** P2 | **Domain:** Settings
 
-Captures taps on the bottom navigation bar (Plans / Books / Profile). Click-through on the tab bar is a distinct funnel signal from the resulting screen impression, so it is tracked separately from `destination_view`.
+Captures taps on the bottom navigation bar (Plans / Books / Profile). Click-through on the tab bar is a distinct funnel signal from the resulting screen impression, so it is tracked separately from `screen_view`.
 
 ## When it fires
 
@@ -20,4 +20,4 @@ User taps a tab in the bottom navigation bar.
 
 ## Notes
 
-- The subsequent screen impression is separately captured by [destination_view](destination_view.md); this event only covers the tap itself, including taps on the already-selected tab.
+- The subsequent screen impression is separately captured by [screen_view](screen_view.md); this event only covers the tap itself, including taps on the already-selected tab.

@@ -2,7 +2,7 @@
 
 **Tier:** P2 | **Domain:** Reading
 
-Captures the user tapping the back control on the book-details screen. Because this click also triggers navigation (which `destination_view` logs separately), this event isolates click-through intent from the resulting screen-view.
+Captures the user tapping the back control on the book-details screen. Because this click also triggers navigation (which `screen_view` logs separately), this event isolates click-through intent from the resulting screen-view.
 
 ## When it fires
 
@@ -18,4 +18,4 @@ None.
 
 ## Notes
 
-- Related: [destination_view](destination_view.md) fires separately once the previous screen becomes visible again.
+- Related: [screen_view](screen_view.md) fires separately once the previous screen becomes visible again.

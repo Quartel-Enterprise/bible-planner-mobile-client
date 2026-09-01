@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.donation.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -16,6 +18,7 @@ import kotlinx.coroutines.launch
 
 class DonationViewModel(
     factory: DonationUiStateFactory,
+    private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DonationUiEvent>(trackEvent) {
     private val _uiState = MutableStateFlow(factory.create())
@@ -26,11 +29,7 @@ class DonationViewModel(
 
     override fun handleEvent(event: DonationUiEvent) {
         when (event) {
-            DonationUiEvent.Dismiss -> {
-                viewModelScope.launch {
-                    _uiAction.emit(DonationUiAction.NavigateBack)
-                }
-            }
+            DonationUiEvent.Dismiss -> navigator.navigateBack()
 
             is DonationUiEvent.Copy -> {
                 viewModelScope.launch {
@@ -87,11 +86,7 @@ class DonationViewModel(
                 )
             }
 
-            DonationUiEvent.OpenPixQr -> {
-                viewModelScope.launch {
-                    _uiAction.emit(DonationUiAction.NavigateToPixQr)
-                }
-            }
+            DonationUiEvent.OpenPixQr -> navigator.navigate(PixQrNavRoute)
         }
     }
 

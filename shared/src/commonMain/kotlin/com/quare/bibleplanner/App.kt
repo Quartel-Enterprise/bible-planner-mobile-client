@@ -25,9 +25,11 @@ import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
 import com.quare.bibleplanner.ui.theme.model.Theme
 import com.quare.bibleplanner.ui.utils.LocalMainBottomBarState
+import com.quare.bibleplanner.ui.utils.LocalMainFabVisibilityState
 import com.quare.bibleplanner.ui.utils.LocalNavigationBarInsets
 import com.quare.bibleplanner.ui.utils.LocalWindowBlurController
 import com.quare.bibleplanner.ui.utils.MainBottomBarState
+import com.quare.bibleplanner.ui.utils.MainFabVisibilityState
 import com.quare.bibleplanner.ui.utils.WindowBlurController
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -41,15 +43,21 @@ fun App(
     val contrast by viewModel.contrastState.collectAsState()
     val windowBlurController = remember { WindowBlurController() }
     val mainBottomBarState = remember { MainBottomBarState() }
+    val mainFabVisibilityState = remember { MainFabVisibilityState() }
     LifecycleEventEffect(
         event = Lifecycle.Event.ON_START,
         onEvent = viewModel::onAppForegrounded,
+    )
+    LifecycleEventEffect(
+        event = Lifecycle.Event.ON_STOP,
+        onEvent = viewModel::onAppBackgrounded,
     )
     ApplyAppLocaleEffect()
     ProvideCompositionLocals(
         theme = theme,
         windowBlurController = windowBlurController,
         mainBottomBarState = mainBottomBarState,
+        mainFabVisibilityState = mainFabVisibilityState,
     ) {
         AppTheme(
             getSpecificColors = getSpecificColors,
@@ -76,6 +84,7 @@ private fun ProvideCompositionLocals(
     theme: Theme,
     windowBlurController: WindowBlurController,
     mainBottomBarState: MainBottomBarState,
+    mainFabVisibilityState: MainFabVisibilityState,
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
@@ -83,6 +92,7 @@ private fun ProvideCompositionLocals(
         LocalNavigationBarInsets provides WindowInsets.navigationBars,
         LocalWindowBlurController provides windowBlurController,
         LocalMainBottomBarState provides mainBottomBarState,
+        LocalMainFabVisibilityState provides mainFabVisibilityState,
         content = content,
     )
 }

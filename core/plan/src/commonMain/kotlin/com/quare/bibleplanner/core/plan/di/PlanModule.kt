@@ -15,12 +15,18 @@ import com.quare.bibleplanner.core.plan.data.sync.UserPreferencesRemoteStore
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.DeleteDayNotesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
+import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapterUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetDaysWithNotesCountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.GetScheduledDay
+import com.quare.bibleplanner.core.plan.domain.usecase.GetScheduledDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.MigratePlanPreferencesToSyncStoreUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
+import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidatesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.TrackReadingCompletionEventsUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
@@ -54,6 +60,7 @@ val planModule = module {
             remoteStore = get<UserPreferencesRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "PreferencesSync",
         )
     }
@@ -66,6 +73,7 @@ val planModule = module {
             remoteStore = get<DayMetaRemoteStore>(),
             networkConnectivityObserver = get(),
             getAuthenticatedUserId = get(),
+            currentTimestampProvider = get(),
             logTag = "DayMetaSync",
         )
     }
@@ -73,6 +81,9 @@ val planModule = module {
     // Use cases
     factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
+    factoryOf(::GetScheduledDayUseCase).bind<GetScheduledDay>()
+    factoryOf(::GetCompletedDayForChapterUseCase).bind<GetCompletedDayForChapter>()
+    factoryOf(::ObserveDayCompletionCandidatesUseCase).bind<ObserveDayCompletionCandidates>()
     factoryOf(::SetPlanStartTimeUseCase)
     factoryOf(::MigratePlanPreferencesToSyncStoreUseCase)
     factoryOf(::EnsureDefaultPlanStartDateUseCase)

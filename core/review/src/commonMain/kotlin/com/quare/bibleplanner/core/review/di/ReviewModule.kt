@@ -20,6 +20,7 @@ val reviewModule = module {
         ShouldRequestReviewUseCase(
             reviewPreferences = get(),
             currentTimestampProvider = get(),
+            hasCooldownElapsed = get(),
             appVersion = ReviewBuildKonfig.APP_VERSION,
         )
     }

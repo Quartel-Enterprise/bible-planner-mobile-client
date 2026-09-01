@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
+    alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
 }
 
 kotlin {
@@ -16,6 +17,9 @@ kotlin {
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
+
+            // Compose
+            implementation(libs.compose.ui)
         }
 
         commonTest.dependencies {

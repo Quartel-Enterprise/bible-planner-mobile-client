@@ -14,7 +14,6 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 private val trueValues = setOf("1", "true", "t", "yes", "y", "on")
-
 private val falseValues = setOf("0", "false", "f", "no", "n", "off", "")
 
 internal class DesktopRemoteConfigService(

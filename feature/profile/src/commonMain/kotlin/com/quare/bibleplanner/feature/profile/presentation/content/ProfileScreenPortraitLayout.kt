@@ -10,9 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
+import com.quare.bibleplanner.feature.profile.presentation.content.component.AccountDataSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.CurrentAppVersionText
-import com.quare.bibleplanner.feature.profile.presentation.content.component.DeleteDataSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LegalSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LoginCard
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LogoutButton
@@ -68,7 +68,12 @@ internal fun ResponsiveContentScope.profileScreenPortraitLayout(
         responsiveItem { SocialSection(onEvent = onEvent) }
     }
     item { VerticalSpacer() }
-    responsiveItem { DeleteDataSection(onEvent = onEvent) }
+    responsiveItem {
+        AccountDataSection(
+            isLoggedIn = state.accountStatusModel is AccountStatusModel.LoggedIn,
+            onEvent = onEvent,
+        )
+    }
     if (state.accountStatusModel is AccountStatusModel.LoggedIn) {
         item { VerticalSpacer() }
         responsiveItem {

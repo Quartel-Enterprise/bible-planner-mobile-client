@@ -14,14 +14,14 @@ import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 
+/**
+ * The day the screenshots open on: 1 Kings 10-12, every chapter ticked off, carrying a note of the
+ * kind a reader actually writes, one per language — the screen ships with an empty field and a
+ * placeholder, which shows the feature exists but not what it is for.
+ */
 private const val DAY_IN_WEEK = 4
 private const val WEEK_NUMBER = 16
 private const val TOTAL_VERSES = 96
-
-/**
- * A note of the kind a reader actually writes, one per language: the screen ships with an empty
- * field and a placeholder, which shows the feature exists but not what it is for.
- */
 private val notesByLocale = mapOf(
     "en-US" to "The queen of Sheba travelled for months to hear this wisdom. Mine sits on the " +
         "bedside table.",
@@ -30,10 +30,7 @@ private val notesByLocale = mapOf(
     "es" to "La reina de Sabá viajó meses para oír esta sabiduría. La mía está en la mesita de " +
         "noche.",
 )
-
-/** The same day the plan screenshot calls today: 1 Kings 10-12, every chapter ticked off. */
 private val chapters = listOf(10, 11, 12)
-
 private val readDate = LocalDate(year = 2026, monthNumber = 7, dayOfMonth = 23)
 
 private fun passage() = PassageModel(

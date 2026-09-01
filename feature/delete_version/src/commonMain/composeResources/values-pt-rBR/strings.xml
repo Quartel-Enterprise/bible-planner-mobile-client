@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_version_title">Excluir Versão da Bíblia</string>
+    <string name="delete_version_message">Tem certeza de que deseja excluir esta versão baixada?</string>
+    <string name="delete">Excluir</string>
+    <string name="cancel">Cancelar</string>
+</resources>

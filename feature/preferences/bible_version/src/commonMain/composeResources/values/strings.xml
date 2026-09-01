@@ -4,15 +4,23 @@
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
     <string name="delete">Delete</string>
-    <string name="bible_versions">Bible Versions</string>
-    <string name="manage_bible_versions_description">Manage your downloaded Bible versions and select one to read.</string>
+    <string name="bible_versions">Bible Version</string>
+    <string name="manage_bible_versions_description">Download to read offline and choose your default version.</string>
     <string name="english">English</string>
     <string name="portuguese_brazil">Portuguese (Brazil)</string>
     <string name="spanish">Spanish</string>
     <string name="downloaded">Downloaded</string>
-    <string name="downloading_progress">Downloading: %1$s%</string>
-    <string name="paused_progress">Download paused at %1$s%</string>
+    <string name="downloading_progress">Downloading %1$s%</string>
+    <string name="paused_progress">Paused %1$s%</string>
     <string name="download_bible_versions_error">We were unable to download the Bible versions to your device. Please check your internet connection and try again.</string>
     <string name="try_again">Try Again</string>
     <string name="download_tip_keep_app_open">Keep the app open to speed up the download.</string>
+    <string name="update">Update</string>
+    <string name="update_available_title">Updates available</string>
+    <string name="update_available_description">New revisions for versions you downloaded. Choose which to update.</string>
+    <string name="tap_to_download">Tap to download</string>
+    <string name="update_available">Update available</string>
+    <string name="update_count">Update (%1$d)</string>
+    <string name="status_with_size">%1$s · %2$s</string>
+    <string name="size_progress">%1$s of %2$s</string>
 </resources>

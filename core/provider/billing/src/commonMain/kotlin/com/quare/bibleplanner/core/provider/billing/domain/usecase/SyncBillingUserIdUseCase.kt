@@ -1,10 +1,12 @@
 package com.quare.bibleplanner.core.provider.billing.domain.usecase
 
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.GetAppInstanceId
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import kotlinx.coroutines.flow.collectLatest
 
 internal class SyncBillingUserIdUseCase(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
+    private val getAppInstanceId: GetAppInstanceId,
     private val billingUserAccount: BillingUserAccount,
 ) : SyncBillingUserId {
     override suspend fun invoke() {
@@ -14,6 +16,7 @@ internal class SyncBillingUserIdUseCase(
             } else {
                 billingUserAccount.logOut()
             }
+            billingUserAccount.setFirebaseAppInstanceId(getAppInstanceId())
         }
     }
 }

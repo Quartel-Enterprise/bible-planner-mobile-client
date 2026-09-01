@@ -9,4 +9,6 @@ internal data class SubscriptionDto(
     val unsubscribeDetectedAt: String?,
     @SerialName("billing_issues_detected_at")
     val billingIssuesDetectedAt: String?,
+    @SerialName("store")
+    val store: String?,
 )

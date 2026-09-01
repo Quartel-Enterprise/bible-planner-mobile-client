@@ -13,6 +13,8 @@ import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
 
 /**
@@ -29,13 +31,25 @@ class PlanRepositoryImpl(
     private val syncedPreferenceDao: SyncedPreferenceDao,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : PlanRepository {
-    override suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanModel> = planLocalDataSource
-        .getPlans(readingPlanType)
-        .map {
-            weekPlanDtoToModelMapper.map(
-                weekPlanDto = it,
-            )
+    /**
+     * The bundled plans never change while the app runs, and reading them means parsing 52 JSON
+     * files per plan, so the mapped weeks are kept for the process. The lock is what makes the
+     * parallel callers of a cold cache wait for one parse instead of each starting their own.
+     */
+    private val plansByType = mutableMapOf<ReadingPlanType, List<WeekPlanModel>>()
+    private val plansMutex = Mutex()
+
+    override suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanModel> = plansMutex.withLock {
+        plansByType.getOrPut(readingPlanType) {
+            planLocalDataSource
+                .getPlans(readingPlanType)
+                .map {
+                    weekPlanDtoToModelMapper.map(
+                        weekPlanDto = it,
+                    )
+                }
         }
+    }
 
     override suspend fun setStartPlanTimestamp(timestamp: Long) {
         syncedPreferenceDao.setLocal(

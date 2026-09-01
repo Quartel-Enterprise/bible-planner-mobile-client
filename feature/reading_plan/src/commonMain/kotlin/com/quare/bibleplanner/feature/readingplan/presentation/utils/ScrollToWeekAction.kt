@@ -3,7 +3,7 @@ package com.quare.bibleplanner.feature.readingplan.presentation.utils
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import com.quare.bibleplanner.feature.readingplan.presentation.content.readingPlanWeekScrollIndex
+import com.quare.bibleplanner.feature.readingplan.presentation.content.getReadingPlanWeekScrollIndex
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import kotlinx.coroutines.delay
@@ -25,7 +25,7 @@ internal fun ScrollToWeekAction(
         }
         val skipAutomaticScroll = scrollToWeekIsAutomatic && includeSidePanel
         if (!skipAutomaticScroll) {
-            val targetIndex = readingPlanWeekScrollIndex(
+            val targetIndex = getReadingPlanWeekScrollIndex(
                 state = loadedUiState,
                 includeSidePanel = includeSidePanel,
                 weekNumber = scrollToWeekNumber,

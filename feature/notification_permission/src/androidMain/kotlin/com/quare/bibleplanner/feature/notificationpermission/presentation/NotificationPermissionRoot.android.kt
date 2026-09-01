@@ -25,7 +25,7 @@ import com.quare.bibleplanner.ui.utils.ActionCollector
 import kotlinx.coroutines.flow.Flow
 import org.koin.compose.viewmodel.koinViewModel
 
-actual fun EntryProviderScope<NavKey>.notificationPermission(onNavigateBack: () -> Unit) {
+actual fun EntryProviderScope<NavKey>.notificationPermission() {
     entry<NotificationPermissionNavRoute>(metadata = DialogSceneStrategy.dialog()) {
         val viewModel = koinViewModel<NotificationPermissionViewModel>()
         val state by viewModel.uiState.collectAsState()
@@ -61,7 +61,6 @@ actual fun EntryProviderScope<NavKey>.notificationPermission(onNavigateBack: () 
 
         NotificationPermissionUiActionCollector(
             uiActionFlow = viewModel.uiAction,
-            onNavigateBack = onNavigateBack,
             context = context,
             permissionLauncher = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -80,15 +79,12 @@ actual fun EntryProviderScope<NavKey>.notificationPermission(onNavigateBack: () 
 @Composable
 private fun NotificationPermissionUiActionCollector(
     uiActionFlow: Flow<NotificationPermissionUiAction>,
-    onNavigateBack: () -> Unit,
     context: Context,
     permissionLauncher: () -> Unit,
 ) {
     ActionCollector(uiActionFlow) { uiAction ->
         when (uiAction) {
             NotificationPermissionUiAction.RequestSystemPermission -> permissionLauncher()
-
-            NotificationPermissionUiAction.NavigateBack -> onNavigateBack()
 
             NotificationPermissionUiAction.OpenNotificationSettings -> {
                 val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {

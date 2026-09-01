@@ -17,6 +17,10 @@ sealed interface LoginWarningReason {
         override val key: String = "day_study"
     }
 
+    data object AiChat : LoginWarningReason {
+        override val key: String = "ai_chat"
+    }
+
     sealed interface Preferences : LoginWarningReason {
         data object Theme : Preferences {
             override val key: String = "preferences_theme"
@@ -25,14 +29,20 @@ sealed interface LoginWarningReason {
         data object Language : Preferences {
             override val key: String = "preferences_language"
         }
+
+        data object StudySuggestion : Preferences {
+            override val key: String = "preferences_study_suggestion"
+        }
     }
 
     companion object {
         private val entries: List<LoginWarningReason> = listOf(
             Purchase,
             DayStudy,
+            AiChat,
             Preferences.Theme,
             Preferences.Language,
+            Preferences.StudySuggestion,
         )
 
         fun fromKey(key: String): LoginWarningReason = entries.first { it.key == key }

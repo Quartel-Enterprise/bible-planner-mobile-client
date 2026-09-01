@@ -22,5 +22,5 @@ No parameters.
 ## Notes
 
 - Logged when the share sheet is requested; whether the user completes the share in the system UI is not observable.
-- Pix QR dialog impressions are covered by [destination_view](destination_view.md) (`destination_name=pix_qr`), reached via `DonationUiEvent.OpenPixQr`.
+- Pix QR dialog impressions are covered by [screen_view](screen_view.md) (`screen_name=pix_qr`), reached via `DonationUiEvent.OpenPixQr`.
 - Related: [donation_method_copied](donation_method_copied.md) with `method=pix` for the copy-key alternative.

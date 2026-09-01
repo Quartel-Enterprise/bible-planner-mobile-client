@@ -16,7 +16,7 @@ internal class FavoritesLocalStore(
     private val bookDao: BookDao,
     private val bookFavoriteMapper: BookFavoriteMapper,
 ) : SyncLocalStore<BookEntity, BookFavoriteDto> {
-    override fun pendingFlow(): Flow<List<BookEntity>> = bookDao.getPendingFavoriteSyncBooksFlow()
+    override fun observePending(): Flow<List<BookEntity>> = bookDao.getPendingFavoriteSyncBooksFlow()
 
     override suspend fun getPending(): List<BookEntity> = bookDao.getPendingFavoriteSyncBooks()
 

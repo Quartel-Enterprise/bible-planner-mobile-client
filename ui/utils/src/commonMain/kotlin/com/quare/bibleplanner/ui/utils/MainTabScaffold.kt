@@ -1,5 +1,11 @@
 package com.quare.bibleplanner.ui.utils
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,17 +18,13 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 
 private val fabBottomSpacing = 16.dp
 private const val WIDE_SCREEN_WIDTH = 600
+private const val FAB_AREA_HEIGHT_LABEL = "fab_area_height"
 
 @Composable
 fun MainTabScaffold(
@@ -66,12 +69,26 @@ private fun WideTabScaffold(
     floatingActionButton: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
+    val navigationBarInsets = WindowInsets.navigationBars
+    val density = LocalDensity.current
+    var fabAreaHeight by remember { mutableStateOf(0.dp) }
+    val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
+    ReserveBottomOverlayHeight {
+        navigationBarInsets.getBottom(density).toFloat() +
+            with(density) { reservedFabHeight.toFabClearance().toPx() }
+    }
+
     Row(modifier = Modifier.fillMaxSize()) {
         navigationRail()
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            floatingActionButton = floatingActionButton,
-            snackbarHost = { SnackbarHost(LocalSnackbarHostState.current) },
+            floatingActionButton = {
+                MeasuredFabArea(
+                    fabAreaHeight = fabAreaHeight,
+                    onFabAreaHeightChange = { fabAreaHeight = it },
+                    content = floatingActionButton,
+                )
+            },
             content = { paddingValues ->
                 CompositionLocalProvider(
                     value = LocalMainPadding provides paddingValues,
@@ -94,13 +111,11 @@ private fun NarrowTabScaffold(
     val density = LocalDensity.current
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     var bottomBarHeightPx by remember { mutableFloatStateOf(0f) }
-    val bottomBarState = LocalMainBottomBarState.current
-    LaunchedEffect(bottomBarState) {
-        snapshotFlow { (bottomBarHeightPx + scrollBehavior.state.heightOffset).coerceAtLeast(0f) }
-            .collect { visibleHeight -> bottomBarState.visibleHeightPx = visibleHeight }
-    }
-    DisposableEffect(bottomBarState) {
-        onDispose { bottomBarState.visibleHeightPx = 0f }
+    val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
+    ReserveBottomOverlayHeight {
+        val visibleBottomBarPx = (bottomBarHeightPx + scrollBehavior.state.heightOffset).coerceAtLeast(0f)
+        maxOf(navigationBarInsets.getBottom(density).toFloat(), visibleBottomBarPx) +
+            with(density) { reservedFabHeight.toFabClearance().toPx() }
     }
 
     Scaffold(
@@ -108,24 +123,18 @@ private fun NarrowTabScaffold(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
-            Box(
-                modifier = Modifier
-                    .onGloballyPositioned { coordinates ->
-                        val measuredHeight = with(density) { coordinates.size.height.toDp() }
-                        if (measuredHeight > fabAreaHeight) {
-                            fabAreaHeight = measuredHeight
-                        }
-                    }.graphicsLayer {
-                        val maxTranslation =
-                            (-scrollBehavior.state.heightOffsetLimit - navigationBarInsets.getBottom(this))
-                                .coerceAtLeast(0f)
-                        translationY = (-scrollBehavior.state.heightOffset).coerceAtMost(maxTranslation)
-                    },
-            ) {
-                floatingActionButton()
-            }
+            MeasuredFabArea(
+                fabAreaHeight = fabAreaHeight,
+                onFabAreaHeightChange = { fabAreaHeight = it },
+                modifier = Modifier.graphicsLayer {
+                    val maxTranslation =
+                        (-scrollBehavior.state.heightOffsetLimit - navigationBarInsets.getBottom(this))
+                            .coerceAtLeast(0f)
+                    translationY = (-scrollBehavior.state.heightOffset).coerceAtMost(maxTranslation)
+                },
+                content = floatingActionButton,
+            )
         },
-        snackbarHost = { SnackbarHost(LocalSnackbarHostState.current) },
         bottomBar = {
             navigationBar(
                 Modifier
@@ -140,13 +149,50 @@ private fun NarrowTabScaffold(
         content = { paddingValues ->
             CompositionLocalProvider(
                 value = LocalMainPadding provides paddingValues.withFabClearance(
-                    fabAreaHeight = fabAreaHeight,
+                    fabAreaHeight = reservedFabHeight,
                     navigationBarInsets = navigationBarInsets,
                 ),
                 content = content,
             )
         },
     )
+}
+
+@Composable
+private fun rememberReservedFabHeight(fabAreaHeight: Dp): Dp {
+    val isFabVisible = LocalMainFabVisibilityState.current.isVisible
+    val reservedFabHeight by animateDpAsState(
+        targetValue = if (isFabVisible) fabAreaHeight else 0.dp,
+        label = FAB_AREA_HEIGHT_LABEL,
+    )
+    return reservedFabHeight
+}
+
+@Composable
+private fun MeasuredFabArea(
+    fabAreaHeight: Dp,
+    onFabAreaHeightChange: (Dp) -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    val density = LocalDensity.current
+    AnimatedVisibility(
+        visible = LocalMainFabVisibilityState.current.isVisible,
+        modifier = modifier,
+        enter = scaleIn() + fadeIn(),
+        exit = scaleOut() + fadeOut(),
+    ) {
+        Box(
+            modifier = Modifier.onGloballyPositioned { coordinates ->
+                val measuredHeight = with(density) { coordinates.size.height.toDp() }
+                if (measuredHeight > fabAreaHeight) {
+                    onFabAreaHeightChange(measuredHeight)
+                }
+            },
+        ) {
+            content()
+        }
+    }
 }
 
 @Composable
@@ -162,6 +208,8 @@ private fun PaddingValues.withFabClearance(
         start = calculateStartPadding(layoutDirection),
         top = calculateTopPadding(),
         end = calculateEndPadding(layoutDirection),
-        bottom = navigationBarBottom + fabAreaHeight + fabBottomSpacing,
+        bottom = navigationBarBottom + fabAreaHeight.toFabClearance(),
     )
 }
+
+private fun Dp.toFabClearance(): Dp = if (this > 0.dp) this + fabBottomSpacing else 0.dp

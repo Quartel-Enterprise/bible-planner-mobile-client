@@ -32,6 +32,12 @@ interface BibleVersionDao {
         status: DownloadStatus,
     )
 
+    @Query("UPDATE bible_versions SET contentVersion = :contentVersion WHERE id = :id")
+    suspend fun updateContentVersion(
+        id: String,
+        contentVersion: String,
+    )
+
     @Query("DELETE FROM bible_versions WHERE id = :id")
     suspend fun deleteVersion(id: String)
 }

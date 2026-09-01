@@ -6,19 +6,19 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownloadProgress
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
-import com.quare.bibleplanner.core.provider.room.dao.VerseDao
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.notification.AndroidBibleVersionDownloadNotifier
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -32,8 +32,8 @@ internal class BibleVersionDownloadWorker(
     private val downloadBible: DownloadBibleUseCase by inject()
     private val notifier: AndroidBibleVersionDownloadNotifier by inject()
     private val bibleVersionDao: BibleVersionDao by inject()
-    private val verseDao: VerseDao by inject()
     private val bibleRepository: BibleRepository by inject()
+    private val observeDownloadProgress: ObserveBibleVersionDownloadProgress by inject()
 
     // Required for expedited work: used to run the worker as a foreground service / expedited job.
     override suspend fun getForegroundInfo(): ForegroundInfo {
@@ -66,15 +66,13 @@ internal class BibleVersionDownloadWorker(
         return try {
             val result = coroutineScope {
                 val progressObserver = launch {
-                    combine(
-                        bibleVersionDao.getAllVersionsFlow().mapNotNull { list -> list.find { it.id == versionId } },
-                        verseDao.countChaptersWithVersesByVersionFlow(versionId),
-                    ) { entity, count -> count.toFloat() / entity.totalChapters }
-                        .distinctUntilChanged()
-                        .collect { progress ->
+                    observeDownloadProgress(versionId)
+                        .onEach { progress ->
                             lastProgress = progress
                             notifier.showProgress(versionId, versionName, progress)
-                        }
+                        }.catch { error ->
+                            Log.w(LOG_TAG, "Progress observation failed; download continues", error)
+                        }.collect()
                 }
                 val downloadResult = downloadBible(versionId)
                 progressObserver.cancel()
@@ -92,11 +90,29 @@ internal class BibleVersionDownloadWorker(
             if (result.isSuccess) Result.success() else Result.failure()
         } catch (_: CancellationException) {
             withContext(NonCancellable) {
-                notifier.showPaused(versionId, versionName, lastProgress)
-                bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
+                markAsPausedUnlessDeleted(
+                    versionId = versionId,
+                    versionName = versionName,
+                    progress = lastProgress,
+                )
             }
             Result.failure()
         }
+    }
+
+    private suspend fun markAsPausedUnlessDeleted(
+        versionId: String,
+        versionName: String,
+        progress: Float,
+    ) {
+        val wasDeleted = bibleVersionDao.getVersionById(versionId)?.status == DownloadStatus.NOT_STARTED
+        if (wasDeleted) return
+        notifier.showPaused(
+            versionId = versionId,
+            versionName = versionName,
+            progress = progress,
+        )
+        bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.PAUSED)
     }
 
     companion object {

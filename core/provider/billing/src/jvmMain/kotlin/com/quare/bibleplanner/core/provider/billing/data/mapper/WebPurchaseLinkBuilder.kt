@@ -12,10 +12,10 @@ internal class WebPurchaseLinkBuilder(
         packageIdentifier: String,
     ): String {
         val baseUrl = config.purchaseLink.trimEnd(PATH_SEPARATOR)
-        return "$baseUrl$PATH_SEPARATOR${appUserId.encoded()}?$PACKAGE_ID_PARAM=${packageIdentifier.encoded()}"
+        return "$baseUrl$PATH_SEPARATOR${appUserId.encode()}?$PACKAGE_ID_PARAM=${packageIdentifier.encode()}"
     }
 
-    private fun String.encoded(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
+    private fun String.encode(): String = URLEncoder.encode(this, StandardCharsets.UTF_8)
 
     private companion object {
         const val PATH_SEPARATOR = '/'

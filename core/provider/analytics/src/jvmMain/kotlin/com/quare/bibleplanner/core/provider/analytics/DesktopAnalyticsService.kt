@@ -35,6 +35,8 @@ internal class DesktopAnalyticsService(
         )
     }
 
+    override suspend fun getAppInstanceId(): String? = null
+
     private fun send(
         eventName: String,
         params: Map<String, Any>,

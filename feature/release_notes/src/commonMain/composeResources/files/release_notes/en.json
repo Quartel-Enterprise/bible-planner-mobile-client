@@ -1,4 +1,72 @@
 {
+  "2.8.0": [
+    "With vertical reading on, you can now scroll up and keep going into the previous chapter — reading used to move forward only, stopping at the beginning of the chapter the screen was opened at.",
+    "The reading screen opens much faster: text already on your device shows up right away, without waiting for the Bible version list to answer over the internet. On a slow connection or offline, that used to leave the screen waiting for tens of seconds.",
+    "The app no longer crashes in rare situations after a long time in the background: real-time sync now pauses when you leave the app and reconnects when you come back, fetching what's new right away — which also reduces battery and data use in the background.",
+    "Fixed the custom color button in the highlight menu showing no background for Pro users.",
+    "You now choose how the app suggests the daily study when you finish the day's last planned chapter: with the usual prominent notice or with a new discreet banner at the bottom that doesn't interrupt your reading. The choice lives in Profile › Preferences › Study suggestion.",
+    "The day-complete notice gained a \"Don't show again\" option — you can turn the suggestion back on anytime from the preferences.",
+    "The study suggestion can now sync across your devices: turn on \"Sync across devices\" in its settings and your choice (on or off, and how it appears) follows your account in real time."
+  ],
+  "2.7.1": [
+    "While a chapter loads, the reading screen now shows an outline of the text instead of a spinning circle — you can see the shape of the chapter that is coming, and the Bible version at the top is no longer blank before it loads.",
+    "With vertical reading on, the previous and next chapter arrows no longer appear at the end of the chapter — the next one is already right below, so only the mark-as-read button stays there.",
+    "With vertical reading on, reaching the end of a chapter no longer stops the scroll: an outline of the next chapter appears right below and the text takes its place as soon as it loads — and the following chapter is already being fetched while you read.",
+    "Vertical reading now works on larger screens too, such as tablets and computers, where reading used to stop at the end of the chapter you opened.",
+    "On larger screens, the chapter name at the top and the mark as read button now follow the chapter you are reading, instead of staying on the one the screen was opened at.",
+    "The reading screen no longer stutters while a Bible version is downloading: scrolling stays smooth from start to finish.",
+    "Downloading a Bible version is now several times faster — what used to take minutes now finishes in seconds.",
+    "You can now delete a Bible version while it is downloading or paused: the download stops right away and the version goes back to not downloaded.",
+    "The confirmation that appears when you delete a downloaded Bible version is now in your language — it used to show up in English for anyone reading in Portuguese or Spanish.",
+    "Fixed the huge gap that appeared between the text field and the keyboard in the AI chat: the field now sits right above the keyboard, and the top of the conversation no longer runs off screen.",
+    "In the AI chat, the conversation now follows the answer as it is being written, the way a messaging chat does — and if you scroll up to re-read something, it stops following and no longer pulls you back down.",
+    "Question suggestions now disappear as soon as you send your question, instead of staying on screen until the answer starts arriving.",
+    "The chat's text field now suggests a capital first letter, like messaging apps do.",
+    "On the day screen, the notes field is no longer hidden behind the keyboard: the screen adjusts and takes you straight to it."
+  ],
+  "2.7.0": [
+    "Fixed a crash that prevented the app from opening on some devices. On those devices, Bible version downloads now happen while the app is open.",
+    "The reading screen has been redesigned: a chapter now opens with the book name and the number in large type, the text has more room to breathe between lines, and the mark as read button is always within reach, next to the arrows for the previous and next chapters.",
+    "Tap a verse to select it — you can pick several — and a panel appears with everything you can do with the passage.",
+    "You can now highlight verses in six colours, or mix your own. To remove a highlight, just tap the colour that is already applied; and pressing and holding a custom colour lets you choose whether to remove only the colour from the palette or the highlights made with it too.",
+    "You can save verses, write a note about a passage, and copy it with the reference and the version already included.",
+    "Sharing got better: besides plain text, you can create a card with the verse for Stories and WhatsApp status, choosing between six typefaces and eight backgrounds.",
+    "Your highlights, saved verses and notes are kept in your account and show up on all your devices.",
+    "A new \"Aa\" button on the reading screen opens the reading appearance: adjust the text size, choose between nine fonts — including one designed for people with dyslexia — turn on the reading ruler to keep your eyes on the line, and turn on vertical reading to continue into the next chapter without leaving the screen.",
+    "On larger screens, such as tablets and computers, the text sits in a column and the tools for the selected verse appear in a panel beside it, without covering what you are reading."
+  ],
+  "2.6.0": [
+    "The notification permission request no longer appears when you open the app: it is now only asked when you start downloading a Bible version, which is when download progress notifications are used."
+  ],
+  "2.5.0": [
+    "You can now delete your account from within the app, in Profile › Account and data. Before you confirm, the app shows everything that will be erased and reminds you to cancel your subscription in the store where you subscribed.",
+    "The delete all progress screen is clearer now: it shows what gets removed and what stays with you, such as your account, your subscription and your preferences.",
+    "Fixed problems when taking your profile photo with the camera on iPhone: the adjustment screen no longer appears blurred and taps keep working after you close the editing windows.",
+    "A loading indicator now appears while the camera opens.",
+    "Fixed a problem that made the plan start on a different date on each device when you had never picked a start date: that date now applies to your whole account and shows up the same on all your devices.",
+    "Fixed a rare crash that could happen when quickly tapping the next chapter suggestion on the reading screen.",
+    "You can now chat with the AI about the day's reading: tap \"Ask the AI\" on the day screen, or the \"Ask about this reading\" card inside the Questions tab, and the assistant already knows which chapters you are reading. The answer appears little by little, as it is being written.",
+    "Your conversations with the AI are saved to your account: you can return to any of them from the history, search by subject, rename or delete them — and it all shows up right away on your other devices.",
+    "Your conversations with the AI are now kept on the device: even with no internet you can still open the history and re-read what was already answered — a connection is only needed to ask something new."
+  ],
+  "2.4.0": [
+    "Fixed a problem that could show an error on the Bible versions screen even with a working internet connection.",
+    "When a Bible version you downloaded receives text corrections, the app now lets you know on launch and shows an update button in the versions list — you choose when to download the new text.",
+    "The Bible versions list now shows the size of each version, and downloads in progress or paused show how much has been downloaded plus a progress bar.",
+    "The Bible version update notice is now clearer, showing the size of each version next to its name.",
+    "The app no longer downloads a Bible version on its own the first time you open it: you now choose when to download it, with a button right on the reading screen (showing size and progress) or on the versions screen — a download left halfway is still resumed.",
+    "When the Bible version includes section headings (like \"The Creation\" before Genesis 1:1), they now show up on the reading screen.",
+    "Fixed a problem that could stop the app from letting you know that a Bible version you already downloaded has new text, such as the section headings.",
+    "On the adjust photo screen, besides dragging and zooming, you can now mirror your profile photo horizontally or vertically and turn it a quarter at a time.",
+    "On Android, dynamic colors, which tint the app with the colors of your wallpaper, now come turned off — if you like them, just turn them on in the theme screen.",
+    "On Android, the app icon now follows the system icon theme: if you choose icons with a custom color, the Bible Planner icon changes color too.",
+    "Fixed a problem that made an already downloaded and up-to-date Bible version show the update notice again.",
+    "Fixed a problem that made a Bible version download stall midway and only move again after pausing and resuming; downloads now also retry on their own when the connection fails.",
+    "New Bible versions now show up in the list as soon as they become available, without having to close and reopen the app.",
+    "Fixed a problem that could leave the Bible versions list stuck and out of date when the device clock was set back.",
+    "The version tag now shows up to three letters and no longer breaks into two lines, like RVR for the Reina-Valera 1960.",
+    "For those using the app in Spanish, the Bible version that comes already selected is now the Reina-Valera 1960 instead of an English one."
+  ],
   "2.3.0": [
     "Fixed the order selector at the top of the reading plan, which on some devices showed its text squeezed against the edges; it now switches to the compact format when space runs short and sits next to the options button.",
     "In the compact format, the order selector now opens a list with both reading orders and marks the one in use, instead of switching straight away on tap.",

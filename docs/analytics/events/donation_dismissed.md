@@ -18,5 +18,5 @@ None.
 
 ## Notes
 
-- Destination impression for the sheet itself is covered by [destination_view](destination_view.md) (`donation`, `bottom_sheet`).
+- Destination impression for the sheet itself is covered by [screen_view](screen_view.md) (`donation`, `bottom_sheet`).
 - Related: [donation_method_copied](donation_method_copied.md), [donation_section_toggled](donation_section_toggled.md), [pix_qr_opened](pix_qr_opened.md).

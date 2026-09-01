@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.utils.migrateLegacyFileIfPresent
 import com.quare.bibleplanner.core.utils.resolveAppDataDirectory
 import java.io.File
 
-actual fun createDataStore(): DataStore<Preferences> = commonCreateDataStore { dataStoreFileName ->
+actual fun createDataStore(): DataStore<Preferences> = createCommonDataStore { dataStoreFileName ->
     resolveDataStoreFile(dataStoreFileName).absolutePath
 }
 

@@ -6,7 +6,7 @@ Captures the user starting (or resuming) a Bible version download. Demand per ve
 
 ## When it fires
 
-The user taps download on a version in the selector, or taps resume on a paused download.
+The user taps download on a version in the selector, taps resume on a paused download, or taps the download/resume button on the reader's chapter-not-downloaded state.
 
 ## Trigger source
 
@@ -15,12 +15,15 @@ The user taps download on a version in the selector, or taps resume on a paused 
 - `BibleVersionUiEvent.OnDownload(id)` — fresh start (`is_resume=false`)
 - `BibleVersionUiEvent.OnResume(id)` — resuming a paused download (`is_resume=true`)
 
+`feature/read/.../presentation/ReadViewModel.kt` — `ReadUiEvent.OnDownloadSelectedVersionClick`, from the chapter-not-downloaded state; downloads the selected version (`source=reader`, `is_resume` reflects whether the download was paused).
+
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `version_id` | string | `nvi` | Bible version identifier |
 | `is_resume` | boolean | `false` | `true` when resuming a paused download, `false` on a fresh start |
+| `source` | string | `reader` | Only sent from the reader's chapter-not-downloaded state; absent when fired from the version selector |
 
 ## Notes
 

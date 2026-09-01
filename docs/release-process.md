@@ -29,7 +29,7 @@ flowchart TD
     H --> F
     F --> F1[Create release/X.Y.Z branch + version bump]
     F1 --> F2[Open + squash-merge the merge-back PR into main]
-    F2 --> F3([Publish GitHub Release vX.Y.Z<br/>with the installers attached])
+    F2 --> F3([Publish GitHub Release X.Y.Z<br/>with the installers attached])
 ```
 
 | Job | Runner | Gated | What it does |
@@ -60,10 +60,17 @@ so macOS Gatekeeper and Windows SmartScreen warn on first launch.
      uploads it to the track as a draft you release manually from the Play Console.
    - **submit_ios_for_review** — `true` (default) submits the iOS build for App Store review;
      `false` only uploads it to App Store Connect / TestFlight (use it for test runs).
+   - **prerelease** — `false` (default). `true` ships a beta that never reaches the public:
+     the version is named `X.Y.Z-beta-N`, Android goes to the Play **internal** track, iOS to
+     TestFlight without review, desktop is skipped and the GitHub Release is marked as a
+     **pre-release**. `track` and `submit_ios_for_review` are ignored (forced to `internal` /
+     off), and `platforms` must be `all` or `mobile`.
 
 Alternatively, run `./scripts/release/release.sh` from the terminal — it asks for the same inputs
 as a menu (with the same defaults) and prints the link to the dispatched run. For a full
-production release on every platform with no prompts, run `./scripts/release/release-prod.sh`.
+production release on every platform with no prompts, run `./scripts/release/prod/release-prod-all.sh`;
+for a mobile-only (android + ios) production release, run `./scripts/release/prod/release-prod-mobile.sh`;
+for a pre-release beta with no prompts, run `./scripts/release/release-beta.sh`.
 4. Click **Run workflow**.
 5. The `plan` job runs and prints the resolved version in the run summary. The run then pauses
    on the **Production** environment.
@@ -92,8 +99,28 @@ submit_ios_for_review:    false
 
 Android uploads to the internal testing track as a draft and iOS lands in App Store Connect /
 TestFlight without being submitted for review. The `finalize` job only runs for
-`platforms = all` **and** `track = production`, so a test run creates no tag, GitHub Release or
-merge-back PR.
+`platforms = all|mobile` **and** `track = production` (or a pre-release), so a test run creates
+no tag, GitHub Release or merge-back PR.
+
+### Example — pre-release beta of 2.4.0
+
+```text
+version:                  (blank — auto-resolved, becomes 2.4.0-beta-1)
+platforms:                mobile
+track:                    (ignored — forced to internal)
+complete_android_release: true
+submit_ios_for_review:    (ignored — forced off)
+prerelease:               true
+```
+
+Unlike a test run, a pre-release **does** finalize: it tags `2.4.0-beta-N`, squash-merges a
+versionCode-only bump back into `main` (the `versionName` in `version.xcconfig` stays at the
+last stable until the real release) and publishes a GitHub Release marked as a **pre-release**,
+with no installers attached. The beta number `N` is computed automatically from the existing
+`2.4.0-beta-*` tags. The `beta-N` suffix appears on the Android `versionName`, the tag and the
+GitHub Release — Apple rejects suffixed version strings, so the iOS build keeps the plain
+`X.Y.Z` and is distinguished in TestFlight by its build number (the `versionCode`). The store
+"What's New" still comes from the plain `X.Y.Z` entry in the release notes JSON.
 
 ## How the version is resolved
 
@@ -110,9 +137,12 @@ flowchart TD
 ```
 
 - The **`versionCode`** (Android) / **`CURRENT_PROJECT_VERSION`** (iOS) is always the current
-  value **+ 1**.
+  value **+ 1** — including for pre-releases, which is why each beta merges a versionCode-only
+  bump back into `main`.
 - The release notes JSON is the preferred source: its newest key is the version the team has
   been accumulating notes for, so the version and the "What's New" come from the same place.
+- For a pre-release, the resolved `X.Y.Z` additionally gets a `-beta-N` suffix, where `N` is
+  one past the highest existing `X.Y.Z-beta-*` tag.
 
 ## Release notes ("What's New")
 
@@ -159,8 +189,13 @@ Once the store uploads and the desktop builds succeed, `finalize`:
 1. Creates the `release/X.Y.Z` branch with the version bump commit (Android, iOS and Desktop —
    see [`scripts/bump-version.sh`](../scripts/bump-version.sh)).
 2. Opens a `chore: merge back X.Y.Z into main` pull request and squash-merges it into `main`.
-3. Publishes a **GitHub Release** `vX.Y.Z` with auto-generated notes and the `.dmg`, `.msi`,
+3. Publishes a **GitHub Release** `X.Y.Z` with auto-generated notes and the `.dmg`, `.msi`,
    `.deb` and `.rpm` installers attached as assets.
+
+For a pre-release the branch is `release/X.Y.Z-beta-N`, the bump commit only advances the
+`versionCode`, and the GitHub Release `X.Y.Z-beta-N` carries the **pre-release** badge with no
+installers. Pre-releases are never marked "Latest", so anything that consumes the latest
+release (like `scripts/install-latest-release-android.sh`) keeps seeing the last stable.
 
 ## If a store rejects the build
 

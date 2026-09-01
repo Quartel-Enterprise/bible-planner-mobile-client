@@ -23,16 +23,20 @@ import com.quare.bibleplanner.core.sync.di.syncModule
 import com.quare.bibleplanner.core.user.di.userModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
 import com.quare.bibleplanner.core.utils.jsonreader.di.jsonReaderModule
+import com.quare.bibleplanner.core.verseannotations.di.verseAnnotationsModule
 import com.quare.bibleplanner.feature.accountdetails.di.accountDetailsModule
 import com.quare.bibleplanner.feature.addnotesfreewarning.di.addNotesFreeWarningModule
 import com.quare.bibleplanner.feature.applanguage.di.appLanguageModule
 import com.quare.bibleplanner.feature.bibleversion.di.bibleVersionModule
 import com.quare.bibleplanner.feature.bookdetails.di.bookDetailsModule
 import com.quare.bibleplanner.feature.books.di.featureBooksModule
+import com.quare.bibleplanner.feature.chat.di.chatModule
 import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.contactsupport.di.contactSupportModule
 import com.quare.bibleplanner.feature.day.di.dayModule
+import com.quare.bibleplanner.feature.dayreadingcomplete.di.dayReadingCompleteModule
 import com.quare.bibleplanner.feature.daystudy.di.dayStudyModule
+import com.quare.bibleplanner.feature.deleteaccount.di.deleteAccountModule
 import com.quare.bibleplanner.feature.deletenotes.di.deleteNotesModule
 import com.quare.bibleplanner.feature.deleteprogress.di.deleteProgressModule
 import com.quare.bibleplanner.feature.deleteversion.di.deleteVersionModule
@@ -49,11 +53,16 @@ import com.quare.bibleplanner.feature.main.di.mainModule
 import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
 import com.quare.bibleplanner.feature.notificationpermission.di.notificationPermissionModule
 import com.quare.bibleplanner.feature.paywall.di.paywallModule
+import com.quare.bibleplanner.feature.paywallteaser.di.paywallTeaserModule
 import com.quare.bibleplanner.feature.profile.di.featureProfileModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.releasenotes.di.releaseNotesModule
+import com.quare.bibleplanner.feature.studysuggestion.di.studySuggestionModule
 import com.quare.bibleplanner.feature.subscriptiondetails.di.subscriptionDetailsModule
 import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
+import com.quare.bibleplanner.feature.verse.addnote.di.verseNoteModule
+import com.quare.bibleplanner.feature.verse.selectionmenu.di.verseSelectionModule
+import com.quare.bibleplanner.feature.verse.share.di.shareVerseModule
 
 object CommonKoinUtils {
     val modules = listOf(
@@ -61,20 +70,29 @@ object CommonKoinUtils {
         planModule,
         clearModule,
         syncModule,
+        verseAnnotationsModule,
+        verseNoteModule,
+        verseSelectionModule,
+        shareVerseModule,
         platformModule,
         connectivityModule,
         dataStoreProviderModule,
         themeSelectionDomainModule,
+        studySuggestionModule,
         materialYouModule,
         readingPlanModule,
         dayModule,
         dayStudyModule,
+        dayReadingCompleteModule,
+        chatModule,
         deleteProgressModule,
+        deleteAccountModule,
         deleteVersionModule,
         deleteNotesModule,
         addNotesFreeWarningModule,
         editPlanStartDateModule,
         paywallModule,
+        paywallTeaserModule,
         roomModule,
         utilsModule,
         jsonReaderModule,

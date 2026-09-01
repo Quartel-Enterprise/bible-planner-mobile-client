@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.sync.data
 
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import com.quare.bibleplanner.core.sync.domain.SyncRemoteStore
@@ -24,7 +25,8 @@ import kotlin.time.Duration.Companion.seconds
  *    [SyncLocalStore.markSynced]).
  *  - **pull** ([pullSnapshot]) — the full remote set is fetched and applied; driven by
  *    [SyncCoordinator] on every realtime CONNECTED transition (including cold start). Covers changes
- *    missed while offline.
+ *    missed while offline, and is what tells the local store its provisional defaults are absent for
+ *    this account (via [SyncLocalStore.adoptProvisionalDefaults]).
  *  - **realtime** ([observeRealtime]) — live inserts/updates are applied as they arrive.
  *
  * Remote writes go through [SyncLocalStore.applyRemote], which only overwrites strictly older,
@@ -35,6 +37,7 @@ class OfflineFirstSynchronizer<E, D>(
     private val remoteStore: SyncRemoteStore<D>,
     private val networkConnectivityObserver: NetworkConnectivityObserver,
     private val getAuthenticatedUserId: GetAuthenticatedUserId,
+    private val currentTimestampProvider: CurrentTimestampProvider,
     logTag: String,
 ) : Synchronizer {
     private val logger = Logger.withTag(logTag)
@@ -58,7 +61,7 @@ class OfflineFirstSynchronizer<E, D>(
      */
     override suspend fun runPushLoop() {
         combine(
-            localStore.pendingFlow(),
+            localStore.observePending(),
             networkConnectivityObserver.observe(),
         ) { pending, isOnline -> pending to isOnline }
             .collectLatest { (pending, isOnline) ->
@@ -103,6 +106,7 @@ class OfflineFirstSynchronizer<E, D>(
     override suspend fun pullSnapshot() {
         val userId = getAuthenticatedUserId() ?: return
         remoteStore.fetch(userId).forEach { localStore.applyRemote(it) }
+        localStore.adoptProvisionalDefaults(currentTimestampProvider.getCurrentTimestamp())
     }
 
     override suspend fun clearLocal() {
