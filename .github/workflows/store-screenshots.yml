@@ -55,9 +55,6 @@ jobs:
         env:
           PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
           VALIDATE_ONLY: ${{ inputs.validate_only }}
-          # The patched screenshot library lives in this repository's own package registry.
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Kept so a failed upload can be diagnosed from what was actually rendered, and so the images
       # can be eyeballed after a validate-only run.
