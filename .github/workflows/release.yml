@@ -333,12 +333,16 @@ jobs:
       #
       # A beta skips this: it goes to TestFlight without creating a version to hold the listing,
       # so there is nothing editable for the screenshots to land on.
+      # These two exist only to feed the screenshots step, so like it they must never take the
+      # binary upload down with them — a broken Gradle cache is not a reason to hold a release.
       - name: Setup Gradle and Java
         if: ${{ !inputs.prerelease }}
+        continue-on-error: true
         uses: ./.github/actions/gradle
 
       - name: Decode build secrets
         if: ${{ !inputs.prerelease }}
+        continue-on-error: true
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
