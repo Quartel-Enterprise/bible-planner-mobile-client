@@ -188,13 +188,7 @@ private val appStoreDevices = mapOf(
 tasks.register("stageStoreScreenshots") {
     group = "store-screenshots"
     description = "Regenerates every store screenshot into the layout fastlane uploads from."
-    dependsOn(
-        ":feature:reading_plan:testAndroidHostTest",
-        ":feature:day:testAndroidHostTest",
-        ":feature:day_study:testAndroidHostTest",
-        ":feature:books:testAndroidHostTest",
-        ":feature:read:testAndroidHostTest",
-    )
+    dependsOn(storeScreenshotModules.map { modulePath -> "$modulePath:testAndroidHostTest" })
     val generatedDir = layout.buildDirectory.dir("outputs/store-screenshots")
     val playDir = layout.projectDirectory.dir("fastlane/metadata/android")
     val appleDir = layout.projectDirectory.dir("fastlane/screenshots")
