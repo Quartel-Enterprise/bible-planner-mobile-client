@@ -12,7 +12,7 @@
     <string name="feature_ai_chat">Unlimited AI chat</string>
     <string name="feature_ai_chat_subtext">Ask anything about the Bible and keep the conversation going.</string>
     <string name="feature_unlimited_notes">Create Unlimited Notes</string>
-    <string name="feature_unlimited_notes_subtext">Free plan limited to notes on %1$d days.</string>
+    <string name="feature_unlimited_notes_subtext">Free plan limited to %1$d notes.</string>
     <string name="feature_highlight_colors">Full highlight palette</string>
     <string name="feature_highlight_colors_subtext">Unlock every preset color and create your own.</string>
     <string name="plan_monthly">Monthly</string>

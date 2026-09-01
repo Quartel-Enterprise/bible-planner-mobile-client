@@ -1,6 +1,6 @@
 {
   "2.8.1": [
-    "La pantalla Pro ahora muestra todos los beneficios de la suscripción, incluidos el chat con IA sin límites y la paleta completa de colores de resaltado. El límite de notas del plan gratuito también quedó más claro: cuenta los días que tienen notas, no el total de notas.",
+    "La pantalla Pro ahora muestra todos los beneficios de la suscripción, incluidos el chat con IA sin límites y la paleta completa de colores de resaltado.",
     "Se corrigió un problema que podía impedir crear notas en el plan gratuito cuando la app no lograba cargar su configuración."
   ],
   "2.8.0": [

@@ -12,7 +12,7 @@
     <string name="feature_ai_chat">Chat con IA ilimitado</string>
     <string name="feature_ai_chat_subtext">Pregunta lo que quieras sobre la Biblia y sigue la conversación.</string>
     <string name="feature_unlimited_notes">Crear Notas Ilimitadas</string>
-    <string name="feature_unlimited_notes_subtext">Plan gratuito limitado a notas en %1$d días.</string>
+    <string name="feature_unlimited_notes_subtext">Plan gratuito limitado a %1$d notas.</string>
     <string name="feature_highlight_colors">Paleta de resaltados completa</string>
     <string name="feature_highlight_colors_subtext">Desbloquea todos los colores y crea los tuyos.</string>
     <string name="plan_monthly">Mensual</string>

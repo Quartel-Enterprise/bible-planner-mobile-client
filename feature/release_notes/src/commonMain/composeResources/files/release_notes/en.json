@@ -1,6 +1,6 @@
 {
   "2.8.1": [
-    "The Pro screen now lists every benefit of the subscription, including unlimited AI chat and the full highlight color palette. The free plan's notes limit is clearer too: it counts the days that have notes, not the total number of notes.",
+    "The Pro screen now lists every benefit of the subscription, including unlimited AI chat and the full highlight color palette.",
     "Fixed a problem that could stop you from creating notes on the free plan when the app failed to load its settings."
   ],
   "2.8.0": [
