@@ -241,7 +241,7 @@ private fun HeroIcon(icon: ImageVector) {
 
 @Composable
 private fun HeroButton(
-    mode: DayStudyCardMode,
+    mode: DayStudyCardMode?,
     isLoading: Boolean,
     onClick: () -> Unit,
 ) {
@@ -269,13 +269,13 @@ private fun HeroButton(
     }
 }
 
-private fun getHeroButtonIcon(mode: DayStudyCardMode): ImageVector = when (mode) {
+private fun getHeroButtonIcon(mode: DayStudyCardMode?): ImageVector = when (mode) {
     DayStudyCardMode.LOCKED -> Icons.Rounded.LockOpen
-    DayStudyCardMode.GENERATE, DayStudyCardMode.VIEW -> Icons.Rounded.AutoAwesome
+    null, DayStudyCardMode.GENERATE, DayStudyCardMode.VIEW -> Icons.Rounded.AutoAwesome
 }
 
-private fun heroButtonLabel(mode: DayStudyCardMode) = when (mode) {
-    DayStudyCardMode.GENERATE -> Res.string.ai_study_generate
+private fun heroButtonLabel(mode: DayStudyCardMode?) = when (mode) {
+    null, DayStudyCardMode.GENERATE -> Res.string.ai_study_generate
     DayStudyCardMode.VIEW -> Res.string.ai_study_view
     DayStudyCardMode.LOCKED -> Res.string.ai_study_subscribe
 }

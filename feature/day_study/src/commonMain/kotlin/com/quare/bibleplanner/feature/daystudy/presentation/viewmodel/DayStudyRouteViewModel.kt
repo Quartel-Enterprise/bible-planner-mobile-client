@@ -303,11 +303,11 @@ internal class DayStudyRouteViewModel(
         val card = _uiState.value.card.valueOrNull() ?: return
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_CARD_CLICKED,
-            params = mapOf(
-                AnalyticsParams.CARD_MODE to card.mode.name.lowercase(),
-                AnalyticsParams.IS_PRO to card.isPro,
-                AnalyticsParams.SOURCE to CARD_CLICK_SOURCE,
-            ),
+            params = buildMap {
+                card.mode?.let { put(AnalyticsParams.CARD_MODE, it.name.lowercase()) }
+                put(AnalyticsParams.IS_PRO, card.isPro)
+                put(AnalyticsParams.SOURCE, CARD_CLICK_SOURCE)
+            },
         )
         if (_uiState.value.openStudy != null || _uiState.value.generation != null) return
         when (card.mode) {
@@ -315,7 +315,7 @@ internal class DayStudyRouteViewModel(
                 PaywallNavRoute(PaywallEntrySource.DAY_STUDY_DETAIL),
             )
 
-            DayStudyCardMode.GENERATE -> generateIfLoggedIn()
+            null, DayStudyCardMode.GENERATE -> generateIfLoggedIn()
 
             DayStudyCardMode.VIEW -> generateOrOpen()
         }

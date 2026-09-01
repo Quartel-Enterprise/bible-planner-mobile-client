@@ -10,7 +10,8 @@ name: release
 #      version in the summary, then approve to continue (or reject and start a
 #      new run with the `version` input to override).
 #   3. Android and iOS are built and uploaded to the stores, and the desktop
-#      installers are built on one runner per OS.
+#      installers are built on one runner per OS. A full release also refreshes
+#      both store listings' screenshots; a pre-release leaves them alone.
 #   4. `finalize` bumps the version on a release branch, opens and squash-merges
 #      the merge-back PR into main, and publishes the GitHub release with the
 #      desktop installers attached as assets. It runs for the `all` and `mobile`
@@ -208,6 +209,25 @@ jobs:
           PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
           COMPLETE_RELEASE: ${{ inputs.complete_android_release }}
 
+  # Play would take these at any time, but a release is the moment the listing has something new to
+  # say, so both stores end a run showing the version that just shipped.
+  #
+  # A job of its own rather than a step on android-upload, so a listing that fails to publish says
+  # so plainly without implying the build did not land — and finalize, which does not wait on it,
+  # tags and merges the release either way.
+  android-screenshots:
+    name: Android — upload the store listing screenshots
+    needs: android-upload
+    # Play's listing is live the moment it changes, whatever track the build went to — so only a
+    # completed production rollout advances it. A beta, a test track or a draft would put next
+    # version's screenshots on this version's public listing; dispatch the store-screenshots
+    # workflow by hand when one of those graduates.
+    if: ${{ !inputs.prerelease && inputs.track == 'production' && inputs.complete_android_release && (inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'android') }}
+    uses: ./.github/workflows/store-screenshots.yml
+    with:
+      validate_only: false
+    secrets: inherit
+
   ios-build:
     name: iOS — build the IPA
     needs: plan
@@ -304,6 +324,43 @@ jobs:
         with:
           name: ios-ipa
           path: build/ios/
+
+      # Screenshots are read-only on a live App Store version and locked on a submitted one, so
+      # they have to be in place before the upload step submits the build for review — afterwards
+      # would mean cancelling the submission by hand to touch them. APP_VERSION lets deliver create
+      # the release's version when this run is the first thing to reach it. Rendering the images
+      # needs Gradle, which this job does not otherwise use.
+      #
+      # A beta skips this: it goes to TestFlight without creating a version to hold the listing,
+      # so there is nothing editable for the screenshots to land on.
+      # These two exist only to feed the screenshots step, so like it they must never take the
+      # binary upload down with them — a broken Gradle cache is not a reason to hold a release.
+      - name: Setup Gradle and Java
+        if: ${{ !inputs.prerelease }}
+        continue-on-error: true
+        uses: ./.github/actions/gradle
+
+      - name: Decode build secrets
+        if: ${{ !inputs.prerelease }}
+        continue-on-error: true
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        run: |
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+          printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
+
+      # Listing assets only: no binary, no metadata, no review submission. A failure here must not
+      # block the release — the submission below still runs, carrying the previous screenshots.
+      - name: Upload the screenshots to App Store Connect
+        if: ${{ !inputs.prerelease }}
+        continue-on-error: true
+        run: fastlane ios upload_screenshots
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          APP_VERSION: ${{ needs.plan.outputs.version }}
 
       - name: Upload to App Store Connect
         run: fastlane ios upload

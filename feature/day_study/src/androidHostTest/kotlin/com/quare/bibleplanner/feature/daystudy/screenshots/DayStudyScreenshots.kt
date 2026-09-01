@@ -1,0 +1,263 @@
+package com.quare.bibleplanner.feature.daystudy.screenshots
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import bibleplanner.feature.day_study.generated.resources.Res
+import bibleplanner.feature.day_study.generated.resources.ai_tab_context
+import bibleplanner.feature.day_study.generated.resources.ai_tab_questions
+import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.daystudy.presentation.DayStudyScreen
+import com.quare.bibleplanner.ui.theme.AppTheme
+import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.ui.theme.model.Theme
+import dev.lucianosantos.storescreenshots.FormFactor
+import dev.lucianosantos.storescreenshots.ScreenshotCanvas
+import dev.lucianosantos.storescreenshots.ScreenshotStyle
+import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
+import org.junit.Assume.assumeTrue
+import org.junit.Test
+
+private val bannerCopy = mapOf(
+    "en-US" to (
+        "Understand what you just read" to
+            "An overview, the historical context, and the questions the passage raises"
+    ),
+    "pt-BR" to (
+        "Entenda o que você acabou de ler" to
+            "Uma visão geral, o contexto histórico e as perguntas que a passagem levanta"
+    ),
+    "es" to (
+        "Entiende lo que acabas de leer" to
+            "Una visión general, el contexto histórico y las preguntas que plantea el pasaje"
+    ),
+)
+private val contextBannerCopy = mapOf(
+    "en-US" to (
+        "The world the passage happened in" to
+            "Who was writing, when, and what the first readers already knew"
+    ),
+    "pt-BR" to (
+        "O mundo em que a passagem aconteceu" to
+            "Quem escreveu, quando, e o que os primeiros leitores já sabiam"
+    ),
+    "es" to (
+        "El mundo en que ocurrió el pasaje" to
+            "Quién escribía, cuándo, y qué sabían ya los primeros lectores"
+    ),
+)
+private val questionsBannerCopy = mapOf(
+    "en-US" to (
+        "The questions the passage raises" to
+            "Straight answers to what readers most often ask about this reading"
+    ),
+    "pt-BR" to (
+        "As perguntas que a passagem levanta" to
+            "Respostas diretas ao que os leitores mais perguntam sobre esta leitura"
+    ),
+    "es" to (
+        "Las preguntas que plantea el pasaje" to
+            "Respuestas directas a lo que más preguntan los lectores sobre esta lectura"
+    ),
+)
+private const val BACKGROUND = 0xFF141C3D
+
+/**
+ * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
+ * everything here renders under Robolectric, which is Android whatever device the frame draws. So
+ * the platform has to follow the form factor, or the Apple shots ship Android chrome.
+ */
+private val FormFactor.platform: Platform
+    get() = when (this) {
+        FormFactor.AppleIPhone65,
+        FormFactor.AppleIPhone67,
+        FormFactor.AppleIPad13,
+        -> Platform.Ios
+
+        else -> Platform.Android
+    }
+
+/**
+ * Play caps a store listing at eight screenshots per device and the App Store at ten. The chat
+ * screen takes the eighth Play slot, so the context tab — the thinnest of the study's three, half
+ * a screen of white under three short facts — is the one that fills an Apple slot only.
+ */
+private val FormFactor.isAppleSlot: Boolean
+    get() = platform == Platform.Ios
+
+internal abstract class DayStudyScreenshots(
+    private val formFactor: FormFactor,
+    private val isWide: Boolean,
+    private val outputSubdir: String? = null,
+    canvas: ScreenshotCanvas? = null,
+) : StoreScreenshotsTest(
+        formFactor = formFactor,
+        canvas = canvas,
+        style = ScreenshotStyle(edgeToEdge = false),
+    ) {
+    @Test
+    fun dayStudy() = bannerCopy.forEach { (locale, copy) ->
+        val (title, description) = copy
+        screenshot(
+            locales = listOf(locale),
+            title = title,
+            description = description,
+            backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
+            fileName = "04_day_study",
+        ) {
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    // The wide layout is a bare pane with no Scaffold, so without a Surface the
+                    // frame's bezel shows through behind the text.
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                    ) {
+                        DayStudyScreen(
+                            uiState = dayStudyUiState(locale, formFactor.platform),
+                            isWide = isWide,
+                            snackbarHostState = SnackbarHostState(),
+                            onCardClick = {},
+                            onRetryClick = {},
+                            onAskAiClick = {},
+                            onNavigateBack = {},
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun dayStudyContext() {
+        assumeTrue(formFactor.isAppleSlot)
+        captureContext()
+    }
+
+    private fun captureContext() = contextBannerCopy.forEach { (locale, copy) ->
+        val (title, description) = copy
+        screenshot(
+            locales = listOf(locale),
+            title = title,
+            description = description,
+            backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
+            fileName = "07_day_study_context",
+            // The tab label is resolved rather than hard-coded so the click keeps working in
+            // every locale, and keeps working if the wording changes.
+            beforeCapture = { rule ->
+                rule.onNodeWithText(runBlocking { getString(Res.string.ai_tab_context) }).performClick()
+            },
+        ) {
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                    ) {
+                        DayStudyScreen(
+                            uiState = dayStudyUiState(locale, formFactor.platform),
+                            isWide = isWide,
+                            snackbarHostState = SnackbarHostState(),
+                            onCardClick = {},
+                            onRetryClick = {},
+                            onAskAiClick = {},
+                            onNavigateBack = {},
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun dayStudyQuestions() = questionsBannerCopy.forEach { (locale, copy) ->
+        val (title, description) = copy
+        screenshot(
+            locales = listOf(locale),
+            title = title,
+            description = description,
+            backgroundColor = Color(BACKGROUND),
+            subdir = outputSubdir,
+            fileName = "08_day_study_questions",
+            // Opening the first question shows that the tab answers them, not just lists them.
+            beforeCapture = { rule ->
+                rule.onNodeWithText(runBlocking { getString(Res.string.ai_tab_questions) }).performClick()
+                rule.onNodeWithText(firstQuestion(locale)).performClick()
+            },
+        ) {
+            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
+                AppTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background,
+                    ) {
+                        DayStudyScreen(
+                            uiState = dayStudyUiState(locale, formFactor.platform),
+                            isWide = isWide,
+                            snackbarHostState = SnackbarHostState(),
+                            onCardClick = {},
+                            onRetryClick = {},
+                            onAskAiClick = {},
+                            onNavigateBack = {},
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+internal class PhoneDayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.Phone,
+        isWide = false,
+    )
+
+internal class Tablet7DayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.Tablet7,
+        isWide = false,
+    )
+
+internal class Tablet10DayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.Tablet10,
+        isWide = true,
+    )
+
+internal class IPhone65DayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.AppleIPhone65,
+        isWide = false,
+    )
+
+internal class IPhone67DayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.AppleIPhone67,
+        isWide = false,
+    )
+
+internal class IPad13DayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.AppleIPad13,
+        isWide = true,
+    )
+
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+internal class IPad11DayStudyScreenshots :
+    DayStudyScreenshots(
+        formFactor = FormFactor.AppleIPad13,
+        isWide = true,
+        outputSubdir = "ipad11",
+        canvas = ScreenshotCanvas.px(1668, 2388),
+    )

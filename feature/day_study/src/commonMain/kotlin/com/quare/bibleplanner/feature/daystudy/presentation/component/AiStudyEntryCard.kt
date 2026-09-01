@@ -62,7 +62,7 @@ private const val SKELETON_TITLE_WIDTH_FRACTION = 0.5f
 private const val SKELETON_SUBTITLE_WIDTH_FRACTION = 0.8f
 
 @Composable
-internal fun AiStudyEntryCard(
+fun AiStudyEntryCard(
     card: DayStudyCardUiModel,
     generation: DayStudyGenerationUiModel?,
     isOpening: Boolean,
@@ -288,6 +288,7 @@ private fun CardIcon(
 
 @Composable
 internal fun CardBadge(card: DayStudyCardUiModel) {
+    if (card.mode == null) return
     val isGenerated = card.mode == DayStudyCardMode.VIEW
     val isProBadge = card.isPro || card.mode == DayStudyCardMode.LOCKED
     if (!isGenerated && !isProBadge && card.quota is Loadable.Loading) {
@@ -333,7 +334,7 @@ internal fun CardBadge(card: DayStudyCardUiModel) {
 
 @Composable
 private fun CardButton(
-    mode: DayStudyCardMode,
+    mode: DayStudyCardMode?,
     isLoading: Boolean,
     onClick: () -> Unit,
 ) {
@@ -355,8 +356,12 @@ private fun CardButton(
             Text(
                 text = stringResource(
                     when (mode) {
-                        DayStudyCardMode.GENERATE -> Res.string.ai_study_generate
+                        null,
+                        DayStudyCardMode.GENERATE,
+                        -> Res.string.ai_study_generate
+
                         DayStudyCardMode.VIEW -> Res.string.ai_study_view
+
                         DayStudyCardMode.LOCKED -> Res.string.ai_study_subscribe
                     },
                 ),
@@ -367,7 +372,9 @@ private fun CardButton(
 
 @Composable
 internal fun dayStudyCardSubtitle(card: DayStudyCardUiModel): String = when (card.mode) {
-    DayStudyCardMode.GENERATE -> if (card.isPro) {
+    null,
+    DayStudyCardMode.GENERATE,
+    -> if (card.isPro) {
         stringResource(Res.string.ai_study_generate_hint_pro)
     } else {
         stringResource(Res.string.ai_study_generate_hint)

@@ -7,6 +7,10 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.chat"
+        withHostTest {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
     }
 
     jvm()
@@ -75,5 +79,20 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }
+
+        getByName("androidHostTest").dependencies {
+            implementation(projects.ui.theme)
+            implementation(libs.storeScreenshots.library)
+            implementation(libs.androidx.compose.ui.testManifest)
+        }
     }
+}
+
+tasks.withType<Test>().configureEach {
+    // Declared as an output so deleting the collected screenshots makes this task out of date;
+    // each module owns its own directory so the generators never overlap.
+    val screenshotsDir = rootProject.layout.buildDirectory.dir("outputs/store-screenshots/chat")
+    systemProperty("storeScreenshots.outputRoot", screenshotsDir.get().asFile.absolutePath)
+    systemProperty("roborazzi.test.record", "true")
+    outputs.dir(screenshotsDir)
 }
