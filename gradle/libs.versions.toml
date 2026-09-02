@@ -1,6 +1,6 @@
 [versions]
 # Build tooling
-agp = "9.3.2"
+agp = "9.4.0"
 kotlin = "2.4.10"
 ksp = "2.3.11"
 buildkonfig = "0.22.0"
@@ -20,7 +20,7 @@ android-targetSdk = "37"
 # AndroidX
 androidx-activity = "1.13.0"
 androidx-annotation = "1.10.0"
-androidx-compose-ui = "1.11.2"
+androidx-compose-ui = "1.12.0"
 androidx-core = "1.19.0"
 androidx-credentials = "1.6.0"
 androidx-lifecycle = "2.11.0"
