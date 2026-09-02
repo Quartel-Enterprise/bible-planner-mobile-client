@@ -1,4 +1,7 @@
 {
+  "2.8.2": [
+    "Los menús de orden y de filtro en la pantalla de Libros ahora se abren con un espacio debajo del botón, en lugar de quedar pegados a él y tapar los filtros de testamento."
+  ],
   "2.8.1": [
     "La pantalla Pro ahora muestra todos los beneficios de la suscripción, incluidos el chat con IA sin límites y la paleta completa de colores de resaltado.",
     "Se corrigió un problema que podía impedir crear notas en el plan gratuito cuando la app no lograba cargar su configuración."

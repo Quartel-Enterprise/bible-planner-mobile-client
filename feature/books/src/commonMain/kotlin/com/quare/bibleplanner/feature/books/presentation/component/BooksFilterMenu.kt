@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.books.presentation.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -11,6 +10,7 @@ import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.content_description_selected
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
+import com.quare.bibleplanner.ui.component.AppDropdownMenu
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -19,8 +19,8 @@ internal fun BooksFilterMenu(
     filterOptions: List<BookFilterOption>,
     onEvent: (BooksUiEvent) -> Unit,
 ) {
-    DropdownMenu(
-        expanded = isVisible,
+    AppDropdownMenu(
+        isExpanded = isVisible,
         onDismissRequest = { onEvent(BooksUiEvent.OnDismissFilterMenu) },
     ) {
         filterOptions.forEach { option ->
