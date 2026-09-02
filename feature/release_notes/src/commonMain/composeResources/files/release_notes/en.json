@@ -1,4 +1,7 @@
 {
+  "2.8.2": [
+    "The sort and filter menus on the Books screen now open with a little breathing room below the button, instead of sitting flush against it and covering the testament filters."
+  ],
   "2.8.1": [
     "The Pro screen now lists every benefit of the subscription, including unlimited AI chat and the full highlight color palette.",
     "Fixed a problem that could stop you from creating notes on the free plan when the app failed to load its settings."
