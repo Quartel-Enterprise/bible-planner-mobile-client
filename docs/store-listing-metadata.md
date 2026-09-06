@@ -82,9 +82,12 @@ Three rules that are easy to get wrong:
   across the three fields, so a word repeated is a word wasted. Skip "app", the category name and
   the developer name too.
 - **Never describe a feature the app does not have**, and re-read the copy whenever a feature
-  lands or goes away. Bible translations in particular are listed by name; the catalogue is the
-  `bible/` prefix of the Supabase `content` bucket, one `metadata.json` per version, and it grows
-  without any code change here.
+  lands or goes away. The catalogue of Bible translations is the `bible/` prefix of the Supabase
+  `content` bucket, one `metadata.json` per version, and it grows without any code change here —
+  which is the other reason the copy describes the translations generically ("pick a translation")
+  rather than listing them. The first reason is that most editions in the catalogue are
+  third-party trademarks, and indexed store copy is what rights holders crawl. Keep it generic
+  unless the licensing is settled and someone decides otherwise.
 
 ## How it ships
 

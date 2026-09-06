@@ -1,1 +1,1 @@
-lectura,plan,diario,cronológico,devocional,versículo,capítulo,resaltar,sagrada,reina,valera
+lectura,plan,diario,cronológico,devocional,versículo,capítulo,resaltar,sagrada,cristiano,365
