@@ -7,6 +7,9 @@ and description in the listing's three locales (`en-US`, `pt-BR`, `es`). None of
 is versioned: every one is rebuilt from source, locally or in CI. The same generators also produce
 the [README's grid](#the-readme-grid), which *is* committed.
 
+The listings' words are versioned instead of generated — see
+[Store listing metadata](store-listing-metadata.md).
+
 ## Regenerating locally
 
 ```bash

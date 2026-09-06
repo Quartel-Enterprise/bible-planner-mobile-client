@@ -1,0 +1,1 @@
+daily,devotional,verse,chapter,highlight,tracker,chronological,scripture,year,kjv,niv,esv

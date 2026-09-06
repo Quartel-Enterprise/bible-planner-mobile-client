@@ -55,7 +55,13 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 fastlane/README.md
-fastlane/metadata/
+# The store listing copy under fastlane/metadata/ is authored and versioned — see
+# docs/store-listing-metadata.md. Only what the pipeline generates into it is ignored:
+# the "What's New" staged from the in-app release notes, and the Play screenshots and
+# changelogs staged by `./gradlew stageStoreScreenshots` and the release lanes.
+fastlane/metadata/*/release_notes.txt
+fastlane/metadata/android/*/changelogs/
+fastlane/metadata/android/*/images/
 **/*.mobileprovision
 **/*.provisionprofile
 # `fastlane cert`/`sigh` drop these in the working directory. The .p12 holds the signing
