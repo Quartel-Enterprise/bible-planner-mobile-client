@@ -2,11 +2,11 @@
 
 **Tier:** P2 | **Domain:** Auth
 
-Captures the user declining the prompt to add a Google account on-device, the negative counterpart to [google_account_add_confirmed](google_account_add_confirmed.md). A high decline rate signals friction at the point where login requires an on-device Google account that isn't present yet.
+Captures the user declining the prompt to add a Google account on-device, the negative counterpart to [google_account_add_confirmed](google_account_add_confirmed.md). A high decline rate signals friction at the point where Google sign-in could not get a credential from the device.
 
 ## When it fires
 
-The user dismisses the "add Google account" dialog shown during login instead of confirming it.
+The user dismisses the Google-unavailable dialog shown during login instead of tapping "add account".
 
 ## Trigger source
 

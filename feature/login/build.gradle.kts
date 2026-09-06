@@ -12,8 +12,8 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            // NoCredentialException, used to detect when the device has no Google account so the
-            // login flow can offer to add one instead of showing a generic error.
+            // NoCredentialException, which AndroidIsGoogleCredentialUnavailable reads to tell a Google
+            // credential the platform could not provide from any other sign-in failure.
             implementation(libs.androidx.credentials)
         }
         jvmMain.dependencies {
