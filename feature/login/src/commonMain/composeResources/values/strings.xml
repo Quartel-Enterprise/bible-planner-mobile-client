@@ -11,10 +11,10 @@
     <string name="login_error_try_again_later">Something went wrong. Please try again later.</string>
     <string name="login_error_connection">Connection timed out. Check your internet and try again.</string>
     <string name="login_error_email_required">You need to share your email to sign in. Try again and choose to share it.</string>
-    <string name="no_google_account_title">No Google account</string>
-    <string name="no_google_account_message">Your device doesn't have a Google account. Add one to continue signing in with Google.</string>
-    <string name="no_google_account_confirm">Add account</string>
-    <string name="no_google_account_dismiss">Cancel</string>
+    <string name="google_sign_in_unavailable_title">Couldn't sign in with Google</string>
+    <string name="google_sign_in_unavailable_message">This device didn't provide a Google account. Add one if you haven't yet, or try again later — you can also sign in with another option.</string>
+    <string name="google_sign_in_unavailable_confirm">Add account</string>
+    <string name="google_sign_in_unavailable_dismiss">Cancel</string>
     <string name="login_result_success">Signed in successfully</string>
     <string name="login_result_error">Couldn't sign in. Please try again.</string>
 </resources>

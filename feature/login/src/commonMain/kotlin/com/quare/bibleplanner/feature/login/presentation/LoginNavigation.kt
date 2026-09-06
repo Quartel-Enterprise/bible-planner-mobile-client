@@ -64,8 +64,8 @@ fun EntryProviderScope<NavKey>.loginRoot() {
             loadingProvider = state.loadingProvider,
             error = state.error,
         )
-        if (state.showAddGoogleAccountDialog) {
-            NoGoogleAccountDialog(onEvent = onEvent)
+        if (state.showGoogleSignInUnavailableDialog) {
+            GoogleSignInUnavailableDialog(onEvent = onEvent)
         }
     }
 }

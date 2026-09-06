@@ -37,7 +37,7 @@ internal class LoginViewModel(
     observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     uiStateFactory: LoginUiStateFactory,
     private val throwableToLoginErrorMapper: ThrowableToLoginErrorMapper,
-    private val noGoogleAccountClassifier: NoGoogleAccountClassifier,
+    private val isGoogleCredentialUnavailable: IsGoogleCredentialUnavailable,
     private val addGoogleAccountLauncher: AddGoogleAccountLauncher,
     private val navigator: Navigator,
     trackEvent: TrackEvent,
@@ -68,7 +68,7 @@ internal class LoginViewModel(
                         val error = throwableToLoginErrorMapper(throwable)
                         trackLoginFailed(
                             provider = uiEvent.provider,
-                            error = error,
+                            reason = error.reasonParam,
                         )
                         _state.update {
                             it.copy(
@@ -86,21 +86,11 @@ internal class LoginViewModel(
                     when (val result = uiEvent.result) {
                         is NativeSignInResult.Success -> it
 
-                        is NativeSignInResult.ClosedByUser -> it.copy(loadingProvider = null)
-
-                        is NativeSignInResult.NetworkError -> it.copy(
+                        else -> it.copy(
                             loadingProvider = null,
-                            error = LoginError.CONNECTION,
+                            error = findLoginErrorOrNull(result),
+                            showGoogleSignInUnavailableDialog = result.hasNoGoogleCredential(),
                         )
-
-                        is NativeSignInResult.Error -> if (noGoogleAccountClassifier(result.exception)) {
-                            it.copy(loadingProvider = null, showAddGoogleAccountDialog = true)
-                        } else {
-                            it.copy(
-                                loadingProvider = null,
-                                error = throwableToLoginErrorMapper(result.exception),
-                            )
-                        }
                     }
                 }
                 notifyLoginResult(uiEvent.result)
@@ -114,10 +104,11 @@ internal class LoginViewModel(
 
             LoginUiEvent.AddGoogleAccountConfirmClick -> {
                 addGoogleAccountLauncher()
-                _state.update { it.copy(showAddGoogleAccountDialog = false) }
+                _state.update { it.copy(showGoogleSignInUnavailableDialog = false) }
             }
 
-            LoginUiEvent.DismissAddGoogleAccountDialog -> _state.update { it.copy(showAddGoogleAccountDialog = false) }
+            LoginUiEvent.DismissAddGoogleAccountDialog ->
+                _state.update { it.copy(showGoogleSignInUnavailableDialog = false) }
         }
     }
 
@@ -133,19 +124,31 @@ internal class LoginViewModel(
                 provider = uiEvent.provider,
             )
 
-            is NativeSignInResult.NetworkError -> trackLoginFailed(
+            else -> trackLoginFailed(
                 provider = uiEvent.provider,
-                error = LoginError.CONNECTION,
+                reason = findLoginErrorOrNull(result)?.reasonParam ?: GOOGLE_UNAVAILABLE_REASON,
             )
-
-            is NativeSignInResult.Error -> if (!noGoogleAccountClassifier(result.exception)) {
-                trackLoginFailed(
-                    provider = uiEvent.provider,
-                    error = throwableToLoginErrorMapper(result.exception),
-                )
-            }
         }
     }
+
+    /**
+     * The message to show for [result], or `null` when there is nothing to show — the user signed
+     * in, closed the sheet, or is being offered the Google-unavailable dialog instead.
+     */
+    private fun findLoginErrorOrNull(result: NativeSignInResult): LoginError? = when (result) {
+        is NativeSignInResult.Success, is NativeSignInResult.ClosedByUser -> null
+
+        is NativeSignInResult.NetworkError -> LoginError.CONNECTION
+
+        is NativeSignInResult.Error -> if (isGoogleCredentialUnavailable(result.exception)) {
+            null
+        } else {
+            throwableToLoginErrorMapper(result.exception)
+        }
+    }
+
+    private fun NativeSignInResult.hasNoGoogleCredential(): Boolean =
+        this is NativeSignInResult.Error && isGoogleCredentialUnavailable(exception)
 
     private fun trackLoginEvent(
         name: String,
@@ -159,13 +162,13 @@ internal class LoginViewModel(
 
     private fun trackLoginFailed(
         provider: LoginProvider,
-        error: LoginError,
+        reason: String,
     ) {
         trackEvent(
             name = AnalyticsEventNames.LOGIN_FAILED,
             params = mapOf(
                 AnalyticsParams.METHOD to provider.methodParam,
-                AnalyticsParams.REASON to error.name.lowercase(),
+                AnalyticsParams.REASON to reason,
             ),
         )
     }
@@ -173,19 +176,14 @@ internal class LoginViewModel(
     private val LoginProvider.methodParam: String
         get() = name.lowercase()
 
+    private val LoginError.reasonParam: String
+        get() = name.lowercase()
+
     private fun notifyLoginResult(result: NativeSignInResult) {
-        val message = when (result) {
-            is NativeSignInResult.Success -> Res.string.login_result_success
-
-            is NativeSignInResult.NetworkError -> Res.string.login_result_error
-
-            is NativeSignInResult.Error -> if (noGoogleAccountClassifier(result.exception)) {
-                null
-            } else {
-                Res.string.login_result_error
-            }
-
-            is NativeSignInResult.ClosedByUser -> null
+        val message = when {
+            result is NativeSignInResult.Success -> Res.string.login_result_success
+            findLoginErrorOrNull(result) != null -> Res.string.login_result_error
+            else -> null
         } ?: return
         viewModelScope.launch {
             _uiAction.emit(LoginUiAction.NotifyLoginResult(message))
@@ -200,5 +198,10 @@ internal class LoginViewModel(
 
     private fun navigateBack() {
         navigator.navigateBack()
+    }
+
+    private companion object {
+        /** Reason reported when the platform could not provide a Google credential at all. */
+        const val GOOGLE_UNAVAILABLE_REASON = "google_unavailable"
     }
 }

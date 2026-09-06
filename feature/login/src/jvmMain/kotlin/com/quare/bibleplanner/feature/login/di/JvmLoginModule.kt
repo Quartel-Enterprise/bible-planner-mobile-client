@@ -4,8 +4,8 @@ import com.quare.bibleplanner.feature.login.presentation.AddGoogleAccountLaunche
 import com.quare.bibleplanner.feature.login.presentation.DesktopAuthRedirectHtmlSynchronizer
 import com.quare.bibleplanner.feature.login.presentation.GetDesktopAuthSuccessHtmlFlow
 import com.quare.bibleplanner.feature.login.presentation.GetResourcesAsTextResult
+import com.quare.bibleplanner.feature.login.presentation.IsGoogleCredentialUnavailable
 import com.quare.bibleplanner.feature.login.presentation.JvmSignInStarter
-import com.quare.bibleplanner.feature.login.presentation.NoGoogleAccountClassifier
 import com.quare.bibleplanner.feature.login.presentation.SignInStarter
 import com.quare.bibleplanner.feature.login.presentation.factory.DesktopAuthSuccessHtmlFactory
 import com.quare.bibleplanner.feature.login.presentation.mapper.LanguageToDesktopAuthSuccessStringsMapper
@@ -20,6 +20,6 @@ val jvmLoginModule = module {
     factoryOf(::GetDesktopAuthSuccessHtmlFlow)
     factoryOf(::DesktopAuthRedirectHtmlSynchronizer)
     factoryOf(::JvmSignInStarter).bind<SignInStarter>()
-    factory<NoGoogleAccountClassifier> { NoGoogleAccountClassifier { false } }
+    factory<IsGoogleCredentialUnavailable> { IsGoogleCredentialUnavailable { false } }
     factory<AddGoogleAccountLauncher> { AddGoogleAccountLauncher { } }
 }
