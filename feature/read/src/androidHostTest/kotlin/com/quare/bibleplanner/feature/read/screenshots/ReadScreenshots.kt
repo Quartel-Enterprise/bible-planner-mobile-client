@@ -64,7 +64,11 @@ internal abstract class ReadScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            fileName = "06_read",
+            // Second on purpose, not in reading order: a shopper who never swipes sees the first
+            // two or three shots, and this is the only one that shows the Bible text itself. The
+            // listings spent years telling people the app did not include it — see
+            // docs/store-listing-metadata.md — so the reader leads instead of the light theme.
+            fileName = "02_read",
         ) {
             CompositionLocalProvider(LocalTheme provides Theme.DARK) {
                 AppTheme {

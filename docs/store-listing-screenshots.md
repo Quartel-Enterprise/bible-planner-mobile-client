@@ -44,11 +44,11 @@ The generators build the app for real, so they need the same local files a debug
 | # | Screen | Play | App Store | Notes |
 |---|--------|------|-----------|-------|
 | 01 | Reading plan (dark) | ✓ | ✓ | 1 Kings 10-12, week 16 — see below |
-| 02 | Reading plan (light) | ✓ | ✓ | The only light shot: "light or dark, it follows you" |
+| 02 | Reader | ✓ | ✓ | Genesis 1:1-12 — the first-frame slot, see below |
 | 03 | Day | ✓ | ✓ | Genesis 1-3 |
 | 04 | Day study — summary | ✓ | ✓ | Genesis 1-3 |
 | 05 | Books | ✓ | ✓ | |
-| 06 | Reader | ✓ | ✓ | Genesis 1:1-12 |
+| 06 | Reading plan (light) | ✓ | ✓ | The only light shot: "light or dark, it follows you" |
 | 07 | Day study — context | | ✓ | App Store only |
 | 08 | Day study — questions | ✓ | ✓ | |
 | 09 | AI chat | ✓ | ✓ | One exchange about Genesis 1-3 |
@@ -62,6 +62,14 @@ because that is the passage a shopper recognises from a thumbnail. The plan scre
 deliberately stands at week 16 of 1 Kings instead: Genesis is day 1 of the plan, where the
 progress card has nothing to show, and that card is the argument for a plan that keeps its place.
 The fixtures say so in their comments — do not "fix" the divergence.
+
+**The reader is second, and the order is the filename prefix.** Both stores show the shots in
+filename order, so `01_`…`09_` *is* the shelf order — renaming a prefix reorders the listing. Only
+the first two or three are visible without swiping, and the reader is the one shot that shows the
+Bible text. It sits there because the listings spent years telling shoppers the app did not
+include that text (see [Store listing metadata](store-listing-metadata.md)); the light plan, which
+used to hold the slot, argued "light or dark" with a second picture of a screen already shown.
+Moving a screen means changing its `fileName` and this table together.
 
 **Play holds 8, the App Store 10.** Play caps a listing at eight screenshots per device type and
 the App Store at ten per display size. The study's context tab (07) is the thinnest image, so it
