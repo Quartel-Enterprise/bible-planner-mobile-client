@@ -23,7 +23,8 @@ import kotlin.coroutines.CoroutineContext
  * statement through a single connection anyway. iOS and the desktop use the bundled driver with a
  * real multi-connection pool, so they stay on `Dispatchers.IO` and keep their read parallelism.
  *
- * Reported upstream against androidx Room; drop this once a fixed version ships.
+ * Upstream bug: https://issuetracker.google.com/issues/558254920 — drop this once a fixed
+ * version ships.
  */
 @OptIn(DelicateCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 private val queryContext: CoroutineContext = newSingleThreadContext(name = "room-query")
