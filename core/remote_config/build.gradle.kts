@@ -25,6 +25,7 @@ kotlin {
         androidMain.dependencies {
             implementation(project.dependencies.platform(libs.firebase.bom))
             implementation(libs.firebase.config)
+            implementation(libs.kermit)
             implementation(libs.koin.android)
         }
 
