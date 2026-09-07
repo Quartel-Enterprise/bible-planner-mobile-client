@@ -24,7 +24,7 @@
     <string name="per_month">por mês</string>
     <string name="per_year">por ano</string>
     <string name="save_percent">ECONOMIZE %1$d%</string>
-    <string name="start_pro_journey">Começar Jornada Pro</string>
+    <string name="subscribe">Assinar</string>
     <string name="footer_payment_info">Pagamento seguro via %1$s. Cancele a qualquer momento.</string>
     <string name="error_restore_purchase">Nenhuma assinatura ativa encontrada na %1$s.</string>
     <string name="error_unknown">Algo deu errado. Por favor, tente novamente.</string>

@@ -24,7 +24,7 @@
     <string name="per_month">per month</string>
     <string name="per_year">per year</string>
     <string name="save_percent">SAVE %1$d%</string>
-    <string name="start_pro_journey">Start Pro Journey</string>
+    <string name="subscribe">Subscribe</string>
     <string name="footer_payment_info">Secure payment via %1$s. Cancel anytime.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
     <string name="error_purchase_cancelled">Purchase was cancelled.</string>
