@@ -1,6 +1,7 @@
 {
   "2.8.3": [
-    "When signing in with Google on Android, the app no longer claims your device has no Google account when the problem lies elsewhere. The message now explains that it couldn't get the account and suggests adding one, trying again later, or signing in another way."
+    "When signing in with Google on Android, the app no longer claims your device has no Google account when the problem lies elsewhere. The message now explains that it couldn't get the account and suggests adding one, trying again later, or signing in another way.",
+    "The Pro screen has been reorganized: plans and prices now come first, before the benefits, and the title with its subtitle moved to the top bar — the benefits follow below, under \"What you unlock\"."
   ],
   "2.8.2": [
     "The sort and filter menus on the Books screen now open with a little breathing room below the button, instead of sitting flush against it and covering the testament filters."

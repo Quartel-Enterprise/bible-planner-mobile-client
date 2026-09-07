@@ -1,6 +1,7 @@
 {
   "2.8.3": [
-    "Ao entrar com o Google no Android, o app não afirma mais que seu aparelho não tem uma conta Google quando o problema é outro. A mensagem agora explica que não foi possível obter a conta e sugere adicionar uma, tentar de novo mais tarde ou usar outra forma de entrar."
+    "Ao entrar com o Google no Android, o app não afirma mais que seu aparelho não tem uma conta Google quando o problema é outro. A mensagem agora explica que não foi possível obter a conta e sugere adicionar uma, tentar de novo mais tarde ou usar outra forma de entrar.",
+    "A tela do Pro foi reorganizada: os planos e preços agora aparecem logo no topo, antes dos benefícios, e o título com o subtítulo passaram para a barra superior — os benefícios seguem abaixo, na seção \"O que você desbloqueia\"."
   ],
   "2.8.2": [
     "Os menus de ordenação e de filtro na tela de Livros agora abrem com um respiro abaixo do botão, em vez de ficarem colados nele e cobrirem os filtros de testamento."

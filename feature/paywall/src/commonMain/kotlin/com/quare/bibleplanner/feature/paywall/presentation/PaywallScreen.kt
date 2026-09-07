@@ -30,7 +30,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -44,19 +43,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.choose_your_plan
 import bibleplanner.feature.paywall.generated.resources.close
+import bibleplanner.feature.paywall.generated.resources.what_you_unlock
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallActionSectionComponent
 import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallHero
+import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallTopBar
 import com.quare.bibleplanner.feature.paywall.presentation.component.premiumfeature.PremiumFeaturesList
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.SubscriptionPlans
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallLandscapeDimensions
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
-import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
 import org.jetbrains.compose.resources.stringResource
@@ -64,8 +63,8 @@ import org.jetbrains.compose.resources.stringResource
 private val landscapeMinWidth = 600.dp
 private val compactLandscapeMaxHeight = 480.dp
 private val valuePanelMaxWidth = 400.dp
-private val portraitFeatureSpacing = 20.dp
-private val portraitFeatureIconSize = 30.dp
+private val portraitFeatureSpacing = 18.dp
+private val portraitFeatureIconSize = 28.dp
 private val portraitPlansSpacing = 12.dp
 private val portraitActionButtonHeight = 56.dp
 private const val VALUE_PANEL_WIDTH_FRACTION = 0.44f
@@ -107,7 +106,7 @@ fun PaywallScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PaywallPortraitContent(
     platform: Platform,
@@ -121,11 +120,11 @@ private fun PaywallPortraitContent(
     ReserveBottomOverlayHeight { actionBarHeightPx }
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    BackIcon(platform = platform, onBackClick = { onEvent(PaywallUiEvent.OnBackClick) })
-                },
+            PaywallTopBar(
+                platform = platform,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+                onBackClick = { onEvent(PaywallUiEvent.OnBackClick) },
             )
         },
         bottomBar = {
@@ -164,35 +163,27 @@ private fun PaywallPortraitContent(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
         ) {
-            VerticalSpacer(4)
-            PaywallHero(
-                modifier = Modifier.fillMaxWidth(),
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope,
-                titleFontSize = 28.sp,
-                titleColor = MaterialTheme.colorScheme.onSurface,
-                proColor = MaterialTheme.colorScheme.primary,
-                subtitleColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                iconBoxSize = 64.dp,
-                iconBoxCornerRadius = 20.dp,
-                iconBoxColor = MaterialTheme.colorScheme.primaryContainer,
-                iconSize = 34.dp,
-                iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
-            )
-            VerticalSpacer(26)
-            PremiumFeaturesList(
-                maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
-                itemSpacing = portraitFeatureSpacing,
-                iconSize = portraitFeatureIconSize,
-            )
-            VerticalSpacer(28)
+            VerticalSpacer(18)
             if (uiState is PaywallUiState.Success) {
                 SubscriptionPlans(
                     subscriptionPlans = uiState.subscriptionPlans,
                     onEvent = onEvent,
                     itemSpacing = portraitPlansSpacing,
                 )
+                VerticalSpacer(26)
             }
+            Text(
+                text = stringResource(Res.string.what_you_unlock),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            VerticalSpacer(14)
+            PremiumFeaturesList(
+                maxFreeNotes = (uiState as? PaywallUiState.Success)?.maxFreeNotes,
+                itemSpacing = portraitFeatureSpacing,
+                iconSize = portraitFeatureIconSize,
+            )
             VerticalSpacer(8)
         }
     }

@@ -7,6 +7,7 @@
     <string name="paywall_title_part_2">Pro</string>
     <string name="paywall_subtitle">Profundiza tu estudio sin límites.</string>
     <string name="choose_your_plan">Elige tu plan</string>
+    <string name="what_you_unlock">LO QUE DESBLOQUEAS</string>
     <string name="feature_ai_day_study">Estudio del día ilimitado con IA</string>
     <string name="feature_ai_day_study_subtext">Visión general, contexto histórico y preguntas guiadas para cada lectura.</string>
     <string name="feature_ai_chat">Chat con IA ilimitado</string>
