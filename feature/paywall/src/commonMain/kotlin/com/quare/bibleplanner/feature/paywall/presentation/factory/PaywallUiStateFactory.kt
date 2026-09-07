@@ -1,12 +1,14 @@
 package com.quare.bibleplanner.feature.paywall.presentation.factory
 
 import bibleplanner.feature.paywall.generated.resources.Res
+import bibleplanner.feature.paywall.generated.resources.month
 import bibleplanner.feature.paywall.generated.resources.per_month
 import bibleplanner.feature.paywall.generated.resources.per_year
 import bibleplanner.feature.paywall.generated.resources.plan_annual
 import bibleplanner.feature.paywall.generated.resources.plan_annual_description
 import bibleplanner.feature.paywall.generated.resources.plan_monthly
 import bibleplanner.feature.paywall.generated.resources.plan_monthly_description
+import bibleplanner.feature.paywall.generated.resources.year
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
@@ -114,10 +116,16 @@ class PaywallUiStateFactory(
             SubscriptionPlanType.Annual -> Res.string.per_year
         }
 
+        val periodUnitRes = when (planType) {
+            SubscriptionPlanType.Monthly -> Res.string.month
+            SubscriptionPlanType.Annual -> Res.string.year
+        }
+
         return SubscriptionPlanPresentationModel(
             title = titleRes,
             description = descriptionRes,
             period = periodRes,
+            periodUnit = periodUnitRes,
             savePercentage = savePercent,
             isSelected = false,
             priceDescription = priceString,

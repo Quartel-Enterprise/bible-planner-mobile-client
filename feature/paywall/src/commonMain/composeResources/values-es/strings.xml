@@ -1,5 +1,4 @@
 <resources>
-    <string name="close">Cerrar</string>
     <string name="already_subscribed">¿Ya estás suscrito?</string>
     <string name="restore_purchase">Restaura tu compra.</string>
     <string name="paywall_error_message">No se pudieron cargar las opciones de suscripción. Por favor, inténtalo de nuevo más tarde.</string>

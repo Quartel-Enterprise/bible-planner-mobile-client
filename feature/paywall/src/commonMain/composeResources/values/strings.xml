@@ -1,5 +1,4 @@
 <resources>
-    <string name="close">Close</string>
     <string name="already_subscribed">Already subscribed?</string>
     <string name="restore_purchase">Restore your purchase.</string>
     <string name="paywall_error_message">Unable to load subscription options. Please try again later.</string>

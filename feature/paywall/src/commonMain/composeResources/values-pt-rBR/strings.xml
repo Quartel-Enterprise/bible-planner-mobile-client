@@ -1,5 +1,4 @@
 <resources>
-    <string name="close">Fechar</string>
     <string name="already_subscribed">Já é assinante?</string>
     <string name="restore_purchase">Restaure sua compra.</string>
     <string name="paywall_error_message">Não foi possível carregar as opções de assinatura. Por favor, tente novamente mais tarde.</string>
