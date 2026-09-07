@@ -192,7 +192,10 @@ platform :android do
       aab: File.join(repo_root, "androidApp/build/outputs/bundle/release/androidApp-release.aab"),
       metadata_path: File.join(repo_root, "fastlane/metadata/android"),
       json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
-      skip_upload_metadata: true,
+      # The listing copy — title, short and full description — is versioned under
+      # fastlane/metadata/android/, so the repo is what the Play listing says. Edit it
+      # there in a PR, never in the Play Console: the next release overwrites the console.
+      skip_upload_metadata: false,
       skip_upload_changelogs: !has_changelogs,
       skip_upload_images: true,
       skip_upload_screenshots: true,
@@ -363,6 +366,13 @@ platform :ios do
       api_key: api_key,
       ipa: File.join(repo_root, "build/ios/BiblePlanner.ipa"),
       metadata_path: File.join(repo_root, "fastlane/metadata"),
+      # Uploads the whole listing, not just the notes: name, subtitle, keywords and
+      # description are versioned under fastlane/metadata/<locale>/ (see
+      # docs/store-listing-metadata.md) and "What's New" is staged next to them above.
+      # Edit the copy in a PR, never in App Store Connect — the next release overwrites it.
+      # A locale with no staged notes still gets its listing copy; only that field is left
+      # alone. When the notes cannot be staged at all, the listing is skipped with them,
+      # which is the conservative half of an already non-fatal step.
       skip_metadata: !has_release_notes,
       skip_screenshots: true,
       submit_for_review: submit,

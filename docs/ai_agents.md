@@ -17,5 +17,6 @@ This document describes the architecture conventions of this project. Follow the
 - [@docs/analytics/README.md](analytics/README.md)
 - [@docs/testing/README.md](testing/README.md)
 - [@docs/store-listing-screenshots.md](store-listing-screenshots.md)
+- [@docs/store-listing-metadata.md](store-listing-metadata.md)
 - [@docs/getting-started.md](getting-started.md)
 - [@docs/code-quality.md](code-quality.md)
