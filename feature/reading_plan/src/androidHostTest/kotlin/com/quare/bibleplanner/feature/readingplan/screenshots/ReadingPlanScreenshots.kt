@@ -94,7 +94,10 @@ internal abstract class ReadingPlanScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            fileName = "02_reading_plan_light",
+            // Sixth, not second: "light or dark" is a weak argument to spend a first-frame slot
+            // on, and standing next to the dark plan it showed the same screen twice before the
+            // shopper saw any Bible text. The reader took the slot; see ReadScreenshots.
+            fileName = "06_reading_plan_light",
         ) {
             CompositionLocalProvider(LocalTheme provides Theme.LIGHT) {
                 AppTheme { ReadingPlanContent() }
