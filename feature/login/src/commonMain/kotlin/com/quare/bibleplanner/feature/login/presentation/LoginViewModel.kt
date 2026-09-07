@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
+import com.quare.bibleplanner.feature.login.domain.usecase.IsNewAccount
 import com.quare.bibleplanner.feature.login.presentation.factory.LoginUiStateFactory
 import com.quare.bibleplanner.feature.login.presentation.mapper.ThrowableToLoginErrorMapper
 import com.quare.bibleplanner.feature.login.presentation.model.LoginError
@@ -39,6 +40,7 @@ internal class LoginViewModel(
     private val throwableToLoginErrorMapper: ThrowableToLoginErrorMapper,
     private val isGoogleCredentialUnavailable: IsGoogleCredentialUnavailable,
     private val addGoogleAccountLauncher: AddGoogleAccountLauncher,
+    private val isNewAccount: IsNewAccount,
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LoginUiEvent>(trackEvent) {
@@ -114,10 +116,12 @@ internal class LoginViewModel(
 
     private fun trackAuthResult(uiEvent: LoginUiEvent.SocialAuthResult) {
         when (val result = uiEvent.result) {
-            is NativeSignInResult.Success -> trackLoginEvent(
-                name = AnalyticsEventNames.LOGIN,
-                provider = uiEvent.provider,
-            )
+            is NativeSignInResult.Success -> viewModelScope.launch {
+                trackLoginEvent(
+                    name = if (isNewAccount()) AnalyticsEventNames.SIGN_UP else AnalyticsEventNames.LOGIN,
+                    provider = uiEvent.provider,
+                )
+            }
 
             is NativeSignInResult.ClosedByUser -> trackLoginEvent(
                 name = AnalyticsEventNames.LOGIN_CANCELLED,

@@ -23,6 +23,10 @@ kotlin {
             implementation(projects.feature.preferences.themeSelection)
             implementation(projects.ui.theme)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)

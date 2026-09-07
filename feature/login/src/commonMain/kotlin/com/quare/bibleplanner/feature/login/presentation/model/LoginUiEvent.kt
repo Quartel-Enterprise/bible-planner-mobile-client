@@ -54,6 +54,7 @@ sealed interface LoginUiEvent : UiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             setOf(
                 AnalyticsEventNames.LOGIN,
+                AnalyticsEventNames.SIGN_UP,
                 AnalyticsEventNames.LOGIN_CANCELLED,
                 AnalyticsEventNames.LOGIN_FAILED,
             ),

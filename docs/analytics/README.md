@@ -379,6 +379,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | Event | Tier | Domain |
 |---|---|---|
 | [login](events/login.md) | P1 | Auth |
+| [sign_up](events/sign_up.md) | P1 | Auth |
 | [login_started](events/login_started.md) | P1 | Auth |
 | [login_failed](events/login_failed.md) | P1 | Auth |
 | [login_cancelled](events/login_cancelled.md) | P2 | Auth |
