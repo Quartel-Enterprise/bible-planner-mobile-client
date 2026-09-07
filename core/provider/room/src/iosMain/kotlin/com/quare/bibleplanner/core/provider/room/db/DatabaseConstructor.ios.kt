@@ -5,6 +5,8 @@ import androidx.room3.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.quare.bibleplanner.core.provider.room.utils.DatabaseUtils
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
@@ -15,6 +17,7 @@ fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
         .databaseBuilder<AppDatabase>(
             name = dbFilePath,
         ).setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.IO)
 }
 
 @OptIn(ExperimentalForeignApi::class)

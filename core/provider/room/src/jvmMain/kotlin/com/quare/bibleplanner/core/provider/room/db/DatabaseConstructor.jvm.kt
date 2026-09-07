@@ -6,6 +6,8 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.quare.bibleplanner.core.provider.room.utils.DatabaseUtils
 import com.quare.bibleplanner.core.utils.migrateLegacyFileIfPresent
 import com.quare.bibleplanner.core.utils.resolveAppDataDirectory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import java.io.File
 
 fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
@@ -14,6 +16,7 @@ fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
         .databaseBuilder<AppDatabase>(
             name = dbFile.absolutePath,
         ).setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.IO)
 }
 
 private fun resolveDatabaseFile(): File {
