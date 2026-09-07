@@ -105,6 +105,7 @@ object AnalyticsEventNames {
     const val PIX_QR_DISMISSED = "pix_qr_dismissed"
 
     const val LOGIN = "login"
+    const val SIGN_UP = "sign_up"
     const val LOGIN_STARTED = "login_started"
     const val LOGIN_FAILED = "login_failed"
     const val LOGIN_CANCELLED = "login_cancelled"
