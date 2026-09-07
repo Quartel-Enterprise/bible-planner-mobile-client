@@ -7,21 +7,26 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.start_pro_journey
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
 
+private const val PRICE_ALPHA = 0.75f
+
 @Composable
 internal fun StartProButton(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
+    priceDescription: String? = null,
     onClick: () -> Unit,
 ) {
     Button(
@@ -41,6 +46,18 @@ internal fun StartProButton(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
+            if (priceDescription != null) {
+                HorizontalSpacer(6)
+                Text(
+                    modifier = Modifier.weight(1f, fill = false),
+                    text = "· $priceDescription",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = LocalContentColor.current.copy(alpha = PRICE_ALPHA),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             HorizontalSpacer(8)
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,

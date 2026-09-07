@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
+import com.quare.bibleplanner.feature.paywall.presentation.utils.selectedPlanPriceDescription
 
 @Composable
 internal fun PaywallActionSectionComponent(
@@ -22,6 +23,7 @@ internal fun PaywallActionSectionComponent(
             modifier = modifier.fillMaxWidth(),
             storeName = uiState.storeName,
             isLoading = uiState.isPurchasing,
+            priceDescription = uiState.selectedPlanPriceDescription(),
             buttonHeight = buttonHeight,
             onEvent = onEvent,
         )

@@ -7,6 +7,7 @@ data class SubscriptionPlanPresentationModel(
     val title: StringResource,
     val description: StringResource,
     val period: StringResource,
+    val periodUnit: StringResource,
     val savePercentage: Int?,
     val isSelected: Boolean,
     val priceDescription: String,

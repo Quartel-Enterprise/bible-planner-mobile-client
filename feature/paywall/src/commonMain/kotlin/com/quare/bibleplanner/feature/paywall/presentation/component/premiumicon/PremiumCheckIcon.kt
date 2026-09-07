@@ -11,12 +11,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
+
+private const val CHECK_SIZE_FRACTION = 0.64f
 
 @Composable
-internal fun PremiumCheckIcon(modifier: Modifier = Modifier) {
+internal fun PremiumCheckIcon(
+    size: Dp,
+    modifier: Modifier = Modifier,
+) {
     Box(
         modifier = modifier
+            .size(size)
             .background(
                 color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
@@ -24,7 +30,7 @@ internal fun PremiumCheckIcon(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            modifier = Modifier.size(19.dp),
+            modifier = Modifier.size(size * CHECK_SIZE_FRACTION),
             imageVector = Icons.Rounded.Check,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onPrimary,
