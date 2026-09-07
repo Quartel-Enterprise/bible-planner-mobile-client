@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.paywall.generated.resources.Res
-import bibleplanner.feature.paywall.generated.resources.start_pro_journey
+import bibleplanner.feature.paywall.generated.resources.subscribe
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
 
@@ -42,7 +42,7 @@ internal fun StartProButton(
             )
         } else {
             Text(
-                text = stringResource(Res.string.start_pro_journey),
+                text = stringResource(Res.string.subscribe),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )

@@ -1,6 +1,7 @@
 {
   "2.9.0": [
-    "En Android, se corrigió un problema que en casos raros podía cerrar la app sola al pasar entre pantallas que leen tus datos guardados — por ejemplo, al aplicar resaltados a versículos uno tras otro en la pantalla de lectura."
+    "En Android, se corrigió un problema que en casos raros podía cerrar la app sola al pasar entre pantallas que leen tus datos guardados — por ejemplo, al aplicar resaltados a versículos uno tras otro en la pantalla de lectura.",
+    "En la pantalla del Pro, el botón de suscribirse ahora es más corto y muestra el precio completo del plan elegido, sin cortarlo en pantallas pequeñas."
   ],
   "2.8.3": [
     "Al iniciar sesión con Google en Android, la app ya no afirma que tu dispositivo no tiene una cuenta de Google cuando el problema es otro. El mensaje ahora explica que no se pudo obtener la cuenta y sugiere agregar una, intentarlo más tarde o entrar de otra forma.",
