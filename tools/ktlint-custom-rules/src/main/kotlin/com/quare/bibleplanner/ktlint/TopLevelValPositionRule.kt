@@ -8,27 +8,14 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.IDENTIFIER
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.OBJECT_DECLARATION
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.PROPERTY
-import com.pinterest.ktlint.rule.engine.core.api.Rule
-import com.pinterest.ktlint.rule.engine.core.api.Rule.About
-import com.pinterest.ktlint.rule.engine.core.api.RuleAutocorrectApproveHandler
-import com.pinterest.ktlint.rule.engine.core.api.RuleId
-import com.pinterest.ktlint.rule.engine.core.api.children
+import com.pinterest.ktlint.rule.engine.core.api.children20
 import com.pinterest.ktlint.rule.engine.core.api.hasModifier
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtProperty
 
 private val topLevelDeclarationElementTypes = setOf(FUN, CLASS, OBJECT_DECLARATION)
 
-class TopLevelValPositionRule :
-    Rule(
-        ruleId = RuleId("$RULE_SET_ID:top-level-val-position"),
-        about = About(
-            maintainer = "Bible Planner",
-            repositoryUrl = "https://github.com/quare-tech/bible-planner-mobile-client",
-            issueTrackerUrl = "https://github.com/quare-tech/bible-planner-mobile-client/issues",
-        ),
-    ),
-    RuleAutocorrectApproveHandler {
+class TopLevelValPositionRule : BiblePlannerRule("top-level-val-position") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
@@ -36,7 +23,7 @@ class TopLevelValPositionRule :
         if (node.elementType != FILE) return
 
         var seenTopLevelDeclaration = false
-        node.children().forEach { child ->
+        node.children20.forEach { child ->
             if (child.elementType in topLevelDeclarationElementTypes) {
                 seenTopLevelDeclaration = true
             } else if (seenTopLevelDeclaration && child.isTopLevelPrivateValOrConst()) {

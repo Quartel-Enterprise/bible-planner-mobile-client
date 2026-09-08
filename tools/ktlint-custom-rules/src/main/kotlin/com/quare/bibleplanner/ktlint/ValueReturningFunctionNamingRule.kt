@@ -6,10 +6,6 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.FUN
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.IDENTIFIER
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.OPERATOR_KEYWORD
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.OVERRIDE_KEYWORD
-import com.pinterest.ktlint.rule.engine.core.api.Rule
-import com.pinterest.ktlint.rule.engine.core.api.Rule.About
-import com.pinterest.ktlint.rule.engine.core.api.RuleAutocorrectApproveHandler
-import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import com.pinterest.ktlint.rule.engine.core.api.hasModifier
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -32,16 +28,7 @@ private val ignoredReturnTypes = setOf("Unit", "Nothing")
 private val exemptContainerAnnotations = setOf("Dao", "Database")
 private val idiomaticSuffixes = listOf("OrNull", "Of", "For")
 
-class ValueReturningFunctionNamingRule :
-    Rule(
-        ruleId = RuleId("$RULE_SET_ID:value-returning-function-naming"),
-        about = About(
-            maintainer = "Bible Planner",
-            repositoryUrl = "https://github.com/quare-tech/bible-planner-mobile-client",
-            issueTrackerUrl = "https://github.com/quare-tech/bible-planner-mobile-client/issues",
-        ),
-    ),
-    RuleAutocorrectApproveHandler {
+class ValueReturningFunctionNamingRule : BiblePlannerRule("value-returning-function-naming") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
