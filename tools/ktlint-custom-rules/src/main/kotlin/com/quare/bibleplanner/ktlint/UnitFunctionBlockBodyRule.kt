@@ -3,10 +3,6 @@ package com.quare.bibleplanner.ktlint
 import com.pinterest.ktlint.rule.engine.core.api.AutocorrectDecision
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.FUN
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.IDENTIFIER
-import com.pinterest.ktlint.rule.engine.core.api.Rule
-import com.pinterest.ktlint.rule.engine.core.api.Rule.About
-import com.pinterest.ktlint.rule.engine.core.api.RuleAutocorrectApproveHandler
-import com.pinterest.ktlint.rule.engine.core.api.RuleId
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtExpression
@@ -16,16 +12,7 @@ import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
 private const val UNIT = "Unit"
 
-class UnitFunctionBlockBodyRule :
-    Rule(
-        ruleId = RuleId("$RULE_SET_ID:unit-function-block-body"),
-        about = About(
-            maintainer = "Bible Planner",
-            repositoryUrl = "https://github.com/quare-tech/bible-planner-mobile-client",
-            issueTrackerUrl = "https://github.com/quare-tech/bible-planner-mobile-client/issues",
-        ),
-    ),
-    RuleAutocorrectApproveHandler {
+class UnitFunctionBlockBodyRule : BiblePlannerRule("unit-function-block-body") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,

@@ -3,11 +3,7 @@ package com.quare.bibleplanner.ktlint
 import com.pinterest.ktlint.rule.engine.core.api.AutocorrectDecision
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.FILE
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.LAMBDA_EXPRESSION
-import com.pinterest.ktlint.rule.engine.core.api.Rule
-import com.pinterest.ktlint.rule.engine.core.api.Rule.About
-import com.pinterest.ktlint.rule.engine.core.api.RuleAutocorrectApproveHandler
-import com.pinterest.ktlint.rule.engine.core.api.RuleId
-import com.pinterest.ktlint.rule.engine.core.api.recursiveChildren
+import com.pinterest.ktlint.rule.engine.core.api.recursiveChildren20
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.lexer.KtTokens.SUSPEND_KEYWORD
@@ -32,16 +28,7 @@ private const val COMPOSABLE_ANNOTATION_NAME = "Composable"
  * anything reached through a receiver. A forwarding lambda around a function from another file is left
  * alone rather than guessed at.
  */
-class PreferMethodReferenceRule :
-    Rule(
-        ruleId = RuleId("$RULE_SET_ID:prefer-method-reference"),
-        about = About(
-            maintainer = "Bible Planner",
-            repositoryUrl = "https://github.com/quare-tech/bible-planner-mobile-client",
-            issueTrackerUrl = "https://github.com/quare-tech/bible-planner-mobile-client/issues",
-        ),
-    ),
-    RuleAutocorrectApproveHandler {
+class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
@@ -49,14 +36,14 @@ class PreferMethodReferenceRule :
         if (node.elementType != FILE) return
 
         val referenceableFunctions = node
-            .recursiveChildren()
+            .recursiveChildren20
             .mapNotNull { it.psi as? KtNamedFunction }
             .filter { it.isReferenceable() }
             .toList()
         if (referenceableFunctions.isEmpty()) return
 
         node
-            .recursiveChildren()
+            .recursiveChildren20
             .filter { it.elementType == LAMBDA_EXPRESSION }
             .mapNotNull { it.psi as? KtLambdaExpression }
             .forEach { lambda ->

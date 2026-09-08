@@ -6,24 +6,11 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.LAMBDA_EXPRESSION
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.LBRACE
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.RBRACE
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.WHEN_ENTRY
-import com.pinterest.ktlint.rule.engine.core.api.Rule
-import com.pinterest.ktlint.rule.engine.core.api.Rule.About
-import com.pinterest.ktlint.rule.engine.core.api.RuleAutocorrectApproveHandler
-import com.pinterest.ktlint.rule.engine.core.api.RuleId
-import com.pinterest.ktlint.rule.engine.core.api.children
-import com.pinterest.ktlint.rule.engine.core.api.isWhiteSpace
+import com.pinterest.ktlint.rule.engine.core.api.children20
+import com.pinterest.ktlint.rule.engine.core.api.isWhiteSpace20
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-class WhenEntrySingleStatementBracesRule :
-    Rule(
-        ruleId = RuleId("$RULE_SET_ID:when-entry-single-statement-braces"),
-        about = About(
-            maintainer = "Bible Planner",
-            repositoryUrl = "https://github.com/quare-tech/bible-planner-mobile-client",
-            issueTrackerUrl = "https://github.com/quare-tech/bible-planner-mobile-client/issues",
-        ),
-    ),
-    RuleAutocorrectApproveHandler {
+class WhenEntrySingleStatementBracesRule : BiblePlannerRule("when-entry-single-statement-braces") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
@@ -33,8 +20,8 @@ class WhenEntrySingleStatementBracesRule :
         val block = node.findChildByType(BLOCK) ?: return
         val statements =
             block
-                .children()
-                .filterNot { it.elementType == LBRACE || it.elementType == RBRACE || it.isWhiteSpace() }
+                .children20
+                .filterNot { it.elementType == LBRACE || it.elementType == RBRACE || it.isWhiteSpace20 }
                 .toList()
         val statement = statements.singleOrNull() ?: return
         if (statement.text.contains('\n')) return

@@ -5,25 +5,13 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.FILE
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.IDENTIFIER
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.PRIVATE_KEYWORD
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.PROPERTY
-import com.pinterest.ktlint.rule.engine.core.api.Rule
-import com.pinterest.ktlint.rule.engine.core.api.RuleAutocorrectApproveHandler
-import com.pinterest.ktlint.rule.engine.core.api.RuleId
-import com.pinterest.ktlint.rule.engine.core.api.children
+import com.pinterest.ktlint.rule.engine.core.api.children20
 import com.pinterest.ktlint.rule.engine.core.api.hasModifier
-import com.pinterest.ktlint.rule.engine.core.api.isWhiteSpace
+import com.pinterest.ktlint.rule.engine.core.api.isWhiteSpace20
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtProperty
 
-class TopLevelValBlankLineRule :
-    Rule(
-        ruleId = RuleId("$RULE_SET_ID:top-level-val-blank-line"),
-        about = About(
-            maintainer = "Bible Planner",
-            repositoryUrl = "https://github.com/quare-tech/bible-planner-mobile-client",
-            issueTrackerUrl = "https://github.com/quare-tech/bible-planner-mobile-client/issues",
-        ),
-    ),
-    RuleAutocorrectApproveHandler {
+class TopLevelValBlankLineRule : BiblePlannerRule("top-level-val-blank-line") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
@@ -31,8 +19,8 @@ class TopLevelValBlankLineRule :
         if (node.elementType != FILE) return
 
         node
-            .children()
-            .filter { it.isWhiteSpace() && it.text.count { char -> char == '\n' } > 1 }
+            .children20
+            .filter { it.isWhiteSpace20 && it.text.count { char -> char == '\n' } > 1 }
             .forEach { whiteSpace ->
                 val previous = whiteSpace.treePrev ?: return@forEach
                 val next = whiteSpace.treeNext ?: return@forEach
