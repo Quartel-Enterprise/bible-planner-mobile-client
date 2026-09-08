@@ -1,7 +1,7 @@
 {
-  "2.9.0": [
-    "No Android, corrigido um problema que raramente podia fechar o app sozinho ao alternar entre telas que leem seus dados salvos — por exemplo, ao aplicar destaques em versículos um atrás do outro na tela de leitura.",
-    "Na tela do Pro, o botão de assinar ficou mais curto e agora mostra o preço do plano escolhido por inteiro, sem cortar em aparelhos com tela pequena."
+  "2.8.4": [
+    "Na tela do Pro, o botão de assinar ficou mais curto e agora mostra o preço do plano escolhido por inteiro, sem cortar em aparelhos com tela pequena.",
+    "No Android, corrigido um problema que raramente podia fechar o app sozinho ao alternar entre telas que leem seus dados salvos — por exemplo, ao aplicar destaques em versículos um atrás do outro na tela de leitura."
   ],
   "2.8.3": [
     "Ao entrar com o Google no Android, o app não afirma mais que seu aparelho não tem uma conta Google quando o problema é outro. A mensagem agora explica que não foi possível obter a conta e sugere adicionar uma, tentar de novo mais tarde ou usar outra forma de entrar.",
