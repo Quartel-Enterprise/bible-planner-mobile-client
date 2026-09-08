@@ -1,7 +1,7 @@
 {
-  "2.9.0": [
-    "On Android, fixed a problem that could rarely close the app on its own while moving between screens that read your saved data — for example, when applying highlights to verses one after another on the reading screen.",
-    "On the Pro screen, the subscribe button is now shorter and shows the full price of the chosen plan, without cutting it off on small screens."
+  "2.8.4": [
+    "On the Pro screen, the subscribe button is now shorter and shows the full price of the chosen plan, without cutting it off on small screens.",
+    "On Android, fixed a problem that could rarely close the app on its own while moving between screens that read your saved data — for example, when applying highlights to verses one after another on the reading screen."
   ],
   "2.8.3": [
     "When signing in with Google on Android, the app no longer claims your device has no Google account when the problem lies elsewhere. The message now explains that it couldn't get the account and suggests adding one, trying again later, or signing in another way.",
