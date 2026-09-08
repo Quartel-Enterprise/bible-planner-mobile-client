@@ -39,6 +39,8 @@ prefs.preferences_pb.tmp
 
 # Claude Code
 .claude/worktrees/
+.claude/settings.json
+.claude/settings.local.json
 
 # Firebase
 androidApp/google-services.json
