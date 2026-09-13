@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +22,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import com.quare.bibleplanner.ui.utils.asStable
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -46,6 +48,7 @@ internal fun ReadTopBar(
     TopAppBar(
         modifier = modifier,
         scrollBehavior = topAppBarScrollBehavior,
+        windowInsets = TopAppBarDefaults.windowInsets.asStable(),
         title = {
             AnimatedVisibility(
                 visible = isTitleVisible,

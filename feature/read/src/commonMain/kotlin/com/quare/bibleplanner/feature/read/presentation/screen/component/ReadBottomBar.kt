@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.ui.utils.asStable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,7 +28,7 @@ internal fun ReadBottomBar(
     BottomAppBar(
         modifier = modifier,
         scrollBehavior = scrollBehavior,
-        windowInsets = WindowInsets.navigationBars,
+        windowInsets = WindowInsets.navigationBars.asStable(),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
