@@ -1,5 +1,6 @@
 {
   "2.8.5": [
+    "Fixed chapters that wouldn't open on the reading screen in some Bible versions — such as Genesis 35 and 40 — and verses missing at the end of others, such as Genesis 41. The affected chapters are downloaded again automatically.",
     "On iPhone and iPad, fixed a problem that could close the app on its own on the reading screen when selecting verses or clearing the selection."
   ],
   "2.8.4": [

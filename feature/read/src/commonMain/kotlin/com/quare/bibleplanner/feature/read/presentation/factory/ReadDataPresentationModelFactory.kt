@@ -11,17 +11,16 @@ import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.Loadable.Loaded
-import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetReadNavigationSuggestionsModelUseCase
+import com.quare.bibleplanner.feature.read.presentation.mapper.ChapterVersesUiModelMapper
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterLoadResult
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
-import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -38,13 +37,14 @@ import org.jetbrains.compose.resources.StringResource
  * plus the header the screen keeps showing even when the text itself failed to load.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class ReadDataPresentationModelFactory(
+internal class ReadDataPresentationModelFactory(
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
     private val getChapterId: GetChapterIdUseCase,
     private val getVersesWithTextsByChapterIdFlow: GetVersesWithTextsByChapterIdFlowUseCase,
     private val getSelectedBibleFlow: GetSelectedBibleFlowUseCase,
     private val getReadNavigationSuggestionsModelFlow: GetReadNavigationSuggestionsModelUseCase,
     private val observeChapterAnnotations: ObserveChapterAnnotations,
+    private val chapterVersesUiModelMapper: ChapterVersesUiModelMapper,
 ) : ObserveReadData {
     /**
      * Every chapter in [prependedChapters] and [appendedChapters] is observed alongside this one and
@@ -174,16 +174,12 @@ class ReadDataPresentationModelFactory(
                         ),
                     ),
                 ) { versesWithTexts, annotations ->
-                    if (versesWithTexts.isEmpty()) return@combine ChapterLoadResult.TextMissing
-                    val verses = versesWithTexts.map { verseWithTexts ->
-                        val verseText = verseWithTexts.texts.find { it.bibleVersionId == versionId }
-                            ?: return@combine ChapterLoadResult.TextMissing
-                        verseWithTexts.verse.number.toVerseUiModel(
-                            heading = verseText.heading,
-                            text = verseText.text,
-                            annotations = annotations,
-                        )
-                    }
+                    val verses = chapterVersesUiModelMapper.map(
+                        versesWithTexts = versesWithTexts,
+                        versionId = versionId,
+                        annotations = annotations,
+                    )
+                    if (verses.isEmpty()) return@combine ChapterLoadResult.TextMissing
                     ChapterLoadResult.Loaded(
                         ReadChapterUiModel(
                             chapter = ChapterRef(
@@ -200,18 +196,4 @@ class ReadDataPresentationModelFactory(
             },
         )
     }
-
-    private fun Int.toVerseUiModel(
-        heading: String?,
-        text: String,
-        annotations: ChapterAnnotations,
-    ): VerseUiModel = VerseUiModel(
-        number = this,
-        heading = heading,
-        text = text,
-        isSelected = false,
-        highlightColor = annotations.highlightColorByVerse[this],
-        isSaved = this in annotations.savedVerseNumbers,
-        noteId = annotations.noteIdByVerse[this],
-    )
 }

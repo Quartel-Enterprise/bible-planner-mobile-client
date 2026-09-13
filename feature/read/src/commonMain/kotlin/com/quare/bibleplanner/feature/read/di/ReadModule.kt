@@ -24,6 +24,7 @@ import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppeara
 import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighlightColorViewModel
 import com.quare.bibleplanner.feature.read.presentation.factory.ObserveReadData
 import com.quare.bibleplanner.feature.read.presentation.factory.ReadDataPresentationModelFactory
+import com.quare.bibleplanner.feature.read.presentation.mapper.ChapterVersesUiModelMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -43,6 +44,7 @@ val featureReadModule = module {
     factoryOf(::SetReaderVerticalReadingUseCase).bind<SetReaderVerticalReading>()
 
     factoryOf(::GetReadNavigationSuggestionsModelUseCase)
+    factoryOf(::ChapterVersesUiModelMapper)
     factoryOf(::ReadDataPresentationModelFactory).bind<ObserveReadData>()
     viewModelOf(::ReadViewModel)
     viewModelOf(::ReaderAppearanceViewModel)
