@@ -1,4 +1,7 @@
 {
+  "2.8.5": [
+    "En iPhone y iPad, se corrigió un problema que podía cerrar la app sola en la pantalla de lectura al seleccionar versículos o borrar la selección."
+  ],
   "2.8.4": [
     "En la pantalla del Pro, el botón de suscribirse ahora es más corto y muestra el precio completo del plan elegido, sin cortarlo en pantallas pequeñas.",
     "En Android, se corrigió un problema que en casos raros podía cerrar la app sola al pasar entre pantallas que leen tus datos guardados — por ejemplo, al aplicar resaltados a versículos uno tras otro en la pantalla de lectura."

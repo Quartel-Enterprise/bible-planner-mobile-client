@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
@@ -24,6 +25,7 @@ import com.quare.bibleplanner.feature.day.presentation.component.DayStudySection
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.DayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
+import com.quare.bibleplanner.ui.utils.asStable
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -78,6 +80,7 @@ internal fun DayScreen(
                 )
             }
         },
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
     ) { paddingValues ->
         DayContent(
             modifier = Modifier

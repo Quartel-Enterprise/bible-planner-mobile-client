@@ -5,12 +5,14 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
+import com.quare.bibleplanner.ui.utils.asStable
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -38,5 +40,6 @@ internal fun DayScreenTopBarComponent(
             BackIcon(platform = platform, onBackClick = { onEvent(DayUiEvent.OnBackClick) })
         },
         scrollBehavior = scrollBehavior,
+        windowInsets = TopAppBarDefaults.windowInsets.asStable(),
     )
 }

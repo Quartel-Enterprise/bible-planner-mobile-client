@@ -45,3 +45,4 @@
 - [Navigator migration](project_navigator_migration.md) — navigation is one injected Navigator (core/model) called from ViewModels; UiAction never carries navigation (2 documented exceptions).
 - [Play SA store presence](project_play_sa_store_presence.md) — the Play CI service account needs the app-level "Manage store presence" permission for listing/screenshot uploads; release permissions alone fail at edits.validate (granted 2026-09-01).
 - [Synced preferences pattern](project_synced_preferences_pattern.md) — the preference sync pipeline is key-agnostic: a new synced preference needs no backend/sync-engine changes, just mirror the theme/language repository pattern (done for study suggestion in #403).
+- [Stable WindowInsets workaround](project_stable_window_insets_workaround.md) — WindowInsets.asStable() fixes iOS "unattached node" insets crash when Nav3 moves screens between scenes (CMP 1.12.0 bug, CMP-10789); remove when CMP ships the androidx fix.

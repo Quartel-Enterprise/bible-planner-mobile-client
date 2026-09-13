@@ -1,4 +1,7 @@
 {
+  "2.8.5": [
+    "On iPhone and iPad, fixed a problem that could close the app on its own on the reading screen when selecting verses or clearing the selection."
+  ],
   "2.8.4": [
     "On the Pro screen, the subscribe button is now shorter and shows the full price of the chosen plan, without cutting it off on small screens.",
     "On Android, fixed a problem that could rarely close the app on its own while moving between screens that read your saved data — for example, when applying highlights to verses one after another on the reading screen."
