@@ -1,4 +1,7 @@
 {
+  "2.8.5": [
+    "Fixed chapters that wouldn't open on the reading screen in some Bible versions — such as Genesis 35 and 40 — and verses missing at the end of others, such as Genesis 41. The affected chapters are downloaded again automatically."
+  ],
   "2.8.4": [
     "On the Pro screen, the subscribe button is now shorter and shows the full price of the chosen plan, without cutting it off on small screens.",
     "On Android, fixed a problem that could rarely close the app on its own while moving between screens that read your saved data — for example, when applying highlights to verses one after another on the reading screen."

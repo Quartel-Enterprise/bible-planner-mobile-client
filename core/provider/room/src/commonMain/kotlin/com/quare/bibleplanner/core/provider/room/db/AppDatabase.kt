@@ -69,7 +69,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         VerseNoteVerseEntity::class,
         HighlightPaletteColorEntity::class,
     ],
-    version = 16,
+    version = 17,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
@@ -82,6 +82,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
         AutoMigration(from = 15, to = 16),
+        AutoMigration(from = 16, to = 17, spec = Migration16To17Spec::class),
     ],
     exportSchema = true,
 )

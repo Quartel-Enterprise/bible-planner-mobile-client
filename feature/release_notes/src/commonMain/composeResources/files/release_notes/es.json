@@ -1,4 +1,7 @@
 {
+  "2.8.5": [
+    "Se corrigieron capítulos que no se abrían en la pantalla de lectura en algunas versiones de la Biblia — como Génesis 35 y 40 — y versículos que faltaban al final de otros, como Génesis 41. Los capítulos afectados se descargan de nuevo automáticamente."
+  ],
   "2.8.4": [
     "En la pantalla del Pro, el botón de suscribirse ahora es más corto y muestra el precio completo del plan elegido, sin cortarlo en pantallas pequeñas.",
     "En Android, se corrigió un problema que en casos raros podía cerrar la app sola al pasar entre pantallas que leen tus datos guardados — por ejemplo, al aplicar resaltados a versículos uno tras otro en la pantalla de lectura."
