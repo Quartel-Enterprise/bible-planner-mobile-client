@@ -1,6 +1,7 @@
 {
   "2.8.5": [
-    "Corrigidos capítulos que não abriam na tela de leitura em algumas versões da Bíblia — como Gênesis 35 e 40 — e versículos que faltavam no fim de outros, como Gênesis 41. Os capítulos afetados são baixados de novo automaticamente."
+    "Corrigidos capítulos que não abriam na tela de leitura em algumas versões da Bíblia — como Gênesis 35 e 40 — e versículos que faltavam no fim de outros, como Gênesis 41. Os capítulos afetados são baixados de novo automaticamente.",
+    "No iPhone e no iPad, corrigido um problema que podia fechar o app sozinho na tela de leitura ao selecionar versículos ou limpar a seleção."
   ],
   "2.8.4": [
     "Na tela do Pro, o botão de assinar ficou mais curto e agora mostra o preço do plano escolhido por inteiro, sem cortar em aparelhos com tela pequena.",

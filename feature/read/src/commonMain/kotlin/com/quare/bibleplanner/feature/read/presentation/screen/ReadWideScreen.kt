@@ -45,6 +45,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterCo
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterShimmerContent
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import com.quare.bibleplanner.ui.utils.asStable
 import org.jetbrains.compose.resources.stringResource
 
 private val readingColumnMaxWidth = 640.dp
@@ -82,7 +83,7 @@ internal fun ReadWideScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars),
+            .windowInsetsPadding(WindowInsets.systemBars.asStable()),
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.weight(1f)) {

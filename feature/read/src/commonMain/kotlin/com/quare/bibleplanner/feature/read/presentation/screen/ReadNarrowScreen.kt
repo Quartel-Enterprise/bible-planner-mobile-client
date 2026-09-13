@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -44,6 +45,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadi
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterShimmerContent
 import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
+import com.quare.bibleplanner.ui.utils.asStable
 
 private const val TITLE_VISIBLE_ITEM_INDEX = 1
 private const val LINE_HEIGHT_RATIO = 1.75f
@@ -118,6 +120,7 @@ internal fun ReadNarrowScreen(
                     )
                 }
             },
+            contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
         ) { paddingValues ->
             contentTopOffset = paddingValues.calculateTopPadding()
         /*
@@ -131,7 +134,7 @@ internal fun ReadNarrowScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .consumeWindowInsets(paddingValues)
-                    .windowInsetsPadding(WindowInsets.systemBars),
+                    .windowInsetsPadding(WindowInsets.systemBars.asStable()),
             ) {
                 when (val content = state.content) {
                     ReadContentUiState.Loading -> ReadLoadingContent(Modifier.fillMaxSize())
