@@ -19,12 +19,15 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseNoteDao
 import com.quare.bibleplanner.core.provider.room.db.AppDatabase
 import com.quare.bibleplanner.core.provider.room.invalidation.RoomTableInvalidationObserver
 import com.quare.bibleplanner.core.provider.room.invalidation.TableInvalidationObserver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import org.koin.dsl.module
 
 val roomModule = module {
     single<AppDatabase> {
         val builder: RoomDatabase.Builder<AppDatabase> = get()
         builder
+            .setQueryCoroutineContext(Dispatchers.IO)
             .fallbackToDestructiveMigration(true)
             .build()
     }
