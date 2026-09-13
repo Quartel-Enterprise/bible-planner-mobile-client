@@ -18,7 +18,7 @@ import androidx.sqlite.execSQL
  * and every version that had them goes from DONE back to IN_PROGRESS — as [Migration8To9Spec] does for
  * John — so the launch-time download fetches the chapter again, this time keeping every verse.
  */
-class Migration16To17Spec(
+class Migration16To18Spec(
     private val corrections: List<VerseCountCorrection> = VERSE_COUNT_CORRECTIONS,
 ) : AutoMigrationSpec {
     override suspend fun onPostMigrate(connection: SQLiteConnection) {

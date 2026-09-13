@@ -69,7 +69,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         VerseNoteVerseEntity::class,
         HighlightPaletteColorEntity::class,
     ],
-    version = 17,
+    version = 18,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
@@ -82,7 +82,9 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
         AutoMigration(from = 15, to = 16),
-        AutoMigration(from = 16, to = 17, spec = Migration16To17Spec::class),
+        // 17 is skipped on purpose: schemas/17.json is a development-only schema that never shipped, and a
+        // device still on it must fall back to a fresh database instead of passing for this one.
+        AutoMigration(from = 16, to = 18, spec = Migration16To18Spec::class),
     ],
     exportSchema = true,
 )

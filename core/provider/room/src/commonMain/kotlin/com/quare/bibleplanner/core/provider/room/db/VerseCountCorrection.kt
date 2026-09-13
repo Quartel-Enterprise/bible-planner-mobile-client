@@ -2,7 +2,7 @@ package com.quare.bibleplanner.core.provider.room.db
 
 import com.quare.bibleplanner.core.model.book.BookId
 
-/** A chapter whose verse rows have to number exactly [verses] — see [Migration16To17Spec]. */
+/** A chapter whose verse rows have to number exactly [verses] — see [Migration16To18Spec]. */
 data class VerseCountCorrection(
     val bookId: BookId,
     val chapter: Int,

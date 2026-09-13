@@ -10,8 +10,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-internal class Migration16To17SpecTest {
-    private lateinit var spec: Migration16To17Spec
+internal class Migration16To18SpecTest {
+    private lateinit var spec: Migration16To18Spec
     private lateinit var connection: SQLiteConnection
 
     @BeforeTest
@@ -161,7 +161,7 @@ internal class Migration16To17SpecTest {
     }
 
     private fun prepareScenario() {
-        spec = Migration16To17Spec(
+        spec = Migration16To18Spec(
             corrections = listOf(
                 VerseCountCorrection(bookId = BookId.GEN, chapter = SHRINKING_CHAPTER, verses = 2),
                 VerseCountCorrection(bookId = BookId.GEN, chapter = GROWING_CHAPTER, verses = 4),
