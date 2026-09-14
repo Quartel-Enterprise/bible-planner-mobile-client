@@ -2,8 +2,10 @@ package com.quare.bibleplanner.feature.main.presentation
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -35,6 +37,7 @@ import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenView
 import com.quare.bibleplanner.feature.profile.presentation.profile
 import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.ui.utils.ActionCollector
+import com.quare.bibleplanner.ui.utils.isNativeNavigationBar
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -84,6 +87,7 @@ private fun MainRootContent(
                     navigationBar = { modifier ->
                         MainNavigationBar(
                             modifier = modifier,
+                            isNativeBarVisible = !isNativeNavigationBar || animatedContentScope.transition.isSettled(),
                             selectedRoute = tabState.selectedTab,
                             mainNavigationModels = mainNavigationModels,
                             language = language,
@@ -140,3 +144,6 @@ private fun EntryProviderScope<NavKey>.toMainEntries(
 private fun createTabTransitionSpec(): ContentTransform =
     fadeIn(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS)) togetherWith
         fadeOut(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS))
+
+private fun Transition<EnterExitState>.isSettled(): Boolean =
+    currentState == EnterExitState.Visible && targetState == EnterExitState.Visible

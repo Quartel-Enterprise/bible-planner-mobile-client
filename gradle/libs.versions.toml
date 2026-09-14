@@ -44,6 +44,8 @@ compose-materialIconsExtended = "1.7.3"
 compose-shimmer = "1.5.0"
 
 # Third party
+# calf-ui transitively upgrades compose-material3 to 1.12.0-alpha03
+calf = "0.14.0"
 coil = "3.6.2"
 crashkios = "0.9.0"
 filekit = "0.16.0"
@@ -148,6 +150,9 @@ play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", versi
 play-review = { module = "com.google.android.play:review", version.ref = "play-review" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
 play-services-time = { module = "com.google.android.gms:play-services-time", version.ref = "play-services-time" }
+
+# Calf
+calf-ui = { module = "com.mohamedrejeb.calf:calf-ui", version.ref = "calf" }
 
 # Coil
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }

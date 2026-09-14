@@ -106,7 +106,7 @@ private fun NarrowTabScaffold(
     floatingActionButton: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+    val scrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior(canScroll = { !isNativeNavigationBar })
     val navigationBarInsets = WindowInsets.navigationBars
     val density = LocalDensity.current
     var fabAreaHeight by remember { mutableStateOf(0.dp) }

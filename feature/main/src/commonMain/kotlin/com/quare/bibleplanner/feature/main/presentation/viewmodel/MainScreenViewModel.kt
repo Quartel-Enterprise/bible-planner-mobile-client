@@ -9,6 +9,7 @@ import bibleplanner.feature.main.generated.resources.Res
 import bibleplanner.feature.main.generated.resources.books
 import bibleplanner.feature.main.generated.resources.plans
 import bibleplanner.feature.main.generated.resources.profile
+import com.mohamedrejeb.calf.sf.symbols.SFSymbol
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
 import com.quare.bibleplanner.core.profile.domain.model.UserProfile
@@ -17,6 +18,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationIcon
+import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationIosIcon
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemPresentationModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
@@ -83,11 +85,19 @@ class MainScreenViewModel(
             MainNavRouteDestination.Plans -> MainNavigationItemPresentationModel(
                 title = Res.string.plans,
                 icon = MainNavigationIcon.Vector(Icons.Default.DateRange),
+                iosIcon = MainNavigationIosIcon(
+                    symbolName = SFSymbol.calendar,
+                    selectedSymbolName = SFSymbol.calendar,
+                ),
             )
 
             MainNavRouteDestination.Books -> MainNavigationItemPresentationModel(
                 title = Res.string.books,
                 icon = MainNavigationIcon.Vector(Icons.AutoMirrored.Filled.MenuBook),
+                iosIcon = MainNavigationIosIcon(
+                    symbolName = SFSymbol.book,
+                    selectedSymbolName = SFSymbol.bookFill,
+                ),
             )
 
             MainNavRouteDestination.Profile -> MainNavigationItemPresentationModel(
@@ -95,6 +105,10 @@ class MainScreenViewModel(
                 icon = MainNavigationIcon.Profile(
                     avatar = userProfile?.avatar ?: AvatarSource.None,
                     displayName = userProfile?.displayName,
+                ),
+                iosIcon = MainNavigationIosIcon(
+                    symbolName = SFSymbol.personCropCircle,
+                    selectedSymbolName = SFSymbol.personCropCircleFill,
                 ),
             )
         },

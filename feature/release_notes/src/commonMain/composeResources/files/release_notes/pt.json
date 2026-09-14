@@ -1,4 +1,7 @@
 {
+  "2.9.0": [
+    "No iPhone, a barra inferior com as abas Planos, Livros e Perfil agora é a barra de abas do próprio sistema — com o novo visual Liquid Glass no iOS 26 —, segue o tema claro ou escuro do app, e a aba Perfil mostra a sua foto quando você está conectado."
+  ],
   "2.8.5": [
     "Corrigidos capítulos que não abriam na tela de leitura em algumas versões da Bíblia — como Gênesis 35 e 40 — e versículos que faltavam no fim de outros, como Gênesis 41. Os capítulos afetados são baixados de novo automaticamente.",
     "No iPhone e no iPad, corrigido um problema que podia fechar o app sozinho na tela de leitura ao selecionar versículos ou limpar a seleção.",
