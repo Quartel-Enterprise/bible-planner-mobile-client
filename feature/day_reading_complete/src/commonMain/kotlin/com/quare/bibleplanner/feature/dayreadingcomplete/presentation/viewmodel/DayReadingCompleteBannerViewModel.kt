@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -60,11 +59,11 @@ class DayReadingCompleteBannerViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayReadingCompleteBannerUiEvent>(trackEvent) {
-    private val _uiState = MutableStateFlow<DayReadingCompleteUiState>(DayReadingCompleteUiState.Loading)
-    val uiState: StateFlow<DayReadingCompleteUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DayReadingCompleteUiState>
+        field = MutableStateFlow<DayReadingCompleteUiState>(DayReadingCompleteUiState.Loading)
 
-    private val _uiAction = MutableSharedFlow<DayReadingCompleteBannerUiAction>(extraBufferCapacity = 1)
-    val uiAction: SharedFlow<DayReadingCompleteBannerUiAction> = _uiAction
+    val uiAction: SharedFlow<DayReadingCompleteBannerUiAction>
+        field = MutableSharedFlow<DayReadingCompleteBannerUiAction>(extraBufferCapacity = 1)
 
     private var passages: List<PassageModel> = emptyList()
     private var hasTrackedShown = false
@@ -92,7 +91,7 @@ class DayReadingCompleteBannerViewModel(
             val timing = classifyDayTiming(scheduledDay.plannedReadDate)
             val chapterCount = scheduledDay.passages.sumOf { it.chapters.size }
             val language = getAppLanguageFlow().first()
-            _uiState.update {
+            uiState.update {
                 DayReadingCompleteUiState.Loaded(
                     timing = timing,
                     plannedReadDate = scheduledDay.plannedReadDate,
@@ -128,7 +127,7 @@ class DayReadingCompleteBannerViewModel(
         chapterCount: Int,
     ) {
         val ctaState = resolveStudyCtaState(isPro, quota)
-        _uiState.update { state ->
+        uiState.update { state ->
             (state as? DayReadingCompleteUiState.Loaded)
                 ?.copy(ctaState = Loadable.Loaded(ctaState))
                 ?: state
@@ -161,7 +160,7 @@ class DayReadingCompleteBannerViewModel(
     }
 
     private fun onCtaClick(readingLabel: String) {
-        val ctaState = (_uiState.value as? DayReadingCompleteUiState.Loaded)
+        val ctaState = (uiState.value as? DayReadingCompleteUiState.Loaded)
             ?.ctaState
             ?.valueOrNull()
             ?: return
@@ -212,7 +211,7 @@ class DayReadingCompleteBannerViewModel(
     )
 
     private fun emitAction(action: DayReadingCompleteBannerUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 
     private companion object {

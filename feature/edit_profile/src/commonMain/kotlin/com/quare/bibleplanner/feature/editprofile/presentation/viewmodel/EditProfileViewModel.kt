@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 internal class EditProfileViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<EditProfileUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<EditProfileUiAction>()
-    val uiAction: SharedFlow<EditProfileUiAction> = _uiAction
+    val uiAction: SharedFlow<EditProfileUiAction>
+        field = MutableSharedFlow<EditProfileUiAction>()
 
     override fun handleEvent(event: EditProfileUiEvent) {
         when (event) {
@@ -26,6 +26,6 @@ internal class EditProfileViewModel(
     }
 
     private fun replaceWith(route: NavRoute) {
-        viewModelScope.launch { _uiAction.emit(EditProfileUiAction(route)) }
+        viewModelScope.launch { uiAction.emit(EditProfileUiAction(route)) }
     }
 }

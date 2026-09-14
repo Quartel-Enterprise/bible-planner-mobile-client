@@ -10,7 +10,6 @@ import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AndroidColorSchemeViewModel(
@@ -18,14 +17,14 @@ class AndroidColorSchemeViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AndroidColorSchemeUiEvent>(trackEvent) {
-    private val _uiState = MutableStateFlow(false)
-    val uiState: StateFlow<Boolean> = _uiState.asStateFlow()
+    val uiState: StateFlow<Boolean>
+        field = MutableStateFlow(false)
 
     init {
         observe(
             flow = useCases.getIsDynamicColorsEnabledFlow(),
             collector = {
-                _uiState.value = it.orFalse()
+                uiState.value = it.orFalse()
             },
         )
     }

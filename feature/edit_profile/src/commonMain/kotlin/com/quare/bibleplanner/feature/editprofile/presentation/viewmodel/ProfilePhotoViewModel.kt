@@ -38,8 +38,8 @@ internal class ProfilePhotoViewModel(
     platform: Platform,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfilePhotoUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<ProfilePhotoUiAction>()
-    val uiAction: SharedFlow<ProfilePhotoUiAction> = _uiAction
+    val uiAction: SharedFlow<ProfilePhotoUiAction>
+        field = MutableSharedFlow<ProfilePhotoUiAction>()
 
     private val isCameraAvailable: Boolean = platform !is Platform.Desktop
 
@@ -77,7 +77,7 @@ internal class ProfilePhotoViewModel(
                 showSnackbar(Res.string.edit_profile_photo_too_large)
                 return@launch
             }
-            _uiAction.emit(ProfilePhotoUiAction.OpenCrop(CropPhotoNavRoute(file)))
+            uiAction.emit(ProfilePhotoUiAction.OpenCrop(CropPhotoNavRoute(file)))
         }
     }
 
@@ -96,16 +96,16 @@ internal class ProfilePhotoViewModel(
     }
 
     private suspend fun finishWith(message: StringResource) {
-        _uiAction.emit(ProfilePhotoUiAction.PhotoChanged)
-        _uiAction.emit(ProfilePhotoUiAction.ShowSnackbar(message))
+        uiAction.emit(ProfilePhotoUiAction.PhotoChanged)
+        uiAction.emit(ProfilePhotoUiAction.ShowSnackbar(message))
     }
 
     private suspend fun showSnackbar(message: StringResource) {
-        _uiAction.emit(ProfilePhotoUiAction.ShowSnackbar(message))
+        uiAction.emit(ProfilePhotoUiAction.ShowSnackbar(message))
     }
 
     private fun emit(action: ProfilePhotoUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 
     private fun createInitialState(): ProfilePhotoUiState = ProfilePhotoUiState(

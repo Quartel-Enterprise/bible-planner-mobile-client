@@ -18,7 +18,6 @@ import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -33,9 +32,8 @@ internal class EditPlanStartDateViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<EditPlanStartDateUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<EditPlanStartDateUiState> =
-        MutableStateFlow(EditPlanStartDateUiState.Loading)
-    val uiState: StateFlow<EditPlanStartDateUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<EditPlanStartDateUiState>
+        field = MutableStateFlow<EditPlanStartDateUiState>(EditPlanStartDateUiState.Loading)
 
     init {
         loadInitialState()
@@ -48,7 +46,7 @@ internal class EditPlanStartDateViewModel(
                     currentTimestampProvider.getCurrentTimestamp(),
                 ).toLocalDate()
                 .toTimestampUTC()
-            _uiState.update {
+            uiState.update {
                 EditPlanStartDateUiState.Loaded(
                     initialTimestamp = initialTimestamp,
                 )

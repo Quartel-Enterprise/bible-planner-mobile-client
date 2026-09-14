@@ -42,8 +42,8 @@ internal class StudySuggestionViewModel(
             initialValue = uiStateFactory.createInitialState(),
         )
 
-    private val _uiAction = MutableSharedFlow<StudySuggestionUiAction>()
-    val uiAction: SharedFlow<StudySuggestionUiAction> = _uiAction
+    val uiAction: SharedFlow<StudySuggestionUiAction>
+        field = MutableSharedFlow<StudySuggestionUiAction>()
 
     override fun handleEvent(event: StudySuggestionUiEvent) {
         when (event) {
@@ -73,7 +73,7 @@ internal class StudySuggestionViewModel(
             } else {
                 Res.string.study_suggestion_disabled_message
             }
-            _uiAction.emit(StudySuggestionUiAction.ShowSnackbar(message))
+            uiAction.emit(StudySuggestionUiAction.ShowSnackbar(message))
         }
     }
 
@@ -91,7 +91,7 @@ internal class StudySuggestionViewModel(
 
     private fun showSnackbar(message: StringResource) {
         viewModelScope.launch {
-            _uiAction.emit(StudySuggestionUiAction.ShowSnackbar(message))
+            uiAction.emit(StudySuggestionUiAction.ShowSnackbar(message))
         }
     }
 

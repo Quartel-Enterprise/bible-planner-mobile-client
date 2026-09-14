@@ -42,7 +42,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -65,36 +64,36 @@ internal class ChatViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ChatUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<ChatUiState> = MutableStateFlow(
-        ChatUiState(
-            contextLabel = null,
-            messages = emptyList(),
-            pendingQuestion = null,
-            suggestions = emptyList(),
-            isSuggestionBarExpanded = false,
-            input = "",
-            inputMode = ChatInputMode.ENABLED,
-            cooldownSeconds = 0,
-            quota = null,
-            isThinking = false,
-            isAnswering = false,
-            failure = null,
-            history = ChatHistoryUiState(
-                isOpen = false,
-                query = "",
-                groups = emptyList(),
-                hasConversations = false,
-                expandedActionsId = null,
-                renamingId = null,
-                renameDraft = "",
-                deletingId = null,
+    val uiState: StateFlow<ChatUiState>
+        field = MutableStateFlow<ChatUiState>(
+            ChatUiState(
+                contextLabel = null,
+                messages = emptyList(),
+                pendingQuestion = null,
+                suggestions = emptyList(),
+                isSuggestionBarExpanded = false,
+                input = "",
+                inputMode = ChatInputMode.ENABLED,
+                cooldownSeconds = 0,
+                quota = null,
+                isThinking = false,
+                isAnswering = false,
+                failure = null,
+                history = ChatHistoryUiState(
+                    isOpen = false,
+                    query = "",
+                    groups = emptyList(),
+                    hasConversations = false,
+                    expandedActionsId = null,
+                    renamingId = null,
+                    renameDraft = "",
+                    deletingId = null,
+                ),
             ),
-        ),
-    )
-    val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
+        )
 
-    private val _uiAction: MutableSharedFlow<ChatUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<ChatUiAction> = _uiAction
+    val uiAction: SharedFlow<ChatUiAction>
+        field = MutableSharedFlow<ChatUiAction>()
 
     private val cooldownTick: Duration = 1.seconds
     private val draftDebounceDelay: Duration = 2.seconds
@@ -143,11 +142,11 @@ internal class ChatViewModel(
         when (event) {
             is ChatUiEvent.OnInputChanged -> onInputChanged(event.text)
 
-            ChatUiEvent.OnSendClick -> send(_uiState.value.input)
+            ChatUiEvent.OnSendClick -> send(uiState.value.input)
 
             is ChatUiEvent.OnSuggestionClick -> onSuggestionClick(event.suggestion)
 
-            ChatUiEvent.OnSuggestionBarToggle -> _uiState.update {
+            ChatUiEvent.OnSuggestionBarToggle -> uiState.update {
                 it.copy(isSuggestionBarExpanded = !it.isSuggestionBarExpanded)
             }
 
@@ -204,7 +203,7 @@ internal class ChatViewModel(
     }
 
     private fun onInputChanged(text: String) {
-        _uiState.update { it.copy(input = text) }
+        uiState.update { it.copy(input = text) }
         val draft = PendingDraftModel(
             threadKey = currentThreadKey.value,
             content = text,
@@ -227,14 +226,14 @@ internal class ChatViewModel(
     }
 
     private fun onDraftChanged(draft: String) {
-        val input = _uiState.value.input
+        val input = uiState.value.input
         if (input == draft) {
             lastAppliedDraft = draft
             return
         }
         if (input.isNotEmpty() && input != lastAppliedDraft) return
         lastAppliedDraft = draft
-        _uiState.update { it.copy(input = draft) }
+        uiState.update { it.copy(input = draft) }
     }
 
     private fun clearDraft() {
@@ -253,10 +252,10 @@ internal class ChatViewModel(
             dayContext = loaded
             context = loaded
             refreshThreadKey()
-            _uiState.update { it.copy(contextLabel = loaded?.label) }
+            uiState.update { it.copy(contextLabel = loaded?.label) }
             val studyQuestions = loaded?.let { useCases.getSuggestions(it.passages) }.orEmpty()
             val suggestions = (studyQuestions + getDefaultSuggestions(hasReadingContext = loaded != null)).distinct()
-            _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
+            uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
             claimDayThread()
         }
     }
@@ -266,14 +265,14 @@ internal class ChatViewModel(
         viewModelScope.launch {
             val studyQuestions = useCases.getSuggestions(reading.passages)
             val suggestions = (studyQuestions + getDefaultSuggestions(hasReadingContext = true)).distinct()
-            _uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
+            uiState.update { state -> state.copy(suggestions = suggestions - usedSuggestions) }
         }
     }
 
     private fun loadDefaultSuggestions() {
         viewModelScope.launch {
             val suggestions = getDefaultSuggestions(hasReadingContext = false)
-            _uiState.update { state -> state.copy(suggestions = suggestions) }
+            uiState.update { state -> state.copy(suggestions = suggestions) }
         }
     }
 
@@ -311,7 +310,7 @@ internal class ChatViewModel(
     private fun applyMessages(messages: List<ChatMessageModel>) {
         threadMessages = messages
         val isAwaitingAnswer = messages.isAwaitingAnswer()
-        _uiState.update { state ->
+        uiState.update { state ->
             state.copy(
                 messages = messageUiMapper.map(messages),
                 isThinking = state.isThinkingWith(
@@ -358,7 +357,7 @@ internal class ChatViewModel(
             while (threadMessages.isAwaitingAnswer()) {
                 delay(answerWaitRecheck)
             }
-            _uiState.update { state ->
+            uiState.update { state ->
                 state.copy(
                     isThinking = state.isThinkingWith(
                         messages = threadMessages,
@@ -376,7 +375,7 @@ internal class ChatViewModel(
     }
 
     private fun onQuotaChanged(quota: ChatQuotaModel?) {
-        _uiState.update { state ->
+        uiState.update { state ->
             state.copy(
                 quota = quota
                     ?.takeIf { !it.isPro }
@@ -401,8 +400,8 @@ internal class ChatViewModel(
             if (activeConversationId.value == null) activeConversationId.value = conversationId
         }
         val pending = send?.takeIf { !it.isAccepted && it.failure == null }?.request?.message
-        val hadPendingQuestion = _uiState.value.pendingQuestion != null
-        _uiState.update { state ->
+        val hadPendingQuestion = uiState.value.pendingQuestion != null
+        uiState.update { state ->
             state.copy(
                 pendingQuestion = pending,
                 isThinking = state.isThinking || pending != null,
@@ -415,7 +414,7 @@ internal class ChatViewModel(
         if (pending != null && !hadPendingQuestion) emitAction(ChatUiAction.ScrollToBottom)
         when (val failure = send?.failure) {
             is ChatSendFailureModel.RateLimited -> startCooldown(failure.retryAfterSeconds)
-            ChatSendFailureModel.LimitReached -> _uiState.update { it.copy(inputMode = ChatInputMode.LOCKED) }
+            ChatSendFailureModel.LimitReached -> uiState.update { it.copy(inputMode = ChatInputMode.LOCKED) }
             ChatSendFailureModel.ConversationGone, ChatSendFailureModel.Generic, null -> Unit
         }
     }
@@ -431,7 +430,7 @@ internal class ChatViewModel(
         )
         if (!send(suggestion)) return
         usedSuggestions = usedSuggestions + suggestion
-        _uiState.update { state -> state.copy(suggestions = state.suggestions - suggestion) }
+        uiState.update { state -> state.copy(suggestions = state.suggestions - suggestion) }
     }
 
     private fun send(message: String): Boolean {
@@ -441,8 +440,8 @@ internal class ChatViewModel(
             navigator.navigate(LoginWarningNavRoute(LoginWarningReason.AiChat.key))
             return false
         }
-        if (_uiState.value.inputMode != ChatInputMode.ENABLED) return false
-        if (_uiState.value.isAnswering) return false
+        if (uiState.value.inputMode != ChatInputMode.ENABLED) return false
+        if (uiState.value.isAnswering) return false
         val conversationId = activeConversationId.value
         trackEvent(
             name = AnalyticsEventNames.AI_CHAT_MESSAGE_SENT,
@@ -451,7 +450,7 @@ internal class ChatViewModel(
                 AnalyticsParams.IS_NEW_CONVERSATION to (conversationId == null),
             ),
         )
-        _uiState.update {
+        uiState.update {
             it.copy(
                 input = "",
                 failure = null,
@@ -471,7 +470,7 @@ internal class ChatViewModel(
     }
 
     private fun onRetryClick() {
-        _uiState.update { it.copy(failure = null) }
+        uiState.update { it.copy(failure = null) }
         if (coordinator.send.value?.failure != null) {
             coordinator.retry()
             return
@@ -482,18 +481,18 @@ internal class ChatViewModel(
     private fun startCooldown(seconds: Int) {
         cooldownJob?.cancel()
         cooldownJob = viewModelScope.launch {
-            _uiState.update {
+            uiState.update {
                 it.copy(
                     inputMode = ChatInputMode.COOLDOWN,
                     cooldownSeconds = seconds,
                 )
             }
-            while (_uiState.value.cooldownSeconds > 0) {
+            while (uiState.value.cooldownSeconds > 0) {
                 delay(cooldownTick)
-                _uiState.update { it.copy(cooldownSeconds = it.cooldownSeconds - 1) }
+                uiState.update { it.copy(cooldownSeconds = it.cooldownSeconds - 1) }
             }
             coordinator.clearFailure()
-            _uiState.update {
+            uiState.update {
                 it.copy(
                     inputMode = ChatInputMode.ENABLED,
                     failure = null,
@@ -522,7 +521,7 @@ internal class ChatViewModel(
         isDayThreadClaimed = true
         context = null
         refreshThreadKey()
-        _uiState.update { state ->
+        uiState.update { state ->
             state.copy(
                 contextLabel = null,
                 input = "",
@@ -553,7 +552,7 @@ internal class ChatViewModel(
         val conversation = conversations.firstOrNull { it.id == conversationId }
         activeConversationId.value = conversationId
         refreshThreadKey()
-        _uiState.update { state ->
+        uiState.update { state ->
             state.copy(
                 contextLabel = conversation?.contextLabel,
                 failure = null,
@@ -588,7 +587,7 @@ internal class ChatViewModel(
     }
 
     private fun onRenameConfirm() {
-        val history = _uiState.value.history
+        val history = uiState.value.history
         val conversationId = history.renamingId ?: return
         val title = history.renameDraft.trim()
         updateHistory {
@@ -608,7 +607,7 @@ internal class ChatViewModel(
     }
 
     private fun onDeleteConfirm() {
-        val conversationId = _uiState.value.history.deletingId ?: return
+        val conversationId = uiState.value.history.deletingId ?: return
         updateHistory {
             it.copy(
                 deletingId = null,
@@ -638,11 +637,11 @@ internal class ChatViewModel(
     }
 
     private fun updateHistory(transform: (ChatHistoryUiState) -> ChatHistoryUiState) {
-        _uiState.update { state -> state.copy(history = transform(state.history)) }
+        uiState.update { state -> state.copy(history = transform(state.history)) }
     }
 
     private fun emitAction(action: ChatUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 
     private companion object {

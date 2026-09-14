@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.StateFlow
  * behave consistently enough for the reader to react to.
  */
 internal class FakeVerseSelectionStore {
-    private val _selection = MutableStateFlow<VerseSelection?>(null)
-    val selection: StateFlow<VerseSelection?> = _selection
+    val selection: StateFlow<VerseSelection?>
+        field = MutableStateFlow<VerseSelection?>(null)
 
     fun toggle(
         chapter: ChapterRef,
         verseNumber: Int,
     ): VerseSelection? {
-        val previousNumbers = _selection.value
+        val previousNumbers = selection.value
             ?.takeIf { it.chapter == chapter }
             ?.verseNumbers
             .orEmpty()
@@ -27,7 +27,7 @@ internal class FakeVerseSelectionStore {
         } else {
             (previousNumbers + verseNumber).sorted()
         }
-        _selection.value = verseNumbers
+        selection.value = verseNumbers
             .takeIf { it.isNotEmpty() }
             ?.let {
                 VerseSelection(
@@ -35,10 +35,10 @@ internal class FakeVerseSelectionStore {
                     verseNumbers = it,
                 )
             }
-        return _selection.value
+        return selection.value
     }
 
     fun clear() {
-        _selection.value = null
+        selection.value = null
     }
 }

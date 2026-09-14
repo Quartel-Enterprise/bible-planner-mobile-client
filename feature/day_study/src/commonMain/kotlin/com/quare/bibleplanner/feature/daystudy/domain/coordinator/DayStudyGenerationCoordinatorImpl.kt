@@ -23,7 +23,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
@@ -43,21 +42,21 @@ class DayStudyGenerationCoordinatorImpl(
     private val isConnected: IsConnected,
     private val trackEvent: TrackEvent,
 ) : DayStudyGenerationCoordinator {
-    private val _jobs: MutableStateFlow<List<DayStudyGenerationJob>> = MutableStateFlow(emptyList())
-    override val jobs: StateFlow<List<DayStudyGenerationJob>> = _jobs.asStateFlow()
+    override val jobs: StateFlow<List<DayStudyGenerationJob>>
+        field = MutableStateFlow<List<DayStudyGenerationJob>>(emptyList())
 
     // The day currently on screen. Its own card/sheet already shows the state, so the global
     // floating card suppresses this key (only backgrounded days show there).
-    private val _activeKey: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val activeKey: StateFlow<String?> = _activeKey.asStateFlow()
+    override val activeKey: StateFlow<String?>
+        field = MutableStateFlow<String?>(null)
 
     // One-shot request (from the card's "Open") for the arriving day screen to open the study.
-    private val _pendingOpenKey: MutableStateFlow<String?> = MutableStateFlow(null)
-    override val pendingOpenKey: StateFlow<String?> = _pendingOpenKey.asStateFlow()
+    override val pendingOpenKey: StateFlow<String?>
+        field = MutableStateFlow<String?>(null)
 
     // Keys the user dismissed from the card. Generation keeps running (and caching) regardless.
-    private val _dismissedKeys: MutableStateFlow<Set<String>> = MutableStateFlow(emptySet())
-    override val dismissedKeys: StateFlow<Set<String>> = _dismissedKeys.asStateFlow()
+    override val dismissedKeys: StateFlow<Set<String>>
+        field = MutableStateFlow<Set<String>>(emptySet())
 
     private val connectivityPollInterval: Duration = 3.seconds
     private val generationStartMarks: MutableMap<String, TimeMark> = mutableMapOf()
@@ -77,7 +76,7 @@ class DayStudyGenerationCoordinatorImpl(
     ): String {
         val key = keyOf(dayRoute)
         if (isGenerating(key)) return key
-        _dismissedKeys.update { it - key }
+        dismissedKeys.update { it - key }
         generationStartMarks[key] = TimeSource.Monotonic.markNow()
         putJob(
             DayStudyGenerationJob(
@@ -202,46 +201,46 @@ class DayStudyGenerationCoordinatorImpl(
     }
 
     override fun setActive(key: String) {
-        _activeKey.value = key
+        activeKey.value = key
     }
 
     override fun clearActive(key: String) {
-        _activeKey.update { current -> current.takeIf { it != key } }
+        activeKey.update { current -> current.takeIf { it != key } }
     }
 
     override fun requestOpen(key: String) {
-        _pendingOpenKey.value = key
+        pendingOpenKey.value = key
     }
 
     override fun consumePendingOpen(key: String) {
-        _pendingOpenKey.update { current -> current.takeIf { it != key } }
+        pendingOpenKey.update { current -> current.takeIf { it != key } }
     }
 
     override fun dismissFromCard(key: String) {
-        _dismissedKeys.update { it + key }
+        dismissedKeys.update { it + key }
     }
 
     override fun acknowledge(key: String) {
-        _jobs.update { jobs -> jobs.filterNot { it.key == key } }
-        _dismissedKeys.update { it - key }
+        jobs.update { currentJobs -> currentJobs.filterNot { it.key == key } }
+        dismissedKeys.update { it - key }
     }
 
-    override fun getGeneratingCount(excludingKey: String?): Int = _jobs.value.count { job ->
+    override fun getGeneratingCount(excludingKey: String?): Int = jobs.value.count { job ->
         job.key != excludingKey && job.status == DayStudyGenerationStatus.Generating
     }
 
     private fun isGenerating(key: String): Boolean =
-        _jobs.value.any { it.key == key && it.status == DayStudyGenerationStatus.Generating }
+        jobs.value.any { it.key == key && it.status == DayStudyGenerationStatus.Generating }
 
     private fun putJob(job: DayStudyGenerationJob) {
-        _jobs.update { jobs -> jobs.filterNot { it.key == job.key } + job }
+        jobs.update { currentJobs -> currentJobs.filterNot { it.key == job.key } + job }
     }
 
     private fun updateJob(
         key: String,
         transform: (DayStudyGenerationJob) -> DayStudyGenerationJob,
     ) {
-        _jobs.update { jobs -> jobs.map { job -> if (job.key == key) transform(job) else job } }
+        jobs.update { currentJobs -> currentJobs.map { job -> if (job.key == key) transform(job) else job } }
     }
 
     private fun recordPhaseEntry(

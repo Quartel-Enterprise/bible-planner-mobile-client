@@ -42,8 +42,8 @@ class BookDetailsViewModel(
 ) : TrackedViewModel<BookDetailsUiEvent>(trackEvent) {
     private val bookId = BookId.valueOf(route.bookId)
 
-    private val _uiState = MutableStateFlow<BookDetailsUiState>(BookDetailsUiState.Loading)
-    val uiState: StateFlow<BookDetailsUiState> = _uiState
+    val uiState: StateFlow<BookDetailsUiState>
+        field = MutableStateFlow<BookDetailsUiState>(BookDetailsUiState.Loading)
 
     private val successState get() = uiState.value as? BookDetailsUiState.Success
 
@@ -62,7 +62,7 @@ class BookDetailsViewModel(
             val bookGroup = bookGroupMapper.fromBookId(book.id)
             val bookCategoryName = getString(bookGroup.titleRes)
 
-            _uiState.update { currentState ->
+            uiState.update { currentState ->
                 val isSynopsisExpanded = (currentState as? BookDetailsUiState.Success)?.isSynopsisExpanded ?: false
                 BookDetailsUiState.Success(
                     id = book.id,
@@ -114,7 +114,7 @@ class BookDetailsViewModel(
             BookDetailsUiEvent.OnToggleSynopsisExpanded -> {
                 successState?.let {
                     val isExpanded = !it.isSynopsisExpanded
-                    _uiState.update { currentState ->
+                    uiState.update { currentState ->
                         (currentState as? BookDetailsUiState.Success)?.copy(
                             isSynopsisExpanded = isExpanded,
                         ) ?: currentState

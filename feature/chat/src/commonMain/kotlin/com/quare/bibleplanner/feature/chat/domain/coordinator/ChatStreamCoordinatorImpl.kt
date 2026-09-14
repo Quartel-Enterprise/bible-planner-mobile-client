@@ -14,7 +14,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -23,14 +22,14 @@ class ChatStreamCoordinatorImpl(
     private val sendChatMessage: SendChatMessageUseCase,
     private val trackEvent: TrackEvent,
 ) : ChatStreamCoordinator {
-    private val _send: MutableStateFlow<ChatSendModel?> = MutableStateFlow(null)
-    override val send: StateFlow<ChatSendModel?> = _send.asStateFlow()
+    override val send: StateFlow<ChatSendModel?>
+        field = MutableStateFlow<ChatSendModel?>(null)
 
     private var job: Job? = null
 
     override fun start(request: ChatSendRequestModel) {
         if (job?.isActive == true) return
-        _send.value = ChatSendModel(
+        send.value = ChatSendModel(
             request = request,
             conversationId = request.conversationId,
             isAccepted = false,
@@ -41,27 +40,27 @@ class ChatStreamCoordinatorImpl(
     }
 
     override fun retry() {
-        val request = _send.value?.request ?: return
+        val request = send.value?.request ?: return
         job?.cancel()
         job = null
         start(request)
     }
 
     override fun clearFailure() {
-        _send.update { current -> current?.copy(failure = null) }
+        send.update { current -> current?.copy(failure = null) }
     }
 
     private suspend fun stream(request: ChatSendRequestModel) {
         try {
             sendChatMessage(request).collect(::onEvent)
-            _send.value = null
+            send.value = null
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (throwable: Throwable) {
             val failure = sendChatMessage.mapFailure(throwable)
             if (failure == ChatSendFailureModel.ConversationGone && request.conversationId != null) {
                 val newConversationRequest = request.copy(conversationId = null)
-                _send.update { current ->
+                send.update { current ->
                     current?.copy(
                         request = newConversationRequest,
                         conversationId = null,
@@ -76,7 +75,7 @@ class ChatStreamCoordinatorImpl(
 
     private fun onEvent(event: ChatSendEventModel) {
         when (event) {
-            is ChatSendEventModel.Accepted -> _send.update { current ->
+            is ChatSendEventModel.Accepted -> send.update { current ->
                 current?.copy(
                     conversationId = event.conversationId,
                     isAccepted = true,
@@ -93,7 +92,7 @@ class ChatStreamCoordinatorImpl(
         failure: ChatSendFailureModel,
     ) {
         Logger.e(throwable) { "Chat answer failed: $failure" }
-        _send.update { current ->
+        send.update { current ->
             current?.copy(
                 isStreaming = false,
                 failure = failure,

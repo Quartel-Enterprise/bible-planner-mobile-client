@@ -26,8 +26,8 @@ internal class DeleteHighlightColorViewModel(
 
     val color: HighlightColor? = HighlightColor.fromKey(colorKey)
 
-    private val _uiAction = MutableSharedFlow<DeleteHighlightColorUiAction>()
-    val uiAction: SharedFlow<DeleteHighlightColorUiAction> = _uiAction
+    val uiAction: SharedFlow<DeleteHighlightColorUiAction>
+        field = MutableSharedFlow<DeleteHighlightColorUiAction>()
 
     override fun handleEvent(event: DeleteHighlightColorUiEvent) {
         when (event) {
@@ -49,7 +49,7 @@ internal class DeleteHighlightColorViewModel(
                 colorKey = colorKey,
                 shouldKeepHighlights = shouldKeepHighlights,
             )
-            _uiAction.emit(
+            uiAction.emit(
                 DeleteHighlightColorUiAction.NotifyDeletion(
                     if (shouldKeepHighlights) {
                         Res.string.highlight_color_removed_kept

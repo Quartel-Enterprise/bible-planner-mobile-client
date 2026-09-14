@@ -78,11 +78,11 @@ class DayViewModel(
 
     private val route = savedStateHandle.toRoute<DayNavRoute>()
 
-    private val _uiState = MutableStateFlow<DayUiState>(DayUiState.Loading)
-    val uiState: StateFlow<DayUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DayUiState>
+        field = MutableStateFlow<DayUiState>(DayUiState.Loading)
 
-    private val _uiAction = MutableSharedFlow<DayUiAction>()
-    val uiAction: SharedFlow<DayUiAction> = _uiAction.asSharedFlow()
+    val uiAction: SharedFlow<DayUiAction>
+        field = MutableSharedFlow<DayUiAction>()
 
     init {
         observeSomething()
@@ -95,14 +95,21 @@ class DayViewModel(
 
     private fun observeSomething() {
         useCases.getSomethingFlow()
-            .onEach { data -> _uiState.value = DayUiState.Loaded(data) }
+            .onEach { data -> uiState.value = DayUiState.Loaded(data) }
             .launchIn(viewModelScope) // use observe() extension from ui/utils
     }
 
     private fun emitAction(action: DayUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 }
 ```
+
+Expose mutable state through an [explicit backing field](https://kotlinlang.org/docs/properties.html#explicit-backing-fields)
+instead of a `_uiState` backing property plus `asStateFlow()`: the public type stays read-only while the class itself
+smart-casts to the mutable one. Keep the type argument on the constructor (`MutableStateFlow<DayUiState>(...)`) — without
+it the field is inferred from the initial value (`MutableStateFlow<DayUiState.Loading>`) and later assignments stop
+compiling. The `bible-planner-style:explicit-backing-field` ktlint rule flags the old pattern. A `Channel` exposed through
+`receiveAsFlow()` is not a subtype of its public type, so it keeps a private backing property.
 
 Use the `observe()` extension from `ui/utils` instead of `.onEach { }.launchIn(viewModelScope)` when available.

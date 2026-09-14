@@ -20,12 +20,12 @@ internal class LoginSyncNudgeViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LoginSyncNudgeUiEvent>(trackEvent) {
-    private val _dontShowAgain: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val dontShowAgain: StateFlow<Boolean> = _dontShowAgain
+    val dontShowAgain: StateFlow<Boolean>
+        field = MutableStateFlow<Boolean>(false)
 
     override fun handleEvent(event: LoginSyncNudgeUiEvent) {
         when (event) {
-            is LoginSyncNudgeUiEvent.OnDontShowAgainToggled -> _dontShowAgain.update { event.isChecked }
+            is LoginSyncNudgeUiEvent.OnDontShowAgainToggled -> dontShowAgain.update { event.isChecked }
 
             LoginSyncNudgeUiEvent.OnLoginClick -> {
                 close(isLogin = true) {
@@ -45,7 +45,7 @@ internal class LoginSyncNudgeViewModel(
     ) {
         viewModelScope.launch {
             when {
-                _dontShowAgain.value -> {
+                dontShowAgain.value -> {
                     dismissLoginNudgePermanently()
                     trackEvent(
                         name = AnalyticsEventNames.LOGIN_NUDGE_DISABLED,

@@ -11,7 +11,6 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgr
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -22,13 +21,13 @@ internal class DayStudyBackgroundGenerationViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayStudyBackgroundGenerationUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<DayStudyBackgroundGenerationUiState> = MutableStateFlow(
-        DayStudyBackgroundGenerationUiState(
-            isVisible = false,
-            jobs = emptyList(),
-        ),
-    )
-    val uiState: StateFlow<DayStudyBackgroundGenerationUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DayStudyBackgroundGenerationUiState>
+        field = MutableStateFlow<DayStudyBackgroundGenerationUiState>(
+            DayStudyBackgroundGenerationUiState(
+                isVisible = false,
+                jobs = emptyList(),
+            ),
+        )
 
     init {
         observeVisibleJobs()
@@ -57,7 +56,7 @@ internal class DayStudyBackgroundGenerationViewModel(
     }
 
     private fun onVisibleJobsChanged(visibleJobs: List<DayStudyGenerationJob>) {
-        _uiState.update { state ->
+        uiState.update { state ->
             state.copy(
                 isVisible = visibleJobs.isNotEmpty(),
                 jobs = visibleJobs.ifEmpty { state.jobs },

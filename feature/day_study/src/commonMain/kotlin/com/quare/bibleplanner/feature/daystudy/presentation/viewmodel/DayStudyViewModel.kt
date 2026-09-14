@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -59,17 +58,17 @@ internal class DayStudyViewModel(
     private val cardUiModelFactory: DayStudyCardUiModelFactory,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayStudyUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<DayStudyUiState> = MutableStateFlow(
-        DayStudyUiState(
-            card = Loadable.Loading,
-            generation = null,
-            isOpeningStudy = false,
-        ),
-    )
-    val uiState: StateFlow<DayStudyUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DayStudyUiState>
+        field = MutableStateFlow<DayStudyUiState>(
+            DayStudyUiState(
+                card = Loadable.Loading,
+                generation = null,
+                isOpeningStudy = false,
+            ),
+        )
 
-    private val _uiAction: MutableSharedFlow<DayStudyUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<DayStudyUiAction> = _uiAction
+    val uiAction: SharedFlow<DayStudyUiAction>
+        field = MutableSharedFlow<DayStudyUiAction>()
 
     private var passages: List<PassageModel> = emptyList()
     private var dayRoute: DayNavRoute? = null
@@ -102,7 +101,7 @@ internal class DayStudyViewModel(
         generationCoordinator.setActive(key)
         if (routeChanged) {
             loadStartMark = TimeSource.Monotonic.markNow()
-            _uiState.update { it.copy(card = Loadable.Loading, generation = null, isOpeningStudy = false) }
+            uiState.update { it.copy(card = Loadable.Loading, generation = null, isOpeningStudy = false) }
         }
         observeCard()
         observeJob()
@@ -125,9 +124,9 @@ internal class DayStudyViewModel(
     }
 
     private suspend fun showCachedCard() {
-        if (_uiState.value.card !is Loadable.Loading) return
+        if (uiState.value.card !is Loadable.Loading) return
         if (!hasCachedStudy(passages)) return
-        _uiState.update { state ->
+        uiState.update { state ->
             state.copy(card = Loadable.Loaded(cardUiModelFactory.createFromCache(isPro = isPro)))
         }
         trackLoad(
@@ -150,9 +149,9 @@ internal class DayStudyViewModel(
 
     private suspend fun onJobUpdate(job: DayStudyGenerationJob?) {
         when (val status = job?.status) {
-            null -> _uiState.update { it.copy(generation = null) }
+            null -> uiState.update { it.copy(generation = null) }
 
-            DayStudyGenerationStatus.Generating -> _uiState.update {
+            DayStudyGenerationStatus.Generating -> uiState.update {
                 it.copy(generation = DayStudyGenerationUiModel(job.phase?.toPhaseIndex() ?: 0))
             }
 
@@ -168,7 +167,7 @@ internal class DayStudyViewModel(
     private suspend fun onJobDone() {
         jobKey ?: return
         refreshCard(isPro)
-        _uiState.update { it.copy(generation = null) }
+        uiState.update { it.copy(generation = null) }
     }
 
     private suspend fun onJobFailed(
@@ -176,15 +175,15 @@ internal class DayStudyViewModel(
         isOffline: Boolean,
     ) {
         jobKey ?: return
-        _uiState.update { it.copy(generation = null) }
+        uiState.update { it.copy(generation = null) }
         if (isLimitReached) lockCard()
-        if (isOffline) _uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
+        if (isOffline) uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
     }
 
     private suspend fun refreshCard(pro: Boolean) {
         suspendRunCatching { getDayStudyQuota(passages) }
             .onSuccess { quota ->
-                _uiState.update { state ->
+                uiState.update { state ->
                     state.copy(
                         card = Loadable.Loaded(
                             cardUiModelFactory.create(
@@ -234,7 +233,7 @@ internal class DayStudyViewModel(
     }
 
     private fun onCardClick() {
-        val card = _uiState.value.card.valueOrNull() ?: return
+        val card = uiState.value.card.valueOrNull() ?: return
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_CARD_CLICKED,
             params = mapOf(
@@ -246,7 +245,7 @@ internal class DayStudyViewModel(
                 AnalyticsParams.SOURCE to CARD_CLICK_SOURCE,
             ),
         )
-        if (_uiState.value.generation != null) {
+        if (uiState.value.generation != null) {
             emitAction(DayStudyUiAction.NavigateToStudy)
             return
         }
@@ -261,7 +260,7 @@ internal class DayStudyViewModel(
         viewModelScope.launch {
             withOpeningIndicator {
                 if (observeAuthenticatedUserId().first() == null) {
-                    _uiAction.emit(DayStudyUiAction.NavigateToLoginWarning)
+                    uiAction.emit(DayStudyUiAction.NavigateToLoginWarning)
                 } else {
                     startGeneration()
                 }
@@ -270,11 +269,11 @@ internal class DayStudyViewModel(
     }
 
     private suspend fun withOpeningIndicator(block: suspend () -> Unit) {
-        _uiState.update { it.copy(isOpeningStudy = true) }
+        uiState.update { it.copy(isOpeningStudy = true) }
         try {
             block()
         } finally {
-            _uiState.update { it.copy(isOpeningStudy = false) }
+            uiState.update { it.copy(isOpeningStudy = false) }
         }
     }
 
@@ -288,7 +287,7 @@ internal class DayStudyViewModel(
                     AnalyticsParams.IS_PRO to isPro,
                 ),
             )
-            _uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
+            uiAction.emit(DayStudyUiAction.ShowSnackBar(Res.string.ai_study_offline_message))
             return
         }
         val quota = getDayStudyQuota(passages)
@@ -301,15 +300,15 @@ internal class DayStudyViewModel(
             ),
         )
         jobKey = generationCoordinator.start(passages, route, label)
-        _uiState.update { it.copy(generation = DayStudyGenerationUiModel(currentPhaseIndex = 0)) }
-        _uiAction.emit(DayStudyUiAction.NavigateToStudy)
+        uiState.update { it.copy(generation = DayStudyGenerationUiModel(currentPhaseIndex = 0)) }
+        uiAction.emit(DayStudyUiAction.NavigateToStudy)
     }
 
     private suspend fun canStartFreeGeneration(quota: DayStudyQuotaModel): Boolean {
         if (isPro || quota.isUnlockedForDay) return true
         val inFlight = generationCoordinator.getGeneratingCount(excludingKey = jobKey)
         if (inFlight < quota.remainingFree) return true
-        _uiAction.emit(
+        uiAction.emit(
             DayStudyUiAction.ShowSnackBarPlural(
                 resource = Res.plurals.ai_study_wait_for_generations,
                 count = inFlight,
@@ -319,7 +318,7 @@ internal class DayStudyViewModel(
     }
 
     private fun lockCard() {
-        _uiState.update { state ->
+        uiState.update { state ->
             val card = state.card.valueOrNull() ?: return@update state
             state.copy(
                 card = Loadable.Loaded(
@@ -345,7 +344,7 @@ internal class DayStudyViewModel(
 
     private fun emitAction(action: DayStudyUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(action)
+            uiAction.emit(action)
         }
     }
 

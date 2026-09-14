@@ -15,7 +15,6 @@ import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateAvailabilit
 import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateDownloadState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -25,8 +24,8 @@ internal class AndroidInAppUpdater(
     private val appUpdateManager: AppUpdateManager,
     private val activityProvider: CurrentActivityProvider,
 ) {
-    private val _downloadState = MutableStateFlow<UpdateDownloadState>(UpdateDownloadState.Idle)
-    val downloadState: StateFlow<UpdateDownloadState> = _downloadState.asStateFlow()
+    val downloadState: StateFlow<UpdateDownloadState>
+        field = MutableStateFlow<UpdateDownloadState>(UpdateDownloadState.Idle)
 
     private val listener = InstallStateUpdatedListener(::onInstallState)
 
@@ -67,11 +66,11 @@ internal class AndroidInAppUpdater(
     }
 
     private fun onInstallState(state: InstallState) {
-        _downloadState.value = when (state.installStatus()) {
+        downloadState.value = when (state.installStatus()) {
             InstallStatus.DOWNLOADING -> UpdateDownloadState.Downloading(state.downloadPercent())
             InstallStatus.DOWNLOADED -> UpdateDownloadState.Downloaded
             InstallStatus.FAILED -> UpdateDownloadState.Failed
-            else -> _downloadState.value
+            else -> downloadState.value
         }
     }
 

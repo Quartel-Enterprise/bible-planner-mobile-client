@@ -14,7 +14,6 @@ import com.quare.bibleplanner.core.provider.billing.domain.repository.DesktopBil
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 internal class DesktopBillingRepositoryImpl(
     private val revenueCatRestDataSource: RevenueCatRestDataSource,
@@ -23,8 +22,8 @@ internal class DesktopBillingRepositoryImpl(
     private val webPurchaseLinkBuilder: WebPurchaseLinkBuilder,
     private val config: DesktopBillingConfig,
 ) : DesktopBillingRepository {
-    private val _subscriptionStatus: MutableStateFlow<SubscriptionStatus?> = MutableStateFlow(null)
-    override val subscriptionStatus: StateFlow<SubscriptionStatus?> = _subscriptionStatus.asStateFlow()
+    override val subscriptionStatus: StateFlow<SubscriptionStatus?>
+        field = MutableStateFlow<SubscriptionStatus?>(null)
 
     override suspend fun refreshSubscriptionStatus(): SubscriptionStatus {
         if (!config.isEntitlementReadEnabled) return SubscriptionStatus.Free
@@ -32,13 +31,13 @@ internal class DesktopBillingRepositoryImpl(
             subscriptionStatusMapper.map(revenueCatRestDataSource.getSubscriber())
         }.onFailure { throwable ->
             Logger.e(throwable) { "Failed to fetch the RevenueCat subscriber" }
-        }.getOrElse { _subscriptionStatus.value ?: SubscriptionStatus.Free }
-        _subscriptionStatus.value = status
+        }.getOrElse { subscriptionStatus.value ?: SubscriptionStatus.Free }
+        subscriptionStatus.value = status
         return status
     }
 
     override fun clearSubscriptionStatus() {
-        _subscriptionStatus.value = null
+        subscriptionStatus.value = null
     }
 
     override suspend fun getStorePackages(): List<StorePackage> {

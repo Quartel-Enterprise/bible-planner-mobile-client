@@ -19,8 +19,8 @@ internal class RenameDeviceViewModel(
     val currentName: String = route.currentName
     private val deviceRowId: String = route.deviceRowId
 
-    private val _backUiAction = MutableSharedFlow<Unit>()
-    val backUiAction: SharedFlow<Unit> = _backUiAction
+    val backUiAction: SharedFlow<Unit>
+        field = MutableSharedFlow<Unit>()
 
     override fun handleEvent(event: RenameDeviceUiEvent) {
         when (event) {
@@ -43,6 +43,6 @@ internal class RenameDeviceViewModel(
     }
 
     private fun navigateBack() {
-        viewModelScope.launch { _backUiAction.emit(Unit) }
+        viewModelScope.launch { backUiAction.emit(Unit) }
     }
 }

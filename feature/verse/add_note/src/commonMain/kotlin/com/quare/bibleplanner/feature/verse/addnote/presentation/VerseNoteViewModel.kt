@@ -35,17 +35,17 @@ internal class VerseNoteViewModel(
     )
     private val verseNumbers = route.verseNumbers
 
-    private val _uiState = MutableStateFlow(
-        VerseNoteUiState(
-            bookId = chapter.bookId,
-            chapterNumber = chapter.chapterNumber,
-            verseNumbers = verseNumbers,
-            quote = "",
-            text = "",
-            isSaveEnabled = false,
-        ),
-    )
-    val uiState: StateFlow<VerseNoteUiState> = _uiState
+    val uiState: StateFlow<VerseNoteUiState>
+        field = MutableStateFlow(
+            VerseNoteUiState(
+                bookId = chapter.bookId,
+                chapterNumber = chapter.chapterNumber,
+                verseNumbers = verseNumbers,
+                quote = "",
+                text = "",
+                isSaveEnabled = false,
+            ),
+        )
 
     init {
         loadNote()
@@ -55,7 +55,7 @@ internal class VerseNoteViewModel(
     override fun handleEvent(event: VerseNoteUiEvent) {
         when (event) {
             is VerseNoteUiEvent.OnTextChange -> {
-                _uiState.update {
+                uiState.update {
                     it.copy(
                         text = event.text,
                         isSaveEnabled = event.text.isNotBlank(),
@@ -74,7 +74,7 @@ internal class VerseNoteViewModel(
         val existingNoteId = noteId ?: return
         viewModelScope.launch {
             val note = getVerseNote(existingNoteId) ?: return@launch
-            _uiState.update {
+            uiState.update {
                 it.copy(
                     text = note.text,
                     isSaveEnabled = note.text.isNotBlank(),
@@ -90,7 +90,7 @@ internal class VerseNoteViewModel(
                 chapterNumber = chapter.chapterNumber,
                 verseNumbers = verseNumbers,
             ) ?: return@launch
-            _uiState.update { it.copy(quote = shareContent.text) }
+            uiState.update { it.copy(quote = shareContent.text) }
         }
     }
 

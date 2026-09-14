@@ -7,14 +7,13 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionSta
 import com.quare.bibleplanner.core.provider.billing.domain.model.store.StorePackage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 internal class FakeDesktopBillingRepository(
     private val refreshesBeforePro: Int,
     private val checkoutUrl: String?,
 ) : DesktopBillingRepository {
-    private val _subscriptionStatus: MutableStateFlow<SubscriptionStatus?> = MutableStateFlow(null)
-    override val subscriptionStatus: StateFlow<SubscriptionStatus?> = _subscriptionStatus.asStateFlow()
+    override val subscriptionStatus: StateFlow<SubscriptionStatus?>
+        field = MutableStateFlow<SubscriptionStatus?>(null)
 
     var refreshCount: Int = 0
         private set
@@ -32,12 +31,12 @@ internal class FakeDesktopBillingRepository(
             SubscriptionStatus.Free
         }
         refreshCount++
-        _subscriptionStatus.value = status
+        subscriptionStatus.value = status
         return status
     }
 
     override fun clearSubscriptionStatus() {
-        _subscriptionStatus.value = null
+        subscriptionStatus.value = null
     }
 
     override suspend fun getStorePackages(): List<StorePackage> = error("unused")

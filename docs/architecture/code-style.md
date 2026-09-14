@@ -349,3 +349,32 @@ no types, so the rule only fires when the called function is declared in the *sa
 the declaration and rule out the `suspend`, `@Composable` and receiver cases above. A forwarding lambda
 around a function from another file (including the `Loaded` example) is left alone rather than guessed at:
 treat the rule as a net for the cases it can prove, not as the definition of the convention.
+
+## Explicit Backing Fields
+
+When a property exposes a read-only view of mutable state, declare the mutable instance as the property's
+explicit backing field instead of pairing a `_name` backing property with a public one.
+
+```kotlin
+// Correct
+val uiState: StateFlow<DayUiState>
+    field = MutableStateFlow<DayUiState>(DayUiState.Loading)
+
+fun refresh() {
+    uiState.update { DayUiState.Loading }
+}
+
+// Wrong — two declarations for one piece of state
+private val _uiState = MutableStateFlow<DayUiState>(DayUiState.Loading)
+val uiState: StateFlow<DayUiState> = _uiState.asStateFlow()
+```
+
+Inside the class the property smart-casts to the field's type, so `update`, `value =` and `emit` work on it
+directly; outside it is only the declared read-only type. Keep the type argument on the constructor: the field
+is inferred from its initializer, so `MutableStateFlow(DayUiState.Loading)` would become a
+`MutableStateFlow<DayUiState.Loading>` and reject every other state. The field works on `override val` too, but
+not on `var`, `open`, delegated properties or properties with a custom getter. A `Channel` exposed through
+`receiveAsFlow()` is not a subtype of the flow it exposes, so it keeps a private backing property.
+
+Enforced by the custom ktlint rule `bible-planner-style:explicit-backing-field`, which flags a private `_name`
+`val` whose only purpose is to be exposed as `name` (directly, or through `asStateFlow()`/`asSharedFlow()`).

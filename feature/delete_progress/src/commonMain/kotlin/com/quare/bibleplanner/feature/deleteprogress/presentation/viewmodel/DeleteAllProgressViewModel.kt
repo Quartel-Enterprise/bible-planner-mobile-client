@@ -12,7 +12,6 @@ import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -25,26 +24,25 @@ internal class DeleteAllProgressViewModel(
 ) : TrackedViewModel<DeleteAllProgressUiEvent>(trackEvent) {
     private val successFeedbackDuration: Duration = 700.milliseconds
 
-    private val _uiState: MutableStateFlow<DeleteAllProgressUiState> =
-        MutableStateFlow(DeleteAllProgressUiState.Idle)
-    val uiState: StateFlow<DeleteAllProgressUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DeleteAllProgressUiState>
+        field = MutableStateFlow<DeleteAllProgressUiState>(DeleteAllProgressUiState.Idle)
 
     override fun handleEvent(event: DeleteAllProgressUiEvent) {
         when (event) {
             DeleteAllProgressUiEvent.OnConfirmDelete -> {
                 viewModelScope.launch {
-                    _uiState.update { DeleteAllProgressUiState.Loading }
+                    uiState.update { DeleteAllProgressUiState.Loading }
                     suspendRunCatching { resetAllProgress() }
                         .onSuccess {
                             trackEvent(
                                 name = AnalyticsEventNames.PROGRESS_RESET_CONFIRMED,
                                 params = emptyMap(),
                             )
-                            _uiState.update { DeleteAllProgressUiState.Success }
+                            uiState.update { DeleteAllProgressUiState.Success }
                             delay(successFeedbackDuration)
                             navigator.navigateBack()
                         }.onFailure {
-                            _uiState.update { DeleteAllProgressUiState.Idle }
+                            uiState.update { DeleteAllProgressUiState.Idle }
                         }
                 }
             }

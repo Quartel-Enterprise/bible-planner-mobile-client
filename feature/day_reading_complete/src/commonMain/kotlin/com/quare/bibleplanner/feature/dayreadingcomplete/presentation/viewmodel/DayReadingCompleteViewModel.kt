@@ -43,7 +43,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -71,11 +70,11 @@ class DayReadingCompleteViewModel(
         dayNumber = route.dayNumber,
         readingPlanType = readingPlanType,
     )
-    private val _uiState = MutableStateFlow<DayReadingCompleteUiState>(DayReadingCompleteUiState.Loading)
-    val uiState: StateFlow<DayReadingCompleteUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DayReadingCompleteUiState>
+        field = MutableStateFlow<DayReadingCompleteUiState>(DayReadingCompleteUiState.Loading)
 
-    private val _uiAction = MutableSharedFlow<DayReadingCompleteUiAction>(extraBufferCapacity = 1)
-    val uiAction: SharedFlow<DayReadingCompleteUiAction> = _uiAction
+    val uiAction: SharedFlow<DayReadingCompleteUiAction>
+        field = MutableSharedFlow<DayReadingCompleteUiAction>(extraBufferCapacity = 1)
 
     private var passages: List<PassageModel> = emptyList()
     private var hasTrackedShown = false
@@ -95,7 +94,7 @@ class DayReadingCompleteViewModel(
     private fun disableSuggestion() {
         viewModelScope.launch {
             setStudySuggestionEnabled(false)
-            _uiAction.emit(
+            uiAction.emit(
                 DayReadingCompleteUiAction.ShowSnackBar(Res.string.day_reading_complete_never_show_confirmation),
             )
             navigator.navigateBack()
@@ -119,7 +118,7 @@ class DayReadingCompleteViewModel(
             val timing = classifyDayTiming(day.plannedReadDate)
             val chapterCount = day.passages.sumOf { it.chapters.size }
             val language = getAppLanguageFlow().first()
-            _uiState.update {
+            uiState.update {
                 DayReadingCompleteUiState.Loaded(
                     timing = timing,
                     plannedReadDate = day.plannedReadDate,
@@ -159,7 +158,7 @@ class DayReadingCompleteViewModel(
         chapterCount: Int,
     ) {
         val ctaState = resolveStudyCtaState(isPro, quota)
-        _uiState.update { state ->
+        uiState.update { state ->
             (state as? DayReadingCompleteUiState.Loaded)
                 ?.copy(ctaState = Loadable.Loaded(ctaState))
                 ?: state
@@ -192,7 +191,7 @@ class DayReadingCompleteViewModel(
     }
 
     private fun onCtaClick(readingLabel: String) {
-        val ctaState = (_uiState.value as? DayReadingCompleteUiState.Loaded)
+        val ctaState = (uiState.value as? DayReadingCompleteUiState.Loaded)
             ?.ctaState
             ?.valueOrNull()
             ?: return
@@ -236,7 +235,7 @@ class DayReadingCompleteViewModel(
     }
 
     private fun emitAction(action: DayReadingCompleteUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 
     private companion object {

@@ -55,7 +55,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -86,21 +85,21 @@ internal class DayStudyRouteViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayStudyRouteUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<DayStudyRouteUiState> = MutableStateFlow(
-        DayStudyRouteUiState(
-            card = Loadable.Loading,
-            generation = null,
-            generationError = null,
-            openStudy = null,
-            isOpeningStudy = false,
-            passageLabel = null,
-            platform = platform,
-        ),
-    )
-    val uiState: StateFlow<DayStudyRouteUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DayStudyRouteUiState>
+        field = MutableStateFlow<DayStudyRouteUiState>(
+            DayStudyRouteUiState(
+                card = Loadable.Loading,
+                generation = null,
+                generationError = null,
+                openStudy = null,
+                isOpeningStudy = false,
+                passageLabel = null,
+                platform = platform,
+            ),
+        )
 
-    private val _uiAction: MutableSharedFlow<DayStudyRouteUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<DayStudyRouteUiAction> = _uiAction
+    val uiAction: SharedFlow<DayStudyRouteUiAction>
+        field = MutableSharedFlow<DayStudyRouteUiAction>()
 
     private val completionPause = 700.milliseconds
 
@@ -142,7 +141,7 @@ internal class DayStudyRouteViewModel(
     }
 
     private fun onRetryClick() {
-        _uiState.update { it.copy(generationError = null) }
+        uiState.update { it.copy(generationError = null) }
         viewModelScope.launch { withOpeningIndicator { startGenerationOrCachedOpen() } }
     }
 
@@ -159,7 +158,7 @@ internal class DayStudyRouteViewModel(
     private suspend fun onPassagesLoaded(loaded: List<PassageModel>) {
         passages = loaded
         label = loaded.getReadingLabel()
-        _uiState.update { it.copy(passageLabel = label) }
+        uiState.update { it.copy(passageLabel = label) }
         if (isStarted) return
         isStarted = true
         observeCard()
@@ -182,9 +181,9 @@ internal class DayStudyRouteViewModel(
     }
 
     private suspend fun showCachedCard() {
-        if (_uiState.value.card !is Loadable.Loading) return
+        if (uiState.value.card !is Loadable.Loading) return
         if (!hasCachedStudy(passages)) return
-        _uiState.update { state ->
+        uiState.update { state ->
             state.copy(card = Loadable.Loaded(cardUiModelFactory.createFromCache(isPro = isPro)))
         }
         trackLoad(
@@ -206,7 +205,7 @@ internal class DayStudyRouteViewModel(
         when (val status = job?.status) {
             null -> Unit
 
-            DayStudyGenerationStatus.Generating -> _uiState.update {
+            DayStudyGenerationStatus.Generating -> uiState.update {
                 it.copy(
                     generation = DayStudyGenerationUiModel(job.phase?.toPhaseIndex() ?: 0),
                     generationError = null,
@@ -223,8 +222,8 @@ internal class DayStudyRouteViewModel(
     }
 
     private suspend fun onJobDone(study: DayStudyModel) {
-        if (_uiState.value.generation != null) completeGenerationPhases()
-        _uiState.update { it.copy(generation = null, openStudy = study) }
+        if (uiState.value.generation != null) completeGenerationPhases()
+        uiState.update { it.copy(generation = null, openStudy = study) }
         trackStudyOpened(isCached = false)
         refreshCard(isPro)
         generationCoordinator.acknowledge(jobKey)
@@ -239,10 +238,10 @@ internal class DayStudyRouteViewModel(
             isOffline -> DayStudyGenerationError.OFFLINE
             else -> DayStudyGenerationError.GENERIC
         }
-        _uiState.update { it.copy(generation = null, generationError = error) }
+        uiState.update { it.copy(generation = null, generationError = error) }
         if (isLimitReached) {
             lockCard()
-            _uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message))
+            uiAction.emit(DayStudyRouteUiAction.ShowSnackBar(Res.string.ai_study_limit_reached_message))
         }
         generationCoordinator.acknowledge(jobKey)
     }
@@ -250,7 +249,7 @@ internal class DayStudyRouteViewModel(
     private suspend fun refreshCard(pro: Boolean) {
         suspendRunCatching { getDayStudyQuota(passages) }
             .onSuccess { quota ->
-                _uiState.update { state ->
+                uiState.update { state ->
                     state.copy(
                         card = Loadable.Loaded(
                             cardUiModelFactory.create(
@@ -300,7 +299,7 @@ internal class DayStudyRouteViewModel(
     }
 
     private fun onCardClick() {
-        val card = _uiState.value.card.valueOrNull() ?: return
+        val card = uiState.value.card.valueOrNull() ?: return
         trackEvent(
             name = AnalyticsEventNames.DAY_STUDY_CARD_CLICKED,
             params = buildMap {
@@ -309,7 +308,7 @@ internal class DayStudyRouteViewModel(
                 put(AnalyticsParams.SOURCE, CARD_CLICK_SOURCE)
             },
         )
-        if (_uiState.value.openStudy != null || _uiState.value.generation != null) return
+        if (uiState.value.openStudy != null || uiState.value.generation != null) return
         when (card.mode) {
             DayStudyCardMode.LOCKED -> navigator.navigate(
                 PaywallNavRoute(PaywallEntrySource.DAY_STUDY_DETAIL),
@@ -338,11 +337,11 @@ internal class DayStudyRouteViewModel(
     }
 
     private suspend fun withOpeningIndicator(block: suspend () -> Unit) {
-        _uiState.update { it.copy(isOpeningStudy = true) }
+        uiState.update { it.copy(isOpeningStudy = true) }
         try {
             block()
         } finally {
-            _uiState.update { it.copy(isOpeningStudy = false) }
+            uiState.update { it.copy(isOpeningStudy = false) }
         }
     }
 
@@ -359,7 +358,7 @@ internal class DayStudyRouteViewModel(
                     AnalyticsParams.IS_PRO to isPro,
                 ),
             )
-            _uiState.update { it.copy(generationError = DayStudyGenerationError.OFFLINE) }
+            uiState.update { it.copy(generationError = DayStudyGenerationError.OFFLINE) }
             return
         }
         val quota = getDayStudyQuota(passages)
@@ -372,14 +371,14 @@ internal class DayStudyRouteViewModel(
             ),
         )
         generationCoordinator.start(passages, dayRoute, label)
-        _uiState.update { it.copy(generation = DayStudyGenerationUiModel(currentPhaseIndex = 0)) }
+        uiState.update { it.copy(generation = DayStudyGenerationUiModel(currentPhaseIndex = 0)) }
     }
 
     private suspend fun canStartFreeGeneration(quota: DayStudyQuotaModel): Boolean {
         if (isPro || quota.isUnlockedForDay) return true
         val inFlight = generationCoordinator.getGeneratingCount(excludingKey = jobKey)
         if (inFlight < quota.remainingFree) return true
-        _uiAction.emit(
+        uiAction.emit(
             DayStudyRouteUiAction.ShowSnackBarPlural(
                 resource = Res.plurals.ai_study_wait_for_generations,
                 count = inFlight,
@@ -392,12 +391,12 @@ internal class DayStudyRouteViewModel(
         val study = getDayStudy(passages)
             .mapNotNull { (it as? DayStudyGenerationEventModel.Completed)?.study }
             .first()
-        _uiState.update { it.copy(openStudy = study) }
+        uiState.update { it.copy(openStudy = study) }
         trackStudyOpened(isCached = true)
     }
 
     private suspend fun completeGenerationPhases() {
-        _uiState.update { state ->
+        uiState.update { state ->
             state.copy(
                 generation = state.generation?.copy(
                     currentPhaseIndex = DayStudyGenerationPhase.entries.size,
@@ -408,7 +407,7 @@ internal class DayStudyRouteViewModel(
     }
 
     private fun lockCard() {
-        _uiState.update { state ->
+        uiState.update { state ->
             val card = state.card.valueOrNull() ?: return@update state
             state.copy(
                 card = Loadable.Loaded(
@@ -441,7 +440,7 @@ internal class DayStudyRouteViewModel(
 
     private fun emitAction(action: DayStudyRouteUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(action)
+            uiAction.emit(action)
         }
     }
 

@@ -63,11 +63,11 @@ internal class ReadingPlanViewModel(
     private val bibleProgressMilestoneTracker: BibleProgressMilestoneTracker,
     private val readingStreakMilestoneTracker: ReadingStreakMilestoneTracker,
 ) : TrackedViewModel<ReadingPlanUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<ReadingPlanUiState> = MutableStateFlow(factory.createFirstState())
-    val uiState: StateFlow<ReadingPlanUiState> = _uiState
+    val uiState: StateFlow<ReadingPlanUiState>
+        field = MutableStateFlow<ReadingPlanUiState>(factory.createFirstState())
 
-    private val _uiAction: MutableSharedFlow<ReadingPlanUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<ReadingPlanUiAction> = _uiAction
+    val uiAction: SharedFlow<ReadingPlanUiAction>
+        field = MutableSharedFlow<ReadingPlanUiAction>()
 
     private var currentPlansModel: PlansModel? = null
     private var currentBibleProgress: Float = 0f
@@ -82,7 +82,7 @@ internal class ReadingPlanViewModel(
                 requestReviewIfNeeded(ReviewTrigger.PROGRESS_MILESTONE)
             }
             currentBibleProgress = progress
-            _uiState.update { currentState ->
+            uiState.update { currentState ->
                 when (currentState) {
                     is ReadingPlanUiState.Loaded -> {
                         val rawWeeks = currentState.weekPlans.map { it.weekPlan }
@@ -97,7 +97,7 @@ internal class ReadingPlanViewModel(
             }
         }
         observe(getSelectedReadingPlanFlow()) { selectedPlan ->
-            _uiState.update { currentState ->
+            uiState.update { currentState ->
                 val plansModel = currentPlansModel
                 if (plansModel == null) {
                     when (currentState) {
@@ -117,12 +117,12 @@ internal class ReadingPlanViewModel(
             reconcileReadOverrides(plansModel)
             currentPlansModel = plansModel
             val authoritativeReadDays = plansModel
-                .weeksFor(_uiState.value.selectedReadingPlan)
+                .weeksFor(uiState.value.selectedReadingPlan)
                 .sumOf { week -> week.days.count { it.isRead } }
             val previousReadDays = lastAuthoritativeReadDayCount
             val progressWasReset = previousReadDays != null && previousReadDays > 0 && authoritativeReadDays == 0
             lastAuthoritativeReadDayCount = authoritativeReadDays
-            _uiState.update { currentState ->
+            uiState.update { currentState ->
                 val selectedPlan = currentState.selectedReadingPlan
                 val selectedWeeks = plansModel.withReadOverrides().weeksFor(selectedPlan)
 
@@ -342,7 +342,7 @@ internal class ReadingPlanViewModel(
     }
 
     private fun onDayReadClick(event: ReadingPlanUiEvent.OnDayReadClick) {
-        val currentUiState = _uiState.value
+        val currentUiState = uiState.value
         if (currentUiState !is ReadingPlanUiState.Loaded) return
         val selectedPlan = currentUiState.selectedReadingPlan
         val day = currentUiState.weekPlans
@@ -512,10 +512,10 @@ internal class ReadingPlanViewModel(
         )
     }
 
-    private fun getLoadedState(): ReadingPlanUiState.Loaded? = _uiState.value as? ReadingPlanUiState.Loaded
+    private fun getLoadedState(): ReadingPlanUiState.Loaded? = uiState.value as? ReadingPlanUiState.Loaded
 
     private fun updateLoaded(transform: (ReadingPlanUiState.Loaded) -> ReadingPlanUiState.Loaded) {
-        _uiState.update { state ->
+        uiState.update { state ->
             when (state) {
                 is ReadingPlanUiState.Loaded -> transform(state)
                 is ReadingPlanUiState.Loading -> state
@@ -524,7 +524,7 @@ internal class ReadingPlanViewModel(
     }
 
     private fun updateState(transform: (ReadingPlanUiState) -> ReadingPlanUiState) {
-        _uiState.update(transform)
+        uiState.update(transform)
     }
 
     private fun PlansModel.weeksFor(plan: ReadingPlanType): List<WeekPlanModel> = when (plan) {
@@ -551,9 +551,9 @@ internal class ReadingPlanViewModel(
             expandedWeeks = expandedWeeks,
         )
 
-    private fun emitUiAction(uiAction: ReadingPlanUiAction) {
+    private fun emitUiAction(action: ReadingPlanUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(uiAction)
+            uiAction.emit(action)
         }
     }
 

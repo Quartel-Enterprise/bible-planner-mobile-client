@@ -27,8 +27,8 @@ internal class AppLanguageViewModel(
     trackEvent: TrackEvent,
     factory: AppLanguageUiStateFactory,
 ) : TrackedViewModel<AppLanguageUiEvent>(trackEvent) {
-    private val _uiAction: MutableSharedFlow<AppLanguageUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<AppLanguageUiAction> = _uiAction
+    val uiAction: SharedFlow<AppLanguageUiAction>
+        field = MutableSharedFlow<AppLanguageUiAction>()
 
     val uiState: StateFlow<AppLanguageUiState> = factory.create().stateIn(
         scope = viewModelScope,
@@ -58,14 +58,14 @@ internal class AppLanguageViewModel(
     private fun selectLanguage(language: Language) {
         viewModelScope.launch {
             setAppLanguage(language)
-            _uiAction.emit(AppLanguageUiAction.ApplyLanguage(language))
+            uiAction.emit(AppLanguageUiAction.ApplyLanguage(language))
             navigator.navigateBack()
         }
     }
 
     private fun emitAction(action: AppLanguageUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(action)
+            uiAction.emit(action)
         }
     }
 }
