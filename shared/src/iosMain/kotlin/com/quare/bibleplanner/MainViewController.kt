@@ -1,5 +1,6 @@
 package com.quare.bibleplanner
 
+import androidx.compose.ui.uikit.LocalUIViewController
 import androidx.compose.ui.window.ComposeUIViewController
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
@@ -30,6 +31,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
+import platform.UIKit.UIUserInterfaceStyle
 import kotlin.experimental.ExperimentalNativeApi
 
 private var isInitialized = false
@@ -100,7 +102,18 @@ fun MainViewController(
             reviewRequester = reviewRequester,
         )
     },
-) { App() }
+) {
+    val viewController = LocalUIViewController.current
+    App(
+        onThemeResolved = { isAppInDarkTheme ->
+            viewController.overrideUserInterfaceStyle = if (isAppInDarkTheme) {
+                UIUserInterfaceStyle.UIUserInterfaceStyleDark
+            } else {
+                UIUserInterfaceStyle.UIUserInterfaceStyleLight
+            }
+        },
+    )
+}
 
 /**
  * Routes a deep link action from the Live Activity buttons to the download facade.

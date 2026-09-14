@@ -1,4 +1,7 @@
 {
+  "2.9.0": [
+    "En iPhone, la barra inferior de pestañas ahora es la del propio sistema — con el nuevo aspecto Liquid Glass en iOS 26 —, sigue el tema claro u oscuro de la app, y la pestaña de perfil muestra tu foto cuando iniciaste sesión."
+  ],
   "2.8.5": [
     "Se corrigieron capítulos que no se abrían en la pantalla de lectura en algunas versiones de la Biblia — como Génesis 35 y 40 — y versículos que faltaban al final de otros, como Génesis 41. Los capítulos afectados se descargan de nuevo automáticamente.",
     "En iPhone y iPad, se corrigió un problema que podía cerrar la app sola en la pantalla de lectura al seleccionar versículos o borrar la selección.",

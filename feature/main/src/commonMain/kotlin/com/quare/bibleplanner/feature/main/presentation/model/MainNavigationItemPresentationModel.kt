@@ -5,4 +5,5 @@ import org.jetbrains.compose.resources.StringResource
 data class MainNavigationItemPresentationModel(
     val title: StringResource,
     val icon: MainNavigationIcon,
+    val iosIcon: MainNavigationIosIcon,
 )

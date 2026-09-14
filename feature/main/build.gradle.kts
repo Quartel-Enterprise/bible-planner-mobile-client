@@ -39,6 +39,9 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.material3.adaptiveNavigationSuite)
 
+            // Calf
+            implementation(libs.calf.ui)
+
             // Navigation 3
             implementation(libs.navigation3.ui)
 
@@ -47,6 +50,11 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
+        }
+
+        iosMain.dependencies {
+            // Coil
+            implementation(libs.coil.compose)
         }
     }
 }
