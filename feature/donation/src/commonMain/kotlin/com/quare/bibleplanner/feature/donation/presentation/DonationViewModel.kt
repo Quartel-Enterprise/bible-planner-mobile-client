@@ -11,8 +11,8 @@ import com.quare.bibleplanner.feature.donation.presentation.factory.DonationUiSt
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -21,11 +21,11 @@ class DonationViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DonationUiEvent>(trackEvent) {
-    private val _uiState = MutableStateFlow(factory.create())
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<DonationUiState>
+        field = MutableStateFlow(factory.create())
 
-    private val _uiAction = MutableSharedFlow<DonationUiAction>()
-    val uiAction = _uiAction.asSharedFlow()
+    val uiAction: SharedFlow<DonationUiAction>
+        field = MutableSharedFlow<DonationUiAction>()
 
     override fun handleEvent(event: DonationUiEvent) {
         when (event) {
@@ -33,8 +33,8 @@ class DonationViewModel(
 
             is DonationUiEvent.Copy -> {
                 viewModelScope.launch {
-                    if (_uiState.value.copiedType == event.type) {
-                        _uiState.update { it.copy(copiedType = null) }
+                    if (uiState.value.copiedType == event.type) {
+                        uiState.update { it.copy(copiedType = null) }
                     } else {
                         val text = when (event.type) {
                             DonationType.BTC_ONCHAIN -> DonationBuildKonfig.BTC_ONCHAIN
@@ -43,8 +43,8 @@ class DonationViewModel(
                             DonationType.USDT_TRC20 -> DonationBuildKonfig.USDT_TRC20
                             DonationType.PIX -> DonationBuildKonfig.PIX_KEY
                         }
-                        _uiState.update { it.copy(copiedType = event.type) }
-                        _uiAction.emit(DonationUiAction.Copy(text))
+                        uiState.update { it.copy(copiedType = event.type) }
+                        uiAction.emit(DonationUiAction.Copy(text))
                         trackEvent(
                             name = AnalyticsEventNames.DONATION_METHOD_COPIED,
                             params = mapOf(AnalyticsParams.METHOD to event.type.name.lowercase()),
@@ -55,13 +55,13 @@ class DonationViewModel(
 
             DonationUiEvent.OpenGitHubSponsors -> {
                 viewModelScope.launch {
-                    _uiAction.emit(DonationUiAction.OpenUrl("https://github.com/sponsors/Quartel-Enterprise"))
+                    uiAction.emit(DonationUiAction.OpenUrl("https://github.com/sponsors/Quartel-Enterprise"))
                 }
             }
 
             DonationUiEvent.ToggleBitcoin -> {
-                val isExpanded = !_uiState.value.isBitcoinExpanded
-                _uiState.update { it.copy(isBitcoinExpanded = isExpanded) }
+                val isExpanded = !uiState.value.isBitcoinExpanded
+                uiState.update { it.copy(isBitcoinExpanded = isExpanded) }
                 trackSectionToggled(
                     section = BITCOIN_SECTION,
                     isExpanded = isExpanded,
@@ -69,8 +69,8 @@ class DonationViewModel(
             }
 
             DonationUiEvent.ToggleUsdt -> {
-                val isExpanded = !_uiState.value.isUsdtExpanded
-                _uiState.update { it.copy(isUsdtExpanded = isExpanded) }
+                val isExpanded = !uiState.value.isUsdtExpanded
+                uiState.update { it.copy(isUsdtExpanded = isExpanded) }
                 trackSectionToggled(
                     section = USDT_SECTION,
                     isExpanded = isExpanded,
@@ -78,8 +78,8 @@ class DonationViewModel(
             }
 
             DonationUiEvent.TogglePix -> {
-                val isExpanded = !_uiState.value.isPixExpanded
-                _uiState.update { it.copy(isPixExpanded = isExpanded) }
+                val isExpanded = !uiState.value.isPixExpanded
+                uiState.update { it.copy(isPixExpanded = isExpanded) }
                 trackSectionToggled(
                     section = PIX_SECTION,
                     isExpanded = isExpanded,

@@ -8,7 +8,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
@@ -17,8 +17,8 @@ class PixQrViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PixQrUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<PixQrUiAction>()
-    val uiAction = _uiAction.asSharedFlow()
+    val uiAction: SharedFlow<PixQrUiAction>
+        field = MutableSharedFlow<PixQrUiAction>()
 
     override fun handleEvent(event: PixQrUiEvent) {
         when (event) {
@@ -28,7 +28,7 @@ class PixQrViewModel(
                 viewModelScope.launch {
                     val message = getString(Res.string.pix_qr_share_message, getAppStoreLink())
 
-                    _uiAction.emit(PixQrUiAction.ShareQrCode(message))
+                    uiAction.emit(PixQrUiAction.ShareQrCode(message))
                 }
             }
         }

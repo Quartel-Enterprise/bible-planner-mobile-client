@@ -8,15 +8,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 internal class FakeChatStreamCoordinator : ChatStreamCoordinator {
-    private val _send: MutableStateFlow<ChatSendModel?> = MutableStateFlow(null)
-    override val send: StateFlow<ChatSendModel?> = _send
+    override val send: StateFlow<ChatSendModel?>
+        field = MutableStateFlow<ChatSendModel?>(null)
 
     val startedRequests: MutableList<ChatSendRequestModel> = mutableListOf()
     var retryCount: Int = 0
 
     override fun start(request: ChatSendRequestModel) {
         startedRequests += request
-        _send.value = ChatSendModel(
+        send.value = ChatSendModel(
             request = request,
             conversationId = request.conversationId,
             isAccepted = false,
@@ -30,11 +30,11 @@ internal class FakeChatStreamCoordinator : ChatStreamCoordinator {
     }
 
     override fun clearFailure() {
-        _send.update { current -> current?.copy(failure = null) }
+        send.update { current -> current?.copy(failure = null) }
     }
 
     fun accept(conversationId: String) {
-        _send.update { current ->
+        send.update { current ->
             current?.copy(
                 conversationId = conversationId,
                 isAccepted = true,
@@ -43,7 +43,7 @@ internal class FakeChatStreamCoordinator : ChatStreamCoordinator {
     }
 
     fun fail(failure: ChatSendFailureModel) {
-        _send.update { current ->
+        send.update { current ->
             current?.copy(
                 isStreaming = false,
                 failure = failure,

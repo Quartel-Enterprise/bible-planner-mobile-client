@@ -40,24 +40,24 @@ internal class CropPhotoViewModel(
     trackEvent: TrackEvent,
     private val encodeDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : TrackedViewModel<CropPhotoUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<CropPhotoUiAction>()
-    val uiAction: SharedFlow<CropPhotoUiAction> = _uiAction
+    val uiAction: SharedFlow<CropPhotoUiAction>
+        field = MutableSharedFlow<CropPhotoUiAction>()
 
-    private val _uiState = MutableStateFlow(
-        CropPhotoUiState(
-            image = ImageResult.Loading,
-            zoom = MIN_ZOOM,
-            zoomRange = MIN_ZOOM..MAX_ZOOM,
-            offsetX = 0f,
-            offsetY = 0f,
-            orientation = PhotoOrientation(
-                rotationDegrees = PhotoOrientation.NO_ROTATION,
-                isFlippedHorizontally = false,
-                isFlippedVertically = false,
+    val uiState: StateFlow<CropPhotoUiState>
+        field = MutableStateFlow(
+            CropPhotoUiState(
+                image = ImageResult.Loading,
+                zoom = MIN_ZOOM,
+                zoomRange = MIN_ZOOM..MAX_ZOOM,
+                offsetX = 0f,
+                offsetY = 0f,
+                orientation = PhotoOrientation(
+                    rotationDegrees = PhotoOrientation.NO_ROTATION,
+                    isFlippedHorizontally = false,
+                    isFlippedVertically = false,
+                ),
             ),
-        ),
-    )
-    val uiState: StateFlow<CropPhotoUiState> = _uiState
+        )
 
     private var imageWidth = 0
     private var imageHeight = 0
@@ -69,9 +69,9 @@ internal class CropPhotoViewModel(
                 .onSuccess { bitmap ->
                     imageWidth = bitmap.width
                     imageHeight = bitmap.height
-                    _uiState.update { it.copy(image = ImageResult.Loaded(bitmap)).clamp() }
+                    uiState.update { it.copy(image = ImageResult.Loaded(bitmap)).clamp() }
                 }.onFailure {
-                    _uiState.update { it.copy(image = ImageResult.Failed) }
+                    uiState.update { it.copy(image = ImageResult.Failed) }
                     finishWith(Res.string.edit_profile_photo_unreadable)
                 }
         }
@@ -91,16 +91,16 @@ internal class CropPhotoViewModel(
     }
 
     private fun updateOrientation(transform: (PhotoOrientation) -> PhotoOrientation) {
-        _uiState.update { state -> state.copy(orientation = transform(state.orientation)).clamp() }
+        uiState.update { state -> state.copy(orientation = transform(state.orientation)).clamp() }
     }
 
     private fun onViewportMeasured(event: CropPhotoUiEvent.OnViewportMeasured) {
         circleDiameter = event.circleDiameter
-        _uiState.update { it.clamp() }
+        uiState.update { it.clamp() }
     }
 
     private fun onTransform(event: CropPhotoUiEvent.OnTransform) {
-        _uiState.update { state ->
+        uiState.update { state ->
             state
                 .copy(
                     zoom = (state.zoom * event.zoomChange).coerceIn(MIN_ZOOM, MAX_ZOOM),
@@ -111,7 +111,7 @@ internal class CropPhotoViewModel(
     }
 
     private fun setZoom(zoom: Float) {
-        _uiState.update { it.copy(zoom = zoom.coerceIn(MIN_ZOOM, MAX_ZOOM)).clamp() }
+        uiState.update { it.copy(zoom = zoom.coerceIn(MIN_ZOOM, MAX_ZOOM)).clamp() }
     }
 
     private fun confirmCrop() {
@@ -125,10 +125,10 @@ internal class CropPhotoViewModel(
                             imageWidth = imageWidth,
                             imageHeight = imageHeight,
                             circleDiameter = circleDiameter,
-                            zoom = _uiState.value.zoom,
-                            offsetX = _uiState.value.offsetX,
-                            offsetY = _uiState.value.offsetY,
-                            orientation = _uiState.value.orientation,
+                            zoom = uiState.value.zoom,
+                            offsetX = uiState.value.offsetX,
+                            offsetY = uiState.value.offsetY,
+                            orientation = uiState.value.orientation,
                         ),
                     )
                 }
@@ -144,11 +144,11 @@ internal class CropPhotoViewModel(
 
     private suspend fun finishWith(message: StringResource) {
         navigator.navigateBack()
-        _uiAction.emit(CropPhotoUiAction.ShowSnackbar(message))
+        uiAction.emit(CropPhotoUiAction.ShowSnackbar(message))
     }
 
     private fun emit(action: CropPhotoUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 
     private fun CropPhotoUiState.clamp(): CropPhotoUiState {

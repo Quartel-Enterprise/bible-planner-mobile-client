@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.SharedFlow
  * before the snackbar is shown (e.g. the login sheet closing on success).
  */
 class AppSnackbarController {
-    private val _messages: MutableSharedFlow<AppSnackbarMessage> = MutableSharedFlow(extraBufferCapacity = 1)
-    val messages: SharedFlow<AppSnackbarMessage> = _messages
+    val messages: SharedFlow<AppSnackbarMessage>
+        field = MutableSharedFlow<AppSnackbarMessage>(extraBufferCapacity = 1)
 
     fun show(message: AppSnackbarMessage) {
-        _messages.tryEmit(message)
+        messages.tryEmit(message)
     }
 }

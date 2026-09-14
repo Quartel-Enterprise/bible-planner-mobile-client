@@ -44,7 +44,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -66,12 +65,12 @@ internal class DayViewModel(
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<DayUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<DayUiState> = MutableStateFlow(DayUiState.Loading)
-    val uiState: StateFlow<DayUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DayUiState>
+        field = MutableStateFlow<DayUiState>(DayUiState.Loading)
     private val safeLoadedState: DayUiState.Loaded? get() = uiState.value as? DayUiState.Loaded
 
-    private val _uiAction: MutableSharedFlow<DayUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<DayUiAction> = _uiAction
+    val uiAction: SharedFlow<DayUiAction>
+        field = MutableSharedFlow<DayUiAction>()
     private val weekNumber = route.weekNumber
     private val dayNumber = route.dayNumber
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
@@ -91,10 +90,10 @@ internal class DayViewModel(
                 weekNumber = weekNumber,
                 dayNumber = dayNumber,
                 readingPlanType = readingPlanType,
-                currentState = _uiState.value as? DayUiState.Loaded,
+                currentState = uiState.value as? DayUiState.Loaded,
             ),
         ) { state ->
-            _uiState.update { state }
+            uiState.update { state }
             reconcileStudyCompanion()
             checkPendingStudyReopen()
         }
@@ -190,7 +189,7 @@ internal class DayViewModel(
 
     private fun showSnackBarText(message: String) {
         viewModelScope.launch {
-            _uiAction.emit(DayUiAction.ShowSnackBarText(message))
+            uiAction.emit(DayUiAction.ShowSnackBarText(message))
         }
     }
 
@@ -225,7 +224,7 @@ internal class DayViewModel(
     }
 
     private fun onEditReadDate(event: DayUiEvent.OnEditReadDate) {
-        val currentState = _uiState.value as? DayUiState.Loaded ?: return
+        val currentState = uiState.value as? DayUiState.Loaded ?: return
         val selectedLocalDate = currentState.datePickerUiState.selectedLocalDate ?: return
         val eventDuration = event.toDuration()
 
@@ -254,7 +253,7 @@ internal class DayViewModel(
     }
 
     private fun onDayReadToggle() {
-        val currentState = _uiState.value as? DayUiState.Loaded ?: return
+        val currentState = uiState.value as? DayUiState.Loaded ?: return
         val newReadStatus = !currentState.day.isRead
 
         trackEvent(
@@ -277,7 +276,7 @@ internal class DayViewModel(
     }
 
     private fun onChapterToggle(event: DayUiEvent.OnChapterCheckboxClick) {
-        val currentState = _uiState.value as? DayUiState.Loaded ?: return
+        val currentState = uiState.value as? DayUiState.Loaded ?: return
         val passage = currentState.day.passages.getOrNull(event.strategy.passageIndex) ?: return
 
         viewModelScope.launch {
@@ -295,7 +294,7 @@ internal class DayViewModel(
                         isRead = isRead,
                     )
                 }.onFailure {
-                    _uiAction.emit(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message))
+                    uiAction.emit(DayUiAction.ShowSnackBar(Res.string.failed_to_toggle_chapter_message))
                 }
         }
     }
@@ -383,7 +382,7 @@ internal class DayViewModel(
             return
         }
         viewModelScope.launch {
-            _uiAction.emit(DayUiAction.ShowSnackBar(Res.string.nothing_to_delete_message))
+            uiAction.emit(DayUiAction.ShowSnackBar(Res.string.nothing_to_delete_message))
         }
     }
 
@@ -419,12 +418,12 @@ internal class DayViewModel(
             name = AnalyticsEventNames.NOTES_LIMIT_REACHED,
             params = mapOf(AnalyticsParams.MAX_FREE_NOTES to maxFreeNotes),
         )
-        _uiAction.emit(DayUiAction.ClearFocus)
+        uiAction.emit(DayUiAction.ClearFocus)
         navigator.navigate(AddNotesFreeWarningNavRoute(maxFreeNotes))
     }
 
     private fun updateLoadedState(transform: (DayUiState.Loaded) -> DayUiState.Loaded) {
-        _uiState.update { currentState ->
+        uiState.update { currentState ->
             if (currentState is DayUiState.Loaded) {
                 transform(currentState)
             } else {

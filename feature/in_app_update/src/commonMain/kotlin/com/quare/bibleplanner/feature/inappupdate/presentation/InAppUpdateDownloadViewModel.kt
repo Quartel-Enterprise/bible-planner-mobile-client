@@ -21,11 +21,11 @@ internal class InAppUpdateDownloadViewModel(
     private val navigator: Navigator,
     private val trackEvent: TrackEvent,
 ) : ViewModel() {
-    private val _uiAction = MutableSharedFlow<InAppUpdateDownloadUiAction>()
-    val uiAction: SharedFlow<InAppUpdateDownloadUiAction> = _uiAction
+    val uiAction: SharedFlow<InAppUpdateDownloadUiAction>
+        field = MutableSharedFlow<InAppUpdateDownloadUiAction>()
 
-    private val _downloadProgress = MutableStateFlow<Int?>(null)
-    val downloadProgress: StateFlow<Int?> = _downloadProgress
+    val downloadProgress: StateFlow<Int?>
+        field = MutableStateFlow<Int?>(null)
 
     init {
         observeUpdateDownloadState()
@@ -35,20 +35,20 @@ internal class InAppUpdateDownloadViewModel(
 
     private suspend fun onDownloadState(state: UpdateDownloadState) {
         when (state) {
-            is UpdateDownloadState.Downloading -> _downloadProgress.value = state.progress
+            is UpdateDownloadState.Downloading -> downloadProgress.value = state.progress
 
             UpdateDownloadState.Downloaded -> {
-                _downloadProgress.value = null
+                downloadProgress.value = null
                 navigator.navigate(UpdateDownloadedNavRoute)
             }
 
             UpdateDownloadState.Failed -> {
-                _downloadProgress.value = null
+                downloadProgress.value = null
                 trackEvent(AnalyticsEventNames.UPDATE_DOWNLOAD_FAILED, emptyMap())
-                _uiAction.emit(InAppUpdateDownloadUiAction.ShowDownloadFailed)
+                uiAction.emit(InAppUpdateDownloadUiAction.ShowDownloadFailed)
             }
 
-            UpdateDownloadState.Idle -> _downloadProgress.value = null
+            UpdateDownloadState.Idle -> downloadProgress.value = null
         }
     }
 }

@@ -67,8 +67,8 @@ internal class ProfileViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<ProfileUiAction>()
-    val uiAction: SharedFlow<ProfileUiAction> = _uiAction
+    val uiAction: SharedFlow<ProfileUiAction>
+        field = MutableSharedFlow<ProfileUiAction>()
     private val isCheckingForUpdate = MutableStateFlow(false)
     val uiState: StateFlow<ProfileUiState> = combine(
         uiStateFactory.create(),
@@ -174,7 +174,7 @@ internal class ProfileViewModel(
                 )
 
                 UpdateAvailability.NotAvailable ->
-                    _uiAction.emit(ProfileUiAction.ShowSnackbar(Res.string.up_to_date_message))
+                    uiAction.emit(ProfileUiAction.ShowSnackbar(Res.string.up_to_date_message))
             }
         }
     }
@@ -185,7 +185,7 @@ internal class ProfileViewModel(
             if (progress > 0) {
                 navigator.navigate(DeleteAllProgressNavRoute)
             } else {
-                _uiAction.emit(ProfileUiAction.ShowNoProgressToDelete)
+                uiAction.emit(ProfileUiAction.ShowNoProgressToDelete)
             }
         }
     }
@@ -198,7 +198,7 @@ internal class ProfileViewModel(
             if (isConnected()) {
                 navigator.navigate(route)
             } else {
-                _uiAction.emit(ProfileUiAction.ShowSnackbar(offlineMessage))
+                uiAction.emit(ProfileUiAction.ShowSnackbar(offlineMessage))
             }
         }
     }
@@ -209,7 +209,7 @@ internal class ProfileViewModel(
 
     private fun emitAction(action: ProfileUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(action)
+            uiAction.emit(action)
         }
     }
 

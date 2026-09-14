@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -56,11 +55,11 @@ class BooksViewModel(
     trackEvent: TrackEvent,
     getBooksWithInformationBoxVisibility: GetBooksWithInformationBoxVisibilityUseCase,
 ) : TrackedViewModel<BooksUiEvent>(trackEvent) {
-    private val _uiState = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
-    val uiState: StateFlow<BooksUiState> = _uiState
+    val uiState: StateFlow<BooksUiState>
+        field = MutableStateFlow<BooksUiState>(BooksUiState.Loading)
 
-    private val _uiAction = MutableSharedFlow<BooksUiAction>()
-    val uiAction: SharedFlow<BooksUiAction> = _uiAction.asSharedFlow()
+    val uiAction: SharedFlow<BooksUiAction>
+        field = MutableSharedFlow<BooksUiAction>()
 
     private var allBooks: List<BookDataModel> = emptyList()
     private var bookNames: Map<BookId, String> = emptyMap()
@@ -107,7 +106,7 @@ class BooksViewModel(
                 updateState(searchQuery = event.query)
                 trackSearchUsed(event.query)
                 viewModelScope.launch {
-                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                    uiAction.emit(BooksUiAction.ScrollToTop)
                 }
             }
 
@@ -116,7 +115,7 @@ class BooksViewModel(
                 updateState(selectedTestament = event.testament)
                 viewModelScope.launch {
                     booksRepository.setSelectedTestament(event.testament.name)
-                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                    uiAction.emit(BooksUiAction.ScrollToTop)
                 }
             }
 
@@ -164,7 +163,7 @@ class BooksViewModel(
                     )
                 }
                 viewModelScope.launch {
-                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                    uiAction.emit(BooksUiAction.ScrollToTop)
                 }
             }
 
@@ -185,13 +184,13 @@ class BooksViewModel(
                 updateState()
                 viewModelScope.launch {
                     booksRepository.setBookLayoutFormat(event.layoutFormat.name)
-                    _uiAction.emit(BooksUiAction.ScrollToTop)
+                    uiAction.emit(BooksUiAction.ScrollToTop)
                 }
             }
 
             BooksUiEvent.OnWebAppLinkClick -> {
                 viewModelScope.launch {
-                    _uiAction.emit(BooksUiAction.OpenWebAppLink(getWebAppUrl()))
+                    uiAction.emit(BooksUiAction.OpenWebAppLink(getWebAppUrl()))
                 }
             }
         }
@@ -209,7 +208,7 @@ class BooksViewModel(
             ),
         )
         viewModelScope.launch {
-            _uiAction.emit(BooksUiAction.ScrollToTop)
+            uiAction.emit(BooksUiAction.ScrollToTop)
         }
     }
 
@@ -270,7 +269,7 @@ class BooksViewModel(
         searchQuery: String? = null,
         selectedTestament: BookTestament? = null,
     ) {
-        val currentState = _uiState.value
+        val currentState = uiState.value
         val currentQuery = searchQuery ?: (currentState as? BooksUiState.Success)?.searchQuery.orEmpty()
         val currentSelectedTestament = selectedTestament
             ?: persistedTestamentValue
@@ -364,7 +363,7 @@ class BooksViewModel(
                 }
             }
 
-        _uiState.update {
+        uiState.update {
             BooksUiState.Success(
                 books = presentationModels,
                 filteredBooks = when (sortOrder) {

@@ -33,8 +33,8 @@ class BibleVersionViewModel(
     trackEvent: TrackEvent,
     uiStateFactory: BibleVersionsUiStateFactory,
 ) : TrackedViewModel<BibleVersionUiEvent>(trackEvent) {
-    private val _uiAction: MutableSharedFlow<BibleVersionUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<BibleVersionUiAction> = _uiAction
+    val uiAction: SharedFlow<BibleVersionUiAction>
+        field = MutableSharedFlow<BibleVersionUiAction>()
 
     val uiState: StateFlow<BibleVersionsUiState> = uiStateFactory
         .create()
@@ -124,9 +124,9 @@ class BibleVersionViewModel(
         navigator.navigateBack()
     }
 
-    private fun emitUiAction(uiAction: BibleVersionUiAction) {
+    private fun emitUiAction(action: BibleVersionUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(uiAction)
+            uiAction.emit(action)
         }
     }
 }

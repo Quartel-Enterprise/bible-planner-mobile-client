@@ -43,8 +43,8 @@ class MainScreenViewModel(
         initialValue = Language.ENGLISH,
     )
 
-    private val _uiAction: MutableSharedFlow<MainScreenUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<MainScreenUiAction> = _uiAction
+    val uiAction: SharedFlow<MainScreenUiAction>
+        field = MutableSharedFlow<MainScreenUiAction>()
 
     val mainNavigationItemModels: StateFlow<List<MainNavigationItemModel<NavKey>>> =
         observeUserProfile().map(::toMainNavigationItemModels).stateIn(
@@ -67,7 +67,7 @@ class MainScreenViewModel(
 
     private fun emitAction(action: MainScreenUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(action)
+            uiAction.emit(action)
         }
     }
 

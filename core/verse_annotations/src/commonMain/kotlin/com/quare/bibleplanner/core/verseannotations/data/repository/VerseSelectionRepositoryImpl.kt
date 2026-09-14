@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 internal class VerseSelectionRepositoryImpl : VerseSelectionRepository {
-    private val _selection = MutableStateFlow<VerseSelection?>(null)
-    override val selection: StateFlow<VerseSelection?> = _selection
+    override val selection: StateFlow<VerseSelection?>
+        field = MutableStateFlow<VerseSelection?>(null)
 
     override fun toggle(
         chapter: ChapterRef,
         verseNumber: Int,
     ): VerseSelection? {
-        _selection.update { current ->
+        selection.update { current ->
             val previousNumbers = current
                 ?.verseNumbers
                 .orEmpty()
@@ -35,10 +35,10 @@ internal class VerseSelectionRepositoryImpl : VerseSelectionRepository {
                 )
             }
         }
-        return _selection.value
+        return selection.value
     }
 
     override fun clear() {
-        _selection.update { null }
+        selection.update { null }
     }
 }

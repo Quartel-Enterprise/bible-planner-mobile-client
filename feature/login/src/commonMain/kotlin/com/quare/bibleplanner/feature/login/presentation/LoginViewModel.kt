@@ -45,11 +45,11 @@ internal class LoginViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LoginUiEvent>(trackEvent) {
     val composeAuth: ComposeAuth = supabaseClient.composeAuth
-    private val _state: MutableStateFlow<LoginUiState> = MutableStateFlow(uiStateFactory.create())
-    val state: StateFlow<LoginUiState> = _state
+    val state: StateFlow<LoginUiState>
+        field = MutableStateFlow<LoginUiState>(uiStateFactory.create())
 
-    private val _uiAction: MutableSharedFlow<LoginUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<LoginUiAction> = _uiAction
+    val uiAction: SharedFlow<LoginUiAction>
+        field = MutableSharedFlow<LoginUiAction>()
 
     init {
         observe(observeAuthenticatedUserId()) { userId ->
@@ -64,7 +64,7 @@ internal class LoginViewModel(
             LoginUiEvent.DismissClick -> navigator.navigateBack()
 
             is LoginUiEvent.SocialLoginClick -> {
-                _state.update { it.copy(loadingProvider = uiEvent.provider, error = null) }
+                state.update { it.copy(loadingProvider = uiEvent.provider, error = null) }
                 viewModelScope.launch {
                     signInStarter(uiEvent.provider, uiEvent.nativeSignInState).onFailure { throwable ->
                         val error = throwableToLoginErrorMapper(throwable)
@@ -72,7 +72,7 @@ internal class LoginViewModel(
                             provider = uiEvent.provider,
                             reason = error.reasonParam,
                         )
-                        _state.update {
+                        state.update {
                             it.copy(
                                 loadingProvider = null,
                                 error = error,
@@ -84,7 +84,7 @@ internal class LoginViewModel(
 
             is LoginUiEvent.SocialAuthResult -> {
                 trackAuthResult(uiEvent)
-                _state.update {
+                state.update {
                     when (val result = uiEvent.result) {
                         is NativeSignInResult.Success -> it
 
@@ -106,11 +106,11 @@ internal class LoginViewModel(
 
             LoginUiEvent.AddGoogleAccountConfirmClick -> {
                 addGoogleAccountLauncher()
-                _state.update { it.copy(showGoogleSignInUnavailableDialog = false) }
+                state.update { it.copy(showGoogleSignInUnavailableDialog = false) }
             }
 
             LoginUiEvent.DismissAddGoogleAccountDialog ->
-                _state.update { it.copy(showGoogleSignInUnavailableDialog = false) }
+                state.update { it.copy(showGoogleSignInUnavailableDialog = false) }
         }
     }
 
@@ -190,12 +190,12 @@ internal class LoginViewModel(
             else -> null
         } ?: return
         viewModelScope.launch {
-            _uiAction.emit(LoginUiAction.NotifyLoginResult(message))
+            uiAction.emit(LoginUiAction.NotifyLoginResult(message))
         }
     }
 
     private suspend fun close() {
-        _uiAction.emit(LoginUiAction.CloseBottomSheet)
+        uiAction.emit(LoginUiAction.CloseBottomSheet)
         delay(250.milliseconds)
         navigateBack()
     }

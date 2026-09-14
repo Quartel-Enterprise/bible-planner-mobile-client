@@ -37,20 +37,20 @@ internal class ShareVerseViewModel(
 
     private var shareContent: VersesShareContentModel? = null
 
-    private val _uiState = MutableStateFlow(
-        ShareVerseUiState(
-            quote = "",
-            reference = "",
-            versionAbbreviation = "",
-            background = ShareCardBackground.VIOLET,
-            font = ShareCardFont.LORA,
-            isReady = false,
-        ),
-    )
-    val uiState: StateFlow<ShareVerseUiState> = _uiState
+    val uiState: StateFlow<ShareVerseUiState>
+        field = MutableStateFlow(
+            ShareVerseUiState(
+                quote = "",
+                reference = "",
+                versionAbbreviation = "",
+                background = ShareCardBackground.VIOLET,
+                font = ShareCardFont.LORA,
+                isReady = false,
+            ),
+        )
 
-    private val _uiAction = MutableSharedFlow<ShareVerseUiAction>()
-    val uiAction: SharedFlow<ShareVerseUiAction> = _uiAction
+    val uiAction: SharedFlow<ShareVerseUiAction>
+        field = MutableSharedFlow<ShareVerseUiAction>()
 
     init {
         loadContent()
@@ -63,12 +63,12 @@ internal class ShareVerseViewModel(
             ShareVerseUiEvent.OnShareAsImageClick -> openImageComposer()
 
             is ShareVerseUiEvent.OnBackgroundClick -> {
-                _uiState.update { it.copy(background = event.background) }
+                uiState.update { it.copy(background = event.background) }
                 trackStyleChange()
             }
 
             is ShareVerseUiEvent.OnFontClick -> {
-                _uiState.update { it.copy(font = event.font) }
+                uiState.update { it.copy(font = event.font) }
                 trackStyleChange()
             }
 
@@ -86,7 +86,7 @@ internal class ShareVerseViewModel(
                 verseNumbers = verseNumbers,
             ) ?: return@launch
             shareContent = content
-            _uiState.update {
+            uiState.update {
                 it.copy(
                     quote = content.text,
                     reference = content.reference,
@@ -101,7 +101,7 @@ internal class ShareVerseViewModel(
         val content = shareContent ?: return
         trackShared(FORMAT_TEXT)
         viewModelScope.launch {
-            _uiAction.emit(ShareVerseUiAction.ShareText(content))
+            uiAction.emit(ShareVerseUiAction.ShareText(content))
         }
     }
 
@@ -123,7 +123,7 @@ internal class ShareVerseViewModel(
         val content = shareContent ?: return
         trackShared(FORMAT_IMAGE)
         viewModelScope.launch {
-            _uiAction.emit(
+            uiAction.emit(
                 ShareVerseUiAction.ShareImage(
                     content = content,
                     imageBytes = imageBytes,

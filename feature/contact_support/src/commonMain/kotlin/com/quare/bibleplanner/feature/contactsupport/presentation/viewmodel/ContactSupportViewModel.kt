@@ -30,14 +30,14 @@ internal class ContactSupportViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactSupportUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<ContactSupportUiAction>()
-    val uiAction: SharedFlow<ContactSupportUiAction> = _uiAction
-    private val _uiState = MutableStateFlow(uiStateFactory.createInitialState())
-    val uiState: StateFlow<ContactSupportUiState> = _uiState
+    val uiAction: SharedFlow<ContactSupportUiAction>
+        field = MutableSharedFlow<ContactSupportUiAction>()
+    val uiState: StateFlow<ContactSupportUiState>
+        field = MutableStateFlow(uiStateFactory.createInitialState())
 
     init {
         observe(uiStateFactory.create()) { state ->
-            _uiState.value = state
+            uiState.value = state
         }
     }
 
@@ -49,15 +49,15 @@ internal class ContactSupportViewModel(
 
             ContactSupportUiEvent.OnCopyEmailClick -> {
                 viewModelScope.launch {
-                    _uiAction.emit(ContactSupportUiAction.Copy(SupportContact.EMAIL))
-                    _uiAction.emit(ContactSupportUiAction.ShowSnackbar(Res.string.support_email_copied_message))
+                    uiAction.emit(ContactSupportUiAction.Copy(SupportContact.EMAIL))
+                    uiAction.emit(ContactSupportUiAction.ShowSnackbar(Res.string.support_email_copied_message))
                 }
             }
         }
     }
 
     private fun sendSupportEmailClick() {
-        val state = _uiState.value
+        val state = uiState.value
         trackEvent(
             name = AnalyticsEventNames.CONTACT_SUPPORT_EMAIL_OPENED,
             params = buildMap {
@@ -67,7 +67,7 @@ internal class ContactSupportViewModel(
         )
         viewModelScope.launch {
             val mailto = mailtoFactory.create(state)
-            _uiAction.emit(ContactSupportUiAction.OpenLink(mailto))
+            uiAction.emit(ContactSupportUiAction.OpenLink(mailto))
         }
     }
 
@@ -82,7 +82,7 @@ internal class ContactSupportViewModel(
 
     private fun emitAction(action: ContactSupportUiAction) {
         viewModelScope.launch {
-            _uiAction.emit(action)
+            uiAction.emit(action)
         }
     }
 }

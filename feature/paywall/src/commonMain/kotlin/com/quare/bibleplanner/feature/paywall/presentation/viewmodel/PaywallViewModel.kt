@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
@@ -50,11 +49,11 @@ internal class PaywallViewModel(
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<PaywallUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<PaywallUiState> = MutableStateFlow(PaywallUiState.Loading)
-    val uiState: StateFlow<PaywallUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<PaywallUiState>
+        field = MutableStateFlow<PaywallUiState>(PaywallUiState.Loading)
 
-    private val _uiAction: MutableSharedFlow<PaywallUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<PaywallUiAction> = _uiAction
+    val uiAction: SharedFlow<PaywallUiAction>
+        field = MutableSharedFlow<PaywallUiAction>()
 
     private val storeName: String = when {
         platform.isDesktop() -> DESKTOP_STORE_NAME
@@ -79,10 +78,10 @@ internal class PaywallViewModel(
         )
         trackCustomPaywallImpression()
         viewModelScope.launch {
-            _uiState.update { PaywallUiState.Loading }
+            uiState.update { PaywallUiState.Loading }
             val initializationResult = factory.create(storeName)
             storePackages = initializationResult.storePackages
-            _uiState.update { initializationResult.uiState }
+            uiState.update { initializationResult.uiState }
         }
         observeProStatus()
     }
@@ -121,7 +120,7 @@ internal class PaywallViewModel(
             PaywallUiEvent.OnStartProJourneyClick -> {
                 viewModelScope.launch {
                     if (!ensureLoggedIn()) return@launch
-                    val currentState = _uiState.value
+                    val currentState = uiState.value
 
                     if (currentState is PaywallUiState.Success) {
                         if (currentState.isPurchasing) return@launch
@@ -143,7 +142,7 @@ internal class PaywallViewModel(
                                 plan = selectedPlan.type,
                                 storePackage = packageToPurchase,
                             )
-                            _uiState.update { currentState.copy(isPurchasing = true) }
+                            uiState.update { currentState.copy(isPurchasing = true) }
 
                             getPurchaseResultUseCase(packageToPurchase)
                                 .onSuccess {
@@ -152,7 +151,7 @@ internal class PaywallViewModel(
                                         plan = selectedPlan.type,
                                         storePackage = packageToPurchase,
                                     )
-                                    _uiState.update { currentState.copy(isPurchasing = false) }
+                                    uiState.update { currentState.copy(isPurchasing = false) }
                                     navigator.navigateReplacingTop(CongratsNavRoute)
                                 }.onFailure { error ->
                                     trackEvent(
@@ -163,9 +162,9 @@ internal class PaywallViewModel(
                                             AnalyticsParams.STORE to store,
                                         ),
                                     )
-                                    _uiState.update { currentState.copy(isPurchasing = false) }
+                                    uiState.update { currentState.copy(isPurchasing = false) }
                                     val messageRes = exceptionMapper.map(error)
-                                    _uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes))
+                                    uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes))
                                 }
                         }
                     }
@@ -179,7 +178,7 @@ internal class PaywallViewModel(
                         params = mapOf(AnalyticsParams.SUBSCRIPTION_PLAN to event.planType.toAnalyticsValue()),
                     )
                 }
-                _uiState.update { currentState ->
+                uiState.update { currentState ->
                     when (currentState) {
                         is PaywallUiState.Success -> currentState.copy(
                             subscriptionPlans = currentState.subscriptionPlans.map { plan ->
@@ -196,9 +195,9 @@ internal class PaywallViewModel(
                 viewModelScope.launch {
                     if (!ensureLoggedIn()) return@launch
                     purchaseInitiated = true
-                    val currentState = _uiState.value
+                    val currentState = uiState.value
                     if (currentState is PaywallUiState.Success) {
-                        _uiState.update { currentState.copy(isPurchasing = true) }
+                        uiState.update { currentState.copy(isPurchasing = true) }
                     }
 
                     getRestorePurchaseResultUseCase()
@@ -208,7 +207,7 @@ internal class PaywallViewModel(
                                 params = mapOf(AnalyticsParams.STORE to store),
                             )
                             if (currentState is PaywallUiState.Success) {
-                                _uiState.update { currentState.copy(isPurchasing = false) }
+                                uiState.update { currentState.copy(isPurchasing = false) }
                             }
                             navigator.navigateReplacingTop(CongratsNavRoute)
                         }.onFailure { error ->
@@ -220,10 +219,10 @@ internal class PaywallViewModel(
                                 ),
                             )
                             if (currentState is PaywallUiState.Success) {
-                                _uiState.update { currentState.copy(isPurchasing = false) }
+                                uiState.update { currentState.copy(isPurchasing = false) }
                             }
                             val messageRes = exceptionMapper.map(error)
-                            _uiAction.emit(
+                            uiAction.emit(
                                 PaywallUiAction.ShowSnackbar(
                                     message = messageRes,
                                     args = listOf(storeName),
@@ -255,7 +254,7 @@ internal class PaywallViewModel(
         ?.let { mapOf(AnalyticsParams.SUBSCRIPTION_PLAN to it.toAnalyticsValue()) }
         .orEmpty()
 
-    private fun getSelectedPlanType(): SubscriptionPlanType? = (_uiState.value as? PaywallUiState.Success)
+    private fun getSelectedPlanType(): SubscriptionPlanType? = (uiState.value as? PaywallUiState.Success)
         ?.subscriptionPlans
         ?.firstOrNull { it.isSelected }
         ?.type

@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -32,17 +31,17 @@ internal class LogoutViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LogoutUiEvent>(trackEvent) {
-    private val _uiState: MutableStateFlow<LogoutUiState> = MutableStateFlow(LogoutUiState.Idle)
-    val uiState: StateFlow<LogoutUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<LogoutUiState>
+        field = MutableStateFlow<LogoutUiState>(LogoutUiState.Idle)
 
-    private val _uiAction: MutableSharedFlow<LogoutUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<LogoutUiAction> = _uiAction
+    val uiAction: SharedFlow<LogoutUiAction>
+        field = MutableSharedFlow<LogoutUiAction>()
 
     override fun handleEvent(event: LogoutUiEvent) {
         when (event) {
             is LogoutUiEvent.ConfirmLogoutClick -> performLogout(shouldFlushPending = event.shouldFlushPending)
             LogoutUiEvent.OnCancel -> navigator.navigateBack()
-            LogoutUiEvent.OnDismiss -> if (_uiState.value !is LogoutUiState.Loading) navigator.navigateBack()
+            LogoutUiEvent.OnDismiss -> if (uiState.value !is LogoutUiState.Loading) navigator.navigateBack()
         }
     }
 
@@ -50,7 +49,7 @@ internal class LogoutViewModel(
         logout(shouldFlushPending)
             .onEach { progress ->
                 when (progress) {
-                    is LogoutProgress.InProgress -> _uiState.update { LogoutUiState.Loading(progress.phase) }
+                    is LogoutProgress.InProgress -> uiState.update { LogoutUiState.Loading(progress.phase) }
                     is LogoutProgress.Finished -> progress.result.handleLogout()
                 }
             }.launchIn(viewModelScope)
@@ -58,16 +57,16 @@ internal class LogoutViewModel(
 
     private suspend fun Result<Unit>.handleLogout() {
         onSuccess {
-            _uiAction.emit(LogoutUiAction.NotifySuccess(Res.string.logout_success_message))
+            uiAction.emit(LogoutUiAction.NotifySuccess(Res.string.logout_success_message))
             navigator.navigateBack()
         }.onFailure { throwable ->
             if (throwable is LogoutFlushFailedException) {
                 trackLogoutFailed(reason = REASON_PENDING_CHANGES)
-                _uiState.update { LogoutUiState.PendingChangesError(Res.string.logout_pending_favorites) }
+                uiState.update { LogoutUiState.PendingChangesError(Res.string.logout_pending_favorites) }
             } else {
                 trackLogoutFailed(reason = REASON_UNKNOWN)
-                _uiState.update { LogoutUiState.Idle }
-                _uiAction.emit(LogoutUiAction.ShowSnackbar(logoutErrorMapper.map(LogoutError.UNKNOWN)))
+                uiState.update { LogoutUiState.Idle }
+                uiAction.emit(LogoutUiAction.ShowSnackbar(logoutErrorMapper.map(LogoutError.UNKNOWN)))
             }
         }
     }

@@ -45,8 +45,8 @@ internal class AccountDetailsViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AccountDetailsUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<AccountDetailsUiAction>()
-    val uiAction: SharedFlow<AccountDetailsUiAction> = _uiAction
+    val uiAction: SharedFlow<AccountDetailsUiAction>
+        field = MutableSharedFlow<AccountDetailsUiAction>()
 
     private val isDevicesExpanded = MutableStateFlow(false)
     private val signingOutDeviceIds = MutableStateFlow<Set<String>>(emptySet())
@@ -129,7 +129,7 @@ internal class AccountDetailsViewModel(
     }
 
     private fun emitAction(action: AccountDetailsUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 
     private fun createInitialState(): AccountDetailsUiState = AccountDetailsUiState(

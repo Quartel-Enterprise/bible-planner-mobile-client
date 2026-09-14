@@ -12,7 +12,6 @@ import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,8 +22,8 @@ class ReleaseNotesViewModel(
     trackEvent: TrackEvent,
     val platform: Platform,
 ) : TrackedViewModel<ReleaseNotesUiEvent>(trackEvent) {
-    private val _uiState = MutableStateFlow(uiStateFactory.createInitialState())
-    val uiState: StateFlow<ReleaseNotesUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<ReleaseNotesUiState>
+        field = MutableStateFlow(uiStateFactory.createInitialState())
 
     private val _uiAction = Channel<ReleaseNotesUiAction>()
     val uiAction = _uiAction.receiveAsFlow()
@@ -36,7 +35,7 @@ class ReleaseNotesViewModel(
     override fun handleEvent(event: ReleaseNotesUiEvent) {
         when (event) {
             is ReleaseNotesUiEvent.OnTabSelected -> {
-                _uiState.update { state ->
+                uiState.update { state ->
                     if (state is ReleaseNotesUiState.Success) {
                         state.copy(currentTab = event.tab)
                     } else {
@@ -67,9 +66,9 @@ class ReleaseNotesViewModel(
 
     private fun loadReleaseNotes() {
         viewModelScope.launch {
-            _uiState.update { ReleaseNotesUiState.Loading }
+            uiState.update { ReleaseNotesUiState.Loading }
             val state = uiStateFactory.create()
-            _uiState.update { state }
+            uiState.update { state }
         }
     }
 

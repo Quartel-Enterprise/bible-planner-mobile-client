@@ -22,8 +22,8 @@ internal class InAppUpdateViewModel(
 ) : TrackedViewModel<InAppUpdateUiEvent>(trackEvent) {
     private val source = route.source
 
-    private val _uiState = MutableStateFlow(InAppUpdateUiState(versionName = route.versionName))
-    val uiState: StateFlow<InAppUpdateUiState> = _uiState
+    val uiState: StateFlow<InAppUpdateUiState>
+        field = MutableStateFlow(InAppUpdateUiState(versionName = route.versionName))
 
     init {
         trackEvent(AnalyticsEventNames.UPDATE_PROMPT_SHOWN, getPromptParams(route.versionName))

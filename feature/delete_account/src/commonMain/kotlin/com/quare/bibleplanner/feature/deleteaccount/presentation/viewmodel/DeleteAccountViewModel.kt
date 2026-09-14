@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -48,27 +47,27 @@ internal class DeleteAccountViewModel(
 
     private var confirmationKeyword: String? = null
 
-    private val _uiState: MutableStateFlow<DeleteAccountUiState> = MutableStateFlow(
-        DeleteAccountUiState(
-            status = DeleteAccountUiStatus.Idle,
-            confirmationText = "",
-            isConfirmEnabled = false,
-            isProUser = false,
-            storeNameRes = null,
-        ),
-    )
-    val uiState: StateFlow<DeleteAccountUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DeleteAccountUiState>
+        field = MutableStateFlow<DeleteAccountUiState>(
+            DeleteAccountUiState(
+                status = DeleteAccountUiStatus.Idle,
+                confirmationText = "",
+                isConfirmEnabled = false,
+                isProUser = false,
+                storeNameRes = null,
+            ),
+        )
 
-    private val _uiAction: MutableSharedFlow<DeleteAccountUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<DeleteAccountUiAction> = _uiAction
+    val uiAction: SharedFlow<DeleteAccountUiAction>
+        field = MutableSharedFlow<DeleteAccountUiAction>()
 
     init {
         viewModelScope.launch {
             confirmationKeyword = getConfirmationKeyword()
-            _uiState.update { it.copy(isConfirmEnabled = it.confirmationText.matchesKeyword()) }
+            uiState.update { it.copy(isConfirmEnabled = it.confirmationText.matchesKeyword()) }
         }
         getSubscriptionStatusFlow()
-            .onEach { status -> _uiState.update { it.withSubscription(status) } }
+            .onEach { status -> uiState.update { it.withSubscription(status) } }
             .launchIn(viewModelScope)
     }
 
@@ -90,10 +89,10 @@ internal class DeleteAccountViewModel(
     }
 
     private val isIdle: Boolean
-        get() = _uiState.value.status == DeleteAccountUiStatus.Idle
+        get() = uiState.value.status == DeleteAccountUiStatus.Idle
 
     private fun updateConfirmationText(text: String) {
-        _uiState.update {
+        uiState.update {
             it.copy(
                 confirmationText = text,
                 isConfirmEnabled = text.matchesKeyword(),
@@ -102,7 +101,7 @@ internal class DeleteAccountViewModel(
     }
 
     private fun performDeletion() {
-        val state = _uiState.value
+        val state = uiState.value
         if (!state.isConfirmEnabled || !isIdle) return
         trackEvent(
             name = AnalyticsEventNames.ACCOUNT_DELETE_CONFIRMED,
@@ -112,7 +111,7 @@ internal class DeleteAccountViewModel(
             .onEach { progress ->
                 when (progress) {
                     is DeleteAccountProgress.InProgress ->
-                        _uiState.update { it.copy(status = DeleteAccountUiStatus.Deleting(progress.phase)) }
+                        uiState.update { it.copy(status = DeleteAccountUiStatus.Deleting(progress.phase)) }
 
                     is DeleteAccountProgress.Finished -> progress.result.handleDeletion()
                 }
@@ -121,9 +120,9 @@ internal class DeleteAccountViewModel(
 
     private suspend fun Result<Unit>.handleDeletion() {
         onSuccess {
-            _uiState.update { it.copy(status = DeleteAccountUiStatus.Deleted) }
+            uiState.update { it.copy(status = DeleteAccountUiStatus.Deleted) }
             delay(successFeedbackDuration)
-            _uiAction.emit(DeleteAccountUiAction.NotifySuccess(Res.string.delete_account_success_message))
+            uiAction.emit(DeleteAccountUiAction.NotifySuccess(Res.string.delete_account_success_message))
             navigator.navigateBack()
         }.onFailure { throwable ->
             val reason = getFailureReason()
@@ -132,13 +131,13 @@ internal class DeleteAccountViewModel(
                 name = AnalyticsEventNames.ACCOUNT_DELETE_FAILED,
                 params = mapOf(AnalyticsParams.REASON to reason),
             )
-            _uiState.update { it.copy(status = DeleteAccountUiStatus.Idle) }
-            _uiAction.emit(DeleteAccountUiAction.ShowSnackbar(Res.string.delete_account_error_message))
+            uiState.update { it.copy(status = DeleteAccountUiStatus.Idle) }
+            uiAction.emit(DeleteAccountUiAction.ShowSnackbar(Res.string.delete_account_error_message))
         }
     }
 
     private fun getFailureReason(): String {
-        val status = _uiState.value.status
+        val status = uiState.value.status
         return if (status is DeleteAccountUiStatus.Deleting && status.phase == DeleteAccountPhase.CLOSING_ACCOUNT) {
             REASON_CLOSE_SESSION
         } else {

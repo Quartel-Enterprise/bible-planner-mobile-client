@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,8 +27,8 @@ internal class NotificationPermissionViewModel(
 ) : TrackedViewModel<NotificationPermissionUiEvent>(trackEvent) {
     private var hasRequestedSystemPermission = false
 
-    private val _uiState: MutableStateFlow<NotificationPermissionUiState> =
-        MutableStateFlow(
+    val uiState: StateFlow<NotificationPermissionUiState>
+        field = MutableStateFlow<NotificationPermissionUiState>(
             NotificationPermissionUiState(
                 isFirstTime = true,
                 textRes = Res.string.notification_permission_explanation,
@@ -37,10 +36,9 @@ internal class NotificationPermissionViewModel(
                 shouldShowDismiss = true,
             ),
         )
-    val uiState: StateFlow<NotificationPermissionUiState> = _uiState.asStateFlow()
 
-    private val _uiAction: MutableSharedFlow<NotificationPermissionUiAction> = MutableSharedFlow()
-    val uiAction: SharedFlow<NotificationPermissionUiAction> = _uiAction
+    val uiAction: SharedFlow<NotificationPermissionUiAction>
+        field = MutableSharedFlow<NotificationPermissionUiAction>()
 
     override fun handleEvent(event: NotificationPermissionUiEvent) {
         when (event) {
@@ -54,11 +52,11 @@ internal class NotificationPermissionViewModel(
     }
 
     private fun handleConfirm() {
-        if (_uiState.value.isFirstTime) {
+        if (uiState.value.isFirstTime) {
             hasRequestedSystemPermission = true
             trackEvent(
                 name = AnalyticsEventNames.NOTIFICATION_PERMISSION_PROMPTED,
-                params = mapOf(AnalyticsParams.IS_FIRST_TIME to _uiState.value.isFirstTime),
+                params = mapOf(AnalyticsParams.IS_FIRST_TIME to uiState.value.isFirstTime),
             )
             emit(NotificationPermissionUiAction.RequestSystemPermission)
         } else {
@@ -81,7 +79,7 @@ internal class NotificationPermissionViewModel(
             )
         }
         if (!granted && !canAskAgain) {
-            _uiState.update {
+            uiState.update {
                 NotificationPermissionUiState(
                     isFirstTime = false,
                     textRes = Res.string.notification_permission_settings_message,
@@ -95,6 +93,6 @@ internal class NotificationPermissionViewModel(
     }
 
     private fun emit(action: NotificationPermissionUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 }

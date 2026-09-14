@@ -10,16 +10,16 @@ import kotlinx.coroutines.launch
 internal class PendingBibleUpdatesPromptViewModel(
     shouldShowBibleUpdatePrompt: ShouldShowBibleUpdatePromptUseCase,
 ) : ViewModel() {
-    private val _shouldPrompt = MutableStateFlow(false)
-    val shouldPrompt: StateFlow<Boolean> = _shouldPrompt
+    val shouldPrompt: StateFlow<Boolean>
+        field = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
-            _shouldPrompt.value = shouldShowBibleUpdatePrompt()
+            shouldPrompt.value = shouldShowBibleUpdatePrompt()
         }
     }
 
     fun onPromptConsumed() {
-        _shouldPrompt.value = false
+        shouldPrompt.value = false
     }
 }

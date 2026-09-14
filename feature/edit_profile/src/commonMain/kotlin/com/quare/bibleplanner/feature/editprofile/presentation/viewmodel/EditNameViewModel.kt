@@ -28,8 +28,8 @@ internal class EditNameViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<EditNameUiEvent>(trackEvent) {
-    private val _uiAction = MutableSharedFlow<EditNameUiAction>()
-    val uiAction: SharedFlow<EditNameUiAction> = _uiAction
+    val uiAction: SharedFlow<EditNameUiAction>
+        field = MutableSharedFlow<EditNameUiAction>()
 
     val uiState: StateFlow<EditNameUiState> = observeUserProfile()
         .map { profile ->
@@ -60,7 +60,7 @@ internal class EditNameViewModel(
             }
             updateDisplayName(trimmed)
             navigator.navigateBack()
-            _uiAction.emit(EditNameUiAction.ShowSnackbar(Res.string.edit_profile_name_updated))
+            uiAction.emit(EditNameUiAction.ShowSnackbar(Res.string.edit_profile_name_updated))
         }
     }
 

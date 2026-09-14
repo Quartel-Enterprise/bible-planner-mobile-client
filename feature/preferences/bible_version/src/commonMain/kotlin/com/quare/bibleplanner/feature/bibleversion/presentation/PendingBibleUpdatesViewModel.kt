@@ -25,12 +25,12 @@ internal class PendingBibleUpdatesViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PendingBibleUpdatesUiEvent>(trackEvent) {
-    private val _pendingUpdates = MutableStateFlow<List<PendingBibleUpdateItem>>(emptyList())
-    val pendingUpdates: StateFlow<List<PendingBibleUpdateItem>> = _pendingUpdates
+    val pendingUpdates: StateFlow<List<PendingBibleUpdateItem>>
+        field = MutableStateFlow<List<PendingBibleUpdateItem>>(emptyList())
 
     init {
         viewModelScope.launch {
-            _pendingUpdates.value = getPendingBibleUpdates().map { bible ->
+            pendingUpdates.value = getPendingBibleUpdates().map { bible ->
                 PendingBibleUpdateItem(
                     id = bible.version.id,
                     name = bible.version.name,
@@ -50,12 +50,12 @@ internal class PendingBibleUpdatesViewModel(
     }
 
     private fun toggleVersion(id: String) {
-        _pendingUpdates.update { items ->
+        pendingUpdates.update { items ->
             items.map { item ->
                 if (item.id == id) item.copy(isSelected = !item.isSelected) else item
             }
         }
-        val isSelected = _pendingUpdates.value.first { it.id == id }.isSelected
+        val isSelected = pendingUpdates.value.first { it.id == id }.isSelected
         trackEvent(
             name = AnalyticsEventNames.BIBLE_VERSION_UPDATE_PROMPT_VERSION_TOGGLED,
             params = mapOf(
@@ -67,7 +67,7 @@ internal class PendingBibleUpdatesViewModel(
 
     private fun updateSelectedVersions() {
         viewModelScope.launch {
-            val selectedUpdates = _pendingUpdates.value.filter { it.isSelected }
+            val selectedUpdates = pendingUpdates.value.filter { it.isSelected }
             selectedUpdates.forEach { item ->
                 updateBibleVersion(item.id)
             }

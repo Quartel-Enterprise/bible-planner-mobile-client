@@ -83,8 +83,8 @@ internal class VerseSelectionViewModel(
         noteIdByVerse = emptyMap(),
     )
 
-    private val _uiAction = MutableSharedFlow<VerseSelectionUiAction>()
-    val uiAction: SharedFlow<VerseSelectionUiAction> = _uiAction
+    val uiAction: SharedFlow<VerseSelectionUiAction>
+        field = MutableSharedFlow<VerseSelectionUiAction>()
 
     val uiState: StateFlow<VerseSelectionUiState?> = combine(
         observeVerseSelection()
@@ -283,10 +283,10 @@ internal class VerseSelectionViewModel(
                 name = AnalyticsEventNames.VERSES_COPIED,
                 params = mapOf(AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size),
             )
-            _uiAction.emit(
+            uiAction.emit(
                 VerseSelectionUiAction.CopyToClipboard(shareContent.shareText),
             )
-            _uiAction.emit(VerseSelectionUiAction.ShowMessage(Res.string.copied_to_clipboard))
+            uiAction.emit(VerseSelectionUiAction.ShowMessage(Res.string.copied_to_clipboard))
         }
     }
 
@@ -308,6 +308,6 @@ internal class VerseSelectionViewModel(
     private fun getCurrentSelection(): VerseSelection? = observeVerseSelection().value
 
     private fun emitAction(action: VerseSelectionUiAction) {
-        viewModelScope.launch { _uiAction.emit(action) }
+        viewModelScope.launch { uiAction.emit(action) }
     }
 }
