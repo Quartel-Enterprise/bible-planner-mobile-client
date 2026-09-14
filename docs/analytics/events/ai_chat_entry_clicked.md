@@ -6,7 +6,7 @@ Captures every tap on an entry point of the AI chat, split by which surface it c
 
 ## When it fires
 
-The user taps the "Ask the AI" FAB on the day screen, or the "Ask about this reading" card at the bottom of the study's questions tab.
+The user taps the "Ask the AI" button on the day screen (a FAB in portrait, an inline button under "Mark as read" in the landscape split), or the "Ask about this reading" card at the bottom of the study's questions tab.
 
 ## Trigger source
 
