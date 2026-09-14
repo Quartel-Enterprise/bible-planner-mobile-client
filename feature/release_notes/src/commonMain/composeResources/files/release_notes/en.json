@@ -1,7 +1,9 @@
 {
   "2.8.5": [
     "Fixed chapters that wouldn't open on the reading screen in some Bible versions — such as Genesis 35 and 40 — and verses missing at the end of others, such as Genesis 41. The affected chapters are downloaded again automatically.",
-    "On iPhone and iPad, fixed a problem that could close the app on its own on the reading screen when selecting verses or clearing the selection."
+    "On iPhone and iPad, fixed a problem that could close the app on its own on the reading screen when selecting verses or clearing the selection.",
+    "On iPhone in landscape, fixed the extra empty space next to the side menu and content that could hide behind the Dynamic Island — for example, the daily study panel beside the day. Every screen now stays within the visible area, as it already did on Android.",
+    "On the day screen in landscape, the \"Ask the AI\" button no longer covers the \"Mark as read\" button: it now sits right below it."
   ],
   "2.8.4": [
     "On the Pro screen, the subscribe button is now shorter and shows the full price of the chosen plan, without cutting it off on small screens.",

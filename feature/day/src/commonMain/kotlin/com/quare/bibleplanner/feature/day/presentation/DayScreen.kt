@@ -64,7 +64,7 @@ internal fun DayScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         floatingActionButton = {
-            if (uiState is DayUiState.Loaded) {
+            if (!isLandscape && uiState is DayUiState.Loaded) {
                 AskAiFab(onClick = { onEvent(DayUiEvent.OnAskAiClick) })
             }
         },

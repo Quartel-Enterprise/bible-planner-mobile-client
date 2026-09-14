@@ -20,6 +20,7 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
+import com.quare.bibleplanner.feature.day.presentation.component.AskAiButton
 import com.quare.bibleplanner.feature.day.presentation.component.ChangeReadStatusButton
 import com.quare.bibleplanner.feature.day.presentation.component.ChapterItemComponent
 import com.quare.bibleplanner.feature.day.presentation.component.DayReadSection
@@ -53,6 +54,10 @@ internal fun LoadedDayLandscapeScreenLeftContent(
             isDayRead = day.isRead,
             buttonModifier = Modifier.fillMaxWidth(),
             onClick = { onEvent(DayUiEvent.OnDayReadToggle) },
+        )
+        AskAiButton(
+            onClick = { onEvent(DayUiEvent.OnAskAiClick) },
+            modifier = Modifier.fillMaxWidth(),
         )
         day.plannedReadDate?.let { plannedReadDate ->
             with(sharedTransitionScope) {

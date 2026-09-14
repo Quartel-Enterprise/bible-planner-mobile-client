@@ -1,7 +1,9 @@
 {
   "2.8.5": [
     "Corrigidos capítulos que não abriam na tela de leitura em algumas versões da Bíblia — como Gênesis 35 e 40 — e versículos que faltavam no fim de outros, como Gênesis 41. Os capítulos afetados são baixados de novo automaticamente.",
-    "No iPhone e no iPad, corrigido um problema que podia fechar o app sozinho na tela de leitura ao selecionar versículos ou limpar a seleção."
+    "No iPhone e no iPad, corrigido um problema que podia fechar o app sozinho na tela de leitura ao selecionar versículos ou limpar a seleção.",
+    "No iPhone deitado, corrigido o espaço vazio extra ao lado do menu lateral e o conteúdo que podia ficar escondido atrás da Dynamic Island — por exemplo, o painel do estudo do dia ao lado do dia. Todas as telas agora ficam dentro da área visível, como já acontecia no Android.",
+    "Na tela do dia com o celular deitado, o botão \"Pergunte à IA\" não cobre mais o botão \"Marcar como lido\": agora ele fica logo abaixo."
   ],
   "2.8.4": [
     "Na tela do Pro, o botão de assinar ficou mais curto e agora mostra o preço do plano escolhido por inteiro, sem cortar em aparelhos com tela pequena.",

@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,7 +54,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -120,12 +116,7 @@ internal fun ChatScreen(
         isAnswering = uiState.isAnswering,
     )
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val safeAreaPadding = WindowInsets.safeDrawing.asPaddingValues()
-        val layoutDirection = LocalLayoutDirection.current
-        val drawableWidth = maxWidth -
-            safeAreaPadding.calculateStartPadding(layoutDirection) -
-            safeAreaPadding.calculateEndPadding(layoutDirection)
-        val isWide = drawableWidth >= sidebarLayoutMinWidth
+        val isWide = maxWidth >= sidebarLayoutMinWidth
         if (isWide) {
             Row(modifier = Modifier.fillMaxSize()) {
                 ChatHistorySidebar(
