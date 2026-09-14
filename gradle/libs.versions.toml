@@ -1,7 +1,7 @@
 [versions]
 # Build tooling
 agp = "9.4.0"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 ksp = "2.3.11"
 buildkonfig = "0.22.0"
 junit-bom = "6.1.3"
