@@ -90,7 +90,7 @@ internal class ProfileUiStateFactory(
         isCheckingForUpdate = false,
     )
 
-    fun create(): Flow<ProfileUiState> = merge(
+    fun create(initialState: ProfileUiState): Flow<ProfileUiState> = merge(
         getProfileScreenRemoteConfigsFlow().map { remoteConfigs ->
             { state: ProfileUiState ->
                 state.copy(
@@ -132,7 +132,7 @@ internal class ProfileUiStateFactory(
                 )
             }
         },
-    ).scan(createInitialState()) { state, reduce -> reduce(state) }
+    ).scan(initialState) { state, reduce -> reduce(state) }
 
     private fun observeSubscriptionStatus(): Flow<SubscriptionStatus?> =
         getSubscriptionStatusFlow?.invoke() ?: flowOf(null)

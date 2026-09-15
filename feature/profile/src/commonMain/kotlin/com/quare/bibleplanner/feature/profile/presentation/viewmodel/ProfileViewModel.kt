@@ -50,7 +50,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
@@ -70,11 +72,14 @@ internal class ProfileViewModel(
     val uiAction: SharedFlow<ProfileUiAction>
         field = MutableSharedFlow<ProfileUiAction>()
     private val isCheckingForUpdate = MutableStateFlow(false)
-    val uiState: StateFlow<ProfileUiState> = combine(
-        uiStateFactory.create(),
-        isCheckingForUpdate,
-    ) { state, checking ->
-        state.copy(isCheckingForUpdate = checking)
+    val uiState: StateFlow<ProfileUiState> = flow {
+        val reducedState = combine(
+            uiStateFactory.create(initialState = uiState.value),
+            isCheckingForUpdate,
+        ) { state, checking ->
+            state.copy(isCheckingForUpdate = checking)
+        }
+        emitAll(reducedState)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
