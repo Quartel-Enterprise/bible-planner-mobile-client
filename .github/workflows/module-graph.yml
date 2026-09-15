@@ -1,0 +1,46 @@
+name: module-graph
+
+# The module graph only changes with build scripts, build-logic, the version catalog or the Gradle
+# version, so Kotlin-only changes skip the full Gradle configuration this check needs.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/module-graph.yml'
+      - '.github/actions/gradle/action.yml'
+      - '**/*.gradle.kts'
+      - 'build-logic/**'
+      - 'gradle/libs.versions.toml'
+      - 'gradle/wrapper/gradle-wrapper.properties'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/module-graph.yml'
+      - '.github/actions/gradle/action.yml'
+      - '**/*.gradle.kts'
+      - 'build-logic/**'
+      - 'gradle/libs.versions.toml'
+      - 'gradle/wrapper/gradle-wrapper.properties'
+
+permissions:
+  contents: read
+
+# Cancels in-progress runs if a new commit is pushed to the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  module-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+
+      - name: Assert module graph
+        run: ./gradlew assertModuleGraph

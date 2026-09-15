@@ -57,5 +57,7 @@ parallel:
 A new dependency that breaks a rule means the code is in the wrong module, not that the rule needs
 an exception: move the shared piece down to a `:core:*` module instead.
 
-The `module-graph` job of the `static-analysis` workflow runs `assertModuleGraph` under the same
-triggers as ktlint.
+The `module-graph` workflow runs `assertModuleGraph` on every pull request — and on every push to
+`main` — that touches a Gradle build script, `build-logic` or the version catalog: the only files
+that can change the module graph. It is a separate workflow so that Kotlin-only changes skip the
+full Gradle configuration it needs.
