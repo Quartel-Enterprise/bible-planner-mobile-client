@@ -5,6 +5,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.loginnudge"
+        withHostTest {}
     }
     jvm()
 

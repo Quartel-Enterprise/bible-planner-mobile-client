@@ -7,6 +7,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.navigation"
+        withHostTest {}
     }
 
     jvm()

@@ -11,6 +11,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.provider.supabase"
+        withHostTest {}
     }
     jvm()
     sourceSets {

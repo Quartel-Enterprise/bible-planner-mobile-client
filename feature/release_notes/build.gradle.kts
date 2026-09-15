@@ -11,6 +11,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.release_notes"
+        withHostTest {}
     }
 
     jvm()

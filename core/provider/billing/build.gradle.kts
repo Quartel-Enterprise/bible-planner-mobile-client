@@ -43,6 +43,7 @@ private fun getRevenueErrorMessage(keyName: String): String =
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.provider.billing"
+        withHostTest {}
     }
 
     jvm()
