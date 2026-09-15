@@ -11,6 +11,7 @@ ktlint-gradle = "14.2.0"
 google-services = "4.5.0"
 firebase-crashlytics-plugin = "3.0.8"
 store-screenshots = "1.5.8"
+jraska-modules-graph-assert = "2.9.1"
 
 # Android SDK levels
 android-minSdk = "26"
@@ -192,6 +193,7 @@ compose-hotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "co
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+jraska-module-graph-assertion = { id = "com.jraska.module.graph.assertion", version.ref = "jraska-modules-graph-assert" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
