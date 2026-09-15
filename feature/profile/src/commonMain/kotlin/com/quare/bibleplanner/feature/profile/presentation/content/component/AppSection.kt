@@ -23,11 +23,10 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
+context(sharedTransitionScope: SharedTransitionScope, animatedContentScope: AnimatedContentScope)
 internal fun AppSection(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {

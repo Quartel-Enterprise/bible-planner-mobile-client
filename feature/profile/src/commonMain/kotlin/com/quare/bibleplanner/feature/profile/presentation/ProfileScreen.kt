@@ -17,12 +17,11 @@ import com.quare.bibleplanner.ui.utils.LocalMainPadding
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
+context(sharedTransitionScope: SharedTransitionScope, animatedContentScope: AnimatedContentScope)
 internal fun ProfileScreen(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
     becomeProTitleContent: @Composable () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
 ) {
     val mainPadding = LocalMainPadding.current
 
@@ -35,8 +34,6 @@ internal fun ProfileScreen(
                     state = state,
                     onEvent = onEvent,
                     becomeProTitleContent = becomeProTitleContent,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope,
                 )
             },
             landscapeContent = {
@@ -44,8 +41,6 @@ internal fun ProfileScreen(
                     state = state,
                     onEvent = onEvent,
                     becomeProTitleContent = becomeProTitleContent,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope,
                 )
             },
         )

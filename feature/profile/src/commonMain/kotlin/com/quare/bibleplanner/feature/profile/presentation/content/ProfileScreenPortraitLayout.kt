@@ -27,12 +27,11 @@ import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
 @OptIn(ExperimentalSharedTransitionApi::class)
+context(sharedTransitionScope: SharedTransitionScope, animatedContentScope: AnimatedContentScope)
 internal fun ResponsiveContentScope.profileScreenPortraitLayout(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
     becomeProTitleContent: @Composable () -> Unit = {},
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
 ) {
     responsiveItem {
         LoginCard(
@@ -59,8 +58,6 @@ internal fun ResponsiveContentScope.profileScreenPortraitLayout(
         AppSection(
             state = state,
             onEvent = onEvent,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = animatedContentScope,
         )
     }
     if (state.isInstagramLinkVisible.valueOrNull() == true) {

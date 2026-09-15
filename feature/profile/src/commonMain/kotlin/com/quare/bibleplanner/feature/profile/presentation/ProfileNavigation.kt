@@ -34,22 +34,21 @@ fun EntryProviderScope<NavKey>.profile(
     animatedContentScope: AnimatedContentScope,
 ) {
     entry<MainNavRouteDestination.Profile> {
-        ProfileTabContent(
-            navigationBar = navigationBar,
-            navigationRail = navigationRail,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = animatedContentScope,
-        )
+        context(sharedTransitionScope, animatedContentScope) {
+            ProfileTabContent(
+                navigationBar = navigationBar,
+                navigationRail = navigationRail,
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
+context(sharedTransitionScope: SharedTransitionScope, animatedContentScope: AnimatedContentScope)
 private fun ProfileTabContent(
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
 ) {
     val viewModel = koinViewModel<ProfileViewModel>()
     ProfileUiActionCollector(
@@ -65,8 +64,6 @@ private fun ProfileTabContent(
         ProfileScreen(
             state = uiState,
             onEvent = viewModel::onEvent,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = animatedContentScope,
             becomeProTitleContent = {
                 Row {
                     with(sharedTransitionScope) {

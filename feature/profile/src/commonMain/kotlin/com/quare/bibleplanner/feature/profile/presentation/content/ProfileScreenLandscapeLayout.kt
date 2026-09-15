@@ -30,12 +30,11 @@ import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
 @OptIn(ExperimentalSharedTransitionApi::class)
+context(sharedTransitionScope: SharedTransitionScope, animatedContentScope: AnimatedContentScope)
 internal fun ResponsiveContentScope.profileScreenLandscapeLayout(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,
     becomeProTitleContent: @Composable () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
 ) {
     responsiveItem {
         LoginCard(
@@ -84,8 +83,6 @@ internal fun ResponsiveContentScope.profileScreenLandscapeLayout(
                 AppSection(
                     state = state,
                     onEvent = onEvent,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope,
                 )
                 AccountDataSection(
                     isLoggedIn = state.accountStatusModel is AccountStatusModel.LoggedIn,
