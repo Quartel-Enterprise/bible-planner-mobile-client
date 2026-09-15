@@ -5,9 +5,7 @@ import com.quare.bibleplanner.core.model.date.DateModel
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.ui.component.date.DatePresentationModel
 import com.quare.bibleplanner.ui.utils.MonthPresentationMapper
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 internal class ReadDateFormatter(
     private val localDateTimeToDateMapper: LocalDateTimeToDateMapper,
     private val monthPresentationMapper: MonthPresentationMapper,

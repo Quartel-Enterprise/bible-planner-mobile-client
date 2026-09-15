@@ -18,9 +18,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 internal class DayUiStateFlowFactory(
     private val getDayDetails: GetDayDetailsUseCase,
     private val getBooks: GetBooksFlowUseCase,

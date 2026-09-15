@@ -4,10 +4,8 @@ import com.quare.bibleplanner.core.date.toLocalDate
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
 internal class ConvertUtcDateToLocalDateUseCase {
     /**
      * Converts a UTC timestamp (in milliseconds) to a LocalDate.

@@ -4,10 +4,8 @@ import com.quare.bibleplanner.core.date.toLocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
 internal class ConvertTimestampToDatePickerInitialDateUseCase {
     /**
      * Converts a timestamp to a UTC timestamp at midnight (local time) for the date picker.

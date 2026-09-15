@@ -4,10 +4,8 @@ import androidx.compose.material3.SelectableDates
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
 class EditDaySelectableDates : SelectableDates {
     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
         // Block future dates - only allow dates up to now
