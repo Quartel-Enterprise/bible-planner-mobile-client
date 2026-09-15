@@ -35,17 +35,8 @@ kotlin {
             implementation(libs.sentry)
         }
 
-        iosMain {
-            dependsOn(commonMain.get())
-            dependencies {
-                implementation(libs.crashkios.crashlytics)
-            }
-        }
-        iosArm64Main {
-            dependsOn(iosMain.get())
-        }
-        iosSimulatorArm64Main {
-            dependsOn(iosMain.get())
+        iosMain.dependencies {
+            implementation(libs.crashkios.crashlytics)
         }
     }
 }
