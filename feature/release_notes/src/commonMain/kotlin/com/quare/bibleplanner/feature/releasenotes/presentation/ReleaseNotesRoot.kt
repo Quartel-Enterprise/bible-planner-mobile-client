@@ -13,10 +13,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
+context(sharedTransitionScope: SharedTransitionScope, animatedContentScope: AnimatedContentScope)
 fun ReleaseNotesRoot(
     openUrl: (String) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     viewModel: ReleaseNotesViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -31,7 +30,5 @@ fun ReleaseNotesRoot(
         platform = viewModel.platform,
         uiState = uiState,
         onEvent = viewModel::onEvent,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedContentScope = animatedContentScope,
     )
 }

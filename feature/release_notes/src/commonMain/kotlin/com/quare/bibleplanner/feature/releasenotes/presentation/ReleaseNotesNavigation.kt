@@ -12,10 +12,8 @@ import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 fun EntryProviderScope<NavKey>.releaseNotes(sharedTransitionScope: SharedTransitionScope) {
     entry<ReleaseNotesNavRoute> {
         val uriHandler = LocalUriHandler.current
-        ReleaseNotesRoot(
-            openUrl = { url -> uriHandler.openUri(url) },
-            sharedTransitionScope = sharedTransitionScope,
-            animatedContentScope = LocalNavAnimatedContentScope.current,
-        )
+        context(sharedTransitionScope, LocalNavAnimatedContentScope.current) {
+            ReleaseNotesRoot(openUrl = { url -> uriHandler.openUri(url) })
+        }
     }
 }

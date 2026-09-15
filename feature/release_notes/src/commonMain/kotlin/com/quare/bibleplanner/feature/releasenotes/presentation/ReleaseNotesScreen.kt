@@ -46,12 +46,11 @@ import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
+context(sharedTransitionScope: SharedTransitionScope, animatedContentScope: AnimatedContentScope)
 fun ReleaseNotesScreen(
     platform: Platform,
     uiState: ReleaseNotesUiState,
     onEvent: (ReleaseNotesUiEvent) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
 ) {
     with(sharedTransitionScope) {
         Scaffold(
