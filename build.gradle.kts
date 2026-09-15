@@ -18,6 +18,7 @@ plugins {
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
+    alias(libs.plugins.jraska.module.graph.assertion)
 }
 
 val ktlintVersion: String = extensions
@@ -43,6 +44,29 @@ val appVersion: Map<String, String> = providers
 
 allprojects {
     appVersion.forEach { (key, value) -> extra[key] = value }
+}
+
+moduleGraphAssert {
+    // Production source sets only: test-only edges (e.g. androidHostTest -> :ui:theme) are not
+    // part of the architecture. Configurations a module does not have are simply ignored.
+    configurations = setOf(
+        "api",
+        "implementation",
+        "commonMainApi",
+        "commonMainImplementation",
+        "androidMainImplementation",
+        "iosMainImplementation",
+        "jvmMainImplementation",
+        "mobileMainImplementation",
+    )
+    // :core:navigation and :core:provider:koin are the composition root: they wire every feature,
+    // so they are the only core modules allowed to see features, and nothing below may see them.
+    restricted = arrayOf(
+        ":core:(?!(navigation|provider:koin) ).* -X> :(feature|ui):.*",
+        ":(feature|ui):.* -X> :core:(navigation|provider:koin)",
+        ":core:(?!(navigation|provider:koin) ).* -X> :core:(navigation|provider:koin)",
+        ":ui:.* -X> :feature:.*",
+    )
 }
 
 subprojects {

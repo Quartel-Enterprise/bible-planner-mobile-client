@@ -27,3 +27,35 @@ compilation into the task graph to check files that are already on disk.
 The `static-analysis` workflow runs the same script on every pull request — and on every push to
 `main` — that touches a `.kt` or `.kts` file, the version catalog, the ktlint script or
 `.editorconfig`.
+
+## Module graph
+
+The dependencies between Gradle modules are checked by
+[modules-graph-assert](https://github.com/jraska/modules-graph-assert), configured in the
+`moduleGraphAssert` block of the root `build.gradle.kts`. It only looks at production source sets
+(test-only dependencies are ignored) and enforces the layering: `:core:navigation` and
+`:core:provider:koin` are the composition root and the only core modules allowed to depend on
+`:feature:*` or `:ui:*`. No feature, UI or other core module may depend on them, and `:ui:*` never
+depends on `:feature:*`.
+
+```bash
+./gradlew assertModuleGraph                  # run every check (what CI runs)
+```
+
+The height of the graph (its longest dependency chain) is not enforced, since part of it is the
+intentional composition root. Keep an eye on it instead, as a deeper graph compiles less in
+parallel:
+
+```bash
+./gradlew generateModulesGraphStatistics     # module count, edge count, height, longest path
+```
+
+```bash
+./gradlew generateModulesGraphvizText -Pmodules.graph.of.module=:feature:day
+```
+
+A new dependency that breaks a rule means the code is in the wrong module, not that the rule needs
+an exception: move the shared piece down to a `:core:*` module instead.
+
+The `module-graph` job of the `static-analysis` workflow runs `assertModuleGraph` under the same
+triggers as ktlint.

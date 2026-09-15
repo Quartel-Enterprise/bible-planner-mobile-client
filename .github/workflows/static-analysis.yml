@@ -49,3 +49,17 @@ jobs:
 
       - name: Run Static Analysis
         uses: ./.github/actions/ktlint
+
+  module-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+
+      - name: Assert module graph
+        run: ./gradlew assertModuleGraph
