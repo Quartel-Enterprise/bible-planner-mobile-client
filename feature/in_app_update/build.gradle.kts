@@ -10,6 +10,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.inappupdate"
+        withHostTest {}
     }
 
     jvm()

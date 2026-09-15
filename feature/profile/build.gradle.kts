@@ -9,6 +9,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.profile"
+        withHostTest {}
     }
 
     jvm()

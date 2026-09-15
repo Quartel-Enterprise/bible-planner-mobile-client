@@ -10,6 +10,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.provider.analytics"
+        withHostTest {}
     }
 
     jvm()

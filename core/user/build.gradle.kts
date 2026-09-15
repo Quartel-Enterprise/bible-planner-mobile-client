@@ -6,6 +6,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.user"
+        withHostTest {}
     }
     jvm()
     sourceSets {
