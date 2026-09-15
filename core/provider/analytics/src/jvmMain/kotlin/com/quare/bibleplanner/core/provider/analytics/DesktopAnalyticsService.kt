@@ -5,13 +5,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.util.UUID
+import kotlin.uuid.Uuid
 
 internal class DesktopAnalyticsService(
     private val measurementProtocolClient: MeasurementProtocolClient,
 ) : AnalyticsService {
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val sessionId = UUID.randomUUID().toString()
+    private val sessionId = Uuid.random().toString()
     private val userProperties = mutableMapOf<String, String?>()
 
     override fun setUserProperty(

@@ -1,14 +1,14 @@
 package com.quare.bibleplanner.core.provider.analytics
 
-import java.util.UUID
 import java.util.prefs.Preferences
+import kotlin.uuid.Uuid
 
 internal class ClientIdProvider {
     private val preferences = Preferences.userRoot().node(PREFERENCES_NODE)
 
     fun getClientId(): String = preferences.get(CLIENT_ID_KEY, null) ?: createClientId()
 
-    private fun createClientId(): String = UUID.randomUUID().toString().also { clientId ->
+    private fun createClientId(): String = Uuid.random().toString().also { clientId ->
         preferences.put(CLIENT_ID_KEY, clientId)
     }
 

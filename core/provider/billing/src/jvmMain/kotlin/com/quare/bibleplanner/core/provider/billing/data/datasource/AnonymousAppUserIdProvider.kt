@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.provider.billing.data.datasource
 
-import java.util.UUID
 import java.util.prefs.Preferences
+import kotlin.uuid.Uuid
 
 internal class AnonymousAppUserIdProvider : GetAnonymousAppUserId {
     private val preferences = Preferences.userRoot().node(PREFERENCES_NODE)
@@ -9,7 +9,7 @@ internal class AnonymousAppUserIdProvider : GetAnonymousAppUserId {
     override fun invoke(): String = preferences.get(ANONYMOUS_APP_USER_ID_KEY, null) ?: createAnonymousAppUserId()
 
     private fun createAnonymousAppUserId(): String {
-        val rawId = UUID.randomUUID().toString().replace("-", "")
+        val rawId = Uuid.random().toHexString()
         val appUserId = ANONYMOUS_PREFIX + rawId
         preferences.put(ANONYMOUS_APP_USER_ID_KEY, appUserId)
         return appUserId

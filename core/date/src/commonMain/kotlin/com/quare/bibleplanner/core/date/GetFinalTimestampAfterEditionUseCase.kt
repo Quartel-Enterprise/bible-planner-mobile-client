@@ -4,9 +4,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class GetFinalTimestampAfterEditionUseCase {
     /**
      * Calculates the final timestamp by combining a local date with a duration.
