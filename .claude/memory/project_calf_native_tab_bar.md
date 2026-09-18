@@ -8,7 +8,7 @@ metadata:
   modified: 2026-09-14T00:56:36.890Z
 ---
 
-Branch `feat/calf-adaptive-navigation-bar` (2026-09-13): the main tab bar uses Calf `AdaptiveNavigationBar` (native UITabBar / Liquid Glass on iOS, Material NavigationBar elsewhere; the rail stays Material).
+Merged in PR #441 (2026-09-14; release notes under 2.9.0, not yet released): the main tab bar uses Calf `AdaptiveNavigationBar` (native UITabBar / Liquid Glass on iOS, Material NavigationBar elsewhere; the rail stays Material).
 
 - calf-ui 0.14.0 transitively pulls `compose-material3` 1.12.0-alpha03 over the app's 1.9.0; the user chose to accept it, with a comment on the catalog `calf` line.
 - The UITabBar is a subview of the root UIViewController, so it floats over Compose content. Calf issue #530: it stays visible over pushed screens and during back gestures. The workaround is `MainNavigationBar(isNativeBarVisible = !isNativeNavigationBar || rootTransition.isSettled())`, which swaps in a same-height Spacer while hidden.
