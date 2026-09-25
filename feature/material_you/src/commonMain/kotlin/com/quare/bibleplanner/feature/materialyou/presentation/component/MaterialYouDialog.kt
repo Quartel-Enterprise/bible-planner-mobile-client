@@ -29,8 +29,8 @@ import bibleplanner.feature.material_you.generated.resources.dynamic_colors_mess
 import bibleplanner.feature.material_you.generated.resources.dynamic_colors_title
 import bibleplanner.feature.material_you.generated.resources.dynamic_colors_toggle_label
 import bibleplanner.feature.material_you.generated.resources.got_it
-import com.mohamedrejeb.calf.ui.toggle.AdaptiveSwitch
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiEvent
+import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
@@ -85,7 +85,7 @@ fun MaterialYouDialog(
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.weight(1f),
                     )
-                    AdaptiveSwitch(
+                    AppSwitch(
                         checked = isMaterialYouActivated,
                         onCheckedChange = {
                             onEvent(AndroidColorSchemeUiEvent.OnIsDynamicColorsEnabledChange(it))

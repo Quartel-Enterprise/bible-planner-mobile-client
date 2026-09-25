@@ -25,12 +25,12 @@ import bibleplanner.feature.preferences.app_language.generated.resources.languag
 import bibleplanner.feature.preferences.app_language.generated.resources.language_spanish
 import bibleplanner.feature.preferences.app_language.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.app_language.generated.resources.sync_across_devices_title
-import com.mohamedrejeb.calf.ui.toggle.AdaptiveSwitch
 import com.quare.bibleplanner.core.utils.isLastIndex
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.applanguage.presentation.component.AppLanguageItem
 import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguageUiEvent
 import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguageUiState
+import com.quare.bibleplanner.ui.component.AppSwitch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -122,7 +122,7 @@ private fun SyncSwitch(
     onBlockedClick: () -> Unit,
 ) {
     Box {
-        AdaptiveSwitch(
+        AppSwitch(
             checked = isChecked && isLoggedIn,
             onCheckedChange = onToggle.takeIf { isLoggedIn },
             enabled = isLoggedIn,

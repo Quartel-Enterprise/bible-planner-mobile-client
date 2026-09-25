@@ -52,10 +52,10 @@ import bibleplanner.feature.read.generated.resources.reader_vertical_reading
 import bibleplanner.feature.read.generated.resources.reader_vertical_reading_description
 import bibleplanner.feature.read.generated.resources.text_size_sample
 import com.mohamedrejeb.calf.ui.slider.AdaptiveSlider
-import com.mohamedrejeb.calf.ui.toggle.AdaptiveSwitch
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
 import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
+import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.icon.ArrowRotationIcon
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.theme.font.displaySerifFontFamily
@@ -424,7 +424,7 @@ private fun SettingSwitchCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                AdaptiveSwitch(
+                AppSwitch(
                     checked = isChecked,
                     onCheckedChange = onCheckedChange,
                 )
