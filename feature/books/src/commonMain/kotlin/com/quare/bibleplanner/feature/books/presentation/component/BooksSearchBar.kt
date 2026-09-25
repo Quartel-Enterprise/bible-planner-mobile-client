@@ -1,12 +1,8 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +16,8 @@ import bibleplanner.feature.books.generated.resources.content_description_search
 import bibleplanner.feature.books.generated.resources.search_books
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,14 +46,14 @@ internal fun BooksSearchBar(
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        icon = AppIcon.Search,
                         contentDescription = stringResource(Res.string.content_description_search),
                     )
                 },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         CommonIconButton(
-                            imageVector = Icons.Default.Close,
+                            icon = AppIcon.Close,
                             contentDescription = stringResource(
                                 Res.string.content_description_clear_search,
                             ),

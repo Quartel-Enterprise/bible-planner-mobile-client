@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +31,8 @@ import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.ui.component.ProfileAvatar
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 private val avatarSize = 48.dp
@@ -57,7 +55,7 @@ internal fun LoginCard(
                     when (accountStatusModel) {
                         AccountStatusModel.Error -> {
                             Icon(
-                                imageVector = Icons.Default.Error,
+                                icon = AppIcon.Error,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(48.dp)
@@ -86,7 +84,7 @@ internal fun LoginCard(
 
                         AccountStatusModel.LoggedOut -> {
                             Icon(
-                                imageVector = Icons.Default.AccountCircle,
+                                icon = AppIcon.AccountCircle,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(48.dp)

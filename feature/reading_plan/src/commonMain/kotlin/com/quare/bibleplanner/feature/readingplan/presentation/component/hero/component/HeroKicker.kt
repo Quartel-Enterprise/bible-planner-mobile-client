@@ -3,20 +3,20 @@ package com.quare.bibleplanner.feature.readingplan.presentation.component.hero.c
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 
 @Composable
 internal fun HeroKicker(
-    icon: ImageVector?,
+    icon: AppIcon?,
     text: String,
     modifier: Modifier = Modifier,
 ) {
@@ -28,7 +28,7 @@ internal fun HeroKicker(
         if (icon != null) {
             Icon(
                 modifier = Modifier.size(17.dp),
-                imageVector = icon,
+                icon = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
             )

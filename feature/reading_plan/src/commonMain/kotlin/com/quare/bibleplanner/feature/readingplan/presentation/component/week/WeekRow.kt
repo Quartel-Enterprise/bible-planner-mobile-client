@@ -17,9 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +33,8 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 import com.quare.bibleplanner.ui.component.icon.ArrowRotationIcon
 import com.quare.bibleplanner.ui.component.progress.AppLinearProgressBar
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -137,7 +136,7 @@ private fun CompletedWeekBadge(modifier: Modifier = Modifier) {
     ) {
         Icon(
             modifier = Modifier.size(20.dp),
-            imageVector = Icons.Default.Check,
+            icon = AppIcon.Check,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSecondary,
         )

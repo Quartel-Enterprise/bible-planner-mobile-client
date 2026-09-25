@@ -8,14 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,6 +27,8 @@ import bibleplanner.feature.reading_plan.generated.resources.more_options
 import bibleplanner.feature.reading_plan.generated.resources.selected
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -151,10 +147,10 @@ private fun OrderChip(
                 )
                 Icon(
                     modifier = Modifier.size(18.dp),
-                    imageVector = if (isShowingOrderMenu) {
-                        Icons.Default.KeyboardArrowUp
+                    icon = if (isShowingOrderMenu) {
+                        AppIcon.KeyboardArrowUp
                     } else {
-                        Icons.Default.KeyboardArrowDown
+                        AppIcon.KeyboardArrowDown
                     },
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -186,7 +182,7 @@ private fun OrderDropdownMenu(
                 trailingIcon = {
                     if (type == selectedReadingPlan) {
                         Icon(
-                            imageVector = Icons.Default.Check,
+                            icon = AppIcon.Check,
                             contentDescription = stringResource(Res.string.selected),
                             tint = MaterialTheme.colorScheme.primary,
                         )
@@ -206,7 +202,7 @@ private fun OverflowMenuButton(
     Box(modifier = modifier) {
         IconButton(onClick = { onEvent(ReadingPlanUiEvent.OnOverflowClick) }) {
             Icon(
-                imageVector = Icons.Default.MoreVert,
+                icon = AppIcon.MoreVert,
                 contentDescription = stringResource(Res.string.more_options),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )

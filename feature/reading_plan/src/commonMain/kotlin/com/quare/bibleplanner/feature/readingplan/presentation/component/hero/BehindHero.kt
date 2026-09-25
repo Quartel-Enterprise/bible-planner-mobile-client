@@ -3,9 +3,6 @@ package com.quare.bibleplanner.feature.readingplan.presentation.component.hero
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +26,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.co
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toDayClick
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toShortLabel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
+import com.quare.bibleplanner.ui.icons.AppIcon
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -43,7 +41,7 @@ internal fun BehindHero(
     val animatedDaysBehind by animateIntAsState(targetValue = planStatus.daysBehind, label = "behindHeroDaysBehind")
     HeroContainer(modifier = modifier) {
         HeroKicker(
-            icon = Icons.Default.History,
+            icon = AppIcon.History,
             text = stringResource(Res.string.hero_kicker_behind),
         )
         HeroPassage(
@@ -73,7 +71,7 @@ internal fun BehindHero(
                 .fillMaxWidth()
                 .padding(top = 12.dp),
             text = stringResource(Res.string.hero_primary_resume),
-            icon = Icons.Default.PlayArrow,
+            icon = AppIcon.PlayArrow,
             trailingIcon = true,
             onClick = { onEvent(next.toDayClick()) },
         )

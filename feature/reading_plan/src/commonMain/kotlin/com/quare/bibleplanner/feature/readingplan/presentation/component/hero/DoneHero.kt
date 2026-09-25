@@ -2,9 +2,6 @@ package com.quare.bibleplanner.feature.readingplan.presentation.component.hero
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MilitaryTech
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +13,8 @@ import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.plan_done_subtitle
 import bibleplanner.feature.reading_plan.generated.resources.plan_done_title
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroContainer
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -30,7 +29,7 @@ internal fun DoneHero(
     ) {
         Icon(
             modifier = Modifier.size(40.dp),
-            imageVector = Icons.Default.MilitaryTech,
+            icon = AppIcon.MilitaryTech,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
         )

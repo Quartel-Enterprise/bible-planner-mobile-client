@@ -18,9 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 
 private const val FLASH_START_ALPHA = 0.28f
 private const val FLASH_DURATION_MILLIS = 1400
@@ -153,7 +152,7 @@ internal fun SharedTransitionScope.DayItem(
                 },
             )
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                icon = AppIcon.ChevronForward,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.outline,
             )

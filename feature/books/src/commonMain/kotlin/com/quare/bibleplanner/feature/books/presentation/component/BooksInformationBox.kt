@@ -5,10 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +26,8 @@ import bibleplanner.feature.books.generated.resources.reading_not_available_yet
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 private const val LINK_PRESENTATION = "www.web.bibleplanner.app"
@@ -50,7 +48,7 @@ internal fun BooksInformationBox(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = Icons.Default.Info,
+                icon = AppIcon.Info,
                 contentDescription = stringResource(Res.string.content_description_info),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp),
@@ -97,7 +95,7 @@ internal fun BooksInformationBox(
             HorizontalSpacer(12.dp)
 
             CommonIconButton(
-                imageVector = Icons.Default.Close,
+                icon = AppIcon.Close,
                 contentDescription = stringResource(Res.string.content_description_dismiss),
                 onClick = onDismiss,
                 modifier = Modifier.size(24.dp),

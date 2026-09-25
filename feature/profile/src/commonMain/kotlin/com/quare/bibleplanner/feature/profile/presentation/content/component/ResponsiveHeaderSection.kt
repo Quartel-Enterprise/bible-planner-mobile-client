@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,6 +32,7 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.theme.gold
 import org.jetbrains.compose.resources.stringResource
 
@@ -65,7 +63,7 @@ internal fun ResponsiveContentScope.headerSection(
                                     modifier = Modifier.weight(1f),
                                     titleContent = becomeProTitleContent,
                                     subtitle = stringResource(Res.string.become_pro_subtitle),
-                                    icon = Icons.Default.Star,
+                                    icon = AppIcon.Star,
                                     onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.BECOME_PRO)) },
                                 )
                             }
@@ -81,7 +79,7 @@ internal fun ResponsiveContentScope.headerSection(
                                         )
                                     },
                                     subtitle = stringResource(Res.string.pro_description_simple),
-                                    icon = Icons.Default.Star,
+                                    icon = AppIcon.Star,
                                     iconTint = MaterialTheme.gold,
                                     border = BorderStroke(2.dp, MaterialTheme.gold),
                                     onClick = { onEvent(ProfileUiEvent.OnProCardClick) },
@@ -104,7 +102,7 @@ internal fun ResponsiveContentScope.headerSection(
                         )
                     },
                     subtitle = stringResource(Res.string.donate_subtitle),
-                    icon = Icons.Default.Favorite,
+                    icon = AppIcon.Favorite,
                     onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.DONATE)) },
                 )
             }

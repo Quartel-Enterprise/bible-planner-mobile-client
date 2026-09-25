@@ -19,6 +19,7 @@ kotlin {
             // UI
             implementation(projects.ui.theme)
             implementation(projects.ui.utils)
+            implementation(projects.ui.icons)
 
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

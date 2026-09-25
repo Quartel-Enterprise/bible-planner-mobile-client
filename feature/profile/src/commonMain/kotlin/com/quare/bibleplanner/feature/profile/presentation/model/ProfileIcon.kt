@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.feature.profile.presentation.model
 
-import androidx.compose.ui.graphics.vector.ImageVector
+import com.quare.bibleplanner.ui.icons.AppIcon
 import org.jetbrains.compose.resources.DrawableResource
 
 internal sealed interface ProfileIcon {
-    data class ImageVectorIcon(
-        val imageVector: ImageVector,
+    data class SystemIcon(
+        val icon: AppIcon,
     ) : ProfileIcon
 
     data class DrawableResourceIcon(

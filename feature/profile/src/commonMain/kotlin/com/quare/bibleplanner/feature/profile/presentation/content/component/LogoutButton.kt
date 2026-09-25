@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -18,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.logout_button
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 private val buttonMinHeight = 44.dp
@@ -35,7 +34,7 @@ internal fun LogoutButton(
         shape = RoundedCornerShape(12.dp),
     ) {
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.Logout,
+            icon = AppIcon.Logout,
             contentDescription = null,
             modifier = Modifier.size(ButtonDefaults.IconSize),
         )

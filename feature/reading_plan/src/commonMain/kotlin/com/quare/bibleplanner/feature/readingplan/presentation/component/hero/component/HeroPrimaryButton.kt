@@ -7,19 +7,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 
 @Composable
 internal fun HeroPrimaryButton(
     text: String,
-    icon: ImageVector,
+    icon: AppIcon,
     trailingIcon: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -40,7 +40,7 @@ internal fun HeroPrimaryButton(
             if (!trailingIcon) {
                 Icon(
                     modifier = Modifier.size(20.dp),
-                    imageVector = icon,
+                    icon = icon,
                     contentDescription = null,
                 )
             }
@@ -51,7 +51,7 @@ internal fun HeroPrimaryButton(
             if (trailingIcon) {
                 Icon(
                     modifier = Modifier.size(20.dp),
-                    imageVector = icon,
+                    icon = icon,
                     contentDescription = null,
                 )
             }

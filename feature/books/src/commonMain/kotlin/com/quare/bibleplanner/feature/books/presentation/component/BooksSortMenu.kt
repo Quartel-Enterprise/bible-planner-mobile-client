@@ -1,9 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import bibleplanner.feature.books.generated.resources.Res
@@ -13,6 +10,8 @@ import bibleplanner.feature.books.generated.resources.sort_alphabetical_descendi
 import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.ui.component.AppDropdownMenu
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -41,7 +40,7 @@ internal fun BooksSortMenu(
                 trailingIcon = if (currentOrder == order) {
                     {
                         Icon(
-                            Icons.Default.Check,
+                            icon = AppIcon.Check,
                             contentDescription = stringResource(
                                 Res.string.content_description_selected,
                             ),
