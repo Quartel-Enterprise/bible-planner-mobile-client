@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.component.BooksItemsComponent
 import com.quare.bibleplanner.feature.books.presentation.component.BooksTopBar
@@ -49,7 +49,9 @@ fun BooksScreen(
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             when (state) {
-                is BooksUiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                is BooksUiState.Loading -> AdaptiveCircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
 
                 is BooksUiState.Success -> {
                     val isGrid = state.layoutFormat == BookLayoutFormat.Grid

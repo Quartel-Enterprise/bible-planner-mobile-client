@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -20,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.BookDetailsTopBar
 import com.quare.bibleplanner.feature.bookdetails.presentation.component.ChaptersGrid
@@ -63,7 +63,9 @@ fun BookDetailsScreen(
                 .fillMaxSize(),
         ) {
             when (state) {
-                BookDetailsUiState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                BookDetailsUiState.Loading -> AdaptiveCircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
 
                 is BookDetailsUiState.Success -> {
                     ResponsiveColumn(

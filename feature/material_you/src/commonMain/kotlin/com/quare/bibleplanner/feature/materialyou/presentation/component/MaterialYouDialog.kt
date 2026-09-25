@@ -16,7 +16,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +30,7 @@ import bibleplanner.feature.material_you.generated.resources.dynamic_colors_titl
 import bibleplanner.feature.material_you.generated.resources.dynamic_colors_toggle_label
 import bibleplanner.feature.material_you.generated.resources.got_it
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiEvent
+import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
@@ -85,7 +85,7 @@ fun MaterialYouDialog(
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.weight(1f),
                     )
-                    Switch(
+                    AppSwitch(
                         checked = isMaterialYouActivated,
                         onCheckedChange = {
                             onEvent(AndroidColorSchemeUiEvent.OnIsDynamicColorsEnabledChange(it))

@@ -1,20 +1,20 @@
 package com.quare.bibleplanner.feature.day.presentation.component
 
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.cancel
 import bibleplanner.feature.day.generated.resources.next
 import bibleplanner.feature.day.generated.resources.ok
 import bibleplanner.feature.day.generated.resources.select_time
+import com.mohamedrejeb.calf.ui.datepicker.AdaptiveDatePicker
+import com.mohamedrejeb.calf.ui.datepicker.rememberAdaptiveDatePickerState
+import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
+import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
@@ -27,11 +27,11 @@ internal fun TimeEditionDialog(
     onEvent: (DayUiEvent) -> Unit,
     datePickerUiState: DatePickerUiState,
 ) {
-    val datePickerState = rememberDatePickerState(
+    val datePickerState = rememberAdaptiveDatePickerState(
         initialSelectedDateMillis = datePickerUiState.initialTimestamp,
         selectableDates = datePickerUiState.selectableDates,
     )
-    val timePickerState = rememberTimePickerState(
+    val timePickerState = rememberAdaptiveTimePickerState(
         initialHour = datePickerUiState.initialHour,
         initialMinute = datePickerUiState.initialMinute,
         is24Hour = true,
@@ -62,7 +62,7 @@ internal fun TimeEditionDialog(
                 }
             },
         ) {
-            DatePicker(datePickerState)
+            AdaptiveDatePicker(datePickerState)
         }
 
         PickerType.TIME -> TimePickerDialog(
@@ -96,7 +96,7 @@ internal fun TimeEditionDialog(
                 }
             },
         ) {
-            TimePicker(timePickerState)
+            AdaptiveTimePicker(timePickerState)
         }
     }
 }

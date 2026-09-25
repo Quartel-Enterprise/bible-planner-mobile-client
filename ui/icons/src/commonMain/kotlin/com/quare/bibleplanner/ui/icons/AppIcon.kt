@@ -50,7 +50,7 @@ import com.mohamedrejeb.calf.sf.symbols.SFSymbol
 
 enum class AppIcon(
     internal val material: () -> ImageVector,
-    internal val sfSymbol: String,
+    val sfSymbol: String,
 ) {
     AccountCircle(
         material = Icons.Default::AccountCircle,

@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +42,7 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_phase_chapter
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_context
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_questions
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_reading
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationPhase
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
@@ -221,7 +221,7 @@ private fun PhaseIndicator(
                 tint = MaterialTheme.colorScheme.onPrimary,
             )
 
-            isActive -> CircularProgressIndicator(
+            isActive -> AdaptiveCircularProgressIndicator(
                 modifier = Modifier.size(14.dp),
                 strokeWidth = 2.dp,
                 color = MaterialTheme.colorScheme.primary,

@@ -55,6 +55,9 @@ kotlin {
 
             // Kermit
             implementation(libs.kermit)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
         getByName("androidHostTest").dependencies {
             implementation(projects.ui.theme)

@@ -1,9 +1,5 @@
 package com.quare.bibleplanner.feature.loginwarning.presentation
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import bibleplanner.feature.login_warning.generated.resources.Res
 import bibleplanner.feature.login_warning.generated.resources.login_warning_dismiss
@@ -17,6 +13,7 @@ import bibleplanner.feature.login_warning.generated.resources.login_warning_mess
 import bibleplanner.feature.login_warning.generated.resources.login_warning_title
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.feature.loginwarning.presentation.model.LoginWarningUiEvent
+import com.quare.bibleplanner.ui.component.dialog.AppAlertDialog
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -25,30 +22,13 @@ internal fun LoginWarningDialog(
     reason: LoginWarningReason,
     onEvent: (LoginWarningUiEvent) -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = { onEvent(LoginWarningUiEvent.OnDismiss) },
-        title = {
-            Text(
-                text = stringResource(Res.string.login_warning_title),
-                style = MaterialTheme.typography.headlineSmall,
-            )
-        },
-        text = {
-            Text(
-                text = stringResource(reason.toMessageResource()),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onEvent(LoginWarningUiEvent.OnLoginClick) }) {
-                Text(text = stringResource(Res.string.login_warning_login))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onEvent(LoginWarningUiEvent.OnDismiss) }) {
-                Text(text = stringResource(Res.string.login_warning_dismiss))
-            }
-        },
+    AppAlertDialog(
+        title = stringResource(Res.string.login_warning_title),
+        text = stringResource(reason.toMessageResource()),
+        confirmText = stringResource(Res.string.login_warning_login),
+        onConfirm = { onEvent(LoginWarningUiEvent.OnLoginClick) },
+        dismissText = stringResource(Res.string.login_warning_dismiss),
+        onDismiss = { onEvent(LoginWarningUiEvent.OnDismiss) },
     )
 }
 

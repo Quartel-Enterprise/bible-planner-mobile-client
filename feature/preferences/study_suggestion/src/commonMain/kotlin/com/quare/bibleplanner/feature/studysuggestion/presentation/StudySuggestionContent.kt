@@ -17,7 +17,6 @@ import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -47,6 +46,7 @@ import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggesti
 import com.quare.bibleplanner.feature.studysuggestion.presentation.component.StudySuggestionModeCard
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiState
+import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.ExpandableText
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import org.jetbrains.compose.resources.stringResource
@@ -183,7 +183,7 @@ private fun ToggleRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Switch(
+        AppSwitch(
             checked = settings.isEnabled,
             onCheckedChange = { isChecked -> onEvent(StudySuggestionUiEvent.OnToggleClick(isChecked)) },
         )
@@ -282,7 +282,7 @@ private fun SyncSwitch(
     onBlockedClick: () -> Unit,
 ) {
     Box {
-        Switch(
+        AppSwitch(
             checked = isChecked && isLoggedIn,
             onCheckedChange = onToggle.takeIf { isLoggedIn },
             enabled = isLoggedIn,

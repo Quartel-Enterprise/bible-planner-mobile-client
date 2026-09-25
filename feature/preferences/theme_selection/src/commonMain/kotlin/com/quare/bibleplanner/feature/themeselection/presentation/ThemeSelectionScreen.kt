@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -40,6 +39,7 @@ import com.quare.bibleplanner.feature.themeselection.presentation.component.Cont
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ThemeOptionCard
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiState
+import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import org.jetbrains.compose.resources.stringResource
 
@@ -157,7 +157,7 @@ private fun DynamicColorOption(
                 onClick = onInfoClick,
             )
         }
-        Switch(
+        AppSwitch(
             checked = isChecked,
             onCheckedChange = onToggle,
         )
@@ -209,7 +209,7 @@ private fun SyncSwitch(
     onBlockedClick: () -> Unit,
 ) {
     Box {
-        Switch(
+        AppSwitch(
             checked = isChecked && isLoggedIn,
             onCheckedChange = onToggle.takeIf { isLoggedIn },
             enabled = isLoggedIn,

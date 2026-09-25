@@ -21,7 +21,6 @@ import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,6 +41,7 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_retry
 import bibleplanner.feature.day_study.generated.resources.ai_study_subscribe
 import bibleplanner.feature.day_study.generated.resources.ai_study_title
 import bibleplanner.feature.day_study.generated.resources.ai_study_view
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
@@ -112,7 +112,7 @@ internal fun DayStudyPane(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                AdaptiveCircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         }
     }
@@ -252,7 +252,7 @@ private fun HeroButton(
         shape = RoundedCornerShape(16.dp),
     ) {
         if (isLoading) {
-            CircularProgressIndicator(
+            AdaptiveCircularProgressIndicator(
                 modifier = Modifier.size(ButtonDefaults.IconSize),
                 color = MaterialTheme.colorScheme.onPrimary,
                 strokeWidth = 2.dp,

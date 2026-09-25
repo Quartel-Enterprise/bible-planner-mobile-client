@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +28,7 @@ import bibleplanner.feature.delete_progress.generated.resources.delete_all_progr
 import bibleplanner.feature.delete_progress.generated.resources.delete_all_progress_removes_chapters
 import bibleplanner.feature.delete_progress.generated.resources.delete_all_progress_removes_plans
 import bibleplanner.feature.delete_progress.generated.resources.delete_all_progress_title
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiEvent
 import com.quare.bibleplanner.feature.deleteprogress.presentation.model.DeleteAllProgressUiState
 import com.quare.bibleplanner.ui.component.dialog.DialogConsequenceRow
@@ -152,7 +152,7 @@ private fun DeleteAllProgressStatus(uiState: DeleteAllProgressUiState) {
                 tint = MaterialTheme.colorScheme.error,
             )
         } else {
-            CircularProgressIndicator(modifier = Modifier.size(progressIconSize))
+            AdaptiveCircularProgressIndicator(modifier = Modifier.size(progressIconSize))
         }
         Text(
             text = stringResource(

@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PersonRemove
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -46,6 +45,7 @@ import bibleplanner.feature.delete_account.generated.resources.delete_account_re
 import bibleplanner.feature.delete_account.generated.resources.delete_account_servers_note
 import bibleplanner.feature.delete_account.generated.resources.delete_account_subscription_warning
 import bibleplanner.feature.delete_account.generated.resources.delete_account_title
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.feature.deleteaccount.domain.usecase.DeleteAccountPhase
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiEvent
 import com.quare.bibleplanner.feature.deleteaccount.presentation.model.DeleteAccountUiState
@@ -244,7 +244,7 @@ private fun DeleteAccountStatusContent(phase: DeleteAccountPhase?) {
                 tint = MaterialTheme.colorScheme.error,
             )
         } else {
-            CircularProgressIndicator(modifier = Modifier.size(progressIconSize))
+            AdaptiveCircularProgressIndicator(modifier = Modifier.size(progressIconSize))
         }
         Text(
             text = stringResource(phase.toMessageRes()),

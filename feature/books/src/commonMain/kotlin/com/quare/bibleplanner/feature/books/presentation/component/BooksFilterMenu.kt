@@ -1,19 +1,15 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
-import bibleplanner.feature.books.generated.resources.Res
-import bibleplanner.feature.books.generated.resources.content_description_selected
 import com.quare.bibleplanner.feature.books.presentation.model.BookFilterOption
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.ui.component.AppDropdownMenu
-import com.quare.bibleplanner.ui.icons.AppIcon
-import com.quare.bibleplanner.ui.icons.Icon
+import com.quare.bibleplanner.ui.component.AppDropdownMenuItem
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun BooksFilterMenu(
+internal fun BoxScope.BooksFilterMenu(
     isVisible: Boolean,
     filterOptions: List<BookFilterOption>,
     onEvent: (BooksUiEvent) -> Unit,
@@ -21,24 +17,14 @@ internal fun BooksFilterMenu(
     AppDropdownMenu(
         isExpanded = isVisible,
         onDismissRequest = { onEvent(BooksUiEvent.OnDismissFilterMenu) },
-    ) {
-        filterOptions.forEach { option ->
-            DropdownMenuItem(
-                text = { Text(stringResource(option.label)) },
+        items = filterOptions.map { option ->
+            AppDropdownMenuItem(
+                title = stringResource(option.label),
+                icon = null,
+                isSelected = option.isSelected,
+                isDestructive = false,
                 onClick = { onEvent(BooksUiEvent.OnToggleFilter(option.type)) },
-                trailingIcon = if (option.isSelected) {
-                    {
-                        Icon(
-                            icon = AppIcon.Check,
-                            contentDescription = stringResource(
-                                Res.string.content_description_selected,
-                            ),
-                        )
-                    }
-                } else {
-                    null
-                },
             )
-        }
-    }
+        },
+    )
 }

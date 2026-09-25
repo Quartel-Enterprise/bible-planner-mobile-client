@@ -13,7 +13,6 @@
     <string name="content_description_navigate">Navegar</string>
     <string name="content_description_search">Buscar</string>
     <string name="content_description_clear_search">Borrar búsqueda</string>
-    <string name="content_description_selected">Seleccionado</string>
     <string name="content_description_book_icon">Icono de libro</string>
     <string name="content_description_sort">Ordenar</string>
     <string name="sort_alphabetical_ascending">Alfabética (A-Z)</string>

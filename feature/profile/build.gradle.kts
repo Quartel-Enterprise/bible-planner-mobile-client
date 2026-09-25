@@ -77,6 +77,9 @@ kotlin {
 
             // Logging
             implementation(libs.kermit)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

@@ -66,6 +66,9 @@ kotlin {
 
             // Logging
             implementation(libs.kermit)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
 
         getByName("androidHostTest").dependencies {

@@ -6,7 +6,6 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,6 +14,7 @@ import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.app_section
 import bibleplanner.feature.profile.generated.resources.check_for_updates_checking
 import bibleplanner.feature.profile.generated.resources.check_for_updates_subtitle
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileMenuOptionsFactory
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
@@ -48,7 +48,7 @@ internal fun AppSection(
                     },
                     trailingContent = if (state.isCheckingForUpdate) {
                         {
-                            CircularProgressIndicator(
+                            AdaptiveCircularProgressIndicator(
                                 modifier = Modifier.size(20.dp),
                                 strokeWidth = 2.dp,
                             )

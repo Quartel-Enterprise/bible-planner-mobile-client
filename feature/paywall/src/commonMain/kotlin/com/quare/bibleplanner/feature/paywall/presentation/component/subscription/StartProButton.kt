@@ -5,7 +5,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +16,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.subscribe
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
 
@@ -35,7 +35,7 @@ internal fun StartProButton(
         shape = RoundedCornerShape(12.dp),
     ) {
         if (isLoading) {
-            CircularProgressIndicator(
+            AdaptiveCircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
                 color = MaterialTheme.colorScheme.onPrimary,
                 strokeWidth = 2.dp,

@@ -106,11 +106,13 @@ fun MainViewController(
     val viewController = LocalUIViewController.current
     App(
         onThemeResolved = { isAppInDarkTheme ->
-            viewController.overrideUserInterfaceStyle = if (isAppInDarkTheme) {
+            val userInterfaceStyle = if (isAppInDarkTheme) {
                 UIUserInterfaceStyle.UIUserInterfaceStyleDark
             } else {
                 UIUserInterfaceStyle.UIUserInterfaceStyleLight
             }
+            viewController.overrideUserInterfaceStyle = userInterfaceStyle
+            viewController.view.window?.overrideUserInterfaceStyle = userInterfaceStyle
         },
     )
 }
