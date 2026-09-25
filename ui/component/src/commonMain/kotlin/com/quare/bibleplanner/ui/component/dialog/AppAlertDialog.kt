@@ -1,14 +1,10 @@
 package com.quare.bibleplanner.ui.component.dialog
 
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.mohamedrejeb.calf.ui.dialog.AdaptiveAlertDialog
-import com.mohamedrejeb.calf.ui.dialog.uikit.AlertDialogIosActionStyle
 
 @Composable
 fun AppAlertDialog(
@@ -21,29 +17,31 @@ fun AppAlertDialog(
     isDestructive: Boolean = false,
     icon: ImageVector? = null,
 ) {
-    val resolution = remember { AlertDialogResolution() }
-    val resolveConfirm = { resolution.resolve(onConfirm) }
-    val resolveDismiss = { resolution.resolve(onDismiss) }
-    AdaptiveAlertDialog(
-        onConfirm = resolveConfirm,
-        onDismiss = resolveDismiss,
-        confirmText = confirmText,
-        dismissText = dismissText,
+    AppAlertDialog(
         title = title,
         text = text,
-        materialConfirmButton = {
-            TextButton(onClick = resolveConfirm) {
-                Text(confirmText)
-            }
-        },
-        materialDismissButton = dismissText?.let { label ->
-            {
-                TextButton(onClick = resolveDismiss) {
-                    Text(label)
-                }
-            }
-        },
-        materialIcon = icon?.let { imageVector ->
+        actions = listOfNotNull(
+            AppAlertDialogAction(
+                text = confirmText,
+                style = if (isDestructive) {
+                    AppAlertDialogActionStyle.DESTRUCTIVE
+                } else {
+                    AppAlertDialogActionStyle.DEFAULT
+                },
+                isEnabled = true,
+                onClick = onConfirm,
+            ),
+            dismissText?.let { label ->
+                AppAlertDialogAction(
+                    text = label,
+                    style = AppAlertDialogActionStyle.CANCEL,
+                    isEnabled = true,
+                    onClick = onDismiss,
+                )
+            },
+        ),
+        onDismissRequest = onDismiss,
+        icon = icon?.let { imageVector ->
             {
                 Icon(
                     imageVector = imageVector,
@@ -51,12 +49,28 @@ fun AppAlertDialog(
                 )
             }
         },
-        iosConfirmButtonStyle = if (isDestructive) {
-            AlertDialogIosActionStyle.Destructive
-        } else {
-            AlertDialogIosActionStyle.Default
+    )
+}
+
+@Composable
+fun AppAlertDialog(
+    title: String,
+    text: String?,
+    actions: List<AppAlertDialogAction>,
+    onDismissRequest: () -> Unit,
+    icon: (@Composable () -> Unit)? = null,
+    textField: AppAlertDialogTextField? = null,
+) {
+    val resolution = remember { AlertDialogResolution() }
+    PlatformAlertDialog(
+        title = title,
+        text = text,
+        actions = actions.map { action ->
+            action.copy(onClick = { resolution.resolve(action.onClick) })
         },
-        iosDismissButtonStyle = AlertDialogIosActionStyle.Cancel,
+        onDismissRequest = { resolution.resolve(onDismissRequest) },
+        icon = icon,
+        textField = textField,
     )
     DisposableEffect(resolution) {
         onDispose(resolution::close)

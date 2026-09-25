@@ -19,6 +19,7 @@ kotlin {
             implementation(projects.core.provider.room)
 
             // UI
+            implementation(projects.ui.component)
             implementation(projects.ui.utils)
 
             // Compose
@@ -36,9 +37,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
-
-            // Calf
-            implementation(libs.calf.ui)
         }
     }
 }

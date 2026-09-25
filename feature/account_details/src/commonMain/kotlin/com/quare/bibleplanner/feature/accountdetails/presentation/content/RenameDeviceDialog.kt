@@ -1,9 +1,5 @@
 package com.quare.bibleplanner.feature.accountdetails.presentation.content
 
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +11,10 @@ import bibleplanner.feature.account_details.generated.resources.account_details_
 import bibleplanner.feature.account_details.generated.resources.account_details_rename_placeholder
 import bibleplanner.feature.account_details.generated.resources.account_details_rename_title
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.RenameDeviceUiEvent
+import com.quare.bibleplanner.ui.component.dialog.AppAlertDialog
+import com.quare.bibleplanner.ui.component.dialog.AppAlertDialogAction
+import com.quare.bibleplanner.ui.component.dialog.AppAlertDialogActionStyle
+import com.quare.bibleplanner.ui.component.dialog.AppAlertDialogTextField
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -23,29 +23,28 @@ internal fun RenameDeviceDialog(
     onEvent: (RenameDeviceUiEvent) -> Unit,
 ) {
     var name by rememberSaveable { mutableStateOf(initialName) }
-    AlertDialog(
-        onDismissRequest = { onEvent(RenameDeviceUiEvent.OnDismiss) },
-        title = { Text(stringResource(Res.string.account_details_rename_title)) },
-        text = {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                singleLine = true,
-                label = { Text(stringResource(Res.string.account_details_rename_placeholder)) },
-            )
-        },
-        confirmButton = {
-            TextButton(
+    AppAlertDialog(
+        title = stringResource(Res.string.account_details_rename_title),
+        text = null,
+        actions = listOf(
+            AppAlertDialogAction(
+                text = stringResource(Res.string.account_details_rename_confirm),
+                style = AppAlertDialogActionStyle.DEFAULT,
+                isEnabled = name.isNotBlank(),
                 onClick = { onEvent(RenameDeviceUiEvent.OnConfirmClick(name)) },
-                enabled = name.isNotBlank(),
-            ) {
-                Text(stringResource(Res.string.account_details_rename_confirm))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onEvent(RenameDeviceUiEvent.OnDismiss) }) {
-                Text(stringResource(Res.string.account_details_rename_cancel))
-            }
-        },
+            ),
+            AppAlertDialogAction(
+                text = stringResource(Res.string.account_details_rename_cancel),
+                style = AppAlertDialogActionStyle.CANCEL,
+                isEnabled = true,
+                onClick = { onEvent(RenameDeviceUiEvent.OnDismiss) },
+            ),
+        ),
+        onDismissRequest = { onEvent(RenameDeviceUiEvent.OnDismiss) },
+        textField = AppAlertDialogTextField(
+            value = name,
+            label = stringResource(Res.string.account_details_rename_placeholder),
+            onValueChange = { typed -> name = typed },
+        ),
     )
 }

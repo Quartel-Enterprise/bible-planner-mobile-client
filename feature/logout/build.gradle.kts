@@ -27,6 +27,7 @@ kotlin {
             implementation(libs.kermit)
 
             // UI
+            implementation(projects.ui.component)
             implementation(projects.ui.utils)
 
             // Compose
@@ -49,9 +50,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
-
-            // Calf
-            implementation(libs.calf.ui)
         }
 
         commonTest.dependencies {
