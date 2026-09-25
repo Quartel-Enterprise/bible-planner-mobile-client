@@ -2,7 +2,8 @@
   "2.9.0": {
     "common": [
       "On the Profile tab, the list no longer jumps back to the top when you return from another screen, such as Become Pro or Release Notes: it stays where you left it, without briefly showing loading placeholders.",
-      "The release notes now show only what changed on your device: changes made just for Android, iPhone or computer appear only there."
+      "The release notes now show only what changed on your device: changes made just for Android, iPhone or computer appear only there.",
+      "Messages that pop up at the bottom of the screen, such as \"You're already on the latest version\", no longer hide behind the tab bar after you switch tabs."
     ],
     "android": [
       "In confirmation windows, actions that delete something now appear in red."

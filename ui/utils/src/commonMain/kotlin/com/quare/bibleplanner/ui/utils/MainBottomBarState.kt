@@ -5,17 +5,26 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 
 class MainBottomBarState {
-    var visibleHeightPx by mutableFloatStateOf(0f)
-        internal set
+    private val reservations = mutableStateListOf<BottomOverlayReservation>()
+
+    val visibleHeightPx: Float
+        get() = reservations.lastOrNull()?.heightPx ?: 0f
+
+    internal fun register(reservation: BottomOverlayReservation) {
+        reservations.add(reservation)
+    }
+
+    internal fun release(reservation: BottomOverlayReservation) {
+        reservations.remove(reservation)
+    }
 }
 
 val LocalMainBottomBarState = staticCompositionLocalOf { MainBottomBarState() }
@@ -23,11 +32,13 @@ val LocalMainBottomBarState = staticCompositionLocalOf { MainBottomBarState() }
 @Composable
 fun ReserveBottomOverlayHeight(heightPx: () -> Float) {
     val state = LocalMainBottomBarState.current
-    LaunchedEffect(state) {
-        snapshotFlow(heightPx).collect { height -> state.visibleHeightPx = height }
+    val reservation = remember { BottomOverlayReservation() }
+    DisposableEffect(state, reservation) {
+        state.register(reservation)
+        onDispose { state.release(reservation) }
     }
-    DisposableEffect(state) {
-        onDispose { state.visibleHeightPx = 0f }
+    LaunchedEffect(reservation) {
+        snapshotFlow(heightPx).collect { height -> reservation.heightPx = height }
     }
 }
 
