@@ -1,23 +1,23 @@
 package com.quare.bibleplanner.feature.day.presentation.component
 
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePickerDialog
 import androidx.compose.runtime.Composable
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.cancel
 import bibleplanner.feature.day.generated.resources.next
 import bibleplanner.feature.day.generated.resources.ok
 import bibleplanner.feature.day.generated.resources.select_time
-import com.mohamedrejeb.calf.ui.datepicker.AdaptiveDatePicker
 import com.mohamedrejeb.calf.ui.datepicker.rememberAdaptiveDatePickerState
-import com.mohamedrejeb.calf.ui.timepicker.AdaptiveTimePicker
 import com.mohamedrejeb.calf.ui.timepicker.rememberAdaptiveTimePickerState
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
+import com.quare.bibleplanner.ui.component.date.DatePickerDialogContent
+import com.quare.bibleplanner.ui.component.date.PickerContentCrossfade
+import com.quare.bibleplanner.ui.component.date.PickerDialog
+import com.quare.bibleplanner.ui.component.date.TimePickerDialogContent
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -36,67 +36,60 @@ internal fun TimeEditionDialog(
         initialMinute = datePickerUiState.initialMinute,
         is24Hour = true,
     )
-    when (type) {
-        PickerType.DATE -> DatePickerDialog(
-            onDismissRequest = {
+    val dismissButton: @Composable () -> Unit = {
+        TextButton(
+            onClick = {
                 onEvent(DayUiEvent.OnDismissPicker)
             },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { utcDateMillis ->
-                            onEvent(DayUiEvent.OnDateSelected(utcDateMillis))
+        ) {
+            Text(stringResource(Res.string.cancel))
+        }
+    }
+    PickerDialog(
+        onDismissRequest = {
+            onEvent(DayUiEvent.OnDismissPicker)
+        },
+    ) {
+        PickerContentCrossfade(targetState = type) { pickerType ->
+            when (pickerType) {
+                PickerType.DATE -> DatePickerDialogContent(
+                    state = datePickerState,
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                datePickerState.selectedDateMillis?.let { utcDateMillis ->
+                                    onEvent(DayUiEvent.OnDateSelected(utcDateMillis))
+                                }
+                            },
+                        ) {
+                            Text(stringResource(Res.string.next))
                         }
                     },
-                ) {
-                    Text(stringResource(Res.string.next))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        onEvent(DayUiEvent.OnDismissPicker)
-                    },
-                ) {
-                    Text(stringResource(Res.string.cancel))
-                }
-            },
-        ) {
-            AdaptiveDatePicker(datePickerState)
-        }
+                    dismissButton = dismissButton,
+                )
 
-        PickerType.TIME -> TimePickerDialog(
-            onDismissRequest = {
-                onEvent(DayUiEvent.OnDismissPicker)
-            },
-            title = {
-                Text(stringResource(Res.string.select_time))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onEvent(
-                            DayUiEvent.OnEditReadDate(
-                                hour = timePickerState.hour,
-                                minute = timePickerState.minute,
-                            ),
-                        )
+                PickerType.TIME -> TimePickerDialogContent(
+                    state = timePickerState,
+                    title = {
+                        Text(stringResource(Res.string.select_time))
                     },
-                ) {
-                    Text(stringResource(Res.string.ok))
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        onEvent(DayUiEvent.OnDismissPicker)
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                onEvent(
+                                    DayUiEvent.OnEditReadDate(
+                                        hour = timePickerState.hour,
+                                        minute = timePickerState.minute,
+                                    ),
+                                )
+                            },
+                        ) {
+                            Text(stringResource(Res.string.ok))
+                        }
                     },
-                ) {
-                    Text(stringResource(Res.string.cancel))
-                }
-            },
-        ) {
-            AdaptiveTimePicker(timePickerState)
+                    dismissButton = dismissButton,
+                )
+            }
         }
     }
 }
