@@ -9,10 +9,11 @@ import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.component.EditPlanStartDateDialog
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.viewmodel.EditPlanStartDateViewModel
+import com.quare.bibleplanner.ui.component.date.pickerDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
 
 fun EntryProviderScope<NavKey>.editPlanStartDate() {
-    entry<EditPlanStartDateNavRoute>(metadata = DialogSceneStrategy.dialog()) {
+    entry<EditPlanStartDateNavRoute>(metadata = DialogSceneStrategy.dialog(pickerDialogProperties)) {
         val viewModel: EditPlanStartDateViewModel = koinViewModel()
         val uiState by viewModel.uiState.collectAsState()
         val onEvent = viewModel::onEvent
