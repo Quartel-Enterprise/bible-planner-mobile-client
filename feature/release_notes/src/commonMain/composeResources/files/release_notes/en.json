@@ -5,8 +5,8 @@
       "The release notes now show only what changed on your device: changes made just for Android, iPhone or computer appear only there."
     ],
     "ios": [
-      "The bottom bar with the Plans, Books and Profile tabs is now the system's own tab bar — with the new Liquid Glass look on iOS 26 — following the app's light or dark theme, and the Profile tab shows your photo when you're signed in.",
-      "Toggles, sliders, loading indicators, date and time pickers, some alerts and the option menus now use iOS's own components, with the Liquid Glass look on iOS 26 and following the app's light or dark theme."
+      "The bottom bar with the Plans, Books and Profile tabs is now the system's own tab bar — with the Liquid Glass look on iOS 26 or later — following the app's light or dark theme, and the Profile tab shows your photo when you're signed in.",
+      "Toggles, sliders, loading indicators, date and time pickers, some alerts and the option menus now use iOS's own components, with the Liquid Glass look on iOS 26 or later and following the app's light or dark theme."
     ]
   },
   "2.8.5": {

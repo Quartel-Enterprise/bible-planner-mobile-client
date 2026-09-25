@@ -156,6 +156,9 @@ Transform the user's description into polished, user-facing sentences. The golde
 - **User's perspective**: describe what they *experience*, not what changed in the code
 - **Positive framing**: "You can now..." or "Fixed an issue that..." instead of dry technical descriptions
 - **Omit internal changes**: refactors, architecture changes, and dependency updates that have no visible user impact should be skipped entirely
+- **OS versions age**: the notes stay in the app for years, so when something depends on an OS
+  version, write it as a floor ("on iOS 26 or later", "on Android 15 or later"), never as a single
+  version, and don't call an OS feature "new"
 - **No redundant platform prefix**: a note in a platform bucket is only shown on that platform, so
   don't open it with "On Android," / "On iPhone," — keep a platform word only when it narrows the
   change further (e.g. "On iPhone in landscape," when iPad isn't affected)

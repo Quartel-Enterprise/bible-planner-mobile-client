@@ -5,8 +5,8 @@
       "Las notas de actualización ahora muestran solo lo que cambió en tu dispositivo: los cambios hechos solo para Android, iPhone o computadora aparecen solo en ellos."
     ],
     "ios": [
-      "La barra inferior de pestañas ahora es la del propio sistema — con el nuevo aspecto Liquid Glass en iOS 26 —, sigue el tema claro u oscuro de la app, y la pestaña de perfil muestra tu foto cuando iniciaste sesión.",
-      "Los interruptores, controles deslizantes, indicadores de carga, selectores de fecha y hora, algunos avisos y los menús de opciones ahora usan los componentes del propio iOS, con el aspecto Liquid Glass en iOS 26 y siguiendo el tema claro u oscuro de la app."
+      "La barra inferior de pestañas ahora es la del propio sistema — con el aspecto Liquid Glass en iOS 26 o posterior —, sigue el tema claro u oscuro de la app, y la pestaña de perfil muestra tu foto cuando iniciaste sesión.",
+      "Los interruptores, controles deslizantes, indicadores de carga, selectores de fecha y hora, algunos avisos y los menús de opciones ahora usan los componentes del propio iOS, con el aspecto Liquid Glass en iOS 26 o posterior y siguiendo el tema claro u oscuro de la app."
     ]
   },
   "2.8.5": {
