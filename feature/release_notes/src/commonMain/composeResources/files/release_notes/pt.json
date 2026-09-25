@@ -11,7 +11,8 @@
     "ios": [
       "A barra inferior com as abas Planos, Livros e Perfil agora é a barra de abas do próprio sistema — com o visual Liquid Glass no iOS 26 ou mais recente —, segue o tema claro ou escuro do app, e a aba Perfil mostra a sua foto quando você está conectado.",
       "Botões de liga/desliga, controles deslizantes, indicadores de carregamento, seletores de data e hora, alguns avisos e os menus de opções agora usam os componentes do próprio iOS, com o visual Liquid Glass no iOS 26 ou mais recente e seguindo o tema claro ou escuro do app.",
-      "As confirmações de sair da conta, excluir uma versão da Bíblia ou uma cor de destaque, editar seu nome e renomear um aparelho agora usam os avisos do próprio iOS, com o visual Liquid Glass no iOS 26 ou mais recente."
+      "As confirmações de sair da conta, excluir uma versão da Bíblia ou uma cor de destaque, editar seu nome e renomear um aparelho agora usam os avisos do próprio iOS, com o visual Liquid Glass no iOS 26 ou mais recente.",
+      "Com o iPhone deitado e no iPad, as abas Planos, Livros e Perfil agora ficam na barra de abas do próprio sistema, na parte de baixo, no lugar da coluna de abas na lateral da tela."
     ],
     "desktop": [
       "Nas janelas de confirmação, as ações que apagam algo agora aparecem em vermelho."
