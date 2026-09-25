@@ -47,7 +47,7 @@ fun MainTabScaffold(
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier) {
-        if (maxWidth > WIDE_SCREEN_WIDTH.dp) {
+        if (maxWidth > WIDE_SCREEN_WIDTH.dp && !isNativeNavigationBar) {
             WideTabScaffold(
                 navigationRail = navigationRail,
                 floatingActionButton = floatingActionButton,
