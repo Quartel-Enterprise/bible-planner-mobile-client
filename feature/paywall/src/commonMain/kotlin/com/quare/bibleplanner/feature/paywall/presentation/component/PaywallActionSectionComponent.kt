@@ -2,11 +2,11 @@ package com.quare.bibleplanner.feature.paywall.presentation.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.feature.paywall.presentation.utils.selectedPlanPriceDescription
@@ -32,7 +32,7 @@ internal fun PaywallActionSectionComponent(
             modifier = modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,
         ) {
-            CircularProgressIndicator()
+            AdaptiveCircularProgressIndicator()
         }
 
         PaywallUiState.Error -> PaywallErrorCard(modifier = modifier)

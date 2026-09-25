@@ -17,7 +17,6 @@ import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -41,6 +40,7 @@ import bibleplanner.feature.preferences.study_suggestion.generated.resources.stu
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_toggle_title
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.sync_across_devices_title
+import com.mohamedrejeb.calf.ui.toggle.AdaptiveSwitch
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
@@ -183,7 +183,7 @@ private fun ToggleRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Switch(
+        AdaptiveSwitch(
             checked = settings.isEnabled,
             onCheckedChange = { isChecked -> onEvent(StudySuggestionUiEvent.OnToggleClick(isChecked)) },
         )
@@ -282,7 +282,7 @@ private fun SyncSwitch(
     onBlockedClick: () -> Unit,
 ) {
     Box {
-        Switch(
+        AdaptiveSwitch(
             checked = isChecked && isLoggedIn,
             onCheckedChange = onToggle.takeIf { isLoggedIn },
             enabled = isLoggedIn,

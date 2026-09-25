@@ -46,6 +46,9 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.materialIconsExtended)
             implementation(libs.compose.components.resources)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
         getByName("androidHostTest").dependencies {
             implementation(projects.ui.theme)

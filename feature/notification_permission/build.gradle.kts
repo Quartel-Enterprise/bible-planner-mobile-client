@@ -18,6 +18,7 @@ kotlin {
             implementation(projects.core.provider.analytics)
 
             // UI
+            implementation(projects.ui.component)
             implementation(projects.ui.utils)
 
             // Compose

@@ -1,7 +1,8 @@
 {
   "2.9.0": [
     "On iPhone, the bottom bar with the Plans, Books and Profile tabs is now the system's own tab bar — with the new Liquid Glass look on iOS 26 — following the app's light or dark theme, and the Profile tab shows your photo when you're signed in.",
-    "On the Profile tab, the list no longer jumps back to the top when you return from another screen, such as Become Pro or Release Notes: it stays where you left it, without briefly showing loading placeholders."
+    "On the Profile tab, the list no longer jumps back to the top when you return from another screen, such as Become Pro or Release Notes: it stays where you left it, without briefly showing loading placeholders.",
+    "On iPhone, toggles, sliders, loading indicators, date and time pickers, some alerts and the option menus now use iOS's own components, with the Liquid Glass look on iOS 26 and following the app's light or dark theme."
   ],
   "2.8.5": [
     "Fixed chapters that wouldn't open on the reading screen in some Bible versions — such as Genesis 35 and 40 — and verses missing at the end of others, such as Genesis 41. The affected chapters are downloaded again automatically.",

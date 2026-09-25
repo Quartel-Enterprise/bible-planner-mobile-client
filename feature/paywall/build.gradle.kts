@@ -46,6 +46,9 @@ kotlin {
 
             // Kermit
             implementation(libs.kermit)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
 
         commonTest.dependencies {

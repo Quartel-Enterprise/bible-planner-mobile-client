@@ -48,6 +48,9 @@ kotlin {
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
 
         commonTest.dependencies {

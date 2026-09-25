@@ -26,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -52,6 +51,8 @@ import bibleplanner.feature.read.generated.resources.reader_text_size
 import bibleplanner.feature.read.generated.resources.reader_vertical_reading
 import bibleplanner.feature.read.generated.resources.reader_vertical_reading_description
 import bibleplanner.feature.read.generated.resources.text_size_sample
+import com.mohamedrejeb.calf.ui.slider.AdaptiveSlider
+import com.mohamedrejeb.calf.ui.toggle.AdaptiveSwitch
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
 import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
@@ -60,6 +61,7 @@ import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.theme.font.displaySerifFontFamily
 import com.quare.bibleplanner.ui.theme.font.toFontFamily
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
+import com.quare.bibleplanner.ui.utils.isIos
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
@@ -222,7 +224,6 @@ private fun TextSizeSlider(
  * twenty-position range into a row of beads. The steps still quantise the value, they are just not
  * drawn.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlainSlider(
     value: Float,
@@ -231,6 +232,52 @@ private fun PlainSlider(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
     onValueChangeFinished: (() -> Unit)? = null,
+) {
+    if (isIos) {
+        AdaptiveSlider(
+            modifier = modifier,
+            value = value,
+            onValueChange = { rawValue ->
+                onValueChange(
+                    rawValue.toNearestStep(
+                        valueRange = valueRange,
+                        steps = steps,
+                    ),
+                )
+            },
+            onValueChangeFinished = onValueChangeFinished,
+            valueRange = valueRange,
+            steps = steps,
+        )
+    } else {
+        MaterialPlainSlider(
+            modifier = modifier,
+            value = value,
+            onValueChange = onValueChange,
+            onValueChangeFinished = onValueChangeFinished,
+            valueRange = valueRange,
+            steps = steps,
+        )
+    }
+}
+
+private fun Float.toNearestStep(
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+): Float {
+    val stepSize = (valueRange.endInclusive - valueRange.start) / (steps + 1)
+    return valueRange.start + ((this - valueRange.start) / stepSize).roundToInt() * stepSize
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MaterialPlainSlider(
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    onValueChange: (Float) -> Unit,
+    onValueChangeFinished: (() -> Unit)?,
+    modifier: Modifier,
 ) {
     Slider(
         modifier = modifier,
@@ -377,7 +424,7 @@ private fun SettingSwitchCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                Switch(
+                AdaptiveSwitch(
                     checked = isChecked,
                     onCheckedChange = onCheckedChange,
                 )

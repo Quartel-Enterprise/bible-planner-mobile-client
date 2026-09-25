@@ -3,13 +3,12 @@ package com.quare.bibleplanner.feature.readingplan.presentation.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,9 +23,10 @@ import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.book_order
 import bibleplanner.feature.reading_plan.generated.resources.chronological_order
 import bibleplanner.feature.reading_plan.generated.resources.more_options
-import bibleplanner.feature.reading_plan.generated.resources.selected
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
+import com.quare.bibleplanner.ui.component.AppDropdownMenu
+import com.quare.bibleplanner.ui.component.AppDropdownMenuItem
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.StringResource
@@ -166,31 +166,24 @@ private fun OrderChip(
 }
 
 @Composable
-private fun OrderDropdownMenu(
+private fun BoxScope.OrderDropdownMenu(
     selectedReadingPlan: ReadingPlanType,
     isShowingOrderMenu: Boolean,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
-    DropdownMenu(
-        expanded = isShowingOrderMenu,
+    AppDropdownMenu(
+        isExpanded = isShowingOrderMenu,
         onDismissRequest = { onEvent(ReadingPlanUiEvent.OnOrderMenuDismiss) },
-    ) {
-        ReadingPlanType.entries.forEach { type ->
-            DropdownMenuItem(
-                text = { Text(text = stringResource(type.toLabelResource())) },
+        items = ReadingPlanType.entries.map { type ->
+            AppDropdownMenuItem(
+                title = stringResource(type.toLabelResource()),
+                icon = null,
+                isSelected = type == selectedReadingPlan,
+                isDestructive = false,
                 onClick = { onEvent(ReadingPlanUiEvent.OnPlanClick(type)) },
-                trailingIcon = {
-                    if (type == selectedReadingPlan) {
-                        Icon(
-                            icon = AppIcon.Check,
-                            contentDescription = stringResource(Res.string.selected),
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                },
             )
-        }
-    }
+        },
+    )
 }
 
 @Composable

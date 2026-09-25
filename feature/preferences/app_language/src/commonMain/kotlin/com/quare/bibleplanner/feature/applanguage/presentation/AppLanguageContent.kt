@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -26,6 +25,7 @@ import bibleplanner.feature.preferences.app_language.generated.resources.languag
 import bibleplanner.feature.preferences.app_language.generated.resources.language_spanish
 import bibleplanner.feature.preferences.app_language.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.app_language.generated.resources.sync_across_devices_title
+import com.mohamedrejeb.calf.ui.toggle.AdaptiveSwitch
 import com.quare.bibleplanner.core.utils.isLastIndex
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.applanguage.presentation.component.AppLanguageItem
@@ -122,7 +122,7 @@ private fun SyncSwitch(
     onBlockedClick: () -> Unit,
 ) {
     Box {
-        Switch(
+        AdaptiveSwitch(
             checked = isChecked && isLoggedIn,
             onCheckedChange = onToggle.takeIf { isLoggedIn },
             enabled = isLoggedIn,

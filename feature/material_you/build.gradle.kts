@@ -45,6 +45,9 @@ kotlin {
             // Data Store
             implementation(libs.datastore)
             implementation(libs.datastore.preferences)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
     }
 }

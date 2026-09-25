@@ -23,6 +23,7 @@ kotlin {
 
             // UI
             implementation(projects.ui.component)
+            implementation(projects.ui.icons)
             implementation(projects.ui.utils)
             implementation(projects.ui.theme)
 
@@ -48,6 +49,9 @@ kotlin {
 
             // Date
             implementation(libs.kotlinx.datetime)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
 
         commonTest.dependencies {

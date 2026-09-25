@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,6 +23,7 @@ import bibleplanner.feature.logout.generated.resources.logout_pending_changes_er
 import bibleplanner.feature.logout.generated.resources.logout_sign_out_anyway
 import bibleplanner.feature.logout.generated.resources.logout_syncing_progress
 import bibleplanner.feature.logout.generated.resources.logout_title
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.feature.logout.domain.usecase.LogoutPhase
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiEvent
 import com.quare.bibleplanner.feature.logout.presentation.model.LogoutUiState
@@ -127,7 +127,7 @@ private fun LogoutProgressContent(phase: LogoutPhase) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
-        CircularProgressIndicator()
+        AdaptiveCircularProgressIndicator()
         Text(
             text = stringResource(
                 when (phase) {

@@ -1,15 +1,15 @@
 package com.quare.bibleplanner.feature.editplanstartdate.presentation.component
 
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import bibleplanner.feature.preferences.edit_plan_start_date.generated.resources.Res
 import bibleplanner.feature.preferences.edit_plan_start_date.generated.resources.cancel
 import bibleplanner.feature.preferences.edit_plan_start_date.generated.resources.ok
+import com.mohamedrejeb.calf.ui.datepicker.AdaptiveDatePicker
+import com.mohamedrejeb.calf.ui.datepicker.rememberAdaptiveDatePickerState
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import org.jetbrains.compose.resources.stringResource
 
@@ -19,7 +19,7 @@ internal fun EditPlanStartDateDialog(
     initialTimestamp: Long?,
     onEvent: (EditPlanStartDateUiEvent) -> Unit,
 ) {
-    val datePickerState = rememberDatePickerState(
+    val datePickerState = rememberAdaptiveDatePickerState(
         initialSelectedDateMillis = initialTimestamp,
     )
 
@@ -48,6 +48,6 @@ internal fun EditPlanStartDateDialog(
             }
         },
     ) {
-        DatePicker(datePickerState)
+        AdaptiveDatePicker(datePickerState)
     }
 }

@@ -3,7 +3,6 @@ package com.quare.bibleplanner.feature.deleteversion.presentation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -15,6 +14,7 @@ import bibleplanner.feature.delete_version.generated.resources.cancel
 import bibleplanner.feature.delete_version.generated.resources.delete
 import bibleplanner.feature.delete_version.generated.resources.delete_version_message
 import bibleplanner.feature.delete_version.generated.resources.delete_version_title
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.feature.deleteversion.presentation.model.DeleteVersionUiEvent
 import com.quare.bibleplanner.feature.deleteversion.presentation.model.DeleteVersionUiState
 import org.jetbrains.compose.resources.stringResource
@@ -47,7 +47,7 @@ internal fun DeleteVersionScreen(
         },
         confirmButton = {
             when (uiState) {
-                is DeleteVersionUiState.Loading -> CircularProgressIndicator()
+                is DeleteVersionUiState.Loading -> AdaptiveCircularProgressIndicator()
 
                 DeleteVersionUiState.Idle -> TextButton(
                     onClick = {

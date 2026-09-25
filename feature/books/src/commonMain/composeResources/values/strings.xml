@@ -14,7 +14,6 @@
     <string name="content_description_navigate">Navigate</string>
     <string name="content_description_search">Search</string>
     <string name="content_description_clear_search">Clear search</string>
-    <string name="content_description_selected">Selected</string>
     <string name="content_description_book_icon">Book icon</string>
     <string name="content_description_sort">Sort</string>
     <string name="sort_alphabetical_ascending">Alphabetical (A-Z)</string>

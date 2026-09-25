@@ -33,7 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,6 +63,7 @@ import bibleplanner.feature.edit_profile.generated.resources.edit_profile_crop_f
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_crop_hint
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_crop_rotate
 import bibleplanner.feature.edit_profile.generated.resources.edit_profile_crop_title
+import com.mohamedrejeb.calf.ui.slider.AdaptiveSlider
 import com.quare.bibleplanner.core.image.getCircleCoverScale
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiEvent
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiState
@@ -255,7 +255,7 @@ private fun ZoomControls(
                 modifier = Modifier.size(smallZoomIconSize),
                 tint = zoomIconColor,
             )
-            Slider(
+            AdaptiveSlider(
                 value = zoom,
                 onValueChange = onZoomChange,
                 modifier = Modifier.weight(1f),

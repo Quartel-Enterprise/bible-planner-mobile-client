@@ -28,6 +28,9 @@ kotlin {
             implementation(libs.compose.materialIconsExtended)
             implementation(libs.compose.components.resources)
 
+            // Calf (adaptive iOS components)
+            implementation(libs.calf.ui)
+
             // Shimmer
             implementation(libs.compose.shimmer)
 

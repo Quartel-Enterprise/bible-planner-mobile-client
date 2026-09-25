@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.choose_your_plan
 import bibleplanner.feature.paywall.generated.resources.what_you_unlock
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallActionSectionComponent
 import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallErrorCard
@@ -295,7 +295,7 @@ private fun PaywallLandscapePlanSection(
             modifier = contentModifier,
             contentAlignment = Alignment.Center,
         ) {
-            CircularProgressIndicator()
+            AdaptiveCircularProgressIndicator()
         }
 
         PaywallUiState.Error -> PaywallErrorCard(modifier = contentModifier)

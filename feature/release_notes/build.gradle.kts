@@ -59,6 +59,9 @@ kotlin {
 
             // Ktor
             implementation(libs.ktor.client.core)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
 
         commonTest.dependencies {

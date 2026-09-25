@@ -15,9 +15,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.TabletMac
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,10 +37,14 @@ import bibleplanner.feature.account_details.generated.resources.account_details_
 import bibleplanner.feature.account_details.generated.resources.account_details_rename
 import bibleplanner.feature.account_details.generated.resources.account_details_sign_out
 import bibleplanner.feature.account_details.generated.resources.account_details_this_device
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.devices.domain.model.DeviceFormFactor
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.AccountDetailsUiEvent
 import com.quare.bibleplanner.feature.accountdetails.presentation.model.DeviceUiModel
+import com.quare.bibleplanner.ui.component.AppDropdownMenu
+import com.quare.bibleplanner.ui.component.AppDropdownMenuItem
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
+import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.utils.format
 import org.jetbrains.compose.resources.stringResource
 
@@ -113,40 +114,32 @@ private fun DeviceMenu(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        DropdownMenu(
-            expanded = isMenuExpanded,
+        AppDropdownMenu(
+            isExpanded = isMenuExpanded,
             onDismissRequest = { isMenuExpanded = false },
-        ) {
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.account_details_rename)) },
-                onClick = {
-                    isMenuExpanded = false
-                    onEvent(AccountDetailsUiEvent.OnRenameDeviceClick(device))
-                },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = null)
-                },
-            )
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(Res.string.account_details_sign_out),
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                },
-                onClick = {
-                    isMenuExpanded = false
-                    onEvent(AccountDetailsUiEvent.OnSignOutDeviceClick(device))
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Logout,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
-                    )
-                },
-            )
-        }
+            items = listOf(
+                AppDropdownMenuItem(
+                    title = stringResource(Res.string.account_details_rename),
+                    icon = AppIcon.Edit,
+                    isSelected = false,
+                    isDestructive = false,
+                    onClick = {
+                        isMenuExpanded = false
+                        onEvent(AccountDetailsUiEvent.OnRenameDeviceClick(device))
+                    },
+                ),
+                AppDropdownMenuItem(
+                    title = stringResource(Res.string.account_details_sign_out),
+                    icon = AppIcon.Logout,
+                    isSelected = false,
+                    isDestructive = true,
+                    onClick = {
+                        isMenuExpanded = false
+                        onEvent(AccountDetailsUiEvent.OnSignOutDeviceClick(device))
+                    },
+                ),
+            ),
+        )
     }
 }
 
@@ -156,7 +149,7 @@ private fun DeviceSignOutSpinner() {
         modifier = Modifier.size(48.dp),
         contentAlignment = Alignment.Center,
     ) {
-        CircularProgressIndicator(
+        AdaptiveCircularProgressIndicator(
             modifier = Modifier.size(18.dp),
             strokeWidth = 2.dp,
         )

@@ -8,4 +8,5 @@
     <string name="show_more">Ver mais</string>
     <string name="show_less">Ver menos</string>
     <string name="megabytes_size">%1$d,%2$d MB</string>
+    <string name="selected">Selecionado</string>
 </resources>

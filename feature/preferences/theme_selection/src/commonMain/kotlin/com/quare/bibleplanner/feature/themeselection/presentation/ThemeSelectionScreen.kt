@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -36,6 +35,7 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.info
 import bibleplanner.feature.preferences.theme_selection.generated.resources.select_contrast
 import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_title
+import com.mohamedrejeb.calf.ui.toggle.AdaptiveSwitch
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ContrastSelector
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ThemeOptionCard
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
@@ -157,7 +157,7 @@ private fun DynamicColorOption(
                 onClick = onInfoClick,
             )
         }
-        Switch(
+        AdaptiveSwitch(
             checked = isChecked,
             onCheckedChange = onToggle,
         )
@@ -209,7 +209,7 @@ private fun SyncSwitch(
     onBlockedClick: () -> Unit,
 ) {
     Box {
-        Switch(
+        AdaptiveSwitch(
             checked = isChecked && isLoggedIn,
             onCheckedChange = onToggle.takeIf { isLoggedIn },
             enabled = isLoggedIn,

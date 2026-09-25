@@ -57,6 +57,9 @@ kotlin {
 
             // DataStore
             implementation(libs.datastore.preferences)
+
+            // Calf
+            implementation(libs.calf.ui)
         }
 
         commonTest.dependencies {

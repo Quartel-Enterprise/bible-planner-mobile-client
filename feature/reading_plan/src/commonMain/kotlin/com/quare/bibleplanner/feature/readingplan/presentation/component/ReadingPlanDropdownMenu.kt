@@ -1,53 +1,30 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.component
 
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanMenuOptionsFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
-import com.quare.bibleplanner.ui.icons.Icon
+import com.quare.bibleplanner.ui.component.AppDropdownMenu
+import com.quare.bibleplanner.ui.component.AppDropdownMenuItem
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ReadingPlanDropdownMenu(
+internal fun BoxScope.ReadingPlanDropdownMenu(
     isShowingMenu: Boolean,
     onEvent: (ReadingPlanUiEvent) -> Unit,
 ) {
-    DropdownMenu(
-        expanded = isShowingMenu,
-        onDismissRequest = {
-            onEvent(ReadingPlanUiEvent.OnOverflowDismiss)
-        },
-    ) {
-        ReadingPlanMenuOptionsFactory.options.forEach { option ->
-            val tint = if (option.type == OverflowOption.DELETE_PROGRESS) {
-                MaterialTheme.colorScheme.error
-            } else {
-                LocalContentColor.current
-            }
-            val text = stringResource(option.name)
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = text,
-                        color = tint,
-                    )
-                },
-                onClick = {
-                    onEvent(ReadingPlanUiEvent.OnOverflowOptionClick(option.type))
-                },
-                leadingIcon = {
-                    Icon(
-                        icon = option.icon,
-                        contentDescription = text,
-                        tint = tint,
-                    )
-                },
+    AppDropdownMenu(
+        isExpanded = isShowingMenu,
+        onDismissRequest = { onEvent(ReadingPlanUiEvent.OnOverflowDismiss) },
+        items = ReadingPlanMenuOptionsFactory.options.map { option ->
+            AppDropdownMenuItem(
+                title = stringResource(option.name),
+                icon = option.icon,
+                isSelected = false,
+                isDestructive = option.type == OverflowOption.DELETE_PROGRESS,
+                onClick = { onEvent(ReadingPlanUiEvent.OnOverflowOptionClick(option.type)) },
             )
-        }
-    }
+        },
+    )
 }

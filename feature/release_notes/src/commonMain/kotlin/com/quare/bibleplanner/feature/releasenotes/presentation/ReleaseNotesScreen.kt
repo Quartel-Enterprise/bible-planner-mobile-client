@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -31,6 +30,7 @@ import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_
 import bibleplanner.feature.release_notes.generated.resources.release_notes_tab_upcoming
 import bibleplanner.feature.release_notes.generated.resources.release_notes_view_all_github
 import bibleplanner.ui.component.generated.resources.ic_github
+import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.releasenotes.presentation.component.ReleaseNoteCard
 import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseNotesTab
@@ -98,7 +98,7 @@ fun ReleaseNotesScreen(
                                     modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
                                     contentAlignment = Alignment.Center,
                                 ) {
-                                    CircularProgressIndicator()
+                                    AdaptiveCircularProgressIndicator()
                                 }
                             }
                         }
