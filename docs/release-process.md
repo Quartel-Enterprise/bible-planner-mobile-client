@@ -146,7 +146,7 @@ flowchart TD
 
 ## Release notes ("What's New")
 
-Release notes live in three JSON files, keyed by version:
+Release notes live in three JSON files, keyed by version and grouped into platform buckets:
 
 ```
 feature/release_notes/src/commonMain/composeResources/files/release_notes/{en,pt,es}.json
@@ -154,24 +154,44 @@ feature/release_notes/src/commonMain/composeResources/files/release_notes/{en,pt
 
 ```json
 {
-  "1.14.0": [
-    "You can now change the app language from the 'More' screen.",
-    "Fixed extra whitespace below the search bar."
-  ]
+  "1.14.0": {
+    "common": [
+      "You can now change the app language from the 'More' screen."
+    ],
+    "android": [
+      "Fixed content hidden behind the navigation bar."
+    ],
+    "ios": [
+      "The tab bar now uses the system's own look."
+    ]
+  }
 }
 ```
 
-Keep them updated during the development cycle with the `release-notes-updater` skill. At
-release time the pipeline reads the entry for the version being shipped and publishes it as the
-store "What's New":
+The buckets are `common`, `android`, `ios` and `desktop`, all optional. Every platform shows
+`common` followed by its own bucket, so a platform-specific note never reaches users who can't see
+the change. In the app's release notes screen, a version with nothing for the current platform is
+hidden.
 
-- **Google Play** — written as changelog files for every listing locale (`en-US`, `pt-BR`,
-  `es-419`, `es-ES`, `es-US`).
-- **App Store** — the listing's locales are discovered at runtime via the App Store Connect API,
-  and the notes are matched by language.
+Keep them updated during the development cycle with the `release-notes-updater` skill.
+[`scripts/check_release_notes.py`](../scripts/check_release_notes.py) runs in the `translations`
+workflow and fails the PR when a bucket is unknown or empty, or when the three languages disagree
+on versions, buckets or number of notes.
+
+At release time the pipeline reads the entry for the version being shipped:
+
+- **Google Play** — `common` + `android`, written as changelog files for every listing locale
+  (`en-US`, `pt-BR`, `es-419`, `es-ES`, `es-US`).
+- **App Store** — `common` + `ios`. The listing's locales are discovered at runtime via the App
+  Store Connect API, and the notes are matched by language.
+- **GitHub Release** — the English notes of every bucket, one section per platform
+  ([`scripts/github_release_notes.py`](../scripts/github_release_notes.py)), above GitHub's
+  generated list of pull requests. This is where desktop users read what changed.
 
 If no JSON entry exists for the version, the build still ships — the store "What's New" is just
-left unchanged.
+left unchanged. If the entry exists but has nothing for a store's platform, that store gets a
+generic "Bug fixes and performance improvements" instead, so the iOS submission for review isn't
+held back by a release whose notes are all for other platforms.
 
 ## Store listing screenshots
 

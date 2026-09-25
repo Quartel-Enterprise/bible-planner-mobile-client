@@ -31,3 +31,8 @@ jobs:
       # so there is nothing to set up or cache here
       - name: Check translations
         run: python3 scripts/check_translations.py
+
+      # Same gate for the in-app release notes JSON: the three languages must
+      # declare the same versions and platform buckets
+      - name: Check release notes
+        run: python3 scripts/check_release_notes.py

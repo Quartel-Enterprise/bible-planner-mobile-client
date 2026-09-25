@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.provider.language.domain.provider.LanguagePro
 import com.quare.bibleplanner.core.utils.jsonreader.JsonResourceReader
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.releasenotes.data.mapper.GitHubReleaseDateMapper
+import com.quare.bibleplanner.feature.releasenotes.data.mapper.PlatformReleaseNotesMapper
 import com.quare.bibleplanner.feature.releasenotes.data.model.GitHubReleaseDto
 import com.quare.bibleplanner.feature.releasenotes.domain.model.ReleaseNoteModel
 import com.quare.bibleplanner.feature.releasenotes.domain.repository.ReleaseNotesRepository
@@ -21,6 +22,7 @@ class GitHubReleaseNotesRepository(
     private val requestHandler: RequestHandler,
     private val jsonResourceReader: JsonResourceReader,
     private val releaseDateMapper: GitHubReleaseDateMapper,
+    private val platformReleaseNotesMapper: PlatformReleaseNotesMapper,
     private val languageProvider: LanguageProvider,
 ) : ReleaseNotesRepository {
     override suspend fun getReleaseNotes(): Result<List<ReleaseNoteModel>> = coroutineScope {
@@ -33,7 +35,7 @@ class GitHubReleaseNotesRepository(
 
         val path = "files/release_notes/$fileName"
         val jsonDeferred = async {
-            jsonResourceReader.read<Map<String, List<String>>>(path) {
+            jsonResourceReader.read<Map<String, Map<String, List<String>>>>(path) {
                 Res.readBytes(it)
             }
         }
@@ -42,7 +44,7 @@ class GitHubReleaseNotesRepository(
             val datesResult = datesDeferred.await()
             val dates = datesResult.getOrDefault(emptyMap())
             releaseDateMapper.mapToReleaseNoteModels(
-                releaseNotesMap = map,
+                releaseNotesMap = platformReleaseNotesMapper.mapToPlatformChanges(map),
                 dates = dates,
             )
         }

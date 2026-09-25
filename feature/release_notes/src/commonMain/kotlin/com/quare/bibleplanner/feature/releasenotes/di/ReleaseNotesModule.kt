@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.releasenotes.di
 
 import com.quare.bibleplanner.feature.releasenotes.data.mapper.GitHubReleaseDateMapper
+import com.quare.bibleplanner.feature.releasenotes.data.mapper.PlatformReleaseNotesMapper
 import com.quare.bibleplanner.feature.releasenotes.data.repository.GitHubReleaseNotesRepository
 import com.quare.bibleplanner.feature.releasenotes.domain.repository.ReleaseNotesRepository
 import com.quare.bibleplanner.feature.releasenotes.domain.usecase.GetReleaseNotesUseCase
@@ -13,6 +14,7 @@ import org.koin.dsl.module
 
 val releaseNotesModule = module {
     factoryOf(::GitHubReleaseDateMapper)
+    factoryOf(::PlatformReleaseNotesMapper)
     factoryOf(::GitHubReleaseNotesRepository) { bind<ReleaseNotesRepository>() }
     factoryOf(::GetReleaseNotesUseCase)
     factory { ReleaseNotesUiStateFactory(get()) }
