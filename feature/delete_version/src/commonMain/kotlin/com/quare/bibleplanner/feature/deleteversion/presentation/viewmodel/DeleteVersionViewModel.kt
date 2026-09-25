@@ -36,7 +36,6 @@ internal class DeleteVersionViewModel(
                         name = AnalyticsEventNames.BIBLE_VERSION_DELETED,
                         params = mapOf(AnalyticsParams.VERSION_ID to versionId),
                     )
-                    uiState.update { DeleteVersionUiState.Idle }
                     dismiss()
                 }
             }

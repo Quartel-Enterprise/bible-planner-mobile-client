@@ -32,6 +32,5 @@
     <string name="edit_profile_crop_flip_horizontal">Horizontal</string>
     <string name="edit_profile_crop_flip_vertical">Vertical</string>
     <string name="edit_profile_crop_rotate">Girar</string>
-    <string name="edit_profile_name_counter">%1$d/%2$d</string>
     <string name="edit_profile_close">Fechar</string>
 </resources>

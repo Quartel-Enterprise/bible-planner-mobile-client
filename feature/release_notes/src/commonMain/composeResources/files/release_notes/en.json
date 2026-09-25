@@ -4,9 +4,16 @@
       "On the Profile tab, the list no longer jumps back to the top when you return from another screen, such as Become Pro or Release Notes: it stays where you left it, without briefly showing loading placeholders.",
       "The release notes now show only what changed on your device: changes made just for Android, iPhone or computer appear only there."
     ],
+    "android": [
+      "In confirmation windows, actions that delete something now appear in red."
+    ],
     "ios": [
       "The bottom bar with the Plans, Books and Profile tabs is now the system's own tab bar — with the Liquid Glass look on iOS 26 or later — following the app's light or dark theme, and the Profile tab shows your photo when you're signed in.",
-      "Toggles, sliders, loading indicators, date and time pickers, some alerts and the option menus now use iOS's own components, with the Liquid Glass look on iOS 26 or later and following the app's light or dark theme."
+      "Toggles, sliders, loading indicators, date and time pickers, some alerts and the option menus now use iOS's own components, with the Liquid Glass look on iOS 26 or later and following the app's light or dark theme.",
+      "The confirmations for signing out, deleting a Bible version or a highlight color, editing your name and renaming a device now use iOS's own alerts, with the Liquid Glass look on iOS 26 or later."
+    ],
+    "desktop": [
+      "In confirmation windows, actions that delete something now appear in red."
     ]
   },
   "2.8.5": {
