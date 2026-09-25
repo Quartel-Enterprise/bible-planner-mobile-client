@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.readingplan.presentation.component
 
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -10,6 +9,7 @@ import androidx.compose.runtime.Composable
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanMenuOptionsFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.model.OverflowOption
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -42,7 +42,7 @@ internal fun ReadingPlanDropdownMenu(
                 },
                 leadingIcon = {
                     Icon(
-                        imageVector = option.icon,
+                        icon = option.icon,
                         contentDescription = text,
                         tint = tint,
                     )

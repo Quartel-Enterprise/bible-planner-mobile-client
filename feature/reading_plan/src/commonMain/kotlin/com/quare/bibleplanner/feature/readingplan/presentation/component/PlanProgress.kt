@@ -14,14 +14,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,6 +38,8 @@ import bibleplanner.feature.reading_plan.generated.resources.streak_days_label
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
@@ -134,7 +130,7 @@ private fun PlanProgressHeader() {
     ) {
         Icon(
             modifier = Modifier.size(20.dp),
-            imageVector = Icons.AutoMirrored.Filled.TrendingUp,
+            icon = AppIcon.TrendingUp,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.secondary,
         )
@@ -191,7 +187,7 @@ private fun PlanStatusChip(
     when {
         planStatus.mode == PlanMode.Behind && daysSinceLastRead != null -> StatusChip(
             modifier = modifier,
-            icon = Icons.Default.Schedule,
+            icon = AppIcon.Schedule,
             text = pluralStringResource(
                 Res.plurals.no_read_for_days,
                 daysSinceLastRead,
@@ -204,7 +200,7 @@ private fun PlanStatusChip(
 
         planStatus.mode.showsStreak() && planStatus.streakDays > 0 -> StatusChip(
             modifier = modifier,
-            icon = Icons.Default.LocalFireDepartment,
+            icon = AppIcon.LocalFireDepartment,
             text = pluralStringResource(
                 Res.plurals.streak_days_label,
                 planStatus.streakDays,
@@ -219,7 +215,7 @@ private fun PlanStatusChip(
 
 @Composable
 private fun StatusChip(
-    icon: ImageVector,
+    icon: AppIcon,
     text: String,
     containerColor: Color,
     contentColor: Color,
@@ -239,7 +235,7 @@ private fun StatusChip(
         ) {
             Icon(
                 modifier = Modifier.size(18.dp),
-                imageVector = icon,
+                icon = icon,
                 contentDescription = null,
                 tint = iconColor,
             )

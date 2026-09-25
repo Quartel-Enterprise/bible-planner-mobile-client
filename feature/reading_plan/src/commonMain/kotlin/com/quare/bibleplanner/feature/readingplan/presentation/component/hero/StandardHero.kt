@@ -5,17 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.days_ahead_note
@@ -44,6 +39,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.co
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toReadClick
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toShortLabel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
+import com.quare.bibleplanner.ui.icons.AppIcon
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -108,7 +104,7 @@ internal fun StandardHero(
             HeroPrimaryButton(
                 modifier = Modifier.weight(1f),
                 text = stringResource(mode.toPrimaryResource()),
-                icon = Icons.AutoMirrored.Filled.ArrowForward,
+                icon = AppIcon.ArrowForward,
                 trailingIcon = true,
                 onClick = { onEvent(next.toDayClick()) },
             )
@@ -124,9 +120,9 @@ private fun PlanMode.toKickerResource(): StringResource = when (this) {
     else -> Res.string.hero_kicker_today
 }
 
-private fun PlanMode.toKickerIcon(): ImageVector? = when (this) {
-    PlanMode.CaughtUp -> Icons.Default.CheckCircle
-    PlanMode.Ahead -> Icons.Default.Bolt
+private fun PlanMode.toKickerIcon(): AppIcon? = when (this) {
+    PlanMode.CaughtUp -> AppIcon.CheckCircle
+    PlanMode.Ahead -> AppIcon.Bolt
     else -> null
 }
 

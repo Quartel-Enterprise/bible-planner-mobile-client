@@ -7,21 +7,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 
 @Composable
 internal fun ActionCard(
     modifier: Modifier = Modifier,
     titleContent: @Composable () -> Unit,
     subtitle: String,
-    icon: ImageVector,
+    icon: AppIcon,
     containerColor: Color = Color.Unspecified,
     iconTint: Color = MaterialTheme.colorScheme.primary,
     border: BorderStroke? = null,
@@ -52,7 +52,7 @@ internal fun ActionCard(
 private fun CardContent(
     titleContent: @Composable () -> Unit,
     subtitle: String,
-    icon: ImageVector,
+    icon: AppIcon,
     iconTint: Color,
 ) {
     Column(
@@ -60,7 +60,7 @@ private fun CardContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Icon(
-            imageVector = icon,
+            icon = icon,
             contentDescription = null,
             tint = iconTint,
         )

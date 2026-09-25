@@ -30,6 +30,7 @@ kotlin {
 
             // UI
             implementation(projects.ui.component)
+            implementation(projects.ui.icons)
             implementation(projects.ui.utils)
 
             // Compose
@@ -37,7 +38,6 @@ kotlin {
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
-            implementation(libs.compose.materialIconsExtended)
             implementation(libs.compose.components.resources)
 
             // Navigation 3

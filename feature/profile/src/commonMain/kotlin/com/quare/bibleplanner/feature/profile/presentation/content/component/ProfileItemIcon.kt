@@ -4,6 +4,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -21,9 +22,9 @@ internal fun ProfileItemIcon(
             )
         }
 
-        is ProfileIcon.ImageVectorIcon -> {
+        is ProfileIcon.SystemIcon -> {
             Icon(
-                imageVector = icon.imageVector,
+                icon = icon.icon,
                 contentDescription = contentDescription,
                 tint = iconColor,
             )

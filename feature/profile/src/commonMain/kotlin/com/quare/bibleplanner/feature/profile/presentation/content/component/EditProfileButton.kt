@@ -3,9 +3,6 @@ package com.quare.bibleplanner.feature.profile.presentation.content.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -18,6 +15,8 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.edit_profile_action
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 private val expandedBreakpoint = 600.dp
@@ -41,7 +40,7 @@ internal fun EditProfileButton(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
+                    icon = AppIcon.Edit,
                     contentDescription = null,
                     modifier = Modifier.size(editIconSize),
                 )
@@ -54,7 +53,7 @@ internal fun EditProfileButton(
             modifier = modifier,
         ) {
             Icon(
-                imageVector = Icons.Default.Edit,
+                icon = AppIcon.Edit,
                 contentDescription = label,
                 modifier = Modifier.size(editIconSize),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,

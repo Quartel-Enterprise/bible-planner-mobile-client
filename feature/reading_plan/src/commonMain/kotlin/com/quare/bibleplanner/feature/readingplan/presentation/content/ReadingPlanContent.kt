@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,6 +40,8 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToWeekAction
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 import com.quare.bibleplanner.ui.component.ResponsiveSplitColumn
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
@@ -261,7 +259,7 @@ private fun ShowMoreButton(
                     },
                 )
                 Icon(
-                    imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                    icon = if (isExpanded) AppIcon.ExpandLess else AppIcon.ExpandMore,
                     contentDescription = null,
                 )
             }

@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.rememberAppIconPainter
 
 /**
  * A reusable composable wrapper around [IconButton] and [Icon] that standardizes
@@ -59,4 +61,21 @@ fun CommonIconButton(
             tint = tint,
         )
     }
+}
+
+@Composable
+fun CommonIconButton(
+    modifier: Modifier = Modifier,
+    icon: AppIcon,
+    contentDescription: String,
+    tint: Color = LocalContentColor.current,
+    onClick: () -> Unit,
+) {
+    CommonIconButton(
+        modifier = modifier,
+        painter = rememberAppIconPainter(icon),
+        contentDescription = contentDescription,
+        tint = tint,
+        onClick = onClick,
+    )
 }

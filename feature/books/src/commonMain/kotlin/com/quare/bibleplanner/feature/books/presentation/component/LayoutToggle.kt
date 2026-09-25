@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +21,8 @@ import bibleplanner.feature.books.generated.resources.grid
 import bibleplanner.feature.books.generated.resources.list
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -60,9 +58,9 @@ internal fun LayoutToggle(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = when (format) {
-                        BookLayoutFormat.List -> Icons.AutoMirrored.Filled.List
-                        BookLayoutFormat.Grid -> Icons.Default.GridView
+                    icon = when (format) {
+                        BookLayoutFormat.List -> AppIcon.ListView
+                        BookLayoutFormat.Grid -> AppIcon.GridView
                     },
                     contentDescription = stringResource(
                         when (format) {

@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.component.ActionCircleButton
+import com.quare.bibleplanner.ui.icons.AppIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +63,7 @@ internal fun BooksTopBar(
 
                     Box {
                         ActionCircleButton(
-                            imageVector = Icons.Default.SortByAlpha,
+                            icon = AppIcon.SortByAlpha,
                             onClick = { onEvent(BooksUiEvent.OnToggleSortMenu) },
                             isSelected = successState?.sortOrder != null,
                         )
@@ -80,7 +78,7 @@ internal fun BooksTopBar(
 
                     Box {
                         ActionCircleButton(
-                            imageVector = Icons.Default.FilterList,
+                            icon = AppIcon.FilterList,
                             onClick = { onEvent(BooksUiEvent.OnToggleFilterMenu) },
                             isSelected = successState?.filterOptions?.any { it.isSelected } == true,
                         )

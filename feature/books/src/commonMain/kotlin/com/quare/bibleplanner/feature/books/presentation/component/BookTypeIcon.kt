@@ -7,10 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,6 +16,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
+import com.quare.bibleplanner.ui.icons.AppIcon
+import com.quare.bibleplanner.ui.icons.Icon
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -49,7 +47,7 @@ internal fun BookTypeIcon(
                 ).background(backgroundColor),
         ) {
             Icon(
-                imageVector = if (book.isCompleted) Icons.Default.Check else Icons.AutoMirrored.Filled.MenuBook,
+                icon = if (book.isCompleted) AppIcon.Check else AppIcon.MenuBook,
                 contentDescription = null,
                 tint = if (book.isCompleted || book.progress > 0f) {
                     MaterialTheme.colorScheme.primary
