@@ -526,6 +526,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python3 scripts/check_translations.py
+          python3 scripts/check_release_notes.py
           gh api --method POST "repos/${{ github.repository }}/check-runs" \
             -f name=check-translations \
             -f head_sha="$(git rev-parse HEAD)" \
@@ -574,6 +575,12 @@ jobs:
           flags=()
           if [ "${{ needs.plan.outputs.prerelease }}" = "true" ]; then
             flags+=(--prerelease)
+          fi
+          # The in-app release notes, one section per platform, go above
+          # GitHub's generated list of pull requests.
+          notes="$(python3 scripts/github_release_notes.py "${{ needs.plan.outputs.display_version }}")"
+          if [ -n "$notes" ]; then
+            flags+=(--notes "$notes")
           fi
           gh release create "${{ needs.plan.outputs.display_version }}" \
             --target main \
