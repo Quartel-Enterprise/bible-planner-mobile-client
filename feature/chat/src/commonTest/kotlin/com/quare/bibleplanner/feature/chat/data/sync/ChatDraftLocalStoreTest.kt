@@ -1,12 +1,9 @@
 package com.quare.bibleplanner.feature.chat.data.sync
 
-import com.quare.bibleplanner.core.provider.room.dao.ChatDraftDao
 import com.quare.bibleplanner.core.provider.room.entity.ChatDraftEntity
 import com.quare.bibleplanner.feature.chat.data.dto.ChatDraftDto
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatDraftMapper
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -112,6 +109,58 @@ internal class ChatDraftLocalStoreTest {
         assertNull(dao.rows.value[THREAD_KEY])
     }
 
+    @Test
+    fun `GIVEN pending and synced rows WHEN listing what to push THEN only the pending ones are returned`() = runTest {
+        // Given
+        dao.rows.value = mapOf(
+            THREAD_KEY to draftRow(isPendingSync = true),
+            OTHER_THREAD_KEY to draftRow(isPendingSync = false).copy(threadKey = OTHER_THREAD_KEY),
+        )
+
+        // When
+        val pending = store.getPending()
+
+        // Then
+        assertEquals(
+            expected = listOf(THREAD_KEY),
+            actual = pending.map(ChatDraftEntity::threadKey),
+        )
+        assertEquals(
+            expected = listOf(THREAD_KEY),
+            actual = store.observePending().first().map(ChatDraftEntity::threadKey),
+        )
+    }
+
+    @Test
+    fun `GIVEN a local row WHEN preparing it for the server THEN it carries the user and its text`() {
+        // When
+        val dto = store.toDto(
+            userId = "user-1",
+            entity = draftRow(isPendingSync = true),
+        )
+
+        // Then
+        assertEquals(
+            expected = "user-1",
+            actual = dto.userId,
+        )
+        assertEquals(
+            expected = THREAD_KEY,
+            actual = dto.threadKey,
+        )
+        assertEquals(
+            expected = "Por que",
+            actual = dto.content,
+        )
+    }
+
+    private fun draftRow(isPendingSync: Boolean): ChatDraftEntity = ChatDraftEntity(
+        threadKey = THREAD_KEY,
+        content = "Por que",
+        updatedAtEpochMillis = 1_000,
+        isPendingSync = isPendingSync,
+    )
+
     private fun remoteDraft(
         content: String,
         updatedAtEpochMillis: Long = 1_000,
@@ -127,57 +176,6 @@ internal class ChatDraftLocalStoreTest {
 
     private companion object {
         const val THREAD_KEY = "day:CHRONOLOGICAL:1:2"
-    }
-}
-
-private class FakeChatDraftDao : ChatDraftDao {
-    val rows: MutableStateFlow<Map<String, ChatDraftEntity>> = MutableStateFlow(emptyMap())
-
-    override fun observeDraft(threadKey: String): Flow<ChatDraftEntity?> = rows
-        .map { current -> current[threadKey] }
-
-    override suspend fun upsertDraft(draft: ChatDraftEntity) {
-        rows.value = rows.value + (draft.threadKey to draft)
-    }
-
-    override fun getPendingSyncFlow(): Flow<List<ChatDraftEntity>> = rows
-        .map { current -> current.values.filter(ChatDraftEntity::isPendingSync) }
-
-    override suspend fun getPendingSync(): List<ChatDraftEntity> = rows.value.values
-        .filter(ChatDraftEntity::isPendingSync)
-
-    override suspend fun markSynced(
-        threadKey: String,
-        syncedUpdatedAt: Long,
-    ) {
-        val row = rows.value[threadKey] ?: return
-        if (row.updatedAtEpochMillis != syncedUpdatedAt) return
-        rows.value = rows.value + (threadKey to row.copy(isPendingSync = false))
-    }
-
-    override suspend fun applyRemoteDraft(
-        threadKey: String,
-        content: String,
-        remoteUpdatedAt: Long,
-    ): Int {
-        val row = rows.value[threadKey] ?: return 0
-        if (row.isPendingSync || row.updatedAtEpochMillis >= remoteUpdatedAt) return 0
-        rows.value = rows.value + (
-            threadKey to row.copy(
-                content = content,
-                updatedAtEpochMillis = remoteUpdatedAt,
-            )
-        )
-        return 1
-    }
-
-    override suspend fun getDraft(threadKey: String): ChatDraftEntity? = rows.value[threadKey]
-
-    override suspend fun deleteDraft(threadKey: String) {
-        rows.value = rows.value - threadKey
-    }
-
-    override suspend fun deleteAll() {
-        rows.value = emptyMap()
+        const val OTHER_THREAD_KEY = "conversation-1"
     }
 }

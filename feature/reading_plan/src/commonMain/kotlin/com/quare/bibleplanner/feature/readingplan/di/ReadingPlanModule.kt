@@ -1,16 +1,20 @@
 package com.quare.bibleplanner.feature.readingplan.di
 
+import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.tracker.BibleProgressMilestoneTracker
 import com.quare.bibleplanner.feature.readingplan.domain.tracker.ReadingStreakMilestoneTracker
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetPlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.ObservePlansByWeek
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveDaySituationMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveMilestoneMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveOverallProgressMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolvePlanStatus
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveStreakMotivation
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.UpdateDayReadStatus
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.FindFirstWeekWithUnreadBookUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.GetPlanMotivationMessageUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.GetSelectedReadingPlanFlowUseCase
@@ -43,6 +47,8 @@ val readingPlanModule = module {
     factoryOf(::ResolvePlanStatusUseCase).bind<ResolvePlanStatus>()
     factoryOf(::BibleProgressMilestoneTracker)
     factoryOf(::ReadingStreakMilestoneTracker)
+    factory<ObservePlansByWeek> { ObservePlansByWeek(get<GetPlansByWeekUseCase>()::invoke) }
+    factory<UpdateDayReadStatus> { UpdateDayReadStatus(get<UpdateDayReadStatusUseCase>()::invoke) }
 
     // Presentation
     viewModelOf(::ReadingPlanViewModel)

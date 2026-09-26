@@ -81,9 +81,11 @@ internal class FakeChatConversationsRemoteDataSource : ChatConversationsRemoteDa
     val renamed: MutableList<Pair<String, String>> = mutableListOf()
     val deleted: MutableList<String> = mutableListOf()
     var fetchCount: Int = 0
+    var fetchFailure: Throwable? = null
 
     override suspend fun fetchAll(): List<ChatConversationDto> {
         fetchCount++
+        fetchFailure?.let { throw it }
         return remoteConversations
     }
 
