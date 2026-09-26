@@ -5,6 +5,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.clear"
+        withHostTest {}
     }
 
     jvm()
@@ -22,6 +23,15 @@ kotlin {
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(projects.core.date)
+            implementation(projects.core.model)
+            implementation(projects.core.provider.room)
+            implementation(libs.kotlinx.datetime)
         }
     }
 }

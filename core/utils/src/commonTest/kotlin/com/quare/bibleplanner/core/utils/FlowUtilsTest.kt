@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.utils
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -68,5 +69,17 @@ class FlowUtilsTest {
 
         // Then
         assertEquals(expected = listOf(0, 1, 2), actual = emissions)
+    }
+
+    @Test
+    fun `replaces the state flow value`() {
+        // Given
+        val state = MutableStateFlow(0)
+
+        // When
+        state.updateValue(5)
+
+        // Then
+        assertEquals(expected = 5, actual = state.value)
     }
 }
