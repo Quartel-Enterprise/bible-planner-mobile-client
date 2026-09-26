@@ -38,12 +38,15 @@ coming from the cache, even for a pull request that doesn't touch the app's code
 The ktlint action caches its own things: the CLI, keyed by version, and the custom ruleset jar,
 keyed by its sources. It sets up Gradle only when the jar has to be rebuilt.
 
-## Instrumented tests
+## UI tests
 
-The `instrumented-tests` workflow runs the [Compose UI tests](testing/compose-ui-tests.md), and the
-rest of `commonTest` with them, for every module that has a `src/androidDeviceTest` directory.
-`scripts/instrumented_shard.sh` finds those modules, so a new one joins without editing the
-workflow. Their JVM run is not here: `unit-tests` already runs it as part of `jvmTest`.
+The `ui-tests` workflow runs the [Compose UI tests](testing/compose-ui-tests.md) of every module
+that has a `src/androidDeviceTest` directory. `scripts/ui_test_shard.sh` finds those modules, so a
+new one joins without editing the workflow. `unit-tests` in `build-and-test` passes
+`-PuiTests=exclude` and leaves them to this workflow, so each job reports one kind of test.
+
+- **`desktop`** runs them on the JVM with `-PuiTests=only`, which leaves the unit tests of the same
+  modules to `unit-tests`. Only the modules with UI tests and what they depend on compile here.
 
 - **`android`** has two shards, and each boots its own API 35 `x86_64` emulator with KVM. The
   script deals the modules to the shards round-robin, so keep `SHARD_COUNT` equal to the length of
@@ -61,7 +64,8 @@ workflow. Their JVM run is not here: `unit-tests` already runs it as part of `jv
   the same Kotlin version, so a library bump rebuilds only what changed. It is the slowest job of a
   pull request, so it also writes its Gradle cache there.
 
-Both upload their test reports when they fail.
+The device jobs run the rest of `commonTest` too, since `androidDeviceTest` and `iosTest` depend on
+all of it. Every job uploads its test reports when it fails.
 
 ## Adding a workflow
 

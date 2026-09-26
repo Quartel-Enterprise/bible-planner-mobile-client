@@ -11,17 +11,23 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 // Compose UI tests are written once, in commonTest, with runComposeUiTest. They run on the jvm
 // target and the iOS simulator in every Compose module, and on an Android device in the modules
-// that have a src/androidDeviceTest directory. scripts/instrumented_shard.sh finds those modules
-// by the same directory, so the build and the CI workflow never disagree on which ones they are.
+// that have a src/androidDeviceTest directory. scripts/ui_test_shard.sh finds those modules by
+// the same directory, so the build and the CI workflow never disagree on which ones they are.
 private const val UI_TEST_CLASS_PATTERN = "*UiTest"
 private const val UI_TESTING_MODULE = ":ui:testing"
 private const val DEVICE_TEST_SOURCE_SET = "androidDeviceTest"
 private const val INSTRUMENTATION_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
 private const val DEVICE_TEST_TASK_SUFFIX = "AndroidDeviceTest"
 private const val DEVICE_TEST_MIN_SDK = 30
+private const val UI_TESTS_PROPERTY = "uiTests"
+private const val UI_TESTS_EXCLUDED = "exclude"
+private const val UI_TESTS_ONLY = "only"
 
 private val Project.hasDeviceTests: Boolean
     get() = file("src/$DEVICE_TEST_SOURCE_SET").isDirectory
+
+private val Project.uiTestsSelection: String?
+    get() = providers.gradleProperty(UI_TESTS_PROPERTY).orNull
 
 private val Project.isBuildingDeviceTests: Boolean
     get() = gradle.startParameter.taskNames.any { taskName -> taskName.endsWith(DEVICE_TEST_TASK_SUFFIX) }
@@ -78,5 +84,25 @@ fun Project.configureComposeUiTests() {
     // that commonTest hands it can't run there. They run on a device instead.
     tasks.withType<Test>().matching { task -> task.name == "testAndroidHostTest" }.configureEach {
         filter.excludeTestsMatching(UI_TEST_CLASS_PATTERN)
+    }
+
+    // -PuiTests=exclude leaves jvmTest with the unit tests alone, for CI's unit-tests job and the
+    // coverage rules. -PuiTests=only keeps only the UI tests, for the desktop job of ui-tests.
+    // Without it jvmTest runs both, so a local run and the IDE still see every test. A property
+    // and not --tests, which applies only to the task right before it on the command line.
+    val selection = uiTestsSelection
+    tasks.withType<Test>().matching { task -> task.name == "jvmTest" }.configureEach {
+        when (selection) {
+            UI_TESTS_EXCLUDED -> filter.excludeTestsMatching(UI_TEST_CLASS_PATTERN)
+
+            UI_TESTS_ONLY -> {
+                filter.includeTestsMatching(UI_TEST_CLASS_PATTERN)
+                filter.isFailOnNoMatchingTests = false
+            }
+
+            null -> Unit
+
+            else -> error("-P$UI_TESTS_PROPERTY must be $UI_TESTS_EXCLUDED or $UI_TESTS_ONLY, not $selection")
+        }
     }
 }

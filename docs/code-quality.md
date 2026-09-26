@@ -78,19 +78,21 @@ through `bibleplanner.kotlin.multiplatform`. A new module is measured as soon as
 Excluding more code is a change to that table and to the filters, reviewed like any other: the
 default for new code is to be measured and tested.
 
-The [Compose UI tests](testing/compose-ui-tests.md) run on `jvmTest` too, so Kover does see the
-composables they render. They still stay out of the report. Counting them drops the merged report
-from 95% to 67% (September 2026): the seven screens with UI tests sit between 70% and 84%, and
-about thirty modules whose UI has no tests yet pull the total down. Chat, the paywall, the verse
-actions and the profile editor are the largest of them. Lift the two composable filters once
-enough of that UI is covered to clear the bar with them in.
+The [Compose UI tests](testing/compose-ui-tests.md) stay out of the report too: `unit-tests` runs
+`jvmTest` with `-PuiTests=exclude`, and they run in the `desktop` job of `ui-tests` instead. That
+loses nothing today, since what they exercise is the composables the filters leave out. Measuring
+the composables would take both back: the UI tests in the coverage run and the two filters gone.
+With both, the merged report drops from 95% to 67% (September 2026): the seven screens with UI tests
+sit between 70% and 84%, and about thirty modules whose UI has no tests yet pull the total down.
+Chat, the paywall, the verse actions and the profile editor are the largest of them. Revisit it once
+enough of that UI is covered to clear the bar.
 
 Branch coverage is reported but not gated: `@Serializable` classes carry generated branches
 (`write$Self`, the synthetic constructor) that no test of ours should chase.
 
 ### In CI
 
-The `unit-tests` job of the `build-and-test` workflow runs `jvmTest` and both rules in one Gradle
+The `unit-tests` job of the `build-and-test` workflow runs `jvmTest` (without the UI tests) and both rules in one Gradle
 call with `--continue`, so a coverage failure doesn't hide a test failure, and uploads the HTML
 report as the `coverage-report` artifact. The same call compiles the desktop app, since `jvmTest`
 has already compiled the jvm target it depends on. On a pull request it first fetches the tip of the

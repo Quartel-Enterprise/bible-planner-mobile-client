@@ -6,9 +6,15 @@ recommends for multiplatform UI tests. A test is written once, in `commonTest`, 
 
 | Target | Task | Where it runs |
 | --- | --- | --- |
-| Desktop JVM | `jvmTest` | every pull request, in `build-and-test`, and it counts towards coverage |
-| iOS simulator | `iosSimulatorArm64Test` | the `ios` job of `instrumented-tests` |
-| Android device | `connectedAndroidDeviceTest` | the `android` job of `instrumented-tests`, on an API 35 emulator |
+| Desktop JVM | `jvmTest` | the `desktop` job of `ui-tests` |
+| iOS simulator | `iosSimulatorArm64Test` | the `ios` job of `ui-tests` |
+| Android device | `connectedAndroidDeviceTest` | the `android` job of `ui-tests`, on an API 35 emulator |
+
+`jvmTest` runs the UI tests and the unit tests together, unless `-PuiTests` picks one kind:
+`exclude` leaves only the unit tests, which is what `unit-tests` in `build-and-test` runs with the
+coverage rules, and `only` leaves only the UI tests, which is what the `desktop` job runs. It is a
+property and not `--tests` because `--tests` applies only to the task right before it on the
+command line.
 
 The Android host (`testAndroidHostTest`) has no `Instrumentation` to launch the test activity with, so
 `build-logic` excludes the `*UiTest` classes from it. The rest of `commonTest` still runs there.
@@ -71,7 +77,7 @@ internal class ReadingPlanUiTest {
 ## Running them
 
 ```bash
-./gradlew :feature:reading_plan:jvmTest --tests '*UiTest'
+./gradlew :feature:reading_plan:jvmTest -PuiTests=only
 ```
 
 ```bash
@@ -82,11 +88,15 @@ internal class ReadingPlanUiTest {
 ./gradlew :feature:reading_plan:connectedAndroidDeviceTest
 ```
 
-`scripts/instrumented_shard.sh` prints those tasks for every module that has device tests, which is
-what CI runs:
+`scripts/ui_test_shard.sh` prints those tasks for every module that has device tests, which is
+what CI runs (`desktop`, `connected` or `ios`):
 
 ```bash
-./gradlew $(./scripts/instrumented_shard.sh connected 0 1)
+./gradlew $(./scripts/ui_test_shard.sh desktop 0 1) -PuiTests=only
+```
+
+```bash
+./gradlew $(./scripts/ui_test_shard.sh connected 0 1)
 ```
 
 ## On an Android device
