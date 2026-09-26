@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.date.HasCooldownElapsedUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleUpdatePromptPreferences
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPendingBibleUpdatesUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ShouldShowBibleUpdatePromptUseCase
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleRepository
 import com.quare.bibleplanner.feature.bibleversion.fake.bibleModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -74,12 +74,13 @@ internal class PendingBibleUpdatesPromptViewModelTest {
             ShouldShowBibleUpdatePromptUseCase(
                 getPendingBibleUpdates = GetPendingBibleUpdatesUseCase(
                     FakeBibleRepository(
-                        listOf(
+                        bibles = listOf(
                             bibleModel(
                                 id = "ACF",
                                 hasPendingUpdate = hasPendingUpdate,
                             ),
                         ),
+                        selectedVersionId = "ACF",
                     ),
                 ),
                 bibleUpdatePromptPreferences = NeverDismissedPromptPreferences(),

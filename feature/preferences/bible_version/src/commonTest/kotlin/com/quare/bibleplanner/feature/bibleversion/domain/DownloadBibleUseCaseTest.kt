@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.bibleversion.domain
 
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -15,7 +16,6 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamen
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPrioritizedBookIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleVersionRepository
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryBibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryChapterDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryVerseDao

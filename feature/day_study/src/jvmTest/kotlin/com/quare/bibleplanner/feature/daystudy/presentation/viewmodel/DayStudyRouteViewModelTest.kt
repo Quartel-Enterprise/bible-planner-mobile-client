@@ -7,6 +7,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_limit_reached_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.books.util.getReadingLabel
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.daystudy.domain.model.ChapterSummaryModel
@@ -21,6 +23,8 @@ import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayPassagesForDayS
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.core.daystudy.domain.usecase.HasCachedStudyUseCase
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyGenerationCoordinator
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyRepository
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -30,6 +34,7 @@ import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
@@ -40,16 +45,12 @@ import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.fake.DefaultIntRemoteConfig
-import com.quare.bibleplanner.feature.daystudy.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.daystudy.fake.FakeBooksRepository
-import com.quare.bibleplanner.feature.daystudy.fake.FakeDayStudyGenerationCoordinator
-import com.quare.bibleplanner.feature.daystudy.fake.FakeDayStudyRepository
-import com.quare.bibleplanner.feature.daystudy.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
@@ -707,11 +708,14 @@ internal class DayStudyRouteViewModelTest {
             statusError = statusError,
             events = events,
         )
-        coordinator = FakeDayStudyGenerationCoordinator().apply {
+        coordinator = FakeDayStudyGenerationCoordinator(pendingOpenKey = null).apply {
             this.generatingCount = generatingCount
         }
         val navigator = Navigator()
-        val bibleRepository = FakeBibleRepository()
+        val bibleRepository = FakeBibleRepository(
+            bibles = emptyList(),
+            selectedVersionId = "ACF",
+        )
         val getAppLanguageFlow = { flowOf(Language.ENGLISH) }
         val languageCodeMapper = LanguageCodeMapper()
         viewModelStore = ViewModelStore()
@@ -723,26 +727,30 @@ internal class DayStudyRouteViewModelTest {
                         getDayPassages = GetDayPassagesForDayStudyUseCase(
                             GetPlansByWeekUseCase(
                                 planRepository = FakePlanRepository(
-                                    listOf(
-                                        WeekPlanModel(
-                                            number = 3,
-                                            days = listOf(
-                                                DayModel(
-                                                    number = 2,
-                                                    passages = passages,
-                                                    isRead = false,
-                                                    totalVerses = 0,
-                                                    readVerses = 0,
-                                                    readTimestamp = null,
-                                                    plannedReadDate = null,
-                                                    notes = null,
-                                                    isToday = false,
+                                    plans = ReadingPlanType.entries.associateWith {
+                                        listOf(
+                                            WeekPlanModel(
+                                                number = 3,
+                                                days = listOf(
+                                                    DayModel(
+                                                        number = 2,
+                                                        passages = passages,
+                                                        isRead = false,
+                                                        totalVerses = 0,
+                                                        readVerses = 0,
+                                                        readTimestamp = null,
+                                                        plannedReadDate = null,
+                                                        notes = null,
+                                                        isToday = false,
+                                                    ),
                                                 ),
                                             ),
-                                        ),
-                                    ),
+                                        )
+                                    },
+                                    startDate = null,
+                                    selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
                                 ),
-                                booksRepository = FakeBooksRepository(),
+                                booksRepository = FakeBooksRepository(emptyList()),
                                 getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),
                                 currentTimestampProvider = { 0L },
                                 localDateTimeProvider = { LocalDateTime(LocalDate(2026, 1, 1), LocalTime(8, 0)) },

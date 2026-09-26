@@ -1,18 +1,17 @@
 package com.quare.bibleplanner.feature.read.domain.usecase
 
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
-import com.quare.bibleplanner.feature.read.fake.FakeBooksRepository
-import com.quare.bibleplanner.feature.read.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.read.fake.book
 import com.quare.bibleplanner.feature.read.fake.passage
 import com.quare.bibleplanner.feature.read.fake.singleWeek
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
 import kotlin.test.Test
@@ -154,7 +153,7 @@ internal class GetReadNavigationSuggestionsModelUseCaseTest {
 
     private fun prepareScenario(selectedPlan: ReadingPlanType) {
         val planRepository = FakePlanRepository(
-            weeksByPlan = mapOf(
+            plans = mapOf(
                 ReadingPlanType.CHRONOLOGICAL to singleWeek(
                     listOf(passage(BookId.GEN, 1, 2)),
                     listOf(passage(BookId.JOB, 1), passage(BookId.EXO, 1)),
@@ -164,15 +163,14 @@ internal class GetReadNavigationSuggestionsModelUseCaseTest {
                     listOf(passage(BookId.EXO, 1), passage(BookId.JOB)),
                 ),
             ),
-            selectedPlan = selectedPlan,
+            startDate = null,
+            selectedReadingPlan = selectedPlan,
         )
         val booksRepository = FakeBooksRepository(
-            flowOf(
-                listOf(
-                    book(
-                        bookId = BookId.JOB,
-                        chapterCount = 2,
-                    ),
+            listOf(
+                book(
+                    bookId = BookId.JOB,
+                    chapterCount = 2,
                 ),
             ),
         )

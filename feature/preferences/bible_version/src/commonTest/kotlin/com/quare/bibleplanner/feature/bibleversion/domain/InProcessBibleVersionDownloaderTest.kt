@@ -2,6 +2,8 @@ package com.quare.bibleplanner.feature.bibleversion.domain
 
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.feature.bibleversion.data.mapper.SupabaseBookAbbreviationMapper
@@ -11,8 +13,6 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetNewTestamen
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPrioritizedBookIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleVersionRepository
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryBibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryChapterDao
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryVerseDao
@@ -152,7 +152,10 @@ internal class InProcessBibleVersionDownloaderTest {
 
     private fun prepareScenario(
         versionStatus: DownloadStatus = DownloadStatus.DONE,
-        bibleRepository: BibleRepository = FakeBibleRepository(listOf(bibleModel(VERSION_ID))),
+        bibleRepository: BibleRepository = FakeBibleRepository(
+            bibles = listOf(bibleModel(VERSION_ID)),
+            selectedVersionId = "ACF",
+        ),
     ) {
         finished = CompletableDeferred()
         notifier = RecordingDownloadNotifier { call ->

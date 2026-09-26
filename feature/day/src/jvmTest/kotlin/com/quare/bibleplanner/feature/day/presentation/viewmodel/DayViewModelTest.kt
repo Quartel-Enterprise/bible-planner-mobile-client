@@ -9,6 +9,7 @@ import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_mes
 import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -36,6 +37,10 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.TrackReadingCompletionEventsUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayNotesUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
+import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
+import com.quare.bibleplanner.core.plan.testing.NotesUpdate
+import com.quare.bibleplanner.core.plan.testing.ReadStatusUpdate
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
@@ -55,11 +60,7 @@ import com.quare.bibleplanner.feature.day.domain.usecase.ToggleChapterReadStatus
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.UpdateDayReadTimestampWithDateAndTimeUseCase
-import com.quare.bibleplanner.feature.day.fake.FakeDayRepository
-import com.quare.bibleplanner.feature.day.fake.FakeDayStudyGenerationCoordinator
-import com.quare.bibleplanner.feature.day.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.day.fake.InMemoryBibleDatabase
-import com.quare.bibleplanner.feature.day.fake.ReadStatusUpdate
 import com.quare.bibleplanner.feature.day.presentation.factory.DayUiStateFlowFactory
 import com.quare.bibleplanner.feature.day.presentation.mapper.DeleteRouteNotesMapper
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
@@ -470,7 +471,7 @@ internal class DayViewModelTest {
             advanceTimeBy(notesDebounce + 1.milliseconds)
 
             // Then
-            assertEquals(listOf<String?>("Final note"), dayRepository.notesUpdates)
+            assertEquals(listOf<String?>("Final note"), dayRepository.notesUpdates.map(NotesUpdate::notes))
             assertEquals(
                 mapOf<String, Any>(
                     "plan_type" to "books",
@@ -495,7 +496,7 @@ internal class DayViewModelTest {
         advanceTimeBy(notesDebounce + 1.milliseconds)
 
         // Then
-        assertEquals(listOf<String?>(null), dayRepository.notesUpdates)
+        assertEquals(listOf<String?>(null), dayRepository.notesUpdates.map(NotesUpdate::notes))
         assertTrue(trackedEvents.value.none { (name, _) -> name == AnalyticsEventNames.NOTE_SAVED })
     }
 
@@ -513,7 +514,7 @@ internal class DayViewModelTest {
             advanceTimeBy(notesDebounce + 1.milliseconds)
 
             // Then
-            assertEquals(listOf<String?>("Unsaved"), dayRepository.notesUpdates)
+            assertEquals(listOf<String?>("Unsaved"), dayRepository.notesUpdates.map(NotesUpdate::notes))
             assertEquals(
                 mapOf<String, Any>(
                     "plan_type" to "books",
@@ -539,7 +540,7 @@ internal class DayViewModelTest {
         advanceUntilIdle()
 
         // Then
-        assertEquals(listOf<String?>("Saved"), dayRepository.notesUpdates)
+        assertEquals(listOf<String?>("Saved"), dayRepository.notesUpdates.map(NotesUpdate::notes))
     }
 
     @Test
@@ -624,7 +625,7 @@ internal class DayViewModelTest {
             advanceTimeBy(blockedNotesCleanupDelay + 1.milliseconds)
 
             // Then
-            assertEquals(listOf<String?>(null), dayRepository.notesUpdates)
+            assertEquals(listOf<String?>(null), dayRepository.notesUpdates.map(NotesUpdate::notes))
         }
 
     @Test
@@ -892,20 +893,20 @@ internal class DayViewModelTest {
     fun `GIVEN a pending study reopen for this day WHEN it loads THEN consumes it and opens the study`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(pendingOpenKey = "BOOKS-1-1")
+            prepareScenario(pendingOpenKey = "BOOKS|1|1")
 
             // When
             awaitLoaded()
 
             // Then
-            assertEquals(listOf("BOOKS-1-1"), coordinator.consumedKeys)
+            assertEquals(listOf("BOOKS|1|1"), coordinator.consumedKeys)
             assertEquals(listOf(NavigationCommand.Navigate(studyRoute())), commands.value)
         }
 
     @Test
     fun `GIVEN a pending study reopen for another day WHEN it loads THEN leaves it alone`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(pendingOpenKey = "BOOKS-9-9")
+        prepareScenario(pendingOpenKey = "BOOKS|9|9")
 
         // When
         awaitLoaded()
@@ -994,6 +995,7 @@ internal class DayViewModelTest {
                     ),
                 ),
                 startDate = null,
+                selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
             ),
             booksRepository = database.booksRepository,
             getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),

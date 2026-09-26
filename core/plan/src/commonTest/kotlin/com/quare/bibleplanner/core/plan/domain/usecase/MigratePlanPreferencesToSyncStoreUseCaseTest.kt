@@ -7,9 +7,9 @@ import androidx.datastore.preferences.core.mutablePreferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
-import com.quare.bibleplanner.core.plan.fake.FakeSyncedPreferenceDao
 import com.quare.bibleplanner.core.plan.fake.InMemoryPreferencesDataStore
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
+import com.quare.bibleplanner.core.provider.room.testing.FakeSyncedPreferenceDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -113,7 +113,7 @@ internal class MigratePlanPreferencesToSyncStoreUseCaseTest {
 
     private fun prepareScenario(preferences: Preferences) {
         dataStore = InMemoryPreferencesDataStore(preferences)
-        dao = FakeSyncedPreferenceDao()
+        dao = FakeSyncedPreferenceDao(emptyMap())
         useCase = MigratePlanPreferencesToSyncStoreUseCase(
             planLocalDataSource = PlanLocalDataSource(dataStore),
             syncedPreferenceDao = dao,

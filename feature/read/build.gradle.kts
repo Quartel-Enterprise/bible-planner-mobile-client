@@ -66,6 +66,10 @@ kotlin {
             implementation(projects.core.date)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.datetime)
+
+            // Shared fakes
+            implementation(projects.core.books.testing)
+            implementation(projects.core.plan.testing)
         }
         getByName("androidHostTest").dependencies {
             implementation(projects.ui.theme)

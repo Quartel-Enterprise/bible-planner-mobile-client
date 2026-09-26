@@ -3,8 +3,8 @@ package com.quare.bibleplanner.core.profile.data.sync
 import com.quare.bibleplanner.core.profile.data.dto.ProfileDto
 import com.quare.bibleplanner.core.profile.data.dto.ProfileRowDto
 import com.quare.bibleplanner.core.profile.data.mapper.ProfileMapper
-import com.quare.bibleplanner.core.profile.fake.FakeRealtime
 import com.quare.bibleplanner.core.profile.fake.RecordingSupabaseClient
+import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.serializer.KotlinXSerializer
 import io.ktor.http.HttpMethod

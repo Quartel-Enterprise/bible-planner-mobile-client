@@ -4,16 +4,20 @@ import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.mark_as_read
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
+import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
@@ -23,9 +27,6 @@ import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotati
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetReadNavigationSuggestionsModelUseCase
-import com.quare.bibleplanner.feature.read.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.read.fake.FakeBooksRepository
-import com.quare.bibleplanner.feature.read.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.read.fake.ThrowingChapterDao
 import com.quare.bibleplanner.feature.read.fake.ThrowingVerseDao
 import com.quare.bibleplanner.feature.read.fake.passage
@@ -180,7 +181,12 @@ internal class ReadDataPresentationModelFactoryTest {
     fun `GIVEN no selected version and no text WHEN observing THEN asks to download without a version name`() =
         runTest {
             // Given
-            prepareScenario(bibles = flowOf(emptyList()))
+            prepareScenario(
+                bibleRepository = FakeBibleRepository(
+                    bibles = emptyList(),
+                    selectedVersionId = versionId,
+                ),
+            )
 
             // When
             val data = observe(chapterNumber = 3).first { it.content != ReadContentUiState.Loading }
@@ -200,7 +206,14 @@ internal class ReadDataPresentationModelFactoryTest {
     @Test
     fun `GIVEN the versions still loading and no text WHEN observing THEN keeps the chapter loading`() = runTest {
         // Given
-        prepareScenario(bibles = MutableSharedFlow())
+        prepareScenario(
+            bibleRepository = object : BibleRepository by FakeBibleRepository(
+                bibles = emptyList(),
+                selectedVersionId = versionId,
+            ) {
+                override fun getBiblesFlow(): Flow<List<BibleModel>> = MutableSharedFlow()
+            },
+        )
 
         // When
         val data = observe(chapterNumber = 3).first()
@@ -288,7 +301,12 @@ internal class ReadDataPresentationModelFactoryTest {
         )
     }
 
-    private fun prepareScenario(bibles: Flow<List<BibleModel>> = flowOf(listOf(selectedBible))) {
+    private fun prepareScenario(
+        bibleRepository: BibleRepository = FakeBibleRepository(
+            bibles = listOf(selectedBible),
+            selectedVersionId = versionId,
+        ),
+    ) {
         val chapterIds = mapOf(1 to 1L, 2 to 2L, 3 to 3L)
         val versesByChapterId = mapOf(
             1L to listOf(
@@ -302,18 +320,15 @@ internal class ReadDataPresentationModelFactoryTest {
             ),
             3L to listOf(verse(chapterId = 3L, number = 1, isRead = false, text = null)),
         )
-        val bibleRepository = FakeBibleRepository(
-            bibles = bibles,
-            selectedVersionId = flowOf(versionId),
-        )
         val planRepository = FakePlanRepository(
-            weeksByPlan = mapOf(
+            plans = mapOf(
                 ReadingPlanType.CHRONOLOGICAL to singleWeek(listOf(passage(BookId.GEN, 1, 2, 3))),
                 ReadingPlanType.BOOKS to singleWeek(listOf(passage(BookId.GEN, 1, 2, 3))),
             ),
-            selectedPlan = ReadingPlanType.CHRONOLOGICAL,
+            startDate = null,
+            selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
         )
-        val booksRepository = FakeBooksRepository(flowOf(emptyList()))
+        val booksRepository = FakeBooksRepository(emptyList())
         factory = ReadDataPresentationModelFactory(
             getSelectedVersionIdFlow = GetSelectedVersionIdFlowUseCase(bibleRepository),
             getChapterId = GetChapterIdUseCase(

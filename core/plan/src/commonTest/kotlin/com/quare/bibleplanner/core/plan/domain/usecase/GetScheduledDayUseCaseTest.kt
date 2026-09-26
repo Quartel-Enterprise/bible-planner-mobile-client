@@ -3,10 +3,10 @@ package com.quare.bibleplanner.core.plan.domain.usecase
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.ScheduledDayModel
-import com.quare.bibleplanner.core.plan.fake.FakePlanRepository
 import com.quare.bibleplanner.core.plan.fake.day
 import com.quare.bibleplanner.core.plan.fake.passage
 import com.quare.bibleplanner.core.plan.fake.week
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test

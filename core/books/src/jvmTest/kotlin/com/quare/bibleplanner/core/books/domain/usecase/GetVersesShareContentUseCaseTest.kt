@@ -3,8 +3,8 @@ package com.quare.bibleplanner.core.books.domain.usecase
 import bibleplanner.core.books.generated.resources.Res
 import bibleplanner.core.books.generated.resources.book_jhn
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
-import com.quare.bibleplanner.core.books.fake.FakeBibleRepository
 import com.quare.bibleplanner.core.books.fake.FakeReadingDatabase
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import kotlinx.coroutines.test.runTest

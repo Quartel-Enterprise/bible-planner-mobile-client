@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryBibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.fake.RecordingDownloadNotifier
 import com.quare.bibleplanner.feature.bibleversion.fake.ThrowingVerseDao
@@ -29,7 +29,7 @@ internal class VersionDownloadActionsUseCasesTest {
             ),
         )
         notifier = RecordingDownloadNotifier()
-        downloaderFacade = FakeBibleVersionDownloaderFacade()
+        downloaderFacade = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = false)
         deletedVerseTexts = mutableListOf()
     }
 
@@ -88,7 +88,10 @@ internal class VersionDownloadActionsUseCasesTest {
     @Test
     fun `selecting a version stores it as the selected one`() = runTest {
         // Given
-        val repository = FakeBibleRepository()
+        val repository = FakeBibleRepository(
+            bibles = emptyList(),
+            selectedVersionId = "ACF",
+        )
         val useCase = SetSelectedVersionUseCase(repository)
 
         // When

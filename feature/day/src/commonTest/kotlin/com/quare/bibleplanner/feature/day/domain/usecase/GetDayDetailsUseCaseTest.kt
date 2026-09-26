@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
@@ -11,9 +12,8 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
-import com.quare.bibleplanner.feature.day.fake.FakeBooksRepository
-import com.quare.bibleplanner.feature.day.fake.FakeDayRepository
-import com.quare.bibleplanner.feature.day.fake.FakePlanRepository
+import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -193,6 +193,7 @@ internal class GetDayDetailsUseCaseTest {
                         ),
                     ),
                     startDate = startDate,
+                    selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
                 ),
                 booksRepository = booksRepository,
                 getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),

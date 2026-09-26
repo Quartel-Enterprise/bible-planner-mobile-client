@@ -1,21 +1,20 @@
 package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
-import com.quare.bibleplanner.core.books.domain.model.BibleModel
-import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
-import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import com.quare.bibleplanner.core.provider.room.testing.FakeBibleVersionDao
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-private const val SELECTED_VERSION_ID = "ACF"
-
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class ObserveSelectedVersionUseCaseTest {
     private lateinit var downloaderFacade: FakeBibleVersionDownloaderFacade
     private lateinit var useCase: ObserveSelectedVersionUseCase
@@ -26,10 +25,11 @@ internal class ObserveSelectedVersionUseCaseTest {
         prepareScenario(status = DownloadStatus.IN_PROGRESS)
 
         // When
-        useCase()
+        backgroundScope.launch { useCase() }
+        runCurrent()
 
         // Then
-        assertEquals(listOf(SELECTED_VERSION_ID), downloaderFacade.downloadedVersionIds)
+        assertEquals(listOf("download $SELECTED_VERSION_ID"), downloaderFacade.calls)
     }
 
     @Test
@@ -38,10 +38,11 @@ internal class ObserveSelectedVersionUseCaseTest {
         prepareScenario(status = DownloadStatus.NOT_STARTED)
 
         // When
-        useCase()
+        backgroundScope.launch { useCase() }
+        runCurrent()
 
         // Then
-        assertTrue(downloaderFacade.downloadedVersionIds.isEmpty())
+        assertTrue(downloaderFacade.calls.isEmpty())
     }
 
     @Test
@@ -50,10 +51,11 @@ internal class ObserveSelectedVersionUseCaseTest {
         prepareScenario(status = DownloadStatus.PAUSED)
 
         // When
-        useCase()
+        backgroundScope.launch { useCase() }
+        runCurrent()
 
         // Then
-        assertTrue(downloaderFacade.downloadedVersionIds.isEmpty())
+        assertTrue(downloaderFacade.calls.isEmpty())
     }
 
     @Test
@@ -62,71 +64,37 @@ internal class ObserveSelectedVersionUseCaseTest {
         prepareScenario(status = DownloadStatus.DONE)
 
         // When
-        useCase()
+        backgroundScope.launch { useCase() }
+        runCurrent()
 
         // Then
-        assertTrue(downloaderFacade.downloadedVersionIds.isEmpty())
+        assertTrue(downloaderFacade.calls.isEmpty())
     }
 
     private fun prepareScenario(status: DownloadStatus) {
-        downloaderFacade = FakeBibleVersionDownloaderFacade()
+        downloaderFacade = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = false)
         useCase = ObserveSelectedVersionUseCase(
-            bibleVersionDao = FakeBibleVersionDao(status),
+            bibleVersionDao = FakeBibleVersionDao(
+                versions = listOf(
+                    BibleVersionEntity(
+                        id = SELECTED_VERSION_ID,
+                        status = status,
+                        totalChapters = 1189,
+                        contentVersion = "1.3.0",
+                    ),
+                ),
+            ),
             bibleVersionDownloaderFacade = downloaderFacade,
-            getSelectedVersionAbbreviationFlow = GetSelectedVersionIdFlowUseCase(FakeSelectedVersionRepository()),
+            getSelectedVersionAbbreviationFlow = GetSelectedVersionIdFlowUseCase(
+                FakeBibleRepository(
+                    bibles = emptyList(),
+                    selectedVersionId = SELECTED_VERSION_ID,
+                ),
+            ),
         )
     }
-}
 
-private class FakeBibleVersionDownloaderFacade : BibleVersionDownloaderFacade {
-    val downloadedVersionIds = mutableListOf<String>()
-
-    override val shouldShowDownloadTip: Boolean = false
-
-    override fun downloadVersion(versionId: String) {
-        downloadedVersionIds += versionId
+    private companion object {
+        const val SELECTED_VERSION_ID = "ACF"
     }
-
-    override suspend fun pauseDownload(versionId: String) = Unit
-
-    override suspend fun deleteDownload(versionId: String) = Unit
-}
-
-private class FakeSelectedVersionRepository : BibleRepository {
-    override fun getBiblesFlow(): Flow<List<BibleModel>> = flowOf(emptyList())
-
-    override fun getSelectedVersionIdFlow(): Flow<String> = flowOf(SELECTED_VERSION_ID)
-
-    override suspend fun setSelectedVersionId(id: String) = Unit
-}
-
-private class FakeBibleVersionDao(
-    private val status: DownloadStatus,
-) : BibleVersionDao {
-    override fun getAllVersionsFlow(): Flow<List<BibleVersionEntity>> = flowOf(emptyList())
-
-    override suspend fun getAllVersions(): List<BibleVersionEntity> = emptyList()
-
-    override suspend fun getVersionById(id: String): BibleVersionEntity = BibleVersionEntity(
-        id = id,
-        status = status,
-        totalChapters = 1189,
-        contentVersion = "1.3.0",
-    )
-
-    override suspend fun insertVersion(version: BibleVersionEntity) = Unit
-
-    override suspend fun updateVersion(version: BibleVersionEntity) = Unit
-
-    override suspend fun updateStatus(
-        id: String,
-        status: DownloadStatus,
-    ) = Unit
-
-    override suspend fun updateContentVersion(
-        id: String,
-        contentVersion: String,
-    ) = Unit
-
-    override suspend fun deleteVersion(id: String) = Unit
 }

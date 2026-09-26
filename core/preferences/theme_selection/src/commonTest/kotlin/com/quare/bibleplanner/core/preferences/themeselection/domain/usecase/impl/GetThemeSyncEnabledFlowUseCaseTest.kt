@@ -2,7 +2,7 @@ package com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.im
 
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
-import com.quare.bibleplanner.core.preferences.themeselection.fake.FakeThemeSelectionRepository
+import com.quare.bibleplanner.core.preferences.themeselection.testing.FakeThemeSelectionRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest

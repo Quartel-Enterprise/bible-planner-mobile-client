@@ -2,87 +2,84 @@ package com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.im
 
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
-import com.quare.bibleplanner.core.preferences.themeselection.domain.repository.ThemeSelectionRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import com.quare.bibleplanner.core.preferences.themeselection.testing.FakeThemeSelectionRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class ObserveThemeSyncUseCaseTest {
+    private lateinit var repository: FakeThemeSelectionRepository
+
     @Test
     fun `applies synced theme and contrast when sync is enabled`() = runTest {
-        val repository = FakeThemeSelectionRepository(
+        // Given
+        prepareScenario(
             syncEnabled = true,
             syncedTheme = Theme.DARK,
             syncedContrast = ContrastType.High,
         )
 
-        ObserveThemeSyncUseCase(repository).invoke()
+        // When
+        backgroundScope.launch { ObserveThemeSyncUseCase(repository).invoke() }
+        runCurrent()
 
-        assertEquals(Theme.DARK, repository.appliedTheme)
-        assertEquals(ContrastType.High, repository.appliedContrast)
+        // Then
+        assertEquals(listOf(Theme.DARK), repository.appliedThemes)
+        assertEquals(listOf(ContrastType.High), repository.appliedContrasts)
     }
 
     @Test
     fun `applies nothing when sync is disabled`() = runTest {
-        val repository = FakeThemeSelectionRepository(
+        // Given
+        prepareScenario(
             syncEnabled = false,
             syncedTheme = Theme.DARK,
             syncedContrast = ContrastType.High,
         )
 
-        ObserveThemeSyncUseCase(repository).invoke()
+        // When
+        backgroundScope.launch { ObserveThemeSyncUseCase(repository).invoke() }
+        runCurrent()
 
-        assertNull(repository.appliedTheme)
-        assertNull(repository.appliedContrast)
+        // Then
+        assertTrue(repository.appliedThemes.isEmpty())
+        assertTrue(repository.appliedContrasts.isEmpty())
     }
 
     @Test
     fun `skips a missing synced value`() = runTest {
-        val repository = FakeThemeSelectionRepository(
+        // Given
+        prepareScenario(
             syncEnabled = true,
             syncedTheme = null,
             syncedContrast = ContrastType.Medium,
         )
 
-        ObserveThemeSyncUseCase(repository).invoke()
+        // When
+        backgroundScope.launch { ObserveThemeSyncUseCase(repository).invoke() }
+        runCurrent()
 
-        assertNull(repository.appliedTheme)
-        assertEquals(ContrastType.Medium, repository.appliedContrast)
+        // Then
+        assertTrue(repository.appliedThemes.isEmpty())
+        assertEquals(listOf(ContrastType.Medium), repository.appliedContrasts)
     }
 
-    private class FakeThemeSelectionRepository(
-        private val syncEnabled: Boolean,
-        private val syncedTheme: Theme?,
-        private val syncedContrast: ContrastType?,
-    ) : ThemeSelectionRepository {
-        var appliedTheme: Theme? = null
-        var appliedContrast: ContrastType? = null
-
-        override fun getThemeSyncEnabledFlow(): Flow<Boolean> = flowOf(syncEnabled)
-
-        override fun observeSyncedTheme(): Flow<Theme?> = flowOf(syncedTheme)
-
-        override fun observeSyncedContrast(): Flow<ContrastType?> = flowOf(syncedContrast)
-
-        override suspend fun applySyncedTheme(theme: Theme) {
-            appliedTheme = theme
-        }
-
-        override suspend fun applySyncedContrast(contrastType: ContrastType) {
-            appliedContrast = contrastType
-        }
-
-        override fun getThemeFlow(): Flow<Theme> = flowOf(Theme.SYSTEM)
-
-        override suspend fun setTheme(theme: Theme) = Unit
-
-        override fun getContrastTypeFlow(): Flow<ContrastType> = flowOf(ContrastType.Standard)
-
-        override suspend fun setContrastType(contrastType: ContrastType) = Unit
-
-        override suspend fun setThemeSyncEnabled(enabled: Boolean) = Unit
+    private fun prepareScenario(
+        syncEnabled: Boolean,
+        syncedTheme: Theme?,
+        syncedContrast: ContrastType?,
+    ) {
+        repository = FakeThemeSelectionRepository(
+            initialTheme = Theme.SYSTEM,
+            initialContrast = ContrastType.Standard,
+            initialSyncEnabled = syncEnabled,
+        )
+        repository.syncedTheme.value = syncedTheme
+        repository.syncedContrast.value = syncedContrast
     }
 }

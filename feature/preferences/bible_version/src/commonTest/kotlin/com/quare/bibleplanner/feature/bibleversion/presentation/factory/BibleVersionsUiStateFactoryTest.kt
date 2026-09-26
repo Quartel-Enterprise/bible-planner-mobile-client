@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation.factory
 
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleRepository
 import com.quare.bibleplanner.feature.bibleversion.fake.bibleModel
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionsUiState
 import kotlinx.coroutines.flow.first
@@ -16,7 +16,12 @@ internal class BibleVersionsUiStateFactoryTest {
     fun `shows the versions grouped by language`() = runTest {
         // Given
         val acf = bibleModel("ACF")
-        val factory = createFactory(FakeBibleRepository(listOf(acf)))
+        val factory = createFactory(
+            FakeBibleRepository(
+                bibles = listOf(acf),
+                selectedVersionId = "ACF",
+            ),
+        )
 
         // When
         val state = factory.create().first()
@@ -31,7 +36,12 @@ internal class BibleVersionsUiStateFactoryTest {
     @Test
     fun `shows an error when no version is available`() = runTest {
         // Given
-        val factory = createFactory(FakeBibleRepository(emptyList()))
+        val factory = createFactory(
+            FakeBibleRepository(
+                bibles = emptyList(),
+                selectedVersionId = "ACF",
+            ),
+        )
 
         // When
         val state = factory.create().first()

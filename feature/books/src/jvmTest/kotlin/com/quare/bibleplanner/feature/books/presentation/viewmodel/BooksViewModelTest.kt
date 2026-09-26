@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.feature.books.presentation.viewmodel
 
-import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookChapterModel
@@ -24,8 +24,6 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -606,11 +604,9 @@ internal class BooksViewModelTest {
         val recordedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
         trackedEvents = recordedEvents
         loginNudgeRequests = 0
-        repository = FakeBooksRepository(
-            initialBooks = listOf(genesis, exodus, matthew, john),
-            initialLayoutFormat = layoutFormat,
-            initialSelectedTestament = selectedTestament,
-        )
+        repository = FakeBooksRepository(listOf(genesis, exodus, matthew, john))
+        repository.layoutFormat.value = layoutFormat
+        repository.selectedTestament.value = selectedTestament
         commands = mutableListOf<NavigationCommand>().also { collected ->
             backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
@@ -635,45 +631,5 @@ internal class BooksViewModelTest {
 
     private companion object {
         const val WEB_APP_URL = "https://bibleplanner.app"
-    }
-}
-
-private class FakeBooksRepository(
-    initialBooks: List<BookDataModel>,
-    initialLayoutFormat: String?,
-    initialSelectedTestament: String?,
-) : BooksRepository {
-    val books = MutableStateFlow(initialBooks)
-    private val layoutFormat = MutableStateFlow(initialLayoutFormat)
-    private val selectedTestament = MutableStateFlow(initialSelectedTestament)
-    val favoriteUpdates = mutableListOf<Pair<BookId, Boolean>>()
-    val layoutFormats = mutableListOf<String>()
-    val selectedTestaments = mutableListOf<String>()
-
-    override fun getBooksFlow(): Flow<List<BookDataModel>> = books
-
-    override fun getBookByIdFlow(bookId: BookId): Flow<BookDataModel?> = error("unused")
-
-    override suspend fun getBooks(): List<BookDataModel> = error("unused")
-
-    override suspend fun initializeDatabase() = error("unused")
-
-    override suspend fun updateBookFavoriteStatus(
-        bookId: BookId,
-        isFavorite: Boolean,
-    ) {
-        favoriteUpdates += bookId to isFavorite
-    }
-
-    override fun getBookLayoutFormatFlow(): Flow<String?> = layoutFormat
-
-    override suspend fun setBookLayoutFormat(layoutFormat: String) {
-        layoutFormats += layoutFormat
-    }
-
-    override fun getSelectedTestamentFlow(): Flow<String?> = selectedTestament
-
-    override suspend fun setSelectedTestament(testament: String) {
-        selectedTestaments += testament
     }
 }

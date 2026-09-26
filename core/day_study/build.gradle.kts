@@ -51,6 +51,11 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
             implementation(projects.core.date)
+
+            // Shared fakes
+            implementation(projects.core.books.testing)
+            implementation(projects.core.dayStudy.testing)
+            implementation(projects.core.plan.testing)
         }
         jvmTest.dependencies {
             implementation(libs.androidx.room.runtime)

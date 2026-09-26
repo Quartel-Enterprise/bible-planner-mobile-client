@@ -1,19 +1,16 @@
 package com.quare.bibleplanner.core.daystudy.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.model.BibleModel
-import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.daystudy.domain.exception.LimitReachedException
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyPhaseModel
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
-import com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository
+import com.quare.bibleplanner.core.daystudy.testing.DayStudyRequest
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.locale.Language
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -28,10 +25,18 @@ internal class GetDayStudyUseCaseTest {
 
     @BeforeTest
     fun setUp() {
-        dayStudyRepository = FakeDayStudyRepository()
+        dayStudyRepository = FakeDayStudyRepository(
+            hasCached = false,
+            status = null,
+            statusError = null,
+            events = emptyList(),
+        )
         useCase = GetDayStudyUseCase(
             repository = dayStudyRepository,
-            bibleRepository = FakeBibleRepository(),
+            bibleRepository = FakeBibleRepository(
+                bibles = emptyList(),
+                selectedVersionId = "ACF",
+            ),
             getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
             languageCodeMapper = LanguageCodeMapper(),
         )
@@ -43,9 +48,16 @@ internal class GetDayStudyUseCaseTest {
         useCase(passages).toList()
 
         // Then
-        assertEquals("ACF", dayStudyRepository.receivedVersion)
-        assertEquals("pt-BR", dayStudyRepository.receivedLanguageCode)
-        assertEquals(passages, dayStudyRepository.receivedPassages)
+        assertEquals(
+            listOf(
+                DayStudyRequest(
+                    passages = passages,
+                    version = "ACF",
+                    languageCode = "pt-BR",
+                ),
+            ),
+            dayStudyRepository.studyRequests,
+        )
     }
 
     @Test
@@ -66,7 +78,7 @@ internal class GetDayStudyUseCaseTest {
     @Test
     fun `GIVEN a failing repository stream WHEN invoking THEN the failure propagates`() = runTest {
         // Given
-        dayStudyRepository.error = LimitReachedException()
+        dayStudyRepository.eventsError = LimitReachedException()
 
         // When & Then
         assertFailsWith<LimitReachedException> {
@@ -89,44 +101,4 @@ internal class GetDayStudyUseCaseTest {
             chapterRanges = null,
         ),
     )
-
-    private class FakeDayStudyRepository : DayStudyRepository {
-        var receivedPassages: List<PassageModel>? = null
-        var receivedVersion: String? = null
-        var receivedLanguageCode: String? = null
-        var events: List<DayStudyGenerationEventModel> = emptyList()
-        var error: Throwable? = null
-
-        override fun getDayStudy(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): Flow<DayStudyGenerationEventModel> = flow {
-            receivedPassages = passages
-            receivedVersion = version
-            receivedLanguageCode = languageCode
-            events.forEach { emit(it) }
-            error?.let { throw it }
-        }
-
-        override suspend fun getDayStudyStatus(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): DayStudyStatusModel? = null
-
-        override suspend fun hasCachedStudy(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): Boolean = false
-    }
-
-    private class FakeBibleRepository : BibleRepository {
-        override fun getBiblesFlow(): Flow<List<BibleModel>> = flowOf(emptyList())
-
-        override fun getSelectedVersionIdFlow(): Flow<String> = flowOf("ACF")
-
-        override suspend fun setSelectedVersionId(id: String) = Unit
-    }
 }

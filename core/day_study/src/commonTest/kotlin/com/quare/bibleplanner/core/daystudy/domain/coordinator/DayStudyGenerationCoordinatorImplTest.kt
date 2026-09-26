@@ -1,27 +1,22 @@
 package com.quare.bibleplanner.core.daystudy.domain.coordinator
 
-import com.quare.bibleplanner.core.books.domain.model.BibleModel
-import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.daystudy.domain.exception.LimitReachedException
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyPhaseModel
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.core.daystudy.domain.model.HistoricalContextModel
-import com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyUseCase
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -34,7 +29,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     @Test
     fun `GIVEN a stream WHEN start THEN a generating job appears then completes as done`() = runTest {
         // Given
-        val repository = FakeDayStudyRepository(
+        val repository = dayStudyRepository(
             events = listOf(
                 DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING),
                 DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.CHAPTERS),
@@ -60,7 +55,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     @Test
     fun `GIVEN a running job WHEN starting the same day again THEN it is not duplicated`() = runTest {
         // Given
-        val coordinator = coordinator(FakeDayStudyRepository(events = listOf()))
+        val coordinator = coordinator(dayStudyRepository(events = listOf()))
 
         // When
         coordinator.start(passages, dayRoute, LABEL)
@@ -73,7 +68,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     @Test
     fun `GIVEN two different days WHEN starting both THEN both jobs run concurrently`() = runTest {
         // Given
-        val coordinator = coordinator(FakeDayStudyRepository(events = listOf()))
+        val coordinator = coordinator(dayStudyRepository(events = listOf()))
 
         // When
         coordinator.start(passages, dayRoute, LABEL)
@@ -86,7 +81,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     @Test
     fun `WHEN dismissing from card THEN the job keeps running but is marked dismissed`() = runTest {
         // Given
-        val coordinator = coordinator(FakeDayStudyRepository(events = listOf()))
+        val coordinator = coordinator(dayStudyRepository(events = listOf()))
         val key = coordinator.start(passages, dayRoute, LABEL)
 
         // When
@@ -101,7 +96,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN a failing stream WHEN start THEN the job ends as failed`() = runTest {
         // Given
         val coordinator = coordinator(
-            FakeDayStudyRepository(events = emptyList(), error = IllegalStateException("boom")),
+            dayStudyRepository(events = emptyList(), eventsError = IllegalStateException("boom")),
         )
 
         // When
@@ -123,7 +118,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     @Test
     fun `WHEN acknowledging a job THEN it is removed`() = runTest {
         // Given
-        val coordinator = coordinator(FakeDayStudyRepository(events = listOf()))
+        val coordinator = coordinator(dayStudyRepository(events = listOf()))
         val key = coordinator.start(passages, dayRoute, LABEL)
 
         // When
@@ -136,7 +131,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     @Test
     fun `GIVEN two generating jobs WHEN counting THEN excluded key is not counted`() = runTest {
         // Given
-        val coordinator = coordinator(FakeDayStudyRepository(events = listOf()))
+        val coordinator = coordinator(dayStudyRepository(events = listOf()))
         coordinator.start(passages, dayRoute, LABEL)
         coordinator.start(passages, otherDayRoute, "Gênesis 2")
 
@@ -149,7 +144,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN a completed job WHEN counting THEN it is not counted as generating`() = runTest {
         // Given
         val coordinator = coordinator(
-            FakeDayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
+            dayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
         )
         coordinator.start(passages, dayRoute, LABEL)
 
@@ -165,7 +160,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         runTest {
             // Given
             val coordinator = coordinator(
-                FakeDayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
+                dayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
             )
 
             // When
@@ -184,7 +179,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN a completing stream WHEN start THEN tracks day_study_generation_time as success`() = runTest {
         // Given
         val coordinator = coordinator(
-            FakeDayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
+            dayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
         )
 
         // When
@@ -203,7 +198,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN reported phases WHEN generation completes THEN generation_time carries per-phase durations`() = runTest {
         // Given
         val coordinator = coordinator(
-            FakeDayStudyRepository(
+            dayStudyRepository(
                 events = listOf(
                     DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING),
                     DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.CHAPTERS),
@@ -229,7 +224,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN a connection drop mid generation THEN the job fails as offline`() = runTest {
         // Given
         val coordinator = coordinator(
-            FakeDayStudyRepository(
+            dayStudyRepository(
                 events = listOf(DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING)),
                 neverCompletes = true,
             ),
@@ -260,7 +255,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         runTest {
             // Given
             val coordinator = coordinator(
-                FakeDayStudyRepository(events = emptyList(), error = LimitReachedException()),
+                dayStudyRepository(events = emptyList(), eventsError = LimitReachedException()),
             )
 
             // When
@@ -278,7 +273,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         runTest {
             // Given
             val coordinator = coordinator(
-                FakeDayStudyRepository(events = emptyList(), error = LimitReachedException()),
+                dayStudyRepository(events = emptyList(), eventsError = LimitReachedException()),
             )
 
             // When
@@ -294,7 +289,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN a generic failure WHEN start THEN tracks day_study_generation_failed with error reason`() = runTest {
         // Given
         val coordinator = coordinator(
-            FakeDayStudyRepository(events = emptyList(), error = IllegalStateException("boom")),
+            dayStudyRepository(events = emptyList(), eventsError = IllegalStateException("boom")),
         )
 
         // When
@@ -309,12 +304,29 @@ internal class DayStudyGenerationCoordinatorImplTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val isConnectedFlow = MutableStateFlow(true)
 
+    private fun dayStudyRepository(
+        events: List<DayStudyGenerationEventModel>,
+        eventsError: Throwable? = null,
+        neverCompletes: Boolean = false,
+    ): FakeDayStudyRepository = FakeDayStudyRepository(
+        hasCached = false,
+        status = null,
+        statusError = null,
+        events = events,
+    ).apply {
+        this.eventsError = eventsError
+        this.neverCompletes = neverCompletes
+    }
+
     private fun TestScope.coordinator(repository: FakeDayStudyRepository): DayStudyGenerationCoordinator =
         DayStudyGenerationCoordinatorImpl(
             applicationScope = ApplicationScope(this),
             getDayStudy = GetDayStudyUseCase(
                 repository = repository,
-                bibleRepository = FakeBibleRepository(),
+                bibleRepository = FakeBibleRepository(
+                    bibles = emptyList(),
+                    selectedVersionId = "ACF",
+                ),
                 getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
                 languageCodeMapper = LanguageCodeMapper(),
             ),
@@ -345,41 +357,5 @@ internal class DayStudyGenerationCoordinatorImplTest {
 
     private companion object {
         const val LABEL = "Gênesis 1"
-    }
-
-    private class FakeDayStudyRepository(
-        private val events: List<DayStudyGenerationEventModel>,
-        private val error: Throwable? = null,
-        private val neverCompletes: Boolean = false,
-    ) : DayStudyRepository {
-        override fun getDayStudy(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): Flow<DayStudyGenerationEventModel> = flow {
-            events.forEach { emit(it) }
-            error?.let { throw it }
-            if (neverCompletes) awaitCancellation()
-        }
-
-        override suspend fun getDayStudyStatus(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): DayStudyStatusModel? = null
-
-        override suspend fun hasCachedStudy(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): Boolean = false
-    }
-
-    private class FakeBibleRepository : BibleRepository {
-        override fun getBiblesFlow(): Flow<List<BibleModel>> = flowOf(emptyList())
-
-        override fun getSelectedVersionIdFlow(): Flow<String> = flowOf("ACF")
-
-        override suspend fun setSelectedVersionId(id: String) = Unit
     }
 }

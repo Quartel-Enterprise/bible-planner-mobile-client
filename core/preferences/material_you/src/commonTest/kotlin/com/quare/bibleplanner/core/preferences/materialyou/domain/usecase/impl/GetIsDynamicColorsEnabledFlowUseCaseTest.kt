@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.impl
 
-import com.quare.bibleplanner.core.preferences.materialyou.fake.FakeMaterialYouRepository
+import com.quare.bibleplanner.core.preferences.materialyou.testing.FakeMaterialYouRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest

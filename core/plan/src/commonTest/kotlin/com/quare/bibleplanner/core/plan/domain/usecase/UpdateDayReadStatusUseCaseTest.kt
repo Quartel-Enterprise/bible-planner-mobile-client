@@ -9,13 +9,11 @@ import com.quare.bibleplanner.core.books.domain.usecase.UpdatePassageReadStatusU
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateSpecificRangeChapterReadStatusUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateWholeBookReadStatusIfNeededUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateWholeChapterReadStatusUseCase
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.core.plan.fake.FakeBooksRepository
-import com.quare.bibleplanner.core.plan.fake.FakeDayRepository
-import com.quare.bibleplanner.core.plan.fake.FakePlanRepository
 import com.quare.bibleplanner.core.plan.fake.ThrowingBookDao
 import com.quare.bibleplanner.core.plan.fake.ThrowingChapterDao
 import com.quare.bibleplanner.core.plan.fake.ThrowingVerseDao
@@ -24,6 +22,9 @@ import com.quare.bibleplanner.core.plan.fake.bookChapter
 import com.quare.bibleplanner.core.plan.fake.day
 import com.quare.bibleplanner.core.plan.fake.passage
 import com.quare.bibleplanner.core.plan.fake.week
+import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
+import com.quare.bibleplanner.core.plan.testing.ReadStatusUpdate
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
@@ -61,7 +62,18 @@ internal class UpdateDayReadStatusUseCaseTest {
                 .single()
                 .isRead,
         )
-        assertEquals(listOf("updateDayReadStatus(1, 1, CHRONOLOGICAL, true, $now)"), dayRepository.calls)
+        assertEquals(
+            listOf(
+                ReadStatusUpdate(
+                    weekNumber = 1,
+                    dayNumber = 1,
+                    readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+                    isRead = true,
+                    readTimestamp = now,
+                ),
+            ),
+            dayRepository.readStatusUpdates,
+        )
     }
 
     @Test
@@ -115,7 +127,18 @@ internal class UpdateDayReadStatusUseCaseTest {
                 .single()
                 .isRead,
         )
-        assertEquals(listOf("updateDayReadStatus(1, 1, CHRONOLOGICAL, false, null)"), dayRepository.calls)
+        assertEquals(
+            listOf(
+                ReadStatusUpdate(
+                    weekNumber = 1,
+                    dayNumber = 1,
+                    readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+                    isRead = false,
+                    readTimestamp = null,
+                ),
+            ),
+            dayRepository.readStatusUpdates,
+        )
         assertTrue(trackedEvents.isEmpty())
     }
 
@@ -139,7 +162,7 @@ internal class UpdateDayReadStatusUseCaseTest {
         )
 
         // Then
-        assertTrue(dayRepository.calls.isEmpty())
+        assertTrue(dayRepository.readStatusUpdates.isEmpty())
         assertEquals(
             false,
             booksRepository.books.value
@@ -164,7 +187,10 @@ internal class UpdateDayReadStatusUseCaseTest {
                 ),
             ),
         )
-        dayRepository = FakeDayRepository()
+        dayRepository = FakeDayRepository(
+            day = null,
+            daysWithNotesCount = 0,
+        )
         trackedEvents = mutableListOf()
         val trackEvent = TrackEvent { name, params -> trackedEvents += name to params }
         val timestampProvider = CurrentTimestampProvider { now }

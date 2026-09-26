@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.viewmodel
 
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookChapterModel
@@ -21,7 +22,6 @@ import com.quare.bibleplanner.feature.readingplan.domain.tracker.ReadingStreakMi
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.FindFirstWeekWithUnreadBookUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.ResolvePlanStatusUseCase
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.impl.day
-import com.quare.bibleplanner.feature.readingplan.fake.FakeBooksRepository
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.WeeksPlanPresentationMapper
@@ -55,7 +55,7 @@ internal class ReadingPlanViewModelTest {
     private lateinit var viewModel: ReadingPlanViewModel
     private lateinit var plans: MutableSharedFlow<PlansModel>
     private lateinit var selectedPlan: MutableStateFlow<ReadingPlanType>
-    private lateinit var books: MutableStateFlow<List<BookDataModel>>
+    private lateinit var booksRepository: FakeBooksRepository
     private lateinit var commands: List<NavigationCommand>
     private lateinit var actions: List<ReadingPlanUiAction>
     private lateinit var trackedEvents: List<Pair<String, Map<String, Any>>>
@@ -114,7 +114,7 @@ internal class ReadingPlanViewModelTest {
         prepareScenario(initialPlans = null)
 
         // When
-        books.value = booksWithReadVerses(10)
+        booksRepository.books.value = booksWithReadVerses(10)
 
         // Then
         assertIs<ReadingPlanUiState.Loading>(viewModel.uiState.value)
@@ -234,7 +234,7 @@ internal class ReadingPlanViewModelTest {
             prepareScenario()
 
             // When
-            books.value = booksWithReadVerses(10)
+            booksRepository.books.value = booksWithReadVerses(10)
 
             // Then
             val state = loaded()
@@ -255,7 +255,7 @@ internal class ReadingPlanViewModelTest {
             prepareScenario()
 
             // When
-            books.value = booksWithReadVerses(30)
+            booksRepository.books.value = booksWithReadVerses(30)
 
             // Then
             assertEquals(
@@ -994,7 +994,7 @@ internal class ReadingPlanViewModelTest {
         plans = MutableSharedFlow(replay = 1)
         initialPlans?.let(plans::tryEmit)
         selectedPlan = MutableStateFlow(ReadingPlanType.CHRONOLOGICAL)
-        books = MutableStateFlow(booksWithReadVerses(0))
+        booksRepository = FakeBooksRepository(booksWithReadVerses(0))
         val trackEvent = TrackEvent { name, params -> collectedEvents += name to params }
         viewModel = ReadingPlanViewModel(
             setSelectedReadingPlan = { type ->
@@ -1030,7 +1030,7 @@ internal class ReadingPlanViewModelTest {
             factory = ReadingPlanStateFactory(),
             observePlansByWeek = { plans },
             getSelectedReadingPlanFlow = { selectedPlan },
-            calculateBibleProgress = CalculateBibleProgressUseCase(FakeBooksRepository(books)),
+            calculateBibleProgress = CalculateBibleProgressUseCase(booksRepository),
             findFirstWeekWithUnreadBook = FindFirstWeekWithUnreadBookUseCase(),
             requestReviewIfNeeded = { trigger -> collectedTriggers += trigger },
             trackEvent = trackEvent,

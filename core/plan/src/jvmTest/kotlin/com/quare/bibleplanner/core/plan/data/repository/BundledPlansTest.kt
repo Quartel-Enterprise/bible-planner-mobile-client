@@ -9,8 +9,8 @@ import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
 import com.quare.bibleplanner.core.plan.data.mapper.ChaptersRangeMapper
 import com.quare.bibleplanner.core.plan.data.mapper.ReadingPlanPreferenceMapperImpl
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
-import com.quare.bibleplanner.core.plan.fake.FakeSyncedPreferenceDao
 import com.quare.bibleplanner.core.plan.fake.InMemoryPreferencesDataStore
+import com.quare.bibleplanner.core.provider.room.testing.FakeSyncedPreferenceDao
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -31,7 +31,7 @@ internal class BundledPlansTest {
             ),
             localDateTimeProvider = LocalDateTimeProvider { error("Unexpected call") },
             readingPlanPreferenceMapper = ReadingPlanPreferenceMapperImpl(),
-            syncedPreferenceDao = FakeSyncedPreferenceDao(),
+            syncedPreferenceDao = FakeSyncedPreferenceDao(emptyMap()),
             currentTimestampProvider = CurrentTimestampProvider { error("Unexpected call") },
         )
     }

@@ -4,12 +4,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.mutablePreferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.quare.bibleplanner.core.provider.datastore.testing.FakePreferencesDataStore
 import com.quare.bibleplanner.core.provider.language.data.mapper.AppLanguageMapper
-import com.quare.bibleplanner.core.provider.language.fake.FakePreferencesDataStore
-import com.quare.bibleplanner.core.provider.language.fake.FakeSyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.language.fake.FixedLanguageProvider
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
+import com.quare.bibleplanner.core.provider.room.testing.FakeSyncedPreferenceDao
 import com.quare.bibleplanner.core.utils.locale.Language
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest

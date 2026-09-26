@@ -45,6 +45,9 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
+
+            // Shared fakes
+            implementation(projects.core.preferences.materialYou.testing)
         }
     }
 }

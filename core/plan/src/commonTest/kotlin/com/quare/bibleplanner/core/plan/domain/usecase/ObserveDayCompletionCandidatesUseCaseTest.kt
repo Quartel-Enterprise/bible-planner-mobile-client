@@ -1,17 +1,17 @@
 package com.quare.bibleplanner.core.plan.domain.usecase
 
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.core.plan.fake.FakeBooksRepository
-import com.quare.bibleplanner.core.plan.fake.FakePlanRepository
 import com.quare.bibleplanner.core.plan.fake.book
 import com.quare.bibleplanner.core.plan.fake.bookChapter
 import com.quare.bibleplanner.core.plan.fake.chapterPlan
 import com.quare.bibleplanner.core.plan.fake.day
 import com.quare.bibleplanner.core.plan.fake.passage
 import com.quare.bibleplanner.core.plan.fake.week
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

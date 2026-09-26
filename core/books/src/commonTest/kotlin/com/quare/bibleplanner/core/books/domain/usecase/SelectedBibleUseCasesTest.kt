@@ -2,7 +2,7 @@ package com.quare.bibleplanner.core.books.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
-import com.quare.bibleplanner.core.books.fake.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import kotlinx.coroutines.flow.first

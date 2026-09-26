@@ -1,16 +1,13 @@
 package com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel
 
-import com.quare.bibleplanner.core.books.domain.model.BibleModel
-import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
-import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
-import com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.core.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCase
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyGenerationCoordinator
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyRepository
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -22,7 +19,6 @@ import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.ScheduledDayModel
-import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
@@ -40,10 +36,6 @@ import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayR
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -60,8 +52,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -172,7 +162,7 @@ internal class DayReadingCompleteViewModelTest {
         viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
         runCurrent()
 
-        assertNotNull(coordinator.startedWith)
+        assertEquals(1, coordinator.startedJobs.size)
         assertEquals(
             expected = NavigationCommand.NavigateReplacingTop(
                 DayStudyNavRoute(
@@ -193,7 +183,7 @@ internal class DayReadingCompleteViewModelTest {
         viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
         runCurrent()
 
-        assertNull(coordinator.startedWith)
+        assertTrue(coordinator.startedJobs.isEmpty())
         assertEquals(
             expected = NavigationCommand.Navigate(LoginWarningNavRoute(LoginWarningReason.DayStudy.key)),
             actual = commands.last(),
@@ -347,7 +337,7 @@ internal class DayReadingCompleteViewModelTest {
 
             // Then
             assertIs<DayReadingCompleteUiAction.ShowSnackBar>(actions.single())
-            assertNull(coordinator.startedWith)
+            assertTrue(coordinator.startedJobs.isEmpty())
             assertTrue(commands.isEmpty())
         }
 
@@ -369,7 +359,7 @@ internal class DayReadingCompleteViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
         assertTrue(commands.isEmpty())
-        assertNull(coordinator.startedWith)
+        assertTrue(coordinator.startedJobs.isEmpty())
     }
 
     private fun TestScope.viewModel(
@@ -384,17 +374,22 @@ internal class DayReadingCompleteViewModelTest {
     ): DayReadingCompleteViewModel {
         trackedEvents = mutableListOf()
         disabledSuggestions = mutableListOf()
-        coordinator = FakeDayStudyGenerationCoordinator()
+        coordinator = FakeDayStudyGenerationCoordinator(pendingOpenKey = null)
         val dayStudyRepository = FakeDayStudyRepository(
+            hasCached = false,
             status = DayStudyStatusModel(
                 freeLimit = freeLimit,
                 usedCount = usedCount,
                 isUnlocked = false,
                 cacheToken = "token",
             ),
-            statusGate = quotaGate,
+            statusError = null,
+            events = emptyList(),
+        ).apply { statusGate = quotaGate }
+        val bibleRepository = FakeBibleRepository(
+            bibles = emptyList(),
+            selectedVersionId = "ACF",
         )
-        val bibleRepository = FakeBibleRepository()
         val getIntRemoteConfig = object : GetIntRemoteConfig {
             override suspend fun invoke(
                 key: String,
@@ -444,72 +439,5 @@ internal class DayReadingCompleteViewModelTest {
             backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
         return viewModel
-    }
-
-    private class FakeDayStudyRepository(
-        private val status: DayStudyStatusModel?,
-        private val statusGate: CompletableDeferred<Unit>?,
-    ) : DayStudyRepository {
-        override fun getDayStudy(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): Flow<DayStudyGenerationEventModel> = emptyFlow()
-
-        override suspend fun getDayStudyStatus(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): DayStudyStatusModel? {
-            statusGate?.await()
-            return status
-        }
-
-        override suspend fun hasCachedStudy(
-            passages: List<PassageModel>,
-            version: String,
-            languageCode: String,
-        ): Boolean = false
-    }
-
-    private class FakeBibleRepository : BibleRepository {
-        override fun getBiblesFlow(): Flow<List<BibleModel>> = flowOf(emptyList())
-
-        override fun getSelectedVersionIdFlow(): Flow<String> = flowOf("ACF")
-
-        override suspend fun setSelectedVersionId(id: String) = Unit
-    }
-
-    private class FakeDayStudyGenerationCoordinator : DayStudyGenerationCoordinator {
-        var startedWith: Triple<List<PassageModel>, DayNavRoute, String>? = null
-        override val jobs: StateFlow<List<DayStudyGenerationJob>> = MutableStateFlow(emptyList())
-        override val activeKey: StateFlow<String?> = MutableStateFlow(null)
-        override val pendingOpenKey: StateFlow<String?> = MutableStateFlow(null)
-        override val dismissedKeys: StateFlow<Set<String>> = MutableStateFlow(emptySet())
-
-        override fun keyOf(dayRoute: DayNavRoute): String = "key"
-
-        override fun start(
-            passages: List<PassageModel>,
-            dayRoute: DayNavRoute,
-            label: String,
-        ): String {
-            startedWith = Triple(passages, dayRoute, label)
-            return "key"
-        }
-
-        override fun setActive(key: String) = Unit
-
-        override fun clearActive(key: String) = Unit
-
-        override fun requestOpen(key: String) = Unit
-
-        override fun consumePendingOpen(key: String) = Unit
-
-        override fun dismissFromCard(key: String) = Unit
-
-        override fun acknowledge(key: String) = Unit
-
-        override fun getGeneratingCount(excludingKey: String?): Int = 0
     }
 }

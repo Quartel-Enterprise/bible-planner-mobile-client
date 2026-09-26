@@ -8,9 +8,9 @@ import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
 import com.quare.bibleplanner.core.plan.data.mapper.ChaptersRangeMapper
 import com.quare.bibleplanner.core.plan.data.mapper.ReadingPlanPreferenceMapperImpl
 import com.quare.bibleplanner.core.plan.data.mapper.WeekPlanDtoToModelMapper
-import com.quare.bibleplanner.core.plan.fake.FakeSyncedPreferenceDao
 import com.quare.bibleplanner.core.plan.fake.InMemoryPreferencesDataStore
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
+import com.quare.bibleplanner.core.provider.room.testing.FakeSyncedPreferenceDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -30,7 +30,7 @@ internal class PlanRepositoryImplTest {
 
     @BeforeTest
     fun setUp() {
-        dao = FakeSyncedPreferenceDao()
+        dao = FakeSyncedPreferenceDao(emptyMap())
         repository = PlanRepositoryImpl(
             planLocalDataSource = PlanLocalDataSource(InMemoryPreferencesDataStore()),
             weekPlanDtoToModelMapper = WeekPlanDtoToModelMapper(

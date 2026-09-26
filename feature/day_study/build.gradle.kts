@@ -68,6 +68,11 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(projects.core.date)
             implementation(projects.core.provider.language)
+
+            // Shared fakes
+            implementation(projects.core.books.testing)
+            implementation(projects.core.dayStudy.testing)
+            implementation(projects.core.plan.testing)
         }
 
         jvmTest.dependencies {
