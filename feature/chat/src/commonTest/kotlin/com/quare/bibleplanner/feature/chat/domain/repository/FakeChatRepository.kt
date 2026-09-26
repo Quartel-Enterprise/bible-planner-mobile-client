@@ -22,6 +22,10 @@ internal class FakeChatRepository : ChatRepository {
     val drafts: MutableStateFlow<Map<String, String>> = MutableStateFlow(emptyMap())
     var refreshedConversations: Int = 0
     var refreshedQuota: Int = 0
+    var syncCount: Int = 0
+    var deleteFailure: Throwable? = null
+    val sentRequests: MutableList<ChatSendRequestModel> = mutableListOf()
+    var answer: (ChatSendRequestModel) -> Flow<ChatSendEventModel> = { emptyFlow() }
 
     override fun observeConversations(): Flow<List<ChatConversationModel>> = conversations
 
@@ -30,7 +34,9 @@ internal class FakeChatRepository : ChatRepository {
 
     override fun observeQuota(): Flow<ChatQuotaModel?> = quota
 
-    override suspend fun syncRemoteChanges() = Unit
+    override suspend fun syncRemoteChanges() {
+        syncCount++
+    }
 
     override suspend fun refreshConversations() {
         refreshedConversations++
@@ -44,7 +50,10 @@ internal class FakeChatRepository : ChatRepository {
         refreshedQuota++
     }
 
-    override fun sendMessage(request: ChatSendRequestModel): Flow<ChatSendEventModel> = emptyFlow()
+    override fun sendMessage(request: ChatSendRequestModel): Flow<ChatSendEventModel> {
+        sentRequests += request
+        return answer(request)
+    }
 
     override suspend fun renameConversation(
         conversationId: String,
@@ -54,6 +63,7 @@ internal class FakeChatRepository : ChatRepository {
     }
 
     override suspend fun deleteConversation(conversationId: String) {
+        deleteFailure?.let { throw it }
         deleted += conversationId
     }
 

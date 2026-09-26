@@ -10,8 +10,6 @@ import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
-import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
-import com.quare.bibleplanner.core.plan.domain.usecase.UpdateDayReadStatusUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.toAnalyticsValue
@@ -24,8 +22,10 @@ import com.quare.bibleplanner.feature.readingplan.domain.tracker.ReadingStreakMi
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.FindFirstWeekWithUnreadBook
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetPlanMotivationMessage
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.GetSelectedReadingPlanFlow
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.ObservePlansByWeek
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolvePlanStatus
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.SetSelectedReadingPlan
+import com.quare.bibleplanner.feature.readingplan.domain.usecase.UpdateDayReadStatus
 import com.quare.bibleplanner.feature.readingplan.presentation.factory.ReadingPlanStateFactory
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.DeleteProgressMapper
 import com.quare.bibleplanner.feature.readingplan.presentation.mapper.WeeksPlanPresentationMapper
@@ -50,11 +50,11 @@ internal class ReadingPlanViewModel(
     private val resolvePlanStatus: ResolvePlanStatus,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
     private val deleteProgressMapper: DeleteProgressMapper,
-    private val updateDayReadStatus: UpdateDayReadStatusUseCase,
+    private val updateDayReadStatus: UpdateDayReadStatus,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val navigator: Navigator,
     factory: ReadingPlanStateFactory,
-    getPlansByWeek: GetPlansByWeekUseCase,
+    observePlansByWeek: ObservePlansByWeek,
     getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
     calculateBibleProgress: CalculateBibleProgressUseCase,
     findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
@@ -113,7 +113,7 @@ internal class ReadingPlanViewModel(
                 }
             }
         }
-        observe(getPlansByWeek()) { plansModel ->
+        observe(observePlansByWeek()) { plansModel ->
             reconcileReadOverrides(plansModel)
             currentPlansModel = plansModel
             val authoritativeReadDays = plansModel

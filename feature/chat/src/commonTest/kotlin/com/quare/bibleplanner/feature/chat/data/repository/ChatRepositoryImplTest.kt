@@ -2,6 +2,9 @@ package com.quare.bibleplanner.feature.chat.data.repository
 
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.plan.ChapterModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.chat.data.datasource.FakeChatConversationsRemoteDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.FakeChatDraftLocalDataSource
@@ -10,16 +13,22 @@ import com.quare.bibleplanner.feature.chat.data.datasource.FakeChatMessagesRemot
 import com.quare.bibleplanner.feature.chat.data.datasource.FakeChatRealtimeDataSource
 import com.quare.bibleplanner.feature.chat.data.datasource.FakeChatStreamRemoteDataSource
 import com.quare.bibleplanner.feature.chat.data.dto.ChatAcceptedDto
+import com.quare.bibleplanner.feature.chat.data.dto.ChatConversationDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatDoneDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatMessageDto
+import com.quare.bibleplanner.feature.chat.data.dto.ChatStatusDto
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatContextRequestMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatConversationMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatMessageMapper
 import com.quare.bibleplanner.feature.chat.data.mapper.ChatQuotaMapper
 import com.quare.bibleplanner.feature.chat.data.model.ChatRemoteChange
 import com.quare.bibleplanner.feature.chat.data.model.ChatStreamEvent
+import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatConversationModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
+import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
+import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -186,6 +195,283 @@ internal class ChatRepositoryImplTest {
         assertTrue(draftDataSource.drafts.value.isEmpty())
     }
 
+    @Test
+    fun `GIVEN cached conversations WHEN observing them THEN reads the cache`() = runTest {
+        // Given
+        val repository = createRepository()
+        localDataSource.conversations.value = listOf(conversation("conversation-1"))
+
+        // When
+        val conversations = repository.observeConversations().first()
+
+        // Then
+        assertEquals(
+            expected = listOf("conversation-1"),
+            actual = conversations.map { it.id },
+        )
+    }
+
+    @Test
+    fun `GIVEN a running sync WHEN realtime connects THEN the conversation list is pulled`() = runTest {
+        // Given
+        val repository = createRepository()
+        conversationsDataSource.remoteConversations = listOf(conversationDto())
+        val sync = launch(UnconfinedTestDispatcher(testScheduler)) { repository.syncRemoteChanges() }
+
+        // When
+        realtimeDataSource.connections.emit(Unit)
+
+        // Then
+        assertEquals(
+            expected = listOf("conversation-1"),
+            actual = localDataSource.conversations.value.map { it.id },
+        )
+        sync.cancel()
+    }
+
+    @Test
+    fun `GIVEN a failing pull WHEN realtime reconnects THEN the sync keeps pulling`() = runTest {
+        // Given
+        val repository = createRepository()
+        conversationsDataSource.fetchFailure = RuntimeException("offline")
+        val sync = launch(UnconfinedTestDispatcher(testScheduler)) { repository.syncRemoteChanges() }
+        realtimeDataSource.connections.emit(Unit)
+
+        // When
+        realtimeDataSource.connections.emit(Unit)
+
+        // Then
+        assertEquals(
+            expected = 2,
+            actual = conversationsDataSource.fetchCount,
+        )
+        sync.cancel()
+    }
+
+    @Test
+    fun `GIVEN a running sync WHEN a conversation is upserted remotely THEN it is cached`() = runTest {
+        // Given
+        val repository = createRepository()
+        val sync = launch(UnconfinedTestDispatcher(testScheduler)) { repository.syncRemoteChanges() }
+
+        // When
+        realtimeDataSource.conversationChanges.emit(ChatRemoteChange.ConversationUpserted(conversationDto()))
+
+        // Then
+        assertEquals(
+            expected = listOf("Caim e Abel"),
+            actual = localDataSource.conversations.value.map { it.title },
+        )
+        sync.cancel()
+    }
+
+    @Test
+    fun `GIVEN a cached message WHEN it is deleted remotely THEN it leaves the thread`() = runTest {
+        // Given
+        val repository = createRepository()
+        localDataSource.conversations.value = listOf(conversation("conversation-1"))
+        val sync = launch(UnconfinedTestDispatcher(testScheduler)) { repository.syncRemoteChanges() }
+        realtimeDataSource.messageChanges.emit(ChatRemoteChange.MessageUpserted(questionDto()))
+
+        // When
+        realtimeDataSource.messageChanges.emit(ChatRemoteChange.MessageDeleted("question-1"))
+
+        // Then
+        assertTrue(
+            localDataSource.messages.value["conversation-1"]
+                .orEmpty()
+                .isEmpty(),
+        )
+        sync.cancel()
+    }
+
+    @Test
+    fun `GIVEN the server status WHEN refreshing the quota THEN it is exposed`() = runTest {
+        // Given
+        val repository = createRepository()
+        streamDataSource.status = ChatStatusDto(
+            usedCount = 3,
+            freeLimit = 10,
+            isPro = false,
+        )
+
+        // When
+        repository.refreshQuota()
+
+        // Then
+        assertEquals(
+            expected = ChatQuotaModel(
+                usedCount = 3,
+                freeLimit = 10,
+                isPro = false,
+            ),
+            actual = repository.observeQuota().first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a question about a reading WHEN it opens a conversation THEN the reading goes along`() = runTest {
+        // Given
+        val repository = createRepository()
+
+        // When
+        val send = launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.sendMessage(request().copy(context = readingContext())).collect {}
+        }
+
+        // Then
+        val context = streamDataSource.requests.single().context
+        assertEquals(
+            expected = "ACF",
+            actual = context?.version,
+        )
+        assertEquals(
+            expected = listOf("GENESIS"),
+            actual = context?.passages?.map { it.book },
+        )
+        assertEquals(
+            expected = 4,
+            actual = context?.dayNumber,
+        )
+        assertEquals(
+            expected = "pt-BR",
+            actual = streamDataSource.requests.single().language,
+        )
+        send.cancel()
+    }
+
+    @Test
+    fun `GIVEN a follow-up question WHEN sending it THEN the reading is not sent again`() = runTest {
+        // Given
+        val repository = createRepository()
+
+        // When
+        val send = launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository
+                .sendMessage(
+                    request().copy(
+                        conversationId = "conversation-1",
+                        context = readingContext(),
+                    ),
+                ).collect {}
+        }
+
+        // Then
+        assertEquals(
+            expected = null,
+            actual = streamDataSource.requests.single().context,
+        )
+        send.cancel()
+    }
+
+    @Test
+    fun `GIVEN a streaming answer WHEN the server restarts it THEN the partial text is dropped`() = runTest {
+        // Given
+        val repository = createRepository()
+        val send = launch(UnconfinedTestDispatcher(testScheduler)) { repository.sendMessage(request()).collect {} }
+        streamDataSource.emit(accepted())
+        streamDataSource.emit(ChatStreamEvent.Delta("Caim"))
+
+        // When
+        streamDataSource.emit(ChatStreamEvent.Restart)
+
+        // Then
+        assertEquals(
+            expected = "",
+            actual = repository
+                .observeMessages("conversation-1")
+                .first()
+                .last()
+                .content,
+        )
+        send.cancel()
+    }
+
+    @Test
+    fun `GIVEN a new conversation WHEN its title is generated THEN the cached conversation is renamed`() = runTest {
+        // Given
+        val repository = createRepository()
+        val send = launch(UnconfinedTestDispatcher(testScheduler)) { repository.sendMessage(request()).collect {} }
+        streamDataSource.emit(accepted())
+
+        // When
+        streamDataSource.emit(
+            ChatStreamEvent.Title(
+                conversationId = "conversation-1",
+                title = "A inveja de Caim",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf("A inveja de Caim"),
+            actual = localDataSource.conversations.value.map { it.title },
+        )
+        send.cancel()
+    }
+
+    @Test
+    fun `GIVEN a cached conversation WHEN renaming it THEN the server and the cache get the new title`() = runTest {
+        // Given
+        val repository = createRepository()
+        localDataSource.conversations.value = listOf(conversation("conversation-1"))
+
+        // When
+        repository.renameConversation(
+            conversationId = "conversation-1",
+            title = "A inveja de Caim",
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf("conversation-1" to "A inveja de Caim"),
+            actual = conversationsDataSource.renamed,
+        )
+        assertEquals(
+            expected = listOf("A inveja de Caim"),
+            actual = localDataSource.conversations.value.map { it.title },
+        )
+    }
+
+    @Test
+    fun `GIVEN an uncached conversation WHEN renaming it THEN only the server is updated`() = runTest {
+        // Given
+        val repository = createRepository()
+
+        // When
+        repository.renameConversation(
+            conversationId = "conversation-1",
+            title = "A inveja de Caim",
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf("conversation-1" to "A inveja de Caim"),
+            actual = conversationsDataSource.renamed,
+        )
+        assertTrue(localDataSource.conversations.value.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN typed text WHEN saving the draft THEN it is read back for its thread`() = runTest {
+        // Given
+        val repository = createRepository()
+
+        // When
+        repository.saveDraft(
+            PendingDraftModel(
+                threadKey = "conversation-1",
+                content = "Por que",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = "Por que",
+            actual = repository.observeDraft("conversation-1").first(),
+        )
+    }
+
     private fun createRepository(): ChatRepositoryImpl = ChatRepositoryImpl(
         localDataSource = localDataSource,
         draftDataSource = draftDataSource,
@@ -239,6 +525,39 @@ internal class ChatRepositoryImplTest {
         content = "Por que Caim matou Abel?",
         createdAt = "2026-08-14T12:00:00Z",
         status = "complete",
+    )
+
+    private fun conversationDto(): ChatConversationDto = ChatConversationDto(
+        id = "conversation-1",
+        title = "Caim e Abel",
+        preview = "Por que Caim matou Abel?",
+        contextType = null,
+        context = null,
+        updatedAt = "2026-08-14T12:00:00Z",
+    )
+
+    private fun readingContext(): ChatContextModel = ChatContextModel(
+        label = "Gênesis 4",
+        passages = listOf(
+            PassageModel(
+                bookId = BookId.GEN,
+                chapters = listOf(
+                    ChapterModel(
+                        number = 4,
+                        startVerse = null,
+                        endVerse = null,
+                        bookId = BookId.GEN,
+                    ),
+                ),
+                isRead = false,
+                chapterRanges = "4",
+            ),
+        ),
+        planDay = ChatPlanDayModel(
+            dayNumber = 4,
+            weekNumber = 1,
+            readingPlanType = "CHRONOLOGICAL",
+        ),
     )
 
     private fun conversation(id: String): ChatConversationModel = ChatConversationModel(
