@@ -500,6 +500,32 @@ internal class DayViewModelTest {
     }
 
     @Test
+    fun `GIVEN notes typed within the debounce WHEN the screen is closed THEN saves them once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            awaitLoaded()
+            viewModel.onEvent(DayUiEvent.OnNotesChanged("Unsaved"))
+            runCurrent()
+
+            // When
+            viewModelStore.clear()
+            advanceTimeBy(notesDebounce + 1.milliseconds)
+
+            // Then
+            assertEquals(listOf<String?>("Unsaved"), dayRepository.notesUpdates)
+            assertEquals(
+                mapOf<String, Any>(
+                    "plan_type" to "books",
+                    "week_number" to 1,
+                    "day_number" to 1,
+                    "note_length" to 7,
+                ),
+                trackedParams(AnalyticsEventNames.NOTE_SAVED),
+            )
+        }
+
+    @Test
     fun `GIVEN saved notes WHEN the screen is closed THEN saves nothing again`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
