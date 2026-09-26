@@ -12,6 +12,11 @@ internal class FakeDayStudyGenerationCoordinator : DayStudyGenerationCoordinator
     val dismissedKeysFlow = MutableStateFlow<Set<String>>(emptySet())
     val requestedOpenKeys = mutableListOf<String>()
     val dismissedFromCardKeys = mutableListOf<String>()
+    val activatedKeys = mutableListOf<String>()
+    val clearedKeys = mutableListOf<String>()
+    val acknowledgedKeys = mutableListOf<String>()
+    val startedJobs = mutableListOf<Triple<List<PassageModel>, DayNavRoute, String>>()
+    var generatingCount = 0
 
     override val jobs: StateFlow<List<DayStudyGenerationJob>> = jobsFlow
     override val activeKey: StateFlow<String?> = activeKeyFlow
@@ -28,11 +33,18 @@ internal class FakeDayStudyGenerationCoordinator : DayStudyGenerationCoordinator
         passages: List<PassageModel>,
         dayRoute: DayNavRoute,
         label: String,
-    ): String = keyOf(dayRoute)
+    ): String {
+        startedJobs += Triple(passages, dayRoute, label)
+        return keyOf(dayRoute)
+    }
 
-    override fun setActive(key: String) = Unit
+    override fun setActive(key: String) {
+        activatedKeys += key
+    }
 
-    override fun clearActive(key: String) = Unit
+    override fun clearActive(key: String) {
+        clearedKeys += key
+    }
 
     override fun requestOpen(key: String) {
         requestedOpenKeys += key
@@ -44,9 +56,11 @@ internal class FakeDayStudyGenerationCoordinator : DayStudyGenerationCoordinator
         dismissedFromCardKeys += key
     }
 
-    override fun acknowledge(key: String) = Unit
+    override fun acknowledge(key: String) {
+        acknowledgedKeys += key
+    }
 
-    override fun getGeneratingCount(excludingKey: String?): Int = 0
+    override fun getGeneratingCount(excludingKey: String?): Int = generatingCount
 
     private companion object {
         const val KEY_SEPARATOR = "|"

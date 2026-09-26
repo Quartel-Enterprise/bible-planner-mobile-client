@@ -59,6 +59,17 @@ kotlin {
             // Calf
             implementation(libs.calf.ui)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(projects.core.remoteConfig)
+        }
+
+        jvmTest.dependencies {
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
+        }
+
         getByName("androidHostTest").dependencies {
             implementation(projects.ui.theme)
             implementation(libs.storeScreenshots.library)
