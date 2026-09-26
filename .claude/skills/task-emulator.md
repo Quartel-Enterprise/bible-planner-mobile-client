@@ -116,19 +116,44 @@ adb -s "emulator-$CONSOLE_PORT" shell am start -n com.quare.bibleplanner/.MainAc
 adb -s "emulator-$CONSOLE_PORT" exec-out screencap -p > <scratchpad>/screen.png
 ```
 
-## Delete
+## Shut down
 
-`finish-task` does this once the branch's merge is verified. Shut the emulator down if it is
-running, wait for it to exit, then remove its two paths:
+Shut the emulator down as soon as the task's device work is done: the tests have passed, or the
+look at the app is over. Do it before reporting back, not at the end of the task. A running emulator
+holds its 2 GB of guest RAM plus the emulator's own, and with several sessions at once that adds up
+fast. Stop its private adb server too:
 
 ```bash
-AVD=BiblePlanner_<short_description>
-pkill -f -- "-avd $AVD( |$)"
+export ANDROID_ADB_SERVER_PORT=$((CONSOLE_PORT + 1000))
+adb -s "emulator-$CONSOLE_PORT" emu kill
 while pgrep -f -- "-avd $AVD( |$)" > /dev/null; do sleep 1; done
-rm -rf ~/.android/avd/"$AVD".avd ~/.android/avd/"$AVD".ini
+adb kill-server
 ```
 
-- Never delete an AVD that isn't named after the task being finished. `Medium_Phone`, `Pixel_9`,
-  `Pixel_Tablet` and every `TuneScout_*` are shared or belong to another project.
-- If the task never created one (started before this step existed, or the user skipped it), there
-  is nothing to delete, so move on.
+The AVD stays, so the task can boot it again later. It boots cold either way (`-no-snapshot`).
+
+## Delete
+
+After its first boot an AVD takes about 2.3 GB of disk, and that space is freed only when the AVD
+is deleted. `finish-task` does that once the branch's merge is verified and the branch is deleted,
+and it does it for every task emulator whose branch no longer exists: this task's, and any left
+behind by a task that was dropped without `finish-task`. Every task emulator has a local branch
+while its task is alive, because `start-task` creates the branch before the emulator.
+
+```bash
+for INI in ~/.android/avd/BiblePlanner_*.ini; do
+  [ -e "$INI" ] || continue
+  AVD=$(basename "$INI" .ini)
+  git for-each-ref --format='%(refname:short)' refs/heads \
+    | sed 's#^[^/]*/##; s#-#_#g' | grep -qx "${AVD#BiblePlanner_}" && continue
+  pkill -f -- "-avd $AVD( |$)"
+  while pgrep -f -- "-avd $AVD( |$)" > /dev/null; do sleep 1; done
+  rm -rf ~/.android/avd/"$AVD".avd "$INI"
+  echo "deleted $AVD"
+done
+```
+
+- Only `BiblePlanner_*` AVDs are ever deleted. `Medium_Phone`, `Pixel_9`, `Pixel_Tablet` and every
+  `TuneScout_*` are shared or belong to another project.
+- A task whose branch still exists keeps its emulator, even if nobody is working on it. Finishing or
+  deleting that branch is what frees it.

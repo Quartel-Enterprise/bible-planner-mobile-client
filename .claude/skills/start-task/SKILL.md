@@ -112,7 +112,8 @@ is shared with `finish-task`. It only writes two config files and does not boot 
 
 Whenever the task needs an Android device (the Compose UI tests of `androidDeviceTest`, a look at
 the running app), boot and use this emulator as described in that file's "Boot", "Run tests on it"
-and "Run the app on it" sections. Never use the user's emulators or another task's.
+and "Run the app on it" sections, then shut it down as soon as that work is done ("Shut down"
+section). Never use the user's emulators or another task's.
 
 ### 6. Report the result
 

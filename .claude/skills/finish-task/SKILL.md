@@ -1,6 +1,6 @@
 ---
 name: finish-task
-description: "Tear down a finished task once its PR has merged: remove its worktree, or switch back to main in-place, then delete the branch, delete the task's emulator if it created one, and sync origin."
+description: "Tear down a finished task once its PR has merged: remove its worktree, or switch back to main in-place, then delete the branch, delete the task's emulator and any left behind by dropped tasks, and sync origin."
 ---
 
 # Finish Task
@@ -11,7 +11,8 @@ This skill cleans up after `start-task`, in either mode it can create a task in:
 - **In-place mode**: switches the main checkout back to `main` and deletes the branch that was
   checked out there.
 
-In both modes it also deletes the emulator `start-task` created for the task, if there is one.
+In both modes it also deletes the emulator `start-task` created for the task, if there is one,
+and the emulators of tasks that were dropped without this skill.
 
 In both modes this only runs after confirming the branch's PR has actually merged. Running this
 skill (or the user asking to clean up / finish the task) is itself the user's authorization to
@@ -99,21 +100,22 @@ A squash merge replaces the branch's commits with a single new one on `main`, so
 local branch as merged and `git branch -d` refuses it. Use `-D` only here, after step 3 confirmed
 the PR merged.
 
-**The task's emulator, in both modes:** its name comes from the branch's short description:
-`BiblePlanner_<short_description>`, with `-` turned into `_`. If `~/.android/avd/` has that AVD,
-shut it down and delete it as the "Delete" section of [`task-emulator.md`](../task-emulator.md)
-describes. If it doesn't, the task never created one, so skip this. Never delete any other AVD.
+**The task's emulator, in both modes:** after the branch is deleted, run the "Delete" section of
+[`task-emulator.md`](../task-emulator.md). It deletes every `BiblePlanner_*` AVD whose branch no
+longer exists: this task's, now that its branch is gone, and any left behind by a dropped task. It
+never touches an AVD whose task still has a branch, nor one that isn't a `BiblePlanner_*`.
 
 ### 5. Verify cleanup
 
 ```bash
 git worktree list
 git branch --list <branch>
-~/Library/Android/sdk/emulator/emulator -list-avds | grep -x 'BiblePlanner_<short_description>'
+~/Library/Android/sdk/emulator/emulator -list-avds | grep '^BiblePlanner_'
 ```
 
-None of them should show the removed task anymore. Report the result to the user, including whether
-an emulator was deleted.
+None of them should show the removed task anymore, and every `BiblePlanner_*` AVD left should belong
+to a branch that still exists. Report the result to the user, including which emulators were
+deleted.
 
 ## Edge cases
 
