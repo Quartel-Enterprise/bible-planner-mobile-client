@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.login.presentation.factory
 
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.login.presentation.GetResourcesAsTextResult
 import com.quare.bibleplanner.feature.login.presentation.mapper.LanguageToDesktopAuthSuccessStringsMapper
-import com.quare.bibleplanner.ui.theme.model.Theme
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse

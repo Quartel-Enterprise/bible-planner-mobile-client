@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 
 private val cardCornerRadius = 14.dp
 private const val SOFT_PRIMARY_ALPHA = 0.12f

@@ -13,15 +13,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            // Feature
-            implementation(projects.feature.materialYou)
-
             // Core
+            implementation(projects.core.preferences.materialYou)
+            implementation(projects.core.preferences.themeSelection)
             implementation(projects.core.provider.analytics)
-            implementation(projects.core.provider.dataStore)
             implementation(projects.core.provider.platform)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.date)
             implementation(projects.core.model)
             implementation(projects.core.user)
 
@@ -46,10 +42,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
-
-            // Data Store
-            implementation(libs.datastore)
-            implementation(libs.datastore.preferences)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

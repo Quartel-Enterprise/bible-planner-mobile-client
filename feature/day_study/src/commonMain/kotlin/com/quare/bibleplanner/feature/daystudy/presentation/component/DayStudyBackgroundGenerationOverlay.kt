@@ -60,9 +60,9 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_phase_chapter
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_context
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_questions
 import bibleplanner.feature.day_study.generated.resources.ai_study_phase_reading
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.viewmodel.DayStudyBackgroundGenerationViewModel
 import com.quare.bibleplanner.ui.utils.HideMainFabEffect

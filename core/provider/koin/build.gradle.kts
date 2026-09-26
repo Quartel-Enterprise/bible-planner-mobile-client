@@ -56,8 +56,12 @@ kotlin {
             implementation(projects.feature.preferences.themeSelection)
             implementation(projects.feature.preferences.studySuggestion)
             implementation(projects.feature.materialYou)
+            implementation(projects.core.preferences.materialYou)
+            implementation(projects.core.preferences.themeSelection)
+            implementation(projects.core.preferences.studySuggestion)
             implementation(projects.feature.day)
             implementation(projects.feature.dayStudy)
+            implementation(projects.core.dayStudy)
             implementation(projects.feature.dayReadingComplete)
             implementation(projects.feature.chat)
             implementation(projects.feature.preferences.editPlanStartDate)
@@ -78,6 +82,7 @@ kotlin {
             implementation(projects.feature.read)
             implementation(projects.feature.notificationPermission)
             implementation(projects.feature.inAppUpdate)
+            implementation(projects.core.inAppUpdate)
 
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))

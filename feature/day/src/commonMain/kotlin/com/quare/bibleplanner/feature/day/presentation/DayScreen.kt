@@ -21,7 +21,6 @@ import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.presentation.component.AskAiFab
 import com.quare.bibleplanner.feature.day.presentation.component.DayScreenTopBarComponent
-import com.quare.bibleplanner.feature.day.presentation.component.DayStudyDaySection
 import com.quare.bibleplanner.feature.day.presentation.content.loaded.DayContent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -37,18 +36,7 @@ internal fun DayScreen(
     animatedContentScope: AnimatedContentScope,
     isLandscape: Boolean,
     onEvent: (DayUiEvent) -> Unit,
-    dayStudySection: @Composable (
-        List<PassageModel>,
-        DayNavRoute,
-        Modifier,
-    ) -> Unit = { passages, dayRoute, sectionModifier ->
-        DayStudyDaySection(
-            passages = passages,
-            dayRoute = dayRoute,
-            onEvent = onEvent,
-            modifier = sectionModifier,
-        )
-    },
+    dayStudySection: @Composable (List<PassageModel>, DayNavRoute, Modifier) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val scaffoldNestedScrollModifier = if (isLandscape) {

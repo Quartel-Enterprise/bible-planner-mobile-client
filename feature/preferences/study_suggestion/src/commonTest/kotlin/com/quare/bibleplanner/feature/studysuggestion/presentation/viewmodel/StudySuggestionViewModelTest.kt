@@ -9,8 +9,8 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.feature.studysuggestion.presentation.factory.StudySuggestionUiStateFactory
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiAction
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent

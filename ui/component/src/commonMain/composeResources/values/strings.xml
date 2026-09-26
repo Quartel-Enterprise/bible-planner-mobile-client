@@ -9,4 +9,7 @@
     <string name="show_less">Show less</string>
     <string name="megabytes_size">%1$d.%2$d MB</string>
     <string name="selected">Selected</string>
+    <string name="language_english">English</string>
+    <string name="language_portuguese_brazil">Portuguese (Brazil)</string>
+    <string name="language_spanish">Spanish</string>
 </resources>

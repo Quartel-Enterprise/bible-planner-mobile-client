@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.books)
             implementation(projects.core.date)
+            implementation(projects.core.dayStudy)
             implementation(projects.core.sync)
             implementation(projects.core.provider.connectivity)
             implementation(projects.core.user)
@@ -33,9 +34,6 @@ kotlin {
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
-
-            // Feature
-            implementation(projects.feature.dayStudy)
 
             // UI
             implementation(projects.ui.component)

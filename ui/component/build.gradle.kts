@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.provider.platform)
+            implementation(projects.core.utils)
             implementation(projects.core.verseAnnotations)
 
             // UI

@@ -5,17 +5,12 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
+import com.quare.bibleplanner.core.model.theme.ContrastType
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetContrastTypeFlowUseCase
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetThemeOptionFlowUseCase
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetThemeSyncEnabledFlowUseCase
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.SetContrastTypeUseCase
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.SetThemeOptionUseCase
 import com.quare.bibleplanner.feature.themeselection.presentation.factory.ThemeSelectionUiStateFactory
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
-import com.quare.bibleplanner.ui.theme.model.ContrastType
-import com.quare.bibleplanner.ui.theme.model.Theme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -206,18 +201,18 @@ internal class ThemeSelectionViewModelTest {
             backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
         viewModel = ThemeSelectionViewModel(
-            setThemeOption = SetThemeOptionUseCase(repository),
+            setThemeOption = repository::setTheme,
             setDynamicColorsEnabledFlow = { isEnabled -> dynamicColorsEnabled.value = isEnabled },
-            setContrastType = SetContrastTypeUseCase(repository),
+            setContrastType = repository::setContrastType,
             setThemeSyncEnabled = repository::setThemeSyncEnabled,
             navigator = navigator,
             trackEvent = { name, params -> recordedEvents += name to params },
             factory = ThemeSelectionUiStateFactory(
-                getThemeOptionFlow = GetThemeOptionFlowUseCase(repository),
+                getThemeOptionFlow = repository::getThemeFlow,
                 getIsDynamicColorsEnabledFlow = { dynamicColorsEnabled },
-                getContrastTypeFlow = GetContrastTypeFlowUseCase(repository),
+                getContrastTypeFlow = repository::getContrastTypeFlow,
                 isDynamicColorSupported = { true },
-                getThemeSyncEnabledFlow = GetThemeSyncEnabledFlowUseCase(repository),
+                getThemeSyncEnabledFlow = repository::getThemeSyncEnabledFlow,
                 observeAuthenticatedUserId = { flowOf("user-1") },
             ),
         )

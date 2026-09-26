@@ -64,7 +64,10 @@ moduleGraphAssert {
     )
     // :core:navigation and :core:provider:koin are the composition root: they wire every feature,
     // so they are the only core modules allowed to see features, and nothing below may see them.
+    // Features never see each other: what two of them share lives in core, and a feature drawn
+    // inside another is handed to it by the composition root.
     restricted = arrayOf(
+        ":feature:.* -X> :feature:.*",
         ":core:(?!(navigation|provider:koin) ).* -X> :(feature|ui):.*",
         ":(feature|ui):.* -X> :core:(navigation|provider:koin)",
         ":core:(?!(navigation|provider:koin) ).* -X> :core:(navigation|provider:koin)",

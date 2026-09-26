@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.feature.inappupdate.presentation
 
+import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateDownloadState
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
-import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateDownloadState
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateDownloadUiAction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

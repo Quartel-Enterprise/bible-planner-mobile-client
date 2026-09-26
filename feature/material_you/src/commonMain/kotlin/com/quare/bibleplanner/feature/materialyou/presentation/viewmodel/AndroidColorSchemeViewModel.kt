@@ -2,9 +2,9 @@ package com.quare.bibleplanner.feature.materialyou.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.preferences.materialyou.domain.model.MaterialYouUseCases
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.orFalse
-import com.quare.bibleplanner.feature.materialyou.domain.model.MaterialYouUseCases
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiEvent
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel

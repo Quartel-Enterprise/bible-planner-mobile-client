@@ -41,8 +41,8 @@ import bibleplanner.feature.preferences.study_suggestion.generated.resources.stu
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.sync_across_devices_title
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.feature.studysuggestion.presentation.component.StudySuggestionModeCard
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiState

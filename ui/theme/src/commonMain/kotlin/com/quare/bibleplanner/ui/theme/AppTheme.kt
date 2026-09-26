@@ -5,13 +5,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.ui.theme.color.darkScheme
 import com.quare.bibleplanner.ui.theme.color.highContrastDarkColorScheme
 import com.quare.bibleplanner.ui.theme.color.highContrastLightColorScheme
 import com.quare.bibleplanner.ui.theme.color.lightScheme
 import com.quare.bibleplanner.ui.theme.color.mediumContrastDarkColorScheme
 import com.quare.bibleplanner.ui.theme.color.mediumContrastLightColorScheme
-import com.quare.bibleplanner.ui.theme.model.ContrastType
 
 @Composable
 fun AppTheme(

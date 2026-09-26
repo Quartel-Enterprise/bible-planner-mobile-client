@@ -31,7 +31,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.DayReadingCompleteBanner
+import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
@@ -61,6 +61,7 @@ internal fun ReadNarrowScreen(
     platform: Platform,
     state: ReadUiState,
     onEvent: (ReadUiEvent) -> Unit,
+    dayCompletionBanner: DayCompletionBannerSlot,
 ) {
     val listState = rememberLazyListState()
     val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
@@ -200,7 +201,7 @@ internal fun ReadNarrowScreen(
             val navigationBarPadding = WindowInsets.navigationBars
                 .asPaddingValues()
                 .calculateBottomPadding()
-            DayReadingCompleteBanner(
+            dayCompletionBanner.Content(
                 day = day,
                 onDismissRequest = { onEvent(ReadUiEvent.OnDayCompletionBannerDismissed) },
                 modifier = Modifier

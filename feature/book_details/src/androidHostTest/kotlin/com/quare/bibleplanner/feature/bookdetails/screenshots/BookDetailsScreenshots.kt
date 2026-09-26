@@ -7,12 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.bookdetails.fixture.bookDetailsUiState
 import com.quare.bibleplanner.feature.bookdetails.presentation.BookDetailsScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
-import com.quare.bibleplanner.ui.theme.model.Theme
 import dev.lucianosantos.storescreenshots.DeviceMockup
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.MockupOrientation

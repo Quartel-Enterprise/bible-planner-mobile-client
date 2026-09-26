@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.login.presentation
 
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.login.presentation.factory.DesktopAuthSuccessHtmlFactory
 import com.quare.bibleplanner.feature.login.presentation.mapper.LanguageToDesktopAuthSuccessStringsMapper
-import com.quare.bibleplanner.ui.theme.model.Theme
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow

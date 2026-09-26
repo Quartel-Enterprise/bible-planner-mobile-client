@@ -46,6 +46,7 @@ import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactS
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiState
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.toStringResource
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import com.quare.bibleplanner.ui.component.language.toStringResource
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource

@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.chat.domain.usecase.impl
 
 import com.quare.bibleplanner.core.books.util.toBookNameResource
+import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.DayModel
@@ -13,7 +14,6 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.fake.FakeBooksRepository
 import com.quare.bibleplanner.feature.chat.fake.FakePlanRepository
-import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime

@@ -15,11 +15,9 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
-            implementation(projects.core.provider.dataStore)
+            implementation(projects.core.preferences.materialYou)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.utils)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.date)
 
             // UI
             implementation(projects.ui.component)
@@ -42,10 +40,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
-
-            // Data Store
-            implementation(libs.datastore)
-            implementation(libs.datastore.preferences)
         }
 
         commonTest.dependencies {

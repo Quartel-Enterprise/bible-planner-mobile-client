@@ -109,8 +109,10 @@ The dependencies between Gradle modules are checked by
 `moduleGraphAssert` block of the root `build.gradle.kts`. It only looks at production source sets
 (test-only dependencies are ignored) and enforces the layering: `:core:navigation` and
 `:core:provider:koin` are the composition root and the only core modules allowed to depend on
-`:feature:*` or `:ui:*`. No feature, UI or other core module may depend on them, and `:ui:*` never
-depends on `:feature:*`.
+`:feature:*` or `:ui:*`. No feature, UI or other core module may depend on them, `:ui:*` never
+depends on `:feature:*`, and a feature never depends on another feature — see
+[Module structure](architecture/module-structure.md#dependency-rules) for where shared code goes
+instead.
 
 ```bash
 ./gradlew assertModuleGraph                  # run every check (what CI runs)
@@ -129,7 +131,8 @@ parallel:
 ```
 
 A new dependency that breaks a rule means the code is in the wrong module, not that the rule needs
-an exception: move the shared piece down to a `:core:*` module instead.
+an exception: move the shared piece down to a `:core:*` module, or have the composition root hand
+it over, instead.
 
 The `module-graph` workflow runs `assertModuleGraph` on every pull request — and on every push to
 `main` — that touches a Gradle build script, `build-logic` or the version catalog: the only files

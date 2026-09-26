@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_summary_by_chapter
 import bibleplanner.feature.day_study.generated.resources.ai_summary_takeaways
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyExpandableCard
 import com.quare.bibleplanner.ui.component.ExpandableText
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer

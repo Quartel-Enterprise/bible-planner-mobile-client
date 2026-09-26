@@ -29,9 +29,9 @@ import bibleplanner.feature.day_study.generated.resources.ai_tab_context
 import bibleplanner.feature.day_study.generated.resources.ai_tab_questions
 import bibleplanner.feature.day_study.generated.resources.ai_tab_summary
 import bibleplanner.ui.component.generated.resources.back
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.feature.daystudy.fixture.dayStudyModel
 import com.quare.bibleplanner.feature.daystudy.fixture.dayStudyUiState
 import com.quare.bibleplanner.feature.daystudy.presentation.component.titleRes

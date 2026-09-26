@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.feature.themeselection.presentation.model
 
+import com.quare.bibleplanner.core.model.theme.ContrastType
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
-import com.quare.bibleplanner.ui.theme.model.ContrastType
-import com.quare.bibleplanner.ui.theme.model.Theme
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
 sealed interface ThemeSelectionUiEvent : UiEvent {
