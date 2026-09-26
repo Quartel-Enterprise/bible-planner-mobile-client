@@ -7,9 +7,18 @@ import io.github.jan.supabase.auth.MemoryCodeVerifierCache
 import io.github.jan.supabase.auth.MemorySessionManager
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.github.jan.supabase.auth.user.UserInfo
+import io.github.jan.supabase.auth.user.UserSession
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.realtime.realtime
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockEngineConfig
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -76,9 +85,40 @@ internal class EndSessionUseCaseTest {
         assertEquals(1, logoutMarker.unmarkCalls)
     }
 
-    private fun prepareScenario(
+    @Test
+    fun `GIVEN clearing local data fails WHEN ending the session THEN returns the failure`() = runTest {
+        // Given
+        prepareScenario(clearLocalData = { error("disk full") })
+
+        // When
+        val result = useCase()
+
+        // Then
+        assertIs<IllegalStateException>(result.exceptionOrNull())
+    }
+
+    @Test
+    fun `GIVEN the sign-out request fails WHEN ending the session THEN returns the failure and keeps local data`() =
+        runTest {
+            // Given
+            prepareScenario(
+                clearLocalData = {},
+                signOutFails = true,
+            )
+
+            // When
+            val result = useCase()
+
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(0, clearLocalDataCalls)
+            assertFalse(logoutMarker.isMarked)
+        }
+
+    private suspend fun prepareScenario(
         clearLocalData: () -> Unit,
         unregisterResult: Result<Unit> = Result.success(Unit),
+        signOutFails: Boolean = false,
     ) {
         logoutMarker = RecordingLogoutMarker()
         unregisterCalls = 0
@@ -87,6 +127,21 @@ internal class EndSessionUseCaseTest {
             supabaseUrl = SUPABASE_URL,
             supabaseKey = SUPABASE_KEY,
         ) {
+            httpEngine = MockEngine(
+                MockEngineConfig().apply {
+                    dispatcher = Dispatchers.Unconfined
+                    addHandler {
+                        respond(
+                            content = SERVER_ERROR,
+                            status = HttpStatusCode.InternalServerError,
+                            headers = headersOf(
+                                name = HttpHeaders.ContentType,
+                                value = "application/json",
+                            ),
+                        )
+                    }
+                },
+            )
             install(Auth) {
                 sessionManager = MemorySessionManager()
                 codeVerifierCache = MemoryCodeVerifierCache()
@@ -94,6 +149,21 @@ internal class EndSessionUseCaseTest {
                 alwaysAutoRefresh = false
             }
             install(Realtime)
+        }
+        if (signOutFails) {
+            supabaseClient.auth.importSession(
+                session = UserSession(
+                    accessToken = "access-token",
+                    refreshToken = "refresh-token",
+                    expiresIn = 3600,
+                    tokenType = "bearer",
+                    user = UserInfo(
+                        aud = "authenticated",
+                        id = "user-1",
+                    ),
+                ),
+                autoRefresh = false,
+            )
         }
         useCase = EndSessionUseCase(
             auth = supabaseClient.auth,
@@ -113,6 +183,7 @@ internal class EndSessionUseCaseTest {
     private companion object {
         const val SUPABASE_URL = "https://project.supabase.co"
         const val SUPABASE_KEY = "anon-key"
+        const val SERVER_ERROR = """{"code":500,"msg":"Internal error"}"""
     }
 }
 

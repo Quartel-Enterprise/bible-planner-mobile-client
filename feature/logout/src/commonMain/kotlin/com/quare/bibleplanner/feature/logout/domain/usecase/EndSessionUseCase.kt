@@ -28,15 +28,20 @@ class EndSessionUseCase(
         unregisterCurrentDevice()
         return suspendRunCatching {
             realtime.removeAllChannels()
-        }.map {
-            realtime.disconnect()
-            intentionalLogoutMarker.mark()
-            suspendRunCatching {
-                auth.signOut()
-                clearLocalUserData()
-            }.onFailure {
-                intentionalLogoutMarker.unmark()
-            }
+        }.fold(
+            onSuccess = { signOutAndClearLocalData() },
+            onFailure = Result.Companion::failure,
+        )
+    }
+
+    private suspend fun signOutAndClearLocalData(): Result<Unit> {
+        realtime.disconnect()
+        intentionalLogoutMarker.mark()
+        return suspendRunCatching {
+            auth.signOut()
+            clearLocalUserData()
+        }.onFailure {
+            intentionalLogoutMarker.unmark()
         }
     }
 }
