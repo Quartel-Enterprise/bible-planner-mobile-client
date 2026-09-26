@@ -58,6 +58,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
         getByName("androidHostTest").dependencies {
             implementation(projects.ui.theme)

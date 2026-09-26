@@ -6,6 +6,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.subscriptiondetails"
+        withHostTest {}
     }
 
     jvm()
@@ -39,6 +40,11 @@ kotlin {
 
             // Date
             implementation(libs.kotlinx.datetime)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

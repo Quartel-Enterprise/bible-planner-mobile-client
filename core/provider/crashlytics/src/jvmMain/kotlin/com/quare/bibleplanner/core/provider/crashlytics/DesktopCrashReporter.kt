@@ -1,10 +1,12 @@
 package com.quare.bibleplanner.core.provider.crashlytics
 
 import com.quare.bibleplanner.core.provider.crashlytics.domain.service.CrashReporter
-import com.quare.bibleplanner.core.provider.crashlytics.generated.CrashlyticsBuildKonfig
 import io.sentry.Sentry
 
-internal class DesktopCrashReporter : CrashReporter {
+internal class DesktopCrashReporter(
+    private val sentryDsn: String,
+    private val appVersion: String,
+) : CrashReporter {
     override fun setCollectionEnabled(enabled: Boolean) {
         if (enabled) startSentry() else Sentry.close()
     }
@@ -14,11 +16,10 @@ internal class DesktopCrashReporter : CrashReporter {
     }
 
     private fun startSentry() {
-        val dsn = CrashlyticsBuildKonfig.SENTRY_DSN
-        if (dsn.isBlank()) return
+        if (sentryDsn.isBlank()) return
         Sentry.init { options ->
-            options.dsn = dsn
-            options.release = "$RELEASE_PACKAGE@${CrashlyticsBuildKonfig.APP_VERSION}"
+            options.dsn = sentryDsn
+            options.release = "$RELEASE_PACKAGE@$appVersion"
             options.isAttachServerName = false
         }
     }

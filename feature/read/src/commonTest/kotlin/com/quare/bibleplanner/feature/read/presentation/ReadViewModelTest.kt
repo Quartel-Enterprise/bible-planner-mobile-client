@@ -2,15 +2,20 @@ package com.quare.bibleplanner.feature.read.presentation
 
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.mark_as_read
+import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
+import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
@@ -20,6 +25,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandi
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
+import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFontSize
 import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
@@ -27,6 +33,7 @@ import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.GetPreviousChapter
 import com.quare.bibleplanner.feature.read.fake.FakeObserveReadData
 import com.quare.bibleplanner.feature.read.fake.FakeVerseSelectionStore
+import com.quare.bibleplanner.feature.read.fake.RecordingBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.read.fake.ThrowingBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
@@ -84,6 +91,9 @@ internal class ReadViewModelTest {
     private lateinit var selectionStore: FakeVerseSelectionStore
     private lateinit var trackedEvents: MutableList<String>
     private lateinit var prefetchedDays: MutableList<PlanDayLocationModel>
+    private lateinit var focusAidWrites: MutableList<ReaderFocusAid>
+    private lateinit var trackedEventParams: MutableList<Pair<String, Map<String, Any>>>
+    private var notificationPermissionRequests = 0
 
     @BeforeTest
     fun setUp() {
@@ -564,6 +574,140 @@ internal class ReadViewModelTest {
         assertFalse(viewModel.uiState.value.isLoadingPreviousChapter)
     }
 
+    @Test
+    fun `opens the suggested next chapter in place of the current one`() = runTest(testDispatcher) {
+        // Given
+        val next = ReadNavigationSuggestionModel(
+            bookId = BookId.GEN,
+            chapterNumber = 4,
+        )
+        prepareScenario(
+            navigationSuggestions = ReadNavigationSuggestionsModel(
+                previous = null,
+                next = next,
+            ),
+            isWholeChapterRead = { chapterNumber, _ -> chapterNumber == 4 },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(next))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf<NavigationCommand>(
+                NavigationCommand.NavigateReplacingTop(
+                    ReadNavRoute(
+                        bookId = BookId.GEN.name,
+                        chapterNumber = 4,
+                        isChapterRead = true,
+                        isFromBookDetails = false,
+                    ),
+                ),
+            ),
+            actual = commands,
+        )
+        assertTrue(trackedEvents.contains("reading_suggestion_clicked"))
+    }
+
+    @Test
+    fun `tracks a tap on the previous chapter suggestion as going back`() = runTest(testDispatcher) {
+        // Given
+        val previous = ReadNavigationSuggestionModel(
+            bookId = BookId.GEN,
+            chapterNumber = 2,
+        )
+        prepareScenario(
+            navigationSuggestions = ReadNavigationSuggestionsModel(
+                previous = previous,
+                next = null,
+            ),
+            isWholeChapterRead = { _, _ -> false },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(previous))
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf<Map<String, Any>>(
+                mapOf(
+                    "direction" to "previous",
+                    "book_id" to "gen",
+                    "chapter_number" to 2,
+                ),
+            ),
+            actual = trackedEventParams
+                .filter { (name, _) -> name == "reading_suggestion_clicked" }
+                .map { (_, params) -> params },
+        )
+    }
+
+    @Test
+    fun `turns the focus aids off when the ruler is dismissed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnRulerDismissClick)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf(ReaderFocusAid.NONE),
+            actual = focusAidWrites,
+        )
+        assertTrue(trackedEvents.contains("reader_focus_aid_changed"))
+    }
+
+    @Test
+    fun `resumes the download of a paused version and asks to notify its progress`() = runTest(testDispatcher) {
+        // Given
+        val downloader = RecordingBibleVersionDownloaderFacade()
+        prepareScenario(
+            content = ReadContentUiState.Error.ChapterNotFound(
+                errorUiEvent = ReadUiEvent.ManageBibleVersions,
+                selectedBibleVersionName = "Almeida",
+                downloadStatus = DownloadStatusModel.InProgress.Paused(progress = 0.5f),
+                versionSizeInBytes = null,
+            ),
+            downloaderFacade = downloader,
+            getSelectedVersionIdFlow = { flowOf("ACF") },
+        )
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnDownloadSelectedVersionClick)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf("ACF"),
+            actual = downloader.downloadedVersionIds,
+        )
+        assertEquals(
+            expected = 1,
+            actual = notificationPermissionRequests,
+        )
+        assertTrue(trackedEvents.contains("bible_version_download_started"))
+    }
+
+    @Test
+    fun `opens the version manager from the missing chapter error`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ReadUiEvent.ManageBibleVersions)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf<NavigationCommand>(NavigationCommand.Navigate(BibleVersionSelectorRoute)),
+            actual = commands,
+        )
+    }
+
     private fun TestScope.prepareScenario(
         toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus = ToggleWholeChapterReadStatus {
             _,
@@ -582,8 +726,19 @@ internal class ReadViewModelTest {
         isVerticalReadingEnabled: Boolean = false,
         getNextChapter: GetNextChapter = GetNextChapter { _, _, _ -> null },
         getPreviousChapter: GetPreviousChapter = GetPreviousChapter { _, _, _ -> null },
+        navigationSuggestions: ReadNavigationSuggestionsModel = ReadNavigationSuggestionsModel(
+            previous = null,
+            next = null,
+        ),
+        content: ReadContentUiState? = null,
+        isWholeChapterRead: IsWholeChapterRead = IsWholeChapterRead { _, _ -> error("unused") },
+        downloaderFacade: BibleVersionDownloaderFacade = ThrowingBibleVersionDownloaderFacade,
+        getSelectedVersionIdFlow: GetSelectedVersionIdFlow = GetSelectedVersionIdFlow { error("unused") },
     ) {
         prefetchedDays = mutableListOf()
+        focusAidWrites = mutableListOf()
+        trackedEventParams = mutableListOf()
+        notificationPermissionRequests = 0
         trackedEvents = mutableListOf()
         selectionStore = FakeVerseSelectionStore()
         val bookStringResource = Res.string.mark_as_read
@@ -610,13 +765,10 @@ internal class ReadViewModelTest {
                     bookStringResource = bookStringResource,
                     chapterNumber = 3,
                     isChapterRead = false,
-                    navigationSuggestions = ReadNavigationSuggestionsModel(
-                        previous = null,
-                        next = null,
-                    ),
+                    navigationSuggestions = navigationSuggestions,
                     versionAbbreviation = Loadable.Loaded("ARC"),
                 ),
-                content = ReadContentUiState.Success(chapters = listOf(chapter)),
+                content = content ?: ReadContentUiState.Success(chapters = listOf(chapter)),
             ),
         )
         val settings = MutableStateFlow(
@@ -638,17 +790,17 @@ internal class ReadViewModelTest {
             ),
             observeReadData = FakeObserveReadData(data),
             toggleWholeChapterReadStatus = toggleWholeChapterReadStatus,
-            isWholeChapterRead = { _, _ -> error("unused") },
+            isWholeChapterRead = isWholeChapterRead,
             getCompletedDayForChapter = getCompletedDayForChapter,
             observeDayCompletionCandidates = ObserveDayCompletionCandidates { flowOf(dayCompletionCandidates) },
             prefetchDayStudyQuota = { day -> prefetchedDays += day },
             observeStudySuggestionSettings = { flowOf(studySuggestionSettings) },
             requestLoginNudgeIfNeeded = { },
-            downloaderFacade = ThrowingBibleVersionDownloaderFacade,
-            getSelectedVersionIdFlow = { error("unused") },
-            requestDownloadNotificationPermission = { error("unused") },
+            downloaderFacade = downloaderFacade,
+            getSelectedVersionIdFlow = getSelectedVersionIdFlow,
+            requestDownloadNotificationPermission = { notificationPermissionRequests++ },
             observeReaderSettings = { settings },
-            setReaderFocusAid = { error("unused") },
+            setReaderFocusAid = { focusAid -> focusAidWrites += focusAid },
             getNextChapter = getNextChapter,
             getPreviousChapter = getPreviousChapter,
             observeVerseSelection = { selectionStore.selection },
@@ -660,7 +812,10 @@ internal class ReadViewModelTest {
             },
             clearVerseSelection = { selectionStore.clear() },
             navigator = navigator,
-            trackEvent = { name, _ -> trackedEvents += name },
+            trackEvent = { name, params ->
+                trackedEvents += name
+                trackedEventParams += name to params
+            },
             platform = Platform.Android,
         )
         commands = mutableListOf<NavigationCommand>().also { collected ->

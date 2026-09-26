@@ -6,6 +6,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.materialyou"
+        withHostTest {}
     }
 
     jvm()
@@ -45,6 +46,11 @@ kotlin {
             // Data Store
             implementation(libs.datastore)
             implementation(libs.datastore.preferences)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

@@ -69,6 +69,15 @@ class ProfilePhotoViewModelTest {
     }
 
     @Test
+    fun `asks the ui to open the camera picker`() = runTest {
+        // When
+        val actions = actionsAfter(ProfilePhotoUiEvent.OnTakePhotoClick)
+
+        // Then
+        assertEquals(listOf(ProfilePhotoUiAction.LaunchCameraPicker), actions)
+    }
+
+    @Test
     fun `ignores a cancelled picker`() = runTest {
         // When
         val actions = actionsAfter(ProfilePhotoUiEvent.OnImagePicked(null))

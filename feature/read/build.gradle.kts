@@ -64,6 +64,7 @@ kotlin {
 
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(projects.core.date)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.kotlinx.datetime)
         }

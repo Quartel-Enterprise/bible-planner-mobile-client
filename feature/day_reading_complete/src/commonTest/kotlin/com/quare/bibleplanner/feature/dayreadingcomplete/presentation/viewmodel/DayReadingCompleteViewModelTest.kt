@@ -329,12 +329,56 @@ internal class DayReadingCompleteViewModelTest {
         assertTrue(trackedEvents.any { (name, _) -> name == "day_reading_complete_dismissed" })
     }
 
+    @Test
+    fun `GIVEN no connection WHEN tapping the cta THEN shows the offline snackbar without starting`() =
+        runTest(testDispatcher) {
+            // Given
+            val viewModel = viewModel(
+                isPro = false,
+                freeLimit = 3,
+                usedCount = 1,
+                isConnected = false,
+            )
+            runCurrent()
+
+            // When
+            viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+            runCurrent()
+
+            // Then
+            assertIs<DayReadingCompleteUiAction.ShowSnackBar>(actions.single())
+            assertNull(coordinator.startedWith)
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the cta still loading WHEN tapping it THEN does nothing`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = viewModel(
+            isPro = false,
+            freeLimit = 3,
+            usedCount = 1,
+            quotaGate = CompletableDeferred(),
+        )
+        runCurrent()
+
+        // When
+        viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+        runCurrent()
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+        assertTrue(commands.isEmpty())
+        assertNull(coordinator.startedWith)
+    }
+
     private fun TestScope.viewModel(
         isPro: Boolean,
         freeLimit: Int,
         usedCount: Int,
         day: ScheduledDayModel? = testDay,
         isLoggedIn: Boolean = true,
+        isConnected: Boolean = true,
         quotaGate: CompletableDeferred<Unit>? = null,
         prefetchedQuota: DayStudyQuotaModel? = null,
     ): DayReadingCompleteViewModel {
@@ -370,7 +414,7 @@ internal class DayReadingCompleteViewModelTest {
             getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
             observeIsProUser = { flowOf(isPro) },
             observeAuthenticatedUserId = { flowOf(if (isLoggedIn) "user-id" else null) },
-            isConnected = { true },
+            isConnected = { isConnected },
             classifyDayTiming = ClassifyDayTimingUseCase(
                 currentTimestampProvider = { 0L },
                 localDateTimeProvider = { LocalDateTime(testPlannedReadDate, LocalTime(12, 0)) },

@@ -80,6 +80,15 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.ktor.client.mock)
+            implementation(projects.core.date)
+        }
+
+        jvmTest.dependencies {
+            // Skiko native library, required by compose-resources' getString() on the JVM target
+            implementation(compose.desktop.currentOs)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
     }
 }

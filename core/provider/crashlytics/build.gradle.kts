@@ -9,6 +9,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.provider.crashlytics"
+        withHostTest {}
     }
 
     jvm()
@@ -23,6 +24,11 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.kermit)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
 
         androidMain.dependencies {

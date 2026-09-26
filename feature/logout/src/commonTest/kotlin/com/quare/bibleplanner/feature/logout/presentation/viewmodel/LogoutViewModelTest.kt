@@ -157,6 +157,22 @@ internal class LogoutViewModelTest {
     }
 
     @Test
+    fun `GIVEN an idle logout dialog WHEN dismissing it THEN navigates back`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(result = Result.success(Unit))
+
+        // When
+        viewModel.onEvent(LogoutUiEvent.OnDismiss)
+
+        // Then
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+        assertEquals(
+            listOf(AnalyticsEventNames.LOGOUT_CANCELLED),
+            trackedEvents.map { (name, _) -> name },
+        )
+    }
+
+    @Test
     fun `GIVEN a logout WHEN confirming THEN tracks logout_confirmed as not forced`() = runTest(testDispatcher) {
         // Given
         prepareScenario(result = Result.success(Unit))

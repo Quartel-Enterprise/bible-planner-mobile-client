@@ -622,6 +622,183 @@ internal class ChatViewModelTest {
             assertEquals(false, viewModel.uiState.value.history.isOpen)
         }
 
+    @Test
+    fun `GIVEN a conversation row WHEN toggling its actions twice THEN they open and close`() =
+        runTest(testDispatcher) {
+            // Given
+            val viewModel = createViewModel()
+            viewModel.onEvent(ChatUiEvent.OnConversationActionsToggle("conversation-1"))
+            val expandedId = viewModel.uiState.value.history.expandedActionsId
+
+            // When
+            viewModel.onEvent(ChatUiEvent.OnConversationActionsToggle("conversation-1"))
+
+            // Then
+            assertEquals(
+                expected = "conversation-1",
+                actual = expandedId,
+            )
+            assertNull(viewModel.uiState.value.history.expandedActionsId)
+        }
+
+    @Test
+    fun `GIVEN a conversation being renamed WHEN cancelled THEN the rename is dropped`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createViewModel()
+        viewModel.onEvent(ChatUiEvent.OnRenameConversationClick("conversation-1"))
+        viewModel.onEvent(ChatUiEvent.OnRenameDraftChanged("Caim"))
+
+        // When
+        viewModel.onEvent(ChatUiEvent.OnRenameCancel)
+
+        // Then
+        assertNull(viewModel.uiState.value.history.renamingId)
+        assertEquals(
+            expected = "",
+            actual = viewModel.uiState.value.history.renameDraft,
+        )
+        assertTrue(repository.renamed.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a conversation marked for deletion WHEN cancelled THEN it is kept`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createViewModel()
+        viewModel.onEvent(ChatUiEvent.OnDeleteConversationClick("conversation-1"))
+
+        // When
+        viewModel.onEvent(ChatUiEvent.OnDeleteCancel)
+
+        // Then
+        assertNull(viewModel.uiState.value.history.deletingId)
+        assertTrue(repository.deleted.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a deletion the server refuses WHEN confirmed THEN the history is pulled again`() =
+        runTest(testDispatcher) {
+            // Given
+            repository.deleteFailure = RuntimeException("offline")
+            val viewModel = createViewModel()
+            val refreshesBefore = repository.refreshedConversations
+            viewModel.onEvent(ChatUiEvent.OnDeleteConversationClick("conversation-1"))
+
+            // When
+            viewModel.onEvent(ChatUiEvent.OnDeleteConfirm)
+
+            // Then
+            assertEquals(
+                expected = refreshesBefore + 1,
+                actual = repository.refreshedConversations,
+            )
+        }
+
+    @Test
+    fun `GIVEN the history WHEN typing a search THEN the query is kept`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createViewModel()
+
+        // When
+        viewModel.onEvent(ChatUiEvent.OnHistoryQueryChanged("caim"))
+
+        // Then
+        assertEquals(
+            expected = "caim",
+            actual = viewModel.uiState.value.history.query,
+        )
+    }
+
+    @Test
+    fun `GIVEN the open history WHEN dismissed THEN it closes`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createViewModel()
+        viewModel.onEvent(ChatUiEvent.OnHistoryClick)
+
+        // When
+        viewModel.onEvent(ChatUiEvent.OnHistoryDismiss)
+
+        // Then
+        assertEquals(
+            expected = false,
+            actual = viewModel.uiState.value.history.isOpen,
+        )
+    }
+
+    @Test
+    fun `GIVEN a failed answer WHEN retrying THEN the coordinator retries it`() = runTest(testDispatcher) {
+        // Given
+        val viewModel = createViewModel()
+        viewModel.onEvent(ChatUiEvent.OnInputChanged("Pergunta"))
+        viewModel.onEvent(ChatUiEvent.OnSendClick)
+        coordinator.fail(ChatSendFailureModel.Generic)
+
+        // When
+        viewModel.onEvent(ChatUiEvent.OnRetryClick)
+
+        // Then
+        assertEquals(
+            expected = 1,
+            actual = coordinator.retryCount,
+        )
+        assertNull(viewModel.uiState.value.failure)
+    }
+
+    @Test
+    fun `GIVEN an unanswered question in the thread WHEN retrying THEN it is asked again`() = runTest(testDispatcher) {
+        // Given
+        repository.messages.value = mapOf(
+            "conversation-1" to listOf(
+                ChatMessageModel(
+                    id = "question-1",
+                    role = ChatRoleModel.USER,
+                    content = SUGGESTION,
+                    isStreaming = false,
+                    isFailed = true,
+                    createdAt = Instant.parse("2026-08-06T15:00:00Z"),
+                ),
+            ),
+        )
+        val viewModel = createViewModel()
+        viewModel.onEvent(ChatUiEvent.OnConversationClick("conversation-1"))
+
+        // When
+        viewModel.onEvent(ChatUiEvent.OnRetryClick)
+
+        // Then
+        assertEquals(
+            expected = SUGGESTION,
+            actual = coordinator.startedRequests.single().message,
+        )
+        assertEquals(
+            expected = "conversation-1",
+            actual = coordinator.startedRequests.single().conversationId,
+        )
+    }
+
+    @Test
+    fun `GIVEN the day thread left for a new one WHEN reopening the day thread THEN its questions come back`() =
+        runTest(testDispatcher) {
+            // Given
+            chatContext = readingContext()
+            chatSuggestions = listOf(SUGGESTION)
+            repository.conversations.value = listOf(conversation(planDay = readingPlanDay))
+            val viewModel = createViewModel()
+            viewModel.onEvent(ChatUiEvent.OnNewConversationClick)
+
+            // When
+            viewModel.onEvent(ChatUiEvent.OnConversationClick("day-conversation"))
+
+            // Then
+            assertEquals(
+                expected = "Gênesis 4-7",
+                actual = viewModel.uiState.value.contextLabel,
+            )
+            assertEquals(
+                expected = listOf(SUGGESTION),
+                actual = viewModel.uiState.value.suggestions,
+            )
+        }
+
     private fun createViewModelWithSuggestion(): ChatViewModel {
         entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
         chatContext = readingContext()

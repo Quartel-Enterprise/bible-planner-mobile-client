@@ -1,6 +1,8 @@
 package com.quare.bibleplanner.feature.releasenotes.data.mapper
 
+import com.quare.bibleplanner.core.date.toDateRepresentation
 import com.quare.bibleplanner.feature.releasenotes.data.model.GitHubReleaseDto
+import com.quare.bibleplanner.feature.releasenotes.domain.model.ReleaseNoteModel
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -86,5 +88,47 @@ internal class GitHubReleaseDateMapperTest {
 
         // Then
         assertTrue(dates.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN dates tagged with or without a v prefix WHEN mapping the notes THEN dates each version`() {
+        // Given
+        val releaseNotesMap = mapOf(
+            "2.4.0" to listOf("New reading plan"),
+            "2.3.0" to listOf("Bug fixes"),
+            "2.2.0" to listOf("Faster sync"),
+        )
+        val dates = mapOf(
+            "2.4.0" to LocalDate(year = 2020, month = 2, day = 1),
+            "v2.3.0" to LocalDate(year = 2020, month = 1, day = 1),
+        )
+
+        // When
+        val notes = mapper.mapToReleaseNoteModels(
+            releaseNotesMap = releaseNotesMap,
+            dates = dates,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                ReleaseNoteModel(
+                    version = "2.4.0",
+                    changes = listOf("New reading plan"),
+                    dateRepresentation = LocalDate(year = 2020, month = 2, day = 1).toDateRepresentation(),
+                ),
+                ReleaseNoteModel(
+                    version = "2.3.0",
+                    changes = listOf("Bug fixes"),
+                    dateRepresentation = LocalDate(year = 2020, month = 1, day = 1).toDateRepresentation(),
+                ),
+                ReleaseNoteModel(
+                    version = "2.2.0",
+                    changes = listOf("Faster sync"),
+                    dateRepresentation = null,
+                ),
+            ),
+            actual = notes,
+        )
     }
 }

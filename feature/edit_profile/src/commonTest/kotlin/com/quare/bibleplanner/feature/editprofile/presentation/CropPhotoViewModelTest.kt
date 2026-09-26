@@ -1,10 +1,13 @@
 package com.quare.bibleplanner.feature.editprofile.presentation
 
+import androidx.compose.ui.graphics.ImageBitmap
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
+import com.quare.bibleplanner.feature.editprofile.fake.FakeImageBitmap
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiAction
 import com.quare.bibleplanner.feature.editprofile.presentation.model.CropPhotoUiEvent
+import com.quare.bibleplanner.feature.editprofile.presentation.model.ImageResult
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.CropPhotoViewModel
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +30,10 @@ class CropPhotoViewModelTest {
     private val navigator = Navigator()
     private val commands = mutableListOf<NavigationCommand>()
     private lateinit var savedPhotos: MutableList<ByteArray>
+    private val landscapeBitmap: ImageBitmap = FakeImageBitmap(
+        width = 200,
+        height = 100,
+    )
 
     @BeforeTest
     fun setUp() {
@@ -120,6 +127,87 @@ class CropPhotoViewModelTest {
         // Then
         assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         assertTrue(actions.any { it is CropPhotoUiAction.ShowSnackbar })
+    }
+
+    @Test
+    fun `shows the photo once it is decoded`() = runTest {
+        // Given
+        val viewModel = viewModel(decode = { Result.success(landscapeBitmap) })
+
+        // When
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(ImageResult.Loaded(landscapeBitmap), viewModel.uiState.value.image)
+    }
+
+    @Test
+    fun `keeps the pan inside the photo edges`() = runTest {
+        // Given
+        val viewModel = viewModel(decode = { Result.success(landscapeBitmap) })
+        advanceUntilIdle()
+        viewModel.onEvent(
+            CropPhotoUiEvent.OnViewportMeasured(
+                areaWidth = 300f,
+                areaHeight = 300f,
+                circleDiameter = 100f,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(
+            CropPhotoUiEvent.OnTransform(
+                panX = 80f,
+                panY = 30f,
+                zoomChange = 1f,
+            ),
+        )
+
+        // Then
+        val uiState = viewModel.uiState.value
+        assertEquals(50f, uiState.offsetX)
+        assertEquals(0f, uiState.offsetY)
+    }
+
+    @Test
+    fun `lets the photo pan further when the user pinches to zoom in`() = runTest {
+        // Given
+        val viewModel = viewModel(decode = { Result.success(landscapeBitmap) })
+        advanceUntilIdle()
+        viewModel.onEvent(
+            CropPhotoUiEvent.OnViewportMeasured(
+                areaWidth = 300f,
+                areaHeight = 300f,
+                circleDiameter = 100f,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(
+            CropPhotoUiEvent.OnTransform(
+                panX = -500f,
+                panY = 500f,
+                zoomChange = 2f,
+            ),
+        )
+
+        // Then
+        val uiState = viewModel.uiState.value
+        assertEquals(2f, uiState.zoom)
+        assertEquals(-150f, uiState.offsetX)
+        assertEquals(50f, uiState.offsetY)
+    }
+
+    @Test
+    fun `turns the photo upside down when the user flips it vertically`() = runTest {
+        // Given
+        val viewModel = viewModel()
+
+        // When
+        viewModel.onEvent(CropPhotoUiEvent.OnFlipVerticalClick)
+
+        // Then
+        assertTrue(viewModel.uiState.value.orientation.isFlippedVertically)
     }
 
     private suspend fun TestScope.actionsAfter(event: CropPhotoUiEvent): List<CropPhotoUiAction> {
