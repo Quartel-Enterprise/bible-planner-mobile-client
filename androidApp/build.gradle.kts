@@ -1,3 +1,5 @@
+import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.multiplatform)
@@ -5,6 +7,12 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
 }
+
+/*
+ * Populated only by the release workflow, which exports it after decoding the keystore from GitHub
+ * secrets. Every other release build (build-and-test, local runs) is a compile check nobody ships.
+ */
+val releaseKeystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
 
 android {
     namespace = "com.quare.bibleplanner"
@@ -30,14 +38,8 @@ android {
     }
     signingConfigs {
         create("release") {
-            /*
-             * Populated only on CI, where the release workflow exports these
-             * variables after decoding the keystore from GitHub secrets.
-             * Local builds leave them unset and fall back to debug signing.
-             */
-            val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
-            if (keystorePath != null) {
-                storeFile = file(keystorePath)
+            if (releaseKeystorePath != null) {
+                storeFile = file(releaseKeystorePath)
                 storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("ANDROID_KEY_ALIAS")
                 keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
@@ -49,10 +51,23 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = if (System.getenv("ANDROID_KEYSTORE_PATH") != null) {
+            signingConfig = if (releaseKeystorePath != null) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
+            }
+            /*
+             * Only a shipped build needs its crashes tied back to a mapping file and a commit. Both
+             * change on every build (the mapping file id is random, the commit is the pull request's
+             * merge commit) and both land in the resources R8 shrinks, so leaving them in the
+             * builds nobody ships would keep R8 — most of the build job — from ever coming from
+             * the build cache. It also stops those builds from uploading their mapping files.
+             */
+            vcsInfo {
+                include = releaseKeystorePath != null
+            }
+            configure<CrashlyticsExtension> {
+                mappingFileUploadEnabled = releaseKeystorePath != null
             }
             /*
              * Bundle native debug symbols into the AAB so Google Play can
