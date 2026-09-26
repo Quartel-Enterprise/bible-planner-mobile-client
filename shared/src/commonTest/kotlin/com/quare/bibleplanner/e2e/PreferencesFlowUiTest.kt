@@ -4,6 +4,8 @@ import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.v2.runComposeUiTest
+import com.quare.bibleplanner.core.model.theme.Theme
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.SetThemeOption
 import com.quare.bibleplanner.e2e.harness.E2eApp
 import com.quare.bibleplanner.e2e.harness.E2eWindow
 import com.quare.bibleplanner.e2e.harness.awaitDarkScreen
@@ -12,8 +14,6 @@ import com.quare.bibleplanner.e2e.harness.awaitNode
 import com.quare.bibleplanner.e2e.harness.awaitText
 import com.quare.bibleplanner.e2e.harness.clickDescription
 import com.quare.bibleplanner.e2e.harness.clickText
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.SetThemeOption
-import com.quare.bibleplanner.ui.theme.model.Theme
 import org.koin.core.Koin
 import kotlin.test.AfterTest
 import kotlin.test.Test
