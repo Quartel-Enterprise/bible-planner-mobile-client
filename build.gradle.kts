@@ -110,9 +110,10 @@ kover {
                     "*$\$serializer",
                     "*ComposableSingletons$*",
                     "*\$DefaultImpls",
-                    "*.BuildKonfig",
                     "*.generated.resources.*",
                 )
+                // BuildKonfig objects, each module generating its own into a `generated` package
+                packages("*.generated")
             }
         }
         verify {
