@@ -118,6 +118,9 @@ jobs:
   ios:
     runs-on: macos-latest
     timeout-minutes: 60
+    env:
+      # The slowest job of a pull request. See .github/actions/gradle.
+      GRADLE_CACHE_WRITE_ON_PULL_REQUESTS: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -134,19 +137,22 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
-      # The Kotlin/Native toolchain and its dependencies live outside the Gradle home, so
-      # setup-gradle does not cache them, and downloading them is several minutes of every run.
-      # Keyed by the Kotlin version alone: the toolchain changes only with it, and a key on the
-      # whole catalog would save another entry of about 1 GB on every dependency bump.
+      # ~/.konan holds the Kotlin/Native toolchain and, more expensive, the compiled cache of every
+      # library the test binaries link. A cold run spends about 15 minutes building that cache on
+      # its first link, so setup-gradle's cache, which leaves ~/.konan out, is not enough. The key
+      # follows the version catalog, since a library bump adds entries the next runs would
+      # otherwise rebuild forever, and falls back to the last entry for the same Kotlin version,
+      # which still holds everything that did not change.
       - name: Read the Kotlin version
         id: kotlin
         run: echo "version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
 
-      - name: Cache the Kotlin/Native toolchain
+      - name: Cache the Kotlin/Native toolchain and library caches
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
+          key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}-${{ hashFiles('gradle/libs.versions.toml') }}
+          restore-keys: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
 
       - name: Run the tests on the iOS simulator
         run: ./gradlew $(./scripts/instrumented_shard.sh ios 0 1) --continue

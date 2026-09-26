@@ -54,8 +54,12 @@ workflow. Their JVM run is not here: `unit-tests` already runs it as part of `jv
   module at a time drives the emulator and the log stays readable. The step has a 25-minute
   timeout, under the job's 45: a hung run then still uploads its reports.
 - **`ios`** runs the same modules on the iOS simulator of a `macos-latest` runner, which costs
-  nothing on a public repository. It caches `~/.konan`, where the Kotlin/Native toolchain lives
-  outside the Gradle home, keyed by the Kotlin version alone.
+  nothing on a public repository. Besides setup-gradle it caches `~/.konan`, which setup-gradle
+  leaves out: the Kotlin/Native toolchain and, more expensive, the compiled cache of every library
+  the test binaries link. Building that cache is about 15 minutes of a cold run, on its first link.
+  The key follows the Kotlin version and the version catalog and falls back to the last entry for
+  the same Kotlin version, so a library bump rebuilds only what changed. It is the slowest job of a
+  pull request, so it also writes its Gradle cache there.
 
 Both upload their test reports when they fail.
 
