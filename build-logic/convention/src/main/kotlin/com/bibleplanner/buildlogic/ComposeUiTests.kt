@@ -1,10 +1,12 @@
 package com.bibleplanner.buildlogic
 
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -58,13 +60,17 @@ fun Project.configureComposeUiTests() {
                 withDeviceTestBuilder { sourceSetTreeName = "test" }.configure {
                     instrumentationRunner = INSTRUMENTATION_RUNNER
                 }
-                // Test names are backticked sentences, and D8 accepts a space in a method name
-                // only from the DEX format of API 30 on. AGP dexes the test APK at the library's
-                // minSdk and has no setting of its own for it, so a build that asks for device
-                // tests raises the minSdk of the modules that have them. Only that build: the app,
-                // which still supports API 26, never builds against the raised value.
-                if (isBuildingDeviceTests) {
-                    minSdk = DEVICE_TEST_MIN_SDK
+            }
+            // Test names are backticked sentences, and D8 accepts a space in a method name only
+            // from the DEX format of API 30 on. AGP dexes the test APK at the library's minSdk and
+            // has no setting of its own for it, so a build that asks for device tests raises the
+            // minSdk of the modules that have them. Only that build: the app, which still supports
+            // API 26, never builds against the raised value. It happens in finalizeDsl, after the
+            // module's own build script, so a module that sets its minSdk there (as :shared does)
+            // doesn't put it back.
+            if (isBuildingDeviceTests) {
+                project.extensions.getByType<KotlinMultiplatformAndroidComponentsExtension>().finalizeDsl { android ->
+                    android.minSdk = DEVICE_TEST_MIN_SDK
                 }
             }
             sourceSets.matching { sourceSet -> sourceSet.name == DEVICE_TEST_SOURCE_SET }.configureEach {
@@ -81,9 +87,11 @@ fun Project.configureComposeUiTests() {
     }
 
     // The Android host has no Instrumentation to launch the test activity with, so the UI tests
-    // that commonTest hands it can't run there. They run on a device instead.
+    // that commonTest hands it can't run there. They run on a device instead. A module whose tests
+    // are all UI tests, like :shared with its end-to-end flows, is left with none, which is fine.
     tasks.withType<Test>().matching { task -> task.name == "testAndroidHostTest" }.configureEach {
         filter.excludeTestsMatching(UI_TEST_CLASS_PATTERN)
+        filter.isFailOnNoMatchingTests = false
     }
 
     // -PuiTests=exclude leaves jvmTest with the unit tests alone, for CI's unit-tests job and the
@@ -93,7 +101,10 @@ fun Project.configureComposeUiTests() {
     val selection = uiTestsSelection
     tasks.withType<Test>().matching { task -> task.name == "jvmTest" }.configureEach {
         when (selection) {
-            UI_TESTS_EXCLUDED -> filter.excludeTestsMatching(UI_TEST_CLASS_PATTERN)
+            UI_TESTS_EXCLUDED -> {
+                filter.excludeTestsMatching(UI_TEST_CLASS_PATTERN)
+                filter.isFailOnNoMatchingTests = false
+            }
 
             UI_TESTS_ONLY -> {
                 filter.includeTestsMatching(UI_TEST_CLASS_PATTERN)

@@ -67,6 +67,9 @@ new one joins without editing the workflow. `unit-tests` in `build-and-test` pas
 The device jobs run the rest of `commonTest` too, since `androidDeviceTest` and `iosTest` depend on
 all of it. Every job uploads its test reports when it fails.
 
+`:shared` joins the `desktop` and `android` jobs with the [end-to-end flows](testing/end-to-end-tests.md),
+and the script leaves it out of `ios`: the flows switch tabs, which on iOS are a native `UITabBar`.
+
 ## Adding a workflow
 
 - Scope it with `paths` or `paths-ignore`, so a docs-only change doesn't run a build — unless it is
