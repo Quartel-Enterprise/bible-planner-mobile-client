@@ -44,7 +44,7 @@ import bibleplanner.feature.day_study.generated.resources.ai_study_view
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationError

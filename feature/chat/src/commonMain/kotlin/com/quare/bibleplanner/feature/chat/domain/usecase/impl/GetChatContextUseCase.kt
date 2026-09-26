@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.domain.usecase.GetChatContext
-import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
+import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 

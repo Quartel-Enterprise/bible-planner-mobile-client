@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_questions_title
-import com.quare.bibleplanner.feature.daystudy.domain.model.QaModel
+import com.quare.bibleplanner.core.daystudy.domain.model.QaModel
 import com.quare.bibleplanner.feature.daystudy.presentation.component.DayStudyExpandableCard
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource

@@ -34,7 +34,7 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
 import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import com.quare.bibleplanner.feature.chat.domain.repository.ChatRepository
-import com.quare.bibleplanner.feature.daystudy.domain.mapper.LanguageCodeMapper
+import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import io.github.jan.supabase.exceptions.RestException
 import io.ktor.client.plugins.sse.SSEClientException
 import io.ktor.client.statement.bodyAsText

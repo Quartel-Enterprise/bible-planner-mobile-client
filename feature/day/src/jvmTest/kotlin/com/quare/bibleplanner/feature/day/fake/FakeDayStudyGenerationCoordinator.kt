@@ -2,8 +2,8 @@ package com.quare.bibleplanner.feature.day.fake
 
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
+import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

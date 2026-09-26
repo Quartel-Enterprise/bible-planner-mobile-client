@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.factory
 
 import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel

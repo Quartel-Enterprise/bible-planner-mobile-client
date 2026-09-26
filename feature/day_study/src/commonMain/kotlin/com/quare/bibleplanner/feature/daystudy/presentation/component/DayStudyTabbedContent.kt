@@ -18,7 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.feature.daystudy.presentation.component.tab.ContextTabContent
 import com.quare.bibleplanner.feature.daystudy.presentation.component.tab.QuestionsTabContent
 import com.quare.bibleplanner.feature.daystudy.presentation.component.tab.SummaryTabContent

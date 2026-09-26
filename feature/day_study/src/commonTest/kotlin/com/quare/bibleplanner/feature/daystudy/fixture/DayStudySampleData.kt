@@ -2,11 +2,11 @@ package com.quare.bibleplanner.feature.daystudy.fixture
 
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.feature.daystudy.domain.model.ChapterSummaryModel
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
-import com.quare.bibleplanner.feature.daystudy.domain.model.FactModel
-import com.quare.bibleplanner.feature.daystudy.domain.model.HistoricalContextModel
-import com.quare.bibleplanner.feature.daystudy.domain.model.QaModel
+import com.quare.bibleplanner.core.daystudy.domain.model.ChapterSummaryModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
+import com.quare.bibleplanner.core.daystudy.domain.model.FactModel
+import com.quare.bibleplanner.core.daystudy.domain.model.HistoricalContextModel
+import com.quare.bibleplanner.core.daystudy.domain.model.QaModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel

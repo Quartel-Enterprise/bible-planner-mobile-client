@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.model
 
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 
 internal data class DayStudyBackgroundGenerationUiState(
     val isVisible: Boolean,

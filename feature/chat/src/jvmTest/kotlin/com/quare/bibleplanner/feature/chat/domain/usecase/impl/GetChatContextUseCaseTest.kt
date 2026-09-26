@@ -13,7 +13,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.chat.fake.FakeBooksRepository
 import com.quare.bibleplanner.feature.chat.fake.FakePlanRepository
-import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
+import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime

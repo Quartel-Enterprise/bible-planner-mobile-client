@@ -29,7 +29,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ClearVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleVerseSelection
-import com.quare.bibleplanner.feature.daystudy.domain.usecase.PrefetchDayStudyQuota
+import com.quare.bibleplanner.core.daystudy.domain.usecase.PrefetchDayStudyQuota
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid

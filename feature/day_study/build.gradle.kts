@@ -18,6 +18,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             // Core
+            implementation(projects.core.dayStudy)
             implementation(projects.core.clear)
             implementation(projects.core.model)
             implementation(projects.core.utils)

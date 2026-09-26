@@ -30,10 +30,10 @@ import com.quare.bibleplanner.feature.dayreadingcomplete.domain.usecase.ResolveS
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteBannerUiAction
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteBannerUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiState
-import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
-import com.quare.bibleplanner.feature.daystudy.domain.store.DayStudyQuotaPrefetchStore
-import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
+import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
+import com.quare.bibleplanner.core.daystudy.domain.store.DayStudyQuotaPrefetchStore
+import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

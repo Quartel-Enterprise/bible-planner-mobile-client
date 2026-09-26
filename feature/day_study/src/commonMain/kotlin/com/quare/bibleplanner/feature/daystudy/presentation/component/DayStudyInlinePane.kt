@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 
 private val contentMaxWidth = 720.dp
 
