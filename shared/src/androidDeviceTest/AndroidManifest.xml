@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Declared by the app too. The flows grant it up front, so downloading a Bible version never
+         opens the system's permission dialog, which pauses the app in the middle of a flow. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application>
+        <!-- The end-to-end flows drive the app's own activity: a language change persists the choice
+             and recreates it, and only MainActivity reads that choice back when it starts. -->
+        <activity
+            android:name="com.quare.bibleplanner.MainActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+    </application>
+</manifest>

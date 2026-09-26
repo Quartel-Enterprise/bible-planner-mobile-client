@@ -1,5 +1,6 @@
 import com.bibleplanner.buildlogic.getAndroidSdkVersions
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
@@ -14,6 +15,8 @@ kotlin {
         compileSdk = androidSdkVersions.compileSdk
         minSdk = androidSdkVersions.minSdk
         namespace = "com.quare.bibleplanner.shared"
+        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
+        withHostTest {}
     }
 
     listOf(
@@ -122,6 +125,22 @@ kotlin {
             // Date
             implementation(libs.kotlinx.datetime)
         }
+
+        // The end-to-end flows: the whole app, with only the outside world faked through Koin.
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(projects.core.date)
+            implementation(projects.core.provider.connectivity)
+            implementation(projects.core.provider.dataStore)
+            implementation(libs.ktor.client.mock)
+            implementation(project.dependencies.platform(libs.supabase.bom))
+            implementation(libs.supabase.auth)
+            implementation(libs.supabase.functions)
+            implementation(libs.supabase.postgrest)
+            implementation(libs.supabase.realtime)
+            implementation(libs.supabase.storage)
+        }
     }
 }
 
@@ -136,4 +155,10 @@ tasks.named<KotlinJvmCompile>("compileKotlinJvm") {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
     }
+}
+
+// The end-to-end flows switch tabs, and on iOS the main tabs are Calf's native UITabBar, outside the
+// Compose semantics tree, so they run on the JVM and on Android only.
+tasks.withType<KotlinNativeSimulatorTest>().configureEach {
+    filter.excludeTestsMatching("com.quare.bibleplanner.e2e.*")
 }

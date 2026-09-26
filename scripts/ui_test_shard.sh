@@ -10,7 +10,8 @@
 #   desktop    runs the shard's tests on the JVM; pass -PuiTests=only to keep only the UI ones
 #   assemble   builds the test APKs of the shard, so it can run before the emulator exists
 #   connected  runs the shard's tests on the connected device
-#   ios        runs the shard's tests on the iOS simulator
+#   ios        runs the shard's tests on the iOS simulator, except :shared's, whose end-to-end
+#              flows switch tabs through Calf's native UITabBar and leave iOS nothing to run
 #
 # The task names end in AndroidDeviceTest on purpose: build-logic raises the minSdk of these
 # modules only in a build that asks for such a task (see ComposeUiTests.kt).
@@ -41,7 +42,7 @@ for MODULE_DIR in $MODULE_DIRS; do
         desktop) TASKS="$TASKS $MODULE:jvmTest" ;;
         assemble) TASKS="$TASKS $MODULE:assembleAndroidDeviceTest" ;;
         connected) TASKS="$TASKS $MODULE:connectedAndroidDeviceTest" ;;
-        ios) TASKS="$TASKS $MODULE:iosSimulatorArm64Test" ;;
+        ios) [ "$MODULE" = ":shared" ] || TASKS="$TASKS $MODULE:iosSimulatorArm64Test" ;;
     esac
 done
 
