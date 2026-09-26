@@ -114,7 +114,8 @@ A module runs on a device once it has `src/androidDeviceTest/AndroidManifest.xml
   `AndroidDeviceTest`. The test names are backticked sentences, and D8 accepts a space in a method
   name only from API 30's DEX format on. AGP has no setting for the test APK's own level, and it
   ignores the level that Android Studio injects for the target device. The app, which still supports
-  API 26, never builds against the raised value.
+  API 26, never builds against the raised value. The raise happens in AGP's `finalizeDsl`, after the
+  module's own build script, so it also holds in a module that sets `minSdk` itself, like `:shared`.
 
 So:
 
@@ -135,3 +136,6 @@ So:
 | Book details | `feature/book_details/.../presentation/BookDetailsUiTest.kt` |
 | Read | `feature/read/.../presentation/screen/ReadUiTest.kt` |
 | Profile (preferences and account) | `feature/profile/.../presentation/ProfileUiTest.kt` |
+
+The whole app, driven from launch across several screens, is covered by the
+[end-to-end flows](end-to-end-tests.md) in `:shared`.
