@@ -5,6 +5,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.network"
+        withHostTest {}
     }
     jvm()
     sourceSets {
@@ -24,6 +25,11 @@ kotlin {
 
             // Kermit (logger)
             implementation(libs.kermit)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
 
         androidMain.dependencies {

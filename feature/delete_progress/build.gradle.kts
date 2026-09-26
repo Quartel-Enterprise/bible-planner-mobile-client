@@ -43,5 +43,16 @@ kotlin {
             // Calf
             implementation(libs.calf.ui)
         }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+
+            // In-memory Room database for the progress reset, on the bundled SQLite driver
+            implementation(projects.core.provider.room)
+            implementation(projects.core.date)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
+        }
     }
 }
