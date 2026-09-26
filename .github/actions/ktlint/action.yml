@@ -1,5 +1,11 @@
 name: 'Run ktlint'
 description: 'Runs ktlint check and annotates results'
+
+inputs:
+  cache-encryption-key:
+    description: 'Forwarded to the Gradle setup used when the ruleset jar has to be rebuilt.'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -37,6 +43,8 @@ runs:
     - name: Setup Gradle
       if: steps.ruleset-cache.outputs.cache-hit != 'true'
       uses: ./.github/actions/gradle
+      with:
+        cache-encryption-key: ${{ inputs.cache-encryption-key }}
 
     - name: Run ktlint check (same as local)
       id: ktlint-check

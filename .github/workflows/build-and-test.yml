@@ -39,6 +39,8 @@ jobs:
 
       - name: Setup Gradle
         uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       # verifyNewFilesCoverage diffs against the tip of the base branch, which a depth-1 checkout of
       # the pull request's merge commit does not bring. On main the diff is empty and the task passes.
@@ -50,12 +52,15 @@ jobs:
 
       # jvmTest stays next to the Kover tasks: :ui:* has tests but is left out of the coverage
       # report, so the Kover tasks alone would not run them. See docs/code-quality.md.
-      - name: Run unit tests and verify coverage
+      # The desktop app is compiled here and not in build: jvmTest already compiles the jvm target
+      # of every module it depends on, so it only adds :desktopApp itself, while in build it
+      # compiled the whole jvm target a second time on top of the Android one.
+      - name: Run unit tests, verify coverage and compile the desktop app
         env:
           BASE_REF: ${{ github.base_ref || 'main' }}
         run: >
           ./gradlew jvmTest :koverVerifyCi :verifyNewFilesCoverage :koverHtmlReportCi
-          -Pcoverage.baseRef="origin/$BASE_REF" --continue
+          :desktopApp:compileKotlin -Pcoverage.baseRef="origin/$BASE_REF" --continue
 
       - name: Upload test reports
         if: failure()
@@ -73,6 +78,11 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    # The longest job, see .github/actions/gradle. unit-tests stays read-only: every writer takes
+    # its share of the 10 GB budget, and a pull request rarely changes enough for main's entry to
+    # stop paying off.
+    env:
+      GRADLE_CACHE_WRITE_ON_PULL_REQUESTS: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -81,6 +91,8 @@ jobs:
 
       - name: Setup Gradle
         uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       # The google-services plugin refuses to build without its file. The real one lives only in the
       # Production environment, which needs a manual approval, so this compile check builds with
@@ -92,6 +104,6 @@ jobs:
       # Release matters: it is the only variant where R8 runs, so a missing keep rule surfaces here
       # instead of on a device. Without the signing secrets it is signed with the debug key, which
       # is all a compile check needs. :androidApp already compiles every production module for
-      # Android; the jvm target is compiled by unit-tests, and the desktop app is checked here.
-      - name: Assemble the Android release and the desktop app
-        run: ./gradlew :androidApp:assembleRelease :desktopApp:compileKotlin
+      # Android; the jvm target and the desktop app are compiled by unit-tests.
+      - name: Assemble the Android release
+        run: ./gradlew :androidApp:assembleRelease

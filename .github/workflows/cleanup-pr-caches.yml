@@ -1,0 +1,56 @@
+name: cleanup-pr-caches
+
+# The build job of build-and-test lets a pull request write its own Gradle cache, scoped to
+# refs/pull/<number>/merge. Nothing can read those entries once the pull request is closed, and
+# left alone they sit in the 10 GB budget until they push out the entries main and the next pull
+# request restore from.
+on:
+  pull_request:
+    types:
+      - closed
+
+permissions:
+  actions: write
+  pull-requests: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      # A pull request merged while its checks are still running would otherwise save its caches
+      # after this job has deleted them: entries that nothing can read any more. The push to
+      # main runs the same checks on the merged code, so these results are no longer needed either.
+      - name: Cancel the runs of this pull request
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          pending_runs() {
+            gh run list --commit "$HEAD_SHA" --event pull_request --limit 100 \
+              --json databaseId,status --jq '.[] | select(.status != "completed") | .databaseId' \
+              | grep -vx "$GITHUB_RUN_ID" || true
+          }
+          pending_runs | xargs -r -n 1 gh run cancel || true
+          # A cancelled job still runs its post steps, which is where the cache is saved
+          for _ in $(seq 1 18); do
+            [ -z "$(pending_runs)" ] && break
+            sleep 10
+          done
+
+      # Every closed pull request and not only this one: a run that outlived the wait above leaves
+      # its entries behind, and the next pull request to close picks them up here.
+      - name: Delete the caches of closed pull requests
+        run: |
+          CACHES=$(gh cache list --limit 1000 --json id,ref \
+            --jq '.[] | select((.ref // "") | test("^refs/pull/[0-9]+/merge$")) | "\(.id) \(.ref)"')
+          NUMBERS=$(echo "$CACHES" | sed -nE 's#^[0-9]+ refs/pull/([0-9]+)/merge$#\1#p' | sort -u)
+          for NUMBER in $NUMBERS; do
+            if [ "$(gh pr view "$NUMBER" --json state --jq .state)" = "OPEN" ]; then
+              continue
+            fi
+            echo "Deleting the caches of #$NUMBER"
+            echo "$CACHES" | awk -v ref="refs/pull/$NUMBER/merge" '$2 == ref { print $1 }' \
+              | xargs -r -n 1 gh cache delete || true
+          done
