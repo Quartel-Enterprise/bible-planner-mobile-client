@@ -205,19 +205,24 @@ Given uncommitted changes that remove a `navigationBarsPadding()` modifier from 
 
 ### 12. Squash and merge (optional)
 
-After the PR is created, use the `AskUserQuestion` tool to ask whether to squash merge now:
+If the user's request already asked for the merge (e.g. "abre o PR e mergeia"), skip the question
+and merge. Otherwise, after the PR is created, use the `AskUserQuestion` tool to ask whether to
+squash merge now:
 
 - Yes — squash merge and clean up the task
 - No — end the workflow here
 
-If yes:
+If yes, wait for the required checks, then merge:
 
 ```bash
+gh pr checks --watch --required --interval 5
 gh pr merge --squash
 ```
 
-Merge right away: `main` has no branch protection, so there is no need to wait for CI or pass
-`--auto`. If the merge fails (e.g. a conflict with `main`), notify the user and stop.
+A ruleset on `main` requires the `check-translations` status check, so `gh pr merge` refuses to
+merge until it passes ("the base branch policy prohibits the merge"). It takes a few seconds. Never
+bypass it with `--admin`. If a required check fails, report it and stop. If the merge fails for
+another reason (e.g. a conflict with `main`), notify the user and stop.
 
 Once the squash merge succeeds, immediately run the `finish-task` skill in the same turn — don't
 wait for the user to ask for it. Asking for the squash merge is also the request to clean up the
