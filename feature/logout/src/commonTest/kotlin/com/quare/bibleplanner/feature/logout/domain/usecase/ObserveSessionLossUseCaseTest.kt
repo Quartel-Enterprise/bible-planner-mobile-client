@@ -158,6 +158,49 @@ class ObserveSessionLossUseCaseTest {
         )
     }
 
+    @Test
+    fun `GIVEN sessions from every source WHEN each one is lost THEN tracks the matching source value`() = runTest {
+        // Given
+        backgroundScope.launch { useCase() }
+        val session = authenticated(expiresAtMillis = NOW_MILLIS + HOUR_MILLIS).session
+        val sources = listOf(
+            SessionSource.AnonymousSignIn,
+            SessionSource.External,
+            SessionSource.Refresh(session),
+            SessionSource.SignUp(Google),
+            SessionSource.Storage,
+            SessionSource.Unknown,
+            SessionSource.UserChanged(session),
+            SessionSource.UserIdentitiesChanged(session),
+        )
+
+        // When
+        sources.forEach { source ->
+            sessionStatus.value = SessionStatus.Authenticated(
+                session = session,
+                source = source,
+            )
+            runCurrent()
+            sessionStatus.value = SessionStatus.NotAuthenticated()
+            runCurrent()
+        }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                "anonymous_sign_in",
+                "external",
+                "refresh",
+                "sign_up",
+                "storage",
+                "unknown",
+                "user_changed",
+                "user_identities_changed",
+            ),
+            actual = trackedEvents.map { (_, params) -> params[AnalyticsParams.SOURCE] },
+        )
+    }
+
     private fun authenticated(expiresAtMillis: Long) = SessionStatus.Authenticated(
         session = UserSession(
             accessToken = "access-token",

@@ -6,6 +6,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.editplanstartdate"
+        withHostTest {}
     }
 
     jvm()
@@ -46,6 +47,11 @@ kotlin {
 
             // Calf
             implementation(libs.calf.ui)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

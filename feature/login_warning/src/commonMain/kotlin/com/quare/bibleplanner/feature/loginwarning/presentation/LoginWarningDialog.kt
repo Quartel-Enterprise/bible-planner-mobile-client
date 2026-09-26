@@ -32,7 +32,7 @@ internal fun LoginWarningDialog(
     )
 }
 
-private fun LoginWarningReason.toMessageResource(): StringResource = when (this) {
+internal fun LoginWarningReason.toMessageResource(): StringResource = when (this) {
     LoginWarningReason.Purchase -> Res.string.login_warning_message_purchase
     LoginWarningReason.DayStudy -> Res.string.login_warning_message_day_study
     LoginWarningReason.AiChat -> Res.string.login_warning_message_ai_chat

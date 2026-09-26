@@ -117,6 +117,7 @@ koin-android = { module = "io.insert-koin:koin-android" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
 koin-core = { module = "io.insert-koin:koin-core" }
+koin-test = { module = "io.insert-koin:koin-test" }
 
 # Ktor
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }

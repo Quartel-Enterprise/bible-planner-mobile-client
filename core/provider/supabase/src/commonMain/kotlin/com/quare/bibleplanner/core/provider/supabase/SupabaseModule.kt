@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.provider.supabase
 
+import com.quare.bibleplanner.core.provider.supabase.generated.SupabaseBuildKonfig
 import com.quare.bibleplanner.core.provider.supabase.session.DataStoreSessionAuditStore
 import com.quare.bibleplanner.core.provider.supabase.session.ExpectedSessionDeletion
 import com.quare.bibleplanner.core.provider.supabase.session.MonitoredSessionManager
@@ -44,7 +45,14 @@ val supabaseModule = module {
             expectedSessionDeletion = get(),
         )
     }
-    single<SupabaseClient> { getSupabaseClient(get()) }
+    single<SupabaseClient> {
+        getSupabaseClient(
+            supabaseUrl = SupabaseBuildKonfig.SUPABASE_URL,
+            supabaseKey = SupabaseBuildKonfig.SUPABASE_API_KEY,
+            googleWebClientId = SupabaseBuildKonfig.SUPABASE_GOOGLE_WEB_CLIENT_ID,
+            monitoredSessionManager = get(),
+        )
+    }
     single<Auth> { get<SupabaseClient>().auth }
     single<StateFlow<SessionStatus>> { get<Auth>().sessionStatus.filterTransientInitializing() }
     single<Realtime> { get<SupabaseClient>().realtime }

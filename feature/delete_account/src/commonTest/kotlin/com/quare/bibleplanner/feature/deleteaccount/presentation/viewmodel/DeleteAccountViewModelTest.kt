@@ -219,6 +219,18 @@ internal class DeleteAccountViewModelTest {
     }
 
     @Test
+    fun `GIVEN the idle dialog WHEN dismissing it THEN navigates back`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(DeleteAccountUiEvent.OnDismiss)
+
+        // Then
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+    }
+
+    @Test
     fun `GIVEN a play store subscription WHEN starting THEN warns about that store`() = runTest(testDispatcher) {
         // Given
         prepareScenario(subscriptionStatus = proSubscription(PurchaseStore.PLAY_STORE))

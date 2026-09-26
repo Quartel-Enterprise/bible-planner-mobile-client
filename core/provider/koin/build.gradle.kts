@@ -83,5 +83,16 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
         }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.koin.test)
+
+            // The desktop platform modules the app starts Koin with, and the types it binds itself
+            implementation(projects.core.provider.language)
+            implementation(libs.androidx.room.runtime)
+            implementation(project.dependencies.platform(libs.supabase.bom))
+            implementation(libs.supabase.functions)
+        }
     }
 }

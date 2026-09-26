@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
@@ -51,6 +52,8 @@ internal class VerseSelectionViewModelTest {
     private lateinit var appliedHighlights: MutableList<Pair<List<VerseRef>, HighlightColor>>
     private lateinit var clearedCount: MutableList<Unit>
     private lateinit var trackedEvents: MutableList<String>
+    private lateinit var addedCustomColors: MutableList<HighlightColor.Custom>
+    private lateinit var toggledSavedRefs: MutableList<List<VerseRef>>
 
     @BeforeTest
     fun setUp() {
@@ -280,12 +283,114 @@ internal class VerseSelectionViewModelTest {
         )
     }
 
+    @Test
+    fun `tapping the color already on the selection removes the highlight`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isColorApplied = false)
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnHighlightColorClick(yellow))
+        runCurrent()
+
+        // Then
+        assertTrue(trackedEvents.contains("verse_highlight_removed"))
+    }
+
+    @Test
+    fun `saves the custom color and applies it to the selection`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isPro = true)
+        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
+        viewModel.onEvent(
+            VerseSelectionUiEvent.OnCustomColorChange(
+                hue = 120,
+                lightness = 60,
+            ),
+        )
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorApplyClick)
+        runCurrent()
+
+        // Then
+        val customColor = HighlightColor.Custom(
+            hue = 120,
+            lightness = 60,
+        )
+        assertEquals(
+            expected = listOf(customColor),
+            actual = addedCustomColors,
+        )
+        assertEquals(
+            expected = customColor,
+            actual = appliedHighlights.single().second,
+        )
+        assertNull(viewModel.uiState.value?.customColorPicker)
+        assertTrue(trackedEvents.contains("highlight_custom_color_created"))
+    }
+
+    @Test
+    fun `cancelling the custom color picker closes it without saving`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isPro = true)
+        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorPickerOpen)
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorCancelClick)
+        runCurrent()
+
+        // Then
+        assertNull(viewModel.uiState.value?.customColorPicker)
+        assertTrue(addedCustomColors.isEmpty())
+    }
+
+    @Test
+    fun `long pressing a custom color opens its delete confirmation`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val customColor = HighlightColor.Custom(
+            hue = 200,
+            lightness = 40,
+        )
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnCustomColorLongClick(customColor))
+
+        // Then
+        assertEquals(
+            expected = NavigationCommand.Navigate(DeleteHighlightColorNavRoute(colorKey = customColor.key)),
+            actual = commands.single(),
+        )
+    }
+
+    @Test
+    fun `toggles the saved state of the whole selection`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnToggleSavedClick)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf(1, 2),
+            actual = toggledSavedRefs.single().map { it.verseNumber },
+        )
+        assertTrue(trackedEvents.contains("verse_saved_toggled"))
+    }
+
     private fun verseSelection(verseNumbers: List<Int>): VerseSelection = VerseSelection(
         chapter = testChapter,
         verseNumbers = verseNumbers,
     )
 
-    private fun TestScope.prepareScenario(isPro: Boolean = true) {
+    private fun TestScope.prepareScenario(
+        isPro: Boolean = true,
+        isColorApplied: Boolean = true,
+    ) {
+        addedCustomColors = mutableListOf()
+        toggledSavedRefs = mutableListOf()
         appliedHighlights = mutableListOf()
         clearedCount = mutableListOf()
         trackedEvents = mutableListOf()
@@ -305,10 +410,13 @@ internal class VerseSelectionViewModelTest {
             observeHighlightPalette = { flowOf(emptyList()) },
             applyHighlightColor = { refs, color ->
                 appliedHighlights += refs to color
+                isColorApplied
+            },
+            addCustomHighlightColor = { color -> addedCustomColors += color },
+            toggleSavedVerses = { refs ->
+                toggledSavedRefs += refs
                 true
             },
-            addCustomHighlightColor = { error("unused") },
-            toggleSavedVerses = { error("unused") },
             observeIsProUser = { flowOf(isPro) },
             getVersesShareContent = { _, _, _ ->
                 VersesShareContentModel(

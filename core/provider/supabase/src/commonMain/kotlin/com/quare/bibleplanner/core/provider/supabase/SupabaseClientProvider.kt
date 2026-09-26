@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.core.provider.supabase
 
-import com.quare.bibleplanner.core.provider.supabase.generated.SupabaseBuildKonfig
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.SessionManager
@@ -19,9 +18,14 @@ private val realtimeHeartbeatInterval: Duration = 10.seconds
 private val realtimeReconnectDelay: Duration = 3.seconds
 private val supabaseRequestTimeout: Duration = 30.seconds
 
-internal fun getSupabaseClient(monitoredSessionManager: SessionManager): SupabaseClient = createSupabaseClient(
-    supabaseUrl = SupabaseBuildKonfig.SUPABASE_URL,
-    supabaseKey = SupabaseBuildKonfig.SUPABASE_API_KEY,
+internal fun getSupabaseClient(
+    supabaseUrl: String,
+    supabaseKey: String,
+    googleWebClientId: String,
+    monitoredSessionManager: SessionManager,
+): SupabaseClient = createSupabaseClient(
+    supabaseUrl = supabaseUrl,
+    supabaseKey = supabaseKey,
 ) {
     httpEngine = createPlatformHttpEngine()
     requestTimeout = supabaseRequestTimeout
@@ -31,7 +35,7 @@ internal fun getSupabaseClient(monitoredSessionManager: SessionManager): Supabas
         sessionManager = monitoredSessionManager
     }
     install(ComposeAuth) {
-        googleNativeLogin(SupabaseBuildKonfig.SUPABASE_GOOGLE_WEB_CLIENT_ID)
+        googleNativeLogin(googleWebClientId)
         appleNativeLogin()
     }
     install(Storage)

@@ -6,6 +6,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.core.remoteconfig"
+        withHostTest {}
     }
 
     jvm()
@@ -38,7 +39,7 @@ kotlin {
             implementation(libs.kermit)
         }
 
-        jvmTest.dependencies {
+        commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }

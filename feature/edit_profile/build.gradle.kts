@@ -57,5 +57,10 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }
+
+        jvmTest.dependencies {
+            // Skiko native library, required to decode images on the JVM target
+            implementation(compose.desktop.currentOs)
+        }
     }
 }
