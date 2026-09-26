@@ -1,24 +1,20 @@
 package com.quare.bibleplanner.feature.daystudy.screenshots
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_tab_context
 import bibleplanner.feature.day_study.generated.resources.ai_tab_questions
-import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.feature.daystudy.fixture.dayStudyUiState
+import com.quare.bibleplanner.feature.daystudy.fixture.DAY_STUDY_CONTEXT_SCREENSHOT
+import com.quare.bibleplanner.feature.daystudy.fixture.DAY_STUDY_QUESTIONS_SCREENSHOT
+import com.quare.bibleplanner.feature.daystudy.fixture.DAY_STUDY_SCREENSHOT
+import com.quare.bibleplanner.feature.daystudy.fixture.DayStudyScreenshotContent
 import com.quare.bibleplanner.feature.daystudy.fixture.firstQuestion
-import com.quare.bibleplanner.feature.daystudy.presentation.DayStudyScreen
-import com.quare.bibleplanner.ui.theme.AppTheme
-import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.ui.testing.screenshots.AppleScreenshotImage
+import com.quare.bibleplanner.ui.testing.screenshots.AppleScreenshotSlot
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -31,37 +27,23 @@ import org.junit.Test
 private const val BACKGROUND = 0xFF141C3D
 
 /**
- * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
- * everything here renders under Robolectric, which is Android whatever device the frame draws. So
- * the platform has to follow the form factor, or the Apple shots ship Android chrome.
+ * One subclass per form factor. The Play ones render the screen here, under Robolectric; the Apple
+ * ones pass [appleSlot] and frame the PNG DayStudyAppleScreenshotCaptures rendered on the iOS
+ * simulator, so the App Store shows the screen as iOS draws it.
  */
-private val FormFactor.platform: Platform
-    get() = when (this) {
-        FormFactor.AppleIPhone65,
-        FormFactor.AppleIPhone67,
-        FormFactor.AppleIPad13,
-        -> Platform.Ios
-
-        else -> Platform.Android
-    }
-
-/**
- * Play caps a store listing at eight screenshots per device and the App Store at ten. The chat
- * screen takes the eighth Play slot, so the context tab — the thinnest of the study's three, half
- * a screen of white under three short facts — is the one that fills an Apple slot only.
- */
-private val FormFactor.isAppleSlot: Boolean
-    get() = platform == Platform.Ios
-
 internal abstract class DayStudyScreenshots(
-    private val formFactor: FormFactor,
     private val isWide: Boolean,
     private val outputSubdir: String? = null,
+    private val appleSlot: AppleScreenshotSlot? = null,
+    formFactor: FormFactor,
     canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
         canvas = canvas,
-        style = ScreenshotStyle(edgeToEdge = false),
+        // Robolectric renders the screen without the app's window insets, so reserve the status
+        // bar height instead of letting the header slide under the frame's clock. An iOS capture
+        // already leaves that room itself and fills the whole screen.
+        style = ScreenshotStyle(edgeToEdge = appleSlot != null),
     ) {
     private val bannerCopy = mapOf(
         "en-US" to (
@@ -115,34 +97,23 @@ internal abstract class DayStudyScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            fileName = "04_day_study",
+            fileName = DAY_STUDY_SCREENSHOT,
         ) {
-            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-                AppTheme {
-                    // The wide layout is a bare pane with no Scaffold, so without a Surface the
-                    // frame's bezel shows through behind the text.
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background,
-                    ) {
-                        DayStudyScreen(
-                            uiState = dayStudyUiState(locale, formFactor.platform),
-                            isWide = isWide,
-                            snackbarHostState = SnackbarHostState(),
-                            onCardClick = {},
-                            onRetryClick = {},
-                            onAskAiClick = {},
-                            onNavigateBack = {},
-                        )
-                    }
-                }
-            }
+            ScreenshotContent(
+                locale = locale,
+                fileName = DAY_STUDY_SCREENSHOT,
+            )
         }
     }
 
+    /**
+     * Play caps a store listing at eight screenshots per device and the App Store at ten. The chat
+     * screen takes the eighth Play slot, so the context tab — the thinnest of the study's three,
+     * half a screen of white under three short facts — is the one that fills an Apple slot only.
+     */
     @Test
     fun dayStudyContext() {
-        assumeTrue(formFactor.isAppleSlot)
+        assumeTrue(appleSlot != null)
         captureContext()
     }
 
@@ -154,31 +125,12 @@ internal abstract class DayStudyScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            fileName = "07_day_study_context",
-            // The tab label is resolved rather than hard-coded so the click keeps working in
-            // every locale, and keeps working if the wording changes.
-            beforeCapture = { rule ->
-                rule.onNodeWithText(runBlocking { getString(Res.string.ai_tab_context) }).performClick()
-            },
+            fileName = DAY_STUDY_CONTEXT_SCREENSHOT,
         ) {
-            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-                AppTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background,
-                    ) {
-                        DayStudyScreen(
-                            uiState = dayStudyUiState(locale, formFactor.platform),
-                            isWide = isWide,
-                            snackbarHostState = SnackbarHostState(),
-                            onCardClick = {},
-                            onRetryClick = {},
-                            onAskAiClick = {},
-                            onNavigateBack = {},
-                        )
-                    }
-                }
-            }
+            ScreenshotContent(
+                locale = locale,
+                fileName = DAY_STUDY_CONTEXT_SCREENSHOT,
+            )
         }
     }
 
@@ -191,77 +143,92 @@ internal abstract class DayStudyScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            fileName = "08_day_study_questions",
-            // Opening the first question shows that the tab answers them, not just lists them.
+            fileName = DAY_STUDY_QUESTIONS_SCREENSHOT,
+            // Opening the first question shows that the tab answers them, not just lists them. An
+            // iOS capture was opened on the simulator already, so only the Play shots click.
             beforeCapture = { rule ->
-                rule.onNodeWithText(runBlocking { getString(Res.string.ai_tab_questions) }).performClick()
-                rule.onNodeWithText(firstQuestion(locale)).performClick()
+                if (appleSlot == null) {
+                    rule.onNodeWithText(runBlocking { getString(Res.string.ai_tab_questions) }).performClick()
+                    rule.onNodeWithText(firstQuestion(locale)).performClick()
+                }
             },
         ) {
-            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-                AppTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background,
-                    ) {
-                        DayStudyScreen(
-                            uiState = dayStudyUiState(locale, formFactor.platform),
-                            isWide = isWide,
-                            snackbarHostState = SnackbarHostState(),
-                            onCardClick = {},
-                            onRetryClick = {},
-                            onAskAiClick = {},
-                            onNavigateBack = {},
-                        )
-                    }
-                }
-            }
+            ScreenshotContent(
+                locale = locale,
+                fileName = DAY_STUDY_QUESTIONS_SCREENSHOT,
+            )
+        }
+    }
+
+    @Composable
+    private fun ScreenshotContent(
+        locale: String,
+        fileName: String,
+    ) {
+        if (appleSlot == null) {
+            DayStudyScreenshotContent(
+                locale = locale,
+                platform = Platform.Android,
+                isWide = isWide,
+                statusBarHeight = 0.dp,
+            )
+        } else {
+            AppleScreenshotImage(
+                slot = appleSlot,
+                locale = locale,
+                fileName = fileName,
+            )
         }
     }
 }
 
 internal class PhoneDayStudyScreenshots :
     DayStudyScreenshots(
-        formFactor = FormFactor.Phone,
         isWide = false,
+        formFactor = FormFactor.Phone,
     )
 
 internal class Tablet7DayStudyScreenshots :
     DayStudyScreenshots(
-        formFactor = FormFactor.Tablet7,
         isWide = false,
+        formFactor = FormFactor.Tablet7,
     )
 
 internal class Tablet10DayStudyScreenshots :
     DayStudyScreenshots(
-        formFactor = FormFactor.Tablet10,
         isWide = true,
+        formFactor = FormFactor.Tablet10,
     )
 
 internal class IPhone65DayStudyScreenshots :
     DayStudyScreenshots(
-        formFactor = FormFactor.AppleIPhone65,
         isWide = false,
+        appleSlot = AppleScreenshotSlot.IPHONE_6_5,
+        formFactor = FormFactor.AppleIPhone65,
     )
 
 internal class IPhone67DayStudyScreenshots :
     DayStudyScreenshots(
-        formFactor = FormFactor.AppleIPhone67,
         isWide = false,
+        appleSlot = AppleScreenshotSlot.IPHONE_6_7,
+        formFactor = FormFactor.AppleIPhone67,
     )
 
 internal class IPad13DayStudyScreenshots :
     DayStudyScreenshots(
-        formFactor = FormFactor.AppleIPad13,
         isWide = true,
+        appleSlot = AppleScreenshotSlot.IPAD_13,
+        formFactor = FormFactor.AppleIPad13,
     )
 
-// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one. The
+// screen inside is the same size, so it frames the 13" capture.
 internal class IPad11DayStudyScreenshots :
     DayStudyScreenshots(
-        formFactor = FormFactor.AppleIPad13,
         isWide = true,
         outputSubdir = "ipad11",
+        appleSlot = AppleScreenshotSlot.IPAD_13,
+        formFactor = FormFactor.AppleIPad13,
         canvas = ScreenshotCanvas.px(1668, 2388),
     )
 
@@ -277,24 +244,12 @@ internal class ReadmeDayStudyScreenshots :
         subdir = README_SUBDIR,
         fileName = "study",
     ) {
-        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-            AppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    DayStudyScreen(
-                        uiState = dayStudyUiState(README_LOCALE, Platform.Android),
-                        isWide = false,
-                        snackbarHostState = SnackbarHostState(),
-                        onCardClick = {},
-                        onRetryClick = {},
-                        onAskAiClick = {},
-                        onNavigateBack = {},
-                    )
-                }
-            }
-        }
+        DayStudyScreenshotContent(
+            locale = README_LOCALE,
+            platform = Platform.Android,
+            isWide = false,
+            statusBarHeight = 0.dp,
+        )
     }
 
     private companion object {

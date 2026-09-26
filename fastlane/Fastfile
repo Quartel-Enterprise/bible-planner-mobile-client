@@ -226,7 +226,7 @@ platform :android do
   lane :upload_screenshots do
     repo_root = File.expand_path("..")
 
-    gradle(task: "stageStoreScreenshots", project_dir: repo_root)
+    gradle(task: "stagePlayStoreScreenshots", project_dir: repo_root)
 
     upload_to_play_store(
       package_name: ANDROID_PACKAGE,
@@ -415,7 +415,8 @@ platform :ios do
       set_spaceship_token: true,
     )
 
-    gradle(task: "stageStoreScreenshots", project_dir: repo_root)
+    # Renders every screen on the iOS simulator first, so this needs a Mac with Xcode.
+    gradle(task: "stageAppStoreScreenshots", project_dir: repo_root)
 
     upload_to_app_store(
       api_key: api_key,

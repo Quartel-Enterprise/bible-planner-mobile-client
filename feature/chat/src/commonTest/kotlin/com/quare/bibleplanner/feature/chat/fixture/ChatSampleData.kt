@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.chat.screenshots
+package com.quare.bibleplanner.feature.chat.fixture
 
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatHistoryUiState
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatInputMode
@@ -12,9 +12,11 @@ import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiState
  * scrolling, so whatever comes first is the whole image, and a trailing unanswered question would
  * read as a chat that broke rather than one that works.
  *
- * The history stays empty for a duller reason: it is a closed drawer at every size these render at,
- * because the frame measures its content narrower than the sidebar's 840dp breakpoint — the same
- * reason the day study screenshots hand their screen `isWide` by hand. Nothing in it is composed.
+ * The history stays empty for a duller reason: under Robolectric it is a closed drawer at every
+ * size, because the frame measures its content narrower than the sidebar's 840dp breakpoint — the
+ * same reason the day study screenshots hand their screen `isWide` by hand. Nothing in it is
+ * composed there. The iPad capture on the iOS simulator is 1024dp wide, though, so it does show the
+ * sidebar, with its empty-history state.
  */
 private val contextLabelByLocale = mapOf(
     "en-US" to "Genesis 1-3",

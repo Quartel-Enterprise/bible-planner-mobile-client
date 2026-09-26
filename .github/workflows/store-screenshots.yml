@@ -58,7 +58,7 @@ jobs:
         run: printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
 
       # Regenerates every screenshot and uploads only the listing assets — no artifact, no track,
-      # no metadata. The lane runs `stageStoreScreenshots` itself.
+      # no metadata. The lane runs `stagePlayStoreScreenshots` itself.
       - name: Upload the screenshots to Google Play
         run: fastlane android upload_screenshots
         env:
@@ -66,17 +66,15 @@ jobs:
           VALIDATE_ONLY: ${{ inputs.validate_only }}
 
       # Kept so a failed upload can be diagnosed from what was actually rendered, and so the images
-      # can be eyeballed after a validate-only run. The lane stages into the fastlane trees and
+      # can be eyeballed after a validate-only run. The lane stages into the fastlane tree and
       # never builds store_listings/ — that is collectStoreScreenshots' local-inspection layout —
-      # so this uploads the Play tree that was actually sent, plus the Apple staging the same
-      # Gradle task fills alongside it.
+      # so this uploads the Play tree that was actually sent. The App Store shots are rendered on
+      # the iOS simulator, so they are staged by the release's macOS job, not here.
       - name: Upload the rendered screenshots as a build artifact
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: store-screenshots
-          path: |
-            fastlane/metadata/android
-            fastlane/screenshots
+          path: fastlane/metadata/android
           retention-days: 7
           if-no-files-found: warn
