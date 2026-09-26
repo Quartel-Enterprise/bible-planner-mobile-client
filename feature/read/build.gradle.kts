@@ -28,8 +28,7 @@ kotlin {
             implementation(projects.core.verseAnnotations)
             implementation(projects.core.utils)
             implementation(projects.feature.dayStudy)
-            implementation(projects.feature.dayReadingComplete)
-            implementation(projects.feature.preferences.studySuggestion)
+            implementation(projects.core.preferences.studySuggestion)
 
             // UI
             implementation(projects.ui.component)

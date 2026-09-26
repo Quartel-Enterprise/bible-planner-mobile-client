@@ -3,8 +3,6 @@ package com.quare.bibleplanner.feature.main.presentation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -27,15 +25,12 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRouteDestination
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
-import com.quare.bibleplanner.feature.books.presentation.booksScreen
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiAction
 import com.quare.bibleplanner.feature.main.presentation.navhost.NavTabState
 import com.quare.bibleplanner.feature.main.presentation.navhost.rememberNavTabState
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationBar
 import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationRail
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
-import com.quare.bibleplanner.feature.profile.presentation.profile
-import com.quare.bibleplanner.feature.readingplan.presentation.readingPlan
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.isNativeNavigationBar
 import org.koin.compose.koinInject
@@ -43,20 +38,18 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val TAB_TRANSITION_DURATION_MILLIS = 300
 
-@OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderScope<NavKey>.mainScreen(sharedTransitionScope: SharedTransitionScope) {
+fun EntryProviderScope<NavKey>.mainScreen(tabEntries: MainTabEntries) {
     entry<MainNavRoute> {
         MainRootContent(
-            sharedTransitionScope = sharedTransitionScope,
+            tabEntries = tabEntries,
             animatedContentScope = LocalNavAnimatedContentScope.current,
         )
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun MainRootContent(
-    sharedTransitionScope: SharedTransitionScope,
+    tabEntries: MainTabEntries,
     animatedContentScope: AnimatedContentScope,
 ) {
     val mainViewModel: MainScreenViewModel = koinViewModel()
@@ -83,7 +76,8 @@ private fun MainRootContent(
     NavDisplay(
         entries = tabState.toDecoratedEntries(
             entryProvider {
-                toMainEntries(
+                tabEntries.register(
+                    scope = this,
                     navigationBar = { modifier ->
                         MainNavigationBar(
                             modifier = modifier,
@@ -102,7 +96,6 @@ private fun MainRootContent(
                             onEvent = onEvent,
                         )
                     },
-                    sharedTransitionScope = sharedTransitionScope,
                     animatedContentScope = animatedContentScope,
                 )
             },
@@ -112,32 +105,6 @@ private fun MainRootContent(
         transitionSpec = { createTabTransitionSpec() },
         popTransitionSpec = { createTabTransitionSpec() },
         predictivePopTransitionSpec = { createTabTransitionSpec() },
-    )
-}
-
-private fun EntryProviderScope<NavKey>.toMainEntries(
-    navigationBar: @Composable ((Modifier) -> Unit),
-    navigationRail: @Composable (() -> Unit),
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
-) {
-    readingPlan(
-        navigationBar = navigationBar,
-        navigationRail = navigationRail,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedContentScope = animatedContentScope,
-    )
-    booksScreen(
-        navigationBar = navigationBar,
-        navigationRail = navigationRail,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedContentScope,
-    )
-    profile(
-        navigationBar = navigationBar,
-        navigationRail = navigationRail,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedContentScope = animatedContentScope,
     )
 }
 

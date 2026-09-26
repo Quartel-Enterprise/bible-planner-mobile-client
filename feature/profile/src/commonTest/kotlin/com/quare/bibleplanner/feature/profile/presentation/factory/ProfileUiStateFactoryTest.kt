@@ -32,10 +32,10 @@ import com.quare.bibleplanner.feature.profile.fake.FakeObserveBooleanRemoteConfi
 import com.quare.bibleplanner.feature.profile.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
-import com.quare.bibleplanner.ui.theme.model.ContrastType
-import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.core.model.theme.ContrastType
+import com.quare.bibleplanner.core.model.theme.Theme
 import io.github.jan.supabase.auth.status.RefreshFailureCause
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo

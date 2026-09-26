@@ -4,12 +4,9 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.Res
 import bibleplanner.feature.preferences.theme_selection.generated.resources.dark_title
 import bibleplanner.feature.preferences.theme_selection.generated.resources.light_title
 import bibleplanner.feature.preferences.theme_selection.generated.resources.system_title
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetContrastTypeFlowUseCase
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetThemeOptionFlowUseCase
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.impl.GetThemeSyncEnabledFlowUseCase
 import com.quare.bibleplanner.feature.themeselection.presentation.FakeThemeSelectionRepository
-import com.quare.bibleplanner.ui.theme.model.ContrastType
-import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.core.model.theme.ContrastType
+import com.quare.bibleplanner.core.model.theme.Theme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -102,11 +99,11 @@ internal class ThemeSelectionUiStateFactoryTest {
             initialSyncEnabled = isSyncEnabled,
         )
         factory = ThemeSelectionUiStateFactory(
-            getThemeOptionFlow = GetThemeOptionFlowUseCase(repository),
+            getThemeOptionFlow = repository::getThemeFlow,
             getIsDynamicColorsEnabledFlow = { flowOf(isDynamicColorsEnabled) },
-            getContrastTypeFlow = GetContrastTypeFlowUseCase(repository),
+            getContrastTypeFlow = repository::getContrastTypeFlow,
             isDynamicColorSupported = { isDynamicColorSupported },
-            getThemeSyncEnabledFlow = GetThemeSyncEnabledFlowUseCase(repository),
+            getThemeSyncEnabledFlow = repository::getThemeSyncEnabledFlow,
             observeAuthenticatedUserId = { flowOf(userId) },
         )
     }

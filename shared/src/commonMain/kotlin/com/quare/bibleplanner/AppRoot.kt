@@ -24,7 +24,7 @@ import com.quare.bibleplanner.core.navigation.RootAppNavDisplay
 import com.quare.bibleplanner.feature.applanguage.presentation.ApplyAppLocaleEffect
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
-import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.ui.utils.LocalMainBottomBarState
 import com.quare.bibleplanner.ui.utils.LocalMainFabVisibilityState
 import com.quare.bibleplanner.ui.utils.LocalNavigationBarInsets

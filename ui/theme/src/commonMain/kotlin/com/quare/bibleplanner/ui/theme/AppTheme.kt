@@ -11,7 +11,7 @@ import com.quare.bibleplanner.ui.theme.color.highContrastLightColorScheme
 import com.quare.bibleplanner.ui.theme.color.lightScheme
 import com.quare.bibleplanner.ui.theme.color.mediumContrastDarkColorScheme
 import com.quare.bibleplanner.ui.theme.color.mediumContrastLightColorScheme
-import com.quare.bibleplanner.ui.theme.model.ContrastType
+import com.quare.bibleplanner.core.model.theme.ContrastType
 
 @Composable
 fun AppTheme(

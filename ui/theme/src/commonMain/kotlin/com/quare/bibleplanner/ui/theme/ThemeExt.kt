@@ -9,7 +9,7 @@ import com.quare.bibleplanner.ui.theme.color.goldLight
 import com.quare.bibleplanner.ui.theme.color.successDark
 import com.quare.bibleplanner.ui.theme.color.successLight
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
-import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.core.model.theme.Theme
 
 @Composable
 fun isAppInDarkTheme(): Boolean = when (LocalTheme.current) {

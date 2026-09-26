@@ -34,11 +34,10 @@ kotlin {
             implementation(libs.androidx.room.runtime)
 
             // Features
-            implementation(projects.feature.preferences.appLanguage)
-            implementation(projects.feature.preferences.themeSelection)
-            implementation(projects.feature.preferences.studySuggestion)
-            implementation(projects.feature.materialYou)
-            implementation(projects.feature.inAppUpdate)
+            implementation(projects.core.preferences.themeSelection)
+            implementation(projects.core.preferences.studySuggestion)
+            implementation(projects.core.preferences.materialYou)
+            implementation(projects.core.inAppUpdate)
 
             // UI
             implementation(projects.ui.component)

@@ -6,8 +6,8 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.bibleplanner.feature.inappupdate.domain.model.UpdateDownloadState
-import com.quare.bibleplanner.feature.inappupdate.domain.usecase.ObserveUpdateDownloadState
+import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateDownloadState
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.ObserveUpdateDownloadState
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateDownloadUiAction
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

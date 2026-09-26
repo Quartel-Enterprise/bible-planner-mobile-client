@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.DayReadingCompleteBanner
+import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
@@ -61,6 +61,7 @@ internal fun ReadWideScreen(
     platform: Platform,
     state: ReadUiState,
     onEvent: (ReadUiEvent) -> Unit,
+    dayCompletionBanner: DayCompletionBannerSlot,
 ) {
     val listState = rememberLazyListState()
     val chapters = (state.content as? ReadContentUiState.Success)?.chapters.orEmpty()
@@ -146,7 +147,7 @@ internal fun ReadWideScreen(
             }
         }
         state.dayCompletionBanner?.let { day ->
-            DayReadingCompleteBanner(
+            dayCompletionBanner.Content(
                 day = day,
                 onDismissRequest = { onEvent(ReadUiEvent.OnDayCompletionBannerDismissed) },
                 modifier = Modifier

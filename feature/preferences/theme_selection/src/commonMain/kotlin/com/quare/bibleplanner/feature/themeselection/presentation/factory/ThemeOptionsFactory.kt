@@ -9,7 +9,7 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.dark
 import bibleplanner.feature.preferences.theme_selection.generated.resources.light_title
 import bibleplanner.feature.preferences.theme_selection.generated.resources.system_title
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionModel
-import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.core.model.theme.Theme
 
 object ThemeOptionsFactory {
     val themeOptions: List<ThemeSelectionModel> = listOf(

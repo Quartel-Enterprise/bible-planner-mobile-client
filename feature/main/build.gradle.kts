@@ -20,12 +20,6 @@ kotlin {
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.language)
 
-            // Features
-            implementation(projects.feature.readingPlan)
-            implementation(projects.feature.profile)
-            implementation(projects.feature.books)
-            implementation(projects.feature.preferences.appLanguage)
-
             // UI
             implementation(projects.ui.component)
             implementation(projects.ui.utils)

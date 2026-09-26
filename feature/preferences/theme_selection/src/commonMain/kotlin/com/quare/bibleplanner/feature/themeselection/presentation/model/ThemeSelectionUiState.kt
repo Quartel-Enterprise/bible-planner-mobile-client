@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.themeselection.presentation.model
 
-import com.quare.bibleplanner.ui.theme.model.ContrastType
+import com.quare.bibleplanner.core.model.theme.ContrastType
 
 data class ThemeSelectionUiState(
     val isMaterialYouToggleOn: Boolean?,

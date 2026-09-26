@@ -9,8 +9,8 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionSta
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import kotlinx.datetime.LocalDate
 
 internal const val SAMPLE_BIBLE_VERSION_NAME = "King James Version"

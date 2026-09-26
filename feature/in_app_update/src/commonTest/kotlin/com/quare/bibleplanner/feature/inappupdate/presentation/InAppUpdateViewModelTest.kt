@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
-import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptSource
+import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiEvent
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiState
 import kotlinx.coroutines.Dispatchers

@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.model.AppForegroundStateHolder
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
-import com.quare.bibleplanner.feature.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
-import com.quare.bibleplanner.ui.theme.model.ContrastType
-import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.RequestUpdatePromptIfNeeded
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetContrastTypeFlow
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetThemeOptionFlow
+import com.quare.bibleplanner.core.model.theme.ContrastType
+import com.quare.bibleplanner.core.model.theme.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

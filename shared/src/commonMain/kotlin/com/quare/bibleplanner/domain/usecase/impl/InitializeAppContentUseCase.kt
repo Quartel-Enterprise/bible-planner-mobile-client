@@ -17,9 +17,9 @@ import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveLanguage
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelectedVersionUseCase
 import com.quare.bibleplanner.feature.logout.domain.usecase.HandleCurrentDeviceRevoked
 import com.quare.bibleplanner.feature.logout.domain.usecase.ObserveSessionLoss
-import com.quare.bibleplanner.feature.materialyou.domain.usecase.ObserveDynamicColorsSync
-import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.ObserveStudySuggestionSync
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.ObserveThemeSync
+import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.ObserveDynamicColorsSync
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.ObserveStudySuggestionSync
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.joinAll

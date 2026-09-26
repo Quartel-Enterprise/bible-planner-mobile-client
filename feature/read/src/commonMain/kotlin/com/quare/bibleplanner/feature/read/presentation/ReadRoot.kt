@@ -27,7 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun EntryProviderScope<NavKey>.read() {
+fun EntryProviderScope<NavKey>.read(dayCompletionBanner: DayCompletionBannerSlot) {
     entry<ReadNavRoute>(metadata = getReaderPane()) { route ->
         val viewModel = koinViewModel<ReadViewModel> { parametersOf(route) }
         val state by viewModel.uiState.collectAsState()
@@ -35,6 +35,7 @@ fun EntryProviderScope<NavKey>.read() {
             platform = viewModel.platform,
             state = state,
             onEvent = viewModel::onEvent,
+            dayCompletionBanner = dayCompletionBanner,
         )
     }
 

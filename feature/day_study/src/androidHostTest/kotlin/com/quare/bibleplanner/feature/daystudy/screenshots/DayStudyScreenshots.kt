@@ -18,7 +18,7 @@ import com.quare.bibleplanner.feature.daystudy.fixture.firstQuestion
 import com.quare.bibleplanner.feature.daystudy.presentation.DayStudyScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
-import com.quare.bibleplanner.ui.theme.model.Theme
+import com.quare.bibleplanner.core.model.theme.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle

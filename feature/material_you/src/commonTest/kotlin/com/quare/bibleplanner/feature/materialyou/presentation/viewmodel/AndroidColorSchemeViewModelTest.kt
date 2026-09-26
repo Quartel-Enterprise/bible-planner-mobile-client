@@ -3,7 +3,7 @@ package com.quare.bibleplanner.feature.materialyou.presentation.viewmodel
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
-import com.quare.bibleplanner.feature.materialyou.domain.model.MaterialYouUseCases
+import com.quare.bibleplanner.core.preferences.materialyou.domain.model.MaterialYouUseCases
 import com.quare.bibleplanner.feature.materialyou.fake.FakeMaterialYouRepository
 import com.quare.bibleplanner.feature.materialyou.presentation.model.AndroidColorSchemeUiEvent
 import kotlinx.coroutines.Dispatchers

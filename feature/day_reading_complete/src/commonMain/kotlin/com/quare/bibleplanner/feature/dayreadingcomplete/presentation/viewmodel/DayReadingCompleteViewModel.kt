@@ -37,7 +37,7 @@ import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenera
 import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
 import com.quare.bibleplanner.feature.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
-import com.quare.bibleplanner.feature.studysuggestion.domain.usecase.SetStudySuggestionEnabled
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.SetStudySuggestionEnabled
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

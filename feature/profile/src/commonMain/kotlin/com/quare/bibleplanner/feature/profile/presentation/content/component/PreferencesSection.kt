@@ -7,9 +7,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import bibleplanner.feature.preferences.app_language.generated.resources.language_english
-import bibleplanner.feature.preferences.app_language.generated.resources.language_portuguese_brazil
-import bibleplanner.feature.preferences.app_language.generated.resources.language_spanish
 import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.preferences
 import bibleplanner.feature.profile.generated.resources.study_suggestion_disabled
@@ -23,13 +20,13 @@ import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileMenuOp
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.feature.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.ui.component.language.toStringResource
 import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import bibleplanner.feature.preferences.app_language.generated.resources.Res as AppLanguageRes
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -107,12 +104,6 @@ private fun bibleVersionSubtitle(state: ProfileUiState): String? = state.bibleVe
     } else {
         name
     }
-}
-
-internal fun Language.toStringResource(): StringResource = when (this) {
-    Language.ENGLISH -> AppLanguageRes.string.language_english
-    Language.PORTUGUESE_BRAZIL -> AppLanguageRes.string.language_portuguese_brazil
-    Language.SPANISH -> AppLanguageRes.string.language_spanish
 }
 
 @Composable

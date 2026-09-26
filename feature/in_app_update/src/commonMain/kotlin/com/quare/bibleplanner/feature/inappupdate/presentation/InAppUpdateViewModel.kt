@@ -6,7 +6,7 @@ import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.bibleplanner.feature.inappupdate.domain.usecase.StartUpdate
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.StartUpdate
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiEvent
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel

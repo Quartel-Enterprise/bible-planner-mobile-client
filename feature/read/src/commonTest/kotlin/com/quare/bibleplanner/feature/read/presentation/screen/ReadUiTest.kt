@@ -28,15 +28,16 @@ import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
+import com.quare.bibleplanner.feature.read.fixture.NoDayCompletionBanner
 import com.quare.bibleplanner.feature.read.fixture.readUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
-import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import org.jetbrains.compose.resources.getString
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 import bibleplanner.ui.component.generated.resources.back as backString
 
@@ -283,6 +284,7 @@ internal class ReadUiTest {
                     platform = Platform.Android,
                     state = uiState,
                     onEvent = { event -> events += event },
+                    dayCompletionBanner = NoDayCompletionBanner,
                 )
             }
         }
