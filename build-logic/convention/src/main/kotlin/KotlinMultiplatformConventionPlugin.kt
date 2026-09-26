@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import com.bibleplanner.buildlogic.configureCoverage
 import com.bibleplanner.buildlogic.getAndroidSdkVersions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -38,6 +39,8 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             // remove expect actual warning
             compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
+
+        configureCoverage()
 
         pluginManager.withPlugin("com.codingfeline.buildkonfig") {
             tasks.matching { it.name.contains("ArtProfile") }.configureEach {

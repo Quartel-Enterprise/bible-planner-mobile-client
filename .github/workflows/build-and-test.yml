@@ -1,0 +1,100 @@
+name: build-and-test
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.claude/**'
+      - 'store_listings/**'
+      - 'fastlane/**'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.claude/**'
+      - 'store_listings/**'
+      - 'fastlane/**'
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels the run of the previous one. On main every commit has a group
+# of its own and always finishes: a cancelled run saves no Gradle cache, so main's entries would fall
+# behind and the next pull requests would recompile from scratch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+
+      # verifyNewFilesCoverage diffs against the tip of the base branch, which a depth-1 checkout of
+      # the pull request's merge commit does not bring. On main the diff is empty and the task passes.
+      - name: Fetch the base branch
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: git fetch --depth=1 origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+
+      # jvmTest stays next to the Kover tasks: :ui:* has tests but is left out of the coverage
+      # report, so the Kover tasks alone would not run them. See docs/code-quality.md.
+      - name: Run unit tests and verify coverage
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+        run: >
+          ./gradlew jvmTest :koverVerifyCi :verifyNewFilesCoverage :koverHtmlReportCi
+          -Pcoverage.baseRef="origin/$BASE_REF" --continue
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: '**/build/reports/tests/**'
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/reports/kover/
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+
+      # The google-services plugin refuses to build without its file, and local.properties carries
+      # the keys BuildKonfig bakes into the app. Neither is in the repository.
+      - name: Decode build secrets
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
+        run: |
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+          printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
+
+      # Release matters: it is the only variant where R8 runs, so a missing keep rule surfaces here
+      # instead of on a device. Without the signing secrets it is signed with the debug key, which
+      # is all a compile check needs. :androidApp already compiles every production module for
+      # Android; the jvm target is compiled by unit-tests, and the desktop app is checked here.
+      - name: Assemble the Android release and the desktop app
+        run: ./gradlew :androidApp:assembleRelease :desktopApp:compileKotlin

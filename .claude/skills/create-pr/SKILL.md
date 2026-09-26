@@ -132,11 +132,13 @@ takes minutes.
 Otherwise, run:
 
 ```bash
-./gradlew jvmTest
+./gradlew jvmTest :koverVerifyCi :verifyNewFilesCoverage --continue
 ```
 
-It runs every module's `commonTest` and `jvmTest` on the JVM target. If tests fail, stop and report
-the failing tests. Do not push a red branch.
+It runs every module's `commonTest` and `jvmTest` on the JVM target and the two coverage rules the
+`build-and-test` workflow enforces: 80% of the lines for the merged report and for each file the
+branch adds (see [docs/code-quality.md](../../../docs/code-quality.md#test-coverage)). If tests fail
+or a rule fails, stop and report it: write the missing tests rather than pushing a red branch.
 
 ### 9. Commit all uncommitted changes
 
