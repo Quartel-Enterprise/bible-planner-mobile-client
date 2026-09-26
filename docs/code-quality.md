@@ -85,11 +85,11 @@ Branch coverage is reported but not gated: `@Serializable` classes carry generat
 
 The `unit-tests` job of the `build-and-test` workflow runs `jvmTest` and both rules in one Gradle
 call with `--continue`, so a coverage failure doesn't hide a test failure, and uploads the HTML
-report as the `coverage-report` artifact. On a pull request it first fetches the tip of the base
-branch, which the depth-1 checkout does not bring, so the new-files rule has something to diff
+report as the `coverage-report` artifact. The same call compiles the desktop app, since `jvmTest`
+has already compiled the jvm target it depends on. On a pull request it first fetches the tip of the
+base branch, which the depth-1 checkout does not bring, so the new-files rule has something to diff
 against. The `build` job of the same workflow assembles `:androidApp:assembleRelease` — the only
-variant R8 runs on, so a missing keep rule fails there instead of on a device — and compiles the
-desktop app. It builds with the placeholder `google-services.json` that
+variant R8 runs on, so a missing keep rule fails there instead of on a device. It builds with the placeholder `google-services.json` that
 `scripts/write_placeholder_google_services.sh` writes, since the real one lives only in the
 `Production` environment, which needs a manual approval.
 

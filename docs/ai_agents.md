@@ -20,3 +20,4 @@ This document describes the architecture conventions of this project. Follow the
 - [@docs/store-listing-metadata.md](store-listing-metadata.md)
 - [@docs/getting-started.md](getting-started.md)
 - [@docs/code-quality.md](code-quality.md)
+- [@docs/ci.md](ci.md)

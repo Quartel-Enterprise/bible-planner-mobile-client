@@ -1,5 +1,14 @@
 name: 'Setup Gradle and Java'
 description: 'Sets up JDK 21 and Gradle with caching'
+
+inputs:
+  cache-encryption-key:
+    description: >-
+      Secret used to encrypt the Gradle configuration cache before storing it. Without it the
+      configuration cache is discarded between runs, so every job pays full configuration time.
+    required: false
+    default: ''
+
 runs:
   using: "composite"
   steps:
@@ -11,6 +20,40 @@ runs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v6
+      with:
+        cache-encryption-key: ${{ inputs.cache-encryption-key }}
+        # setup-gradle only lets the default branch write the cache, so every push to a pull
+        # request starts from main's entries and recompiles the whole diff again. A job on the pull
+        # request's critical path sets GRADLE_CACHE_WRITE_ON_PULL_REQUESTS=true: its entries are
+        # scoped to the pull request's ref, so the next push only compiles what changed since the
+        # previous one. This is an environment variable and not an input because the ktlint action
+        # nests this one, and the runner evaluates a nested action's inputs as empty in the post
+        # step, which is exactly where the cache is written.
+        # GRADLE_CACHE_READ_ONLY=true is the opposite switch, for a job that barely uses Gradle. On
+        # main it would still save a few hundred MB of its own dependencies and transforms out of
+        # the 10 GB budget, and setup-gradle falls back to the most recent entry of any job, so a
+        # job without an entry of its own would restore that nearly empty one instead of a useful
+        # one.
+        cache-read-only: >-
+          ${{ env.GRADLE_CACHE_READ_ONLY == 'true'
+          || (env.GRADLE_CACHE_WRITE_ON_PULL_REQUESTS != 'true' && github.event.repository != null
+          && github.ref_name != github.event.repository.default_branch) }}
+        # GitHub looks every restore key up in the pull request's own scope before it falls back to
+        # main, and setup-gradle's broadest key matches the most recent entry of any job. That is
+        # how unit-tests in #464 restored the Gradle home ktlint had saved on main, which holds
+        # nothing but the ruleset jar, and ran all 1227 of its tasks with no cache hit. Strict
+        # matching leaves only the key of the job itself, which a read-only job finds on main and a
+        # writer in the pull request. The GRADLE_CACHE_READ_ONLY jobs have no entry of their own
+        # and would start cold on every push, so they keep the fallback. Main keeps it too: its
+        # scope has no other entries to get in the way, and the first run of a new job starts from
+        # another job's entry instead of from nothing.
+        gradle-home-cache-strict-match: >-
+          ${{ env.GRADLE_CACHE_READ_ONLY != 'true' && github.event_name == 'pull_request' }}
+        # Cleanup drops whatever a build did not touch, and a warm build touches fewer dependencies
+        # and transforms than a cold one, so each push would save new entries that differ only by
+        # what is missing. Pull request entries are deleted when it closes instead, see
+        # cleanup-pr-caches.
+        cache-cleanup: ${{ github.event_name == 'pull_request' && 'never' || 'on-success' }}
 
     - name: Make gradlew executable
       shell: bash
