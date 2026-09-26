@@ -74,6 +74,7 @@ internal class DayViewModel(
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)
 
     private var notesSaveJob: Job? = null
+    private var pendingNotes: String? = null
     private val notesDebounceDelay: Duration = 2.seconds
     private var isWide: Boolean? = null
     private var isStudyRoutePushedByUs = false
@@ -334,6 +335,7 @@ internal class DayViewModel(
         updateLoadedState { loaded ->
             loaded.copy(day = loaded.day.copy(notes = event.notes))
         }
+        pendingNotes = event.notes
         notesSaveJob?.cancel()
         notesSaveJob = event.toJob()
     }
@@ -341,14 +343,14 @@ internal class DayViewModel(
     private fun DayUiEvent.OnNotesChanged.toJob(): Job = viewModelScope.launch {
         delay(notesDebounceDelay)
         saveNotes(notes)
+        pendingNotes = null
     }
 
     override fun onCleared() {
         super.onCleared()
-        if (notesSaveJob?.isActive != true) return
-        notesSaveJob?.cancel()
-        val pendingNotes = safeLoadedState?.day?.notes
-        applicationScope.launch { saveNotes(pendingNotes) }
+        val notes = pendingNotes ?: return
+        pendingNotes = null
+        applicationScope.launch { saveNotes(notes) }
     }
 
     private suspend fun saveNotes(notes: String?) {

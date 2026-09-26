@@ -3,7 +3,8 @@
     "common": [
       "Na aba Perfil, a lista não volta mais para o topo quando você retorna de outra tela, como Seja Pro ou Notas de Atualização: ela fica onde você parou, sem mostrar por um instante os espaços de carregamento.",
       "As notas de atualização agora mostram só o que mudou no seu aparelho: mudanças feitas apenas para Android, iPhone ou computador aparecem só neles.",
-      "Os avisos que aparecem na parte de baixo da tela, como \"Você já está na versão mais recente\", não ficam mais escondidos atrás da barra de abas depois que você troca de aba."
+      "Os avisos que aparecem na parte de baixo da tela, como \"Você já está na versão mais recente\", não ficam mais escondidos atrás da barra de abas depois que você troca de aba.",
+      "Na tela do dia, as anotações escritas logo antes de sair da tela não se perdem mais: elas são salvas mesmo que você volte imediatamente."
     ],
     "android": [
       "Nas janelas de confirmação, as ações que apagam algo agora aparecem em vermelho."
