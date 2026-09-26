@@ -1,12 +1,12 @@
 ---
 name: create-pr
-description: "Create a pull request following all project conventions: Conventional Commits title, description template, assignee, and labels."
+description: "Create a pull request following all project conventions: ktlint formatting, unit tests, release notes, Conventional Commits title, description template, assignee, and labels."
 ---
 
 # Create PR
 
-This skill formats the code, commits any uncommitted changes, pushes the branch, and opens a pull
-request with a clear title and description inferred from the actual changes.
+This skill formats the code, runs the tests, commits any uncommitted changes, pushes the branch, and
+opens a pull request with a clear title and description inferred from the actual changes.
 
 ## Step-by-step workflow
 
@@ -22,7 +22,8 @@ Run these in parallel:
 
 ### 2. Run ktlint formatter (if needed)
 
-Check whether any `.kt` or `.kts` files are among the changed files gathered in step 1. If none are present, skip this step entirely.
+Check whether any `.kt` or `.kts` files are among the changed files gathered in step 1. If none are
+present, skip this step entirely.
 
 If there are Kotlin files changed, run from the project root:
 
@@ -30,16 +31,16 @@ If there are Kotlin files changed, run from the project root:
 ./scripts/ktlint.sh --format
 ```
 
-This is the ktlint CLI, which is exactly what the `static-analysis` workflow runs in CI. Do **not** use
-`./gradlew ktlintFormat` — the Gradle plugin path is far slower and is no longer what CI checks.
+This is the ktlint CLI, which is exactly what the `static-analysis` workflow runs in CI. Do **not**
+use `./gradlew ktlintFormat` — the Gradle plugin path is far slower and is no longer what CI checks.
 
 If the command exits with a non-zero code, stop and notify the user:
 > "ktlint found issues it couldn't fix automatically. Please review and fix the reported errors, then try again."
 
 Do not proceed until the formatter succeeds.
 
-Formatting rewrites files in place, so re-run `git status -s` afterwards if you need an up-to-date list of
-changed files for the steps below.
+Formatting rewrites files in place, so re-run `git status -s` afterwards if you need an up-to-date
+list of changed files for the steps below.
 
 ### 3. Check the current branch
 
@@ -53,17 +54,18 @@ Also check the upstream tracking branch:
 git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null
 ```
 
-**If the current branch is `main`**, or the upstream tracking branch is `origin/main`, the
-user is working directly on main — a new branch must be created before committing. Continue to
-step 4 to determine the prefix, then create the branch in step 5.
+**If the current branch is `main`**, or the upstream tracking branch is `origin/main`, stop and ask
+whether the user wants to use the `start-task` skill instead — it's the preferred way to start new
+work and will ask whether to use a worktree or work in-place. If they'd rather branch directly here
+without going through that flow, continue to step 4 to determine the prefix, then create the branch
+in step 5.
 
-**If the current branch is already a feature/fix/enhancement/refactor branch**, skip branch
-creation and go directly to step 5.
+**If the current branch is already a feature/fix/enhancement/refactor/chore branch**, take the type
+from its prefix and go directly to step 6.
 
 ### 4. Infer the change type
 
-Inspect the uncommitted changes and any commits ahead of origin/main to understand what kind of
-change this is:
+Inspect the uncommitted changes and any commits ahead of origin/main:
 
 ```bash
 git remote update
@@ -71,58 +73,37 @@ git diff HEAD
 git log origin/main..HEAD --oneline
 ```
 
-Based on the changes, choose the most appropriate type:
-
-| Type | When to use |
-|---|---|
-| `fix` | Corrects a bug or unintended behavior |
-| `feature` | Adds new functionality visible to the user |
-| `enhancement` | Improves existing functionality (performance, UX, accessibility) |
-| `refactor` | Internal code restructuring with no user-facing change |
-
-If the changes clearly point to one type, use it without asking.
-If it's genuinely ambiguous, ask the user:
-> "What type of change is this?"
-> - Bug fix
-> - New feature
-> - Improvement to something existing
-> - Internal code cleanup (no visible change)
+Pick the `<type>` prefix using the table in [`branch-types.md`](../branch-types.md).
 
 ### 5. Create a new branch (if needed)
 
-If the user is on `main` (determined in step 3), create and switch to a new branch. Derive the
-branch name from the changes — keep it short, lowercase, hyphen-separated:
+Derive the branch name from the changes — keep it short, lowercase, hyphen-separated:
 
 ```bash
 git checkout -b <type>/<short-description>
 ```
 
-Examples:
-- `fix/whitespace-below-search-bar`
-- `feature/offline-bible-reading`
-- `enhancement/books-screen-filters`
-- `refactor/release-notes-viewmodel`
+Examples: `fix/whitespace-below-search-bar`, `feature/offline-bible-reading`,
+`enhancement/books-screen-filters`, `refactor/release-notes-viewmodel`, `chore/ci-module-graph`.
 
 ### 6. Update release notes (if user-facing)
 
 Before committing, decide whether the change is user-facing:
 
-- **Run the release-notes-updater skill** if the type is `fix`, `feature`, or `enhancement` AND
+- **Run the `release-notes-updater` skill** if the type is `fix`, `feature`, or `enhancement` AND
   the change has a visible impact on the user (UI, behavior, new screen, crash fix, etc.)
-- **Skip it** if the type is `refactor`, or if the change is purely internal with no perceptible
-  effect on the user (e.g. dependency update, build config, architecture cleanup, test additions)
+- **Skip it** if the type is `refactor` or `chore`, or if the change is purely internal with no
+  perceptible effect on the user (e.g. dependency update, build config, architecture cleanup, test
+  additions)
 
 When in doubt, lean toward running the skill — it's better to have an extra release note than
-to miss a user-facing change.
-
-Invoke the skill by following the instructions in `docs/skills/release-notes-updater.md`. The
-changes inferred in step 3 should be enough context — pass them along so the skill doesn't need
-to re-run the git commands.
+to miss a user-facing change. The changes inferred in steps 1 and 4 should be enough context — pass
+them along so the skill doesn't need to re-run the git commands.
 
 ### 7. Verify analytics catalog (feature/enhancement)
 
-Skip this for `fix` and `refactor`. For `feature` and `enhancement`, check whether the diff adds
-or changes user actions that should be tracked — i.e. it touches
+Skip this for `fix`, `refactor` and `chore`. For `feature` and `enhancement`, check whether the diff
+adds or changes user actions that should be tracked — i.e. it touches
 `feature/**/presentation/model/*UiEvent.kt` (new or changed `UiEvent` cases) or other feature
 code introducing user-facing interactions.
 
@@ -142,12 +123,28 @@ offer to run the `add-analytics-event` skill before committing:
 
 Do not block on it — if the user confirms the actions are deliberately `NotTracked`, continue.
 
-### 8. Commit all uncommitted changes
+### 8. Run the unit tests (if needed)
 
-If the release-notes-updater skill was run in step 6, show the user what was written and ask:
+If every file the branch changes is Markdown (`.md`), as gathered in step 1 (commits ahead of
+`main` and uncommitted changes alike), skip this step. No test can read those files, and the run
+takes minutes.
+
+Otherwise, run:
+
+```bash
+./gradlew jvmTest
+```
+
+It runs every module's `commonTest` and `jvmTest` on the JVM target. If tests fail, stop and report
+the failing tests. Do not push a red branch.
+
+### 9. Commit all uncommitted changes
+
+If the `release-notes-updater` skill was run in step 6, show the user what was written and ask:
 > "The release notes have been updated. Want me to commit now?"
 
-Wait for confirmation before proceeding. If the user wants to adjust the notes first, let them — then ask again.
+Wait for confirmation before proceeding. If the user wants to adjust the notes first, let them —
+then ask again.
 
 Stage everything (including any release notes updates) and create a single commit:
 
@@ -157,41 +154,19 @@ git commit -m "<type>: <short description>"
 ```
 
 The commit message must:
-- Start with the type prefix (`fix:`, `feature:`, `enhancement:`, `refactor:`)
+- Start with the type prefix (`fix:`, `feature:`, `enhancement:`, `refactor:`, `chore:`)
 - Be concise and in the imperative form (e.g. "fix: remove extra whitespace below search bar")
 - Not exceed 72 characters
 
 If there are no uncommitted changes (the user already committed everything), skip this step.
 
-### 9. Push the branch
+### 10. Push the branch
 
 ```bash
 git push -u origin HEAD
 ```
 
-### 10. Create the pull request
-
-First, check if the GitHub CLI is available:
-
-```bash
-gh --version
-```
-
-**If `gh` is not installed**, suggest installing it and ask before proceeding:
-> "GitHub CLI (`gh`) is not installed. Would you like me to install it now?"
-
-If the user agrees, install it:
-```bash
-# macOS
-brew install gh
-```
-
-After installation, authenticate if needed:
-```bash
-gh auth status || gh auth login
-```
-
-Once `gh` is available, create the PR:
+### 11. Create the pull request
 
 ```bash
 gh pr create \
@@ -202,14 +177,11 @@ gh pr create \
   --label "<label>"
 ```
 
-Choose the label based on the change type:
+Take the label from the table in [`branch-types.md`](../branch-types.md). `chore` has no label:
+drop the `--label` flag for it.
 
-| Type | Label |
-|---|---|
-| `fix` | `bug` |
-| `feature` | `feature` |
-| `enhancement` | `enhancement` |
-| `refactor` | `refactor` |
+If `gh` is not installed, ask the user before installing it (`brew install gh`, then
+`gh auth status || gh auth login`).
 
 **Title:** Same format as the commit message — type prefix + short imperative description.
 
@@ -231,51 +203,34 @@ Given uncommitted changes that remove a `navigationBarsPadding()` modifier from 
 - **PR description:**
   > The books screen had extra whitespace appearing below the search bar due to `navigationBarsPadding()` being applied to the top bar instead of the screen content. This modifier adds padding matching the system navigation bar height, which caused the top bar surface to grow downward unnecessarily. Removed the modifier from the top bar to fix the layout.
 
-### 11. Squash and switch to main (optional)
+### 12. Squash and merge (optional)
 
-After the PR is created, use the `AskUserQuestion` tool to ask the user with a menu:
+After the PR is created, use the `AskUserQuestion` tool to ask whether to squash merge now:
 
-- **Question:** "Do you want to squash merge this branch into origin/main now?"
-- **Options:**
-  - Yes — squash merge, update remote refs, and switch to origin/main
-  - No — end the workflow here
+- Yes — squash merge and clean up the task
+- No — end the workflow here
 
-If the user agrees, proceed with the following steps in order:
+If yes:
 
-**Squash merge via GitHub CLI:**
 ```bash
-gh pr merge --squash --auto
+gh pr merge --squash
 ```
 
-If the merge fails (e.g. pending reviews, CI checks not passed), notify the user and stop:
-> "Could not squash merge right now. Make sure the PR has passed all required checks and try again."
+Merge right away: `main` has no branch protection, so there is no need to wait for CI or pass
+`--auto`. If the merge fails (e.g. a conflict with `main`), notify the user and stop.
 
-**Update remote refs:**
-```bash
-git remote update
-```
-
-**Switch to origin/main:**
-```bash
-git checkout origin/main
-```
-
-**Delete the local branch:** since the squash merge replaces the branch's commits with a single
-new one, the local feature branch is now stale and must be force-deleted (a plain `-d` would fail
-because git doesn't see it as merged):
-```bash
-git branch -D <branch>
-```
-
-Replace `<branch>` with the feature branch name captured earlier.
-
-If the user declines, skip this step entirely and end the workflow.
+Once the squash merge succeeds, immediately run the `finish-task` skill in the same turn — don't
+wait for the user to ask for it. Asking for the squash merge is also the request to clean up the
+task. `finish-task` handles both worktree and in-place tasks and checks the merge before removing
+the branch (and the worktree, if there is one), so don't duplicate its logic here.
 
 ## Edge cases
 
-- If `./scripts/ktlint.sh --format` fails, stop immediately — do not commit or push. The remaining errors are ones ktlint cannot autocorrect (e.g. custom `bible-planner-style:*` rules), so they must be fixed by hand
-- If the user is already on a correctly prefixed branch, skip branch creation
+- If `./scripts/ktlint.sh --format` fails, stop immediately — do not commit or push. The remaining
+  errors are ones ktlint cannot autocorrect (e.g. custom `bible-planner-style:*` rules), so they
+  must be fixed by hand
 - If there is nothing to commit and the branch is already pushed, go directly to PR creation
 - If the branch already has an open PR, notify the user instead of creating a duplicate
 - Always target `main` as the base branch for the PR
-- Release notes updates (step 6) are included in the same commit as the rest of the changes — do not create a separate commit for them
+- Release notes updates (step 6) are included in the same commit as the rest of the changes — do
+  not create a separate commit for them
