@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.day.fixture.dayUiState
 import com.quare.bibleplanner.feature.day.presentation.DayScreen
 import com.quare.bibleplanner.feature.daystudy.presentation.component.AiStudyEntryCard
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel

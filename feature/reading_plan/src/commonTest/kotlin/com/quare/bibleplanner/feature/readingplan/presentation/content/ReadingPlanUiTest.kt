@@ -30,6 +30,16 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 internal class ReadingPlanUiTest {
+    private val loadingUiState = ReadingPlanUiState.Loading(
+        selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
+        isShowingMenu = false,
+        isShowingOrderMenu = false,
+        scrollToWeekNumber = 0,
+        scrollToWeekIsAutomatic = false,
+        scrollToTop = false,
+        isScrolledDown = false,
+        isActiveRowVisible = true,
+    )
     private lateinit var events: MutableList<ReadingPlanUiEvent>
 
     @Test
@@ -161,16 +171,5 @@ internal class ReadingPlanUiTest {
         const val TOTAL_DAYS = 364
         const val FIRST_DAY_GLOBAL_INDEX = (CURRENT_WEEK - 1) * 7 + 1
         const val TODAY_GLOBAL_INDEX = (CURRENT_WEEK - 1) * 7 + TODAY_DAY_NUMBER
-
-        val loadingUiState = ReadingPlanUiState.Loading(
-            selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
-            isShowingMenu = false,
-            isShowingOrderMenu = false,
-            scrollToWeekNumber = 0,
-            scrollToWeekIsAutomatic = false,
-            scrollToTop = false,
-            isScrolledDown = false,
-            isActiveRowVisible = true,
-        )
     }
 }

@@ -7,6 +7,6 @@ import androidx.compose.ui.test.ExperimentalTestApi
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.setUiTestContent(content: @Composable () -> Unit) {
     setContent {
-        ProvidePlatformUiTestLocals(content = content)
+        PlatformUiTestContent(content = content)
     }
 }

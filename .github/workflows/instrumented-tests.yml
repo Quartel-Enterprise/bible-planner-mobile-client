@@ -1,0 +1,159 @@
+name: instrumented-tests
+
+on:
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.claude/**'
+      - 'store_listings/**'
+      - 'fastlane/**'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.claude/**'
+      - 'store_listings/**'
+      - 'fastlane/**'
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels the run of the previous one. On main every commit has a group
+# of its own and always finishes: a cancelled run saves no Gradle cache, so main's entries would fall
+# behind and the next pull requests would recompile from scratch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # The device runs one module's tests at a time, so that phase grows with every module and is the
+  # longest part of this job. Each shard boots its own emulator and takes every other module with
+  # a src/androidDeviceTest directory; scripts/instrumented_shard.sh deals them out, so nothing here
+  # needs editing when a module is added. Keep SHARD_COUNT equal to the length of matrix.shard.
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1]
+    env:
+      SHARD_COUNT: 2
+      # Compilation is most of a cold run. See .github/actions/gradle.
+      GRADLE_CACHE_WRITE_ON_PULL_REQUESTS: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      # Compiling before the emulator exists gives Gradle all four cores, and a compilation error
+      # fails the job without paying for the SDK download and the boot.
+      - name: Assemble the shard's test APKs
+        run: ./gradlew $(./scripts/instrumented_shard.sh assemble ${{ matrix.shard }} "$SHARD_COUNT")
+
+      # The emulator runner downloads these two packages on every run and fails the job the first
+      # time a download comes back corrupt ("Error on ZipFile unknown archive"), as it did on
+      # TuneScout's main twice in one day. Installing them here first, with retries, leaves the
+      # runner nothing to download: sdkmanager skips a package that is already up to date. Keep the
+      # system image in step with api-level, target and arch below.
+      - name: Install the emulator and its system image
+        run: |
+          sdkmanager="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$sdkmanager" --licenses > /dev/null
+          for attempt in 1 2 3; do
+            if "$sdkmanager" --install emulator 'system-images;android-35;default;x86_64' > /dev/null; then
+              exit 0
+            fi
+            echo "::warning::SDK download failed (attempt $attempt of 3), retrying"
+            sleep 15
+          done
+          exit 1
+
+      # No AVD cache: on TuneScout it saved about 20s, inside the run-to-run noise, while its 1.3 GB
+      # entry crowded the repository's 10 GB cache budget and evicted the Gradle caches.
+      # The test APKs are dexed at API 30 (see build-logic's ComposeUiTests.kt), so the image has
+      # to be at least that.
+      # The step has a timeout of its own, well under the job's: a run that hangs on the device
+      # otherwise holds the emulator until the job is killed, and a killed job uploads no report.
+      - name: Run the tests on the emulator
+        timeout-minutes: 25
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          # One module at a time: the shard has a single emulator, and Gradle's parallel execution
+          # otherwise installs and drives several test APKs on it at once, which interleaves the
+          # log past the point of telling which module is stuck.
+          script: >-
+            ./gradlew $(./scripts/instrumented_shard.sh connected ${{ matrix.shard }} "$SHARD_COUNT")
+            --continue --max-workers=1
+
+      - name: Upload the test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-reports-shard-${{ matrix.shard }}
+          path: '**/build/reports/androidTests/**'
+
+  # The same modules on the iOS simulator. The runner is free on a public repository, and the
+  # simulator is the only place where the UIKit side of the app's native components (Calf's switches,
+  # menus and pickers) is composed at all.
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Select the latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      # The Kotlin/Native toolchain and its dependencies live outside the Gradle home, so
+      # setup-gradle does not cache them, and downloading them is several minutes of every run.
+      # Keyed by the Kotlin version alone: the toolchain changes only with it, and a key on the
+      # whole catalog would save another entry of about 1 GB on every dependency bump.
+      - name: Read the Kotlin version
+        id: kotlin
+        run: echo "version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Kotlin/Native toolchain
+        uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
+
+      - name: Run the tests on the iOS simulator
+        run: ./gradlew $(./scripts/instrumented_shard.sh ios 0 1) --continue
+
+      - name: Upload the test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-reports
+          path: '**/build/reports/tests/iosSimulatorArm64Test/**'

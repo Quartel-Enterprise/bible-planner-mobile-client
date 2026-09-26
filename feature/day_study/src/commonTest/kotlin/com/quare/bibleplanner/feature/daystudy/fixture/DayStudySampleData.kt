@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.daystudy.screenshots
+package com.quare.bibleplanner.feature.daystudy.fixture
 
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.platform.Platform
@@ -214,7 +214,7 @@ internal fun dayStudyUiState(
     locale: String,
     platform: Platform,
 ): DayStudyRouteUiState {
-    val study = studyByLocale.getValue(locale)
+    val study = dayStudyModel(locale)
     return DayStudyRouteUiState(
         card = Loadable.Loaded(
             DayStudyCardUiModel(
@@ -236,6 +236,8 @@ internal fun dayStudyUiState(
         platform = platform,
     )
 }
+
+internal fun dayStudyModel(locale: String): DayStudyModel = studyByLocale.getValue(locale)
 
 /** The question the questions-tab screenshot opens, taken from the same data the screen renders. */
 internal fun firstQuestion(locale: String): String = studyByLocale

@@ -27,7 +27,8 @@ feature/
 ui/
 ├── theme/           # AppTheme, colors, Theme enum
 ├── component/       # Shared composables
-└── utils/           # ActionCollector, observe() extension
+├── utils/           # ActionCollector, observe() extension
+└── testing/         # setUiTestContent for the Compose UI tests (test-only dependency)
 ```
 
 ### Within every `feature/` or `core/` module

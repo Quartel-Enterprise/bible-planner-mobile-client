@@ -14,19 +14,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 // that have a src/androidDeviceTest directory. scripts/instrumented_shard.sh finds those modules
 // by the same directory, so the build and the CI workflow never disagree on which ones they are.
 private const val UI_TEST_CLASS_PATTERN = "*UiTest"
-
-// Brings the ui-test API and setUiTestContent, which fills in what each platform's test host
-// leaves out.
 private const val UI_TESTING_MODULE = ":ui:testing"
-
 private const val DEVICE_TEST_SOURCE_SET = "androidDeviceTest"
 private const val INSTRUMENTATION_RUNNER = "androidx.test.runner.AndroidJUnitRunner"
 private const val DEVICE_TEST_TASK_SUFFIX = "AndroidDeviceTest"
-
-// Test names are backticked sentences, and D8 accepts spaces in a method name only from the DEX
-// format of API 30 on. AGP dexes the test APK at the library's minSdk and has no setting of its own
-// for it, so a build that asks for device tests raises the minSdk of the modules that have them.
-// Only that build: the app, which still supports API 26, never builds against the raised value.
 private const val DEVICE_TEST_MIN_SDK = 30
 
 private val Project.hasDeviceTests: Boolean
@@ -40,6 +31,8 @@ fun Project.configureComposeUiTests() {
     extensions.configure<KotlinMultiplatformExtension> {
         sourceSets.named("commonTest") {
             dependencies {
+                // The ui-test API, and setUiTestContent, which fills in what each platform's test
+                // host leaves out.
                 implementation(project(UI_TESTING_MODULE))
             }
         }
@@ -59,6 +52,11 @@ fun Project.configureComposeUiTests() {
                 withDeviceTestBuilder { sourceSetTreeName = "test" }.configure {
                     instrumentationRunner = INSTRUMENTATION_RUNNER
                 }
+                // Test names are backticked sentences, and D8 accepts a space in a method name
+                // only from the DEX format of API 30 on. AGP dexes the test APK at the library's
+                // minSdk and has no setting of its own for it, so a build that asks for device
+                // tests raises the minSdk of the modules that have them. Only that build: the app,
+                // which still supports API 26, never builds against the raised value.
                 if (isBuildingDeviceTests) {
                     minSdk = DEVICE_TEST_MIN_SDK
                 }
