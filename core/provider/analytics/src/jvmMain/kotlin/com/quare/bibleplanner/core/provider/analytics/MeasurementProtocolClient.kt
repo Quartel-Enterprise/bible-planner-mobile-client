@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.core.provider.analytics
 
 import co.touchlab.kermit.Logger
-import com.quare.bibleplanner.core.provider.analytics.generated.AnalyticsBuildKonfig
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
@@ -18,10 +17,9 @@ import kotlinx.serialization.json.putJsonObject
 internal class MeasurementProtocolClient(
     private val httpClient: HttpClient,
     private val clientIdProvider: ClientIdProvider,
+    private val measurementId: String,
+    private val apiSecret: String,
 ) {
-    private val measurementId: String = AnalyticsBuildKonfig.GA_MEASUREMENT_ID
-    private val apiSecret: String = AnalyticsBuildKonfig.GA_MEASUREMENT_API_SECRET
-
     suspend fun send(
         eventName: String,
         params: Map<String, Any>,

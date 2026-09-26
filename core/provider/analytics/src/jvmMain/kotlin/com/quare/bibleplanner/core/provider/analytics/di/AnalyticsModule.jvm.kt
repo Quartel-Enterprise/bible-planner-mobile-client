@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.provider.analytics.ClientIdProvider
 import com.quare.bibleplanner.core.provider.analytics.DesktopAnalyticsService
 import com.quare.bibleplanner.core.provider.analytics.MeasurementProtocolClient
 import com.quare.bibleplanner.core.provider.analytics.domain.service.AnalyticsService
+import com.quare.bibleplanner.core.provider.analytics.generated.AnalyticsBuildKonfig
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
@@ -20,6 +21,8 @@ internal actual val platformAnalyticsModule: Module = module {
         MeasurementProtocolClient(
             httpClient = createHttpClient(),
             clientIdProvider = get(),
+            measurementId = AnalyticsBuildKonfig.GA_MEASUREMENT_ID,
+            apiSecret = AnalyticsBuildKonfig.GA_MEASUREMENT_API_SECRET,
         )
     }
     singleOf(::DesktopAnalyticsService).bind<AnalyticsService>()

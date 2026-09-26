@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.provider.analytics.domain.mapper
 
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
@@ -10,11 +11,19 @@ import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
+import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteAccountNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteAllProgressNavRoute
+import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.DeleteNotesRoute
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
+import com.quare.bibleplanner.core.model.route.EditNameNavRoute
+import com.quare.bibleplanner.core.model.route.EditPhotoSourceNavRoute
 import com.quare.bibleplanner.core.model.route.EditPlanStartDateNavRoute
+import com.quare.bibleplanner.core.model.route.EditProfileNavRoute
+import com.quare.bibleplanner.core.model.route.ExpandedPhotoNavRoute
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.core.model.route.LoginSyncNudgeNavRoute
@@ -27,13 +36,22 @@ import com.quare.bibleplanner.core.model.route.NavRoute
 import com.quare.bibleplanner.core.model.route.NotificationPermissionNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.PendingBibleUpdatesNavRoute
 import com.quare.bibleplanner.core.model.route.PixQrNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
+import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
+import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
+import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
+import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
+import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.DestinationType
 import kotlin.test.Test
@@ -236,5 +254,135 @@ class NavRouteToDestinationMapperImplTest {
         val destination = mapper.map(LogoutNavRoute)
 
         assertEquals(emptyMap(), destination?.params)
+    }
+
+    @Test
+    fun `GIVEN the profile verse and device routes WHEN mapping THEN returns their screen_name and screen_class`() {
+        // Given
+        val routes: List<NavRoute> = listOf(
+            AccountDetailsNavRoute,
+            EditProfileNavRoute,
+            EditPhotoSourceNavRoute,
+            EditNameNavRoute,
+            ExpandedPhotoNavRoute,
+            DeleteAccountNavRoute,
+            ReaderAppearanceNavRoute,
+            DeleteHighlightColorNavRoute(colorKey = "c:10:40"),
+            VerseNoteNavRoute(
+                bibleVersionId = "ACF",
+                bookId = "GEN",
+                chapterNumber = 1,
+                verseNumbers = listOf(1),
+                noteId = null,
+            ),
+            VerseSelectionNavRoute,
+            ShareVerseNavRoute(
+                bookId = "GEN",
+                chapterNumber = 1,
+                verseNumbers = listOf(1),
+            ),
+            ShareVerseImageNavRoute(
+                bookId = "GEN",
+                chapterNumber = 1,
+                verseNumbers = listOf(1),
+            ),
+            RenameDeviceNavRoute(
+                deviceRowId = "row-1",
+                currentName = "iPhone",
+            ),
+            StudySuggestionNavRoute,
+        )
+
+        // When
+        val destinations = routes.map { route -> mapper.map(route)?.let { it.name to it.type } }
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                "account_details" to DestinationType.RESPONSIVE,
+                "edit_profile" to DestinationType.RESPONSIVE,
+                "edit_profile_photo_source" to DestinationType.RESPONSIVE,
+                "edit_profile_name" to DestinationType.DIALOG,
+                "profile_photo_expanded" to DestinationType.DIALOG,
+                "delete_account" to DestinationType.DIALOG,
+                "reader_appearance" to DestinationType.RESPONSIVE,
+                "delete_highlight_color" to DestinationType.DIALOG,
+                "verse_note" to DestinationType.RESPONSIVE,
+                "verse_selection" to DestinationType.RESPONSIVE,
+                "share_verse" to DestinationType.RESPONSIVE,
+                "share_verse_image" to DestinationType.RESPONSIVE,
+                "rename_device" to DestinationType.DIALOG,
+                "study_suggestion" to DestinationType.RESPONSIVE,
+            ),
+            actual = destinations,
+        )
+    }
+
+    @Test
+    fun `GIVEN DayStudyNavRoute WHEN mapping THEN is a screen carrying the lowercase plan_type week and day`() {
+        // When
+        val destination = mapper.map(
+            DayStudyNavRoute(
+                dayNumber = 3,
+                weekNumber = 2,
+                readingPlanType = "CHRONOLOGICAL",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = DestinationType.SCREEN,
+            actual = destination?.type,
+        )
+        assertEquals(
+            expected = mapOf(
+                AnalyticsParams.PLAN_TYPE to "chronological",
+                AnalyticsParams.WEEK_NUMBER to 2,
+                AnalyticsParams.DAY_NUMBER to 3,
+            ),
+            actual = destination?.params,
+        )
+    }
+
+    @Test
+    fun `GIVEN DayReadingCompleteNavRoute WHEN mapping THEN is responsive carrying the plan_type week and day`() {
+        // When
+        val destination = mapper.map(
+            DayReadingCompleteNavRoute(
+                dayNumber = 5,
+                weekNumber = 1,
+                readingPlanType = "BOOKS",
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = "day_reading_complete" to DestinationType.RESPONSIVE,
+            actual = destination?.let { it.name to it.type },
+        )
+        assertEquals(
+            expected = mapOf(
+                AnalyticsParams.PLAN_TYPE to "books",
+                AnalyticsParams.WEEK_NUMBER to 1,
+                AnalyticsParams.DAY_NUMBER to 5,
+            ),
+            actual = destination?.params,
+        )
+    }
+
+    @Test
+    fun `GIVEN PaywallTeaserNavRoute WHEN mapping THEN carries the teaser reason as a lowercase param`() {
+        // When
+        val destination = mapper.map(PaywallTeaserNavRoute(reason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR))
+
+        // Then
+        assertEquals(
+            expected = "paywall_teaser" to DestinationType.RESPONSIVE,
+            actual = destination?.let { it.name to it.type },
+        )
+        assertEquals(
+            expected = mapOf(AnalyticsParams.REASON to "highlight_custom_color"),
+            actual = destination?.params,
+        )
     }
 }
