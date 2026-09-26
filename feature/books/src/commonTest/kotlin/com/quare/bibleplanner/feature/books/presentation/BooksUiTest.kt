@@ -23,18 +23,14 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import bibleplanner.feature.books.generated.resources.Res
 import bibleplanner.feature.books.generated.resources.content_description_clear_search
-import bibleplanner.feature.books.generated.resources.favorites
 import bibleplanner.feature.books.generated.resources.grid
-import bibleplanner.feature.books.generated.resources.sort_alphabetical_descending
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.feature.books.fixture.booksUiState
 import com.quare.bibleplanner.feature.books.fixture.exodus
 import com.quare.bibleplanner.feature.books.fixture.genesis
 import com.quare.bibleplanner.feature.books.fixture.joshua
-import com.quare.bibleplanner.feature.books.presentation.model.BookFilterType
 import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
-import com.quare.bibleplanner.feature.books.presentation.model.BookSortOrder
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.testing.setUiTestContent
@@ -187,24 +183,6 @@ internal class BooksUiTest {
     }
 
     @Test
-    fun `GIVEN the sort menu open WHEN selecting the descending order THEN emits OnSortOrderSelect`() =
-        runComposeUiTest {
-            // Given
-            prepareScenario(uiState = booksUiState().copy(isSortMenuVisible = true))
-
-            // When
-            onNodeWithText(getString(Res.string.sort_alphabetical_descending)).performClick()
-
-            // Then
-            assertEquals(
-                expected = listOf<BooksUiEvent>(
-                    BooksUiEvent.OnSortOrderSelect(BookSortOrder.AlphabeticalDescending),
-                ),
-                actual = events,
-            )
-        }
-
-    @Test
     fun `GIVEN loaded books WHEN clicking the filter button THEN emits OnToggleFilterMenu`() = runComposeUiTest {
         // Given
         prepareScenario(uiState = booksUiState())
@@ -215,22 +193,6 @@ internal class BooksUiTest {
         // Then
         assertEquals(expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleFilterMenu), actual = events)
     }
-
-    @Test
-    fun `GIVEN the filter menu open WHEN selecting favorites THEN emits OnToggleFilter for favorites`() =
-        runComposeUiTest {
-            // Given
-            prepareScenario(uiState = booksUiState().copy(isFilterMenuVisible = true))
-
-            // When
-            onNodeWithText(getString(Res.string.favorites)).performClick()
-
-            // Then
-            assertEquals(
-                expected = listOf<BooksUiEvent>(BooksUiEvent.OnToggleFilter(BookFilterType.Favorites)),
-                actual = events,
-            )
-        }
 
     @Test
     fun `GIVEN books still loading WHEN rendered THEN shows a progress indicator instead of the books`() =

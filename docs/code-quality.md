@@ -64,7 +64,7 @@ Only what a JVM test can reach. Left out:
 
 | Excluded | How | Why |
 | --- | --- | --- |
-| `@Composable` and `@Preview` functions | annotation filter | covered by the Compose UI tests |
+| `@Composable` and `@Preview` functions | annotation filter | only the main screens have Compose UI tests yet, see below |
 | `*.presentation.content`, `*.presentation.component` | package filter | composable-only packages; the annotation filter leaves their top-level `Dp` constants behind |
 | `*.di` | package filter | Koin modules: wiring, no behaviour of their own |
 | `*.presentation.*Root`, `*.presentation.*Navigation` | class filter | the `EntryProviderScope` extensions that hand a route to a screen |
@@ -77,6 +77,13 @@ The filters and both rules live in the root `build.gradle.kts`; the modules only
 through `bibleplanner.kotlin.multiplatform`. A new module is measured as soon as it uses it.
 Excluding more code is a change to that table and to the filters, reviewed like any other: the
 default for new code is to be measured and tested.
+
+The [Compose UI tests](testing/compose-ui-tests.md) run on `jvmTest` too, so Kover does see the
+composables they render. They still stay out of the report. Counting them drops the merged report
+from 95% to 67% (September 2026): the seven screens with UI tests sit between 70% and 84%, and
+about thirty modules whose UI has no tests yet pull the total down. Chat, the paywall, the verse
+actions and the profile editor are the largest of them. Lift the two composable filters once
+enough of that UI is covered to clear the bar with them in.
 
 Branch coverage is reported but not gated: `@Serializable` classes carry generated branches
 (`write$Self`, the synthetic constructor) that no test of ours should chase.

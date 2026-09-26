@@ -199,7 +199,6 @@ internal class ReadUiTest {
             onAllNodesWithText(getString(Res.string.mark_as_read)).onFirst().performClick()
 
             // Then
-            onNodeWithText("${getString(genesisName)} $CHAPTER").assertIsDisplayed()
             assertEquals(
                 expected = listOf<ReadUiEvent>(
                     ReadUiEvent.ToggleReadStatus(

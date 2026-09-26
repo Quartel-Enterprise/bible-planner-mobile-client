@@ -31,6 +31,10 @@ The Android host (`testAndroidHostTest`) has no `Instrumentation` to launch the 
 - The usual structure still applies: Given / When / Then, and a `ComposeUiTest.prepareScenario(...)`
   as the last member. It sets the content and assigns the `lateinit` fields the test reads, such as
   the list of emitted events. A render-only test uses `waitForIdle()` as its **When**.
+- Calf renders menus, pickers and alerts natively on iOS, as a `UIMenu` or a `UIAlertController`,
+  outside the Compose semantics tree. On the iOS simulator a test can open one of them, but it
+  can't find or click the items inside it. Test the button that opens a menu, not the items in it:
+  the ViewModel tests already cover the event an item sends.
 - A screen that also has store screenshots shares their sample data. The fixture lives in
   `commonTest/.../fixture`, which the screenshots in `androidHostTest` also see.
 
@@ -115,3 +119,9 @@ So:
 | Screen | Test |
 | --- | --- |
 | Reading plan | `feature/reading_plan/.../presentation/content/ReadingPlanUiTest.kt` |
+| Day | `feature/day/.../presentation/DayUiTest.kt` |
+| Day study | `feature/day_study/.../presentation/DayStudyUiTest.kt` |
+| Books | `feature/books/.../presentation/BooksUiTest.kt` |
+| Book details | `feature/book_details/.../presentation/BookDetailsUiTest.kt` |
+| Read | `feature/read/.../presentation/screen/ReadUiTest.kt` |
+| Profile (preferences and account) | `feature/profile/.../presentation/ProfileUiTest.kt` |
