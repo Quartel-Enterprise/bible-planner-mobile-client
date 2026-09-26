@@ -27,13 +27,13 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 internal class BibleRepositoryImpl(
-    private val bibleVersionDao: BibleVersionDao,
     private val verseDao: VerseDao,
-    private val bibleVersionRepository: BibleVersionRepository,
-    private val bibleMapper: BibleMapper,
     private val dataStore: DataStore<Preferences>,
     private val languageProvider: LanguageProvider,
     private val observeTableInvalidation: TableInvalidationObserver,
+    bibleVersionDao: BibleVersionDao,
+    bibleVersionRepository: BibleVersionRepository,
+    bibleMapper: BibleMapper,
     applicationScope: ApplicationScope,
 ) : BibleRepository {
     private val bibleVersionKey = stringPreferencesKey(BIBLE_VERSION_KEY)

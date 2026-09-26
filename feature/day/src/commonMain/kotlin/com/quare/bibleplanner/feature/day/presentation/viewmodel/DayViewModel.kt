@@ -52,7 +52,6 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 internal class DayViewModel(
-    route: DayNavRoute,
     private val useCases: DayUseCases,
     private val dayUiStateFlowFactory: DayUiStateFlowFactory,
     private val deleteRouteNotesMapper: DeleteRouteNotesMapper,
@@ -60,8 +59,9 @@ internal class DayViewModel(
     private val applicationScope: ApplicationScope,
     private val generationCoordinator: DayStudyGenerationCoordinator,
     private val navigator: Navigator,
-    trackEvent: TrackEvent,
     val platform: Platform,
+    route: DayNavRoute,
+    trackEvent: TrackEvent,
 ) : TrackedViewModel<DayUiEvent>(trackEvent) {
     val uiState: StateFlow<DayUiState>
         field = MutableStateFlow<DayUiState>(DayUiState.Loading)

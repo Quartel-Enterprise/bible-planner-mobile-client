@@ -15,7 +15,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.PickerType
 import com.quare.bibleplanner.ui.component.date.DatePickerDialogContent
-import com.quare.bibleplanner.ui.component.date.PickerContentCrossfade
+import com.quare.bibleplanner.ui.component.date.PickerContentCrossfadeComponent
 import com.quare.bibleplanner.ui.component.date.PickerDialog
 import com.quare.bibleplanner.ui.component.date.TimePickerDialogContent
 import org.jetbrains.compose.resources.stringResource
@@ -50,7 +50,7 @@ internal fun TimeEditionDialog(
             onEvent(DayUiEvent.OnDismissPicker)
         },
     ) {
-        PickerContentCrossfade(targetState = type) { pickerType ->
+        PickerContentCrossfadeComponent(targetState = type) { pickerType ->
             when (pickerType) {
                 PickerType.DATE -> DatePickerDialogContent(
                     state = datePickerState,

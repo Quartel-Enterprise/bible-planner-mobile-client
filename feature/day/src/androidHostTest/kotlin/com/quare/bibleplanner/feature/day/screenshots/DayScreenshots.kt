@@ -22,23 +22,7 @@ import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.junit.Test
 
-private val bannerCopy = mapOf(
-    "en-US" to (
-        "Tick off today's reading, chapter by chapter" to
-            "Open the day, read, and mark each chapter as you go"
-    ),
-    "pt-BR" to (
-        "Marque a leitura de hoje, capítulo por capítulo" to
-            "Abra o dia, leia e vá marcando cada capítulo"
-    ),
-    "es" to (
-        "Marca la lectura de hoy, capítulo por capítulo" to
-            "Abre el día, lee y ve marcando cada capítulo"
-    ),
-)
 private const val BACKGROUND = 0xFF141C3D
-private const val README_SUBDIR = "readme"
-private const val README_LOCALE = "en-US"
 private const val FREE_LIMIT = 3
 
 /**
@@ -65,6 +49,21 @@ internal abstract class DayScreenshots(
         canvas = canvas,
         style = ScreenshotStyle(edgeToEdge = false),
     ) {
+    private val bannerCopy = mapOf(
+        "en-US" to (
+            "Tick off today's reading, chapter by chapter" to
+                "Open the day, read, and mark each chapter as you go"
+        ),
+        "pt-BR" to (
+            "Marque a leitura de hoje, capítulo por capítulo" to
+                "Abra o dia, leia e vá marcando cada capítulo"
+        ),
+        "es" to (
+            "Marca la lectura de hoy, capítulo por capítulo" to
+                "Abre el día, lee y ve marcando cada capítulo"
+        ),
+    )
+
     @Test
     fun day() = bannerCopy.forEach { (locale, copy) ->
         val (title, description) = copy
@@ -118,6 +117,11 @@ internal class ReadmeDayScreenshots :
         CompositionLocalProvider(LocalTheme provides Theme.DARK) {
             AppTheme { DayContent(README_LOCALE, Platform.Android) }
         }
+    }
+
+    private companion object {
+        const val README_SUBDIR = "readme"
+        const val README_LOCALE = "en-US"
     }
 }
 

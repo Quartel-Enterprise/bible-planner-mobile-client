@@ -19,10 +19,10 @@ import bibleplanner.feature.reading_plan.generated.resources.hero_primary_resume
 import bibleplanner.feature.reading_plan.generated.resources.hero_skip_to_today
 import com.quare.bibleplanner.core.books.util.toReadingLabel
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
-import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroContainer
-import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroKicker
-import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroPassage
+import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroKickerText
+import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroPassageText
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroPrimaryButton
+import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroSurface
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toDayClick
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toShortLabel
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
@@ -39,12 +39,12 @@ internal fun BehindHero(
     val next = planStatus.nextDay ?: return
     val animatedDayIndex by animateIntAsState(targetValue = next.globalIndex, label = "behindHeroDayIndex")
     val animatedDaysBehind by animateIntAsState(targetValue = planStatus.daysBehind, label = "behindHeroDaysBehind")
-    HeroContainer(modifier = modifier) {
-        HeroKicker(
+    HeroSurface(modifier = modifier) {
+        HeroKickerText(
             icon = AppIcon.History,
             text = stringResource(Res.string.hero_kicker_behind),
         )
-        HeroPassage(
+        HeroPassageText(
             modifier = Modifier.padding(top = 4.dp),
             text = next.passages.toReadingLabel(),
         )

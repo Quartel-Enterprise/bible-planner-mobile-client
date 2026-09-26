@@ -20,11 +20,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class VerseNoteViewModel(
-    route: VerseNoteNavRoute,
     private val getVerseNote: GetVerseNote,
     private val saveVerseNote: SaveVerseNote,
     private val getVersesShareContent: GetVersesShareContent,
     private val navigator: Navigator,
+    route: VerseNoteNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<VerseNoteUiEvent>(trackEvent) {
     private val noteId = route.noteId

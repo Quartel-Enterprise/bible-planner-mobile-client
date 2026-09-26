@@ -10,9 +10,9 @@ import com.pinterest.ktlint.rule.engine.core.api.hasModifier
 import com.pinterest.ktlint.rule.engine.core.api.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-private val lowerCamelCaseRegex = Regex("^[a-z][a-zA-Z0-9]*$")
-
 class PrivateTopLevelValNamingRule : BiblePlannerRule("private-top-level-val-naming") {
+    private val lowerCamelCaseRegex = Regex("^[a-z][a-zA-Z0-9]*$")
+
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,

@@ -14,9 +14,9 @@ import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.launch
 
 internal class DeleteNotesViewModel(
-    route: DeleteNotesRoute,
     private val deleteDayNotes: DeleteDayNotesUseCase,
     private val navigator: Navigator,
+    route: DeleteNotesRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteNotesUiEvent>(trackEvent) {
     private val readingPlanType = ReadingPlanType.valueOf(route.readingPlanType)

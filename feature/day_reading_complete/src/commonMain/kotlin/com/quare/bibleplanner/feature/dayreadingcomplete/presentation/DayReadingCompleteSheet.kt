@@ -244,7 +244,7 @@ private fun LoadedContent(
         }
         hintText(ctaState)?.let { hint ->
             VerticalSpacer(10)
-            QuotaHint(hint)
+            QuotaHintText(hint)
         }
         VerticalSpacer(6)
         NeverShowAgainButton(onClick = { onEvent(DayReadingCompleteUiEvent.OnNeverShowAgainClick) })
@@ -326,7 +326,7 @@ private fun StudyCard(
 }
 
 @Composable
-private fun QuotaHint(hint: String) {
+private fun QuotaHintText(hint: String) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,

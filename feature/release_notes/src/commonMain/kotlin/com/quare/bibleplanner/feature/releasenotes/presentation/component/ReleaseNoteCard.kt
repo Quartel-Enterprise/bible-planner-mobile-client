@@ -59,7 +59,7 @@ fun ReleaseNoteCard(
                 }
 
                 if (type == ReleaseVersionType.LATEST || type == ReleaseVersionType.UPCOMING) {
-                    ReleaseNoteTag(type = type)
+                    ReleaseNoteTagLabel(type = type)
                 }
             }
 

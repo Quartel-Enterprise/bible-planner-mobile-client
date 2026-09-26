@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.plan_done_subtitle
 import bibleplanner.feature.reading_plan.generated.resources.plan_done_title
-import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroContainer
+import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroSurface
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.pluralStringResource
@@ -23,7 +23,7 @@ internal fun DoneHero(
     totalDays: Int,
     modifier: Modifier = Modifier,
 ) {
-    HeroContainer(
+    HeroSurface(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

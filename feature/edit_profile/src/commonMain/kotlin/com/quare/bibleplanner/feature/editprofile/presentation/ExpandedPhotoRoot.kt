@@ -29,7 +29,7 @@ fun EntryProviderScope<NavKey>.expandedPhoto() {
             onDismiss = navigator::navigateBack,
             onEvent = viewModel::onEvent,
         )
-        ProfilePhotoPickers(
+        ProfilePhotoPickersComponent(
             viewModel = viewModel,
             onOpenCrop = navigator::navigate,
             onPhotoChanged = {},

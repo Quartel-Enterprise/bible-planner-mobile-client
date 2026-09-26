@@ -36,8 +36,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class PaywallViewModel(
-    route: PaywallNavRoute,
-    private val factory: PaywallUiStateFactory,
     private val getPurchaseResultUseCase: GetPurchaseResultUseCase,
     private val getRestorePurchaseResultUseCase: GetRestorePurchaseResultUseCase,
     private val getAuthenticatedUserId: GetAuthenticatedUserId,
@@ -45,9 +43,11 @@ internal class PaywallViewModel(
     private val analyticsReasonMapper: PaywallAnalyticsReasonMapper,
     private val observeIsProUser: ObserveIsProUser,
     private val navigator: Navigator,
+    val platform: Platform,
+    route: PaywallNavRoute,
+    factory: PaywallUiStateFactory,
     trackCustomPaywallImpression: TrackCustomPaywallImpression,
     trackEvent: TrackEvent,
-    val platform: Platform,
 ) : TrackedViewModel<PaywallUiEvent>(trackEvent) {
     val uiState: StateFlow<PaywallUiState>
         field = MutableStateFlow<PaywallUiState>(PaywallUiState.Loading)

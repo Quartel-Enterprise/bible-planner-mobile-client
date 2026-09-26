@@ -14,13 +14,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private val testChapter = ChapterRef(
-    bibleVersionId = "ACF",
-    bookId = BookId.GEN,
-    chapterNumber = 3,
-)
-
 internal class ApplyHighlightColorUseCaseTest {
+    private val testChapter = ChapterRef(
+        bibleVersionId = "ACF",
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
     private val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
     private val green = HighlightColor.Preset(PresetHighlightColor.GREEN)
     private val refs = listOf(verseRef(1), verseRef(2))

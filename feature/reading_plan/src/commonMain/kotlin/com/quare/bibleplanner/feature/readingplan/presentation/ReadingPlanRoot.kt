@@ -21,7 +21,7 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiState
 import com.quare.bibleplanner.feature.readingplan.presentation.utils.ReadingPlanUiActionCollector
-import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToTopObserver
+import com.quare.bibleplanner.feature.readingplan.presentation.utils.ScrollToTopEffect
 import com.quare.bibleplanner.feature.readingplan.presentation.viewmodel.ReadingPlanViewModel
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.MainTabScaffold
@@ -61,7 +61,7 @@ private fun ReadingPlanTabContent(
     val lazyListState = rememberLazyListState()
     val snackbarHostState = LocalSnackbarHostState.current
 
-    ReadingPlanScreenObserver(
+    ReadingPlanScreenEffect(
         lazyListState = lazyListState,
         uiActionFlow = viewModel.uiAction,
         snackbarHostState = snackbarHostState,
@@ -89,7 +89,7 @@ private fun ReadingPlanTabContent(
 }
 
 @Composable
-private fun ReadingPlanScreenObserver(
+private fun ReadingPlanScreenEffect(
     lazyListState: LazyListState,
     snackbarHostState: SnackbarHostState,
     uiActionFlow: Flow<ReadingPlanUiAction>,
@@ -112,7 +112,7 @@ private fun ReadingPlanScreenObserver(
         onEvent(ReadingPlanUiEvent.OnActiveRowVisibilityChange(isActiveRowVisible))
     }
 
-    ScrollToTopObserver(
+    ScrollToTopEffect(
         scrollToTop = scrollToTop,
         lazyListState = lazyListState,
         onEvent = onEvent,

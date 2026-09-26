@@ -32,9 +32,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 
 internal class ProfilePhotoViewModel(
-    observeUserProfile: ObserveUserProfile,
     private val removeProfilePhoto: RemoveProfilePhoto,
     private val useProviderPhoto: UseProviderPhoto,
+    observeUserProfile: ObserveUserProfile,
     platform: Platform,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfilePhotoUiEvent>(trackEvent) {

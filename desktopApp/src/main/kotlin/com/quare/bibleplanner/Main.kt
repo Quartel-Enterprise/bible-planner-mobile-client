@@ -53,6 +53,6 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = stringResource(Res.string.app_title),
     ) {
-        App()
+        AppRoot()
     }
 }

@@ -31,7 +31,7 @@ internal fun NotesTextField(
                 animationSpec = tween(300),
             ),
         placeholder = {
-            NotesPlaceholder()
+            NotesPlaceholderText()
         },
         shape = RoundedCornerShape(12.dp),
         textStyle = MaterialTheme.typography.bodyMedium,

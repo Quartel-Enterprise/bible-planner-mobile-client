@@ -11,16 +11,14 @@ import kotlinx.coroutines.flow.map
 internal class DayStudyPanelRatioRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
 ) : DayStudyPanelRatioRepository {
+    private val readingFractionKey = floatPreferencesKey("day_study_panel_reading_fraction")
+
     override fun observeReadingFraction(): Flow<Float?> = dataStore.data.map { preferences ->
-        preferences[READING_FRACTION_KEY]
+        preferences[readingFractionKey]
     }
 
     override suspend fun setReadingFraction(fraction: Float) = dataStore.write(
-        key = READING_FRACTION_KEY,
+        key = readingFractionKey,
         value = fraction,
     )
-
-    companion object {
-        private val READING_FRACTION_KEY = floatPreferencesKey("day_study_panel_reading_fraction")
-    }
 }

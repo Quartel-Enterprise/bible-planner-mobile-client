@@ -77,7 +77,7 @@ internal fun ReadingRulerOverlay(
                     .height(bandOffset)
                     .background(scrimColor),
             )
-            RulerBand(
+            RulerBandBox(
                 height = bandHeight,
                 onDrag = { delta -> bandOffsetPx = (bandOffsetPx + delta).coerceIn(0f, maxOffsetPx) },
                 onDismiss = onDismiss,
@@ -93,7 +93,7 @@ internal fun ReadingRulerOverlay(
 }
 
 @Composable
-private fun RulerBand(
+private fun RulerBandBox(
     height: Dp,
     onDrag: (Float) -> Unit,
     onDismiss: () -> Unit,

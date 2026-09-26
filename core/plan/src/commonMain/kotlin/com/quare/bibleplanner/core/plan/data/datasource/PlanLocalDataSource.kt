@@ -28,7 +28,10 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 class PlanLocalDataSource(
     private val dataStore: DataStore<Preferences>,
 ) {
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+    }
 
     private val startDateKey = longPreferencesKey(PLAN_START_DATE_KEY)
     private val selectedReadingPlanKey = stringPreferencesKey(SELECTED_READING_PLAN_KEY)

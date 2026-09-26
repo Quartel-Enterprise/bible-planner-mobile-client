@@ -76,7 +76,7 @@ internal fun BookListItemComponent(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    BookProgressNumbers(
+                    BookProgressText(
                         book = book,
                         sharedTransitionScope = screensSharedTransitionScope,
                         animatedVisibilityScope = screensAnimatedVisibilityScope,

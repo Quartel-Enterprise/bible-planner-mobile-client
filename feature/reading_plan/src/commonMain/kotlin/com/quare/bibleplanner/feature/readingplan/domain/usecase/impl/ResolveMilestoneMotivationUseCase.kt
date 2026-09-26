@@ -6,8 +6,6 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage.Milestone
 import com.quare.bibleplanner.feature.readingplan.domain.usecase.ResolveMilestoneMotivation
 
-private const val MILESTONE_WINDOW_MILLIS: Long = 24L * 60L * 60L * 1000L
-
 internal class ResolveMilestoneMotivationUseCase : ResolveMilestoneMotivation {
     override fun invoke(
         days: List<DayModel>,
@@ -93,5 +91,9 @@ internal class ResolveMilestoneMotivationUseCase : ResolveMilestoneMotivation {
         if (booksWithUnreadPassages.size != 1) return null
         if (booksFullyRead.isEmpty()) return null
         return Milestone.OnlyOneBookLeft(booksWithUnreadPassages.single())
+    }
+
+    private companion object {
+        const val MILESTONE_WINDOW_MILLIS: Long = 24L * 60L * 60L * 1000L
     }
 }

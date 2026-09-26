@@ -36,7 +36,7 @@ private val verseVerticalPadding = 6.dp
 
 internal fun LazyListScope.chapterShimmerContent(position: ChapterShimmerPosition) {
     item(key = "$CHAPTER_SHIMMER_KEY-${position.name}-header") {
-        ChapterHeaderShimmer()
+        ChapterHeaderSkeleton()
     }
     items(
         count = VERSE_SHIMMER_COUNT,
@@ -49,7 +49,7 @@ internal fun LazyListScope.chapterShimmerContent(position: ChapterShimmerPositio
 }
 
 @Composable
-private fun ChapterHeaderShimmer() {
+private fun ChapterHeaderSkeleton() {
     Column(
         modifier = Modifier
             .fillMaxWidth()

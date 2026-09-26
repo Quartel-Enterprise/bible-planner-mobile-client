@@ -35,10 +35,10 @@ import kotlin.time.Duration.Companion.milliseconds
 
 internal class DeleteAccountViewModel(
     private val deleteAccount: DeleteAccount,
-    getConfirmationKeyword: GetConfirmationKeyword,
-    getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase,
     private val storeNameMapper: StoreNameMapper,
     private val navigator: Navigator,
+    getConfirmationKeyword: GetConfirmationKeyword,
+    getSubscriptionStatusFlow: GetSubscriptionStatusFlowUseCase,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteAccountUiEvent>(trackEvent) {
     private val logger = Logger.withTag(LOG_TAG)

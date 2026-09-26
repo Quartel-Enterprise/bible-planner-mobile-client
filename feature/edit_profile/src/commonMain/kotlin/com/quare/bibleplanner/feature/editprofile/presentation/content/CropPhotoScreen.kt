@@ -183,19 +183,19 @@ internal fun CropPhotoScreen(
             }
         }
 
-        ZoomControls(
+        ZoomControlColumn(
             zoom = uiState.zoom,
             zoomRange = uiState.zoomRange,
             onZoomChange = { onEvent(CropPhotoUiEvent.OnZoomChanged(it)) },
         )
 
-        OrientationControls(
+        OrientationControlRow(
             onFlipHorizontal = { onEvent(CropPhotoUiEvent.OnFlipHorizontalClick) },
             onFlipVertical = { onEvent(CropPhotoUiEvent.OnFlipVerticalClick) },
             onRotate = { onEvent(CropPhotoUiEvent.OnRotateClick) },
         )
 
-        CropActions(
+        CropActionRow(
             onCancel = { onEvent(CropPhotoUiEvent.OnCancelClick) },
             onConfirm = { onEvent(CropPhotoUiEvent.OnConfirmClick) },
         )
@@ -233,7 +233,7 @@ private fun CropHeader(onCancel: () -> Unit) {
 }
 
 @Composable
-private fun ZoomControls(
+private fun ZoomControlColumn(
     zoom: Float,
     zoomRange: ClosedFloatingPointRange<Float>,
     onZoomChange: (Float) -> Unit,
@@ -285,7 +285,7 @@ private fun ZoomControls(
 }
 
 @Composable
-private fun OrientationControls(
+private fun OrientationControlRow(
     onFlipHorizontal: () -> Unit,
     onFlipVertical: () -> Unit,
     onRotate: () -> Unit,
@@ -359,7 +359,7 @@ private fun OrientationChip(
 }
 
 @Composable
-private fun CropActions(
+private fun CropActionRow(
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
 ) {

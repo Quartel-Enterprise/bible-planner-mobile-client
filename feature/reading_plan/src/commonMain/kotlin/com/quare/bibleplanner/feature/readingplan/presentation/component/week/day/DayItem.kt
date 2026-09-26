@@ -130,7 +130,7 @@ internal fun SharedTransitionScope.DayItem(
                 isHighlighted = isActive,
             )
             Box(modifier = Modifier.weight(1f)) {
-                DayItemTexts(
+                DayItemTextColumn(
                     animatedContentScope = animatedContentScope,
                     day = day,
                     globalDayIndex = dayPlan.globalDayIndex,

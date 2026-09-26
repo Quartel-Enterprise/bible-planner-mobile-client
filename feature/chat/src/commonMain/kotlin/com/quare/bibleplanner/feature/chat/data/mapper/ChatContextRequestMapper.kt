@@ -7,8 +7,6 @@ import com.quare.bibleplanner.feature.chat.data.dto.PassageRequestDto
 import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import com.quare.bibleplanner.feature.daystudy.domain.mapper.BookIdWireNameMapper
 
-private const val DAY_READING_TYPE = "day_reading"
-
 internal class ChatContextRequestMapper(
     private val bookIdWireNameMapper: BookIdWireNameMapper,
 ) {
@@ -35,4 +33,8 @@ internal class ChatContextRequestMapper(
             )
         },
     )
+
+    private companion object {
+        const val DAY_READING_TYPE = "day_reading"
+    }
 }

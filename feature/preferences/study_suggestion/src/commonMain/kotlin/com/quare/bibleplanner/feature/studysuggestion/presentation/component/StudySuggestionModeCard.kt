@@ -60,7 +60,7 @@ internal fun StudySuggestionModeCard(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        StudySuggestionModePreview(mode = mode)
+        StudySuggestionModePreviewBox(mode = mode)
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(3.dp),

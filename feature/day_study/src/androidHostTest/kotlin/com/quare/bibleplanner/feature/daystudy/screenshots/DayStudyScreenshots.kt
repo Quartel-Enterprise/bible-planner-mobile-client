@@ -26,51 +26,7 @@ import org.jetbrains.compose.resources.getString
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 
-private val bannerCopy = mapOf(
-    "en-US" to (
-        "Understand what you just read" to
-            "An overview, the historical context, and the questions the passage raises"
-    ),
-    "pt-BR" to (
-        "Entenda o que você acabou de ler" to
-            "Uma visão geral, o contexto histórico e as perguntas que a passagem levanta"
-    ),
-    "es" to (
-        "Entiende lo que acabas de leer" to
-            "Una visión general, el contexto histórico y las preguntas que plantea el pasaje"
-    ),
-)
-private val contextBannerCopy = mapOf(
-    "en-US" to (
-        "The world the passage happened in" to
-            "Who was writing, when, and what the first readers already knew"
-    ),
-    "pt-BR" to (
-        "O mundo em que a passagem aconteceu" to
-            "Quem escreveu, quando, e o que os primeiros leitores já sabiam"
-    ),
-    "es" to (
-        "El mundo en que ocurrió el pasaje" to
-            "Quién escribía, cuándo, y qué sabían ya los primeros lectores"
-    ),
-)
-private val questionsBannerCopy = mapOf(
-    "en-US" to (
-        "The questions the passage raises" to
-            "Straight answers to what readers most often ask about this reading"
-    ),
-    "pt-BR" to (
-        "As perguntas que a passagem levanta" to
-            "Respostas diretas ao que os leitores mais perguntam sobre esta leitura"
-    ),
-    "es" to (
-        "Las preguntas que plantea el pasaje" to
-            "Respuestas directas a lo que más preguntan los lectores sobre esta lectura"
-    ),
-)
 private const val BACKGROUND = 0xFF141C3D
-private const val README_SUBDIR = "readme"
-private const val README_LOCALE = "en-US"
 
 /**
  * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
@@ -105,6 +61,49 @@ internal abstract class DayStudyScreenshots(
         canvas = canvas,
         style = ScreenshotStyle(edgeToEdge = false),
     ) {
+    private val bannerCopy = mapOf(
+        "en-US" to (
+            "Understand what you just read" to
+                "An overview, the historical context, and the questions the passage raises"
+        ),
+        "pt-BR" to (
+            "Entenda o que você acabou de ler" to
+                "Uma visão geral, o contexto histórico e as perguntas que a passagem levanta"
+        ),
+        "es" to (
+            "Entiende lo que acabas de leer" to
+                "Una visión general, el contexto histórico y las preguntas que plantea el pasaje"
+        ),
+    )
+    private val contextBannerCopy = mapOf(
+        "en-US" to (
+            "The world the passage happened in" to
+                "Who was writing, when, and what the first readers already knew"
+        ),
+        "pt-BR" to (
+            "O mundo em que a passagem aconteceu" to
+                "Quem escreveu, quando, e o que os primeiros leitores já sabiam"
+        ),
+        "es" to (
+            "El mundo en que ocurrió el pasaje" to
+                "Quién escribía, cuándo, y qué sabían ya los primeros lectores"
+        ),
+    )
+    private val questionsBannerCopy = mapOf(
+        "en-US" to (
+            "The questions the passage raises" to
+                "Straight answers to what readers most often ask about this reading"
+        ),
+        "pt-BR" to (
+            "As perguntas que a passagem levanta" to
+                "Respostas diretas ao que os leitores mais perguntam sobre esta leitura"
+        ),
+        "es" to (
+            "Las preguntas que plantea el pasaje" to
+                "Respuestas directas a lo que más preguntan los lectores sobre esta lectura"
+        ),
+    )
+
     @Test
     fun dayStudy() = bannerCopy.forEach { (locale, copy) ->
         val (title, description) = copy
@@ -294,5 +293,10 @@ internal class ReadmeDayStudyScreenshots :
                 }
             }
         }
+    }
+
+    private companion object {
+        const val README_SUBDIR = "readme"
+        const val README_LOCALE = "en-US"
     }
 }

@@ -83,7 +83,7 @@ internal fun DayStudyTabbedContent(
                         )
                     }
                     VerticalSpacer(20)
-                    DayStudyDisclaimer()
+                    DayStudyDisclaimerText()
                 }
             }
         }

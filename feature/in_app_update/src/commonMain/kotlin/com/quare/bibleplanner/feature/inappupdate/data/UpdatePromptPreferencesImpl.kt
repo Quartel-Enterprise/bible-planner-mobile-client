@@ -10,14 +10,12 @@ import com.quare.bibleplanner.feature.inappupdate.domain.UpdatePromptPreferences
 internal class UpdatePromptPreferencesImpl(
     private val dataStore: DataStore<Preferences>,
 ) : UpdatePromptPreferences {
+    private val lastPromptedAtKey = longPreferencesKey("update_prompt_last_prompted_at")
+
     override suspend fun getLastPromptedAt(): Long? = dataStore.read(lastPromptedAtKey)
 
     override suspend fun setLastPromptedAt(timestamp: Long) = dataStore.write(
         key = lastPromptedAtKey,
         value = timestamp,
     )
-
-    private companion object {
-        val lastPromptedAtKey = longPreferencesKey("update_prompt_last_prompted_at")
-    }
 }

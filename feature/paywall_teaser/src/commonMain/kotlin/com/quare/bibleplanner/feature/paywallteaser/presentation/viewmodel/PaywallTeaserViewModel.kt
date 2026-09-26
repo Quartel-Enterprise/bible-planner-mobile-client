@@ -12,8 +12,8 @@ import com.quare.bibleplanner.feature.paywallteaser.presentation.model.PaywallTe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 
 internal class PaywallTeaserViewModel(
-    route: PaywallTeaserNavRoute,
     private val navigator: Navigator,
+    route: PaywallTeaserNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PaywallTeaserUiEvent>(trackEvent) {
     val reason = route.reason

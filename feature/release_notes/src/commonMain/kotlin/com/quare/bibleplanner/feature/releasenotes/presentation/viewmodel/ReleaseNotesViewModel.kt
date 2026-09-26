@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 class ReleaseNotesViewModel(
     private val uiStateFactory: ReleaseNotesUiStateFactory,
     private val navigator: Navigator,
-    trackEvent: TrackEvent,
     val platform: Platform,
+    trackEvent: TrackEvent,
 ) : TrackedViewModel<ReleaseNotesUiEvent>(trackEvent) {
     val uiState: StateFlow<ReleaseNotesUiState>
         field = MutableStateFlow(uiStateFactory.createInitialState())

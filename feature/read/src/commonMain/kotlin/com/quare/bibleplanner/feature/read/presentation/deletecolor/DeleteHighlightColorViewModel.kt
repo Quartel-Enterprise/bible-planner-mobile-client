@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 internal class DeleteHighlightColorViewModel(
-    route: DeleteHighlightColorNavRoute,
     private val removeCustomHighlightColor: RemoveCustomHighlightColor,
     private val navigator: Navigator,
+    route: DeleteHighlightColorNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteHighlightColorUiEvent>(trackEvent) {
     private val colorKey = route.colorKey

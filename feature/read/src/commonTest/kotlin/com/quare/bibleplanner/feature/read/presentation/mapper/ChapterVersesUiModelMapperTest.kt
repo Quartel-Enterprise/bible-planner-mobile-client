@@ -9,6 +9,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 internal class ChapterVersesUiModelMapperTest {
+    private val noAnnotations = ChapterAnnotations(
+        highlightColorByVerse = emptyMap(),
+        savedVerseNumbers = emptySet(),
+        noteIdByVerse = emptyMap(),
+    )
     private lateinit var mapper: ChapterVersesUiModelMapper
 
     @Test
@@ -92,10 +97,5 @@ internal class ChapterVersesUiModelMapperTest {
         const val CHAPTER_ID = 1L
         const val ESV = "ESV"
         const val KJV = "KJV"
-        val noAnnotations = ChapterAnnotations(
-            highlightColorByVerse = emptyMap(),
-            savedVerseNumbers = emptySet(),
-            noteIdByVerse = emptyMap(),
-        )
     }
 }

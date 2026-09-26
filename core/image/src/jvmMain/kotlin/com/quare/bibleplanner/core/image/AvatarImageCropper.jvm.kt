@@ -7,10 +7,6 @@ import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 import kotlin.math.PI
 
-private const val JPEG_FORMAT = "jpg"
-private const val HALF = 2
-private const val STRAIGHT_ANGLE_DEGREES = 180.0
-
 actual fun createAvatarImageCropper(): AvatarImageCropper = JvmAvatarImageCropper()
 
 internal class JvmAvatarImageCropper : AvatarImageCropper {
@@ -61,5 +57,11 @@ internal class JvmAvatarImageCropper : AvatarImageCropper {
             dispose()
         }
         return target
+    }
+
+    private companion object {
+        const val JPEG_FORMAT = "jpg"
+        const val HALF = 2
+        const val STRAIGHT_ANGLE_DEGREES = 180.0
     }
 }

@@ -48,13 +48,13 @@ private const val SHIMMER_ROWS = 3
 @Composable
 internal fun AccountInfoSection(accountInfo: Loadable<AccountInfo?>) {
     when (accountInfo) {
-        Loadable.Loading -> AccountInfoShimmer()
-        is Loadable.Loaded -> accountInfo.value?.let { LoadedAccountInfo(it) }
+        Loadable.Loading -> AccountInfoSkeleton()
+        is Loadable.Loaded -> accountInfo.value?.let { LoadedAccountInfoContent(it) }
     }
 }
 
 @Composable
-private fun LoadedAccountInfo(accountInfo: AccountInfo) {
+private fun LoadedAccountInfoContent(accountInfo: AccountInfo) {
     Column {
         LoginMethodRow(loginMethod = accountInfo.loginMethod)
         InfoRow(
@@ -92,7 +92,7 @@ private fun LoginMethodRow(loginMethod: LoginMethod) {
             )
             VerticalSpacer(2.dp)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                ProviderLogo(loginMethod)
+                ProviderLogoIcon(loginMethod)
                 Text(
                     text = loginMethod.label(),
                     style = MaterialTheme.typography.bodyLarge,
@@ -104,7 +104,7 @@ private fun LoginMethodRow(loginMethod: LoginMethod) {
 }
 
 @Composable
-private fun ProviderLogo(loginMethod: LoginMethod) {
+private fun ProviderLogoIcon(loginMethod: LoginMethod) {
     when (loginMethod) {
         LoginMethod.GOOGLE -> Image(
             imageVector = googleLogo(),
@@ -159,7 +159,7 @@ private fun InfoRow(
 }
 
 @Composable
-private fun AccountInfoShimmer() {
+private fun AccountInfoSkeleton() {
     Column {
         repeat(SHIMMER_ROWS) {
             Row(

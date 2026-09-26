@@ -17,8 +17,8 @@ private val trueValues = setOf("1", "true", "t", "yes", "y", "on")
 private val falseValues = setOf("0", "false", "f", "no", "n", "off", "")
 
 internal class DesktopRemoteConfigService(
-    private val proxyClient: RemoteConfigProxyClient,
     private val coroutineScope: CoroutineScope,
+    proxyClient: RemoteConfigProxyClient,
 ) : RemoteConfigDataSource {
     private val refreshInterval: Duration = 15.minutes
     private val firstFetchTimeout: Duration = 10.seconds

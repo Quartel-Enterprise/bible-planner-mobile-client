@@ -20,10 +20,6 @@ import platform.UIKit.UIImageJPEGRepresentation
 import platform.posix.memcpy
 import kotlin.math.PI
 
-private const val QUALITY_SCALE = 100.0
-private const val HALF = 2.0
-private const val STRAIGHT_ANGLE_DEGREES = 180.0
-
 actual fun createAvatarImageCropper(): AvatarImageCropper = IosAvatarImageCropper()
 
 @OptIn(ExperimentalForeignApi::class)
@@ -97,5 +93,11 @@ internal class IosAvatarImageCropper : AvatarImageCropper {
                 memcpy(pinned.addressOf(0), bytes, length)
             }
         }
+    }
+
+    private companion object {
+        const val QUALITY_SCALE = 100.0
+        const val HALF = 2.0
+        const val STRAIGHT_ANGLE_DEGREES = 180.0
     }
 }

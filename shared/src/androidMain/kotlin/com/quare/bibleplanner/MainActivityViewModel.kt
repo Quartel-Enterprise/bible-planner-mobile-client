@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
 class MainActivityViewModel(
-    getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
     val navigator: Navigator,
+    getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,
 ) : ViewModel() {
     val isDynamicColorsEnabled: StateFlow<Boolean> = getIsDynamicColorsEnabledFlow().stateIn(
         scope = viewModelScope,

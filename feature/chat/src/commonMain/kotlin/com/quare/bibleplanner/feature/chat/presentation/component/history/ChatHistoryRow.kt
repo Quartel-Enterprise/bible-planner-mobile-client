@@ -163,7 +163,7 @@ internal fun ChatHistoryRow(
             }
         }
         AnimatedVisibility(isDeleting) {
-            ChatDeleteConfirmStrip(
+            ChatDeleteConfirmBar(
                 onConfirm = onDeleteConfirm,
                 onCancel = onDeleteCancel,
             )
@@ -172,7 +172,7 @@ internal fun ChatHistoryRow(
 }
 
 @Composable
-private fun ChatDeleteConfirmStrip(
+private fun ChatDeleteConfirmBar(
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {

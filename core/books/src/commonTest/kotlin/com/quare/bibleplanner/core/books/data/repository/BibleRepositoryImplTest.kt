@@ -98,7 +98,7 @@ internal class BibleRepositoryImplTest {
 }
 
 private class FakePreferencesDataStore(
-    private val preferences: Preferences,
+    preferences: Preferences,
 ) : DataStore<Preferences> {
     override val data: Flow<Preferences> = flowOf(preferences)
 

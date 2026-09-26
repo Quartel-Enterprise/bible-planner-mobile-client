@@ -14,8 +14,6 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 
-private val panelWidth = 392.dp
-
 /**
  * Keeps the reader on screen underneath its selection panel, because the selection is built by
  * tapping the very verses the panel acts on — covering them with a modal sheet would end the
@@ -31,6 +29,7 @@ internal class VerseSelectionScene(
     override val previousEntries: List<NavEntry<NavKey>>,
     private val isWide: Boolean,
 ) : Scene<NavKey> {
+    private val panelWidth = 392.dp
     override val entries: List<NavEntry<NavKey>> = listOf(readerEntry, selectionEntry)
 
     override val content: @Composable () -> Unit = {

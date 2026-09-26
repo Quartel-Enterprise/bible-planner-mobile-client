@@ -11,6 +11,10 @@ import com.quare.bibleplanner.core.review.domain.ReviewPreferences
 internal class ReviewPreferencesImpl(
     private val dataStore: DataStore<Preferences>,
 ) : ReviewPreferences {
+    private val firstEligibleAtKey = longPreferencesKey("review_first_eligible_at")
+    private val lastPromptedAtKey = longPreferencesKey("review_last_prompted_at")
+    private val lastPromptedVersionKey = stringPreferencesKey("review_last_prompted_version")
+
     override suspend fun getFirstEligibleAt(): Long? = dataStore.read(firstEligibleAtKey)
 
     override suspend fun setFirstEligibleAt(timestamp: Long) = dataStore.write(
@@ -31,10 +35,4 @@ internal class ReviewPreferencesImpl(
         key = lastPromptedVersionKey,
         value = version,
     )
-
-    private companion object {
-        val firstEligibleAtKey = longPreferencesKey("review_first_eligible_at")
-        val lastPromptedAtKey = longPreferencesKey("review_last_prompted_at")
-        val lastPromptedVersionKey = stringPreferencesKey("review_last_prompted_version")
-    }
 }

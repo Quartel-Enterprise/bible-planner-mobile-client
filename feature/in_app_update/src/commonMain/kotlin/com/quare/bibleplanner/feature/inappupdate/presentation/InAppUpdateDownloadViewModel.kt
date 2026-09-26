@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 internal class InAppUpdateDownloadViewModel(
-    observeUpdateDownloadState: ObserveUpdateDownloadState,
     private val navigator: Navigator,
     private val trackEvent: TrackEvent,
+    observeUpdateDownloadState: ObserveUpdateDownloadState,
 ) : ViewModel() {
     val uiAction: SharedFlow<InAppUpdateDownloadUiAction>
         field = MutableSharedFlow<InAppUpdateDownloadUiAction>()

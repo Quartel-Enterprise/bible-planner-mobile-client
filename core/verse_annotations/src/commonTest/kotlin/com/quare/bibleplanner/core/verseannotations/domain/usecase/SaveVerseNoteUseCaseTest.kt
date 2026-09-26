@@ -10,13 +10,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-private val testChapter = ChapterRef(
-    bibleVersionId = "ACF",
-    bookId = BookId.GEN,
-    chapterNumber = 3,
-)
-
 internal class SaveVerseNoteUseCaseTest {
+    private val testChapter = ChapterRef(
+        bibleVersionId = "ACF",
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
     private val now = 1_700_000_000_000L
     private val createdAt = 1_600_000_000_000L
     private lateinit var useCase: SaveVerseNoteUseCase

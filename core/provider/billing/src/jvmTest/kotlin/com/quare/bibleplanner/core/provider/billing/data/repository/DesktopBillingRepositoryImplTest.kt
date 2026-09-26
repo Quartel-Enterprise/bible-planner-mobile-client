@@ -37,7 +37,6 @@ private const val MONTHLY_PACKAGE_IDENTIFIER = $$"$rc_monthly"
 private const val ANNUAL_PACKAGE_IDENTIFIER = $$"$rc_annual"
 private const val MONTHLY_PRODUCT_ID = "prod_web_1"
 private const val ANNUAL_PRODUCT_ID = "prod_web_1_yearly"
-private const val PURCHASE_LINK = "https://pay.rev.cat/token"
 
 internal class DesktopBillingRepositoryImplTest {
     private lateinit var repository: DesktopBillingRepositoryImpl
@@ -230,6 +229,10 @@ internal class DesktopBillingRepositoryImplTest {
             webPurchaseLinkBuilder = WebPurchaseLinkBuilder(config),
             config = config,
         )
+    }
+
+    private companion object {
+        const val PURCHASE_LINK = "https://pay.rev.cat/token"
     }
 }
 

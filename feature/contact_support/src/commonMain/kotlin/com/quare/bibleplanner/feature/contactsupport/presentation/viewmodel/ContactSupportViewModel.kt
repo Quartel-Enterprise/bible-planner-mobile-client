@@ -25,9 +25,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 internal class ContactSupportViewModel(
-    uiStateFactory: ContactSupportUiStateFactory,
     private val mailtoFactory: ContactSupportMailtoFactory,
     private val navigator: Navigator,
+    uiStateFactory: ContactSupportUiStateFactory,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ContactSupportUiEvent>(trackEvent) {
     val uiAction: SharedFlow<ContactSupportUiAction>

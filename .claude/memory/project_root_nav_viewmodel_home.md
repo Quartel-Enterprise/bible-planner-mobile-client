@@ -12,6 +12,6 @@ metadata:
 
 **How to give a root-level composable (RootAppNavDisplay) a ViewModel:** put the ViewModel + use cases + repository + Koin registration in a feature module that is ALREADY in the DI graph and that `core/navigation` already depends on. For the day/study split pane I used `feature/day_study` (its `dayStudyModule` is in CommonKoinUtils; navigation already depends on `projects.feature.dayStudy`). Then `RootAppNavDisplay` does `koinViewModel<DayStudyPanelViewModel>()` (add `libs.koin.compose.viewmodel` to navigation's build).
 
-`App.kt` already hosts `koinViewModel<AppViewModel>()` at the same level as `RootAppNavDisplay`, so a ViewModelStoreOwner exists at that root — `koinViewModel` there is safe and app-scoped (single instance for app lifetime).
+`AppRoot.kt` already hosts `koinViewModel<AppViewModel>()` at the same level as `RootAppNavDisplay`, so a ViewModelStoreOwner exists at that root — `koinViewModel` there is safe and app-scoped (single instance for app lifetime).
 
 **Persisted split-pane ratio** lives here: `DayStudyPanelRatio` (DEFAULT/MIN/MAX bounds object, shared with the scene), `DayStudyPanelRatioRepository` (DataStore floatPreferencesKey `day_study_panel_reading_fraction`), Observe/Set use cases (clamp + default), `DayStudyPanelViewModel`. The draggable divider lives in `core/navigation` `DayStudyPanelScene`. Related: [[project_navigation3_migration]].

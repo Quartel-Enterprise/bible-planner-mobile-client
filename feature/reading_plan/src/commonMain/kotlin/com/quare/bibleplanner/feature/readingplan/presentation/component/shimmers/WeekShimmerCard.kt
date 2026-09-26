@@ -46,7 +46,7 @@ internal fun WeekShimmerCard(
         },
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            WeekHeaderShimmer(isCurrent = isCurrent)
+            WeekHeaderSkeleton(isCurrent = isCurrent)
             if (isCurrent) {
                 repeat(DAY_SHIMMER_COUNT) {
                     DayShimmerRow()
@@ -57,7 +57,7 @@ internal fun WeekShimmerCard(
 }
 
 @Composable
-private fun WeekHeaderShimmer(isCurrent: Boolean) {
+private fun WeekHeaderSkeleton(isCurrent: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

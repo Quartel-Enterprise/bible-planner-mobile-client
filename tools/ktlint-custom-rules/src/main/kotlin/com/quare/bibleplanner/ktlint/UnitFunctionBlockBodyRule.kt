@@ -10,8 +10,6 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
-private const val UNIT = "Unit"
-
 class UnitFunctionBlockBodyRule : BiblePlannerRule("unit-function-block-body") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
@@ -59,5 +57,9 @@ class UnitFunctionBlockBodyRule : BiblePlannerRule("unit-function-block-body") {
     private fun KtNamedFunction.isKnownUnit(): Boolean {
         val declaredReturnType = typeReference?.text ?: return hasBlockBody()
         return declaredReturnType == UNIT
+    }
+
+    private companion object {
+        const val UNIT = "Unit"
     }
 }

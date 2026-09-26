@@ -10,14 +10,12 @@ import com.quare.bibleplanner.feature.bibleversion.domain.BibleUpdatePromptPrefe
 internal class BibleUpdatePromptPreferencesImpl(
     private val dataStore: DataStore<Preferences>,
 ) : BibleUpdatePromptPreferences {
+    private val lastDismissedAtKey = longPreferencesKey("bible_update_prompt_last_dismissed_at")
+
     override suspend fun getLastDismissedAt(): Long? = dataStore.read(lastDismissedAtKey)
 
     override suspend fun setLastDismissedAt(timestamp: Long) = dataStore.write(
         key = lastDismissedAtKey,
         value = timestamp,
     )
-
-    private companion object {
-        val lastDismissedAtKey = longPreferencesKey("bible_update_prompt_last_dismissed_at")
-    }
 }

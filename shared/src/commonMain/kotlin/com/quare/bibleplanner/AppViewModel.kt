@@ -16,11 +16,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class AppViewModel(
+    private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
+    private val appForegroundStateHolder: AppForegroundStateHolder,
     getThemeOptionFlow: GetThemeOptionFlow,
     getContrastTypeFlow: GetContrastTypeFlow,
     initializeAppContent: InitializeAppContent,
-    private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
-    private val appForegroundStateHolder: AppForegroundStateHolder,
 ) : ViewModel() {
     init {
         initializeAppContent(viewModelScope)

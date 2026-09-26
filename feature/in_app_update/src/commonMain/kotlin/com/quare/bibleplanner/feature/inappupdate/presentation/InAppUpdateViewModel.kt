@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 internal class InAppUpdateViewModel(
-    route: InAppUpdateNavRoute,
     private val startUpdate: StartUpdate,
     private val navigator: Navigator,
+    route: InAppUpdateNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<InAppUpdateUiEvent>(trackEvent) {
     private val source = route.source

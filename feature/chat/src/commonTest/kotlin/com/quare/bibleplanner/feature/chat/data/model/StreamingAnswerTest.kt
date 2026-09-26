@@ -7,11 +7,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
-private const val CONVERSATION_ID = "conversation-1"
-private const val ANSWER_ID = "answer-1"
-private val createdAt = Instant.parse("2026-08-06T15:00:00Z")
-
 internal class StreamingAnswerTest {
+    private val createdAt = Instant.parse("2026-08-06T15:00:00Z")
+
     @Test
     fun `GIVEN the answer is already cached WHEN merging THEN its id appears once`() {
         val cached = listOf(
@@ -104,4 +102,9 @@ internal class StreamingAnswerTest {
         isFailed = false,
         createdAt = createdAt,
     )
+
+    private companion object {
+        const val CONVERSATION_ID = "conversation-1"
+        const val ANSWER_ID = "answer-1"
+    }
 }

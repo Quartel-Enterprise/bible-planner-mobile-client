@@ -5,9 +5,6 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatMessageModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatRoleModel
 import kotlin.time.Instant
 
-private const val ASSISTANT_ROLE = "assistant"
-private const val FAILED_STATUS = "failed"
-
 internal class ChatMessageMapper {
     fun map(dto: ChatMessageDto): ChatMessageModel = ChatMessageModel(
         id = dto.id,
@@ -17,4 +14,9 @@ internal class ChatMessageMapper {
         isFailed = dto.status == FAILED_STATUS,
         createdAt = Instant.parse(dto.createdAt),
     )
+
+    private companion object {
+        const val ASSISTANT_ROLE = "assistant"
+        const val FAILED_STATUS = "failed"
+    }
 }

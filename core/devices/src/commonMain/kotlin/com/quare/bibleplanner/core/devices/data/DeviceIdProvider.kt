@@ -10,6 +10,8 @@ import kotlin.uuid.Uuid
 internal class DeviceIdProvider(
     private val dataStore: DataStore<Preferences>,
 ) {
+    private val deviceIdKey = stringPreferencesKey("device_installation_id")
+
     suspend fun getOrCreate(): String = dataStore.read(deviceIdKey)
         ?: Uuid.random().toString().also { newId ->
             dataStore.write(
@@ -17,8 +19,4 @@ internal class DeviceIdProvider(
                 value = newId,
             )
         }
-
-    private companion object {
-        val deviceIdKey = stringPreferencesKey("device_installation_id")
-    }
 }

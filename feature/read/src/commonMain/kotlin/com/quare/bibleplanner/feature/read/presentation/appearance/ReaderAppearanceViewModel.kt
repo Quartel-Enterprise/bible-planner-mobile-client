@@ -25,13 +25,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class ReaderAppearanceViewModel(
-    private val observeReaderSettings: ObserveReaderSettings,
     private val setReaderFontSize: SetReaderFontSize,
     private val setReaderFont: SetReaderFont,
     private val setReaderFocusAid: SetReaderFocusAid,
     private val setReaderRulerLines: SetReaderRulerLines,
     private val setReaderVerticalReading: SetReaderVerticalReading,
     private val navigator: Navigator,
+    observeReaderSettings: ObserveReaderSettings,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ReaderAppearanceUiEvent>(trackEvent) {
     private val isFontMenuExpanded = MutableStateFlow(false)

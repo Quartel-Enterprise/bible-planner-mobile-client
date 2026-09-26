@@ -35,7 +35,7 @@ import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationIcon
 import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItemModel
 import com.quare.bibleplanner.feature.main.presentation.model.MainScreenUiEvent
-import com.quare.bibleplanner.ui.component.ProfileAvatar
+import com.quare.bibleplanner.ui.component.ProfileAvatarImage
 import org.jetbrains.compose.resources.stringResource
 
 private val profileIconSize = 24.dp
@@ -179,7 +179,7 @@ private fun MainNavigationItemIcon(
         }
 
         is MainNavigationIcon.Profile -> {
-            ProfileAvatar(
+            ProfileAvatarImage(
                 photoUrl = icon.avatar.photoUrl,
                 photoBytes = icon.avatar.photoBytes,
                 displayName = icon.displayName,

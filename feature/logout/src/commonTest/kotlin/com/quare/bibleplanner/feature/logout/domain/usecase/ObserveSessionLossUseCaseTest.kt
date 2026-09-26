@@ -21,6 +21,7 @@ import kotlin.test.assertEquals
 import kotlin.time.Instant
 
 class ObserveSessionLossUseCaseTest {
+    private val fakeRefreshFailureCause = RefreshFailureCause.NetworkError(Exception("offline"))
     private lateinit var sessionStatus: MutableStateFlow<SessionStatus>
     private lateinit var intentionalLogoutMarker: IntentionalLogoutMarker
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
@@ -123,7 +124,7 @@ class ObserveSessionLossUseCaseTest {
         backgroundScope.launch { useCase() }
         sessionStatus.value = authenticated(expiresAtMillis = NOW_MILLIS - 1)
         runCurrent()
-        sessionStatus.value = SessionStatus.RefreshFailure(FAKE_REFRESH_FAILURE_CAUSE)
+        sessionStatus.value = SessionStatus.RefreshFailure(fakeRefreshFailureCause)
         runCurrent()
 
         // When
@@ -190,6 +191,5 @@ class ObserveSessionLossUseCaseTest {
     private companion object {
         const val NOW_MILLIS = 1_000_000L
         const val HOUR_MILLIS = 3_600_000L
-        val FAKE_REFRESH_FAILURE_CAUSE = RefreshFailureCause.NetworkError(Exception("offline"))
     }
 }

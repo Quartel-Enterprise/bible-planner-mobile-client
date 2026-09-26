@@ -9,9 +9,8 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
 
-private val now = Instant.parse("2026-08-06T15:00:00Z")
-
 internal class ChatConversationGroupMapperTest {
+    private val now = Instant.parse("2026-08-06T15:00:00Z")
     private val mapper = ChatConversationGroupMapper()
 
     @Test

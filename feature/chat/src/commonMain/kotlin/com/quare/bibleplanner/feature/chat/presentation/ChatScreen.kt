@@ -73,7 +73,7 @@ import com.quare.bibleplanner.feature.chat.presentation.component.ChatFailureCar
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatInputBar
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatMessageBubble
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatSuggestionBar
-import com.quare.bibleplanner.feature.chat.presentation.component.ChatSuggestionChips
+import com.quare.bibleplanner.feature.chat.presentation.component.ChatSuggestionChipColumn
 import com.quare.bibleplanner.feature.chat.presentation.component.ChatThinkingIndicator
 import com.quare.bibleplanner.feature.chat.presentation.component.history.ChatHistoryDrawer
 import com.quare.bibleplanner.feature.chat.presentation.component.history.ChatHistorySidebar
@@ -81,7 +81,7 @@ import com.quare.bibleplanner.feature.chat.presentation.model.ChatMessageUiModel
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiEvent
 import com.quare.bibleplanner.feature.chat.presentation.model.ChatUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
-import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
+import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeightEffect
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -108,7 +108,7 @@ internal fun ChatScreen(
 ) {
     val listState = rememberLazyListState()
     var composerHeightPx by remember { mutableFloatStateOf(0f) }
-    ReserveBottomOverlayHeight { composerHeightPx }
+    ReserveBottomOverlayHeightEffect { composerHeightPx }
     ChatScrollEffect(
         requests = scrollToBottomRequests,
         listState = listState,
@@ -125,7 +125,7 @@ internal fun ChatScreen(
                     onNavigateBack = onNavigateBack,
                 )
                 VerticalDivider()
-                ChatThread(
+                ChatThreadScaffold(
                     uiState = uiState,
                     listState = listState,
                     isWide = true,
@@ -136,7 +136,7 @@ internal fun ChatScreen(
                 )
             }
         } else {
-            ChatThread(
+            ChatThreadScaffold(
                 uiState = uiState,
                 listState = listState,
                 isWide = false,
@@ -154,7 +154,7 @@ internal fun ChatScreen(
 }
 
 @Composable
-private fun ChatThread(
+private fun ChatThreadScaffold(
     uiState: ChatUiState,
     listState: LazyListState,
     isWide: Boolean,
@@ -207,14 +207,14 @@ private fun ChatThread(
                 .consumeWindowInsets(padding)
                 .imePadding(),
         ) {
-            ChatMessages(
+            ChatMessageList(
                 uiState = uiState,
                 listState = listState,
                 onEvent = onEvent,
                 modifier = Modifier.weight(1f),
             )
             if (isWide) HorizontalDivider()
-            ChatComposer(
+            ChatComposerBar(
                 uiState = uiState,
                 onEvent = onEvent,
                 onHeightChange = onComposerHeightChange,
@@ -299,7 +299,7 @@ private fun ChatTopBar(
 }
 
 @Composable
-private fun ChatMessages(
+private fun ChatMessageList(
     uiState: ChatUiState,
     listState: LazyListState,
     onEvent: (ChatUiEvent) -> Unit,
@@ -375,7 +375,7 @@ private fun ChatMessages(
         }
         if (uiState.showInitialSuggestions) {
             item(key = SUGGESTIONS_KEY) {
-                ChatSuggestionChips(
+                ChatSuggestionChipColumn(
                     suggestions = uiState.suggestions,
                     onSuggestionClick = { suggestion -> onEvent(ChatUiEvent.OnSuggestionClick(suggestion)) },
                     modifier = Modifier.centeredContent(),
@@ -386,7 +386,7 @@ private fun ChatMessages(
 }
 
 @Composable
-private fun ChatComposer(
+private fun ChatComposerBar(
     uiState: ChatUiState,
     onEvent: (ChatUiEvent) -> Unit,
     onHeightChange: (Float) -> Unit,

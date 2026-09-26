@@ -73,7 +73,7 @@ internal fun StudySuggestionContent(
             .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        ScopeNote()
+        ScopeNoteText()
         ExpandableText(
             text = stringResource(Res.string.study_suggestion_description),
             style = MaterialTheme.typography.bodyMedium,
@@ -82,9 +82,9 @@ internal fun StudySuggestionContent(
         )
         val settings = uiState.settings.valueOrNull()
         if (settings == null) {
-            LoadingSettings()
+            LoadingSettingsContent()
         } else {
-            LoadedSettings(
+            LoadedSettingsContent(
                 settings = settings,
                 onEvent = onEvent,
             )
@@ -100,7 +100,7 @@ internal fun StudySuggestionContent(
 }
 
 @Composable
-private fun ScopeNote() {
+private fun ScopeNoteText() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -128,7 +128,7 @@ private fun ScopeNote() {
 }
 
 @Composable
-private fun LoadingSettings() {
+private fun LoadingSettingsContent() {
     ShimmerBox(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,7 +138,7 @@ private fun LoadingSettings() {
 }
 
 @Composable
-private fun LoadedSettings(
+private fun LoadedSettingsContent(
     settings: StudySuggestionSettingsModel,
     onEvent: (StudySuggestionUiEvent) -> Unit,
 ) {

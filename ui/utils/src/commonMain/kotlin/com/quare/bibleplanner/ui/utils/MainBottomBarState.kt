@@ -30,7 +30,7 @@ class MainBottomBarState {
 val LocalMainBottomBarState = staticCompositionLocalOf { MainBottomBarState() }
 
 @Composable
-fun ReserveBottomOverlayHeight(heightPx: () -> Float) {
+fun ReserveBottomOverlayHeightEffect(heightPx: () -> Float) {
     val state = LocalMainBottomBarState.current
     val reservation = remember { BottomOverlayReservation() }
     DisposableEffect(state, reservation) {

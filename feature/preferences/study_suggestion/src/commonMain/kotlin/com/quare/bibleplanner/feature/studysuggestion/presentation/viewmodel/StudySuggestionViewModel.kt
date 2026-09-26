@@ -27,11 +27,11 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 
 internal class StudySuggestionViewModel(
-    uiStateFactory: StudySuggestionUiStateFactory,
     private val setStudySuggestionEnabled: SetStudySuggestionEnabled,
     private val setStudySuggestionMode: SetStudySuggestionMode,
     private val setStudySuggestionSyncEnabled: SetStudySuggestionSyncEnabled,
     private val navigator: Navigator,
+    uiStateFactory: StudySuggestionUiStateFactory,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<StudySuggestionUiEvent>(trackEvent) {
     val uiState: StateFlow<StudySuggestionUiState> = uiStateFactory

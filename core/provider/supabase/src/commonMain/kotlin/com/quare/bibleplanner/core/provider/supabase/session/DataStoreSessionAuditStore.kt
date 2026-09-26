@@ -12,6 +12,9 @@ internal class DataStoreSessionAuditStore(
     private val dataStore: DataStore<Preferences>,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : SessionAuditStore {
+    private val lastSavedAtKey = longPreferencesKey(LAST_SAVED_AT_KEY)
+    private val lastDeletedAtKey = longPreferencesKey(LAST_DELETED_AT_KEY)
+
     override suspend fun recordSaved() = dataStore.write(
         key = lastSavedAtKey,
         value = currentTimestampProvider.getCurrentTimestamp(),
@@ -31,7 +34,7 @@ internal class DataStoreSessionAuditStore(
         }.first()
 
     private companion object {
-        val lastSavedAtKey = longPreferencesKey("supabase_session_last_saved_at")
-        val lastDeletedAtKey = longPreferencesKey("supabase_session_last_deleted_at")
+        const val LAST_SAVED_AT_KEY = "supabase_session_last_saved_at"
+        const val LAST_DELETED_AT_KEY = "supabase_session_last_deleted_at"
     }
 }

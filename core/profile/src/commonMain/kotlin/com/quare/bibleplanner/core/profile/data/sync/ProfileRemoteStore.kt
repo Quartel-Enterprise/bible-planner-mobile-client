@@ -26,6 +26,8 @@ internal class ProfileRemoteStore(
     private val supabaseClient: SupabaseClient,
     private val profileMapper: ProfileMapper,
 ) : SyncRemoteStore<ProfileDto> {
+    private val columns = Columns.list(COLUMN_ID, COLUMN_DISPLAY_NAME, COLUMN_AVATAR_URL, COLUMN_UPDATED_AT)
+
     private val realtime: Realtime
         get() = supabaseClient.realtime
 
@@ -41,7 +43,7 @@ internal class ProfileRemoteStore(
 
     override suspend fun fetch(userId: String): List<ProfileDto> = supabaseClient
         .from(TABLE)
-        .select(columns = COLUMNS) {
+        .select(columns = columns) {
             filter { eq(COLUMN_ID, userId) }
         }.decodeList<ProfileRowDto>()
         .map(profileMapper::toDto)
@@ -89,6 +91,5 @@ internal class ProfileRemoteStore(
         const val COLUMN_DISPLAY_NAME = "display_name"
         const val COLUMN_AVATAR_URL = "avatar_url"
         const val COLUMN_UPDATED_AT = "updated_at"
-        val COLUMNS = Columns.list(COLUMN_ID, COLUMN_DISPLAY_NAME, COLUMN_AVATAR_URL, COLUMN_UPDATED_AT)
     }
 }

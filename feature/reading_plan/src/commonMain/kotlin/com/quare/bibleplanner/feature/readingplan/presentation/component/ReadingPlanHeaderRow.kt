@@ -47,7 +47,7 @@ internal fun ReadingPlanHeaderRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AdaptiveOrderSelector(
+        AdaptiveOrderPicker(
             modifier = Modifier.weight(1f),
             selectedReadingPlan = selectedReadingPlan,
             isShowingOrderMenu = isShowingOrderMenu,
@@ -61,7 +61,7 @@ internal fun ReadingPlanHeaderRow(
 }
 
 @Composable
-private fun AdaptiveOrderSelector(
+private fun AdaptiveOrderPicker(
     selectedReadingPlan: ReadingPlanType,
     isShowingOrderMenu: Boolean,
     onEvent: (ReadingPlanUiEvent) -> Unit,
@@ -76,7 +76,7 @@ private fun AdaptiveOrderSelector(
             var overflowed = false
             ReadingPlanType.entries.forEach { probedPlan ->
                 subcompose(OrderSelectorSlot.Probe to probedPlan) {
-                    PlanTypesSegmentedButtons(
+                    PlanTypesSegmentedButtonRow(
                         modifier = Modifier.fillMaxWidth(),
                         selectedReadingPlan = probedPlan,
                         onPlanClick = onPlanClick,
@@ -90,7 +90,7 @@ private fun AdaptiveOrderSelector(
         }
         val placeables = subcompose(OrderSelectorSlot.Content) {
             if (segmentedFits) {
-                PlanTypesSegmentedButtons(
+                PlanTypesSegmentedButtonRow(
                     modifier = Modifier.fillMaxWidth(),
                     selectedReadingPlan = selectedReadingPlan,
                     onPlanClick = onPlanClick,

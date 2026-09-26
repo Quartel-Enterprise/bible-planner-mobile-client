@@ -24,13 +24,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private val testChapter = ChapterRef(
-    bibleVersionId = "ACF",
-    bookId = BookId.GEN,
-    chapterNumber = 3,
-)
-
 internal class VerseNoteViewModelTest {
+    private val testChapter = ChapterRef(
+        bibleVersionId = "ACF",
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
     private val testDispatcher = UnconfinedTestDispatcher()
     private val verseNumbers = listOf(1, 2)
     private lateinit var viewModel: VerseNoteViewModel

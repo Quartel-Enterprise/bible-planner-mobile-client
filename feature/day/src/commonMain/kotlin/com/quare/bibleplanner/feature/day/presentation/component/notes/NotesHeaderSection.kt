@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.clear_notes
 import bibleplanner.feature.day.generated.resources.notes
-import com.quare.bibleplanner.ui.component.icon.DeleteIconButon
+import com.quare.bibleplanner.ui.component.icon.DeleteIconButton
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -29,6 +29,6 @@ internal fun NotesHeaderSection(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        DeleteIconButon(onClick = onDeleteClick, contentDescription = stringResource(Res.string.clear_notes))
+        DeleteIconButton(onClick = onDeleteClick, contentDescription = stringResource(Res.string.clear_notes))
     }
 }

@@ -8,8 +8,6 @@ import android.graphics.Rect
 import androidx.core.graphics.createBitmap
 import java.io.ByteArrayOutputStream
 
-private const val HALF = 2f
-
 actual fun createAvatarImageCropper(): AvatarImageCropper = AndroidAvatarImageCropper()
 
 internal class AndroidAvatarImageCropper : AvatarImageCropper {
@@ -77,5 +75,9 @@ internal class AndroidAvatarImageCropper : AvatarImageCropper {
                 targetPx = AVATAR_OUTPUT_SIZE_PX,
             )
         }
+    }
+
+    private companion object {
+        const val HALF = 2f
     }
 }

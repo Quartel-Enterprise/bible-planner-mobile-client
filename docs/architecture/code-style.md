@@ -378,3 +378,191 @@ not on `var`, `open`, delegated properties or properties with a custom getter. A
 
 Enforced by the custom ktlint rule `bible-planner-style:explicit-backing-field`, which flags a private `_name`
 `val` whose only purpose is to be exposed as `name` (directly, or through `asStateFlow()`/`asSharedFlow()`).
+
+## Where a `private val` Lives
+
+A `private val` belongs to the **class body** whenever a class in the file can hold it; a `private const val`
+belongs to that class's `private companion object` (declared at the end of the class). File scope is for values
+that genuinely have no owner, not a default.
+
+```kotlin
+// Correct
+class ChatContextRequestMapper {
+    fun map(...) = ... DAY_READING_TYPE ...
+
+    private companion object {
+        const val DAY_READING_TYPE = "day_reading"
+    }
+}
+
+// Wrong — file scope for something only this class ever reads
+private const val DAY_READING_TYPE = "day_reading"
+
+class ChatContextRequestMapper { ... }
+```
+
+**Declare it before the property that reads it.** A class body initializes top to bottom, so a `private val`
+declared *after* the `val` whose initializer uses it is still `null` at that point.
+
+File scope stays right in four cases:
+
+- **Compose sizing and styling constants** — the `Dp`, `Shape`, `Color` and `TextUnit` values above the
+  composable they size. A `@Composable` function is not a class (see the next sections).
+- **A value the instance cannot see yet** — a default for a constructor parameter or an argument to a
+  superclass constructor call is evaluated before the class body exists.
+- **Files with no class** — a Koin module, a fixture file, a theme.
+- **`value class` bodies**, which cannot declare properties.
+
+## Companion Objects Hold Constants, Not State
+
+A companion object is for `const val` and for values that are part of the type's public API. The class's own
+private values — a DataStore `Preferences.Key`, a `Duration`, a `Regex` — go in the class body, in
+`lowerCamelCase`:
+
+```kotlin
+// Correct
+class ReaderSettingsRepositoryImpl(...) : ReaderSettingsRepository {
+    private val fontSizeKey = intPreferencesKey("font_size")
+}
+
+// Wrong — a private val hidden in a companion
+class ReaderSettingsRepositoryImpl(...) : ReaderSettingsRepository {
+    private companion object {
+        val FONT_SIZE_KEY = intPreferencesKey("font_size")
+    }
+}
+```
+
+Enforced by two custom ktlint rules. `bible-planner-style:companion-object-constants` flags a non-`const`
+property that is private, or that sits in a `private companion object`. `bible-planner-style:top-level-val-ownership`
+flags the opposite mistake — a top-level `private val` or `private const val` read by exactly one class or object
+of the file — and says where it goes. It decides by **where the value is read**, which keeps the exceptions above
+without type resolution: a constant read by a top-level `@Composable` has a reader outside every class, and a
+constructor default is read from the primary constructor.
+
+## Interface and Implementation in Separate Files
+
+An interface and a class that implements it never share a file. The interface is the contract a consumer imports;
+the implementation is a detail it should not have to scroll past.
+
+```kotlin
+// Correct — CurrentTimestampProvider.kt
+fun interface CurrentTimestampProvider {
+    fun getCurrentTimestamp(): Long
+}
+
+// Correct — DeviceClockTimestampProvider.kt
+internal class DeviceClockTimestampProvider : CurrentTimestampProvider { ... }
+```
+
+Exempt: a `sealed interface` and its cases (the hierarchy *is* the file), a `private` interface, and an
+implementation nested inside the interface itself. Enforced by the custom ktlint rule
+`bible-planner-style:interface-implementation-separate-files`.
+
+## Constructor Properties That Could Be Parameters
+
+A primary-constructor `private val` that is only read while the instance is being built — by a property
+initializer, a delegate or an `init` block — never needed to be a property. Drop `private val`: a plain parameter
+reaches the same places and the class keeps one field less.
+
+```kotlin
+// Wrong — a field kept only to build readingFraction
+class DayStudyPanelViewModel(
+    private val observeReadingFraction: ObserveDayStudyPanelReadingFractionUseCase,
+) : ViewModel() {
+    val readingFraction: StateFlow<Float> = observeReadingFraction().stateIn(...)
+}
+
+// Correct
+class DayStudyPanelViewModel(
+    observeReadingFraction: ObserveDayStudyPanelReadingFractionUseCase,
+) : ViewModel() {
+    val readingFraction: StateFlow<Float> = observeReadingFraction().stateIn(...)
+}
+```
+
+Enforced by the custom ktlint rule `bible-planner-style:redundant-private-constructor-property`. It has no type
+resolution, so it reports only what it can prove: any read from a method, an accessor, a nested class or through
+a qualifier (`this.x`) keeps the property.
+
+### Properties first, plain parameters last
+
+In a primary constructor every `val` / `var` comes before the plain parameters, so what the instance keeps reads
+as one block and what it only consumes while being built as another. When the rule above turns a `private val`
+into a plain parameter, the parameter also moves to the end. Call constructors with named arguments (or let Koin
+resolve them by type) and the order never reaches a call site.
+
+Enforced by the custom ktlint rule `bible-planner-style:constructor-property-order`. It is not autocorrected:
+moving a parameter changes the meaning of every positional call.
+
+## Unused Parameters
+
+Every parameter of a function is read by it. One that is not is a promise the signature does not keep: each
+caller has to produce a value that changes nothing. Remove it, along with the argument at every call site.
+
+Enforced by the custom ktlint rule `bible-planner-style:unused-function-parameter`. Functions whose signature is
+dictated from outside are skipped — `override`, `open`, `abstract`, `operator`, `expect`/`actual`, `external` and
+interface members — as is anything annotated with `@Suppress("UNUSED_PARAMETER")`.
+
+## DTOs
+
+A `@Serializable` `*Dto` mirrors the wire format and nothing else:
+
+```kotlin
+@Serializable
+data class EndChapterDto(
+    @SerialName("number") val number: Int,
+    @SerialName("verse") val verse: Int?,
+)
+```
+
+- **Every field declares its JSON key with `@SerialName`**, even when it equals the property name. Renaming the
+  Kotlin property can then never change the contract, and the key is greppable.
+- **No default values.** What the payload may leave out is a nullable type, and the `Json` that decodes it is
+  configured with `explicitNulls = false`, which reads an absent key as `null`. The mapper decides what a missing
+  value means.
+
+Enforced by the custom ktlint rule `bible-planner-style:dto-serial-name`, on every `@Serializable` class whose name
+ends in `Dto`. A `*Dto` that is not serialized (e.g. `ProfileDto`, built by hand from a `JsonObject`) is not held
+to it.
+
+## Composable Naming
+
+A `@Composable` that emits UI ends in a word that says **what kind of UI it is**, taken from a closed list, so the
+name alone tells a screen from a row from a side effect:
+
+| Suffix | Use for |
+|---|---|
+| `Screen` | the entry point of a route: collects the ViewModel state and hands it to a `Content` |
+| `Content` | the stateless body of a screen or of one of its states |
+| `Scaffold`, `Theme`, `Root`, `Display`, `Layout` | structural wrappers and the app / navigation roots |
+| `Dialog`, `Sheet`, `Overlay`, `Pane`, `Panel`, `Drawer`, `Sidebar`, `Rail`, `Bar`, `Footer`, `Header` | surfaces and chrome |
+| `Card`, `Box`, `Surface`, `Section`, `Hero`, `Banner`, `Bubble`, `Tile`, `Cell`, `Item`, `Row`, `Column`, `List`, `Grid`, `Spacer` | containers and layout pieces |
+| `Button`, `Fab`, `Action`, `Toggle`, `Switch`, `Slider`, `Picker`, `Option`, `Menu`, `Chip`, `Pill`, `Field`, `Handle` | things the user operates |
+| `Text`, `Title`, `Heading`, `Label`, `Message`, `Icon`, `Image`, `Badge`, `Line`, `Indicator`, `Spinner`, `Snackbar` | things the user reads or sees |
+| `Skeleton` | the loading placeholder of another composable (never `Shimmer`: shimmer is the effect, not the thing) |
+| `Effect`, `Collector` | composables that emit no UI and only run a side effect |
+| `Component` | anything none of the above describes |
+
+```kotlin
+// Correct
+@Composable fun PlanProgressIndicator(...)
+@Composable fun ScrollToTopEffect(...)
+@Composable fun ChapterEndNavigationRow(...)
+
+// Wrong — a noun that does not say what is drawn
+@Composable fun PlanProgress(...)
+@Composable fun ScrollToTopObserver(...)
+@Composable fun ChapterEndNavigation(...)
+```
+
+The file is named after its main composable, so it carries the suffix too.
+
+Not held to the list:
+
+- **Composables that return a value** (`rememberDayProgress`, `chapterCountText`). They are lowercase and follow
+  [Function Naming](#function-naming) instead.
+- **`@Preview` functions**, named after what they preview.
+
+Enforced by the custom ktlint rule `bible-planner-style:composable-naming-suffix`. A genuinely new kind of UI gets
+a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — not a one-off exception.

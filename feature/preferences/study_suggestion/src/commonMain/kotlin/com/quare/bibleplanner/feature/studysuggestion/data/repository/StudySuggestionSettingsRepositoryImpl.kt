@@ -26,10 +26,13 @@ internal class StudySuggestionSettingsRepositoryImpl(
     private val syncedPreferenceDao: SyncedPreferenceDao,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : StudySuggestionSettingsRepository {
+    private val enabledKey = booleanPreferencesKey("study_suggestion_enabled")
+    private val modeKey = stringPreferencesKey("study_suggestion_mode")
+
     override fun observe(): Flow<StudySuggestionSettingsModel> = dataStore.data.map { preferences ->
         StudySuggestionSettingsModel(
-            isEnabled = preferences[ENABLED_KEY] != false,
-            mode = preferences[MODE_KEY]?.toMode() ?: StudySuggestionMode.DIALOG,
+            isEnabled = preferences[enabledKey] != false,
+            mode = preferences[modeKey]?.toMode() ?: StudySuggestionMode.DIALOG,
         )
     }
 
@@ -88,12 +91,12 @@ internal class StudySuggestionSettingsRepositoryImpl(
     override suspend fun applySyncedMode(mode: StudySuggestionMode) = writeMode(mode)
 
     private suspend fun writeEnabled(isEnabled: Boolean) = dataStore.write(
-        key = ENABLED_KEY,
+        key = enabledKey,
         value = isEnabled,
     )
 
     private suspend fun writeMode(mode: StudySuggestionMode) = dataStore.write(
-        key = MODE_KEY,
+        key = modeKey,
         value = mode.name,
     )
 
@@ -111,9 +114,4 @@ internal class StudySuggestionSettingsRepositoryImpl(
     }
 
     private fun String.toMode(): StudySuggestionMode? = StudySuggestionMode.entries.find { it.name == this }
-
-    private companion object {
-        val ENABLED_KEY = booleanPreferencesKey("study_suggestion_enabled")
-        val MODE_KEY = stringPreferencesKey("study_suggestion_mode")
-    }
 }

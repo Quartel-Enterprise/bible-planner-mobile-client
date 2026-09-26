@@ -89,7 +89,7 @@ private fun ChapterNotFoundContent(
         ),
     )
     when (val downloadStatus = content.downloadStatus) {
-        is DownloadStatusModel.InProgress.Downloading -> DownloadProgress(
+        is DownloadStatusModel.InProgress.Downloading -> DownloadProgressIndicator(
             inProgressStatus = downloadStatus,
             statusText = stringResource(
                 Res.string.downloading_progress,
@@ -99,7 +99,7 @@ private fun ChapterNotFoundContent(
         )
 
         is DownloadStatusModel.InProgress.Paused -> {
-            DownloadProgress(
+            DownloadProgressIndicator(
                 inProgressStatus = downloadStatus,
                 statusText = stringResource(
                     Res.string.paused_progress,
@@ -158,7 +158,7 @@ private fun DownloadButton(
 }
 
 @Composable
-private fun DownloadProgress(
+private fun DownloadProgressIndicator(
     inProgressStatus: DownloadStatusModel.InProgress,
     statusText: String,
     versionSizeInBytes: Long?,

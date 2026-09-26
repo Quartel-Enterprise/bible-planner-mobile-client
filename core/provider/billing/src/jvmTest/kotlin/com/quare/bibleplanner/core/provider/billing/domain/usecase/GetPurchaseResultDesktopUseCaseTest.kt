@@ -11,9 +11,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
-private const val PURCHASE_LINK = "https://pay.rev.cat/token"
-private const val APP_USER_ID = "user-1"
-
 internal class GetPurchaseResultDesktopUseCaseTest {
     private lateinit var useCase: GetPurchaseResultDesktopUseCase
     private lateinit var openedUrls: MutableList<String>
@@ -97,5 +94,10 @@ internal class GetPurchaseResultDesktopUseCaseTest {
             openUrl = { url -> openedUrls += url },
             awaitProEntitlement = AwaitProEntitlementUseCase(repository),
         )
+    }
+
+    private companion object {
+        const val PURCHASE_LINK = "https://pay.rev.cat/token"
+        const val APP_USER_ID = "user-1"
     }
 }

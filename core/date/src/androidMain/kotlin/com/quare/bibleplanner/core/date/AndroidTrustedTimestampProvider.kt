@@ -5,8 +5,8 @@ import com.google.android.gms.time.TrustedTime
 import com.google.android.gms.time.TrustedTimeClient
 
 internal class AndroidTrustedTimestampProvider(
-    context: Context,
     private val networkTimeTimestampProvider: NetworkTimeTimestampProvider,
+    context: Context,
 ) : CurrentTimestampProvider {
     @Volatile
     private var trustedTimeClient: TrustedTimeClient? = null

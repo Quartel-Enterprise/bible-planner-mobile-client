@@ -71,7 +71,6 @@ import kotlin.time.TimeMark
 import kotlin.time.TimeSource
 
 internal class DayStudyRouteViewModel(
-    route: DayStudyNavRoute,
     private val getDayPassages: GetDayPassagesForDayStudyUseCase,
     private val getDayStudy: GetDayStudyUseCase,
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,
@@ -81,8 +80,9 @@ internal class DayStudyRouteViewModel(
     private val observeIsProUser: ObserveIsProUser,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val cardUiModelFactory: DayStudyCardUiModelFactory,
-    platform: Platform,
     private val navigator: Navigator,
+    route: DayStudyNavRoute,
+    platform: Platform,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayStudyRouteUiEvent>(trackEvent) {
     val uiState: StateFlow<DayStudyRouteUiState>

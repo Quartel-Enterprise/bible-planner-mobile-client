@@ -27,39 +27,10 @@ import org.junit.Test
  * and the checks are painted in, so it out-glows the product it is framing.
  */
 private const val BACKGROUND = 0xFF141C3D
-private const val README_SUBDIR = "readme"
-private val bannerCopy = mapOf(
-    "en-US" to
-        ("Your whole Bible, one day at a time" to "A plan that keeps its place, so you always know what to read next"),
-    "pt-BR" to
-        (
-            "A Bíblia inteira, um dia por vez" to
-                "Um plano que guarda o seu lugar, para você sempre saber o que ler a seguir"
-        ),
-    "es" to
-        (
-            "La Biblia entera, un día a la vez" to
-                "Un plan que guarda tu lugar, para que siempre sepas qué leer después"
-        ),
-)
-private val lightBannerCopy = mapOf(
-    "en-US" to (
-        "Light or dark, it follows you" to
-            "The same plan, in the theme you actually read in"
-    ),
-    "pt-BR" to (
-        "Claro ou escuro, ele acompanha" to
-            "O mesmo plano, no tema em que você realmente lê"
-    ),
-    "es" to (
-        "Claro u oscuro, te acompaña" to
-            "El mismo plan, en el tema en que de verdad lees"
-    ),
-)
 
 internal abstract class ReadingPlanScreenshots(
-    formFactor: FormFactor,
     private val outputSubdir: String? = null,
+    formFactor: FormFactor,
     canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
@@ -68,6 +39,38 @@ internal abstract class ReadingPlanScreenshots(
         // instead of letting the header slide under the frame's clock.
         style = ScreenshotStyle(edgeToEdge = false),
     ) {
+    private val bannerCopy = mapOf(
+        "en-US" to
+            (
+                "Your whole Bible, one day at a time" to
+                    "A plan that keeps its place, so you always know what to read next"
+            ),
+        "pt-BR" to
+            (
+                "A Bíblia inteira, um dia por vez" to
+                    "Um plano que guarda o seu lugar, para você sempre saber o que ler a seguir"
+            ),
+        "es" to
+            (
+                "La Biblia entera, un día a la vez" to
+                    "Un plan que guarda tu lugar, para que siempre sepas qué leer después"
+            ),
+    )
+    private val lightBannerCopy = mapOf(
+        "en-US" to (
+            "Light or dark, it follows you" to
+                "The same plan, in the theme you actually read in"
+        ),
+        "pt-BR" to (
+            "Claro ou escuro, ele acompanha" to
+                "O mesmo plano, no tema em que você realmente lê"
+        ),
+        "es" to (
+            "Claro u oscuro, te acompaña" to
+                "El mismo plan, en el tema en que de verdad lees"
+        ),
+    )
+
     @Test
     fun readingPlan() = bannerCopy.forEach { (locale, copy) ->
         val (title, description) = copy
@@ -106,17 +109,17 @@ internal abstract class ReadingPlanScreenshots(
     }
 }
 
-internal class PhoneReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.Phone)
+internal class PhoneReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.Phone)
 
-internal class Tablet7ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.Tablet7)
+internal class Tablet7ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.Tablet7)
 
-internal class Tablet10ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.Tablet10)
+internal class Tablet10ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.Tablet10)
 
-internal class IPhone65ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPhone65)
+internal class IPhone65ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.AppleIPhone65)
 
-internal class IPhone67ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPhone67)
+internal class IPhone67ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.AppleIPhone67)
 
-internal class IPad13ReadingPlanScreenshots : ReadingPlanScreenshots(FormFactor.AppleIPad13)
+internal class IPad13ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.AppleIPad13)
 
 // The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
 internal class IPad11ReadingPlanScreenshots :
@@ -152,6 +155,10 @@ internal class ReadmeReadingPlanScreenshots :
         CompositionLocalProvider(LocalTheme provides Theme.LIGHT) {
             AppTheme { ReadingPlanContent() }
         }
+    }
+
+    private companion object {
+        const val README_SUBDIR = "readme"
     }
 }
 

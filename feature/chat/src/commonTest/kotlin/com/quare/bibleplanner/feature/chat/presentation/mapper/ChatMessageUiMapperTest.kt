@@ -8,9 +8,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
-private val createdAt = Instant.parse("2026-08-06T15:00:00Z")
-
 internal class ChatMessageUiMapperTest {
+    private val createdAt = Instant.parse("2026-08-06T15:00:00Z")
+
     private val mapper = ChatMessageUiMapper()
 
     @Test

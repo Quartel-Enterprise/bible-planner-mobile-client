@@ -73,7 +73,7 @@ private fun WideTabScaffold(
     val density = LocalDensity.current
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
-    ReserveBottomOverlayHeight {
+    ReserveBottomOverlayHeightEffect {
         navigationBarInsets.getBottom(density).toFloat() +
             with(density) { reservedFabHeight.toFabClearance().toPx() }
     }
@@ -83,7 +83,7 @@ private fun WideTabScaffold(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
-                MeasuredFabArea(
+                MeasuredFabBox(
                     fabAreaHeight = fabAreaHeight,
                     onFabAreaHeightChange = { fabAreaHeight = it },
                     content = floatingActionButton,
@@ -112,7 +112,7 @@ private fun NarrowTabScaffold(
     var fabAreaHeight by remember { mutableStateOf(0.dp) }
     var bottomBarHeightPx by remember { mutableFloatStateOf(0f) }
     val reservedFabHeight = rememberReservedFabHeight(fabAreaHeight)
-    ReserveBottomOverlayHeight {
+    ReserveBottomOverlayHeightEffect {
         val visibleBottomBarPx = (bottomBarHeightPx + scrollBehavior.state.heightOffset).coerceAtLeast(0f)
         maxOf(navigationBarInsets.getBottom(density).toFloat(), visibleBottomBarPx) +
             with(density) { reservedFabHeight.toFabClearance().toPx() }
@@ -123,7 +123,7 @@ private fun NarrowTabScaffold(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
-            MeasuredFabArea(
+            MeasuredFabBox(
                 fabAreaHeight = fabAreaHeight,
                 onFabAreaHeightChange = { fabAreaHeight = it },
                 modifier = Modifier.graphicsLayer {
@@ -169,7 +169,7 @@ private fun rememberReservedFabHeight(fabAreaHeight: Dp): Dp {
 }
 
 @Composable
-private fun MeasuredFabArea(
+private fun MeasuredFabBox(
     fabAreaHeight: Dp,
     onFabAreaHeightChange: (Dp) -> Unit,
     modifier: Modifier = Modifier,

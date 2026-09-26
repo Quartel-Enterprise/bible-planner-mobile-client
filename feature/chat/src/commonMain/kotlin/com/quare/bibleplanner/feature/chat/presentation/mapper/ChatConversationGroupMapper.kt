@@ -13,8 +13,6 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-private const val RECENT_DAYS = 7
-
 class ChatConversationGroupMapper {
     fun map(
         conversations: List<ChatConversationModel>,
@@ -75,5 +73,9 @@ class ChatConversationGroupMapper {
             month = date.month,
             year = date.year,
         )
+    }
+
+    private companion object {
+        const val RECENT_DAYS = 7
     }
 }
