@@ -12,13 +12,13 @@ import androidx.compose.ui.test.performClick
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_tab_context
 import bibleplanner.feature.day_study.generated.resources.ai_tab_questions
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.daystudy.fixture.dayStudyUiState
 import com.quare.bibleplanner.feature.daystudy.fixture.firstQuestion
 import com.quare.bibleplanner.feature.daystudy.presentation.DayStudyScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
-import com.quare.bibleplanner.ui.theme.model.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle

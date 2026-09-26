@@ -6,6 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import com.quare.bibleplanner.core.navigation.slot.RootDayCompletionBanner
+import com.quare.bibleplanner.core.navigation.slot.RootDayStudySection
+import com.quare.bibleplanner.core.navigation.slot.RootMainTabEntries
 import com.quare.bibleplanner.feature.accountdetails.presentation.accountDetails
 import com.quare.bibleplanner.feature.accountdetails.presentation.renameDevice
 import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.addNotesFreeWarning
@@ -59,8 +62,11 @@ internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKe
     loginWarning()
     loginSyncNudge()
     logout()
-    mainScreen(sharedTransitionScope)
-    day(sharedTransitionScope)
+    mainScreen(RootMainTabEntries(sharedTransitionScope))
+    day(
+        sharedTransitionScope = sharedTransitionScope,
+        dayStudySection = RootDayStudySection,
+    )
     dayStudy()
     dayReadingComplete()
     chat()
@@ -91,7 +97,7 @@ internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKe
     expandedPhoto()
     cropPhoto()
     contactSupport()
-    read()
+    read(RootDayCompletionBanner)
     verseNote()
     verseSelection()
     shareVerse()

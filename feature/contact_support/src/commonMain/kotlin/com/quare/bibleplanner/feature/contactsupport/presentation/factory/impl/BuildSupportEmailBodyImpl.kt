@@ -12,6 +12,7 @@ import com.quare.bibleplanner.feature.contactsupport.domain.model.AccountStatusM
 import com.quare.bibleplanner.feature.contactsupport.presentation.factory.BuildSupportEmailBody
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiState
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.toStringResource
+import com.quare.bibleplanner.ui.component.language.toStringResource
 import org.jetbrains.compose.resources.getString
 
 internal class BuildSupportEmailBodyImpl : BuildSupportEmailBody {

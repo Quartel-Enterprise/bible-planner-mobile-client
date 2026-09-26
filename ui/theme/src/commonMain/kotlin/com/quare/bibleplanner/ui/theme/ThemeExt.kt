@@ -4,12 +4,12 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.ui.theme.color.goldDark
 import com.quare.bibleplanner.ui.theme.color.goldLight
 import com.quare.bibleplanner.ui.theme.color.successDark
 import com.quare.bibleplanner.ui.theme.color.successLight
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
-import com.quare.bibleplanner.ui.theme.model.Theme
 
 @Composable
 fun isAppInDarkTheme(): Boolean = when (LocalTheme.current) {

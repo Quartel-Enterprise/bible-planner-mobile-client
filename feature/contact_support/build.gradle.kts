@@ -26,7 +26,6 @@ kotlin {
             implementation(projects.core.user)
 
             // Features
-            implementation(projects.feature.preferences.appLanguage)
 
             // UI
             implementation(projects.ui.component)

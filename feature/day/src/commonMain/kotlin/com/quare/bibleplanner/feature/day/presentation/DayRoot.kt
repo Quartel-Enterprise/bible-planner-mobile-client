@@ -13,6 +13,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.getDayStudyMainPane
+import com.quare.bibleplanner.feature.day.presentation.component.DayStudyDaySection
 import com.quare.bibleplanner.feature.day.presentation.component.TimeEditionDialog
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
@@ -23,11 +24,15 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun EntryProviderScope<NavKey>.day(sharedTransitionScope: SharedTransitionScope) {
+fun EntryProviderScope<NavKey>.day(
+    sharedTransitionScope: SharedTransitionScope,
+    dayStudySection: DayStudySectionSlot,
+) {
     entry<DayNavRoute>(metadata = getDayStudyMainPane()) { route ->
         DayRootContent(
             route = route,
             sharedTransitionScope = sharedTransitionScope,
+            dayStudySection = dayStudySection,
         )
     }
 }
@@ -37,6 +42,7 @@ fun EntryProviderScope<NavKey>.day(sharedTransitionScope: SharedTransitionScope)
 private fun DayRootContent(
     route: DayNavRoute,
     sharedTransitionScope: SharedTransitionScope,
+    dayStudySection: DayStudySectionSlot,
 ) {
     val viewModel = koinViewModel<DayViewModel> { parametersOf(route) }
     val uiState by viewModel.uiState.collectAsState()
@@ -68,5 +74,14 @@ private fun DayRootContent(
         sharedTransitionScope = sharedTransitionScope,
         animatedContentScope = LocalNavAnimatedContentScope.current,
         isLandscape = isWide,
+        dayStudySection = { passages, dayRoute, sectionModifier ->
+            DayStudyDaySection(
+                slot = dayStudySection,
+                passages = passages,
+                dayRoute = dayRoute,
+                onEvent = onEvent,
+                modifier = sectionModifier,
+            )
+        },
     )
 }

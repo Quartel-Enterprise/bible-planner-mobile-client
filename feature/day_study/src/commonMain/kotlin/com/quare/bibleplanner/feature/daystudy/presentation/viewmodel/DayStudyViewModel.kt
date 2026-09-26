@@ -5,6 +5,13 @@ import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyPhaseModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
+import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCase
+import com.quare.bibleplanner.core.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.PassageModel
@@ -17,13 +24,6 @@ import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProU
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.suspendRunCatching
-import com.quare.bibleplanner.feature.daystudy.domain.coordinator.DayStudyGenerationCoordinator
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyPhaseModel
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyQuotaModel
-import com.quare.bibleplanner.feature.daystudy.domain.usecase.GetDayStudyQuotaUseCase
-import com.quare.bibleplanner.feature.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel

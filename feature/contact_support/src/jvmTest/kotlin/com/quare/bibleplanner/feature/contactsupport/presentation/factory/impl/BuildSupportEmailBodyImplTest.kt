@@ -11,7 +11,7 @@ import bibleplanner.feature.contact_support.generated.resources.diagnostics_subs
 import bibleplanner.feature.contact_support.generated.resources.diagnostics_subscription_pro
 import bibleplanner.feature.contact_support.generated.resources.platform_android
 import bibleplanner.feature.contact_support.generated.resources.platform_ios
-import bibleplanner.feature.preferences.app_language.generated.resources.language_english
+import bibleplanner.ui.component.generated.resources.language_english
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.billing.domain.model.ProPlanType
 import com.quare.bibleplanner.core.provider.billing.domain.model.PurchaseStore
@@ -25,7 +25,7 @@ import kotlinx.coroutines.test.runTest
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import bibleplanner.feature.preferences.app_language.generated.resources.Res as AppLanguageRes
+import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 internal class BuildSupportEmailBodyImplTest {
     private lateinit var buildSupportEmailBody: BuildSupportEmailBodyImpl
@@ -74,7 +74,7 @@ internal class BuildSupportEmailBodyImplTest {
             )
             appendLine(
                 "${getString(Res.string.diagnostics_language_label)}: " +
-                    getString(AppLanguageRes.string.language_english),
+                    getString(ComponentRes.string.language_english),
             )
             appendLine("${getString(Res.string.diagnostics_account_label)}: ana@example.com")
             append(

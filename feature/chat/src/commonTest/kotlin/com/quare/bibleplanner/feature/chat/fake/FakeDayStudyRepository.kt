@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.chat.fake
 
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
+import com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.core.model.plan.PassageModel
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationEventModel
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyStatusModel
-import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyRepository
 import kotlinx.coroutines.flow.Flow
 
 internal class FakeDayStudyRepository(

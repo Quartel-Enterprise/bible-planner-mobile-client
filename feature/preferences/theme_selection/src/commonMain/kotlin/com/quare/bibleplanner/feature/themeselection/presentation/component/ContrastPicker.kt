@@ -11,7 +11,7 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.Res
 import bibleplanner.feature.preferences.theme_selection.generated.resources.high_contrast
 import bibleplanner.feature.preferences.theme_selection.generated.resources.medium_contrast
 import bibleplanner.feature.preferences.theme_selection.generated.resources.standard_contrast
-import com.quare.bibleplanner.ui.theme.model.ContrastType
+import com.quare.bibleplanner.core.model.theme.ContrastType
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

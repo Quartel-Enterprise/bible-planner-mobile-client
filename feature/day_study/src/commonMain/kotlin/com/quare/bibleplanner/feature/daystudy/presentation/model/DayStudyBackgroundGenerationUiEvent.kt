@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.model
 
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.core.provider.analytics.domain.model.toPlanTypeAnalyticsValue
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationJob
-import com.quare.bibleplanner.feature.daystudy.domain.model.DayStudyGenerationStatus
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
 internal sealed interface DayStudyBackgroundGenerationUiEvent : UiEvent {

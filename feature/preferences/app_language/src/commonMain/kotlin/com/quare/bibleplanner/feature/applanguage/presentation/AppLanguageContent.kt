@@ -20,9 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.preferences.app_language.generated.resources.Res
-import bibleplanner.feature.preferences.app_language.generated.resources.language_english
-import bibleplanner.feature.preferences.app_language.generated.resources.language_portuguese_brazil
-import bibleplanner.feature.preferences.app_language.generated.resources.language_spanish
 import bibleplanner.feature.preferences.app_language.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.app_language.generated.resources.sync_across_devices_title
 import com.quare.bibleplanner.core.utils.isLastIndex
@@ -31,7 +28,7 @@ import com.quare.bibleplanner.feature.applanguage.presentation.component.AppLang
 import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguageUiEvent
 import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguageUiState
 import com.quare.bibleplanner.ui.component.AppSwitch
-import org.jetbrains.compose.resources.StringResource
+import com.quare.bibleplanner.ui.component.language.toStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -139,12 +136,6 @@ private fun SyncSwitch(
             )
         }
     }
-}
-
-private fun Language.toStringResource(): StringResource = when (this) {
-    Language.ENGLISH -> Res.string.language_english
-    Language.PORTUGUESE_BRAZIL -> Res.string.language_portuguese_brazil
-    Language.SPANISH -> Res.string.language_spanish
 }
 
 private fun Language.toCode(): String = when (this) {

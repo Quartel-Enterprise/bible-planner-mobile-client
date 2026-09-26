@@ -15,7 +15,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.v2.runComposeUiTest
-import bibleplanner.feature.preferences.app_language.generated.resources.language_english
 import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.app_language_option
 import bibleplanner.feature.profile.generated.resources.bible_version_option
@@ -30,6 +29,7 @@ import bibleplanner.feature.profile.generated.resources.study_suggestion_enabled
 import bibleplanner.feature.profile.generated.resources.study_suggestion_option
 import bibleplanner.feature.profile.generated.resources.theme_option
 import bibleplanner.feature.profile.generated.resources.theme_system
+import bibleplanner.ui.component.generated.resources.language_english
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.fixture.SAMPLE_BIBLE_VERSION_NAME
 import com.quare.bibleplanner.feature.profile.fixture.profileUiState
@@ -43,7 +43,7 @@ import com.quare.bibleplanner.ui.utils.toStringResource
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import bibleplanner.feature.preferences.app_language.generated.resources.Res as AppLanguageRes
+import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 @OptIn(ExperimentalTestApi::class)
 internal class ProfileUiTest {
@@ -66,7 +66,7 @@ internal class ProfileUiTest {
 
             // Then
             onListNodeWithText(getString(Res.string.theme_system)).assertIsDisplayed()
-            onListNodeWithText(getString(AppLanguageRes.string.language_english)).assertIsDisplayed()
+            onListNodeWithText(getString(ComponentRes.string.language_english)).assertIsDisplayed()
             onListNodeWithText(SAMPLE_BIBLE_VERSION_NAME).assertIsDisplayed()
             onListNodeWithText(planStartDateSubtitle).assertIsDisplayed()
             onListNodeWithText(getString(Res.string.study_suggestion_enabled_dialog)).assertIsDisplayed()

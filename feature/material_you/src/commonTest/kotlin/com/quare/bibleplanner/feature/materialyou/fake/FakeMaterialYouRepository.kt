@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.materialyou.fake
 
-import com.quare.bibleplanner.feature.materialyou.domain.repository.MaterialYouRepository
+import com.quare.bibleplanner.core.preferences.materialyou.domain.repository.MaterialYouRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 

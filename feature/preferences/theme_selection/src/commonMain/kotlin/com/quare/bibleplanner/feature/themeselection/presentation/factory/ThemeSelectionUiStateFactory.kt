@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.feature.themeselection.presentation.factory
 
+import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
+import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.IsDynamicColorSupported
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetContrastTypeFlow
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetThemeOptionFlow
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetThemeSyncEnabledFlow
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
-import com.quare.bibleplanner.feature.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
-import com.quare.bibleplanner.feature.materialyou.domain.usecase.IsDynamicColorSupported
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetContrastTypeFlow
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeOptionFlow
-import com.quare.bibleplanner.feature.themeselection.domain.usecase.GetThemeSyncEnabledFlow
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

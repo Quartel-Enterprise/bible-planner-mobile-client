@@ -4,11 +4,16 @@ import com.quare.bibleplanner.core.books.di.booksModule
 import com.quare.bibleplanner.core.clear.di.clearModule
 import com.quare.bibleplanner.core.datastore.di.dataStoreProviderModule
 import com.quare.bibleplanner.core.date.di.dateModule
+import com.quare.bibleplanner.core.daystudy.di.dayStudyModule
 import com.quare.bibleplanner.core.devices.di.devicesModule
 import com.quare.bibleplanner.core.di.modelModule
+import com.quare.bibleplanner.core.inappupdate.di.inAppUpdateModule
 import com.quare.bibleplanner.core.loginnudge.di.loginNudgeModule
 import com.quare.bibleplanner.core.network.data.di.networkModule
 import com.quare.bibleplanner.core.plan.di.planModule
+import com.quare.bibleplanner.core.preferences.materialyou.di.materialYouModule
+import com.quare.bibleplanner.core.preferences.studysuggestion.di.studySuggestionModule
+import com.quare.bibleplanner.core.preferences.themeselection.di.themeSelectionModule
 import com.quare.bibleplanner.core.profile.di.profileModule
 import com.quare.bibleplanner.core.provider.analytics.di.analyticsModule
 import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
@@ -35,7 +40,7 @@ import com.quare.bibleplanner.feature.congrats.di.congratsModule
 import com.quare.bibleplanner.feature.contactsupport.di.contactSupportModule
 import com.quare.bibleplanner.feature.day.di.dayModule
 import com.quare.bibleplanner.feature.dayreadingcomplete.di.dayReadingCompleteModule
-import com.quare.bibleplanner.feature.daystudy.di.dayStudyModule
+import com.quare.bibleplanner.feature.daystudy.di.featureDayStudyModule
 import com.quare.bibleplanner.feature.deleteaccount.di.deleteAccountModule
 import com.quare.bibleplanner.feature.deletenotes.di.deleteNotesModule
 import com.quare.bibleplanner.feature.deleteprogress.di.deleteProgressModule
@@ -44,22 +49,22 @@ import com.quare.bibleplanner.feature.donation.di.donationModule
 import com.quare.bibleplanner.feature.donation.pixqr.di.pixQrModule
 import com.quare.bibleplanner.feature.editplanstartdate.di.editPlanStartDateModule
 import com.quare.bibleplanner.feature.editprofile.di.editProfileModule
-import com.quare.bibleplanner.feature.inappupdate.di.inAppUpdateModule
+import com.quare.bibleplanner.feature.inappupdate.di.featureInAppUpdateModule
 import com.quare.bibleplanner.feature.login.di.loginModule
 import com.quare.bibleplanner.feature.loginsyncnudge.di.loginSyncNudgeModule
 import com.quare.bibleplanner.feature.loginwarning.di.loginWarningModule
 import com.quare.bibleplanner.feature.logout.di.logoutModule
 import com.quare.bibleplanner.feature.main.di.mainModule
-import com.quare.bibleplanner.feature.materialyou.di.materialYouModule
+import com.quare.bibleplanner.feature.materialyou.di.featureMaterialYouModule
 import com.quare.bibleplanner.feature.notificationpermission.di.notificationPermissionModule
 import com.quare.bibleplanner.feature.paywall.di.paywallModule
 import com.quare.bibleplanner.feature.paywallteaser.di.paywallTeaserModule
 import com.quare.bibleplanner.feature.profile.di.featureProfileModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.releasenotes.di.releaseNotesModule
-import com.quare.bibleplanner.feature.studysuggestion.di.studySuggestionModule
+import com.quare.bibleplanner.feature.studysuggestion.di.featureStudySuggestionModule
 import com.quare.bibleplanner.feature.subscriptiondetails.di.subscriptionDetailsModule
-import com.quare.bibleplanner.feature.themeselection.di.themeSelectionDomainModule
+import com.quare.bibleplanner.feature.themeselection.di.featureThemeSelectionModule
 import com.quare.bibleplanner.feature.verse.addnote.di.verseNoteModule
 import com.quare.bibleplanner.feature.verse.selectionmenu.di.verseSelectionModule
 import com.quare.bibleplanner.feature.verse.share.di.shareVerseModule
@@ -77,12 +82,16 @@ object CommonKoinUtils {
         platformModule,
         connectivityModule,
         dataStoreProviderModule,
-        themeSelectionDomainModule,
+        themeSelectionModule,
+        featureThemeSelectionModule,
         studySuggestionModule,
+        featureStudySuggestionModule,
         materialYouModule,
+        featureMaterialYouModule,
         readingPlanModule,
         dayModule,
         dayStudyModule,
+        featureDayStudyModule,
         dayReadingCompleteModule,
         chatModule,
         deleteProgressModule,
@@ -130,5 +139,6 @@ object CommonKoinUtils {
         com.quare.bibleplanner.feature.read.di.featureReadModule,
         notificationPermissionModule,
         inAppUpdateModule,
+        featureInAppUpdateModule,
     )
 }
