@@ -1,10 +1,7 @@
 <resources>
-    <string name="day_details_screen">Tela de Detalhes do Dia</string>
-    <string name="back">Voltar</string>
     <string name="day_title_part">Dia %1$d</string>
     <string name="week_title_part">Semana %1$d</string>
     <string name="passages_completed">passagens concluídas</string>
-    <string name="loading">Carregando...</string>
     <string name="no_date_set">Nenhuma data definida</string>
     <string name="mark_as_unread">Marcar como não lido</string>
     <string name="mark_as_read">Marcar como lido</string>
@@ -13,7 +10,6 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="select_time">Selecionar Hora</string>
-    <string name="future_date_error">Não é possível selecionar uma data futura</string>
     <string name="calendar">Calendário</string>
     <string name="vers">Versos</string>
     <string name="planned_read_date">Data de leitura programada:</string>

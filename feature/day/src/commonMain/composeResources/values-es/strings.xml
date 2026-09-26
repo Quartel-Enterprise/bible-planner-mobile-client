@@ -1,10 +1,7 @@
 <resources>
-    <string name="day_details_screen">Pantalla de Detalles del Día</string>
-    <string name="back">Atrás</string>
     <string name="day_title_part">Día %1$d</string>
     <string name="week_title_part">Semana %1$d</string>
     <string name="passages_completed">pasajes completados</string>
-    <string name="loading">Cargando...</string>
     <string name="no_date_set">No hay fecha establecida</string>
     <string name="mark_as_unread">Marcar como no leído</string>
     <string name="mark_as_read">Marcar como leído</string>
@@ -13,7 +10,6 @@
     <string name="ok">Aceptar</string>
     <string name="cancel">Cancelar</string>
     <string name="select_time">Seleccionar hora</string>
-    <string name="future_date_error">No se puede seleccionar una fecha futura</string>
     <string name="calendar">Calendario</string>
     <string name="vers">Versos</string>
     <string name="planned_read_date">Fecha de lectura programada:</string>

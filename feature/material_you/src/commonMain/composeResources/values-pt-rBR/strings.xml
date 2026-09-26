@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="android_dynamic_colors">Cores dinâmicas</string>
     <string name="dynamic_colors_title">Cores dinâmicas</string>
     <string name="dynamic_colors_message">
         As cores dinâmicas adaptam a aparência do app para combinar com o papel de parede do seu dispositivo.

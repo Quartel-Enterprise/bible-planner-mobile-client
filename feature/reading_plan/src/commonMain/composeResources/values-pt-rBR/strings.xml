@@ -1,11 +1,9 @@
 <resources>
     <string name="book_order">Ordem dos Livros</string>
     <string name="chronological_order">Ordem Cronológica</string>
-    <string name="progress_label">Progresso: %1$d %</string>
     <string name="plan_progress_title">Progresso do plano</string>
     <string name="plan_progress_days_completed">%1$d de %2$d dias</string>
     <string name="plan_progress_days_remaining">%1$d dias restantes</string>
-    <string name="loading">Carregando...</string>
 
     <string name="plan_motivation_overall_zero">Tudo começa com uma página.</string>
     <string name="plan_motivation_overall_early_start">Ótimo começo! O hábito está nascendo.</string>
@@ -38,26 +36,16 @@
     <string name="plan_motivation_milestone_book_completed">Você terminou %1$s. Próximo capítulo!</string>
 
     <string name="week_number">Semana %1$d</string>
-    <string name="week_progress_complete">completo</string>
     <string name="week_progress_summary">%1$d de %2$d dias</string>
     <string name="day_number">Dia %1$d</string>
     <string name="today_badge">Hoje</string>
     <string name="more_options">Mais opções</string>
 
     <string name="delete_progress_option">Deletar progresso</string>
-    <string name="go_to_unread">Ir para não lido</string>
     <string name="scroll_to_top">Rolar para o topo</string>
 
     <string name="no_progress_to_delete_message">Você não tem nenhum progresso para deletar ainda.</string>
-    <string name="monday">Segunda-feira</string>
-    <string name="tuesday">Terça-feira</string>
-    <string name="wednesday">Quarta-feira</string>
-    <string name="thursday">Quinta-feira</string>
-    <string name="friday">Sexta-feira</string>
-    <string name="saturday">Sábado</string>
-    <string name="sunday">Domingo</string>
     <string name="edit_plan_start_day">Data de início do plano</string>
-    <string name="start_date">Data de início</string>
 
     <string name="hero_kicker_new">SUA PRIMEIRA LEITURA</string>
     <string name="hero_kicker_today">LEITURA DE HOJE</string>

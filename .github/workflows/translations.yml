@@ -32,6 +32,11 @@ jobs:
       - name: Check translations
         run: python3 scripts/check_translations.py
 
+      # Every string in a values/strings.xml must be referenced by the code, so a
+      # string left behind by a removed feature doesn't keep being translated
+      - name: Check unused strings
+        run: python3 scripts/check_unused_strings.py
+
       # Same gate for the in-app release notes JSON: the three languages must
       # declare the same versions and platform buckets
       - name: Check release notes

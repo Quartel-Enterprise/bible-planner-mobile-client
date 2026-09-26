@@ -10,6 +10,5 @@
     <string name="renews_label">Renews</string>
     <string name="expires_label">Expires</string>
     <string name="origin_label">Origin</string>
-    <string name="store_name_android">Google Play</string>
     <string name="store_name_ios">App Store</string>
 </resources>

@@ -18,10 +18,8 @@
     <string name="donate_option">Doar</string>
     <string name="pro_and_support">Pro e Suporte</string>
     <string name="pro_section">Pro</string>
-    <string name="support_section">Suporte</string>
     <string name="preferences">Preferências</string>
     <string name="account_data_section">Conta e dados</string>
-    <string name="legal_section">Legal</string>
     <string name="social_section">Social</string>
     <string name="support_comments_section">Suporte e comentários</string>
     <string name="contact_support_option">Contatar suporte</string>
@@ -40,7 +38,6 @@
     <string name="theme_dark">Escuro</string>
     <string name="theme_system">Padrão do sistema</string>
     <string name="you_re_pro">Você é Pro</string>
-    <string name="pro_description">Obrigado pelo seu apoio!\nSeu plano é válido até %s.</string>
     <string name="pro_description_simple">Obrigado pelo seu apoio!</string>
 
     <string name="contrast_standard">Contraste padrão</string>

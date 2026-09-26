@@ -61,3 +61,22 @@ The `module-graph` workflow runs `assertModuleGraph` on every pull request — a
 `main` — that touches a Gradle build script, `build-logic` or the version catalog: the only files
 that can change the module graph. It is a separate workflow so that Kotlin-only changes skip the
 full Gradle configuration it needs.
+
+## String resources
+
+Two scripts guard the `strings.xml` files, and the `translations` workflow runs both on every pull
+request — and on every push to `main`:
+
+```bash
+python3 scripts/check_translations.py    # every string exists in values-pt-rBR and values-es
+python3 scripts/check_unused_strings.py  # every string is referenced by the code
+```
+
+`check_unused_strings.py` reports a string no code references anymore, so a leftover of a removed
+feature doesn't keep being translated. A Compose Resources string counts as used when some Kotlin
+file imports its accessor (`import bibleplanner.feature.day.generated.resources.day_title`); an
+Android `res/` string when some code references `R.string.<name>` or some XML `@string/<name>`.
+Android Lint's `UnusedResources` can't do this: it doesn't see Compose Resources accessors.
+
+When it fails, delete the reported strings from `values/strings.xml` and from every translation next
+to it.

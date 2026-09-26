@@ -90,8 +90,6 @@
     <string name="synopsis">Sinopsis</string>
     <string name="chapters">Capítulos</string>
     <string name="reading_progress">Progreso de Lectura</string>
-    <string name="read_count">%1$d / %2$d leídos</string>
-    <string name="tap_to_mark">tocar para marcar</string>
     <string name="mark_all_as_read">Marcar todos como leídos</string>
     <string name="mark_all_as_unread">Marcar todos como no leídos</string>
     <string name="read_count_suffix"> leídos</string>
