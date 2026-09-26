@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.daystudy.di
 import com.quare.bibleplanner.core.clear.domain.ClearDayStudyLocalData
 import com.quare.bibleplanner.feature.daystudy.data.datasource.DayStudyLocalDataSource
 import com.quare.bibleplanner.feature.daystudy.data.datasource.DayStudyRemoteDataSource
+import com.quare.bibleplanner.feature.daystudy.data.datasource.DayStudyRemoteDataSourceImpl
 import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyCacheKeyFactory
 import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyContentMapper
 import com.quare.bibleplanner.feature.daystudy.data.mapper.DayStudyEntityMapper
@@ -48,7 +49,7 @@ val dayStudyModule = module {
     factoryOf(::DayStudyStatusMapper)
     factoryOf(::DayStudyPhaseMapper)
 
-    singleOf(::DayStudyRemoteDataSource)
+    singleOf(::DayStudyRemoteDataSourceImpl).bind<DayStudyRemoteDataSource>()
     singleOf(::DayStudyLocalDataSource)
     singleOf(::DayStudyRepositoryImpl).bind<DayStudyRepository>()
     singleOf(::DayStudyPanelRatioRepositoryImpl).bind<DayStudyPanelRatioRepository>()
