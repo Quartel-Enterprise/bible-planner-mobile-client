@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.impl
 
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import com.quare.bibleplanner.core.preferences.materialyou.fake.FakeMaterialYouRepository
 import com.quare.bibleplanner.core.preferences.materialyou.fake.FakeSyncedPreferenceDao
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest

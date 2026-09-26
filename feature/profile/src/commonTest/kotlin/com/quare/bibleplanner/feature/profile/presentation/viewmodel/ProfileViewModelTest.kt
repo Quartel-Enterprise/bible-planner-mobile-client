@@ -7,6 +7,8 @@ import bibleplanner.feature.profile.generated.resources.logout_requires_internet
 import bibleplanner.feature.profile.generated.resources.up_to_date_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
+import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
+import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookChapterModel
@@ -33,12 +35,14 @@ import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
+import com.quare.bibleplanner.core.model.theme.ContrastType
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
-import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOptionUseCase
@@ -53,10 +57,6 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionIt
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiAction
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
-import com.quare.bibleplanner.core.model.theme.ContrastType
-import com.quare.bibleplanner.core.model.theme.Theme
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers

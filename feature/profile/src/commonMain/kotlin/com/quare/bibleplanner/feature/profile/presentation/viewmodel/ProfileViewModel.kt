@@ -8,6 +8,10 @@ import bibleplanner.feature.profile.generated.resources.login_requires_internet
 import bibleplanner.feature.profile.generated.resources.logout_requires_internet
 import bibleplanner.feature.profile.generated.resources.up_to_date_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
+import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
+import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.CheckForUpdate
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
@@ -32,10 +36,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.GetWebAppUrl
-import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
-import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
-import com.quare.bibleplanner.core.inappupdate.domain.usecase.CheckForUpdate
-import com.quare.bibleplanner.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileUiStateFactory
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType

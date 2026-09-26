@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.core.daystudy.data.mapper
 
+import com.quare.bibleplanner.core.daystudy.fake.dayStudyModel
+import com.quare.bibleplanner.core.daystudy.fake.dayStudyResponse
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyChapterSummaryEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyFactEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyQuestionEntity
 import com.quare.bibleplanner.core.provider.room.entity.DayStudyTakeawayEntity
-import com.quare.bibleplanner.core.daystudy.fake.dayStudyModel
-import com.quare.bibleplanner.core.daystudy.fake.dayStudyResponse
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

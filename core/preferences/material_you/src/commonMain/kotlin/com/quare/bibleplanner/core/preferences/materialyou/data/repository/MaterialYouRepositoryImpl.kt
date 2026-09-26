@@ -4,8 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.quare.bibleplanner.core.datastore.write
-import com.quare.bibleplanner.core.utils.orFalse
 import com.quare.bibleplanner.core.preferences.materialyou.domain.repository.MaterialYouRepository
+import com.quare.bibleplanner.core.utils.orFalse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

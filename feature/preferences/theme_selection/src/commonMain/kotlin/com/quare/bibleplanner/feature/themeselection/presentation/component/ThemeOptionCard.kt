@@ -26,8 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionModel
 import com.quare.bibleplanner.core.model.theme.Theme
+import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionModel
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

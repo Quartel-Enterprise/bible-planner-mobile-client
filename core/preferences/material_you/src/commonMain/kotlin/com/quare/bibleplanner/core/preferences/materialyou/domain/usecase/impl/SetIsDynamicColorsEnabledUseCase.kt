@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.impl
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import com.quare.bibleplanner.core.preferences.materialyou.domain.repository.MaterialYouRepository
 import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.SetIsDynamicColorsEnabled
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.flow.first
 
 /**

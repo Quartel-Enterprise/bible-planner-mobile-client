@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.daystudy.fake
 
-import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 

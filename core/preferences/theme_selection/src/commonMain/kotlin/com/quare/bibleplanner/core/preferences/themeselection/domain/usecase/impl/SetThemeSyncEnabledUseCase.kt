@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.impl
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.GetIsDynamicColorsEnabledFlow
 import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.IsDynamicColorSupported
 import com.quare.bibleplanner.core.preferences.themeselection.domain.repository.ThemeSelectionRepository
 import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.SetThemeSyncEnabled
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.flow.first
 
 /**

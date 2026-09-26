@@ -1,10 +1,10 @@
 package com.quare.bibleplanner.core.daystudy.data.mapper
 
-import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.daystudy.data.dto.ChapterRequestDto
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyRequestDto
 import com.quare.bibleplanner.core.daystudy.data.dto.PassageRequestDto
 import com.quare.bibleplanner.core.daystudy.domain.mapper.BookIdWireNameMapper
+import com.quare.bibleplanner.core.model.plan.PassageModel
 
 internal class DayStudyRequestMapper(
     private val bookIdWireNameMapper: BookIdWireNameMapper,

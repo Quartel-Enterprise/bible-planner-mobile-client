@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.inappupdate.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.CompleteUpdateInstall
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.bibleplanner.core.inappupdate.domain.usecase.CompleteUpdateInstall
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.UpdateDownloadedUiEvent
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.launch

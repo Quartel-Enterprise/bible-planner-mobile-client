@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 
-interface DayCompletionBannerSlot {
+fun interface DayCompletionBannerSlot {
     @Composable
     fun Content(
         day: PlanDayLocationModel,

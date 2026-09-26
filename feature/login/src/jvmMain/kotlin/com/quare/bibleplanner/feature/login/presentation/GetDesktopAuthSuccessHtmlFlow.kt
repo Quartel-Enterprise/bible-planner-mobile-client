@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.feature.login.presentation
 
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetThemeOptionFlow
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.feature.login.presentation.factory.DesktopAuthSuccessHtmlFactory
-import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetThemeOptionFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 

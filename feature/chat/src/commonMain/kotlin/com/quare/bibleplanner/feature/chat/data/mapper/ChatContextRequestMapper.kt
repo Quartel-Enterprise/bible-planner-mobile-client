@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.feature.chat.data.mapper
 
+import com.quare.bibleplanner.core.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.feature.chat.data.dto.ChapterRequestDto
 import com.quare.bibleplanner.feature.chat.data.dto.ChatContextRequestDto
 import com.quare.bibleplanner.feature.chat.data.dto.PassageRequestDto
 import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
-import com.quare.bibleplanner.core.daystudy.domain.mapper.BookIdWireNameMapper
 
 internal class ChatContextRequestMapper(
     private val bookIdWireNameMapper: BookIdWireNameMapper,

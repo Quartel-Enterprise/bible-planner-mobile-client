@@ -21,10 +21,10 @@ import com.quare.bibleplanner.core.user.domain.model.UserModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.contactsupport.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactSupportUiState
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.jetbrains.compose.resources.getString
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 internal class BuildSupportEmailBodyImplTest {

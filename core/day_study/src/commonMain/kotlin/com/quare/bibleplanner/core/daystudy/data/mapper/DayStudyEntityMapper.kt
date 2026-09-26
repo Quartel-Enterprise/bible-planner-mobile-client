@@ -1,17 +1,17 @@
 package com.quare.bibleplanner.core.daystudy.data.mapper
 
-import com.quare.bibleplanner.core.provider.room.entity.DayStudyChapterSummaryEntity
-import com.quare.bibleplanner.core.provider.room.entity.DayStudyEntity
-import com.quare.bibleplanner.core.provider.room.entity.DayStudyFactEntity
-import com.quare.bibleplanner.core.provider.room.entity.DayStudyQuestionEntity
-import com.quare.bibleplanner.core.provider.room.entity.DayStudyTakeawayEntity
-import com.quare.bibleplanner.core.provider.room.relation.DayStudyWithContent
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyResponseDto
 import com.quare.bibleplanner.core.daystudy.domain.model.ChapterSummaryModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.daystudy.domain.model.FactModel
 import com.quare.bibleplanner.core.daystudy.domain.model.HistoricalContextModel
 import com.quare.bibleplanner.core.daystudy.domain.model.QaModel
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyChapterSummaryEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyFactEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyQuestionEntity
+import com.quare.bibleplanner.core.provider.room.entity.DayStudyTakeawayEntity
+import com.quare.bibleplanner.core.provider.room.relation.DayStudyWithContent
 
 internal class DayStudyEntityMapper {
     fun mapToEntities(

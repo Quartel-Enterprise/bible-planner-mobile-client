@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.core.daystudy.domain.usecase
 
+import com.quare.bibleplanner.core.daystudy.fake.FakeBooksRepository
+import com.quare.bibleplanner.core.daystudy.fake.FakePlanRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
@@ -7,8 +9,6 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
-import com.quare.bibleplanner.core.daystudy.fake.FakeBooksRepository
-import com.quare.bibleplanner.core.daystudy.fake.FakePlanRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate

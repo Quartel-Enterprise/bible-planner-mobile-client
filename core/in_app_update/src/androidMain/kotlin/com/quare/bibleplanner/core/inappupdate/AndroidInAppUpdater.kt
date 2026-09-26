@@ -9,10 +9,10 @@ import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
-import com.quare.bibleplanner.core.provider.platform.CurrentActivityProvider
-import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateDownloadState
+import com.quare.bibleplanner.core.provider.platform.CurrentActivityProvider
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine

@@ -5,12 +5,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.quare.bibleplanner.core.datastore.write
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
-import com.quare.bibleplanner.core.preferences.themeselection.data.mapper.ThemePreferenceMapper
-import com.quare.bibleplanner.core.preferences.themeselection.domain.repository.ThemeSelectionRepository
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
+import com.quare.bibleplanner.core.preferences.themeselection.data.mapper.ThemePreferenceMapper
+import com.quare.bibleplanner.core.preferences.themeselection.domain.repository.ThemeSelectionRepository
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

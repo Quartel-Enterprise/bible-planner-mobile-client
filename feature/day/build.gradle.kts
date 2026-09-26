@@ -71,6 +71,8 @@ kotlin {
         }
 
         getByName("androidHostTest").dependencies {
+            // The store screenshots draw the study card the day screen gets from the root
+            implementation(projects.feature.dayStudy)
             implementation(projects.ui.theme)
             implementation(libs.storeScreenshots.library)
             implementation(libs.androidx.compose.ui.testManifest)

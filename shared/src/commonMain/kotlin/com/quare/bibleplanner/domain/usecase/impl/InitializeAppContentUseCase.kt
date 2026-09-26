@@ -7,6 +7,9 @@ import com.quare.bibleplanner.core.devices.domain.usecase.ObserveCurrentDeviceRe
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDeviceRegistration
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.MigratePlanPreferencesToSyncStoreUseCase
+import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.ObserveDynamicColorsSync
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.ObserveStudySuggestionSync
+import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.ObserveThemeSync
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.ObserveTesterUserProperty
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
@@ -17,9 +20,6 @@ import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveLanguage
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ObserveSelectedVersionUseCase
 import com.quare.bibleplanner.feature.logout.domain.usecase.HandleCurrentDeviceRevoked
 import com.quare.bibleplanner.feature.logout.domain.usecase.ObserveSessionLoss
-import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.ObserveDynamicColorsSync
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.ObserveStudySuggestionSync
-import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.joinAll

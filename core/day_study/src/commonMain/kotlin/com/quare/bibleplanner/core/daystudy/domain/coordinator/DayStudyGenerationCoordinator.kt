@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.core.daystudy.domain.coordinator
 
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 import kotlinx.coroutines.flow.StateFlow
 
 /**

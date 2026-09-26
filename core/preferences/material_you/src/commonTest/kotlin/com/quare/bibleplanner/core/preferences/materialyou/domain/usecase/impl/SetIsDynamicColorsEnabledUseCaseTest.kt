@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.impl
 
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
-import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import com.quare.bibleplanner.core.preferences.materialyou.fake.FakeMaterialYouRepository
 import com.quare.bibleplanner.core.preferences.materialyou.fake.FakeSyncedPreferenceDao
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
+import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

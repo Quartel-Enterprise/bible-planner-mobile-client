@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.books.util.toBookNameResource
+import com.quare.bibleplanner.core.daystudy.domain.usecase.PrefetchDayStudyQuota
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -20,6 +21,9 @@ import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
 import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.ObserveStudySuggestionSettings
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -29,7 +33,6 @@ import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ClearVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleVerseSelection
-import com.quare.bibleplanner.core.daystudy.domain.usecase.PrefetchDayStudyQuota
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
@@ -48,9 +51,6 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerticalChapterCounts
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.ObserveStudySuggestionSettings
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel

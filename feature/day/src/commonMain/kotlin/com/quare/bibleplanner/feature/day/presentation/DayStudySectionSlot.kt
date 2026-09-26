@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 
-interface DayStudySectionSlot {
+fun interface DayStudySectionSlot {
     @Composable
     fun Content(
         passages: List<PassageModel>,

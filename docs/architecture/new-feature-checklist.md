@@ -1,6 +1,6 @@
 ## Checklist for a New Feature
 
-- [ ] Create a new Gradle module under `feature/` with the standard layer structure
+- [ ] Create a new Gradle module under `feature/` with the standard layer structure — it may not depend on another `feature/` module (see [Dependency rules](module-structure.md#dependency-rules))
 - [ ] Define `UiState`, `UiEvent`, `UiAction` in `presentation/model/` (each `UiEvent` implements `UiEvent` marker and declares its `analytics` decision)
 - [ ] Define repository interface in `domain/repository/`
 - [ ] Implement repository in `data/repository/`

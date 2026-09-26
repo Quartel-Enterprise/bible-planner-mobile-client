@@ -1,14 +1,14 @@
 package com.quare.bibleplanner.core.inappupdate.domain.usecase.impl
 
+import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
+import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
+import com.quare.bibleplanner.core.inappupdate.fake.FakeUpdatePromptPreferences
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
-import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
-import com.quare.bibleplanner.core.inappupdate.fake.FakeUpdatePromptPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

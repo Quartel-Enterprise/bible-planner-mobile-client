@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.studysuggestion.presentation.model
 
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
 internal sealed interface StudySuggestionUiEvent : UiEvent {

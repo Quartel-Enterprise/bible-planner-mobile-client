@@ -1,6 +1,12 @@
 package com.quare.bibleplanner.core.daystudy.domain.coordinator
 
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.daystudy.domain.exception.LimitReachedException
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
+import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyPhaseModel
+import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -12,12 +18,6 @@ import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObse
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.suspendRunCatching
-import com.quare.bibleplanner.core.daystudy.domain.exception.LimitReachedException
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
-import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyPhaseModel
-import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyUseCase
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

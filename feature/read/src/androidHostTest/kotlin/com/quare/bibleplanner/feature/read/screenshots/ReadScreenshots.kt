@@ -2,13 +2,13 @@ package com.quare.bibleplanner.feature.read.screenshots
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.fixture.NoDayCompletionBanner
 import com.quare.bibleplanner.feature.read.fixture.readUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.ReadNarrowScreen
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
-import com.quare.bibleplanner.core.model.theme.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle

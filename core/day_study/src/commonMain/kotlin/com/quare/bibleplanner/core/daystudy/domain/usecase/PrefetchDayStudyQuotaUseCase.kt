@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.core.daystudy.domain.usecase
 
 import co.touchlab.kermit.Logger
+import com.quare.bibleplanner.core.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.utils.suspendRunCatching
-import com.quare.bibleplanner.core.daystudy.domain.store.DayStudyQuotaPrefetchStore
 import kotlinx.coroutines.flow.first
 
 /**

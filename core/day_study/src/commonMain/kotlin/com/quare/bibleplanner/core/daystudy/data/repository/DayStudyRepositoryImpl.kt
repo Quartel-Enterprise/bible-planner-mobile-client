@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.core.daystudy.data.repository
 
 import co.touchlab.kermit.Logger
-import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.daystudy.data.datasource.DayStudyLocalDataSource
 import com.quare.bibleplanner.core.daystudy.data.datasource.DayStudyRemoteDataSource
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyResponseDto
@@ -17,6 +16,7 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEvent
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import io.github.jan.supabase.exceptions.RestException
 import io.ktor.client.plugins.sse.SSEClientException
 import kotlinx.coroutines.flow.Flow

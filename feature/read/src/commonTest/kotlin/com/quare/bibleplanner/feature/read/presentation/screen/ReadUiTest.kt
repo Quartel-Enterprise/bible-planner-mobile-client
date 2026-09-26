@@ -35,9 +35,9 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
+import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import org.jetbrains.compose.resources.getString
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 import bibleplanner.ui.component.generated.resources.back as backString
 

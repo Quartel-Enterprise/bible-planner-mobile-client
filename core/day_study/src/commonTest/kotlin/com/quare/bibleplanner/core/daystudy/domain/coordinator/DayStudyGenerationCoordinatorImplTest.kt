@@ -2,12 +2,6 @@ package com.quare.bibleplanner.core.daystudy.domain.coordinator
 
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
-import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.plan.ChapterModel
-import com.quare.bibleplanner.core.model.plan.PassageModel
-import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
-import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.core.daystudy.domain.exception.LimitReachedException
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
@@ -18,6 +12,12 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.core.daystudy.domain.model.HistoricalContextModel
 import com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyUseCase
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.plan.ChapterModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
+import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
+import com.quare.bibleplanner.core.utils.locale.Language
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

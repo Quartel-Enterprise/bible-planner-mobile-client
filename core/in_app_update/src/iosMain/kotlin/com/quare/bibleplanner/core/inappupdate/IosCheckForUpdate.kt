@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.core.inappupdate
 
-import com.quare.bibleplanner.core.network.data.handler.RequestHandler
-import com.quare.bibleplanner.core.utils.version.VersionComparator
 import com.quare.bibleplanner.core.inappupdate.data.dto.ItunesLookupResponseDto
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.core.inappupdate.domain.usecase.CheckForUpdate
 import com.quare.bibleplanner.core.inappupdate.generated.InAppUpdateBuildKonfig
+import com.quare.bibleplanner.core.network.data.handler.RequestHandler
+import com.quare.bibleplanner.core.utils.version.VersionComparator
 import io.ktor.client.request.get
 
 internal class IosCheckForUpdate(

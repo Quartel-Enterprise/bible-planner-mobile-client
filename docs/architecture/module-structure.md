@@ -31,6 +31,29 @@ ui/
 └── testing/         # setUiTestContent for the Compose UI tests (test-only dependency)
 ```
 
+## Dependency rules
+
+- A feature never depends on another feature. `assertModuleGraph` fails the build on the first
+  `:feature:* -> :feature:*` edge in a production source set; tests may still depend on a feature
+  (the Day store screenshots draw the real study card).
+- Only the composition root — `:core:navigation` and `:core:provider:koin` — depends on features.
+- Core never depends on `:ui:*`, and `:ui:*` never depends on features. `:ui:*` may depend on core,
+  which is why domain types a screen also draws, like `Theme` and `ContrastType`, live in
+  `core/model` and not in `ui/theme`.
+
+When two features need the same thing, it goes down, never sideways:
+
+| Need | Where it goes | Example |
+|---|---|---|
+| Domain or data another feature reads | A `:core:*` module holding the `domain/` and `data/` layers; the feature keeps `presentation/` | `core/day_study`, `core/in_app_update`, `core/preferences/{theme_selection,material_you,study_suggestion}` |
+| A string or composable another feature shows | `ui/component` | the language names, `Language.toStringResource()` |
+| A feature's screen drawn inside another's | The host declares a slot interface; `:core:navigation` implements it with the other feature's composable and passes it to the host's entry | `DayStudySectionSlot` (study card in Day), `DayCompletionBannerSlot` (banner in Read) |
+| A host composing other features' entries | The host takes them as a parameter from `:core:navigation` | `MainTabEntries` (Plans, Books and Profile tabs) |
+
+When a feature's domain moves to core, split its Koin module the same way: the core module keeps
+the plain name (`dayStudyModule`) and the feature's presentation module takes a `feature` prefix
+(`featureDayStudyModule`), as `profileModule` / `featureProfileModule` already did.
+
 ### Within every `feature/` or `core/` module
 
 ```

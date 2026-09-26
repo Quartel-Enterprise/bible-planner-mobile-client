@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -19,16 +18,12 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.dayStudy)
-            implementation(projects.core.clear)
             implementation(projects.core.model)
             implementation(projects.core.utils)
             implementation(projects.core.books)
             implementation(projects.core.plan)
             implementation(projects.core.user)
             implementation(projects.core.provider.dataStore)
-            implementation(projects.core.provider.language)
-            implementation(projects.core.provider.room)
-            implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.connectivity)
             implementation(projects.core.provider.analytics)
@@ -47,17 +42,6 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.materialIconsExtended)
             implementation(libs.compose.components.resources)
-
-            // Supabase
-            implementation(project.dependencies.platform(libs.supabase.bom))
-            implementation(libs.supabase.functions)
-            implementation(libs.supabase.postgrest)
-
-            // Ktor
-            implementation(libs.ktor.client.core)
-
-            // Serialization
-            implementation(libs.kotlinx.serialization.json)
 
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))
@@ -81,15 +65,14 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.ktor.client.mock)
+            implementation(libs.kotlinx.datetime)
             implementation(projects.core.date)
+            implementation(projects.core.provider.language)
         }
 
         jvmTest.dependencies {
             // Skiko native library, required by compose-resources' getString() on the JVM target
             implementation(compose.desktop.currentOs)
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.sqlite.bundled)
         }
     }
 }

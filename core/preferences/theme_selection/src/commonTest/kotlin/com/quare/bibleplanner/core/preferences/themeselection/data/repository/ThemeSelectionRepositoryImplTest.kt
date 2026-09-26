@@ -3,12 +3,12 @@ package com.quare.bibleplanner.core.preferences.themeselection.data.repository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
+import com.quare.bibleplanner.core.model.theme.ContrastType
+import com.quare.bibleplanner.core.model.theme.Theme
+import com.quare.bibleplanner.core.preferences.themeselection.data.mapper.ThemePreferenceMapperImpl
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
-import com.quare.bibleplanner.core.preferences.themeselection.data.mapper.ThemePreferenceMapperImpl
-import com.quare.bibleplanner.core.model.theme.ContrastType
-import com.quare.bibleplanner.core.model.theme.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first

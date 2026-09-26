@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.feature.login.presentation.factory
 
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.login.presentation.GetResourcesAsTextResult
 import com.quare.bibleplanner.feature.login.presentation.mapper.LanguageToDesktopAuthSuccessStringsMapper
-import com.quare.bibleplanner.core.model.theme.Theme
 
 /**
  * Builds the HTML shown in the browser after a successful desktop OAuth login.

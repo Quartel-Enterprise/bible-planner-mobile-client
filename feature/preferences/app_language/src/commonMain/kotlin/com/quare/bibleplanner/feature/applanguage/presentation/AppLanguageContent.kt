@@ -29,7 +29,6 @@ import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguage
 import com.quare.bibleplanner.feature.applanguage.presentation.model.AppLanguageUiState
 import com.quare.bibleplanner.ui.component.AppSwitch
 import com.quare.bibleplanner.ui.component.language.toStringResource
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

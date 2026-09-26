@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.core.daystudy.data.datasource
 
-import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyProgressDto
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyRequestDto
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyResponseDto
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyStatusDto
 import com.quare.bibleplanner.core.daystudy.data.exception.DayStudyStreamStalledException
 import com.quare.bibleplanner.core.daystudy.data.model.DayStudyStreamEvent
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.functions.FunctionServerSentEvent
 import io.github.jan.supabase.functions.Functions

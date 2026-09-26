@@ -40,9 +40,9 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import com.quare.bibleplanner.ui.utils.toStringResource
+import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import org.jetbrains.compose.resources.getString
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 @OptIn(ExperimentalTestApi::class)

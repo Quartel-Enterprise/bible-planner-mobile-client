@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.day.fixture.dayUiState
 import com.quare.bibleplanner.feature.day.presentation.DayScreen
@@ -16,7 +17,6 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQu
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.ui.theme.AppTheme
 import com.quare.bibleplanner.ui.theme.model.LocalTheme
-import com.quare.bibleplanner.core.model.theme.Theme
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle

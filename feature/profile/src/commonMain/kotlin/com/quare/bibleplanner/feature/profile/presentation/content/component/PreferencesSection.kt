@@ -15,13 +15,12 @@ import bibleplanner.feature.profile.generated.resources.study_suggestion_enabled
 import bibleplanner.feature.profile.generated.resources.today
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
-import com.quare.bibleplanner.core.utils.locale.Language
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
+import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileMenuOptionsFactory
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
-import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.ui.component.language.toStringResource
 import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate

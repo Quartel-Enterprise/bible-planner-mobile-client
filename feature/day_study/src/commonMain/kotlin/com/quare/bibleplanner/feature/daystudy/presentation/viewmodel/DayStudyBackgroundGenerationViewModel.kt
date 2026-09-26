@@ -1,11 +1,11 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.quare.bibleplanner.core.model.Navigator
-import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.daystudy.domain.coordinator.DayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
+import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiEvent
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel

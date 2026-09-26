@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.core.daystudy.data.mapper
 
-import com.quare.bibleplanner.core.model.book.BookId
-import com.quare.bibleplanner.core.model.plan.ChapterModel
-import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.daystudy.data.dto.ChapterRequestDto
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyRequestDto
 import com.quare.bibleplanner.core.daystudy.data.dto.PassageRequestDto
 import com.quare.bibleplanner.core.daystudy.domain.mapper.BookIdWireNameMapper
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.plan.ChapterModel
+import com.quare.bibleplanner.core.model.plan.PassageModel
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

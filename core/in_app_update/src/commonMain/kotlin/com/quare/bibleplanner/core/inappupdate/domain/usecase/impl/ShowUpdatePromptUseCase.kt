@@ -1,6 +1,10 @@
 package com.quare.bibleplanner.core.inappupdate.domain.usecase.impl
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
+import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptPreferences
+import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.ShowUpdatePrompt
+import com.quare.bibleplanner.core.inappupdate.domain.usecase.StartUpdate
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -8,10 +12,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.isAndroid
-import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptPreferences
-import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
-import com.quare.bibleplanner.core.inappupdate.domain.usecase.ShowUpdatePrompt
-import com.quare.bibleplanner.core.inappupdate.domain.usecase.StartUpdate
 
 internal class ShowUpdatePromptUseCase(
     private val platform: Platform,

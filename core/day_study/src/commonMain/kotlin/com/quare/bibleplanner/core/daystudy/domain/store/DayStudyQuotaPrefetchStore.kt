@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.daystudy.domain.store
 
-import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyQuotaModel
+import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 

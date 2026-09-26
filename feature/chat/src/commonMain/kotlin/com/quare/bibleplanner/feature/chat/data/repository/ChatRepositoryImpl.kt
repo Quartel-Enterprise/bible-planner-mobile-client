@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.chat.data.repository
 
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.suspendRunCatching
@@ -34,7 +35,6 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
 import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import com.quare.bibleplanner.feature.chat.domain.repository.ChatRepository
-import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import io.github.jan.supabase.exceptions.RestException
 import io.ktor.client.plugins.sse.SSEClientException
 import io.ktor.client.statement.bodyAsText

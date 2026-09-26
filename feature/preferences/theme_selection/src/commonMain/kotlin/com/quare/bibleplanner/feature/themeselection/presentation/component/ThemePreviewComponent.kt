@@ -19,10 +19,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.ui.theme.LocalDynamicColorScheme
 import com.quare.bibleplanner.ui.theme.color.darkScheme
 import com.quare.bibleplanner.ui.theme.color.lightScheme
-import com.quare.bibleplanner.core.model.theme.Theme
 
 @Composable
 internal fun ThemePreviewComponent(

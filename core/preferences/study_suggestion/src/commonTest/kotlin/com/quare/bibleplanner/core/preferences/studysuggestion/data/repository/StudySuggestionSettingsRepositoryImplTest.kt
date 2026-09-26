@@ -5,12 +5,12 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.mutablePreferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
-import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.preferences.studysuggestion.fake.FakePreferencesDataStore
 import com.quare.bibleplanner.core.preferences.studysuggestion.fake.FakeSyncedPreferenceDao
+import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
+import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

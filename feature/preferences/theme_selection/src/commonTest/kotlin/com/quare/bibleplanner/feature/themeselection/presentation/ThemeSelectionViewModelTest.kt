@@ -5,12 +5,12 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.MaterialYouBottomSheetNavRoute
+import com.quare.bibleplanner.core.model.theme.ContrastType
+import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.feature.themeselection.presentation.factory.ThemeSelectionUiStateFactory
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
-import com.quare.bibleplanner.core.model.theme.ContrastType
-import com.quare.bibleplanner.core.model.theme.Theme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

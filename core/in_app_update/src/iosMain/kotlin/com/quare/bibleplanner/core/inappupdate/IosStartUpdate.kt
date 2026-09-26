@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.inappupdate
 
-import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.core.inappupdate.domain.usecase.StartUpdate
+import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 
