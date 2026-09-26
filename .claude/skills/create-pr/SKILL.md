@@ -215,12 +215,16 @@ squash merge now:
 If yes, wait for the required checks, then merge:
 
 ```bash
+for _ in $(seq 20); do gh pr checks --required 2>/dev/null | grep -q . && break; sleep 3; done
 gh pr checks --watch --required --interval 5
 gh pr merge --squash
 ```
 
 A ruleset on `main` requires the `check-translations` status check, so `gh pr merge` refuses to
-merge until it passes ("the base branch policy prohibits the merge"). It takes a few seconds. Never
+merge until it passes ("the base branch policy prohibits the merge"). It takes a few seconds. Right
+after the push, GitHub hasn't registered the check yet and `gh pr checks` fails with "no checks
+reported", so the loop first waits up to a minute for it to show up. If it never does, check the
+workflow runs with `gh run list --branch <branch>` and tell the user instead of merging. Never
 bypass it with `--admin`. If a required check fails, report it and stop. If the merge fails for
 another reason (e.g. a conflict with `main`), notify the user and stop.
 
