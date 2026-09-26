@@ -11,6 +11,9 @@ from the main checkout and any other in-progress task, at the cost of an extra s
 git-ignored local config into the new worktree). In-place is faster to start but ties up the
 current checkout for this one task.
 
+Either way, the task also gets an emulator of its own, `BiblePlanner_<short_description>`, so any
+device work it does never touches an emulator the user or another session is using.
+
 ## Step-by-step workflow
 
 ### 1. Determine how to start
@@ -101,19 +104,31 @@ git checkout -b <type>/<short-description> origin/main
 No file copying is needed here — the checkout already has all the local git-ignored config in
 place.
 
-### 5. Report the result
+### 5. Create the task's emulator
+
+In both modes, create an emulator for this task only: `BiblePlanner_<short_description>`, a copy of
+`Pixel_9`'s config. Follow the "Create" section of [`task-emulator.md`](../task-emulator.md), which
+is shared with `finish-task`. It only writes two config files and does not boot the emulator.
+
+Whenever the task needs an Android device (the Compose UI tests of `androidDeviceTest`, a look at
+the running app), boot and use this emulator as described in that file's "Boot", "Run tests on it"
+and "Run the app on it" sections. Never use the user's emulators or another task's.
+
+### 6. Report the result
 
 Worktree mode: tell the user the absolute path to the new worktree and the branch name, and that
 it's ready to open (new Claude Code session, or Android Studio via "Open" on that path).
 
 In-place mode: confirm the branch name and that the current checkout is now on it, ready to work.
 
-### 6. Start implementing immediately
+In both modes, also name the task's emulator.
+
+### 7. Start implementing immediately
 
 If the user's request already described the task to do (bug to fix, feature to add, etc.) —
-not just which branch/mode to use — don't stop after step 5 and wait for a "go ahead"/"pode
+not just which branch/mode to use — don't stop after step 6 and wait for a "go ahead"/"pode
 implementar". Continue straight into implementing that task in this same turn, right after the
-short status report from step 5.
+short status report from step 6.
 
 - Worktree mode: keep working in this same session — do not wait for a new session to be opened
   in the worktree. Point every file tool (Read/Edit/Write/Bash/etc.) at paths inside the new
@@ -136,3 +151,5 @@ implement.
   `.claude/worktrees/<short-description>` relative to the main repo root.
 - In in-place mode, if `git checkout -b` fails because the branch name already exists, stop and ask
   the user how they want to resolve it.
+- If the task's emulator already exists (an AVD of that name, or its `.avd` directory), stop and
+  ask. It may belong to a task that is still running, so don't reuse it or overwrite it.
