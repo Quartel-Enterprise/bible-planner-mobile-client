@@ -10,10 +10,14 @@ This skill adds a whole new language to Bible Planner. English in
 lives in a `values-<qualifier>/strings.xml` next to it, in every module that has strings.
 
 The `translations` workflow runs [`scripts/check_translations.py`](../../../scripts/check_translations.py)
-on every pull request that touches a `strings.xml`. It fails when a locale listed in its
-`REQUIRED_LOCALES` is missing a file, is missing a key, or declares a key the English file doesn't.
-Adding the new locale there is what turns "a translation" into "a supported language": from then on,
-nobody can add an English string without translating it into this language too.
+on every pull request. It fails when a locale listed in its `REQUIRED_LOCALES` is missing a file, is
+missing a key, or declares a key the English file doesn't. Adding the new locale there is what turns
+"a translation" into "a supported language": from then on, nobody can add an English string without
+translating it into this language too.
+
+The same workflow also runs [`scripts/check_unused_strings.py`](../../../scripts/check_unused_strings.py),
+which fails when an English string isn't referenced by any code. It only reads the English files,
+so a new language never needs a change there.
 
 Strings are only half of it here: the app has its own language picker, reading content and store
 listings keyed by language, so the language also has to be wired into code (step 5).
@@ -159,10 +163,15 @@ every code branch where you had to pick a value in step 5, and any term you had 
 (so a native speaker can review it). Then offer the `create-pr` skill — the branch type is
 `feature`, since users get a new language.
 
-## Adding strings later
+## Adding or removing strings later
 
 Once a language is in `REQUIRED_LOCALES`, every new English string needs its translation in the
 same pull request — the `translations` workflow fails otherwise. When the check reports
 `missing translation for: <keys>`, add those keys to each listed file following the rules in step 3.
 When it reports `not declared in values/strings.xml`, the key was renamed or removed in English:
 rename or remove it in the translation too.
+
+When `check_unused_strings.py` reports `never referenced: <keys>`, the code that used those strings
+is gone: delete each key from `values/strings.xml` and from every `values-*/strings.xml` next to it,
+then run both checks again. Don't keep an unused string around "for later" — it's translated and
+reviewed in every language for nothing.
