@@ -174,7 +174,7 @@ private fun DeleteAccountConfirmationContent(
             text = stringResource(Res.string.delete_account_removes_preferences),
         )
         uiState.storeNameRes?.let { storeNameRes ->
-            SubscriptionWarning(storeNameRes = storeNameRes)
+            SubscriptionWarningSurface(storeNameRes = storeNameRes)
         }
         Text(
             text = stringResource(Res.string.delete_account_servers_note),
@@ -201,7 +201,7 @@ private fun DeleteAccountConfirmationContent(
 }
 
 @Composable
-private fun SubscriptionWarning(storeNameRes: StringResource) {
+private fun SubscriptionWarningSurface(storeNameRes: StringResource) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(warningCornerRadius),

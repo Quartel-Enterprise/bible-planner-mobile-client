@@ -98,7 +98,7 @@ internal fun HighlightPaletteRow(
             PresetHighlightColor.entries.forEach { preset ->
                 val color = HighlightColor.Preset(preset)
                 val isLocked = preset.requiresPro && !isProUser
-                ColorSwatch(
+                ColorSwatchBox(
                     color = color.toSwatchColor(),
                     isActive = activeColor?.key == color.key,
                     isLocked = isLocked,
@@ -106,7 +106,7 @@ internal fun HighlightPaletteRow(
                 )
             }
             customColors.forEach { custom ->
-                ColorSwatch(
+                ColorSwatchBox(
                     modifier = Modifier.combinedClickable(
                         onClick = { onColorClick(custom) },
                         onLongClick = { onCustomColorLongClick(custom) },
@@ -175,7 +175,7 @@ internal fun HighlightPaletteRow(
 }
 
 @Composable
-private fun ColorSwatch(
+private fun ColorSwatchBox(
     color: Color,
     isActive: Boolean,
     onClick: (() -> Unit)?,

@@ -22,6 +22,27 @@ class AnalyticsCatalogTest {
 
     private val eventsDir = File(repoRoot, "docs/analytics/events")
 
+    private val analyticsEventNameRegex = Regex("""AnalyticsEventNames\.([A-Z0-9_]+)""")
+
+    private val trackNameRegex = Regex("""name\s*=\s*AnalyticsEventNames\.([A-Z0-9_]+)""")
+
+    private val constValRegex = Regex("""const val ([A-Z0-9_]+) = "([a-z0-9_]+)"""")
+
+    private val eventIndexHeadingRegex = Regex(
+        pattern = """^## Event index$""",
+        option = RegexOption.MULTILINE,
+    )
+
+    private val sectionHeadingRegex = Regex(
+        pattern = """^## """,
+        option = RegexOption.MULTILINE,
+    )
+
+    private val indexRowRegex = Regex(
+        pattern = """^\|\s*\[[a-z0-9_]+]\(events/([a-z0-9_]+)\.md\)""",
+        option = RegexOption.MULTILINE,
+    )
+
     @Test
     fun `every Track Manual name is wired to a trackEvent call elsewhere in its module`() {
         val violations = uiEventDeclarationFiles().flatMap { file ->
@@ -86,15 +107,15 @@ class AnalyticsCatalogTest {
 
     private fun indexedEventNames(): Set<String> {
         val readme = File(repoRoot, "docs/analytics/README.md").readText()
-        val heading = EVENT_INDEX_HEADING_REGEX.find(readme)
+        val heading = eventIndexHeadingRegex.find(readme)
             ?: fail("Heading \"$EVENT_INDEX_HEADING\" not found in docs/analytics/README.md")
         val start = heading.range.last
-        val end = SECTION_HEADING_REGEX
+        val end = sectionHeadingRegex
             .find(readme, startIndex = start)
             ?.range
             ?.first
             ?: readme.length
-        return INDEX_ROW_REGEX
+        return indexRowRegex
             .findAll(readme.substring(start, end))
             .map { it.groupValues[1] }
             .toSet()
@@ -113,11 +134,11 @@ class AnalyticsCatalogTest {
         .first { File(it, "build.gradle.kts").exists() }
 
     private fun trackedManuallyNames(text: String): Set<String> = callArgs(text, "EventAnalytics.Track.Manual(")
-        .flatMap { args -> ANALYTICS_EVENT_NAME_REGEX.findAll(args).map { it.groupValues[1] } }
+        .flatMap { args -> analyticsEventNameRegex.findAll(args).map { it.groupValues[1] } }
         .toSet()
 
     private fun trackNames(text: String): Set<String> = callArgs(text, "EventAnalytics.Track.Automatic(")
-        .mapNotNull { args -> TRACK_NAME_REGEX.find(args)?.groupValues?.get(1) }
+        .mapNotNull { args -> trackNameRegex.find(args)?.groupValues?.get(1) }
         .toSet()
 
     private fun callArgs(
@@ -147,27 +168,12 @@ class AnalyticsCatalogTest {
         val file = repoRoot
             .resolve("core/provider/analytics/src/commonMain/kotlin/com/quare/bibleplanner")
             .resolve("core/provider/analytics/domain/model/AnalyticsEventNames.kt")
-        return CONST_VAL_REGEX
+        return constValRegex
             .findAll(file.readText())
             .associate { it.groupValues[1] to it.groupValues[2] }
     }
 
     private companion object {
         const val EVENT_INDEX_HEADING = "## Event index"
-        val ANALYTICS_EVENT_NAME_REGEX = Regex("""AnalyticsEventNames\.([A-Z0-9_]+)""")
-        val TRACK_NAME_REGEX = Regex("""name\s*=\s*AnalyticsEventNames\.([A-Z0-9_]+)""")
-        val CONST_VAL_REGEX = Regex("""const val ([A-Z0-9_]+) = "([a-z0-9_]+)"""")
-        val EVENT_INDEX_HEADING_REGEX = Regex(
-            pattern = """^## Event index$""",
-            option = RegexOption.MULTILINE,
-        )
-        val SECTION_HEADING_REGEX = Regex(
-            pattern = """^## """,
-            option = RegexOption.MULTILINE,
-        )
-        val INDEX_ROW_REGEX = Regex(
-            pattern = """^\|\s*\[[a-z0-9_]+]\(events/([a-z0-9_]+)\.md\)""",
-            option = RegexOption.MULTILINE,
-        )
     }
 }

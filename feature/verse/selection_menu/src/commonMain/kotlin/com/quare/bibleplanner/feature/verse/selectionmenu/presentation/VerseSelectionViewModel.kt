@@ -54,15 +54,15 @@ import kotlinx.coroutines.launch
 internal class VerseSelectionViewModel(
     private val observeVerseSelection: ObserveVerseSelection,
     private val clearVerseSelection: ClearVerseSelection,
-    private val observeChapterAnnotations: ObserveChapterAnnotations,
-    private val observeHighlightPalette: ObserveHighlightPalette,
     private val applyHighlightColor: ApplyHighlightColor,
     private val addCustomHighlightColor: AddCustomHighlightColor,
     private val toggleSavedVerses: ToggleSavedVerses,
     private val getVersesShareContent: GetVersesShareContent,
-    private val observeIsProUser: ObserveIsProUser,
     val platform: Platform,
     private val navigator: Navigator,
+    observeChapterAnnotations: ObserveChapterAnnotations,
+    observeHighlightPalette: ObserveHighlightPalette,
+    observeIsProUser: ObserveIsProUser,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<VerseSelectionUiEvent>(trackEvent) {
     private val defaultCustomColor = CustomColorUiModel(

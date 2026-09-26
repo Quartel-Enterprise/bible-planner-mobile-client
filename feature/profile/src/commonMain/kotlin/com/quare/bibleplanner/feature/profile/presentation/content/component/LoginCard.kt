@@ -29,7 +29,7 @@ import com.quare.bibleplanner.core.profile.domain.model.photoBytes
 import com.quare.bibleplanner.core.profile.domain.model.photoUrl
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
-import com.quare.bibleplanner.ui.component.ProfileAvatar
+import com.quare.bibleplanner.ui.component.ProfileAvatarImage
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
@@ -43,7 +43,7 @@ internal fun LoginCard(
     onEvent: (ProfileUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ElevatedCardContainer(
+    ElevatedContainerCard(
         isClickable = accountStatusModel is AccountStatusModel.LoggedIn,
         onClick = { onEvent(ProfileUiEvent.OnAccountCardClick) },
         modifier = modifier.fillMaxWidth(),
@@ -73,7 +73,7 @@ internal fun LoginCard(
 
                         is AccountStatusModel.LoggedIn -> {
                             val profile = accountStatusModel.profile
-                            ProfileAvatar(
+                            ProfileAvatarImage(
                                 photoUrl = profile.avatar.photoUrl,
                                 photoBytes = profile.avatar.photoBytes,
                                 displayName = profile.displayName,

@@ -15,13 +15,12 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private val testChapter = ChapterRef(
-    bibleVersionId = "ACF",
-    bookId = BookId.GEN,
-    chapterNumber = 3,
-)
-
 internal class ObserveChapterAnnotationsUseCaseTest {
+    private val testChapter = ChapterRef(
+        bibleVersionId = "ACF",
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
     private val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
     private lateinit var useCase: ObserveChapterAnnotationsUseCase
 

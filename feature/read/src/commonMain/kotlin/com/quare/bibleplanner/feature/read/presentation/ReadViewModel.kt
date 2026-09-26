@@ -77,13 +77,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadViewModel(
     private val route: ReadNavRoute,
-    private val observeReadData: ObserveReadData,
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus,
     private val isWholeChapterRead: IsWholeChapterRead,
     private val getCompletedDayForChapter: GetCompletedDayForChapter,
-    private val observeDayCompletionCandidates: ObserveDayCompletionCandidates,
     private val prefetchDayStudyQuota: PrefetchDayStudyQuota,
-    observeStudySuggestionSettings: ObserveStudySuggestionSettings,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
@@ -92,12 +89,15 @@ class ReadViewModel(
     private val setReaderFocusAid: SetReaderFocusAid,
     private val getNextChapter: GetNextChapter,
     private val getPreviousChapter: GetPreviousChapter,
-    private val observeVerseSelection: ObserveVerseSelection,
     private val toggleVerseSelection: ToggleVerseSelection,
     private val clearVerseSelection: ClearVerseSelection,
     private val navigator: Navigator,
-    trackEvent: TrackEvent,
     val platform: Platform,
+    observeReadData: ObserveReadData,
+    observeDayCompletionCandidates: ObserveDayCompletionCandidates,
+    observeStudySuggestionSettings: ObserveStudySuggestionSettings,
+    observeVerseSelection: ObserveVerseSelection,
+    trackEvent: TrackEvent,
 ) : TrackedViewModel<ReadUiEvent>(trackEvent) {
     private val isAppendRequested = MutableStateFlow(false)
     private val isPrependRequested = MutableStateFlow(false)

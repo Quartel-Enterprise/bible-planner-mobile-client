@@ -11,24 +11,12 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
-private const val ALLOWED_VERB_PREFIXES =
-    "add apply are as await bind build calculate call can cancel check clamp clear close collect " +
-        "compare compute configure consume contains convert copy count create crop decode decrypt " +
-        "delete derive detect did disable dismiss does download drop emit enable encode encrypt " +
-        "ensure equals execute extract fetch filter find flip format from generate get handle has " +
-        "hash hide highlight init initialize insert install invoke is join launch load log make map " +
-        "matches merge must navigate needs normalize observe of on open or orient parse pick pop " +
-        "prepare produce provide read receive refresh register reload remember remove render replace " +
-        "report request require reset resolve respond restore retry rotate run sanitize save search " +
-        "select send should show shows sign skip sort split start stop store stream suspend sync " +
-        "take throttle to toggle track transform trim unbind unregister update upload upsert use validate " +
-        "verify was were will with wrap write"
-private val allowedVerbPrefixes = ALLOWED_VERB_PREFIXES.split(' ').toSet()
-private val ignoredReturnTypes = setOf("Unit", "Nothing")
-private val exemptContainerAnnotations = setOf("Dao", "Database")
-private val idiomaticSuffixes = listOf("OrNull", "Of", "For")
-
 class ValueReturningFunctionNamingRule : BiblePlannerRule("value-returning-function-naming") {
+    private val allowedVerbPrefixes = ALLOWED_VERB_PREFIXES.split(' ').toSet()
+    private val ignoredReturnTypes = setOf("Unit", "Nothing")
+    private val exemptContainerAnnotations = setOf("Dao", "Database")
+    private val idiomaticSuffixes = listOf("OrNull", "Of", "For")
+
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
@@ -76,4 +64,19 @@ class ValueReturningFunctionNamingRule : BiblePlannerRule("value-returning-funct
     private fun String.isIdiomatic(): Boolean = idiomaticSuffixes.any { endsWith(it) }
 
     private fun String.takeLeadingWord(): String = takeWhile { !it.isUpperCase() }
+
+    private companion object {
+        const val ALLOWED_VERB_PREFIXES =
+            "add apply are as await bind build calculate call can cancel check clamp clear close collect " +
+                "compare compute configure consume contains convert copy count create crop decode decrypt " +
+                "delete derive detect did disable dismiss does download drop emit enable encode encrypt " +
+                "ensure equals execute extract fetch filter find flip format from generate get handle has " +
+                "hash hide highlight init initialize insert install invoke is join launch load log make map " +
+                "matches merge must navigate needs normalize observe of on open or orient parse pick pop " +
+                "prepare produce provide read receive refresh register reload remember remove render replace " +
+                "report request require reset resolve respond restore retry rotate run sanitize save search " +
+                "select send should show shows sign skip sort split start stop store stream suspend sync " +
+                "take throttle to toggle track transform trim unbind unregister update upload upsert use validate " +
+                "verify was were will with wrap write"
+    }
 }

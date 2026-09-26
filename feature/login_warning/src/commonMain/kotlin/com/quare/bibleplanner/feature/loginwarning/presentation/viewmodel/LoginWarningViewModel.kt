@@ -11,9 +11,9 @@ import com.quare.bibleplanner.feature.loginwarning.presentation.model.LoginWarni
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 
 internal class LoginWarningViewModel(
+    private val navigator: Navigator,
     route: LoginWarningNavRoute,
     trackEvent: TrackEvent,
-    private val navigator: Navigator,
 ) : TrackedViewModel<LoginWarningUiEvent>(trackEvent) {
     val reason: LoginWarningReason = LoginWarningReason.fromKey(route.reason)
 

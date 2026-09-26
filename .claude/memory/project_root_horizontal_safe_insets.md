@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-App.kt pads RootAppNavDisplay with `WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)` (changed 2026-09-13; it was `navigationBars` before). On iOS, Compose Multiplatform maps `navigationBars` to the bottom safe area only and `systemBars`/`safeDrawing` to the full safe area, so the old root padding was a no-op on iOS: every Scaffold and NavigationRail re-applied the 59pt landscape safe area (double gap beside the rail) while split-pane scenes with no Scaffold (day study panel, verse selection) ran under the Dynamic Island.
+AppRoot.kt pads RootAppNavDisplay with `WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)` (changed 2026-09-13; it was `navigationBars` before). On iOS, Compose Multiplatform maps `navigationBars` to the bottom safe area only and `systemBars`/`safeDrawing` to the full safe area, so the old root padding was a no-op on iOS: every Scaffold and NavigationRail re-applied the 59pt landscape safe area (double gap beside the rail) while split-pane scenes with no Scaffold (day study panel, verse selection) ran under the Dynamic Island.
 
 **Why:** Nav3 scenes put two entries side by side in a Row. A per-screen Scaffold cannot know it owns only one side, and siblings never see each other's consumed insets. Consuming once at the root lets `Scaffold.onConsumedWindowInsetsChanged` and `windowInsetsPadding` subtract it automatically everywhere below.
 

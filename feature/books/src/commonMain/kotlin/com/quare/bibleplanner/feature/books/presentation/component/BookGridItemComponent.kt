@@ -103,7 +103,7 @@ internal fun BookGridItemComponent(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    BookProgressNumbers(
+                    BookProgressText(
                         book = book,
                         sharedTransitionScope = screensSharedTransitionScope,
                         animatedVisibilityScope = screensAnimatedVisibilityScope,

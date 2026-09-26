@@ -12,9 +12,9 @@ import com.pinterest.ktlint.rule.engine.core.api.isWhiteSpace
 import com.pinterest.ktlint.rule.engine.core.api.parent
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 
-private val exposureRegex = Regex("^(_[a-zA-Z]\\w*)(\\.as(State|Shared)Flow\\(\\))?$")
-
 class ExplicitBackingFieldRule : BiblePlannerRule("explicit-backing-field") {
+    private val exposureRegex = Regex("^(_[a-zA-Z]\\w*)(\\.as(State|Shared)Flow\\(\\))?$")
+
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,

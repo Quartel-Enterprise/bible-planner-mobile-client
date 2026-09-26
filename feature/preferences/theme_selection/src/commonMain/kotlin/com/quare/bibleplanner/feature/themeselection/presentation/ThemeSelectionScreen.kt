@@ -35,7 +35,7 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.info
 import bibleplanner.feature.preferences.theme_selection.generated.resources.select_contrast
 import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_description
 import bibleplanner.feature.preferences.theme_selection.generated.resources.sync_across_devices_title
-import com.quare.bibleplanner.feature.themeselection.presentation.component.ContrastSelector
+import com.quare.bibleplanner.feature.themeselection.presentation.component.ContrastPicker
 import com.quare.bibleplanner.feature.themeselection.presentation.component.ThemeOptionCard
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiState
@@ -93,7 +93,7 @@ fun ThemeSelectionContent(
                         text = stringResource(Res.string.select_contrast),
                         modifier = Modifier.padding(bottom = 10.dp),
                     )
-                    ContrastSelector(
+                    ContrastPicker(
                         selectedContrast = uiState.selectedContrast,
                         onContrastSelected = { onEvent(ThemeSelectionUiEvent.OnContrastSelected(it)) },
                         modifier = Modifier

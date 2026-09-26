@@ -7,13 +7,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-private val testChapter = ChapterRef(
-    bibleVersionId = "ACF",
-    bookId = BookId.GEN,
-    chapterNumber = 3,
-)
-
 internal class VerseSelectionRepositoryImplTest {
+    private val testChapter = ChapterRef(
+        bibleVersionId = "ACF",
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
+
     private lateinit var repository: VerseSelectionRepositoryImpl
 
     @BeforeTest

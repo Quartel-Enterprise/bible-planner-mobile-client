@@ -11,6 +11,10 @@ import com.quare.bibleplanner.core.loginnudge.domain.LoginNudgePreferences
 internal class LoginNudgePreferencesImpl(
     private val dataStore: DataStore<Preferences>,
 ) : LoginNudgePreferences {
+    private val snoozedAtKey = longPreferencesKey("login_nudge_snoozed_at")
+    private val dontShowAgainKey = booleanPreferencesKey("login_nudge_dont_show_again")
+    private val firstActionAtKey = longPreferencesKey("login_nudge_first_action_at")
+
     override suspend fun getSnoozedAt(): Long? = dataStore.read(snoozedAtKey)
 
     override suspend fun setSnoozedAt(timestamp: Long) = dataStore.write(
@@ -31,10 +35,4 @@ internal class LoginNudgePreferencesImpl(
         key = firstActionAtKey,
         value = timestamp,
     )
-
-    private companion object {
-        val snoozedAtKey = longPreferencesKey("login_nudge_snoozed_at")
-        val dontShowAgainKey = booleanPreferencesKey("login_nudge_dont_show_again")
-        val firstActionAtKey = longPreferencesKey("login_nudge_first_action_at")
-    }
 }

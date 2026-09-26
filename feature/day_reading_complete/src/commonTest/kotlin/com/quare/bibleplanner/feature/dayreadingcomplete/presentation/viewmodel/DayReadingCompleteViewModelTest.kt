@@ -64,30 +64,33 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private val testRoute = DayReadingCompleteNavRoute(
-    dayNumber = 1,
-    weekNumber = 1,
-    readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
-)
-private val testPlannedReadDate = LocalDate(2026, 8, 21)
-private val testPassages = listOf(
-    PassageModel(
-        bookId = BookId.GEN,
-        chapters = (1..3).map { number ->
-            ChapterModel(number = number, startVerse = null, endVerse = null, bookId = BookId.GEN)
-        },
-        isRead = true,
-        chapterRanges = "1-3",
-    ),
-)
-private val testDay = ScheduledDayModel(
-    number = 1,
-    passages = testPassages,
-    plannedReadDate = testPlannedReadDate,
-)
-
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DayReadingCompleteViewModelTest {
+    private val testRoute = DayReadingCompleteNavRoute(
+        dayNumber = 1,
+        weekNumber = 1,
+        readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
+    )
+
+    private val testPlannedReadDate = LocalDate(2026, 8, 21)
+
+    private val testPassages = listOf(
+        PassageModel(
+            bookId = BookId.GEN,
+            chapters = (1..3).map { number ->
+                ChapterModel(number = number, startVerse = null, endVerse = null, bookId = BookId.GEN)
+            },
+            isRead = true,
+            chapterRanges = "1-3",
+        ),
+    )
+
+    private val testDay = ScheduledDayModel(
+        number = 1,
+        passages = testPassages,
+        plannedReadDate = testPlannedReadDate,
+    )
+
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var actions: List<DayReadingCompleteUiAction>
     private val navigator = Navigator()

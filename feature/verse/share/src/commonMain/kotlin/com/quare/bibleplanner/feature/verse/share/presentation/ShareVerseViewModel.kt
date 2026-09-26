@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class ShareVerseViewModel(
-    route: ShareVerseNavRoute,
     private val getVersesShareContent: GetVersesShareContent,
     val platform: Platform,
     private val navigator: Navigator,
+    route: ShareVerseNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ShareVerseUiEvent>(trackEvent) {
     private val bookId = BookId.valueOf(route.bookId)

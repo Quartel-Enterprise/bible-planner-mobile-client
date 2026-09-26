@@ -44,7 +44,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadError
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ReadLoadingContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterContent
 import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterShimmerContent
-import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
+import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeightEffect
 import com.quare.bibleplanner.ui.utils.asStable
 
 private const val TITLE_VISIBLE_ITEM_INDEX = 1
@@ -86,7 +86,7 @@ internal fun ReadNarrowScreen(
         chapters = chapters,
         onReachedStart = { onEvent(ReadUiEvent.OnReachedStart) },
     )
-    ReserveBottomOverlayHeight {
+    ReserveBottomOverlayHeightEffect {
         (bottomOverlayHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
     }
     var contentTopOffset by remember { mutableStateOf(0.dp) }

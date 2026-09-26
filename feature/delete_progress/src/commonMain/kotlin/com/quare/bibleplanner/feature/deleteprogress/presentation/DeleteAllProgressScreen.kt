@@ -77,9 +77,9 @@ internal fun DeleteAllProgressScreen(
         },
         text = {
             if (isIdle) {
-                DeleteAllProgressConsequences()
+                DeleteAllProgressConsequencesColumn()
             } else {
-                DeleteAllProgressStatus(uiState = uiState)
+                DeleteAllProgressStatusColumn(uiState = uiState)
             }
         },
         confirmButton = {
@@ -111,7 +111,7 @@ internal fun DeleteAllProgressScreen(
 }
 
 @Composable
-private fun DeleteAllProgressConsequences() {
+private fun DeleteAllProgressConsequencesColumn() {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(consequenceSpacing),
@@ -137,7 +137,7 @@ private fun DeleteAllProgressConsequences() {
 }
 
 @Composable
-private fun DeleteAllProgressStatus(uiState: DeleteAllProgressUiState) {
+private fun DeleteAllProgressStatusColumn(uiState: DeleteAllProgressUiState) {
     val isDeleted = uiState == DeleteAllProgressUiState.Success
     Column(
         modifier = Modifier.fillMaxWidth(),

@@ -53,12 +53,12 @@ internal fun SummaryTabContent(study: DayStudyModel) {
             }
         }
         VerticalSpacer(22)
-        TakeawaysBlock(takeaways = study.takeaways)
+        TakeawaysSurface(takeaways = study.takeaways)
     }
 }
 
 @Composable
-private fun TakeawaysBlock(takeaways: List<String>) {
+private fun TakeawaysSurface(takeaways: List<String>) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),

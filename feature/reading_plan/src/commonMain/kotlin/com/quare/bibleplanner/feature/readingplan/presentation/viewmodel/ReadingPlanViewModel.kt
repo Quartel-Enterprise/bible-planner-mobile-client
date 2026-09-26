@@ -45,23 +45,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class ReadingPlanViewModel(
-    factory: ReadingPlanStateFactory,
-    getPlansByWeek: GetPlansByWeekUseCase,
-    getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
-    calculateBibleProgress: CalculateBibleProgressUseCase,
     private val setSelectedReadingPlan: SetSelectedReadingPlan,
-    private val findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
     private val getPlanMotivationMessage: GetPlanMotivationMessage,
     private val resolvePlanStatus: ResolvePlanStatus,
     private val weeksPlanPresentationMapper: WeeksPlanPresentationMapper,
     private val deleteProgressMapper: DeleteProgressMapper,
     private val updateDayReadStatus: UpdateDayReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
-    private val requestReviewIfNeeded: RequestReviewIfNeeded,
     private val navigator: Navigator,
+    factory: ReadingPlanStateFactory,
+    getPlansByWeek: GetPlansByWeekUseCase,
+    getSelectedReadingPlanFlow: GetSelectedReadingPlanFlow,
+    calculateBibleProgress: CalculateBibleProgressUseCase,
+    findFirstWeekWithUnreadBook: FindFirstWeekWithUnreadBook,
+    requestReviewIfNeeded: RequestReviewIfNeeded,
     trackEvent: TrackEvent,
-    private val bibleProgressMilestoneTracker: BibleProgressMilestoneTracker,
-    private val readingStreakMilestoneTracker: ReadingStreakMilestoneTracker,
+    bibleProgressMilestoneTracker: BibleProgressMilestoneTracker,
+    readingStreakMilestoneTracker: ReadingStreakMilestoneTracker,
 ) : TrackedViewModel<ReadingPlanUiEvent>(trackEvent) {
     val uiState: StateFlow<ReadingPlanUiState>
         field = MutableStateFlow<ReadingPlanUiState>(factory.createFirstState())

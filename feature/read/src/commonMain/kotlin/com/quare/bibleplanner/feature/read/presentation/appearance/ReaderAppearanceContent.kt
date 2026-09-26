@@ -174,20 +174,20 @@ private fun TextSizeCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                SampleLetter(fontSize = smallSampleFontSize)
+                SampleLetterText(fontSize = smallSampleFontSize)
                 TextSizeSlider(
                     modifier = Modifier.weight(1f),
                     fontSizeSp = fontSizeSp,
                     onEvent = onEvent,
                 )
-                SampleLetter(fontSize = largeSampleFontSize)
+                SampleLetterText(fontSize = largeSampleFontSize)
             }
         }
     }
 }
 
 @Composable
-private fun SampleLetter(fontSize: TextUnit) {
+private fun SampleLetterText(fontSize: TextUnit) {
     Text(
         text = stringResource(Res.string.text_size_sample),
         fontFamily = displaySerifFontFamily(),

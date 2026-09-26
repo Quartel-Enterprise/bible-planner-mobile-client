@@ -33,12 +33,12 @@ import org.jetbrains.compose.resources.StringResource
 
 internal class CropPhotoViewModel(
     private val route: CropPhotoNavRoute,
-    private val decodeImageBitmap: DecodeImageBitmap,
     private val cropImage: AvatarImageCropper,
     private val setProfilePhoto: SetProfilePhoto,
     private val navigator: Navigator,
-    trackEvent: TrackEvent,
     private val encodeDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    decodeImageBitmap: DecodeImageBitmap,
+    trackEvent: TrackEvent,
 ) : TrackedViewModel<CropPhotoUiEvent>(trackEvent) {
     val uiAction: SharedFlow<CropPhotoUiAction>
         field = MutableSharedFlow<CropPhotoUiAction>()

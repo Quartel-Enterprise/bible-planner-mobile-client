@@ -4,9 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-private const val API_KEY = "rcb_test"
-private const val PURCHASE_LINK = "https://pay.rev.cat/token"
-
 internal class DesktopBillingConfigTest {
     @Test
     fun `should enable billing when both credentials are present`() {
@@ -45,5 +42,10 @@ internal class DesktopBillingConfigTest {
         // Then
         assertTrue(config.isEntitlementReadEnabled)
         assertFalse(config.isPurchaseEnabled)
+    }
+
+    private companion object {
+        const val API_KEY = "rcb_test"
+        const val PURCHASE_LINK = "https://pay.rev.cat/token"
     }
 }

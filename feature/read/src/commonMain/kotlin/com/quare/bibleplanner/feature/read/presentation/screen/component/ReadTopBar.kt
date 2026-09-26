@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.component
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.material.icons.Icons
@@ -40,8 +38,6 @@ internal fun ReadTopBar(
     topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    sharedTransitionScope: SharedTransitionScope? = null,
-    animatedVisibilityScope: AnimatedVisibilityScope? = null,
 ) {
     val bookName = stringResource(visibleChapter?.bookStringResource ?: header.bookStringResource)
     val chapterNumber = visibleChapter?.chapter?.chapterNumber ?: header.chapterNumber

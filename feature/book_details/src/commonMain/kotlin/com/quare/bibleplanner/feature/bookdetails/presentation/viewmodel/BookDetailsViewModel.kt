@@ -29,16 +29,16 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 
 class BookDetailsViewModel(
-    route: BookDetailsNavRoute,
     private val booksRepository: BooksRepository,
-    private val bookGroupMapper: BookGroupMapper,
     private val markBookRead: UpdateBookReadStatusUseCase,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
-    private val requestReviewIfNeeded: RequestReviewIfNeeded,
     private val navigator: Navigator,
+    val platform: Platform,
+    route: BookDetailsNavRoute,
+    bookGroupMapper: BookGroupMapper,
+    requestReviewIfNeeded: RequestReviewIfNeeded,
     trackEvent: TrackEvent,
     getBookByIdFlow: GetBookByIdFlowUseCase,
-    val platform: Platform,
 ) : TrackedViewModel<BookDetailsUiEvent>(trackEvent) {
     private val bookId = BookId.valueOf(route.bookId)
 

@@ -30,11 +30,11 @@ import bibleplanner.feature.reading_plan.generated.resources.hero_tomorrow_day
 import com.quare.bibleplanner.core.books.util.toReadingLabel
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanStatus
-import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroContainer
-import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroKicker
+import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroKickerText
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroMarkButton
-import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroPassage
+import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroPassageText
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroPrimaryButton
+import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.HeroSurface
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toDayClick
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toReadClick
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.component.toShortLabel
@@ -54,13 +54,13 @@ internal fun StandardHero(
     val mode = planStatus.mode
     val animatedDayIndex by animateIntAsState(targetValue = next.globalIndex, label = "heroDayIndex")
     val animatedDaysAhead by animateIntAsState(targetValue = planStatus.daysAhead, label = "heroDaysAhead")
-    HeroContainer(modifier = modifier) {
+    HeroSurface(modifier = modifier) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            HeroKicker(
+            HeroKickerText(
                 icon = mode.toKickerIcon(),
                 text = stringResource(mode.toKickerResource()),
             )
@@ -74,7 +74,7 @@ internal fun StandardHero(
                 }
             }
         }
-        HeroPassage(
+        HeroPassageText(
             modifier = Modifier.padding(top = 4.dp),
             text = next.passages.toReadingLabel(),
         )

@@ -16,11 +16,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 internal class AndroidBibleVersionDownloaderFacade(
-    private val context: Context,
     private val requestFactory: AndroidBibleVersionDownloadRequestFactory,
     private val inProcessDownloader: InProcessBibleVersionDownloader,
     private val pauseBibleVersion: PauseBibleVersionDownloadUseCase,
     private val deleteBibleVersion: DeleteBibleVersionDownloadUseCase,
+    context: Context,
 ) : BibleVersionDownloaderFacade {
     private val workManager: WorkManager? by lazy {
         runCatching { WorkManager.getInstance(context) }

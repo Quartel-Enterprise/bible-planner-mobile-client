@@ -7,9 +7,8 @@ import kotlinx.datetime.LocalTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private val today = LocalDate(2026, 8, 21)
-
 internal class ClassifyDayTimingUseCaseTest {
+    private val today = LocalDate(2026, 8, 21)
     private val classifyDayTiming = ClassifyDayTimingUseCase(
         currentTimestampProvider = { 0L },
         localDateTimeProvider = { LocalDateTime(today, LocalTime(12, 0)) },

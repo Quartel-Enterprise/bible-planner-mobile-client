@@ -34,14 +34,14 @@ import kotlin.time.Duration.Companion.milliseconds
 
 internal class LoginViewModel(
     private val signInStarter: SignInStarter,
-    supabaseClient: SupabaseClient,
-    observeAuthenticatedUserId: ObserveAuthenticatedUserId,
-    uiStateFactory: LoginUiStateFactory,
     private val throwableToLoginErrorMapper: ThrowableToLoginErrorMapper,
     private val isGoogleCredentialUnavailable: IsGoogleCredentialUnavailable,
     private val addGoogleAccountLauncher: AddGoogleAccountLauncher,
     private val isNewAccount: IsNewAccount,
     private val navigator: Navigator,
+    supabaseClient: SupabaseClient,
+    observeAuthenticatedUserId: ObserveAuthenticatedUserId,
+    uiStateFactory: LoginUiStateFactory,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<LoginUiEvent>(trackEvent) {
     val composeAuth: ComposeAuth = supabaseClient.composeAuth

@@ -54,7 +54,7 @@ internal fun ResponsiveContentScope.headerSection(
         ) {
             if (state.isProCardVisible.valueOrNull() == true) {
                 when (val subscriptionStatus = state.subscriptionStatus) {
-                    Loadable.Loading -> ProCardShimmer(modifier = Modifier.weight(1f))
+                    Loadable.Loading -> ProCardSkeleton(modifier = Modifier.weight(1f))
 
                     is Loadable.Loaded -> {
                         when (subscriptionStatus.value) {
@@ -111,7 +111,7 @@ internal fun ResponsiveContentScope.headerSection(
 }
 
 @Composable
-private fun ProCardShimmer(modifier: Modifier = Modifier) {
+private fun ProCardSkeleton(modifier: Modifier = Modifier) {
     ElevatedCard(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),

@@ -45,7 +45,7 @@ fun BooksItemsComponent(
                         span = { GridItemSpan(totalColumns) },
                         key = "testament_toggle_item",
                     ) {
-                        BookToggles(
+                        BookToggleRow(
                             selectedTestament = state.selectedTestament,
                             selectedLayoutFormat = state.layoutFormat,
                             onEvent = onEvent,

@@ -53,7 +53,6 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 internal class ChatViewModel(
-    route: ChatNavRoute,
     private val useCases: ChatUseCases,
     private val applicationScope: ApplicationScope,
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
@@ -62,6 +61,7 @@ internal class ChatViewModel(
     private val messageUiMapper: ChatMessageUiMapper,
     private val conversationGroupMapper: ChatConversationGroupMapper,
     private val navigator: Navigator,
+    route: ChatNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ChatUiEvent>(trackEvent) {
     val uiState: StateFlow<ChatUiState>

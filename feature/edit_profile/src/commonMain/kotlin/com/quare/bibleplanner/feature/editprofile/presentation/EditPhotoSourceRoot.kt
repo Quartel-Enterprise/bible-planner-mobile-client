@@ -37,7 +37,7 @@ fun EntryProviderScope<NavKey>.editPhotoSource() {
                 onEvent = viewModel::onEvent,
             )
         }
-        ProfilePhotoPickers(
+        ProfilePhotoPickersComponent(
             viewModel = viewModel,
             onOpenCrop = navigator::navigateReplacingTop,
             onPhotoChanged = navigator::navigateBack,

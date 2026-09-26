@@ -10,7 +10,7 @@ data class GitHubReleaseDto(
     @SerialName("prerelease")
     val isPrerelease: Boolean,
     @SerialName("published_at")
-    val publishedAt: String? = null,
+    val publishedAt: String?,
     @SerialName("body")
-    val body: String? = null,
+    val body: String?,
 )

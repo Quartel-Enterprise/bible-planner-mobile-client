@@ -9,8 +9,8 @@ import com.quare.bibleplanner.feature.addnotesfreewarning.presentation.model.Add
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 
 internal class AddNotesFreeWarningViewModel(
-    route: AddNotesFreeWarningNavRoute,
     private val navigator: Navigator,
+    route: AddNotesFreeWarningNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AddNotesFreeWarningUiEvent>(trackEvent) {
     val maxFreeNotesAmount = route.maxFreeNotesAmount

@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 internal class RenameDeviceViewModel(
-    route: RenameDeviceNavRoute,
     private val renameDevice: RenameDevice,
+    route: RenameDeviceNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<RenameDeviceUiEvent>(trackEvent) {
     val currentName: String = route.currentName

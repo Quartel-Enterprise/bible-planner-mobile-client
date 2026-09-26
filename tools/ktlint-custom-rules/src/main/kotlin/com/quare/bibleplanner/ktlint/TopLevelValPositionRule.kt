@@ -13,9 +13,9 @@ import com.pinterest.ktlint.rule.engine.core.api.hasModifier
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtProperty
 
-private val topLevelDeclarationElementTypes = setOf(FUN, CLASS, OBJECT_DECLARATION)
-
 class TopLevelValPositionRule : BiblePlannerRule("top-level-val-position") {
+    private val topLevelDeclarationElementTypes = setOf(FUN, CLASS, OBJECT_DECLARATION)
+
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,

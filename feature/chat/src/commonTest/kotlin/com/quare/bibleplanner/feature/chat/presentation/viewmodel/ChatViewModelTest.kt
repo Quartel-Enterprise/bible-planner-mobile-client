@@ -54,17 +54,13 @@ import kotlin.test.assertTrue
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-private const val SUGGESTION = "Por que Caim matou Abel?"
-private const val STARTER = "Resuma esta leitura"
-private const val DAY_DRAFT_KEY = "day:CHRONOLOGICAL:1:4"
-private val readingPlanDay = ChatPlanDayModel(
-    dayNumber = 4,
-    weekNumber = 1,
-    readingPlanType = "CHRONOLOGICAL",
-)
-
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChatViewModelTest {
+    private val readingPlanDay = ChatPlanDayModel(
+        dayNumber = 4,
+        weekNumber = 1,
+        readingPlanType = "CHRONOLOGICAL",
+    )
     private val testDispatcher = UnconfinedTestDispatcher()
     private val repository = FakeChatRepository()
     private val coordinator = FakeChatStreamCoordinator()
@@ -679,4 +675,10 @@ internal class ChatViewModelTest {
         navigator = navigator,
         trackEvent = { name, params -> trackedEvents += name to params },
     )
+
+    private companion object {
+        const val SUGGESTION = "Por que Caim matou Abel?"
+        const val STARTER = "Resuma esta leitura"
+        const val DAY_DRAFT_KEY = "day:CHRONOLOGICAL:1:4"
+    }
 }

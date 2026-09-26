@@ -9,9 +9,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.time.Instant
 
-private val updatedAt = Instant.parse("2026-08-06T15:00:00Z")
-
 internal class ChatEntityMapperTest {
+    private val updatedAt = Instant.parse("2026-08-06T15:00:00Z")
     private val mapper = ChatEntityMapper()
 
     @Test

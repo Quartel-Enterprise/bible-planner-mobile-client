@@ -52,12 +52,12 @@ internal fun ContextTabContent(context: HistoricalContextModel) {
             style = MaterialTheme.typography.bodyLarge,
         )
         VerticalSpacer(16)
-        FactsBlock(facts = context.facts)
+        FactsSurface(facts = context.facts)
     }
 }
 
 @Composable
-private fun FactsBlock(facts: List<FactModel>) {
+private fun FactsSurface(facts: List<FactModel>) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),

@@ -18,55 +18,53 @@ import kotlinx.coroutines.flow.map
 internal class ReaderSettingsRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
 ) : ReaderSettingsRepository {
+    private val fontSizeKey = floatPreferencesKey("reader_font_size")
+    private val fontKey = stringPreferencesKey("reader_font")
+    private val rulerEnabledKey = booleanPreferencesKey("reader_ruler_enabled")
+    private val rulerLinesKey = intPreferencesKey("reader_ruler_lines")
+    private val focusedVerseEnabledKey = booleanPreferencesKey("reader_focused_verse_enabled")
+    private val verticalReadingEnabledKey = booleanPreferencesKey("reader_vertical_reading_enabled")
+
     override fun observe(): Flow<ReaderSettingsModel> = dataStore.data.map { preferences ->
         ReaderSettingsModel(
-            fontSizeSp = preferences[FONT_SIZE_KEY] ?: ReaderFontSize.DEFAULT,
-            font = preferences[FONT_KEY]?.toReaderFont() ?: ReaderFont.LORA,
-            isRulerEnabled = preferences[RULER_ENABLED_KEY] == true,
-            rulerLines = preferences[RULER_LINES_KEY] ?: ReaderRulerLines.DEFAULT,
-            isFocusedVerseEnabled = preferences[FOCUSED_VERSE_ENABLED_KEY] == true,
-            isVerticalReadingEnabled = preferences[VERTICAL_READING_ENABLED_KEY] == true,
+            fontSizeSp = preferences[fontSizeKey] ?: ReaderFontSize.DEFAULT,
+            font = preferences[fontKey]?.toReaderFont() ?: ReaderFont.LORA,
+            isRulerEnabled = preferences[rulerEnabledKey] == true,
+            rulerLines = preferences[rulerLinesKey] ?: ReaderRulerLines.DEFAULT,
+            isFocusedVerseEnabled = preferences[focusedVerseEnabledKey] == true,
+            isVerticalReadingEnabled = preferences[verticalReadingEnabledKey] == true,
         )
     }
 
     override suspend fun setFontSize(fontSizeSp: Float) = dataStore.write(
-        key = FONT_SIZE_KEY,
+        key = fontSizeKey,
         value = fontSizeSp,
     )
 
     override suspend fun setFont(fontName: String) = dataStore.write(
-        key = FONT_KEY,
+        key = fontKey,
         value = fontName,
     )
 
     override suspend fun setRulerEnabled(isEnabled: Boolean) = dataStore.write(
-        key = RULER_ENABLED_KEY,
+        key = rulerEnabledKey,
         value = isEnabled,
     )
 
     override suspend fun setRulerLines(lines: Int) = dataStore.write(
-        key = RULER_LINES_KEY,
+        key = rulerLinesKey,
         value = lines,
     )
 
     override suspend fun setFocusedVerseEnabled(isEnabled: Boolean) = dataStore.write(
-        key = FOCUSED_VERSE_ENABLED_KEY,
+        key = focusedVerseEnabledKey,
         value = isEnabled,
     )
 
     override suspend fun setVerticalReadingEnabled(isEnabled: Boolean) = dataStore.write(
-        key = VERTICAL_READING_ENABLED_KEY,
+        key = verticalReadingEnabledKey,
         value = isEnabled,
     )
 
     private fun String.toReaderFont(): ReaderFont? = ReaderFont.entries.find { it.name == this }
-
-    private companion object {
-        val FONT_SIZE_KEY = floatPreferencesKey("reader_font_size")
-        val FONT_KEY = stringPreferencesKey("reader_font")
-        val RULER_ENABLED_KEY = booleanPreferencesKey("reader_ruler_enabled")
-        val RULER_LINES_KEY = intPreferencesKey("reader_ruler_lines")
-        val FOCUSED_VERSE_ENABLED_KEY = booleanPreferencesKey("reader_focused_verse_enabled")
-        val VERTICAL_READING_ENABLED_KEY = booleanPreferencesKey("reader_vertical_reading_enabled")
-    }
 }

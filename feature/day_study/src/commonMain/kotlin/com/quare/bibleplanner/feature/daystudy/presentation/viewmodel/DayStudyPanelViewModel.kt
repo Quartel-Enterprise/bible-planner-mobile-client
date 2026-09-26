@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DayStudyPanelViewModel(
-    observeReadingFraction: ObserveDayStudyPanelReadingFractionUseCase,
     private val setReadingFraction: SetDayStudyPanelReadingFractionUseCase,
+    observeReadingFraction: ObserveDayStudyPanelReadingFractionUseCase,
 ) : ViewModel() {
     val readingFraction: StateFlow<Float> = observeReadingFraction().stateIn(
         scope = viewModelScope,

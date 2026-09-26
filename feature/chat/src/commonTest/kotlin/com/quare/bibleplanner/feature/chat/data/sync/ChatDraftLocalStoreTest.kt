@@ -13,8 +13,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private const val THREAD_KEY = "day:CHRONOLOGICAL:1:2"
-
 internal class ChatDraftLocalStoreTest {
     private val dao = FakeChatDraftDao()
     private val store = ChatDraftLocalStore(
@@ -126,6 +124,10 @@ internal class ChatDraftLocalStoreTest {
             isPendingSync = false,
         ),
     )
+
+    private companion object {
+        const val THREAD_KEY = "day:CHRONOLOGICAL:1:2"
+    }
 }
 
 private class FakeChatDraftDao : ChatDraftDao {

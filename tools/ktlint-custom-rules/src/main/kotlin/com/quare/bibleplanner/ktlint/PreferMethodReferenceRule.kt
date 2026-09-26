@@ -15,9 +15,6 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
-private const val IMPLICIT_PARAMETER_NAME = "it"
-private const val COMPOSABLE_ANNOTATION_NAME = "Composable"
-
 /**
  * Flags a lambda that exists only to hand its parameter to a function — `{ day -> mapDay(day) }` where
  * `::mapDay` says the same thing.
@@ -60,6 +57,8 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
     /**
      * A `suspend` function's reference has a `suspend` function type, which does not fit the plain function
      * type `let`, `map` and `forEach` declare; `@Composable` functions cannot be referenced at all.
+     *
+     * @return whether a reference to this function fits a plain function type.
      */
     private fun KtNamedFunction.isReferenceable(): Boolean {
         if (hasModifier(SUSPEND_KEYWORD)) return false
@@ -79,6 +78,8 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
     /**
      * A same-file function is referenceable from the lambda when it is top level, or a member of the class
      * the lambda itself sits in — a member of a *different* class in the file needs its own receiver.
+     *
+     * @return whether [lambda] can reference this function without a receiver.
      */
     private fun KtNamedFunction.isReachableFrom(lambda: KtLambdaExpression): Boolean {
         val declaringClass = containingClassOrObject ?: return true
@@ -105,6 +106,8 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
     /**
      * The name the lambda takes as its single parameter, whether written out or left implicit as `it`. A
      * lambda that takes several parameters, or destructures them, has no single name to forward.
+     *
+     * @return that name, or null when the lambda has no single parameter.
      */
     private fun KtLambdaExpression.findForwardedParameterName(): String? {
         val parameters = functionLiteral.valueParameters
@@ -117,6 +120,8 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
     /**
      * The call this lambda exists only to make: its whole body, taking [parameterName] as its one and only
      * argument. Type arguments and trailing lambdas are left alone — a reference cannot carry either.
+     *
+     * @return that call, or null when the body is anything else.
      */
     private fun KtLambdaExpression.findSingleForwardingCall(parameterName: String): KtCallExpression? {
         val call = functionLiteral.bodyExpression?.statements?.singleOrNull() as? KtCallExpression ?: return null
@@ -126,5 +131,10 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
         if (argument.getArgumentName() != null || argument.isSpread) return null
         val argumentName = (argument.getArgumentExpression() as? KtNameReferenceExpression)?.getReferencedName()
         return call.takeIf { argumentName == parameterName }
+    }
+
+    private companion object {
+        const val IMPLICIT_PARAMETER_NAME = "it"
+        const val COMPOSABLE_ANNOTATION_NAME = "Composable"
     }
 }

@@ -16,9 +16,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class DeleteVersionViewModel(
-    route: DeleteVersionNavRoute,
     private val bibleVersionDownloaderFacade: BibleVersionDownloaderFacade,
     private val navigator: Navigator,
+    route: DeleteVersionNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DeleteVersionUiEvent>(trackEvent) {
     val uiState: StateFlow<DeleteVersionUiState>

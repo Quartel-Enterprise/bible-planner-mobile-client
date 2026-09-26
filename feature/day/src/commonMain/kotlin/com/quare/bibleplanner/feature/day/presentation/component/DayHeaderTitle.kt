@@ -79,7 +79,7 @@ internal fun DayHeaderTitle(
             }
         }
         VerticalSpacer(4)
-        DayProgress(
+        DayProgressIndicator(
             completedCount = state.completedPassagesCount,
             totalCount = state.totalPassagesCount,
         )

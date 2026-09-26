@@ -27,22 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.junit.Test
 import kotlin.math.roundToInt
 
-private val bannerCopy = mapOf(
-    "en-US" to (
-        "Every book, always at hand" to
-            "Track your progress through all 66 books of the Bible"
-    ),
-    "pt-BR" to (
-        "Todos os livros sempre à mão" to
-            "Acompanhe seu progresso nos 66 livros da Bíblia"
-    ),
-    "es" to (
-        "Todos los libros siempre a mano" to
-            "Sigue tu progreso en los 66 libros de la Biblia"
-    ),
-)
 private const val BACKGROUND = 0xFF141C3D
-private const val README_SUBDIR = "readme"
 private val pentateuch = listOf(
     SampleBook(
         id = BookId.GEN,
@@ -98,8 +83,8 @@ private val historicalBooks = listOf(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 internal abstract class BooksScreenshots(
-    formFactor: FormFactor,
     private val outputSubdir: String? = null,
+    formFactor: FormFactor,
     canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
@@ -108,6 +93,21 @@ internal abstract class BooksScreenshots(
         // instead of letting the search field slide under the frame's clock.
         style = ScreenshotStyle(edgeToEdge = false),
     ) {
+    private val bannerCopy = mapOf(
+        "en-US" to (
+            "Every book, always at hand" to
+                "Track your progress through all 66 books of the Bible"
+        ),
+        "pt-BR" to (
+            "Todos os livros sempre à mão" to
+                "Acompanhe seu progresso nos 66 livros da Bíblia"
+        ),
+        "es" to (
+            "Todos los libros siempre a mano" to
+                "Sigue tu progreso en los 66 libros de la Biblia"
+        ),
+    )
+
     @Test
     fun books() = bannerCopy.forEach { (locale, copy) ->
         val (title, description) = copy
@@ -126,17 +126,17 @@ internal abstract class BooksScreenshots(
     }
 }
 
-internal class PhoneBooksScreenshots : BooksScreenshots(FormFactor.Phone)
+internal class PhoneBooksScreenshots : BooksScreenshots(formFactor = FormFactor.Phone)
 
-internal class Tablet7BooksScreenshots : BooksScreenshots(FormFactor.Tablet7)
+internal class Tablet7BooksScreenshots : BooksScreenshots(formFactor = FormFactor.Tablet7)
 
-internal class Tablet10BooksScreenshots : BooksScreenshots(FormFactor.Tablet10)
+internal class Tablet10BooksScreenshots : BooksScreenshots(formFactor = FormFactor.Tablet10)
 
-internal class IPhone65BooksScreenshots : BooksScreenshots(FormFactor.AppleIPhone65)
+internal class IPhone65BooksScreenshots : BooksScreenshots(formFactor = FormFactor.AppleIPhone65)
 
-internal class IPhone67BooksScreenshots : BooksScreenshots(FormFactor.AppleIPhone67)
+internal class IPhone67BooksScreenshots : BooksScreenshots(formFactor = FormFactor.AppleIPhone67)
 
-internal class IPad13BooksScreenshots : BooksScreenshots(FormFactor.AppleIPad13)
+internal class IPad13BooksScreenshots : BooksScreenshots(formFactor = FormFactor.AppleIPad13)
 
 // The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
 internal class IPad11BooksScreenshots :
@@ -161,6 +161,10 @@ internal class ReadmeBooksScreenshots :
         CompositionLocalProvider(LocalTheme provides Theme.DARK) {
             AppTheme { BooksContent() }
         }
+    }
+
+    private companion object {
+        const val README_SUBDIR = "readme"
     }
 }
 

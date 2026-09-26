@@ -18,10 +18,6 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
-private const val NOW = 1_000_000_000L
-private const val CACHED_CONTENT_VERSION = "1.2.0"
-private const val REMOTE_CONTENT_VERSION = "1.3.0"
-
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class BibleVersionRepositoryImplTest {
     private val freshCacheAge: Duration = 5.minutes
@@ -249,6 +245,12 @@ internal class BibleVersionRepositoryImplTest {
             currentTimestampProvider = { NOW },
         )
     }
+
+    private companion object {
+        const val NOW = 1_000_000_000L
+        const val CACHED_CONTENT_VERSION = "1.2.0"
+        const val REMOTE_CONTENT_VERSION = "1.3.0"
+    }
 }
 
 private fun versionDto(version: String): VersionDto = VersionDto(
@@ -276,8 +278,8 @@ private class FakeBibleVersionsRemoteDataSource(
 }
 
 private class FakeBibleVersionsLocalDataSource(
-    cachedVersions: List<VersionDto>?,
     private val cacheTimestamp: Long?,
+    cachedVersions: List<VersionDto>?,
 ) : BibleVersionsLocalDataSource {
     private val cachedVersionsFlow = MutableStateFlow(cachedVersions)
     var savedVersions: List<VersionDto>? = null

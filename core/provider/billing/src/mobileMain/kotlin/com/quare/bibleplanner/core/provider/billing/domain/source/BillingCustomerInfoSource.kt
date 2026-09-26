@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.shareIn
 
 internal class BillingCustomerInfoSource(
-    private val purchases: Purchases,
+    purchases: Purchases,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val seedPolicies = listOf(

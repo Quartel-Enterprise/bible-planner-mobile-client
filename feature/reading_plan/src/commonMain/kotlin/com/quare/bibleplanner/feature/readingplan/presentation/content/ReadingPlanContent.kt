@@ -26,12 +26,12 @@ import bibleplanner.feature.reading_plan.generated.resources.section_upcoming
 import bibleplanner.feature.reading_plan.generated.resources.see_less
 import bibleplanner.feature.reading_plan.generated.resources.see_more_weeks
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMode
-import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanProgress
+import com.quare.bibleplanner.feature.readingplan.presentation.component.PlanProgressIndicator
 import com.quare.bibleplanner.feature.readingplan.presentation.component.ReadingPlanHeaderRow
 import com.quare.bibleplanner.feature.readingplan.presentation.component.hero.PlanHeroCard
-import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.PlanHeroShimmer
-import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.PlanProgressShimmer
-import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.SectionHeaderShimmer
+import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.PlanHeroSkeleton
+import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.PlanProgressSkeleton
+import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.SectionHeaderSkeleton
 import com.quare.bibleplanner.feature.readingplan.presentation.component.shimmers.WeekShimmerCard
 import com.quare.bibleplanner.feature.readingplan.presentation.component.week.WeekPlanItem
 import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlanUiEvent
@@ -136,12 +136,12 @@ private fun ResponsiveContentScope.sidePanelItems(
                 onEvent = onEvent,
             )
         } else {
-            PlanHeroShimmer(modifier = sectionModifier)
+            PlanHeroSkeleton(modifier = sectionModifier)
         }
     }
     responsiveItem(key = "progress") {
         if (loadedUiState != null) {
-            PlanProgress(
+            PlanProgressIndicator(
                 modifier = sectionModifier,
                 progress = loadedUiState.progress,
                 readDaysCount = loadedUiState.readDaysCount,
@@ -150,7 +150,7 @@ private fun ResponsiveContentScope.sidePanelItems(
                 planStatus = loadedUiState.planStatus,
             )
         } else {
-            PlanProgressShimmer(modifier = sectionModifier)
+            PlanProgressSkeleton(modifier = sectionModifier)
         }
     }
 }
@@ -164,7 +164,7 @@ private fun ResponsiveContentScope.weekItems(
 ) {
     if (loadedUiState == null) {
         responsiveItem(key = "week_shimmer_section_header") {
-            SectionHeaderShimmer()
+            SectionHeaderSkeleton()
         }
         repeat(WEEK_SHIMMER_COUNT) { index ->
             responsiveItem(key = "week_shimmer_$index") {

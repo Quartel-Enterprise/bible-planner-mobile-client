@@ -27,13 +27,13 @@ internal fun SubscriptionPlanContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             SubscriptionPlanIcon(isSelected = isSelected)
-            SubscriptionPlanInformation(
+            SubscriptionPlanInformationColumn(
                 modifier = Modifier.weight(1f),
                 title = title,
                 description = description,
             )
         }
-        SubscriptionPlanPrice(
+        SubscriptionPlanPriceText(
             price = price,
             period = period,
         )

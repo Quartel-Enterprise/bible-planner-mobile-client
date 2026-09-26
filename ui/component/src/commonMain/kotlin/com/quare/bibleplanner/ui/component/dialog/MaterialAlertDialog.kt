@@ -37,7 +37,7 @@ internal fun MaterialAlertDialog(
             null
         } else {
             {
-                MaterialAlertDialogBody(
+                MaterialAlertDialogContent(
                     text = text,
                     textField = textField,
                 )
@@ -66,7 +66,7 @@ internal fun MaterialAlertDialog(
 }
 
 @Composable
-private fun MaterialAlertDialogBody(
+private fun MaterialAlertDialogContent(
     text: String?,
     textField: AppAlertDialogTextField?,
 ) {

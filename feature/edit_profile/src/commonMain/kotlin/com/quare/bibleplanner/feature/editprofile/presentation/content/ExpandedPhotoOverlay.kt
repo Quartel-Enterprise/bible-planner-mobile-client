@@ -44,7 +44,7 @@ import com.quare.bibleplanner.core.profile.domain.model.photoBytes
 import com.quare.bibleplanner.core.profile.domain.model.photoUrl
 import com.quare.bibleplanner.feature.editprofile.presentation.model.ProfilePhotoUiEvent
 import com.quare.bibleplanner.ui.component.DialogWindowBlurEffect
-import com.quare.bibleplanner.ui.component.ProfileAvatar
+import com.quare.bibleplanner.ui.component.ProfileAvatarImage
 import com.quare.bibleplanner.ui.component.googleLogo
 import org.jetbrains.compose.resources.stringResource
 
@@ -84,7 +84,7 @@ internal fun ExpandedPhotoOverlay(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(28.dp),
         ) {
-            ProfileAvatar(
+            ProfileAvatarImage(
                 photoUrl = profile?.avatar?.photoUrl,
                 photoBytes = profile?.avatar?.photoBytes,
                 displayName = profile?.displayName,
@@ -96,7 +96,7 @@ internal fun ExpandedPhotoOverlay(
             )
             Row(horizontalArrangement = Arrangement.spacedBy(22.dp)) {
                 if (profile?.hasProviderPhoto == true && !profile.isUsingProviderPhoto) {
-                    PhotoShortcut(
+                    PhotoShortcutButton(
                         label = stringResource(Res.string.edit_profile_photo_short_provider),
                         background = Color.White,
                         onClick = { onEvent(ProfilePhotoUiEvent.OnUseProviderPhotoClick) },
@@ -109,7 +109,7 @@ internal fun ExpandedPhotoOverlay(
                     }
                 }
                 if (isCameraAvailable) {
-                    PhotoShortcut(
+                    PhotoShortcutButton(
                         label = stringResource(Res.string.edit_profile_photo_short_camera),
                         background = neutralShortcutBackground,
                         onClick = { onEvent(ProfilePhotoUiEvent.OnTakePhotoClick) },
@@ -117,7 +117,7 @@ internal fun ExpandedPhotoOverlay(
                         ShortcutIcon(icon = Icons.Default.PhotoCamera)
                     }
                 }
-                PhotoShortcut(
+                PhotoShortcutButton(
                     label = stringResource(Res.string.edit_profile_photo_short_gallery),
                     background = neutralShortcutBackground,
                     onClick = { onEvent(ProfilePhotoUiEvent.OnPickFromGalleryClick) },
@@ -125,7 +125,7 @@ internal fun ExpandedPhotoOverlay(
                     ShortcutIcon(icon = Icons.Default.PhotoLibrary)
                 }
                 if (profile?.hasVisiblePhoto == true) {
-                    PhotoShortcut(
+                    PhotoShortcutButton(
                         label = stringResource(Res.string.edit_profile_photo_short_remove),
                         background = destructiveShortcutBackground,
                         labelColor = destructiveShortcutContent,
@@ -173,7 +173,7 @@ private fun ShortcutIcon(
 }
 
 @Composable
-private fun PhotoShortcut(
+private fun PhotoShortcutButton(
     label: String,
     background: Color,
     onClick: () -> Unit,

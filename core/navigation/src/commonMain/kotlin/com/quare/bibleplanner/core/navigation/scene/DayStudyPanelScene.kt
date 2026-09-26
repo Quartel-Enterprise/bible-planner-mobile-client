@@ -42,8 +42,8 @@ internal class DayStudyPanelScene(
     private val mainEntry: NavEntry<NavKey>,
     private val detailEntry: NavEntry<NavKey>,
     override val previousEntries: List<NavEntry<NavKey>>,
-    private val initialReadingFraction: Float,
-    private val onReadingFractionCommit: (Float) -> Unit,
+    initialReadingFraction: Float,
+    onReadingFractionCommit: (Float) -> Unit,
 ) : Scene<NavKey> {
     override val entries: List<NavEntry<NavKey>> = listOf(mainEntry, detailEntry)
 

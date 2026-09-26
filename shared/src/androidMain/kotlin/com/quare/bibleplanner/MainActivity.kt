@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val isDynamicColorsOn by viewModel.isDynamicColorsEnabled.collectAsState()
-            App(
+            AppRoot(
                 getSpecificColors = { isAppInDarkTheme ->
                     getAndroidSpecificColorScheme(
                         isDynamicColorsOn = isDynamicColorsOn,

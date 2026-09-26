@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BookPlanDto(
-    @SerialName("chapters") val chapters: ChaptersPlanDto? = null,
+    @SerialName("chapters") val chapters: ChaptersPlanDto?,
     @SerialName("name") val name: String,
 )

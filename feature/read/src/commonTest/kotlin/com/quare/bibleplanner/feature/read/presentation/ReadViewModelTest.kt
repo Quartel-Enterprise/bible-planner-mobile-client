@@ -56,25 +56,27 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private val dayReadingCompleteCommand: NavigationCommand = NavigationCommand.Navigate(
-    DayReadingCompleteNavRoute(
-        dayNumber = 2,
-        weekNumber = 1,
-        readingPlanType = "CHRONOLOGICAL",
-    ),
-)
-private val completedDay = PlanDayLocationModel(
-    weekNumber = 1,
-    dayNumber = 2,
-    readingPlanType = ReadingPlanType.CHRONOLOGICAL,
-)
-private val testChapter = ChapterRef(
-    bibleVersionId = "ACF",
-    bookId = BookId.GEN,
-    chapterNumber = 3,
-)
-
 internal class ReadViewModelTest {
+    private val dayReadingCompleteCommand: NavigationCommand = NavigationCommand.Navigate(
+        DayReadingCompleteNavRoute(
+            dayNumber = 2,
+            weekNumber = 1,
+            readingPlanType = "CHRONOLOGICAL",
+        ),
+    )
+
+    private val completedDay = PlanDayLocationModel(
+        weekNumber = 1,
+        dayNumber = 2,
+        readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+    )
+
+    private val testChapter = ChapterRef(
+        bibleVersionId = "ACF",
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
+
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: ReadViewModel
     private val navigator = Navigator()

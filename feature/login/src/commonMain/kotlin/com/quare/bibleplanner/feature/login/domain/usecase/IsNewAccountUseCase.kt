@@ -20,19 +20,17 @@ import kotlin.time.Duration.Companion.seconds
 internal class IsNewAccountUseCase(
     private val observeCurrentUser: ObserveCurrentUser,
 ) : IsNewAccount {
+    /**
+     * How far `last_sign_in_at` may sit past `created_at` and still count as the account's first
+     * sign-in: wide enough to absorb the lag between the two writes, far shorter than any real
+     * gap between two separate sign-ins.
+     */
+    private val newAccountWindow = 10.seconds
+
     override suspend fun invoke(): Boolean {
         val user = observeCurrentUser().first() ?: return false
         val createdAt = user.createdAt ?: return false
         val lastSignInAt = user.lastSignInAt ?: return false
-        return lastSignInAt - createdAt < NEW_ACCOUNT_WINDOW
-    }
-
-    private companion object {
-        /**
-         * How far `last_sign_in_at` may sit past `created_at` and still count as the account's first
-         * sign-in: wide enough to absorb the lag between the two writes, far shorter than any real
-         * gap between two separate sign-ins.
-         */
-        val NEW_ACCOUNT_WINDOW = 10.seconds
+        return lastSignInAt - createdAt < newAccountWindow
     }
 }

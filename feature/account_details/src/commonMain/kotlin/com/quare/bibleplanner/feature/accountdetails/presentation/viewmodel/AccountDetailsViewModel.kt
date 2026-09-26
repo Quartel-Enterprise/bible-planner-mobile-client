@@ -38,11 +38,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class AccountDetailsViewModel(
-    observeCurrentUser: ObserveCurrentUser,
-    observeDevices: ObserveDevices,
-    private val deviceUiModelMapper: DeviceUiModelMapper,
     private val signOutDevice: SignOutDevice,
     private val navigator: Navigator,
+    observeCurrentUser: ObserveCurrentUser,
+    observeDevices: ObserveDevices,
+    deviceUiModelMapper: DeviceUiModelMapper,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AccountDetailsUiEvent>(trackEvent) {
     val uiAction: SharedFlow<AccountDetailsUiAction>

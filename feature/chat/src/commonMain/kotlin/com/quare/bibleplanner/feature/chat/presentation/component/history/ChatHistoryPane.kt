@@ -105,7 +105,7 @@ internal fun ChatHistoryPane(
         )
         VerticalSpacer(8)
         if (history.groups.isEmpty()) {
-            if (history.hasConversations) EmptySearchState() else EmptyHistoryState()
+            if (history.hasConversations) EmptySearchContent() else EmptyHistoryContent()
         } else {
             ConversationList(
                 history = history,
@@ -226,7 +226,7 @@ private fun ConversationList(
 }
 
 @Composable
-private fun EmptyHistoryState() {
+private fun EmptyHistoryContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -260,7 +260,7 @@ private fun EmptyHistoryState() {
 }
 
 @Composable
-private fun EmptySearchState() {
+private fun EmptySearchContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()

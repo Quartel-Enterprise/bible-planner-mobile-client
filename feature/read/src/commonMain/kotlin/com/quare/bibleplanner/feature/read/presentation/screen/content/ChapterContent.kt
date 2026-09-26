@@ -5,7 +5,7 @@ import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
-import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterEndNavigation
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterEndNavigationRow
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterHeader
 import com.quare.bibleplanner.feature.read.presentation.screen.component.VerseRow
 import org.jetbrains.compose.resources.stringResource
@@ -51,7 +51,7 @@ internal fun LazyListScope.chapterContent(
         )
     }
     item(key = "chapter-end-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
-        ChapterEndNavigation(
+        ChapterEndNavigationRow(
             suggestions = header.navigationSuggestions.takeIf { !settings.isVerticalReadingEnabled },
             isRead = chapter.isRead,
             onReadClick = {

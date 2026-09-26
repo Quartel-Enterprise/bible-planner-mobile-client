@@ -106,7 +106,7 @@ fun DayReadingCompleteBanner(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             BannerIcon()
-            BannerTexts(
+            BannerTextColumn(
                 uiState = uiState,
                 onEvent = viewModel::onEvent,
                 modifier = Modifier.weight(1f),
@@ -166,7 +166,7 @@ private fun BannerIcon() {
 }
 
 @Composable
-private fun BannerTexts(
+private fun BannerTextColumn(
     uiState: DayReadingCompleteUiState,
     onEvent: (DayReadingCompleteBannerUiEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -189,7 +189,7 @@ private fun BannerTexts(
                 )
             }
 
-            is DayReadingCompleteUiState.Loaded -> LoadedBannerTexts(
+            is DayReadingCompleteUiState.Loaded -> LoadedBannerTextColumn(
                 state = uiState,
                 onEvent = onEvent,
             )
@@ -198,7 +198,7 @@ private fun BannerTexts(
 }
 
 @Composable
-private fun LoadedBannerTexts(
+private fun LoadedBannerTextColumn(
     state: DayReadingCompleteUiState.Loaded,
     onEvent: (DayReadingCompleteBannerUiEvent) -> Unit,
 ) {

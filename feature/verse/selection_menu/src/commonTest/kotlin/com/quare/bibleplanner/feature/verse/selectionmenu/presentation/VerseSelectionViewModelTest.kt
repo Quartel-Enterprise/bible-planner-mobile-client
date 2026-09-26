@@ -34,13 +34,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private val testChapter = ChapterRef(
-    bibleVersionId = "ACF",
-    bookId = BookId.GEN,
-    chapterNumber = 3,
-)
-
 internal class VerseSelectionViewModelTest {
+    private val testChapter = ChapterRef(
+        bibleVersionId = "ACF",
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+    )
+
     private val testDispatcher = UnconfinedTestDispatcher()
     private val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
     private lateinit var viewModel: VerseSelectionViewModel

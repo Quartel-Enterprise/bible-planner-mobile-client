@@ -46,14 +46,14 @@ import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallLega
 import com.quare.bibleplanner.feature.paywall.presentation.component.PaywallTopBar
 import com.quare.bibleplanner.feature.paywall.presentation.component.premiumfeature.PremiumFeaturesList
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.StartProButton
-import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.SubscriptionPlans
+import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.SubscriptionPlanList
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.SubscriptionPlansRow
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallLandscapeDimensions
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiState
 import com.quare.bibleplanner.feature.paywall.presentation.utils.selectedPlanPriceDescription
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
-import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeight
+import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeightEffect
 import org.jetbrains.compose.resources.stringResource
 
 private val landscapeMinWidth = 600.dp
@@ -114,7 +114,7 @@ private fun PaywallPortraitContent(
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     var actionBarHeightPx by remember { mutableFloatStateOf(0f) }
-    ReserveBottomOverlayHeight { actionBarHeightPx }
+    ReserveBottomOverlayHeightEffect { actionBarHeightPx }
     Scaffold(
         topBar = {
             PaywallTopBar(
@@ -162,7 +162,7 @@ private fun PaywallPortraitContent(
         ) {
             VerticalSpacer(18)
             if (uiState is PaywallUiState.Success) {
-                SubscriptionPlans(
+                SubscriptionPlanList(
                     subscriptionPlans = uiState.subscriptionPlans,
                     onEvent = onEvent,
                     itemSpacing = portraitPlansSpacing,

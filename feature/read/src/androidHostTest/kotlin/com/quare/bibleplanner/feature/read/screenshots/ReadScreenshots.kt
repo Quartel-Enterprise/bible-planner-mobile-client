@@ -13,23 +13,7 @@ import dev.lucianosantos.storescreenshots.ScreenshotStyle
 import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.junit.Test
 
-private val bannerCopy = mapOf(
-    "en-US" to (
-        "Read the chapter right where you are" to
-            "The passage of the day, without leaving the plan behind"
-    ),
-    "pt-BR" to (
-        "Leia o capítulo ali mesmo" to
-            "A passagem do dia, sem sair de perto do plano"
-    ),
-    "es" to (
-        "Lee el capítulo allí mismo" to
-            "El pasaje del día, sin alejarte del plan"
-    ),
-)
 private const val BACKGROUND = 0xFF141C3D
-private const val README_SUBDIR = "readme"
-private const val README_LOCALE = "en-US"
 
 /**
  * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
@@ -55,6 +39,21 @@ internal abstract class ReadScreenshots(
         canvas = canvas,
         style = ScreenshotStyle(edgeToEdge = false),
     ) {
+    private val bannerCopy = mapOf(
+        "en-US" to (
+            "Read the chapter right where you are" to
+                "The passage of the day, without leaving the plan behind"
+        ),
+        "pt-BR" to (
+            "Leia o capítulo ali mesmo" to
+                "A passagem do dia, sem sair de perto do plano"
+        ),
+        "es" to (
+            "Lee el capítulo allí mismo" to
+                "El pasaje del día, sin alejarte del plan"
+        ),
+    )
+
     @Test
     fun read() = bannerCopy.forEach { (locale, copy) ->
         val (title, description) = copy
@@ -141,5 +140,10 @@ internal class ReadmeReadScreenshots :
                 )
             }
         }
+    }
+
+    private companion object {
+        const val README_SUBDIR = "readme"
+        const val README_LOCALE = "en-US"
     }
 }

@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.quare.bibleplanner.feature.paywall.presentation.component.description.SecurePaymentDescription
+import com.quare.bibleplanner.feature.paywall.presentation.component.description.SecurePaymentDescriptionRow
 import com.quare.bibleplanner.feature.paywall.presentation.model.PaywallUiEvent
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
@@ -20,6 +20,6 @@ internal fun PaywallLegalFooter(
     ) {
         RestorePurchaseComponent(onEvent = onEvent)
         VerticalSpacer(8)
-        SecurePaymentDescription(storeName = storeName)
+        SecurePaymentDescriptionRow(storeName = storeName)
     }
 }

@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class PendingBibleUpdatesViewModel(
-    private val getPendingBibleUpdates: GetPendingBibleUpdatesUseCase,
     private val updateBibleVersion: UpdateBibleVersionUseCase,
     private val dismissBibleUpdatePrompt: DismissBibleUpdatePromptUseCase,
     private val requestDownloadNotificationPermission: RequestDownloadNotificationPermissionUseCase,
     private val navigator: Navigator,
+    getPendingBibleUpdates: GetPendingBibleUpdatesUseCase,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PendingBibleUpdatesUiEvent>(trackEvent) {
     val pendingUpdates: StateFlow<List<PendingBibleUpdateItem>>

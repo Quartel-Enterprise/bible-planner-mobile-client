@@ -58,7 +58,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 
 internal class ProfileViewModel(
-    uiStateFactory: ProfileUiStateFactory,
     private val calculateBibleProgress: CalculateBibleProgressUseCase,
     private val getWebAppUrl: GetWebAppUrl,
     private val getInstagramUrl: GetInstagramUrlUseCase,
@@ -67,6 +66,7 @@ internal class ProfileViewModel(
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
     private val navigator: Navigator,
+    uiStateFactory: ProfileUiStateFactory,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ProfileUiEvent>(trackEvent) {
     val uiAction: SharedFlow<ProfileUiAction>

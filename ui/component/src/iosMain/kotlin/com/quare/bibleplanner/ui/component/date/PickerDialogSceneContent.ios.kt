@@ -7,7 +7,7 @@ actual fun PickerDialogSceneContent(
     onDismissRequest: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    NativePickerModal(
+    NativePickerDialog(
         onDismissRequest = onDismissRequest,
         content = content,
     )

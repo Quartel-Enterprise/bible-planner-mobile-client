@@ -36,15 +36,13 @@ sealed interface LoginWarningReason {
     }
 
     companion object {
-        private val entries: List<LoginWarningReason> = listOf(
+        fun fromKey(key: String): LoginWarningReason = listOf(
             Purchase,
             DayStudy,
             AiChat,
             Preferences.Theme,
             Preferences.Language,
             Preferences.StudySuggestion,
-        )
-
-        fun fromKey(key: String): LoginWarningReason = entries.first { it.key == key }
+        ).first { it.key == key }
     }
 }

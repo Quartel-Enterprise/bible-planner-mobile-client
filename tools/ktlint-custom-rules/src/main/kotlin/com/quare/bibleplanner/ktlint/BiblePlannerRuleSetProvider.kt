@@ -8,13 +8,21 @@ class BiblePlannerRuleSetProvider : RuleSetProviderV3(RuleSetId(RULE_SET_ID)) {
     override fun getRuleProviders(): Set<RuleProvider> = setOf(
         RuleProvider { PrivateTopLevelValNamingRule() },
         RuleProvider { TopLevelValPositionRule() },
+        RuleProvider { TopLevelValOwnershipRule() },
         RuleProvider { TopLevelValBlankLineRule() },
         RuleProvider { WhenEntrySingleStatementBracesRule() },
         RuleProvider { FunInterfaceRule() },
+        RuleProvider { InterfaceImplementationSeparateFilesRule() },
         RuleProvider { RedundantSamConstructorArgumentRule() },
         RuleProvider { ValueReturningFunctionNamingRule() },
         RuleProvider { UnitFunctionBlockBodyRule() },
         RuleProvider { PreferMethodReferenceRule() },
         RuleProvider { ExplicitBackingFieldRule() },
+        RuleProvider { CompanionObjectConstantsRule() },
+        RuleProvider { RedundantPrivateConstructorPropertyRule() },
+        RuleProvider { DtoSerialNameRule() },
+        RuleProvider { UnusedFunctionParameterRule() },
+        RuleProvider { ComposableNamingSuffixRule() },
+        RuleProvider { ConstructorPropertyOrderRule() },
     )
 }
