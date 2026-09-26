@@ -15,7 +15,7 @@ internal class DayStudyStatusMapperTest {
     }
 
     @Test
-    fun `GIVEN a status response WHEN mapping THEN keeps the quota, unlock and cache token`() {
+    fun `GIVEN a status response WHEN mapping THEN keeps the quota and the unlock and cache token`() {
         // Given
         val dto = DayStudyStatusDto(
             isUnlocked = true,

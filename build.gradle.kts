@@ -87,7 +87,8 @@ kover {
     reports {
         filters {
             excludes {
-                // Composables are covered by the Compose UI tests, not by this report
+                // Composables are left to the Compose UI tests, which cover only the main screens
+                // so far. docs/code-quality.md has the numbers for lifting this.
                 annotatedBy(
                     "androidx.compose.runtime.Composable",
                     "org.jetbrains.compose.ui.tooling.preview.Preview",

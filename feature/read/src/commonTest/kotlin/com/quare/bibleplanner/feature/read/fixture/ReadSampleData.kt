@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.read.screenshots
+package com.quare.bibleplanner.feature.read.fixture
 
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.book.BookId

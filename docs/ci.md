@@ -38,6 +38,35 @@ coming from the cache, even for a pull request that doesn't touch the app's code
 The ktlint action caches its own things: the CLI, keyed by version, and the custom ruleset jar,
 keyed by its sources. It sets up Gradle only when the jar has to be rebuilt.
 
+## UI tests
+
+The `ui-tests` workflow runs the [Compose UI tests](testing/compose-ui-tests.md) of every module
+that has a `src/androidDeviceTest` directory. `scripts/ui_test_shard.sh` finds those modules, so a
+new one joins without editing the workflow. `unit-tests` in `build-and-test` passes
+`-PuiTests=exclude` and leaves them to this workflow, so each job reports one kind of test.
+
+- **`desktop`** runs them on the JVM with `-PuiTests=only`, which leaves the unit tests of the same
+  modules to `unit-tests`. Only the modules with UI tests and what they depend on compile here.
+
+- **`android`** has two shards, and each boots its own API 35 `x86_64` emulator with KVM. The
+  script deals the modules to the shards round-robin, so keep `SHARD_COUNT` equal to the length of
+  `matrix.shard`. A shard assembles its test APKs before the emulator boots: that gives Gradle all
+  four cores, and a compile error fails the job before the SDK download and the boot. The emulator
+  and its system image are installed in their own step, with three attempts, because the emulator
+  runner fails the job on the first corrupt download. The tests run with `--max-workers=1`, so one
+  module at a time drives the emulator and the log stays readable. The step has a 25-minute
+  timeout, under the job's 45: a hung run then still uploads its reports.
+- **`ios`** runs the same modules on the iOS simulator of a `macos-latest` runner, which costs
+  nothing on a public repository. Besides setup-gradle it caches `~/.konan`, which setup-gradle
+  leaves out: the Kotlin/Native toolchain and, more expensive, the compiled cache of every library
+  the test binaries link. Building that cache is about 15 minutes of a cold run, on its first link.
+  The key follows the Kotlin version and the version catalog and falls back to the last entry for
+  the same Kotlin version, so a library bump rebuilds only what changed. It is the slowest job of a
+  pull request, so it also writes its Gradle cache there.
+
+The device jobs run the rest of `commonTest` too, since `androidDeviceTest` and `iosTest` depend on
+all of it. Every job uploads its test reports when it fails.
+
 ## Adding a workflow
 
 - Scope it with `paths` or `paths-ignore`, so a docs-only change doesn't run a build — unless it is

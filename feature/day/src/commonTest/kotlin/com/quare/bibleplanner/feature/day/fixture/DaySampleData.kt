@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.day.screenshots
+package com.quare.bibleplanner.feature.day.fixture
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates

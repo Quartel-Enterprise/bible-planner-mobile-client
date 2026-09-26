@@ -48,7 +48,7 @@ internal class ChapterVersesUiModelMapperTest {
     }
 
     @Test
-    fun `GIVEN only another version's texts WHEN mapping THEN returns nothing`() {
+    fun `GIVEN only the texts of another version WHEN mapping THEN returns nothing`() {
         // Given
         prepareScenario()
         val verses = listOf(verse(number = 1, versions = listOf(KJV)))

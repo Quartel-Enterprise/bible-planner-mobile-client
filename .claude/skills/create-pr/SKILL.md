@@ -135,8 +135,9 @@ Otherwise, run:
 ./gradlew jvmTest :koverVerifyCi :verifyNewFilesCoverage --continue
 ```
 
-It runs every module's `commonTest` and `jvmTest` on the JVM target and the two coverage rules the
-`build-and-test` workflow enforces: 80% of the lines for the merged report and for each file the
+It runs every module's `commonTest` and `jvmTest` on the JVM target, Compose UI tests included (CI
+splits them between `unit-tests` and the `desktop` job of `ui-tests`; the coverage is the same
+either way), and the two coverage rules the `build-and-test` workflow enforces: 80% of the lines for the merged report and for each file the
 branch adds (see [docs/code-quality.md](../../../docs/code-quality.md#test-coverage)). If tests fail
 or a rule fails, stop and report it: write the missing tests rather than pushing a red branch.
 

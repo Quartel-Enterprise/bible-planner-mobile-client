@@ -1,3 +1,4 @@
+import com.bibleplanner.buildlogic.configureComposeUiTests
 import com.bibleplanner.buildlogic.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -19,6 +20,10 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
                     .get()
                     .pluginId,
             )
+        }
+
+        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            configureComposeUiTests()
         }
     }
 }

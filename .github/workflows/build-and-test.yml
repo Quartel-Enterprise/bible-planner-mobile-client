@@ -52,6 +52,8 @@ jobs:
 
       # jvmTest stays next to the Kover tasks: :ui:* has tests but is left out of the coverage
       # report, so the Kover tasks alone would not run them. See docs/code-quality.md.
+      # -PuiTests=exclude leaves the Compose UI tests out: the desktop job of ui-tests runs
+      # them, so this job and the coverage report are about the unit tests alone.
       # The desktop app is compiled here and not in build: jvmTest already compiles the jvm target
       # of every module it depends on, so it only adds :desktopApp itself, while in build it
       # compiled the whole jvm target a second time on top of the Android one.
@@ -60,7 +62,7 @@ jobs:
           BASE_REF: ${{ github.base_ref || 'main' }}
         run: >
           ./gradlew jvmTest :koverVerifyCi :verifyNewFilesCoverage :koverHtmlReportCi
-          :desktopApp:compileKotlin -Pcoverage.baseRef="origin/$BASE_REF" --continue
+          :desktopApp:compileKotlin -Pcoverage.baseRef="origin/$BASE_REF" -PuiTests=exclude --continue
 
       - name: Upload test reports
         if: failure()
