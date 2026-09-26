@@ -60,7 +60,7 @@ internal class DayStudyBackgroundGenerationViewModelTest {
     }
 
     @Test
-    fun `GIVEN the active day's job WHEN observing THEN it is suppressed`() = runTest(testDispatcher) {
+    fun `GIVEN the job of the active day WHEN observing THEN it is suppressed`() = runTest(testDispatcher) {
         // Given
         val job = generatingJob(dayRoute)
 
