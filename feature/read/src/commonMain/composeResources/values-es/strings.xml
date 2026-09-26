@@ -5,9 +5,7 @@
     <string name="unknown_error_occurred">Ocurrió un error desconocido.</string>
     <string name="retry">Reintentar</string>
     <string name="change_bible_version">Cambiar Versión de la Biblia</string>
-    <string name="mark_as_unread">Marcar como No Leído</string>
     <string name="mark_as_read">Marcar como Leído</string>
-    <string name="read_label">Leído</string>
     <string name="download_version">Descargar</string>
     <string name="download_version_with_size">Descargar (%1$s)</string>
     <string name="resume_download">Reanudar descarga</string>
@@ -45,12 +43,8 @@
     <string name="highlight_color_removed_kept">Color quitado de la paleta. Resaltados mantenidos</string>
     <string name="highlight_color_removed">Color personalizado eliminado</string>
     <string name="dismiss_ruler">Apagar la regla de lectura</string>
-    <string name="open_side_panel">Abrir el panel lateral</string>
-    <string name="close_side_panel">Cerrar el panel lateral</string>
-    <string name="selection_panel_empty">Toca un versículo para resaltarlo, guardarlo o anotarlo.</string>
     <string name="cancel">Cancelar</string>
     <string name="text_size_sample">A</string>
-    <string name="move_ruler">Mover la regla</string>
     <string name="reader_ruler_height">Altura de la banda</string>
     <plurals name="reader_ruler_lines">
         <item quantity="one">%1$d línea</item>

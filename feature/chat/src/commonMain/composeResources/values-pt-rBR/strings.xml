@@ -21,7 +21,6 @@
     <string name="chat_rate_limit_countdown">Disponível em %1$ds</string>
     <string name="chat_cooldown_input">Aguarde %1$ds para enviar novamente</string>
     <string name="chat_locked_input">Assine para continuar perguntando</string>
-    <string name="chat_history">Histórico</string>
     <string name="chat_new">Nova</string>
     <string name="chat_conversations">Conversas</string>
     <string name="chat_back">Voltar</string>

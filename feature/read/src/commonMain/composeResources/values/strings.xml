@@ -5,9 +5,7 @@
     <string name="unknown_error_occurred">An unknown error occurred.</string>
     <string name="retry">Retry</string>
     <string name="change_bible_version">Change Bible Version</string>
-    <string name="mark_as_unread">Mark as Unread</string>
     <string name="mark_as_read">Mark as Read</string>
-    <string name="read_label">Read</string>
     <string name="download_version">Download</string>
     <string name="download_version_with_size">Download (%1$s)</string>
     <string name="resume_download">Resume download</string>
@@ -45,12 +43,8 @@
     <string name="highlight_color_removed_kept">Color removed from the palette. Highlights kept</string>
     <string name="highlight_color_removed">Custom color removed</string>
     <string name="dismiss_ruler">Turn off the reading ruler</string>
-    <string name="open_side_panel">Open the side panel</string>
-    <string name="close_side_panel">Close the side panel</string>
-    <string name="selection_panel_empty">Tap a verse to highlight it, save it, or write a note.</string>
     <string name="cancel">Cancel</string>
     <string name="text_size_sample">A</string>
-    <string name="move_ruler">Move the ruler</string>
     <string name="reader_ruler_height">Band height</string>
     <plurals name="reader_ruler_lines">
         <item quantity="one">%1$d line</item>

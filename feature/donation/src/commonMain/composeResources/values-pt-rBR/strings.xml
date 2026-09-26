@@ -10,7 +10,6 @@
     <string name="donation_gh_sponsors">GitHub Sponsors</string>
     <string name="donation_gh_sponsors_description">Mensal ou pagamento único</string>
     <string name="donation_maybe_later">Talvez mais tarde</string>
-    <string name="donation_copied">Copiado para a área de transferência!</string>
     <string name="donation_onchain">On-chain</string>
     <string name="donation_lightning">Lightning Network</string>
     <string name="donation_trc20">TRC20</string>
