@@ -50,6 +50,22 @@ kotlin {
             // Calf
             implementation(libs.calf.ui)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
+
+        jvmTest.dependencies {
+            // Skiko native library, required by compose-resources' getString() on the JVM target
+            implementation(compose.desktop.currentOs)
+
+            // In-memory database behind the real UpdateBookReadStatusUseCase
+            implementation(projects.core.provider.room)
+            implementation(projects.core.date)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
+        }
+
         getByName("androidHostTest").dependencies {
             implementation(projects.ui.theme)
             implementation(libs.storeScreenshots.library)

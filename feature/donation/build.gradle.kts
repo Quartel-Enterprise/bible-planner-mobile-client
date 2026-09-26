@@ -10,6 +10,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.donation"
+        withHostTest {}
     }
 
     jvm()
@@ -42,6 +43,11 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.materialIconsExtended)
             implementation(libs.compose.components.resources)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

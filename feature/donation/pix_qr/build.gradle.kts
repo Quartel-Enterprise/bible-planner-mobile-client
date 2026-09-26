@@ -37,6 +37,14 @@ kotlin {
             implementation(libs.compose.materialIconsExtended)
             implementation(libs.compose.components.resources)
         }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+
+            // Skiko native library, required by compose-resources' getString() on the JVM target
+            implementation(compose.desktop.currentOs)
+        }
     }
 }
 
