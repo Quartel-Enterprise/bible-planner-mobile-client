@@ -1,8 +1,10 @@
 package com.quare.bibleplanner.e2e.harness
 
+import android.Manifest
 import android.app.UiAutomation
 import android.content.Context
 import android.hardware.display.DisplayManager
+import android.os.Build
 import android.view.Display
 import android.view.Surface
 import androidx.compose.ui.test.ComposeUiTest
@@ -73,12 +75,22 @@ private object AndroidE2ePlatform : E2ePlatform {
     ): AutoCloseable {
         val appPreferences = context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE)
         appPreferences.edit(commit = true) { putString(APP_LANGUAGE_KEY, ENGLISH_LANGUAGE_TAG) }
+        allowNotifications()
         turnTheDevice(window)
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         return AutoCloseable {
             scenario.close()
             uiAutomation.setRotation(UiAutomation.ROTATION_UNFREEZE)
             appPreferences.edit(commit = true) { clear() }
+        }
+    }
+
+    // Downloading a Bible version asks for this permission, and the system dialog that asks for it
+    // pauses the app, which leaves the test with no Compose hierarchy until it goes away. The flows
+    // are for a user who has already allowed notifications.
+    private fun allowNotifications() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            uiAutomation.grantRuntimePermission(context.packageName, Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
