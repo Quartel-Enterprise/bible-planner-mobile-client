@@ -29,6 +29,12 @@ then deletes the entries of every closed pull request.
 The `GRADLE_ENCRYPTION_KEY` secret encrypts the configuration cache. Without it the configuration
 cache is dropped between runs and every job configures the build from scratch.
 
+R8 takes about two thirds of the `build` job and reruns whenever its inputs change. Only the
+release workflow's build, the one signed with the release keystore, embeds the commit and a
+Crashlytics mapping file id and uploads its mapping file. Every other release build leaves both out:
+the id is random per build and the commit changes on every run, so either would keep R8 from ever
+coming from the cache, even for a pull request that doesn't touch the app's code.
+
 The ktlint action caches its own things: the CLI, keyed by version, and the custom ruleset jar,
 keyed by its sources. It sets up Gradle only when the jar has to be rebuilt.
 
