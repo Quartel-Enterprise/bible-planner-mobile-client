@@ -3,7 +3,8 @@
     "common": [
       "En la pestaña de perfil, la lista ya no vuelve al principio cuando regresas de otra pantalla, como Hazte Pro o Notas de la Versión: se queda donde la dejaste, sin mostrar por un momento los espacios de carga.",
       "Las notas de actualización ahora muestran solo lo que cambió en tu dispositivo: los cambios hechos solo para Android, iPhone o computadora aparecen solo en ellos.",
-      "Los avisos que aparecen en la parte de abajo de la pantalla, como \"Ya tienes la versión más reciente\", ya no quedan escondidos detrás de la barra de pestañas después de cambiar de pestaña."
+      "Los avisos que aparecen en la parte de abajo de la pantalla, como \"Ya tienes la versión más reciente\", ya no quedan escondidos detrás de la barra de pestañas después de cambiar de pestaña.",
+      "En la pantalla del día, las notas que escribes justo antes de salir de la pantalla ya no se pierden: se guardan aunque regreses de inmediato."
     ],
     "android": [
       "En las ventanas de confirmación, las acciones que borran algo ahora aparecen en rojo."
