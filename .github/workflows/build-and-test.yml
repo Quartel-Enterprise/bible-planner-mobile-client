@@ -82,15 +82,12 @@ jobs:
       - name: Setup Gradle
         uses: ./.github/actions/gradle
 
-      # The google-services plugin refuses to build without its file, and local.properties carries
-      # the keys BuildKonfig bakes into the app. Neither is in the repository.
-      - name: Decode build secrets
-        env:
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-          LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
-        run: |
-          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
-          printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
+      # The google-services plugin refuses to build without its file. The real one lives only in the
+      # Production environment, which needs a manual approval, so this compile check builds with
+      # placeholder values instead. Without local.properties BuildKonfig bakes empty keys, which is
+      # fine for an app nothing runs.
+      - name: Write a placeholder google-services.json
+        run: ./scripts/write_placeholder_google_services.sh
 
       # Release matters: it is the only variant where R8 runs, so a missing keep rule surfaces here
       # instead of on a device. Without the signing secrets it is signed with the debug key, which

@@ -89,7 +89,9 @@ report as the `coverage-report` artifact. On a pull request it first fetches the
 branch, which the depth-1 checkout does not bring, so the new-files rule has something to diff
 against. The `build` job of the same workflow assembles `:androidApp:assembleRelease` — the only
 variant R8 runs on, so a missing keep rule fails there instead of on a device — and compiles the
-desktop app.
+desktop app. It builds with the placeholder `google-services.json` that
+`scripts/write_placeholder_google_services.sh` writes, since the real one lives only in the
+`Production` environment, which needs a manual approval.
 
 ## Module graph
 
