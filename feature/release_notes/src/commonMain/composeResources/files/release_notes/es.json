@@ -1,4 +1,9 @@
 {
+  "2.9.1": {
+    "common": [
+      "En la pantalla Anotaciones, volver con el botón o el gesto del sistema con la búsqueda abierta ahora solo cierra la búsqueda, en lugar de salir de la pantalla."
+    ]
+  },
   "2.9.0": {
     "common": [
       "En la pestaña de perfil, la lista ya no vuelve al principio cuando regresas de otra pantalla, como Hazte Pro o Notas de la Versión: se queda donde la dejaste, sin mostrar por un momento los espacios de carga.",
