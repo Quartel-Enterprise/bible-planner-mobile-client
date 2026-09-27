@@ -10,26 +10,37 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasScrollToNodeAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.waitUntilAtLeastOneExists
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.waitUntilDoesNotExist
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
 
 // The app reads Room and DataStore off the main thread, which waitForIdle does not wait for, so every
 // step waits for the node it needs instead.
 private const val TIMEOUT_MILLIS = 10_000L
+private val settleTime = 2.seconds
 
 // A flow that fails says which screen it was on: the error carries the text of every node on screen.
+// A lazy list doesn't even compose the items below the fold, so a node that stays missing is looked
+// for in the lazy lists on screen, once the screen has had time to settle: scrolling the screen a
+// transition is leaving keeps that transition from finishing.
 @OptIn(ExperimentalTestApi::class)
 internal fun ComposeUiTest.awaitNode(matcher: SemanticsMatcher): SemanticsNodeInteraction {
+    val start = TimeSource.Monotonic.markNow()
     try {
-        waitUntilAtLeastOneExists(
-            matcher = matcher,
+        waitUntil(
+            conditionDescription = "at least one node matches (${matcher.description})",
             timeoutMillis = TIMEOUT_MILLIS,
-        )
+        ) {
+            onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty() ||
+                (start.elapsedNow() > settleTime && scrollLazyListsTo(matcher))
+        }
     } catch (timeout: ComposeTimeoutException) {
         throw AssertionError("${timeout.message}\nOn screen:\n${screenText()}", timeout)
     }
@@ -72,6 +83,19 @@ internal fun ComposeUiTest.click(matcher: SemanticsMatcher) {
         node.performScrollTo()
     }
     node.performClick()
+}
+
+// Only the lists of the topmost root are scrolled: with a dialog open, the screen behind it isn't
+// the user's to scroll, and scrolling it hides the bottom bar.
+@OptIn(ExperimentalTestApi::class)
+private fun ComposeUiTest.scrollLazyListsTo(matcher: SemanticsMatcher): Boolean {
+    val topRoot = onAllNodes(isRoot()).fetchSemanticsNodes().lastOrNull()?.root
+    val lazyLists = onAllNodes(hasScrollToNodeAction())
+    return lazyLists
+        .fetchSemanticsNodes()
+        .withIndex()
+        .filter { (_, lazyList) -> lazyList.root == topRoot }
+        .any { (index, _) -> runCatching { lazyLists[index].performScrollToNode(matcher) }.isSuccess }
 }
 
 @OptIn(ExperimentalTestApi::class)

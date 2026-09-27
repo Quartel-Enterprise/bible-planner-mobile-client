@@ -66,8 +66,11 @@ disk for the next one.
 - The app reads Room and DataStore off the main thread, which `waitForIdle` doesn't wait for. Find
   every node through the helpers in `E2eInteractions.kt`: `awaitText`, `awaitNode`, `clickText`,
   `clickDescription` and `click` wait for the node, and the click helpers scroll it into view first,
-  since a phone in landscape leaves most lists below the fold. When a node doesn't show up, the error
-  lists every text on screen.
+  since a phone in landscape leaves most lists below the fold. A lazy list doesn't even compose the
+  items below the fold, so when a node is still missing after the screen has had 2 seconds to settle,
+  every helper looks for it in the lazy lists on screen. With a dialog open, only the dialog's lists
+  are scrolled: scrolling the screen behind it would hide the bottom bar. When a node doesn't show up,
+  the error lists every text on screen.
 - Assert what the user sees. A matcher that waits for a state (`isOn()`, a text that only appears
   afterwards) is better than asserting right after a click.
 - The screens' strings live in each feature module's `Res`, which is internal, so the flows use the
