@@ -1,22 +1,12 @@
 package com.quare.bibleplanner.feature.day.screenshots
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import com.quare.bibleplanner.core.model.loadable.Loadable
-import com.quare.bibleplanner.core.model.theme.Theme
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.feature.day.fixture.dayUiState
-import com.quare.bibleplanner.feature.day.presentation.DayScreen
-import com.quare.bibleplanner.feature.daystudy.presentation.component.AiStudyEntryCard
-import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardQuotaUiModel
-import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
-import com.quare.bibleplanner.ui.theme.AppTheme
-import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.feature.day.fixture.DAY_SCREENSHOT
+import com.quare.bibleplanner.feature.day.fixture.DayScreenshotContent
+import com.quare.bibleplanner.ui.testing.screenshots.AppleScreenshotImage
+import com.quare.bibleplanner.ui.testing.screenshots.AppleScreenshotSlot
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -24,31 +14,24 @@ import dev.lucianosantos.storescreenshots.StoreScreenshotsTest
 import org.junit.Test
 
 private const val BACKGROUND = 0xFF141C3D
-private const val FREE_LIMIT = 3
 
 /**
- * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
- * everything here renders under Robolectric, which is Android whatever device the frame draws. So
- * the platform has to follow the form factor, or the Apple shots ship Android chrome.
+ * One subclass per form factor. The Play ones render the screen here, under Robolectric; the Apple
+ * ones pass [appleSlot] and frame the PNG DayAppleScreenshotCaptures rendered on the iOS
+ * simulator, so the App Store shows the screen as iOS draws it.
  */
-private val FormFactor.platform: Platform
-    get() = when (this) {
-        FormFactor.AppleIPhone65,
-        FormFactor.AppleIPhone67,
-        FormFactor.AppleIPad13,
-        -> Platform.Ios
-
-        else -> Platform.Android
-    }
-
 internal abstract class DayScreenshots(
-    private val formFactor: FormFactor,
     private val outputSubdir: String? = null,
+    private val appleSlot: AppleScreenshotSlot? = null,
+    formFactor: FormFactor,
     canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
         canvas = canvas,
-        style = ScreenshotStyle(edgeToEdge = false),
+        // Robolectric renders the screen without the app's window insets, so reserve the status
+        // bar height instead of letting the header slide under the frame's clock. An iOS capture
+        // already leaves that room itself and fills the whole screen.
+        style = ScreenshotStyle(edgeToEdge = appleSlot != null),
     ) {
     private val bannerCopy = mapOf(
         "en-US" to (
@@ -74,30 +57,54 @@ internal abstract class DayScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            fileName = "03_day",
+            fileName = DAY_SCREENSHOT,
         ) {
-            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-                AppTheme { DayContent(locale, formFactor.platform) }
+            if (appleSlot == null) {
+                DayScreenshotContent(
+                    locale = locale,
+                    platform = Platform.Android,
+                    statusBarHeight = 0.dp,
+                )
+            } else {
+                AppleScreenshotImage(
+                    slot = appleSlot,
+                    locale = locale,
+                    fileName = DAY_SCREENSHOT,
+                )
             }
         }
     }
 }
 
-internal class PhoneDayScreenshots : DayScreenshots(FormFactor.Phone)
+internal class PhoneDayScreenshots : DayScreenshots(formFactor = FormFactor.Phone)
 
-internal class Tablet7DayScreenshots : DayScreenshots(FormFactor.Tablet7)
+internal class Tablet7DayScreenshots : DayScreenshots(formFactor = FormFactor.Tablet7)
 
-internal class Tablet10DayScreenshots : DayScreenshots(FormFactor.Tablet10)
+internal class Tablet10DayScreenshots : DayScreenshots(formFactor = FormFactor.Tablet10)
 
-internal class IPhone65DayScreenshots : DayScreenshots(FormFactor.AppleIPhone65)
+internal class IPhone65DayScreenshots :
+    DayScreenshots(
+        appleSlot = AppleScreenshotSlot.IPHONE_6_5,
+        formFactor = FormFactor.AppleIPhone65,
+    )
 
-internal class IPhone67DayScreenshots : DayScreenshots(FormFactor.AppleIPhone67)
+internal class IPhone67DayScreenshots :
+    DayScreenshots(
+        appleSlot = AppleScreenshotSlot.IPHONE_6_7,
+        formFactor = FormFactor.AppleIPhone67,
+    )
 
-internal class IPad13DayScreenshots : DayScreenshots(FormFactor.AppleIPad13)
+internal class IPad13DayScreenshots :
+    DayScreenshots(
+        appleSlot = AppleScreenshotSlot.IPAD_13,
+        formFactor = FormFactor.AppleIPad13,
+    )
 
-// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one. The
+// screen inside is the same size, so it frames the 13" capture.
 internal class IPad11DayScreenshots :
     DayScreenshots(
+        appleSlot = AppleScreenshotSlot.IPAD_13,
         formFactor = FormFactor.AppleIPad13,
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
@@ -115,56 +122,15 @@ internal class ReadmeDayScreenshots :
         subdir = README_SUBDIR,
         fileName = "day",
     ) {
-        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-            AppTheme { DayContent(README_LOCALE, Platform.Android) }
-        }
+        DayScreenshotContent(
+            locale = README_LOCALE,
+            platform = Platform.Android,
+            statusBarHeight = 0.dp,
+        )
     }
 
     private companion object {
         const val README_SUBDIR = "readme"
         const val README_LOCALE = "en-US"
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun DayContent(
-    locale: String,
-    platform: Platform,
-) {
-    SharedTransitionLayout {
-        AnimatedContent(targetState = Unit) {
-            DayScreen(
-                platform = platform,
-                uiState = dayUiState(locale),
-                snackbarHostState = SnackbarHostState(),
-                sharedTransitionScope = this@SharedTransitionLayout,
-                animatedContentScope = this@AnimatedContent,
-                isLandscape = false,
-                onEvent = {},
-                // The real card, with a state the ViewModel would otherwise have produced: the
-                // section it replaces resolves a Koin ViewModel that pulls in Supabase and Room.
-                // A null mode drops the status badge, so the listing shot advertises the feature
-                // rather than a quota.
-                dayStudySection = { _, _, sectionModifier ->
-                    AiStudyEntryCard(
-                        card = DayStudyCardUiModel(
-                            mode = null,
-                            quota = Loadable.Loaded(
-                                DayStudyCardQuotaUiModel(
-                                    remainingFree = FREE_LIMIT,
-                                    freeLimit = FREE_LIMIT,
-                                ),
-                            ),
-                            isPro = true,
-                        ),
-                        generation = null,
-                        isOpening = false,
-                        onClick = {},
-                        modifier = sectionModifier,
-                    )
-                },
-            )
-        }
     }
 }

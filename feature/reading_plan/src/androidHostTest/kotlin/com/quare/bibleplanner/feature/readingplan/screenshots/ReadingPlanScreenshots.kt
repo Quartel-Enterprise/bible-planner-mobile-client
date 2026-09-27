@@ -1,21 +1,14 @@
 package com.quare.bibleplanner.feature.readingplan.screenshots
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.theme.Theme
-import com.quare.bibleplanner.feature.readingplan.fixture.readingPlanUiState
-import com.quare.bibleplanner.feature.readingplan.presentation.content.ReadingPlanScreen
-import com.quare.bibleplanner.ui.theme.AppTheme
-import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.feature.readingplan.fixture.READING_PLAN_LIGHT_SCREENSHOT
+import com.quare.bibleplanner.feature.readingplan.fixture.READING_PLAN_SCREENSHOT
+import com.quare.bibleplanner.feature.readingplan.fixture.ReadingPlanScreenshotContent
+import com.quare.bibleplanner.ui.testing.screenshots.AppleScreenshotImage
+import com.quare.bibleplanner.ui.testing.screenshots.AppleScreenshotSlot
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -29,16 +22,23 @@ import org.junit.Test
  */
 private const val BACKGROUND = 0xFF141C3D
 
+/**
+ * One subclass per form factor. The Play ones render the screen here, under Robolectric; the Apple
+ * ones pass [appleSlot] and frame the PNG ReadingPlanAppleScreenshotCaptures rendered on the iOS
+ * simulator, so the App Store shows the screen as iOS draws it.
+ */
 internal abstract class ReadingPlanScreenshots(
     private val outputSubdir: String? = null,
+    private val appleSlot: AppleScreenshotSlot? = null,
     formFactor: FormFactor,
     canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
         canvas = canvas,
-        // The screen renders without the app's window insets, so reserve the status bar height
-        // instead of letting the header slide under the frame's clock.
-        style = ScreenshotStyle(edgeToEdge = false),
+        // Robolectric renders the screen without the app's window insets, so reserve the status
+        // bar height instead of letting the header slide under the frame's clock. An iOS capture
+        // already leaves that room itself and fills the whole screen.
+        style = ScreenshotStyle(edgeToEdge = appleSlot != null),
     ) {
     private val bannerCopy = mapOf(
         "en-US" to
@@ -81,11 +81,13 @@ internal abstract class ReadingPlanScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            fileName = "01_reading_plan",
+            fileName = READING_PLAN_SCREENSHOT,
         ) {
-            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-                AppTheme { ReadingPlanContent() }
-            }
+            ScreenshotContent(
+                theme = Theme.DARK,
+                locale = locale,
+                fileName = READING_PLAN_SCREENSHOT,
+            )
         }
     }
 
@@ -98,14 +100,39 @@ internal abstract class ReadingPlanScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            // Sixth, not second: "light or dark" is a weak argument to spend a first-frame slot
-            // on, and standing next to the dark plan it showed the same screen twice before the
-            // shopper saw any Bible text. The reader took the slot; see ReadScreenshots.
-            fileName = "06_reading_plan_light",
+            fileName = READING_PLAN_LIGHT_SCREENSHOT,
+            // An iOS capture runs the light screen up under the status bar, as iOS does, so the
+            // clock and icons turn dark to stay readable on it.
+            style = ScreenshotStyle(
+                edgeToEdge = appleSlot != null,
+                statusBarContentDark = appleSlot != null,
+            ),
         ) {
-            CompositionLocalProvider(LocalTheme provides Theme.LIGHT) {
-                AppTheme { ReadingPlanContent() }
-            }
+            ScreenshotContent(
+                theme = Theme.LIGHT,
+                locale = locale,
+                fileName = READING_PLAN_LIGHT_SCREENSHOT,
+            )
+        }
+    }
+
+    @Composable
+    private fun ScreenshotContent(
+        theme: Theme,
+        locale: String,
+        fileName: String,
+    ) {
+        if (appleSlot == null) {
+            ReadingPlanScreenshotContent(
+                theme = theme,
+                statusBarHeight = 0.dp,
+            )
+        } else {
+            AppleScreenshotImage(
+                slot = appleSlot,
+                locale = locale,
+                fileName = fileName,
+            )
         }
     }
 }
@@ -116,15 +143,29 @@ internal class Tablet7ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor
 
 internal class Tablet10ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.Tablet10)
 
-internal class IPhone65ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.AppleIPhone65)
+internal class IPhone65ReadingPlanScreenshots :
+    ReadingPlanScreenshots(
+        appleSlot = AppleScreenshotSlot.IPHONE_6_5,
+        formFactor = FormFactor.AppleIPhone65,
+    )
 
-internal class IPhone67ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.AppleIPhone67)
+internal class IPhone67ReadingPlanScreenshots :
+    ReadingPlanScreenshots(
+        appleSlot = AppleScreenshotSlot.IPHONE_6_7,
+        formFactor = FormFactor.AppleIPhone67,
+    )
 
-internal class IPad13ReadingPlanScreenshots : ReadingPlanScreenshots(formFactor = FormFactor.AppleIPad13)
+internal class IPad13ReadingPlanScreenshots :
+    ReadingPlanScreenshots(
+        appleSlot = AppleScreenshotSlot.IPAD_13,
+        formFactor = FormFactor.AppleIPad13,
+    )
 
-// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one. The
+// screen inside is the same size, so it frames the 13" capture.
 internal class IPad11ReadingPlanScreenshots :
     ReadingPlanScreenshots(
+        appleSlot = AppleScreenshotSlot.IPAD_13,
         formFactor = FormFactor.AppleIPad13,
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
@@ -142,9 +183,10 @@ internal class ReadmeReadingPlanScreenshots :
         subdir = README_SUBDIR,
         fileName = "plan",
     ) {
-        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-            AppTheme { ReadingPlanContent() }
-        }
+        ReadingPlanScreenshotContent(
+            theme = Theme.DARK,
+            statusBarHeight = 0.dp,
+        )
     }
 
     @Test
@@ -153,35 +195,13 @@ internal class ReadmeReadingPlanScreenshots :
         subdir = README_SUBDIR,
         fileName = "plan_light",
     ) {
-        CompositionLocalProvider(LocalTheme provides Theme.LIGHT) {
-            AppTheme { ReadingPlanContent() }
-        }
+        ReadingPlanScreenshotContent(
+            theme = Theme.LIGHT,
+            statusBarHeight = 0.dp,
+        )
     }
 
     private companion object {
         const val README_SUBDIR = "readme"
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun ReadingPlanContent() {
-    // The screen paints no background of its own — in the app that comes from the Scaffold in
-    // MainRoot — so without a Surface the frame's bezel shows through behind the cards.
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
-    ) {
-        SharedTransitionLayout {
-            AnimatedContent(targetState = Unit) {
-                ReadingPlanScreen(
-                    sharedTransitionScope = this@SharedTransitionLayout,
-                    animatedContentScope = this@AnimatedContent,
-                    uiState = readingPlanUiState(),
-                    onEvent = {},
-                    lazyListState = rememberLazyListState(),
-                )
-            }
-        }
     }
 }

@@ -1,3 +1,5 @@
+import com.bibleplanner.buildlogic.configureAppleStoreScreenshots
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
@@ -63,6 +65,9 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.core.remoteConfig)
+            // The store screenshots draw the study card the day screen gets from the root
+            implementation(projects.feature.dayStudy)
+            implementation(projects.ui.theme)
         }
 
         jvmTest.dependencies {
@@ -71,9 +76,6 @@ kotlin {
         }
 
         getByName("androidHostTest").dependencies {
-            // The store screenshots draw the study card the day screen gets from the root
-            implementation(projects.feature.dayStudy)
-            implementation(projects.ui.theme)
             implementation(libs.storeScreenshots.library)
             implementation(libs.androidx.compose.ui.testManifest)
         }
@@ -88,3 +90,14 @@ tasks.withType<Test>().configureEach {
     systemProperty("roborazzi.test.record", "true")
     outputs.dir(screenshotsDir)
 }
+
+// An iOS test binary carries the Compose resources of the module's production dependencies only,
+// so the study card, which :feature:day_study reaches the tests through commonTest, would render
+// without its strings on the simulator. Its resources join the test binary's by hand.
+tasks.named<Copy>("copyTestComposeResourcesForIosSimulatorArm64") {
+    from(project(":feature:day_study").tasks.named("iosSimulatorArm64AggregateResources")) {
+        include("composeResources/bibleplanner.feature.day_study.generated.resources/**")
+    }
+}
+
+configureAppleStoreScreenshots(screenshotsName = "day")

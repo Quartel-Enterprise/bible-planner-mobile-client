@@ -1,14 +1,12 @@
 package com.quare.bibleplanner.feature.read.screenshots
 
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import com.quare.bibleplanner.core.model.theme.Theme
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
-import com.quare.bibleplanner.feature.read.fixture.NoDayCompletionBanner
-import com.quare.bibleplanner.feature.read.fixture.readUiState
-import com.quare.bibleplanner.feature.read.presentation.screen.ReadNarrowScreen
-import com.quare.bibleplanner.ui.theme.AppTheme
-import com.quare.bibleplanner.ui.theme.model.LocalTheme
+import com.quare.bibleplanner.feature.read.fixture.READ_SCREENSHOT
+import com.quare.bibleplanner.feature.read.fixture.ReadScreenshotContent
+import com.quare.bibleplanner.ui.testing.screenshots.AppleScreenshotImage
+import com.quare.bibleplanner.ui.testing.screenshots.AppleScreenshotSlot
 import dev.lucianosantos.storescreenshots.FormFactor
 import dev.lucianosantos.storescreenshots.ScreenshotCanvas
 import dev.lucianosantos.storescreenshots.ScreenshotStyle
@@ -18,28 +16,20 @@ import org.junit.Test
 private const val BACKGROUND = 0xFF141C3D
 
 /**
- * Screens branch on this — the back arrow is a chevron on Apple and a left arrow elsewhere — and
- * everything here renders under Robolectric, which is Android whatever device the frame draws. So
- * the platform has to follow the form factor, or the Apple shots ship Android chrome.
+ * One subclass per form factor. The Play ones render the screen here, under Robolectric; the Apple
+ * ones pass [appleSlot] and frame the PNG ReadAppleScreenshotCaptures rendered on the iOS
+ * simulator, so the App Store shows the screen as iOS draws it.
  */
-private val FormFactor.platform: Platform
-    get() = when (this) {
-        FormFactor.AppleIPhone65,
-        FormFactor.AppleIPhone67,
-        FormFactor.AppleIPad13,
-        -> Platform.Ios
-
-        else -> Platform.Android
-    }
-
 internal abstract class ReadScreenshots(
-    private val formFactor: FormFactor,
     private val outputSubdir: String? = null,
+    private val appleSlot: AppleScreenshotSlot? = null,
+    formFactor: FormFactor,
     canvas: ScreenshotCanvas? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
         canvas = canvas,
-        style = ScreenshotStyle(edgeToEdge = false),
+        // An iOS capture already leaves the status bar's room itself and fills the whole screen.
+        style = ScreenshotStyle(edgeToEdge = appleSlot != null),
     ) {
     private val bannerCopy = mapOf(
         "en-US" to (
@@ -65,41 +55,55 @@ internal abstract class ReadScreenshots(
             description = description,
             backgroundColor = Color(BACKGROUND),
             subdir = outputSubdir,
-            // Second on purpose, not in reading order: a shopper who never swipes sees the first
-            // two or three shots, and this is the only one that shows the Bible text itself. The
-            // listings spent years telling people the app did not include it — see
-            // docs/store-listing-metadata.md — so the reader leads instead of the light theme.
-            fileName = "02_read",
+            fileName = READ_SCREENSHOT,
         ) {
-            CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-                AppTheme {
-                    ReadNarrowScreen(
-                        platform = formFactor.platform,
-                        state = readUiState(locale),
-                        onEvent = {},
-                        dayCompletionBanner = NoDayCompletionBanner,
-                    )
-                }
+            if (appleSlot == null) {
+                ReadScreenshotContent(
+                    platform = Platform.Android,
+                    locale = locale,
+                    areVersesHighlighted = false,
+                    statusBarHeight = 0.dp,
+                )
+            } else {
+                AppleScreenshotImage(
+                    slot = appleSlot,
+                    locale = locale,
+                    fileName = READ_SCREENSHOT,
+                )
             }
         }
     }
 }
 
-internal class PhoneReadScreenshots : ReadScreenshots(FormFactor.Phone)
+internal class PhoneReadScreenshots : ReadScreenshots(formFactor = FormFactor.Phone)
 
-internal class Tablet7ReadScreenshots : ReadScreenshots(FormFactor.Tablet7)
+internal class Tablet7ReadScreenshots : ReadScreenshots(formFactor = FormFactor.Tablet7)
 
-internal class Tablet10ReadScreenshots : ReadScreenshots(FormFactor.Tablet10)
+internal class Tablet10ReadScreenshots : ReadScreenshots(formFactor = FormFactor.Tablet10)
 
-internal class IPhone65ReadScreenshots : ReadScreenshots(FormFactor.AppleIPhone65)
+internal class IPhone65ReadScreenshots :
+    ReadScreenshots(
+        appleSlot = AppleScreenshotSlot.IPHONE_6_5,
+        formFactor = FormFactor.AppleIPhone65,
+    )
 
-internal class IPhone67ReadScreenshots : ReadScreenshots(FormFactor.AppleIPhone67)
+internal class IPhone67ReadScreenshots :
+    ReadScreenshots(
+        appleSlot = AppleScreenshotSlot.IPHONE_6_7,
+        formFactor = FormFactor.AppleIPhone67,
+    )
 
-internal class IPad13ReadScreenshots : ReadScreenshots(FormFactor.AppleIPad13)
+internal class IPad13ReadScreenshots :
+    ReadScreenshots(
+        appleSlot = AppleScreenshotSlot.IPAD_13,
+        formFactor = FormFactor.AppleIPad13,
+    )
 
-// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one.
+// The 11" slot: same bezel, a taller canvas, so Apple does not have to letterbox the 13" one. The
+// screen inside is the same size, so it frames the 13" capture.
 internal class IPad11ReadScreenshots :
     ReadScreenshots(
+        appleSlot = AppleScreenshotSlot.IPAD_13,
         formFactor = FormFactor.AppleIPad13,
         outputSubdir = "ipad11",
         canvas = ScreenshotCanvas.px(1668, 2388),
@@ -131,19 +135,12 @@ internal class ReadmeReadScreenshots :
         subdir = README_SUBDIR,
         fileName = fileName,
     ) {
-        CompositionLocalProvider(LocalTheme provides Theme.DARK) {
-            AppTheme {
-                ReadNarrowScreen(
-                    platform = Platform.Android,
-                    state = readUiState(
-                        locale = README_LOCALE,
-                        areVersesHighlighted = areVersesHighlighted,
-                    ),
-                    onEvent = {},
-                    dayCompletionBanner = NoDayCompletionBanner,
-                )
-            }
-        }
+        ReadScreenshotContent(
+            platform = Platform.Android,
+            locale = README_LOCALE,
+            areVersesHighlighted = areVersesHighlighted,
+            statusBarHeight = 0.dp,
+        )
     }
 
     private companion object {

@@ -1,3 +1,5 @@
+import com.bibleplanner.buildlogic.configureAppleStoreScreenshots
+
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
     alias(libs.plugins.bibleplanner.kotlin.composeMultiplatform)
@@ -68,7 +70,6 @@ kotlin {
             implementation(libs.kotlinx.datetime)
         }
         getByName("androidHostTest").dependencies {
-            implementation(projects.ui.theme)
             implementation(libs.storeScreenshots.library)
             implementation(libs.androidx.compose.ui.testManifest)
         }
@@ -83,3 +84,5 @@ tasks.withType<Test>().configureEach {
     systemProperty("roborazzi.test.record", "true")
     outputs.dir(screenshotsDir)
 }
+
+configureAppleStoreScreenshots(screenshotsName = "read")

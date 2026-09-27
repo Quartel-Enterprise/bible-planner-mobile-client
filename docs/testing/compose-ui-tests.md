@@ -42,7 +42,8 @@ The Android host (`testAndroidHostTest`) has no `Instrumentation` to launch the 
   can't find or click the items inside it. Test the button that opens a menu, not the items in it:
   the ViewModel tests already cover the event an item sends.
 - A screen that also has store screenshots shares their sample data. The fixture lives in
-  `commonTest/.../fixture`, which the screenshots in `androidHostTest` also see.
+  `commonTest/.../fixture`, which the screenshots in `androidHostTest` and their iOS captures in
+  `iosTest` also see.
 
 ```kotlin
 @OptIn(ExperimentalTestApi::class)
