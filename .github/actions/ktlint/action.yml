@@ -17,14 +17,14 @@ runs:
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
     - name: Cache ktlint CLI
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.cache/ktlint
         key: ktlint-cli-${{ steps.ktlint-version.outputs.version }}
 
     - name: Cache custom ruleset jar
       id: ruleset-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: tools/ktlint-custom-rules/build/libs/ktlint-custom-rules.jar
         key: >-
@@ -55,7 +55,7 @@ runs:
       continue-on-error: true
 
     - name: Annotate ktlint results
-      uses: yutailang0119/action-ktlint@v5
+      uses: yutailang0119/action-ktlint@v6
       with:
         report-path: 'build/ktlint-report.xml'
         ignore-warnings: false

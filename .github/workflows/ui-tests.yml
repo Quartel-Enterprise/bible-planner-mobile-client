@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload the test reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: desktop-test-reports
           path: '**/build/reports/tests/jvmTest/**'
@@ -133,7 +133,7 @@ jobs:
 
       - name: Upload the test reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-test-reports-shard-${{ matrix.shard }}
           path: '**/build/reports/androidTests/**'
@@ -174,7 +174,7 @@ jobs:
         run: echo "version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
 
       - name: Cache the Kotlin/Native toolchain and library caches
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.konan
           key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}-${{ hashFiles('gradle/libs.versions.toml') }}
@@ -185,7 +185,7 @@ jobs:
 
       - name: Upload the test reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-test-reports
           path: '**/build/reports/tests/iosSimulatorArm64Test/**'

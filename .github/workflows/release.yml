@@ -360,7 +360,7 @@ jobs:
       - name: Cache the Kotlin/Native toolchain and library caches
         if: ${{ !inputs.prerelease }}
         continue-on-error: true
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.konan
           key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}-${{ hashFiles('gradle/libs.versions.toml') }}
