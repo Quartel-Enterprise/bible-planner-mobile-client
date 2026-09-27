@@ -1,7 +1,8 @@
 package com.quare.bibleplanner.core.plan.domain.usecase
 
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.core.plan.fake.FakeDayRepository
+import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
+import com.quare.bibleplanner.core.plan.testing.NotesUpdate
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -12,7 +13,10 @@ internal class DayNotesUseCasesTest {
 
     @BeforeTest
     fun setUp() {
-        dayRepository = FakeDayRepository(daysWithNotesCount = 4)
+        dayRepository = FakeDayRepository(
+            day = null,
+            daysWithNotesCount = 4,
+        )
     }
 
     @Test
@@ -26,7 +30,17 @@ internal class DayNotesUseCasesTest {
         )
 
         // Then
-        assertEquals(listOf("updateDayNotes(3, 5, BOOKS, Reflection)"), dayRepository.calls)
+        assertEquals(
+            listOf(
+                NotesUpdate(
+                    weekNumber = 3,
+                    dayNumber = 5,
+                    readingPlanType = ReadingPlanType.BOOKS,
+                    notes = "Reflection",
+                ),
+            ),
+            dayRepository.notesUpdates,
+        )
     }
 
     @Test
@@ -39,7 +53,17 @@ internal class DayNotesUseCasesTest {
         )
 
         // Then
-        assertEquals(listOf("updateDayNotes(3, 5, CHRONOLOGICAL, null)"), dayRepository.calls)
+        assertEquals(
+            listOf(
+                NotesUpdate(
+                    weekNumber = 3,
+                    dayNumber = 5,
+                    readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+                    notes = null,
+                ),
+            ),
+            dayRepository.notesUpdates,
+        )
     }
 
     @Test

@@ -2,8 +2,8 @@ package com.quare.bibleplanner.feature.day.domain.usecase
 
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.feature.day.fake.FakeDayRepository
-import com.quare.bibleplanner.feature.day.fake.ReadStatusUpdate
+import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
+import com.quare.bibleplanner.core.plan.testing.ReadStatusUpdate
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone

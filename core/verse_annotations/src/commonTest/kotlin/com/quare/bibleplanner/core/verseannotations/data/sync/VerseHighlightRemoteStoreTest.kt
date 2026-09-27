@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.verseannotations.data.sync
 
+import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import com.quare.bibleplanner.core.verseannotations.data.dto.VerseHighlightDto
-import com.quare.bibleplanner.core.verseannotations.fake.FakeRealtime
 import com.quare.bibleplanner.core.verseannotations.fake.RecordingSupabaseClient
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.serializer.KotlinXSerializer

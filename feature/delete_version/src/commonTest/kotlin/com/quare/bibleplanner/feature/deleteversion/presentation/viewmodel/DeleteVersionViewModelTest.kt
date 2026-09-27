@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.feature.deleteversion.presentation.viewmodel
 
-import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
@@ -28,6 +28,7 @@ internal class DeleteVersionViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: DeleteVersionViewModel
     private lateinit var downloader: FakeBibleVersionDownloaderFacade
+    private lateinit var deletionGate: CompletableDeferred<Unit>
     private lateinit var commands: MutableList<NavigationCommand>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
 
@@ -63,10 +64,10 @@ internal class DeleteVersionViewModelTest {
             viewModel.onEvent(DeleteVersionUiEvent.OnConfirmDelete)
 
             // When
-            downloader.finishDeletion()
+            deletionGate.complete(Unit)
 
             // Then
-            assertEquals(listOf(VERSION_ID), downloader.deletedVersions)
+            assertEquals(listOf("delete $VERSION_ID"), downloader.calls)
             assertEquals(
                 listOf(
                     AnalyticsEventNames.BIBLE_VERSION_DELETED to
@@ -86,7 +87,7 @@ internal class DeleteVersionViewModelTest {
         viewModel.onEvent(DeleteVersionUiEvent.OnCancel)
 
         // Then
-        assertTrue(downloader.deletedVersions.isEmpty())
+        assertTrue(downloader.calls.isEmpty())
         assertEquals(DeleteVersionUiState.Idle, viewModel.uiState.value)
         assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         assertEquals(
@@ -99,7 +100,9 @@ internal class DeleteVersionViewModelTest {
 
     private fun TestScope.prepareScenario() {
         val navigator = Navigator()
-        downloader = FakeBibleVersionDownloaderFacade()
+        deletionGate = CompletableDeferred()
+        downloader = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = false)
+        downloader.deletionGate = deletionGate
         commands = mutableListOf()
         trackedEvents = mutableListOf()
         backgroundScope.launch { navigator.commands.collect(commands::add) }
@@ -114,24 +117,4 @@ internal class DeleteVersionViewModelTest {
     private companion object {
         const val VERSION_ID = "NVI"
     }
-}
-
-private class FakeBibleVersionDownloaderFacade : BibleVersionDownloaderFacade {
-    private val deletion = CompletableDeferred<Unit>()
-    val deletedVersions = mutableListOf<String>()
-
-    fun finishDeletion() {
-        deletion.complete(Unit)
-    }
-
-    override suspend fun deleteDownload(versionId: String) {
-        deletion.await()
-        deletedVersions += versionId
-    }
-
-    override val shouldShowDownloadTip: Boolean get() = error("unused")
-
-    override fun downloadVersion(versionId: String) = error("unused")
-
-    override suspend fun pauseDownload(versionId: String) = error("unused")
 }

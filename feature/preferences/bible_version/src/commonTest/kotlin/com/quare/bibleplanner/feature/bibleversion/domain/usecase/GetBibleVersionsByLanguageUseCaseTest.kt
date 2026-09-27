@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleRepository
 import com.quare.bibleplanner.feature.bibleversion.fake.bibleModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -31,7 +31,10 @@ internal class GetBibleVersionsByLanguageUseCaseTest {
     fun `groups the versions by language with the app language first and the rest alphabetically`() = runTest {
         // Given
         val useCase = GetBibleVersionsByLanguageUseCase(
-            repository = FakeBibleRepository(listOf(kjv, acf, rvr, web)),
+            repository = FakeBibleRepository(
+                bibles = listOf(kjv, acf, rvr, web),
+                selectedVersionId = "ACF",
+            ),
             getAppLanguageFlow = { flowOf(Language.SPANISH) },
         )
 

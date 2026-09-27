@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.chat.domain.usecase.impl
 
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayPassagesForDayStudyUseCase
 import com.quare.bibleplanner.core.model.book.BookId
@@ -11,10 +12,8 @@ import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
-import com.quare.bibleplanner.feature.chat.fake.FakeBooksRepository
-import com.quare.bibleplanner.feature.chat.fake.FakePlanRepository
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.getString
@@ -57,17 +56,18 @@ internal class GetChatContextUseCaseTest {
             ),
         )
         val planRepository = FakePlanRepository(
-            weeksByPlan = mapOf(
+            plans = mapOf(
                 ReadingPlanType.CHRONOLOGICAL to weeks,
                 ReadingPlanType.BOOKS to weeks,
             ),
-            selectedPlan = ReadingPlanType.CHRONOLOGICAL,
+            startDate = null,
+            selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
         )
         useCase = GetChatContextUseCase(
             getDayPassages = GetDayPassagesForDayStudyUseCase(
                 GetPlansByWeekUseCase(
                     planRepository = planRepository,
-                    booksRepository = FakeBooksRepository(flowOf(emptyList())),
+                    booksRepository = FakeBooksRepository(emptyList()),
                     getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),
                     currentTimestampProvider = { 0L },
                     localDateTimeProvider = {

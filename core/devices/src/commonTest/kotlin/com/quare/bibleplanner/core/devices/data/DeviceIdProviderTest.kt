@@ -1,8 +1,9 @@
 package com.quare.bibleplanner.core.devices.data
 
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.quare.bibleplanner.core.devices.fake.FakePreferencesDataStore
+import com.quare.bibleplanner.core.provider.datastore.testing.FakePreferencesDataStore
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -45,7 +46,7 @@ class DeviceIdProviderTest {
 
     private fun prepareScenario(storedId: String?) {
         val dataStore = if (storedId == null) {
-            FakePreferencesDataStore()
+            FakePreferencesDataStore(emptyPreferences())
         } else {
             FakePreferencesDataStore(preferencesOf(stringPreferencesKey("device_installation_id") to storedId))
         }

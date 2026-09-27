@@ -68,6 +68,11 @@ kotlin {
             // The store screenshots draw the study card the day screen gets from the root
             implementation(projects.feature.dayStudy)
             implementation(projects.ui.theme)
+
+            // Shared fakes
+            implementation(projects.core.books.testing)
+            implementation(projects.core.dayStudy.testing)
+            implementation(projects.core.plan.testing)
         }
 
         jvmTest.dependencies {

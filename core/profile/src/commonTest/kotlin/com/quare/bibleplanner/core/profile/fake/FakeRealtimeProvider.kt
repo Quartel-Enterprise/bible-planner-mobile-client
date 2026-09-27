@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.profile.fake
 
+import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.plugins.SupabasePluginProvider
 import io.github.jan.supabase.realtime.Realtime

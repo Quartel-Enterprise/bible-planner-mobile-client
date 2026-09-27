@@ -1,6 +1,6 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
-import com.quare.bibleplanner.core.books.fake.FakeBooksRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import kotlinx.coroutines.flow.first

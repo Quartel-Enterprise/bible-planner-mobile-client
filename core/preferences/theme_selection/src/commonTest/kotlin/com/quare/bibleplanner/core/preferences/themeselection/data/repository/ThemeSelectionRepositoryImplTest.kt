@@ -1,19 +1,14 @@
 package com.quare.bibleplanner.core.preferences.themeselection.data.repository
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.preferences.themeselection.data.mapper.ThemePreferenceMapperImpl
-import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
+import com.quare.bibleplanner.core.provider.datastore.testing.FakePreferencesDataStore
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.quare.bibleplanner.core.provider.room.testing.FakeSyncedPreferenceDao
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -61,7 +56,14 @@ internal class ThemeSelectionRepositoryImplTest {
 
         // Then
         assertEquals(
-            listOf(Triple(SyncedPreferenceKeys.APP_THEME, "light_theme", TIMESTAMP)),
+            listOf(
+                SyncedPreferenceEntity(
+                    key = SyncedPreferenceKeys.APP_THEME,
+                    value = "light_theme",
+                    updatedAt = TIMESTAMP,
+                    pendingSync = true,
+                ),
+            ),
             syncedPreferenceDao.localWrites,
         )
     }
@@ -77,7 +79,14 @@ internal class ThemeSelectionRepositoryImplTest {
         // Then
         assertEquals(ContrastType.Medium, repository.getContrastTypeFlow().first())
         assertEquals(
-            listOf(Triple(SyncedPreferenceKeys.THEME_CONTRAST, "medium_contrast", TIMESTAMP)),
+            listOf(
+                SyncedPreferenceEntity(
+                    key = SyncedPreferenceKeys.THEME_CONTRAST,
+                    value = "medium_contrast",
+                    updatedAt = TIMESTAMP,
+                    pendingSync = true,
+                ),
+            ),
             syncedPreferenceDao.localWrites,
         )
     }
@@ -109,9 +118,24 @@ internal class ThemeSelectionRepositoryImplTest {
             assertTrue(repository.getThemeSyncEnabledFlow().first())
             assertEquals(
                 listOf(
-                    Triple(SyncedPreferenceKeys.THEME_SYNC_ENABLED, "true", TIMESTAMP),
-                    Triple(SyncedPreferenceKeys.APP_THEME, "dark_theme", TIMESTAMP),
-                    Triple(SyncedPreferenceKeys.THEME_CONTRAST, "high_contrast", TIMESTAMP),
+                    SyncedPreferenceEntity(
+                        key = SyncedPreferenceKeys.THEME_SYNC_ENABLED,
+                        value = "true",
+                        updatedAt = TIMESTAMP,
+                        pendingSync = true,
+                    ),
+                    SyncedPreferenceEntity(
+                        key = SyncedPreferenceKeys.APP_THEME,
+                        value = "dark_theme",
+                        updatedAt = TIMESTAMP,
+                        pendingSync = true,
+                    ),
+                    SyncedPreferenceEntity(
+                        key = SyncedPreferenceKeys.THEME_CONTRAST,
+                        value = "high_contrast",
+                        updatedAt = TIMESTAMP,
+                        pendingSync = true,
+                    ),
                 ),
                 syncedPreferenceDao.localWrites,
             )
@@ -128,7 +152,14 @@ internal class ThemeSelectionRepositoryImplTest {
         // Then
         assertFalse(repository.getThemeSyncEnabledFlow().first())
         assertEquals(
-            listOf(Triple(SyncedPreferenceKeys.THEME_SYNC_ENABLED, "false", TIMESTAMP)),
+            listOf(
+                SyncedPreferenceEntity(
+                    key = SyncedPreferenceKeys.THEME_SYNC_ENABLED,
+                    value = "false",
+                    updatedAt = TIMESTAMP,
+                    pendingSync = true,
+                ),
+            ),
             syncedPreferenceDao.localWrites,
         )
     }
@@ -183,7 +214,7 @@ internal class ThemeSelectionRepositoryImplTest {
     private fun prepareScenario(syncedValues: Map<String, String> = emptyMap()) {
         syncedPreferenceDao = FakeSyncedPreferenceDao(syncedValues)
         repository = ThemeSelectionRepositoryImpl(
-            dataStore = FakePreferencesDataStore(),
+            dataStore = FakePreferencesDataStore(emptyPreferences()),
             mapper = ThemePreferenceMapperImpl(),
             syncedPreferenceDao = syncedPreferenceDao,
             currentTimestampProvider = { TIMESTAMP },
@@ -193,59 +224,4 @@ internal class ThemeSelectionRepositoryImplTest {
     private companion object {
         const val TIMESTAMP = 1_000L
     }
-}
-
-private class FakePreferencesDataStore : DataStore<Preferences> {
-    private val preferences = MutableStateFlow(emptyPreferences())
-
-    override val data: Flow<Preferences> = preferences
-
-    override suspend fun updateData(transform: suspend (Preferences) -> Preferences): Preferences =
-        transform(preferences.value).also { updated -> preferences.value = updated }
-}
-
-private class FakeSyncedPreferenceDao(
-    initialValues: Map<String, String>,
-) : SyncedPreferenceDao() {
-    private val values = MutableStateFlow(initialValues)
-    val localWrites = mutableListOf<Triple<String, String, Long>>()
-
-    override fun observeValue(key: String): Flow<String?> = values.map { it[key] }
-
-    override suspend fun setLocal(
-        key: String,
-        value: String,
-        updatedAt: Long,
-    ) {
-        localWrites += Triple(key, value, updatedAt)
-        values.update { it + (key to value) }
-    }
-
-    override fun getPendingFlow(): Flow<List<SyncedPreferenceEntity>> = error("unused")
-
-    override suspend fun getPending(): List<SyncedPreferenceEntity> = error("unused")
-
-    override suspend fun markSynced(
-        key: String,
-        syncedUpdatedAt: Long,
-    ) = error("unused")
-
-    override suspend fun seedProvisional(
-        key: String,
-        value: String,
-    ) = error("unused")
-
-    override suspend fun adoptProvisional(now: Long) = error("unused")
-
-    override suspend fun deleteByKeys(keys: List<String>) = error("unused")
-
-    override suspend fun deleteAll() = error("unused")
-
-    override suspend fun updateFromRemote(
-        key: String,
-        value: String,
-        remoteUpdatedAt: Long,
-    ): Int = error("unused")
-
-    override suspend fun insertIfAbsent(entity: SyncedPreferenceEntity) = error("unused")
 }

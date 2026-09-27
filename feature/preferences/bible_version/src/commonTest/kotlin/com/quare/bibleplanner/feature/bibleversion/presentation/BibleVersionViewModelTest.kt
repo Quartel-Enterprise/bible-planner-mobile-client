@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
@@ -13,8 +15,6 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVer
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryBibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.fake.NoOpDeleteVerseDao
 import com.quare.bibleplanner.feature.bibleversion.fake.RecordingDownloadNotifier
@@ -275,7 +275,10 @@ internal class BibleVersionViewModelTest {
 
     private fun TestScope.prepareScenario(shouldShowDownloadTip: Boolean = false) {
         downloaderFacade = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = shouldShowDownloadTip)
-        bibleRepository = FakeBibleRepository(listOf(selectedVersion, otherVersion))
+        bibleRepository = FakeBibleRepository(
+            bibles = listOf(selectedVersion, otherVersion),
+            selectedVersionId = "ACF",
+        )
         permissionRequester = RecordingNotificationPermissionRequester()
         bibleVersionDao = InMemoryBibleVersionDao(
             listOf(

@@ -54,6 +54,10 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
+
+            // Shared fakes
+            implementation(projects.core.provider.dataStore.testing)
+            implementation(projects.core.provider.supabase.testing)
         }
     }
 }

@@ -19,6 +19,42 @@ fun interface ObserveAuthenticatedUserId {
 
 A fake only needs real behavior for the methods under test; stub the rest with `error("unused")`.
 
+## Shared fakes
+
+A fake of a `core` interface that more than one module needs lives in that core module's `:testing`
+submodule instead of being copied into each test source set:
+
+| Module | Fakes |
+| --- | --- |
+| `:core:books:testing` | `FakeBooksRepository`, `FakeBibleRepository`, `FakeBibleVersionRepository`, `FakeBibleVersionDownloaderFacade` |
+| `:core:plan:testing` | `FakePlanRepository`, `FakeDayRepository` |
+| `:core:day_study:testing` | `FakeDayStudyRepository`, `FakeDayStudyGenerationCoordinator` |
+| `:core:preferences:theme_selection:testing` | `FakeThemeSelectionRepository` |
+| `:core:preferences:material_you:testing` | `FakeMaterialYouRepository` |
+| `:core:provider:data_store:testing` | `FakePreferencesDataStore` |
+| `:core:provider:room:testing` | `FakeSyncedPreferenceDao`, `FakeBibleVersionDao` |
+| `:core:provider:supabase:testing` | `FakeRealtime` |
+
+Depend on it from a test source set only (`commonTest.dependencies { implementation(projects.core.books.testing) }`);
+`assertModuleGraph` rejects a production dependency on a `:testing` module, and Kover does not measure
+them.
+
+A shared fake is not written for one test, so it behaves like an in-memory version of the real
+thing instead of stubbing methods with `error("unused")`: its state is a public `MutableStateFlow` a
+test can set or read (`books`, `startDate`, `day`), every write is recorded in a public list
+(`favoriteUpdates`, `readStatusUpdates`, `notesUpdates`) and applied to that state, and knobs for
+failure paths are public `var`s (`statusError`, `eventsError`, `statusGate`). Its state never
+completes, so a use case that collects it forever runs in `backgroundScope` (see below). When a test
+needs one method to behave differently, delegate to the shared fake and override just that method:
+
+```kotlin
+object : BibleRepository by FakeBibleRepository(bibles = emptyList(), selectedVersionId = versionId) {
+    override fun getBiblesFlow(): Flow<List<BibleModel>> = MutableSharedFlow()
+}
+```
+
+A fake used by a single module stays a `private class` in that module's tests.
+
 ## Coroutines
 
 - Wrap test bodies in `runTest { }`. Virtual time auto-advances, so timeouts/`delay` resolve without

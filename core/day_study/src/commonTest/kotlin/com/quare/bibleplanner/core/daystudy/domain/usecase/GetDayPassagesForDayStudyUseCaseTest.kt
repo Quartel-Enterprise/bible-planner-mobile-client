@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.core.daystudy.domain.usecase
 
-import com.quare.bibleplanner.core.daystudy.fake.FakeBooksRepository
-import com.quare.bibleplanner.core.daystudy.fake.FakePlanRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
@@ -9,6 +8,7 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -32,26 +32,30 @@ internal class GetDayPassagesForDayStudyUseCaseTest {
         useCase = GetDayPassagesForDayStudyUseCase(
             GetPlansByWeekUseCase(
                 planRepository = FakePlanRepository(
-                    listOf(
-                        WeekPlanModel(
-                            number = 4,
-                            days = listOf(
-                                DayModel(
-                                    number = 6,
-                                    passages = listOf(passage),
-                                    isRead = false,
-                                    totalVerses = 0,
-                                    readVerses = 0,
-                                    readTimestamp = null,
-                                    plannedReadDate = null,
-                                    notes = null,
-                                    isToday = false,
+                    plans = ReadingPlanType.entries.associateWith {
+                        listOf(
+                            WeekPlanModel(
+                                number = 4,
+                                days = listOf(
+                                    DayModel(
+                                        number = 6,
+                                        passages = listOf(passage),
+                                        isRead = false,
+                                        totalVerses = 0,
+                                        readVerses = 0,
+                                        readTimestamp = null,
+                                        plannedReadDate = null,
+                                        notes = null,
+                                        isToday = false,
+                                    ),
                                 ),
                             ),
-                        ),
-                    ),
+                        )
+                    },
+                    startDate = null,
+                    selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
                 ),
-                booksRepository = FakeBooksRepository(),
+                booksRepository = FakeBooksRepository(emptyList()),
                 getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),
                 currentTimestampProvider = { 0L },
                 localDateTimeProvider = { LocalDateTime(LocalDate(2026, 1, 1), LocalTime(8, 0)) },

@@ -5,16 +5,13 @@ import com.quare.bibleplanner.core.date.toTimestampUTC
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.core.model.plan.WeekPlanModel
-import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -102,7 +99,7 @@ internal class EditPlanStartDateViewModelTest {
             // Then
             assertEquals(
                 listOf(pickedDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()),
-                planRepository.savedTimestamps,
+                planRepository.startTimestamps,
             )
             assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
             assertEquals(1, loginNudgeRequests)
@@ -117,14 +114,18 @@ internal class EditPlanStartDateViewModelTest {
         viewModel.onEvent(EditPlanStartDateUiEvent.OnDismissDialog)
 
         // Then
-        assertTrue(planRepository.savedTimestamps.isEmpty())
+        assertTrue(planRepository.startTimestamps.isEmpty())
         assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         assertEquals(0, loginNudgeRequests)
     }
 
     private fun TestScope.prepareScenario(startDate: LocalDate?) {
         val navigator = Navigator()
-        planRepository = FakePlanRepository(startDate)
+        planRepository = FakePlanRepository(
+            plans = emptyMap(),
+            startDate = startDate,
+            selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
+        )
         commands = mutableListOf()
         loginNudgeRequests = 0
         backgroundScope.launch { navigator.commands.collect(commands::add) }
@@ -155,25 +156,4 @@ internal class EditPlanStartDateViewModelTest {
     private companion object {
         const val NOW = 1_714_557_600_000L
     }
-}
-
-private class FakePlanRepository(
-    startDate: LocalDate?,
-) : PlanRepository {
-    private val startDate = MutableStateFlow(startDate)
-    val savedTimestamps = mutableListOf<Long>()
-
-    override fun getStartPlanTimestamp(): Flow<LocalDate?> = startDate
-
-    override suspend fun setStartPlanTimestamp(timestamp: Long) {
-        savedTimestamps += timestamp
-    }
-
-    override suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanModel> = error("unused")
-
-    override fun getSelectedReadingPlanFlow(): Flow<ReadingPlanType> = error("unused")
-
-    override suspend fun setSelectedReadingPlan(readingPlanType: ReadingPlanType) = error("unused")
-
-    override suspend fun seedDefaultStartDate(timestamp: Long) = error("unused")
 }

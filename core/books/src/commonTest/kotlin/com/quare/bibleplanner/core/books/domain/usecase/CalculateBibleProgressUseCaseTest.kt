@@ -1,14 +1,11 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
-import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.VerseModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -34,7 +31,7 @@ internal class CalculateBibleProgressUseCaseTest {
                 ),
             ),
         )
-        val useCase = CalculateBibleProgressUseCase(FakeBooksRepository(flowOf(listOf(book))))
+        val useCase = CalculateBibleProgressUseCase(FakeBooksRepository(listOf(book)))
 
         val progress = useCase().first()
 
@@ -43,7 +40,7 @@ internal class CalculateBibleProgressUseCaseTest {
 
     @Test
     fun `progress is zero when there are no books`() = runTest {
-        val useCase = CalculateBibleProgressUseCase(FakeBooksRepository(flowOf(emptyList())))
+        val useCase = CalculateBibleProgressUseCase(FakeBooksRepository(emptyList()))
 
         assertEquals(0f, useCase().first())
     }
@@ -52,29 +49,4 @@ internal class CalculateBibleProgressUseCaseTest {
         number: Int,
         isRead: Boolean,
     ): VerseModel = VerseModel(number = number, isRead = isRead)
-
-    private class FakeBooksRepository(
-        private val booksFlow: Flow<List<BookDataModel>>,
-    ) : BooksRepository {
-        override fun getBooksFlow(): Flow<List<BookDataModel>> = booksFlow
-
-        override fun getBookByIdFlow(bookId: BookId): Flow<BookDataModel?> = emptyFlow()
-
-        override suspend fun getBooks(): List<BookDataModel> = emptyList()
-
-        override suspend fun initializeDatabase() = Unit
-
-        override suspend fun updateBookFavoriteStatus(
-            bookId: BookId,
-            isFavorite: Boolean,
-        ) = Unit
-
-        override fun getBookLayoutFormatFlow(): Flow<String?> = emptyFlow()
-
-        override suspend fun setBookLayoutFormat(layoutFormat: String) = Unit
-
-        override fun getSelectedTestamentFlow(): Flow<String?> = emptyFlow()
-
-        override suspend fun setSelectedTestament(testament: String) = Unit
-    }
 }

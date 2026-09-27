@@ -1,8 +1,8 @@
 package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionRepository
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleVersionRepository
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

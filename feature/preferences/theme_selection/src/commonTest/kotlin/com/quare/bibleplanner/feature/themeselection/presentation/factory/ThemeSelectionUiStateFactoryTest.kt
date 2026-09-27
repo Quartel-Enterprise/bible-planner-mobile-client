@@ -6,7 +6,7 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.ligh
 import bibleplanner.feature.preferences.theme_selection.generated.resources.system_title
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
-import com.quare.bibleplanner.feature.themeselection.presentation.FakeThemeSelectionRepository
+import com.quare.bibleplanner.core.preferences.themeselection.testing.FakeThemeSelectionRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest

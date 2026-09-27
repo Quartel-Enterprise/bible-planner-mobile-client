@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_offline_message
 import bibleplanner.feature.day_study.generated.resources.ai_study_wait_for_generations
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
@@ -14,6 +15,8 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyPhaseModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCase
 import com.quare.bibleplanner.core.daystudy.domain.usecase.HasCachedStudyUseCase
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyGenerationCoordinator
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
@@ -25,9 +28,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.fake.DefaultIntRemoteConfig
-import com.quare.bibleplanner.feature.daystudy.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.daystudy.fake.FakeDayStudyGenerationCoordinator
-import com.quare.bibleplanner.feature.daystudy.fake.FakeDayStudyRepository
 import com.quare.bibleplanner.feature.daystudy.fake.dayStudyModel
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMode
@@ -655,7 +655,7 @@ internal class DayStudyViewModelTest {
     ) {
         trackedEvents = mutableListOf()
         actions = mutableListOf()
-        coordinator = FakeDayStudyGenerationCoordinator().apply {
+        coordinator = FakeDayStudyGenerationCoordinator(pendingOpenKey = null).apply {
             this.generatingCount = generatingCount
         }
         repository = FakeDayStudyRepository(
@@ -664,7 +664,10 @@ internal class DayStudyViewModelTest {
             statusError = statusError,
             events = emptyList(),
         )
-        val bibleRepository = FakeBibleRepository()
+        val bibleRepository = FakeBibleRepository(
+            bibles = emptyList(),
+            selectedVersionId = "ACF",
+        )
         val languageCodeMapper = LanguageCodeMapper()
         val getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) }
         viewModelStore = ViewModelStore()

@@ -9,9 +9,9 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
+import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
-import com.quare.bibleplanner.feature.day.fake.FakeDayRepository
-import com.quare.bibleplanner.feature.day.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.day.fake.InMemoryBibleDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -141,6 +141,7 @@ internal class ToggleChapterReadStatusUseCaseTest {
                             ),
                         ),
                         startDate = null,
+                        selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
                     ),
                     booksRepository = database.booksRepository,
                     getPlannedReadDateForDayUseCase = GetPlannedReadDateForDayUseCase(),

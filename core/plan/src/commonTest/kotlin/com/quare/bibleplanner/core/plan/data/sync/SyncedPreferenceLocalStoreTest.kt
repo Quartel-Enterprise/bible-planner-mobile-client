@@ -2,8 +2,8 @@ package com.quare.bibleplanner.core.plan.data.sync
 
 import com.quare.bibleplanner.core.plan.data.dto.UserPreferenceDto
 import com.quare.bibleplanner.core.plan.data.mapper.UserPreferenceMapper
-import com.quare.bibleplanner.core.plan.fake.FakeSyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
+import com.quare.bibleplanner.core.provider.room.testing.FakeSyncedPreferenceDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
@@ -16,7 +16,7 @@ internal class SyncedPreferenceLocalStoreTest {
 
     @BeforeTest
     fun setUp() {
-        dao = FakeSyncedPreferenceDao()
+        dao = FakeSyncedPreferenceDao(emptyMap())
         store = SyncedPreferenceLocalStore(
             dao = dao,
             mapper = UserPreferenceMapper(),

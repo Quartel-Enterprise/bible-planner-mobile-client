@@ -7,6 +7,8 @@ import bibleplanner.feature.profile.generated.resources.logout_requires_internet
 import bibleplanner.feature.profile.generated.resources.up_to_date_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
 import com.quare.bibleplanner.core.model.NavigationCommand
@@ -17,6 +19,7 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.VerseModel
 import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
@@ -38,20 +41,18 @@ import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
+import com.quare.bibleplanner.core.provider.room.testing.FakeBibleVersionDao
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetInstagramUrlUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOptionUseCase
-import com.quare.bibleplanner.feature.profile.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.profile.fake.FakeBibleVersionDao
-import com.quare.bibleplanner.feature.profile.fake.FakeBooksRepository
 import com.quare.bibleplanner.feature.profile.fake.FakeLanguageProvider
 import com.quare.bibleplanner.feature.profile.fake.FakeObserveBooleanRemoteConfig
-import com.quare.bibleplanner.feature.profile.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.profile.presentation.factory.ProfileUiStateFactory
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiAction
@@ -471,7 +472,10 @@ internal class ProfileViewModelTest {
         shownPrompts = collectedPrompts
         navigator = Navigator()
         val languageProvider = FakeLanguageProvider(appLanguage)
-        val bibleRepository = FakeBibleRepository(bibles = emptyList())
+        val bibleRepository = FakeBibleRepository(
+            bibles = emptyList(),
+            selectedVersionId = "ACF",
+        )
         val getSelectedBible = GetSelectedBibleFlowUseCase(bibleRepository)
         viewModel = ProfileViewModel(
             calculateBibleProgress = CalculateBibleProgressUseCase(
@@ -516,7 +520,13 @@ internal class ProfileViewModelTest {
                 getSubscriptionStatusFlow = null,
                 isInstagramLinkVisible = { flowOf(false) },
                 shouldShowDonateOption = ObserveShowDonateOptionUseCase(FakeObserveBooleanRemoteConfig(false)),
-                getPlanStartDate = GetPlanStartDateFlowUseCase(FakePlanRepository(null)),
+                getPlanStartDate = GetPlanStartDateFlowUseCase(
+                    FakePlanRepository(
+                        plans = emptyMap(),
+                        startDate = null,
+                        selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
+                    ),
+                ),
                 getThemeOptionFlow = { flowOf(Theme.SYSTEM) },
                 getContrastTypeFlow = { flowOf(ContrastType.Standard) },
                 getIsDynamicColorsEnabledFlow = { flowOf(false) },

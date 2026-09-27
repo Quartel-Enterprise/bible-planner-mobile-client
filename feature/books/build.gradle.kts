@@ -53,6 +53,9 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(projects.ui.theme)
+
+            // Shared fakes
+            implementation(projects.core.books.testing)
         }
 
         jvmTest.dependencies {

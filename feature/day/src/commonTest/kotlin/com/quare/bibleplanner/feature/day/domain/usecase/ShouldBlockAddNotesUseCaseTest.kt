@@ -2,8 +2,8 @@ package com.quare.bibleplanner.feature.day.domain.usecase
 
 import com.quare.bibleplanner.core.plan.domain.usecase.GetDaysWithNotesCountUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetMaxFreeNotesAmountUseCase
+import com.quare.bibleplanner.core.plan.testing.FakeDayRepository
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
-import com.quare.bibleplanner.feature.day.fake.FakeDayRepository
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertFalse

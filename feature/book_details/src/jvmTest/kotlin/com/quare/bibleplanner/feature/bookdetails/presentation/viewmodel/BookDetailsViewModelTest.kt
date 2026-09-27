@@ -2,11 +2,11 @@ package com.quare.bibleplanner.feature.bookdetails.presentation.viewmodel
 
 import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.UpdateBookReadStatusUseCase
 import com.quare.bibleplanner.core.books.presentation.mapper.BookGroupMapper
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.books.util.toBookNameResource
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
@@ -27,7 +27,6 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.model.BookDetails
 import com.quare.bibleplanner.feature.bookdetails.presentation.utils.toSynopsisResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -157,7 +156,7 @@ internal class BookDetailsViewModelTest {
         prepareScenario()
 
         // When
-        repository.book.value = genesis.copy(chapters = genesis.chapters.map { it.copy(isRead = true) })
+        repository.books.value = listOf(genesis.copy(chapters = genesis.chapters.map { it.copy(isRead = true) }))
         val triggers = reviewTriggers.first(List<ReviewTrigger>::isNotEmpty)
 
         // Then
@@ -205,7 +204,7 @@ internal class BookDetailsViewModelTest {
             sendEvent(BookDetailsUiEvent.OnToggleSynopsisExpanded)
 
             // When
-            repository.book.value = genesis.copy(isFavorite = true)
+            repository.books.value = listOf(genesis.copy(isFavorite = true))
             viewModel.uiState.first { (it as? BookDetailsUiState.Success)?.isFavorite == true }
 
             // Then
@@ -349,7 +348,8 @@ internal class BookDetailsViewModelTest {
             ),
         )
         database.chapterDao().insertChapters(
-            repository.book.value
+            repository.books.value
+                .firstOrNull()
                 ?.chapters
                 .orEmpty()
                 .map { chapter ->
@@ -373,7 +373,7 @@ internal class BookDetailsViewModelTest {
         trackedEvents = recordedEvents
         reviewTriggers = MutableStateFlow(emptyList())
         loginNudgeRequests = MutableStateFlow(0)
-        repository = FakeBooksRepository(book)
+        repository = FakeBooksRepository(listOfNotNull(book))
         commands = mutableListOf<NavigationCommand>().also { collected ->
             backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
@@ -404,34 +404,4 @@ internal class BookDetailsViewModelTest {
     private companion object {
         const val TIMESTAMP = 1_000L
     }
-}
-
-private class FakeBooksRepository(
-    initialBook: BookDataModel?,
-) : BooksRepository {
-    val book = MutableStateFlow(initialBook)
-    val favoriteUpdates = mutableListOf<Pair<BookId, Boolean>>()
-
-    override fun getBooksFlow(): Flow<List<BookDataModel>> = error("unused")
-
-    override fun getBookByIdFlow(bookId: BookId): Flow<BookDataModel?> = book
-
-    override suspend fun getBooks(): List<BookDataModel> = error("unused")
-
-    override suspend fun initializeDatabase() = error("unused")
-
-    override suspend fun updateBookFavoriteStatus(
-        bookId: BookId,
-        isFavorite: Boolean,
-    ) {
-        favoriteUpdates += bookId to isFavorite
-    }
-
-    override fun getBookLayoutFormatFlow(): Flow<String?> = error("unused")
-
-    override suspend fun setBookLayoutFormat(layoutFormat: String) = error("unused")
-
-    override fun getSelectedTestamentFlow(): Flow<String?> = error("unused")
-
-    override suspend fun setSelectedTestament(testament: String) = error("unused")
 }

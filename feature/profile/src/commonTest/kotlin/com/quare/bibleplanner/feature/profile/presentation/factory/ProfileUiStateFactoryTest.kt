@@ -13,12 +13,15 @@ import bibleplanner.feature.profile.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.theme.ContrastType
 import com.quare.bibleplanner.core.model.theme.Theme
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCase
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
@@ -26,14 +29,12 @@ import com.quare.bibleplanner.core.profile.domain.model.UserProfile
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
+import com.quare.bibleplanner.core.provider.room.testing.FakeBibleVersionDao
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOptionUseCase
-import com.quare.bibleplanner.feature.profile.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.profile.fake.FakeBibleVersionDao
 import com.quare.bibleplanner.feature.profile.fake.FakeObserveBooleanRemoteConfig
-import com.quare.bibleplanner.feature.profile.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import io.github.jan.supabase.auth.status.RefreshFailureCause
@@ -529,6 +530,7 @@ internal class ProfileUiStateFactoryTest {
                     hasPendingUpdate = false,
                 ),
             ),
+            selectedVersionId = "ACF",
         )
         val getSelectedBible = GetSelectedBibleFlowUseCase(bibleRepository)
         factory = ProfileUiStateFactory(
@@ -539,7 +541,13 @@ internal class ProfileUiStateFactoryTest {
             },
             isInstagramLinkVisible = { flowOf(isInstagramVisible) },
             shouldShowDonateOption = ObserveShowDonateOptionUseCase(FakeObserveBooleanRemoteConfig(shouldShowDonate)),
-            getPlanStartDate = GetPlanStartDateFlowUseCase(FakePlanRepository(planStartDate)),
+            getPlanStartDate = GetPlanStartDateFlowUseCase(
+                FakePlanRepository(
+                    plans = emptyMap(),
+                    startDate = planStartDate,
+                    selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
+                ),
+            ),
             getThemeOptionFlow = { flowOf(theme) },
             getContrastTypeFlow = { flowOf(contrast) },
             getIsDynamicColorsEnabledFlow = { flowOf(isDynamicColorsEnabled) },

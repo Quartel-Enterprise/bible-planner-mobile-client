@@ -83,6 +83,11 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
+
+            // Shared fakes
+            implementation(projects.core.books.testing)
+            implementation(projects.core.plan.testing)
+            implementation(projects.core.provider.room.testing)
         }
     }
 }

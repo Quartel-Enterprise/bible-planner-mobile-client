@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
@@ -12,8 +14,6 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVer
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DismissBibleUpdatePromptUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPendingBibleUpdatesUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.bibleversion.fake.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryBibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.fake.NoOpDeleteVerseDao
 import com.quare.bibleplanner.feature.bibleversion.fake.RecordingDownloadNotifier
@@ -48,7 +48,7 @@ internal class PendingBibleUpdatesViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        downloaderFacade = FakeBibleVersionDownloaderFacade()
+        downloaderFacade = FakeBibleVersionDownloaderFacade(shouldShowDownloadTip = false)
         permissionRequester = RecordingNotificationPermissionRequester()
         promptPreferences = RecordingPromptPreferences()
         trackedEvents = mutableListOf()
@@ -82,7 +82,7 @@ internal class PendingBibleUpdatesViewModelTest {
             navigator = navigator,
             getPendingBibleUpdates = GetPendingBibleUpdatesUseCase(
                 FakeBibleRepository(
-                    listOf(
+                    bibles = listOf(
                         bibleModel(
                             id = FIRST_ID,
                             hasPendingUpdate = true,
@@ -93,6 +93,7 @@ internal class PendingBibleUpdatesViewModelTest {
                             hasPendingUpdate = true,
                         ),
                     ),
+                    selectedVersionId = "ACF",
                 ),
             ),
             trackEvent = { name, params -> trackedEvents += name to params },

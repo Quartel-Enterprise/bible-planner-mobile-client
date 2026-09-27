@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
-import com.quare.bibleplanner.core.provider.supabase.fake.FakePreferencesDataStore
+import com.quare.bibleplanner.core.provider.datastore.testing.FakePreferencesDataStore
 import com.quare.bibleplanner.core.provider.supabase.session.MonitoredSessionManager
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.Auth

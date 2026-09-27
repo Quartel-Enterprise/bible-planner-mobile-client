@@ -5,10 +5,10 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import com.quare.bibleplanner.feature.day.data.datasource.DayLocalDataSource
 import com.quare.bibleplanner.feature.day.data.mapper.DayEntityToModelMapper
-import com.quare.bibleplanner.feature.day.fake.FakePlanRepository
 import com.quare.bibleplanner.feature.day.fake.InMemoryBibleDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -63,6 +63,7 @@ internal class DayRepositoryImplTest {
                     ),
                 ),
                 startDate = null,
+                selectedReadingPlan = ReadingPlanType.CHRONOLOGICAL,
             ),
             dayEntityToModelMapper = DayEntityToModelMapper(),
         )

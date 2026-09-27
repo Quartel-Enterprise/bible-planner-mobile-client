@@ -2,10 +2,10 @@ package com.quare.bibleplanner.feature.daystudy.presentation.viewmodel
 
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationJob
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationStatus
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DayNavRoute
-import com.quare.bibleplanner.feature.daystudy.fake.FakeDayStudyGenerationCoordinator
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyBackgroundGenerationUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DayStudyBackgroundGenerationViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val coordinator = FakeDayStudyGenerationCoordinator()
+    private val coordinator = FakeDayStudyGenerationCoordinator(pendingOpenKey = null)
     private val navigator = Navigator()
     private lateinit var viewModel: DayStudyBackgroundGenerationViewModel
 

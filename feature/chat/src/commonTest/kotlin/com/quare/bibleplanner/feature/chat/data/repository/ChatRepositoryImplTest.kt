@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.chat.data.repository
 
-import com.quare.bibleplanner.core.books.domain.model.BibleModel
-import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.daystudy.domain.mapper.BookIdWireNameMapper
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.model.book.BookId
@@ -32,7 +31,6 @@ import com.quare.bibleplanner.feature.chat.domain.model.ChatQuotaModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
 import com.quare.bibleplanner.feature.chat.domain.model.PendingDraftModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -484,7 +482,10 @@ internal class ChatRepositoryImplTest {
         quotaMapper = ChatQuotaMapper(),
         contextRequestMapper = ChatContextRequestMapper(BookIdWireNameMapper()),
         languageCodeMapper = LanguageCodeMapper(),
-        bibleRepository = FakeBibleRepository(),
+        bibleRepository = FakeBibleRepository(
+            bibles = emptyList(),
+            selectedVersionId = "ACF",
+        ),
         getAppLanguageFlow = { flowOf(Language.PORTUGUESE_BRAZIL) },
         observeAuthenticatedUserId = { authenticatedUserId },
         json = Json { ignoreUnknownKeys = true },
@@ -568,12 +569,4 @@ internal class ChatRepositoryImplTest {
         planDay = null,
         updatedAt = Instant.parse("2026-08-14T12:00:00Z"),
     )
-}
-
-private class FakeBibleRepository : BibleRepository {
-    override fun getBiblesFlow(): Flow<List<BibleModel>> = flowOf(emptyList())
-
-    override fun getSelectedVersionIdFlow(): Flow<String> = flowOf("ACF")
-
-    override suspend fun setSelectedVersionId(id: String) = Unit
 }

@@ -79,6 +79,11 @@ kotlin {
             implementation(kotlin("test"))
             implementation(projects.core.plan)
             implementation(libs.kotlinx.coroutines.test)
+
+            // Shared fakes
+            implementation(projects.core.books.testing)
+            implementation(projects.core.dayStudy.testing)
+            implementation(projects.core.plan.testing)
         }
 
         jvmTest.dependencies {

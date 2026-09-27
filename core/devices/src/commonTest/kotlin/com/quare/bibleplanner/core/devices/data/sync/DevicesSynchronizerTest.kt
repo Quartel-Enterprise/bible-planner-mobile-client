@@ -4,10 +4,10 @@ import com.quare.bibleplanner.core.devices.data.UserDevicesRemoteStore
 import com.quare.bibleplanner.core.devices.data.dto.UserDeviceDto
 import com.quare.bibleplanner.core.devices.data.local.UserDeviceLocalStore
 import com.quare.bibleplanner.core.devices.data.mapper.UserDeviceDtoToEntityMapper
-import com.quare.bibleplanner.core.devices.fake.FakeRealtime
 import com.quare.bibleplanner.core.devices.fake.FakeUserDeviceDao
 import com.quare.bibleplanner.core.devices.fake.RecordingSupabaseClient
 import com.quare.bibleplanner.core.provider.room.entity.UserDeviceEntity
+import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.serializer.KotlinXSerializer
 import io.ktor.http.HttpMethod

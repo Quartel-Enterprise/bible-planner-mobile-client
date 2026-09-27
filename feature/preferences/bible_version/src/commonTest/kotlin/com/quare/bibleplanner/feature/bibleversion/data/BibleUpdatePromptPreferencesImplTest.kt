@@ -1,7 +1,8 @@
 package com.quare.bibleplanner.feature.bibleversion.data
 
+import androidx.datastore.preferences.core.emptyPreferences
+import com.quare.bibleplanner.core.provider.datastore.testing.FakePreferencesDataStore
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DismissBibleUpdatePromptUseCase
-import com.quare.bibleplanner.feature.bibleversion.fake.FakePreferencesDataStore
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -13,7 +14,7 @@ internal class BibleUpdatePromptPreferencesImplTest {
 
     @BeforeTest
     fun setUp() {
-        preferences = BibleUpdatePromptPreferencesImpl(FakePreferencesDataStore())
+        preferences = BibleUpdatePromptPreferencesImpl(FakePreferencesDataStore(emptyPreferences()))
     }
 
     @Test

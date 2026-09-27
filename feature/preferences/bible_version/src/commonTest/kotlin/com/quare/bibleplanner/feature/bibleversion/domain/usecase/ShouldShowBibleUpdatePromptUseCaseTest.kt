@@ -2,13 +2,11 @@ package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
-import com.quare.bibleplanner.core.books.domain.repository.BibleRepository
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.date.HasCooldownElapsedUseCase
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.domain.BibleUpdatePromptPreferences
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -72,7 +70,25 @@ internal class ShouldShowBibleUpdatePromptUseCaseTest {
     ) {
         useCase = ShouldShowBibleUpdatePromptUseCase(
             getPendingBibleUpdates = GetPendingBibleUpdatesUseCase(
-                bibleRepository = FakeBibleRepository(hasPendingUpdate),
+                bibleRepository = FakeBibleRepository(
+                    bibles = listOf(
+                        BibleModel(
+                            version = VersionModel(
+                                id = "ACF",
+                                name = "Almeida Corrigida Fiel",
+                                version = "1.2.0",
+                                language = Language.PORTUGUESE_BRAZIL,
+                                chapters = 1189,
+                                size = 8245560,
+                            ),
+                            downloadedChapters = 1189,
+                            downloadStatus = DownloadStatusModel.Downloaded,
+                            isSelected = false,
+                            hasPendingUpdate = hasPendingUpdate,
+                        ),
+                    ),
+                    selectedVersionId = "ACF",
+                ),
             ),
             bibleUpdatePromptPreferences = FakeBibleUpdatePromptPreferences(lastDismissedAt),
             hasCooldownElapsed = HasCooldownElapsedUseCase { NOW },
@@ -82,33 +98,6 @@ internal class ShouldShowBibleUpdatePromptUseCaseTest {
     private companion object {
         const val NOW = 1_700_000_000_000L
     }
-}
-
-private class FakeBibleRepository(
-    private val hasPendingUpdate: Boolean,
-) : BibleRepository {
-    override fun getBiblesFlow(): Flow<List<BibleModel>> = flowOf(
-        listOf(
-            BibleModel(
-                version = VersionModel(
-                    id = "ACF",
-                    name = "Almeida Corrigida Fiel",
-                    version = "1.2.0",
-                    language = Language.PORTUGUESE_BRAZIL,
-                    chapters = 1189,
-                    size = 8245560,
-                ),
-                downloadedChapters = 1189,
-                downloadStatus = DownloadStatusModel.Downloaded,
-                isSelected = false,
-                hasPendingUpdate = hasPendingUpdate,
-            ),
-        ),
-    )
-
-    override fun getSelectedVersionIdFlow(): Flow<String> = error("Unexpected call")
-
-    override suspend fun setSelectedVersionId(id: String) = error("Unexpected call")
 }
 
 private class FakeBibleUpdatePromptPreferences(

@@ -72,6 +72,8 @@ moduleGraphAssert {
         ":(feature|ui):.* -X> :core:(navigation|provider:koin)",
         ":core:(?!(navigation|provider:koin) ).* -X> :core:(navigation|provider:koin)",
         ":ui:.* -X> :feature:.*",
+        // The :testing modules hold fakes for tests, so production code never depends on them.
+        ":(?!\\S*:testing ).* -X> :.*:testing",
     )
 }
 

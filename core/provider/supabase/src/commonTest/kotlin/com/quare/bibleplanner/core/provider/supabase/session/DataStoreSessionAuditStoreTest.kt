@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.provider.supabase.session
 
 import androidx.datastore.preferences.core.emptyPreferences
-import com.quare.bibleplanner.core.provider.supabase.fake.FakePreferencesDataStore
+import com.quare.bibleplanner.core.provider.datastore.testing.FakePreferencesDataStore
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

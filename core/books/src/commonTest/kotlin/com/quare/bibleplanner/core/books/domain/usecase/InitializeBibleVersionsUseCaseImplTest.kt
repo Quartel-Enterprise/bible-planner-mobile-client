@@ -1,11 +1,10 @@
 package com.quare.bibleplanner.core.books.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
-import com.quare.bibleplanner.core.books.domain.repository.BibleVersionRepository
 import com.quare.bibleplanner.core.books.fake.RecordingBibleVersionDao
 import com.quare.bibleplanner.core.books.fake.ThrowingVerseDao
+import com.quare.bibleplanner.core.books.testing.FakeBibleVersionRepository
 import com.quare.bibleplanner.core.utils.locale.Language
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -70,12 +69,4 @@ internal class InitializeBibleVersionsUseCaseImplTest {
             ),
         )
     }
-}
-
-private class FakeBibleVersionRepository(
-    private val remoteVersions: Result<List<VersionModel>>,
-) : BibleVersionRepository {
-    override suspend fun getVersions(forceRefresh: Boolean): Result<List<VersionModel>> = remoteVersions
-
-    override fun observeVersions(): Flow<List<VersionModel>> = error("Unexpected call")
 }

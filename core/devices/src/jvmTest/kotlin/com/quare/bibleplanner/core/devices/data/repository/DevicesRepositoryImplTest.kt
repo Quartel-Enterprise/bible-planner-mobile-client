@@ -9,11 +9,11 @@ import com.quare.bibleplanner.core.devices.data.dto.RegisterDeviceRequest
 import com.quare.bibleplanner.core.devices.data.local.UserDeviceLocalStore
 import com.quare.bibleplanner.core.devices.data.mapper.UserDeviceDtoToEntityMapper
 import com.quare.bibleplanner.core.devices.data.mapper.UserDeviceEntityToDomainMapper
-import com.quare.bibleplanner.core.devices.fake.FakePreferencesDataStore
-import com.quare.bibleplanner.core.devices.fake.FakeRealtime
 import com.quare.bibleplanner.core.devices.fake.FakeUserDeviceDao
 import com.quare.bibleplanner.core.devices.fake.RecordingSupabaseClient
+import com.quare.bibleplanner.core.provider.datastore.testing.FakePreferencesDataStore
 import com.quare.bibleplanner.core.provider.room.entity.UserDeviceEntity
+import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.emptyFlow

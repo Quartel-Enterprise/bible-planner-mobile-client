@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.core.inappupdate.data
 
 import androidx.datastore.preferences.core.emptyPreferences
-import com.quare.bibleplanner.core.inappupdate.fake.FakePreferencesDataStore
+import com.quare.bibleplanner.core.provider.datastore.testing.FakePreferencesDataStore
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

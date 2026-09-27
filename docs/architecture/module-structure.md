@@ -12,6 +12,7 @@ core/
 ├── model/           # Shared data models and nav routes
 ├── navigation/      # RootAppNavDisplay
 ├── plan/            # Plan data (JSON) domain + data
+│   └── testing/     # In-memory fakes of plan's interfaces, for other modules' tests
 ├── utils/           # Kotlin extension utilities
 └── provider/
     ├── koin/        # Koin initialization — register new modules here
@@ -37,6 +38,8 @@ ui/
   `:feature:* -> :feature:*` edge in a production source set; tests may still depend on a feature
   (the Day store screenshots draw the real study card).
 - Only the composition root — `:core:navigation` and `:core:provider:koin` — depends on features.
+- A `:testing` module (e.g. `:core:books:testing`) is only ever a test dependency: `assertModuleGraph`
+  fails on a production edge to one. See [Shared fakes](../testing/fakes-and-coroutines.md#shared-fakes).
 - Core never depends on `:ui:*`, and `:ui:*` never depends on features. `:ui:*` may depend on core,
   which is why domain types a screen also draws, like `Theme` and `ContrastType`, live in
   `core/model` and not in `ui/theme`.

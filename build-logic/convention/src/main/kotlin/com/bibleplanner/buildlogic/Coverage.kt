@@ -11,8 +11,10 @@ const val COVERAGE_VARIANT = "ci"
 private const val TESTED_TARGET = "jvm"
 
 // :ui:* is composables plus theme constants, which the Compose UI tests cover, so it stays out.
+// The :testing modules hold the fakes tests share, which are test code even though they live in
+// commonMain.
 private val Project.isMeasuredForCoverage: Boolean
-    get() = !path.startsWith(":ui:")
+    get() = !path.startsWith(":ui:") && !path.endsWith(":testing")
 
 fun Project.configureCoverage() {
     if (!isMeasuredForCoverage) return

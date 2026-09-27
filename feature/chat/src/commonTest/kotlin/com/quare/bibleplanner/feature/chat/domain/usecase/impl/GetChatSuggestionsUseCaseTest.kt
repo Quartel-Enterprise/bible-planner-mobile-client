@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.chat.domain.usecase.impl
 
+import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyGenerationEventModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
@@ -8,14 +9,11 @@ import com.quare.bibleplanner.core.daystudy.domain.model.HistoricalContextModel
 import com.quare.bibleplanner.core.daystudy.domain.model.QaModel
 import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyUseCase
 import com.quare.bibleplanner.core.daystudy.domain.usecase.HasCachedStudyUseCase
+import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyRepository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.utils.locale.Language
-import com.quare.bibleplanner.feature.chat.fake.FakeBibleRepository
-import com.quare.bibleplanner.feature.chat.fake.FakeDayStudyRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -66,7 +64,7 @@ internal class GetChatSuggestionsUseCaseTest {
         assertTrue(suggestions.isEmpty())
         assertEquals(
             expected = listOf("ACF" to "pt-BR"),
-            actual = repository.cacheLookups,
+            actual = repository.cacheLookups.map { lookup -> lookup.version to lookup.languageCode },
         )
     }
 
@@ -75,7 +73,7 @@ internal class GetChatSuggestionsUseCaseTest {
         // Given
         prepareScenario(
             isCached = true,
-            study = flowOf(
+            events = listOf(
                 DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.entries.first()),
                 DayStudyGenerationEventModel.Completed(
                     DayStudyModel(
@@ -113,7 +111,7 @@ internal class GetChatSuggestionsUseCaseTest {
         // Given
         prepareScenario(
             isCached = true,
-            study = flow { throw IllegalStateException("offline") },
+            eventsError = IllegalStateException("offline"),
         )
 
         // When
@@ -125,13 +123,20 @@ internal class GetChatSuggestionsUseCaseTest {
 
     private fun prepareScenario(
         isCached: Boolean,
-        study: Flow<DayStudyGenerationEventModel> = flowOf(),
+        events: List<DayStudyGenerationEventModel> = emptyList(),
+        eventsError: Throwable? = null,
     ) {
         repository = FakeDayStudyRepository(
-            isCached = isCached,
-            study = study,
+            hasCached = isCached,
+            status = null,
+            statusError = null,
+            events = events,
         )
-        val bibleRepository = FakeBibleRepository(selectedVersionId = "ACF")
+        repository.eventsError = eventsError
+        val bibleRepository = FakeBibleRepository(
+            bibles = emptyList(),
+            selectedVersionId = "ACF",
+        )
         useCase = GetChatSuggestionsUseCase(
             hasCachedStudy = HasCachedStudyUseCase(
                 repository = repository,

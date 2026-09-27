@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.day.domain.usecase
 
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
+import com.quare.bibleplanner.core.books.testing.FakeBooksRepository
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.BookId
@@ -8,7 +9,6 @@ import com.quare.bibleplanner.core.model.book.VerseModel
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
-import com.quare.bibleplanner.feature.day.fake.FakeBooksRepository
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

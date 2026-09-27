@@ -33,6 +33,9 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
+
+            // Shared fakes
+            implementation(projects.core.provider.dataStore.testing)
         }
     }
 }

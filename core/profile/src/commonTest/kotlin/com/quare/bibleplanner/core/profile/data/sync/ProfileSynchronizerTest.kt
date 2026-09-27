@@ -1,9 +1,9 @@
 package com.quare.bibleplanner.core.profile.data.sync
 
 import com.quare.bibleplanner.core.profile.fake.FakeProfileDao
-import com.quare.bibleplanner.core.profile.fake.FakeRealtime
 import com.quare.bibleplanner.core.profile.fake.RecordingSupabaseClient
 import com.quare.bibleplanner.core.provider.room.entity.ProfileEntity
+import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import io.github.jan.supabase.storage.storage
 import io.ktor.http.HttpStatusCode

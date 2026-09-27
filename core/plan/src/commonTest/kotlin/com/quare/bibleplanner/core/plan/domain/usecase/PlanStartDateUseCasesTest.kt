@@ -2,7 +2,7 @@ package com.quare.bibleplanner.core.plan.domain.usecase
 
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
-import com.quare.bibleplanner.core.plan.fake.FakePlanRepository
+import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
