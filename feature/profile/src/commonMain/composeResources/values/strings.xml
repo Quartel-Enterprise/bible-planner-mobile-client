@@ -64,4 +64,18 @@
     <string name="study_suggestion_enabled_dialog">Enabled · prominent notice</string>
     <string name="study_suggestion_enabled_banner">Enabled · discreet banner</string>
     <string name="study_suggestion_disabled">Disabled</string>
+    <string name="annotations_option">Annotations</string>
+    <string name="annotations_summary_empty">Highlights, saved verses and notes</string>
+    <plurals name="annotations_highlight_count">
+        <item quantity="one">%1$d highlight</item>
+        <item quantity="other">%1$d highlights</item>
+    </plurals>
+    <plurals name="annotations_saved_count">
+        <item quantity="one">%1$d saved</item>
+        <item quantity="other">%1$d saved</item>
+    </plurals>
+    <plurals name="annotations_note_count">
+        <item quantity="one">%1$d note</item>
+        <item quantity="other">%1$d notes</item>
+    </plurals>
 </resources>

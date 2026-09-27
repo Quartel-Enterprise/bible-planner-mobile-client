@@ -25,6 +25,7 @@ internal class VerseSelectionSceneStrategyTest {
             chapterNumber = 3,
             isChapterRead = false,
             isFromBookDetails = false,
+            targetVerseNumbers = emptyList(),
         ),
         metadata = getReaderPane(),
     )

@@ -51,6 +51,7 @@ import com.quare.bibleplanner.feature.studysuggestion.presentation.studySuggesti
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.subscriptionDetails
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.feature.verse.addnote.presentation.verseNote
+import com.quare.bibleplanner.feature.verse.annotations.presentation.annotations
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.verseSelection
 import com.quare.bibleplanner.feature.verse.share.presentation.shareVerse
 
@@ -101,6 +102,7 @@ internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKe
     verseNote()
     verseSelection()
     shareVerse()
+    annotations()
     notificationPermission()
     inAppUpdate()
     updateDownloaded()

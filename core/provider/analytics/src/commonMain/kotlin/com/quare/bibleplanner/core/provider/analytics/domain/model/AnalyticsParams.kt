@@ -76,6 +76,8 @@ object AnalyticsParams {
     const val KEPT_HIGHLIGHTS = "kept_highlights"
     const val IS_SAVED = "is_saved"
     const val IS_EXISTING = "is_existing"
+    const val HAS_HIGHLIGHT = "has_highlight"
+    const val HAS_NOTE = "has_note"
     const val FONT = "font"
     const val FONT_SIZE = "font_size"
     const val FOCUS_AID = "focus_aid"
@@ -86,4 +88,5 @@ object AnalyticsParams {
     const val ACCOUNT_STATE = "account_state"
     const val TIMING = "timing"
     const val CHAPTER_COUNT = "chapter_count"
+    const val PERIOD = "period"
 }

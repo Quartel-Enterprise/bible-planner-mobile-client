@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.verseannotations.data.repository
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.room.entity.SavedVerseEntity
+import com.quare.bibleplanner.core.verseannotations.domain.model.SavedVerse
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.fake.FakeSavedVerseDao
 import kotlinx.coroutines.flow.first
@@ -207,6 +208,53 @@ internal class SavedVerseRepositoryImplTest {
         chapter = testChapter,
         verseNumber = verseNumber,
     )
+
+    @Test
+    fun `observes every saved verse of the version with its timestamp`() = runTest {
+        // Given
+        prepareScenario(
+            initialRows = listOf(
+                entity(
+                    verseNumber = 1,
+                    isSaved = true,
+                ),
+                entity(
+                    verseNumber = 2,
+                    isSaved = false,
+                ),
+                entity(
+                    verseNumber = 3,
+                    isSaved = true,
+                    chapterNumber = 7,
+                    updatedAt = NOW,
+                ),
+            ),
+        )
+
+        // When
+        val savedVerses = repository.observeVersionSavedVerses(testChapter.bibleVersionId).first()
+
+        // Then
+        assertEquals(
+            expected = setOf(
+                SavedVerse(
+                    ref = VerseRef(
+                        chapter = testChapter,
+                        verseNumber = 1,
+                    ),
+                    updatedAtEpochMillis = OLD_TIMESTAMP,
+                ),
+                SavedVerse(
+                    ref = VerseRef(
+                        chapter = testChapter.copy(chapterNumber = 7),
+                        verseNumber = 3,
+                    ),
+                    updatedAtEpochMillis = NOW,
+                ),
+            ),
+            actual = savedVerses.toSet(),
+        )
+    }
 
     private fun entity(
         verseNumber: Int,

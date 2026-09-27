@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface VerseNoteRepository {
     fun observeChapterNotes(chapter: ChapterRef): Flow<List<VerseNote>>
 
+    fun observeVersionNotes(bibleVersionId: String): Flow<List<VerseNote>>
+
     suspend fun getNote(noteId: String): VerseNote?
 
     suspend fun upsert(note: VerseNote)

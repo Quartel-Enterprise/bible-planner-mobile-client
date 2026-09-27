@@ -21,6 +21,9 @@ interface SavedVerseDao {
         chapterNumber: Int,
     ): Flow<List<SavedVerseEntity>>
 
+    @Query("SELECT * FROM saved_verses WHERE bibleVersionId = :bibleVersionId AND isSaved = 1")
+    fun getVersionSavedVersesFlow(bibleVersionId: String): Flow<List<SavedVerseEntity>>
+
     @Query(
         "SELECT * FROM saved_verses WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
             "AND chapterNumber = :chapterNumber AND verseNumber IN (:verseNumbers)",

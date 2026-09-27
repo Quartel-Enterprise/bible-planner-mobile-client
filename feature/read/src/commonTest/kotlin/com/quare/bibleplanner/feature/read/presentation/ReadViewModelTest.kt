@@ -42,6 +42,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
+import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import kotlinx.coroutines.CompletableDeferred
@@ -103,6 +104,41 @@ internal class ReadViewModelTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `GIVEN target verses in the route WHEN opening THEN asks the screen to focus them until shown`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(targetVerseNumbers = listOf(4, 5))
+            val focus = viewModel.uiState.value.verseFocus
+
+            // When
+            viewModel.onEvent(ReadUiEvent.OnVerseFocusShown)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = VerseFocusUiModel(
+                    bookId = BookId.GEN,
+                    chapterNumber = 3,
+                    verseNumbers = listOf(4, 5),
+                ),
+                actual = focus,
+            )
+            assertNull(viewModel.uiState.value.verseFocus)
+        }
+
+    @Test
+    fun `GIVEN no target verses WHEN opening THEN focuses nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val focus = viewModel.uiState.value.verseFocus
+
+        // Then
+        assertNull(focus)
     }
 
     @Test
@@ -602,6 +638,7 @@ internal class ReadViewModelTest {
                         chapterNumber = 4,
                         isChapterRead = true,
                         isFromBookDetails = false,
+                        targetVerseNumbers = emptyList(),
                     ),
                 ),
             ),
@@ -724,6 +761,7 @@ internal class ReadViewModelTest {
             mode = StudySuggestionMode.DIALOG,
         ),
         isVerticalReadingEnabled: Boolean = false,
+        targetVerseNumbers: List<Int> = emptyList(),
         getNextChapter: GetNextChapter = GetNextChapter { _, _, _ -> null },
         getPreviousChapter: GetPreviousChapter = GetPreviousChapter { _, _, _ -> null },
         navigationSuggestions: ReadNavigationSuggestionsModel = ReadNavigationSuggestionsModel(
@@ -787,6 +825,7 @@ internal class ReadViewModelTest {
                 chapterNumber = 3,
                 isChapterRead = false,
                 isFromBookDetails = false,
+                targetVerseNumbers = targetVerseNumbers,
             ),
             observeReadData = FakeObserveReadData(data),
             toggleWholeChapterReadStatus = toggleWholeChapterReadStatus,

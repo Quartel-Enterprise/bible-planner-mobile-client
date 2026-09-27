@@ -18,6 +18,7 @@ import com.quare.bibleplanner.core.verseannotations.data.sync.VerseHighlightLoca
 import com.quare.bibleplanner.core.verseannotations.data.sync.VerseHighlightRemoteStore
 import com.quare.bibleplanner.core.verseannotations.data.sync.VerseNoteLocalStore
 import com.quare.bibleplanner.core.verseannotations.data.sync.VerseNoteRemoteStore
+import com.quare.bibleplanner.core.verseannotations.domain.factory.AnnotatedPassageFactory
 import com.quare.bibleplanner.core.verseannotations.domain.repository.HighlightPaletteRepository
 import com.quare.bibleplanner.core.verseannotations.domain.repository.SavedVerseRepository
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseHighlightRepository
@@ -28,10 +29,12 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.ApplyHighligh
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ClearVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.DeleteVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.GetVerseNote
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveAnnotatedPassages
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveHighlightPalette
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemoveCustomHighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemovePassageAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleSavedVerses
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleVerseSelection
@@ -40,10 +43,12 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ApplyHig
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ClearVerseSelectionUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.DeleteVerseNoteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.GetVerseNoteUseCase
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveAnnotatedPassagesUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveChapterAnnotationsUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveHighlightPaletteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveVerseSelectionUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.RemoveCustomHighlightColorUseCase
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.RemovePassageAnnotationsUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.SaveVerseNoteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ToggleSavedVersesUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ToggleVerseSelectionUseCase
@@ -59,6 +64,7 @@ val verseAnnotationsModule = module {
     factoryOf(::SavedVerseMapper)
     factoryOf(::VerseNoteEntityMapper)
     factoryOf(::VerseNoteSyncMapper)
+    factoryOf(::AnnotatedPassageFactory)
 
     singleOf(::VerseHighlightRepositoryImpl).bind<VerseHighlightRepository>()
     singleOf(::SavedVerseRepositoryImpl).bind<SavedVerseRepository>()
@@ -78,6 +84,8 @@ val verseAnnotationsModule = module {
     factoryOf(::ObserveVerseSelectionUseCase).bind<ObserveVerseSelection>()
     factoryOf(::ToggleVerseSelectionUseCase).bind<ToggleVerseSelection>()
     factoryOf(::ClearVerseSelectionUseCase).bind<ClearVerseSelection>()
+    factoryOf(::ObserveAnnotatedPassagesUseCase).bind<ObserveAnnotatedPassages>()
+    factoryOf(::RemovePassageAnnotationsUseCase).bind<RemovePassageAnnotations>()
 
     factoryOf(::VerseHighlightLocalStore)
     factoryOf(::VerseHighlightRemoteStore)

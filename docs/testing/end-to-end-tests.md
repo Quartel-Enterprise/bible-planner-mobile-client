@@ -11,6 +11,7 @@ Multiplatform), and they live in `shared/src/commonTest/kotlin/com/quare/biblepl
 | Books → chapter: open a book, read a chapter, see it counted in the book's progress | `BookChapterFlowUiTest` |
 | Verse note: save a note on a verse, reopen the chapter, see it again; the free-notes limit offers Pro | `VerseNoteFlowUiTest` |
 | Preferences: the theme darkens the screen, the language translates it, a Bible version is downloaded and shown | `PreferencesFlowUiTest` |
+| Annotations: marked verses show up under Profile → Annotations, opening one lands the reader on that verse, the search narrows the list and removing an item updates the Profile summary | `AnnotationsFlowUiTest` |
 
 Each flow runs in portrait and in a wide window: 400×720 and 1000×720 dp on the JVM, the phone in
 portrait and in landscape on Android. The wide window is past the 700 dp at which the app switches to

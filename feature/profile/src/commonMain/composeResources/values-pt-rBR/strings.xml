@@ -64,4 +64,18 @@
     <string name="study_suggestion_enabled_dialog">Ativada · aviso em destaque</string>
     <string name="study_suggestion_enabled_banner">Ativada · banner discreto</string>
     <string name="study_suggestion_disabled">Desativada</string>
+    <string name="annotations_option">Marcações</string>
+    <string name="annotations_summary_empty">Destaques, versículos salvos e anotações</string>
+    <plurals name="annotations_highlight_count">
+        <item quantity="one">%1$d destaque</item>
+        <item quantity="other">%1$d destaques</item>
+    </plurals>
+    <plurals name="annotations_saved_count">
+        <item quantity="one">%1$d salvo</item>
+        <item quantity="other">%1$d salvos</item>
+    </plurals>
+    <plurals name="annotations_note_count">
+        <item quantity="one">%1$d anotação</item>
+        <item quantity="other">%1$d anotações</item>
+    </plurals>
 </resources>

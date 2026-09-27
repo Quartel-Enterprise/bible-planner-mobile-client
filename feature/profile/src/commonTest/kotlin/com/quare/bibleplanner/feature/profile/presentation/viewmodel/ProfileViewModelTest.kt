@@ -21,6 +21,7 @@ import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
@@ -111,6 +112,7 @@ internal class ProfileViewModelTest {
             ProfileOptionItemType.RELEASE_NOTES to ReleaseNotesNavRoute,
             ProfileOptionItemType.BIBLE_VERSION to BibleVersionSelectorRoute,
             ProfileOptionItemType.CONTACT_SUPPORT to ContactSupportNavRoute,
+            ProfileOptionItemType.ANNOTATIONS to AnnotationsNavRoute,
         )
 
         // When
@@ -548,6 +550,8 @@ internal class ProfileViewModelTest {
                         ),
                     )
                 },
+                getSelectedVersionId = { flowOf("NVI") },
+                observeAnnotatedPassages = { flowOf(emptyList()) },
                 platform = platform,
             ),
             trackEvent = { name, params -> collectedEvents += name to params },

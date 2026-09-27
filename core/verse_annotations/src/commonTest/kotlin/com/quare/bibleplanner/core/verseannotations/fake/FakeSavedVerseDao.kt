@@ -24,6 +24,10 @@ internal class FakeSavedVerseDao(
             .sortedBy { it.verseNumber }
     }
 
+    override fun getVersionSavedVersesFlow(bibleVersionId: String): Flow<List<SavedVerseEntity>> = rows.map { current ->
+        current.filter { it.bibleVersionId == bibleVersionId && it.isSaved }
+    }
+
     override suspend fun getSavedVerses(
         bibleVersionId: String,
         bookId: String,

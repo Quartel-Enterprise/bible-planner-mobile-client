@@ -14,6 +14,8 @@ import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
@@ -31,11 +33,15 @@ import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.provider.room.testing.FakeBibleVersionDao
 import com.quare.bibleplanner.core.utils.locale.Language
+import com.quare.bibleplanner.core.verseannotations.domain.model.AnnotatedPassage
+import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.profile.fake.FakeObserveBooleanRemoteConfig
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
+import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import io.github.jan.supabase.auth.status.RefreshFailureCause
 import io.github.jan.supabase.auth.status.SessionStatus
@@ -127,6 +133,49 @@ internal class ProfileUiStateFactoryTest {
                 actual = state.appVersion,
             )
         }
+
+    @Test
+    fun `GIVEN annotated passages WHEN observing THEN summarizes those of the selected version`() = runTest {
+        // Given
+        val chapter = ChapterRef(
+            bibleVersionId = selectedVersion.id,
+            bookId = BookId.JHN,
+            chapterNumber = 3,
+        )
+        val passage = AnnotatedPassage(
+            chapter = chapter,
+            verseNumbers = listOf(16),
+            highlightColor = HighlightColor.Preset(PresetHighlightColor.YELLOW),
+            isSaved = true,
+            note = null,
+            updatedAtEpochMillis = 0L,
+        )
+        prepareScenario(
+            annotatedPassages = listOf(
+                passage,
+                passage.copy(
+                    verseNumbers = listOf(17),
+                    highlightColor = null,
+                ),
+                passage.copy(chapter = chapter.copy(bibleVersionId = "WEB")),
+            ),
+        )
+
+        // When
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = Loadable.Loaded(
+                AnnotationsSummaryModel(
+                    highlightCount = 1,
+                    savedCount = 2,
+                    noteCount = 0,
+                ),
+            ),
+            actual = states.last().annotationsSummary,
+        )
+    }
 
     @Test
     fun `GIVEN every source emitted WHEN observing THEN loads every section`() = runTest {
@@ -519,6 +568,7 @@ internal class ProfileUiStateFactoryTest {
         versionStatus: DownloadStatus = DownloadStatus.DONE,
         downloadedChapters: Int = 0,
         totalChapters: Int = 1189,
+        annotatedPassages: List<AnnotatedPassage> = emptyList(),
     ) {
         val bibleRepository = FakeBibleRepository(
             bibles = listOf(
@@ -569,6 +619,10 @@ internal class ProfileUiStateFactoryTest {
             getSelectedBible = getSelectedBible,
             getAppLanguageFlow = { flowOf(Language.ENGLISH) },
             observeStudySuggestionSettings = { flowOf(studySuggestion) },
+            getSelectedVersionId = { flowOf(selectedVersion.id) },
+            observeAnnotatedPassages = { versionId ->
+                flowOf(annotatedPassages.filter { it.chapter.bibleVersionId == versionId })
+            },
             platform = platform,
         )
         states = mutableListOf<ProfileUiState>().also { collected ->

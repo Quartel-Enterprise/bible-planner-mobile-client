@@ -203,6 +203,7 @@ internal class DayViewModel(
                 chapterNumber = chapterNumber,
                 isChapterRead = strategy.isChapterRead,
                 isFromBookDetails = false,
+                targetVerseNumbers = emptyList(),
             ),
         )
     }

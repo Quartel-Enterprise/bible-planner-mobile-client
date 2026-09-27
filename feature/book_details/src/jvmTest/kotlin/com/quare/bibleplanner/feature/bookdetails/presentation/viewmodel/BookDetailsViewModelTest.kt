@@ -287,6 +287,7 @@ internal class BookDetailsViewModelTest {
                         chapterNumber = 2,
                         isChapterRead = false,
                         isFromBookDetails = true,
+                        targetVerseNumbers = emptyList(),
                     ),
                 ),
             ),

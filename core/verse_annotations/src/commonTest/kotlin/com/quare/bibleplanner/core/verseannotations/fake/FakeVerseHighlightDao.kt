@@ -24,6 +24,11 @@ internal class FakeVerseHighlightDao(
             .sortedBy { it.verseNumber }
     }
 
+    override fun getVersionHighlightsFlow(bibleVersionId: String): Flow<List<VerseHighlightEntity>> =
+        rows.map { current ->
+            current.filter { it.bibleVersionId == bibleVersionId && it.color != null }
+        }
+
     override suspend fun getHighlights(
         bibleVersionId: String,
         bookId: String,

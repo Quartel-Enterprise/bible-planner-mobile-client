@@ -25,6 +25,7 @@ internal class ProfileOptionItemTypeAnalyticsTest {
             ProfileOptionItemType.CONTACT_SUPPORT to "contact_support",
             ProfileOptionItemType.RATE_APP to "rate_app",
             ProfileOptionItemType.CHECK_FOR_UPDATE to "check_for_update",
+            ProfileOptionItemType.ANNOTATIONS to "annotations",
         )
 
         // When

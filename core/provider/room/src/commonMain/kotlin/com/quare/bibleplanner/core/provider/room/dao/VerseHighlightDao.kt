@@ -21,6 +21,9 @@ interface VerseHighlightDao {
         chapterNumber: Int,
     ): Flow<List<VerseHighlightEntity>>
 
+    @Query("SELECT * FROM verse_highlights WHERE bibleVersionId = :bibleVersionId AND color IS NOT NULL")
+    fun getVersionHighlightsFlow(bibleVersionId: String): Flow<List<VerseHighlightEntity>>
+
     @Query(
         "SELECT * FROM verse_highlights WHERE bibleVersionId = :bibleVersionId AND bookId = :bookId " +
             "AND chapterNumber = :chapterNumber AND verseNumber IN (:verseNumbers)",

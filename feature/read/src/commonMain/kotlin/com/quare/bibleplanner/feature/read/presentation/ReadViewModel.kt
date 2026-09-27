@@ -50,6 +50,7 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
+import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerticalChapterCounts
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.utils.observe
@@ -124,6 +125,16 @@ class ReadViewModel(
     private val pendingReadOverrides = MutableStateFlow<Map<ChapterLocationModel, Boolean>>(emptyMap())
 
     private val dayCompletionBanner = MutableStateFlow<PlanDayLocationModel?>(null)
+
+    private val verseFocus = MutableStateFlow(
+        route.targetVerseNumbers.takeIf { it.isNotEmpty() }?.let { verseNumbers ->
+            VerseFocusUiModel(
+                bookId = BookId.valueOf(route.bookId),
+                chapterNumber = route.chapterNumber,
+                verseNumbers = verseNumbers,
+            )
+        },
+    )
 
     /**
      * How the reader celebrates a finished plan day is the user's call: the full sheet, the quiet
@@ -212,8 +223,12 @@ class ReadViewModel(
             )
         },
         dayCompletionBanner,
-    ) { state, banner ->
-        state.copy(dayCompletionBanner = banner)
+        verseFocus,
+    ) { state, banner, focus ->
+        state.copy(
+            dayCompletionBanner = banner,
+            verseFocus = focus,
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -298,6 +313,7 @@ class ReadViewModel(
             ReadUiEvent.OnReachedEnd -> appendNextChapter()
             ReadUiEvent.OnReachedStart -> prependPreviousChapter()
             ReadUiEvent.OnDayCompletionBannerDismissed -> dayCompletionBanner.update { null }
+            ReadUiEvent.OnVerseFocusShown -> verseFocus.update { null }
         }
     }
 
@@ -421,6 +437,7 @@ class ReadViewModel(
                         bookId = suggestion.bookId,
                     ),
                     isFromBookDetails = route.isFromBookDetails,
+                    targetVerseNumbers = emptyList(),
                 ),
             )
         }
@@ -530,6 +547,7 @@ class ReadViewModel(
         isLoadingPreviousChapter = isLoadingPreviousChapter,
         isLoadingNextChapter = isLoadingNextChapter,
         dayCompletionBanner = null,
+        verseFocus = null,
     )
 
     private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterLocationModel, Boolean>): ReadHeaderUiModel {
@@ -610,6 +628,7 @@ class ReadViewModel(
         isLoadingPreviousChapter = false,
         isLoadingNextChapter = false,
         dayCompletionBanner = null,
+        verseFocus = null,
     )
 
     private companion object {

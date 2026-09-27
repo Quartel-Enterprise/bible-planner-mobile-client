@@ -18,7 +18,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -52,6 +54,8 @@ private const val VERSE_NUMBER_FONT_SIZE_RATIO = 0.68f
 private const val VERSE_NUMBER_WIDTH_RATIO = 1.2f
 private const val SELECTION_UNDERLINE_OFFSET_RATIO = 0.14f
 private val verseVerticalPadding = 6.dp
+private const val FLASH_MAX_ALPHA = 0.22f
+private val flashCornerRadius = 8.dp
 private val selectionUnderlineDotWidth = 1.6.dp
 private val selectionUnderlineDotGap = 3.dp
 
@@ -69,6 +73,7 @@ internal fun VerseRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isDimmed: Boolean = false,
+    flashAlpha: (() -> Float)? = null,
 ) {
     val fontSize = settings.fontSizeSp.sp
     val textStyle = TextStyle(
@@ -87,7 +92,19 @@ internal fun VerseRow(
         ),
         color = MaterialTheme.colorScheme.onSurface,
     )
-    Column(modifier = modifier.alpha(if (isDimmed) DIMMED_ALPHA else 1f)) {
+    val flashColor = MaterialTheme.colorScheme.primary
+    Column(
+        modifier = modifier
+            .alpha(if (isDimmed) DIMMED_ALPHA else 1f)
+            .drawBehind {
+                flashAlpha?.let { alpha ->
+                    drawRoundRect(
+                        color = flashColor.copy(alpha = alpha() * FLASH_MAX_ALPHA),
+                        cornerRadius = CornerRadius(flashCornerRadius.toPx()),
+                    )
+                }
+            },
+    ) {
         verse.heading?.let { heading ->
             /*
              * The heading titles the section, not this verse, so it stays outside the tap target —

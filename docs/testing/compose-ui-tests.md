@@ -137,6 +137,7 @@ So:
 | Book details | `feature/book_details/.../presentation/BookDetailsUiTest.kt` |
 | Read | `feature/read/.../presentation/screen/ReadUiTest.kt` |
 | Profile (preferences and account) | `feature/profile/.../presentation/ProfileUiTest.kt` |
+| Annotations | `feature/verse/annotations/.../presentation/content/AnnotationsUiTest.kt` |
 
 The whole app, driven from launch across several screens, is covered by the
 [end-to-end flows](end-to-end-tests.md) in `:shared`.

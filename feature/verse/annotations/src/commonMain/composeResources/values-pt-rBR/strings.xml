@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="annotations_title">Marcações</string>
+    <string name="type_all">Todos</string>
+    <string name="type_highlights">Destaques</string>
+    <string name="type_saved">Salvos</string>
+    <string name="type_notes">Anotações</string>
+    <string name="filter_book">Livro</string>
+    <string name="filter_all_books">Todos os livros</string>
+    <string name="filter_date">Data</string>
+    <string name="period_any">Qualquer data</string>
+    <string name="period_today">Hoje</string>
+    <string name="period_last_7_days">Últimos 7 dias</string>
+    <string name="period_last_30_days">Últimos 30 dias</string>
+    <string name="period_custom">Personalizado</string>
+    <string name="apply_range">Aplicar</string>
+    <string name="clear_filters">Limpar</string>
+    <string name="clear_all_filters">Limpar todos os filtros</string>
+    <string name="highlight_color_section">Cor do destaque</string>
+    <string name="period_section">Período</string>
+    <string name="book_section">Livro</string>
+    <string name="group_today">Hoje</string>
+    <string name="group_yesterday">Ontem</string>
+    <string name="open_in_chapter">Abrir no capítulo</string>
+    <string name="add_note">Adicionar anotação</string>
+    <string name="edit_note">Editar anotação</string>
+    <string name="share">Compartilhar</string>
+    <string name="remove">Remover</string>
+    <string name="more_options">Mais opções</string>
+    <string name="color_filter">Filtrar pela cor do destaque</string>
+    <string name="empty_title">Nada marcado ainda</string>
+    <string name="empty_body">Durante a leitura, toque em um versículo para destacar, salvar ou anotar. Tudo aparece aqui.</string>
+    <string name="no_results_title">Nenhum item com esses filtros</string>
+    <string name="search">Buscar</string>
+    <string name="search_hint">Buscar em versículos, livros e anotações</string>
+    <string name="search_hint_short">Buscar versículo, livro ou anotação</string>
+    <string name="clear_search">Limpar busca</string>
+    <string name="no_results_query">Nenhum resultado para “%1$s”</string>
+    <string name="no_results_query_hint">Buscamos na referência, no texto do versículo e nas anotações.</string>
+    <string name="no_results_filters_hint">Tente ampliar o período ou trocar o tipo.</string>
+    <string name="no_results_clear">Limpar filtros</string>
+    <string name="remove_title">Remover %1$s?</string>
+    <string name="remove_body">Tudo o que você marcou nesta passagem será removido. O texto continua disponível na leitura.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="annotation_removed">Removido das suas marcações</string>
+    <plurals name="item_count">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d itens</item>
+    </plurals>
+</resources>

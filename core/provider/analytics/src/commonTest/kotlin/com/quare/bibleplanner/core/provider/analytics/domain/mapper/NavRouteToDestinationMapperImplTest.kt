@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.provider.analytics.domain.mapper
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
@@ -104,9 +105,16 @@ class NavRouteToDestinationMapperImplTest {
             PaywallNavRoute(source = PaywallEntrySource.PROFILE_MENU) to ("paywall" to DestinationType.SCREEN),
             PendingBibleUpdatesNavRoute to ("pending_bible_updates" to DestinationType.DIALOG),
             PixQrNavRoute to ("pix_qr" to DestinationType.DIALOG),
-            ReadNavRoute(bookId = "exodus", chapterNumber = 4, isChapterRead = true, isFromBookDetails = false) to
+            ReadNavRoute(
+                bookId = "exodus",
+                chapterNumber = 4,
+                isChapterRead = true,
+                isFromBookDetails = false,
+                targetVerseNumbers = emptyList(),
+            ) to
                 ("read" to DestinationType.SCREEN),
             ReleaseNotesNavRoute to ("release_notes" to DestinationType.SCREEN),
+            AnnotationsNavRoute to ("annotations" to DestinationType.SCREEN),
             SubscriptionDetailsNavRoute to ("subscription_details" to DestinationType.DIALOG),
             ThemeNavRoute to ("theme_selection" to DestinationType.RESPONSIVE),
             UpdateDownloadedNavRoute to ("update_downloaded" to DestinationType.DIALOG),
@@ -230,7 +238,13 @@ class NavRouteToDestinationMapperImplTest {
     @Test
     fun `GIVEN ReadNavRoute WHEN mapping THEN carries book_id and chapter_number params`() {
         val destination = mapper.map(
-            ReadNavRoute(bookId = "exodus", chapterNumber = 4, isChapterRead = true, isFromBookDetails = false),
+            ReadNavRoute(
+                bookId = "exodus",
+                chapterNumber = 4,
+                isChapterRead = true,
+                isFromBookDetails = false,
+                targetVerseNumbers = emptyList(),
+            ),
         )
 
         assertEquals(

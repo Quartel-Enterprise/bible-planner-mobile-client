@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.verseannotations.fake
 
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.verseannotations.domain.model.SavedVerse
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.domain.repository.SavedVerseRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,17 @@ internal class FakeSavedVerseRepository(
             .filter { it.chapter == chapter }
             .map { it.verseNumber }
             .toSet()
+    }
+
+    override fun observeVersionSavedVerses(bibleVersionId: String): Flow<List<SavedVerse>> = savedRefs.map { current ->
+        current
+            .filter { it.chapter.bibleVersionId == bibleVersionId }
+            .map { ref ->
+                SavedVerse(
+                    ref = ref,
+                    updatedAtEpochMillis = 0L,
+                )
+            }
     }
 
     override suspend fun areAllSaved(refs: List<VerseRef>): Boolean =
