@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.feature.verse.share.presentation.model.ShareVerseUiEvent
 import com.quare.bibleplanner.feature.verse.share.presentation.utils.ShareVerseUiActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -26,7 +27,9 @@ private val wideShareImageDialogWidth = 760.dp
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.shareVerse() {
     entry<ShareVerseNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) { route ->
         val viewModel = koinViewModel<ShareVerseViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
@@ -45,7 +48,9 @@ fun EntryProviderScope<NavKey>.shareVerse() {
     }
 
     entry<ShareVerseImageNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) { route ->
         val viewModel = koinViewModel<ShareVerseViewModel> {
             parametersOf(

@@ -15,13 +15,16 @@ import com.quare.bibleplanner.core.model.route.PendingBibleUpdatesNavRoute
 import com.quare.bibleplanner.feature.bibleversion.presentation.component.PendingBibleUpdatesContent
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.PendingBibleUpdatesUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.pendingBibleUpdates() {
     entry<PendingBibleUpdatesNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) {
         val viewModel = koinViewModel<PendingBibleUpdatesViewModel>()
         val pendingUpdates by viewModel.pendingUpdates.collectAsState()

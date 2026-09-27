@@ -12,6 +12,7 @@ import com.quare.bibleplanner.core.model.route.EditProfileNavRoute
 import com.quare.bibleplanner.feature.editprofile.presentation.content.EditProfileSheetContent
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.EditProfileViewModel
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -20,7 +21,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.editProfile() {
     entry<EditProfileNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) {
         val viewModel = koinViewModel<EditProfileViewModel>()
         val navigator = koinInject<Navigator>()

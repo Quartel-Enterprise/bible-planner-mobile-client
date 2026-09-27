@@ -13,6 +13,7 @@ import bibleplanner.feature.verse.add_note.generated.resources.verse_note_title
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -20,7 +21,9 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.verseNote() {
     entry<VerseNoteNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) { route ->
         val viewModel = koinViewModel<VerseNoteViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()

@@ -11,13 +11,16 @@ import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
 import com.quare.bibleplanner.feature.inappupdate.presentation.content.InAppUpdateContent
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.InAppUpdateUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.inAppUpdate() {
     entry<InAppUpdateNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) { route ->
         val viewModel = koinViewModel<InAppUpdateViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()

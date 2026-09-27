@@ -22,6 +22,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readValue
 import platform.CoreGraphics.CGAffineTransformIdentity
 import platform.CoreGraphics.CGAffineTransformMakeScale
+import platform.UIKit.UIAccessibilityIsReduceMotionEnabled
 import platform.UIKit.UIColor
 import platform.UIKit.UIModalPresentationOverFullScreen
 import platform.UIKit.UIView
@@ -95,7 +96,8 @@ private fun UIViewController.present(from: UIViewController) {
     modalPresentationStyle = UIModalPresentationOverFullScreen
     view.backgroundColor = UIColor.clearColor
     view.alpha = 0.0
-    view.transform = CGAffineTransformMakeScale(ENTER_SCALE, ENTER_SCALE)
+    val initialScale = if (UIAccessibilityIsReduceMotionEnabled()) 1.0 else ENTER_SCALE
+    view.transform = CGAffineTransformMakeScale(initialScale, initialScale)
     from.findTopmostPresented().presentViewController(
         viewControllerToPresent = this,
         animated = false,

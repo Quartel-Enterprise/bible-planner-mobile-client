@@ -4,6 +4,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
@@ -11,6 +12,7 @@ import com.quare.bibleplanner.core.model.route.LoginNavRoute
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.utils.LoginUiActionCollector
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
 import io.github.jan.supabase.compose.auth.composable.GoogleDialogType
@@ -21,7 +23,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.loginRoot() {
-    entry<LoginNavRoute>(metadata = DialogSceneStrategy.dialog()) { route ->
+    entry<LoginNavRoute>(metadata = DialogSceneStrategy.dialog(DialogProperties().toSheetDialogProperties())) { route ->
         val notifyResultViaSnackbar = route.notifyResultViaSnackbar
         val appSnackbarController = koinInject<AppSnackbarController>()
         val viewModel = koinViewModel<LoginViewModel>()

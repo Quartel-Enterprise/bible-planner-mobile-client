@@ -9,10 +9,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.DonationNavRoute
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.toClipEntry
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +22,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.donation() {
-    entry<DonationNavRoute>(metadata = DialogSceneStrategy.dialog()) {
+    entry<DonationNavRoute>(metadata = DialogSceneStrategy.dialog(DialogProperties().toSheetDialogProperties())) {
         val viewModel = koinViewModel<DonationViewModel>()
         val state by viewModel.uiState.collectAsState()
 

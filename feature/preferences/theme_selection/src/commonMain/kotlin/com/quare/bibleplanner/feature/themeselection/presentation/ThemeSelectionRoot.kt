@@ -12,13 +12,16 @@ import bibleplanner.feature.preferences.theme_selection.generated.resources.sele
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.feature.themeselection.presentation.model.ThemeSelectionUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.themeSettings() {
     entry<ThemeNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) {
         val viewModel = koinViewModel<ThemeSelectionViewModel>()
         val uiState by viewModel.uiState.collectAsState()

@@ -107,12 +107,13 @@ private fun MainNavigationItemModel<NavKey>.toUIKitUITabBarItem(): UIKitUITabBar
 
 @Composable
 internal fun MainNavigationRail(
+    modifier: Modifier,
     selectedRoute: NavKey?,
     mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
     language: Language,
     onEvent: (MainScreenUiEvent) -> Unit,
 ) {
-    NavigationRail {
+    NavigationRail(modifier = modifier) {
         key(language) {
             MainNavigationItemsComponent(
                 mainNavigationModels = mainNavigationModels,

@@ -9,12 +9,15 @@ import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.feature.inappupdate.presentation.content.UpdateDownloadedContent
 import com.quare.bibleplanner.feature.inappupdate.presentation.model.UpdateDownloadedUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.updateDownloaded() {
     entry<UpdateDownloadedNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) {
         val viewModel = koinViewModel<UpdateDownloadedViewModel>()
         ResponsiveDialogSheet(

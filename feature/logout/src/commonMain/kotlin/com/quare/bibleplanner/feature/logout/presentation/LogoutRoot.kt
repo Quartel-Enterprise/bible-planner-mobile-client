@@ -9,6 +9,7 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.feature.logout.presentation.utils.LogoutUiActionCollector
 import com.quare.bibleplanner.feature.logout.presentation.viewmodel.LogoutViewModel
+import com.quare.bibleplanner.ui.component.dialog.toNativeAlertDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
 
 fun EntryProviderScope<NavKey>.logout() {
@@ -17,7 +18,7 @@ fun EntryProviderScope<NavKey>.logout() {
             DialogProperties(
                 dismissOnBackPress = false,
                 dismissOnClickOutside = false,
-            ),
+            ).toNativeAlertDialogProperties(),
         ),
     ) {
         val viewModel = koinViewModel<LogoutViewModel>()

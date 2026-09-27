@@ -15,6 +15,7 @@ import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySu
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
 import com.quare.bibleplanner.feature.studysuggestion.presentation.viewmodel.StudySuggestionViewModel
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
@@ -26,7 +27,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.studySuggestionSettings() {
     entry<StudySuggestionNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) {
         val viewModel = koinViewModel<StudySuggestionViewModel>()
         val uiState by viewModel.uiState.collectAsState()
