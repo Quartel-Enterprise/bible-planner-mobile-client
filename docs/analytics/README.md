@@ -129,6 +129,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `MainNavRouteDestination.Books` | `books` | `screen` | — |
 | `MainNavRouteDestination.Profile` | `profile` | `screen` | — |
 | `AccountDetailsNavRoute` | `account_details` | `responsive` | — |
+| `AnnotationsNavRoute` | `annotations` | `screen` | — |
 | `AddNotesFreeWarningNavRoute` | `add_notes_free_warning` | `dialog` | `max_free_notes` |
 | `AppLanguageNavRoute` | `app_language` | `responsive` | — |
 | `BibleVersionSelectorRoute` | `bible_version_selector` | `responsive` | — |
@@ -261,6 +262,28 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [verse_share_image_opened](events/verse_share_image_opened.md) | P2 | Verse annotations |
 | [verse_share_style_changed](events/verse_share_style_changed.md) | P2 | Verse annotations |
 | [verse_share_dismissed](events/verse_share_dismissed.md) | P2 | Verse annotations |
+| [annotations_back_clicked](events/annotations_back_clicked.md) | P2 | Verse annotations |
+| [annotations_search_opened](events/annotations_search_opened.md) | P2 | Verse annotations |
+| [annotations_search_cleared](events/annotations_search_cleared.md) | P2 | Verse annotations |
+| [annotations_search_closed](events/annotations_search_closed.md) | P2 | Verse annotations |
+| [annotations_type_filter_changed](events/annotations_type_filter_changed.md) | P2 | Verse annotations |
+| [annotations_color_filter_toggled](events/annotations_color_filter_toggled.md) | P2 | Verse annotations |
+| [annotations_book_filter_opened](events/annotations_book_filter_opened.md) | P2 | Verse annotations |
+| [annotations_book_filter_changed](events/annotations_book_filter_changed.md) | P2 | Verse annotations |
+| [annotations_period_filter_opened](events/annotations_period_filter_opened.md) | P2 | Verse annotations |
+| [annotations_period_filter_changed](events/annotations_period_filter_changed.md) | P2 | Verse annotations |
+| [annotations_filter_menu_dismissed](events/annotations_filter_menu_dismissed.md) | P2 | Verse annotations |
+| [annotations_custom_range_opened](events/annotations_custom_range_opened.md) | P2 | Verse annotations |
+| [annotations_custom_range_dismissed](events/annotations_custom_range_dismissed.md) | P2 | Verse annotations |
+| [annotations_filters_cleared](events/annotations_filters_cleared.md) | P2 | Verse annotations |
+| [annotation_chapter_opened](events/annotation_chapter_opened.md) | P1 | Verse annotations |
+| [annotation_menu_opened](events/annotation_menu_opened.md) | P2 | Verse annotations |
+| [annotation_menu_dismissed](events/annotation_menu_dismissed.md) | P2 | Verse annotations |
+| [annotation_note_opened](events/annotation_note_opened.md) | P1 | Verse annotations |
+| [annotation_share_opened](events/annotation_share_opened.md) | P1 | Verse annotations |
+| [annotation_removal_opened](events/annotation_removal_opened.md) | P2 | Verse annotations |
+| [annotation_removal_confirmed](events/annotation_removal_confirmed.md) | P1 | Verse annotations |
+| [annotation_removal_cancelled](events/annotation_removal_cancelled.md) | P2 | Verse annotations |
 
 ### Reader
 

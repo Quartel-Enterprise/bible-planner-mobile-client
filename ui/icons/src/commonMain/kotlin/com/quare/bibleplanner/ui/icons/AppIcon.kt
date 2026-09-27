@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditCalendar
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -39,6 +41,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SupportAgent
@@ -67,6 +70,10 @@ enum class AppIcon(
     Bolt(
         material = Icons.Default::Bolt,
         sfSymbol = SFSymbol.boltFill,
+    ),
+    Bookmarks(
+        material = Icons.Default::Bookmarks,
+        sfSymbol = SFSymbol.bookmarkFill,
     ),
     Check(
         material = Icons.Default::Check,
@@ -99,6 +106,10 @@ enum class AppIcon(
     Edit(
         material = Icons.Default::Edit,
         sfSymbol = SFSymbol.pencil,
+    ),
+    EditNote(
+        material = Icons.Default::EditNote,
+        sfSymbol = SFSymbol.squareAndPencil,
     ),
     EditCalendar(
         material = Icons.Default::EditCalendar,
@@ -199,6 +210,10 @@ enum class AppIcon(
     Search(
         material = Icons.Default::Search,
         sfSymbol = SFSymbol.magnifyingglass,
+    ),
+    Share(
+        material = Icons.Default::Share,
+        sfSymbol = SFSymbol.squareAndArrowUp,
     ),
     SortByAlpha(
         material = Icons.Default::SortByAlpha,

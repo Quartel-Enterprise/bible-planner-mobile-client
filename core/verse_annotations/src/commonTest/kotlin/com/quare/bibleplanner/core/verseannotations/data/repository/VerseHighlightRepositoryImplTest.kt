@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.room.entity.VerseHighlightEntity
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.model.VerseHighlight
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.fake.FakeVerseHighlightDao
 import kotlinx.coroutines.flow.first
@@ -303,6 +304,64 @@ internal class VerseHighlightRepositoryImplTest {
         chapter = testChapter,
         verseNumber = verseNumber,
     )
+
+    @Test
+    fun `observes every coloured verse of the version with its timestamp`() = runTest {
+        // Given
+        prepareScenario(
+            initialRows = listOf(
+                entity(
+                    verseNumber = 1,
+                    color = yellow.key,
+                ),
+                entity(
+                    verseNumber = 2,
+                    color = green.key,
+                    chapterNumber = 9,
+                    updatedAt = NOW,
+                ),
+                entity(
+                    verseNumber = 3,
+                    color = null,
+                ),
+                entity(
+                    verseNumber = 4,
+                    color = "not-a-colour",
+                ),
+                entity(
+                    verseNumber = 5,
+                    color = yellow.key,
+                    bibleVersionId = "WEB",
+                ),
+            ),
+        )
+
+        // When
+        val highlights = repository.observeVersionHighlights(testChapter.bibleVersionId).first()
+
+        // Then
+        assertEquals(
+            expected = setOf(
+                VerseHighlight(
+                    ref = VerseRef(
+                        chapter = testChapter,
+                        verseNumber = 1,
+                    ),
+                    color = yellow,
+                    updatedAtEpochMillis = OLD_TIMESTAMP,
+                ),
+                VerseHighlight(
+                    ref = VerseRef(
+                        chapter = testChapter.copy(chapterNumber = 9),
+                        verseNumber = 2,
+                    ),
+                    color = green,
+                    updatedAtEpochMillis = NOW,
+                ),
+            ),
+            actual = highlights.toSet(),
+        )
+    }
 
     private fun entity(
         verseNumber: Int,

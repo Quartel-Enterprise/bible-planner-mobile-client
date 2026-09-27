@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.provider.analytics.domain.mapper
 
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
@@ -65,6 +66,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is MainNavRouteDestination.Profile -> createScreenDestination("profile")
 
         is AccountDetailsNavRoute -> createResponsiveDestination("account_details")
+
+        is AnnotationsNavRoute -> createScreenDestination("annotations")
 
         is EditProfileNavRoute -> createResponsiveDestination("edit_profile")
 

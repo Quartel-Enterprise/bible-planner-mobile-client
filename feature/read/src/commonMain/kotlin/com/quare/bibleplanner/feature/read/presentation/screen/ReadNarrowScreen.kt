@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
+import com.quare.bibleplanner.feature.read.presentation.component.rememberVerseFlash
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
@@ -72,6 +73,13 @@ internal fun ReadNarrowScreen(
     }
     val chapters = (state.content as? ReadContentUiState.Success)?.chapters.orEmpty()
     val leadingItemCount = if (state.isLoadingPreviousChapter) CHAPTER_SHIMMER_ITEM_COUNT else 0
+    val verseFlash = rememberVerseFlash(
+        focus = state.verseFocus,
+        chapters = chapters,
+        listState = listState,
+        leadingItemCount = leadingItemCount,
+        onShown = { onEvent(ReadUiEvent.OnVerseFocusShown) },
+    )
     val visibleChapter = rememberVisibleChapter(
         chapters = chapters,
         listState = listState,
@@ -173,6 +181,7 @@ internal fun ReadNarrowScreen(
                                     header = state.header,
                                     settings = state.settings,
                                     focusedVerseNumber = null,
+                                    verseFlash = verseFlash,
                                     onEvent = onEvent,
                                 )
                             }

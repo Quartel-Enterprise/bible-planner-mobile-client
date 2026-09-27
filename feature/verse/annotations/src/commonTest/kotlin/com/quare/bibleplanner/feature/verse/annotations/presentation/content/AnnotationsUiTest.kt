@@ -1,0 +1,243 @@
+package com.quare.bibleplanner.feature.verse.annotations.presentation.content
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import bibleplanner.feature.verse.annotations.generated.resources.Res
+import bibleplanner.feature.verse.annotations.generated.resources.empty_title
+import bibleplanner.feature.verse.annotations.generated.resources.highlight_color_section
+import bibleplanner.feature.verse.annotations.generated.resources.item_count
+import bibleplanner.feature.verse.annotations.generated.resources.no_results_clear
+import bibleplanner.feature.verse.annotations.generated.resources.no_results_query
+import bibleplanner.feature.verse.annotations.generated.resources.search
+import bibleplanner.feature.verse.annotations.generated.resources.search_hint_short
+import bibleplanner.feature.verse.annotations.generated.resources.type_notes
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.verse.annotations.domain.model.AnnotationEntry
+import com.quare.bibleplanner.feature.verse.annotations.fixture.sampleNow
+import com.quare.bibleplanner.feature.verse.annotations.fixture.samplePassage
+import com.quare.bibleplanner.feature.verse.annotations.fixture.toEntry
+import com.quare.bibleplanner.feature.verse.annotations.fixture.utcLocalDateTimeProvider
+import com.quare.bibleplanner.feature.verse.annotations.fixture.yellow
+import com.quare.bibleplanner.feature.verse.annotations.presentation.factory.AnnotationsContentFactory
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationTypeFilter
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsFilters
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiEvent
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiState
+import com.quare.bibleplanner.ui.testing.setUiTestContent
+import org.jetbrains.compose.resources.getPluralString
+import org.jetbrains.compose.resources.getString
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+@OptIn(ExperimentalTestApi::class)
+internal class AnnotationsUiTest {
+    private val narrowWidth = 400.dp
+    private val wideWidth = 1000.dp
+    private lateinit var events: MutableList<AnnotationsUiEvent>
+
+    private val factory = AnnotationsContentFactory(
+        currentTimestampProvider = { sampleNow },
+        localDateTimeProvider = utcLocalDateTimeProvider,
+    )
+    private val entries = listOf(
+        samplePassage(
+            bookId = BookId.JHN,
+            chapterNumber = 3,
+            verseNumbers = listOf(16),
+            highlightColor = yellow,
+        ).toEntry(text = "For God so loved the world"),
+        samplePassage(
+            bookId = BookId.GEN,
+            chapterNumber = 3,
+            verseNumbers = listOf(15),
+            noteText = "First promise",
+        ).toEntry(text = "I will put enmity"),
+    )
+
+    @Test
+    fun `GIVEN annotations WHEN showing them THEN lists each verse with its note and the count`() = runComposeUiTest {
+        // Given
+        prepareScenario(state = loadedState())
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithText("For God so loved the world").assertIsDisplayed()
+        onNodeWithText("“First promise”").assertIsDisplayed()
+        onNodeWithText(getPluralString(Res.plurals.item_count, 2, 2)).assertIsDisplayed()
+    }
+
+    @Test
+    fun `GIVEN annotations WHEN tapping a verse THEN asks to open it`() = runComposeUiTest {
+        // Given
+        prepareScenario(state = loadedState())
+
+        // When
+        onNodeWithText("For God so loved the world").performClick()
+
+        // Then
+        val event = events.single() as AnnotationsUiEvent.OnItemClick
+        assertEquals(
+            expected = BookId.JHN,
+            actual = event.item.passage.chapter.bookId,
+        )
+    }
+
+    @Test
+    fun `GIVEN annotations WHEN tapping a type THEN asks to filter by it`() = runComposeUiTest {
+        // Given
+        prepareScenario(state = loadedState())
+
+        // When
+        onNodeWithText(getString(Res.string.type_notes)).performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf<AnnotationsUiEvent>(AnnotationsUiEvent.OnTypeFilterClick(AnnotationTypeFilter.NOTES)),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `GIVEN a phone WHEN tapping the magnifying glass THEN asks to open the search`() = runComposeUiTest {
+        // Given
+        prepareScenario(state = loadedState())
+
+        // When
+        onNodeWithContentDescription(getString(Res.string.search)).performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf<AnnotationsUiEvent>(AnnotationsUiEvent.OnSearchClick),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `GIVEN an open search WHEN typing THEN sends the query`() = runComposeUiTest {
+        // Given
+        prepareScenario(state = loadedState().copy(isSearchOpen = true))
+
+        // When
+        onNode(hasSetTextAction()).performTextInput("love")
+
+        // Then
+        assertEquals(
+            expected = listOf<AnnotationsUiEvent>(AnnotationsUiEvent.OnSearchQueryChange("love")),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `GIVEN a search without matches WHEN clearing the filters THEN asks to reset them`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            state = loadedState(
+                filters = AnnotationsContentFactory.noFilters.copy(query = "zzz"),
+            ).copy(
+                isSearchOpen = true,
+                searchQuery = "zzz",
+            ),
+        )
+        onNodeWithText(getString(Res.string.no_results_query, "zzz")).assertIsDisplayed()
+
+        // When
+        onNodeWithText(getString(Res.string.no_results_clear)).performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf<AnnotationsUiEvent>(AnnotationsUiEvent.OnClearFiltersClick),
+            actual = events,
+        )
+    }
+
+    @Test
+    fun `GIVEN nothing marked WHEN showing the screen THEN explains how to mark verses`() = runComposeUiTest {
+        // Given
+        prepareScenario(state = loadedState(entries = emptyList()))
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithText(getString(Res.string.empty_title)).assertIsDisplayed()
+    }
+
+    @Test
+    fun `GIVEN a wide window WHEN showing annotations THEN keeps the search field and the filter panel in view`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                state = loadedState(),
+                width = wideWidth,
+            )
+
+            // When
+            waitForIdle()
+
+            // Then
+            onNodeWithText(getString(Res.string.search_hint_short)).assertExists()
+            onNodeWithText(getString(Res.string.highlight_color_section)).assertIsDisplayed()
+            assertTrue(events.isEmpty())
+        }
+
+    private fun loadedState(
+        entries: List<AnnotationEntry> = this.entries,
+        filters: AnnotationsFilters = AnnotationsContentFactory.noFilters,
+    ): AnnotationsUiState = AnnotationsUiState(
+        content = Loadable.Loaded(
+            factory.create(
+                entries = entries,
+                filters = filters,
+            ),
+        ),
+        openMenuItemKey = null,
+        openFilterMenu = null,
+        pendingRemoval = null,
+        isCustomRangePickerOpen = false,
+        isSearchOpen = false,
+        searchQuery = filters.query,
+    )
+
+    private fun ComposeUiTest.prepareScenario(
+        state: AnnotationsUiState,
+        width: Dp = narrowWidth,
+    ) {
+        events = mutableListOf()
+        setUiTestContent {
+            Box(
+                modifier = Modifier
+                    .wrapContentWidth(
+                        align = Alignment.Start,
+                        unbounded = true,
+                    ).requiredWidth(width)
+                    .fillMaxHeight(),
+            ) {
+                AnnotationsScreen(
+                    platform = Platform.Android,
+                    state = state,
+                    onEvent = { event -> events += event },
+                )
+            }
+        }
+    }
+}

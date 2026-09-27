@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.room.dao.SavedVerseDao
 import com.quare.bibleplanner.core.provider.room.entity.SavedVerseEntity
+import com.quare.bibleplanner.core.verseannotations.domain.model.SavedVerse
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.domain.repository.SavedVerseRepository
 import kotlinx.coroutines.flow.Flow
@@ -20,6 +21,17 @@ internal class SavedVerseRepositoryImpl(
             bookId = chapter.bookId.name,
             chapterNumber = chapter.chapterNumber,
         ).map { entities -> entities.map { it.verseNumber }.toSet() }
+
+    override fun observeVersionSavedVerses(bibleVersionId: String): Flow<List<SavedVerse>> = savedVerseDao
+        .getVersionSavedVersesFlow(bibleVersionId)
+        .map { entities ->
+            entities.map { entity ->
+                SavedVerse(
+                    ref = entity.toVerseRef(),
+                    updatedAtEpochMillis = entity.updatedAtEpochMillis,
+                )
+            }
+        }
 
     override suspend fun areAllSaved(refs: List<VerseRef>): Boolean {
         if (refs.isEmpty()) return false
@@ -59,14 +71,14 @@ internal class SavedVerseRepositoryImpl(
                 chapterNumber = chapter.chapterNumber,
                 verseNumbers = chapterRefs.map { it.verseNumber },
             )
-        }.associate { entity ->
-            VerseRef(
-                chapter = ChapterRef(
-                    bibleVersionId = entity.bibleVersionId,
-                    bookId = BookId.valueOf(entity.bookId),
-                    chapterNumber = entity.chapterNumber,
-                ),
-                verseNumber = entity.verseNumber,
-            ) to entity.isSaved
-        }
+        }.associate { entity -> entity.toVerseRef() to entity.isSaved }
+
+    private fun SavedVerseEntity.toVerseRef(): VerseRef = VerseRef(
+        chapter = ChapterRef(
+            bibleVersionId = bibleVersionId,
+            bookId = BookId.valueOf(bookId),
+            chapterNumber = chapterNumber,
+        ),
+        verseNumber = verseNumber,
+    )
 }

@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.verseannotations.fake
 
 import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.model.VerseHighlight
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseHighlightRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,18 @@ internal class FakeVerseHighlightRepository(
         current
             .filterKeys { it.chapter == chapter }
             .mapKeys { (ref, _) -> ref.verseNumber }
+    }
+
+    override fun observeVersionHighlights(bibleVersionId: String): Flow<List<VerseHighlight>> = colors.map { current ->
+        current
+            .filterKeys { it.chapter.bibleVersionId == bibleVersionId }
+            .map { (ref, color) ->
+                VerseHighlight(
+                    ref = ref,
+                    color = color,
+                    updatedAtEpochMillis = 0L,
+                )
+            }
     }
 
     override suspend fun getColors(refs: List<VerseRef>): Map<VerseRef, HighlightColor?> =

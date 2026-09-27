@@ -8,4 +8,5 @@ data class ReadNavRoute(
     val chapterNumber: Int,
     val isChapterRead: Boolean,
     val isFromBookDetails: Boolean,
+    val targetVerseNumbers: List<Int>,
 ) : NavRoute

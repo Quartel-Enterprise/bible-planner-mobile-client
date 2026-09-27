@@ -31,6 +31,7 @@ kotlin {
             implementation(projects.core.profile)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.room)
+            implementation(projects.core.verseAnnotations)
             implementation(libs.androidx.room.runtime)
 
             // Features

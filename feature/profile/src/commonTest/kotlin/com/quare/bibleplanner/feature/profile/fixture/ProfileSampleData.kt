@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.profile.domain.model.UserProfile
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
+import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import kotlinx.datetime.LocalDate
 
@@ -50,6 +51,13 @@ internal fun profileUiState(accountStatusModel: AccountStatusModel): ProfileUiSt
         StudySuggestionSettingsModel(
             isEnabled = true,
             mode = StudySuggestionMode.DIALOG,
+        ),
+    ),
+    annotationsSummary = Loadable.Loaded(
+        AnnotationsSummaryModel(
+            highlightCount = 3,
+            savedCount = 2,
+            noteCount = 1,
         ),
     ),
     currentDate = LocalDate(

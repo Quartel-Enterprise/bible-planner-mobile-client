@@ -92,4 +92,8 @@ sealed interface ReadUiEvent : UiEvent {
     data object OnDayCompletionBannerDismissed : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
+
+    data object OnVerseFocusShown : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
 }

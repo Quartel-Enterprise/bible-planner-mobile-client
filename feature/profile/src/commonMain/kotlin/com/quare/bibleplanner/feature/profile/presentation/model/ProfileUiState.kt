@@ -23,6 +23,7 @@ internal data class ProfileUiState(
     val bibleDownloadProgress: Loadable<Float?>,
     val planStartDate: Loadable<LocalDate?>,
     val studySuggestion: Loadable<StudySuggestionSettingsModel>,
+    val annotationsSummary: Loadable<AnnotationsSummaryModel>,
     val currentDate: LocalDate,
     val appVersion: String,
     val isUpdateRowVisible: Boolean,

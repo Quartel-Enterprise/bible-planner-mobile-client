@@ -32,10 +32,14 @@ import com.quare.bibleplanner.core.books.domain.usecase.ClearLocalReadingDataUse
 import com.quare.bibleplanner.core.books.domain.usecase.GetBookByIdFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksWithInformationBoxVisibilityUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetChapterIdUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseTexts
+import com.quare.bibleplanner.core.books.domain.usecase.GetChapterVerseTextsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleNameFlowUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetVerseReference
+import com.quare.bibleplanner.core.books.domain.usecase.GetVerseReferenceUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContentUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesWithTextsByChapterIdFlowUseCase
@@ -153,6 +157,8 @@ val booksModule = module {
     factoryOf(::GetVersesWithTextsByChapterIdFlowUseCase)
     factoryOf(::GetSelectedVersionIdFlowUseCase).bind<GetSelectedVersionIdFlow>()
     factoryOf(::GetVersesShareContentUseCase).bind<GetVersesShareContent>()
+    factoryOf(::GetChapterVerseTextsUseCase).bind<GetChapterVerseTexts>()
+    factoryOf(::GetVerseReferenceUseCase).bind<GetVerseReference>()
     factoryOf(::GetSelectedBibleFlowUseCase)
     factoryOf(::ObserveBibleVersionDownloadProgressUseCase).bind<ObserveBibleVersionDownloadProgress>()
     factoryOf(::GetSelectedBibleNameFlowUseCase)

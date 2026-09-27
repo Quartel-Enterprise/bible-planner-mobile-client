@@ -1,11 +1,14 @@
 package com.quare.bibleplanner.core.verseannotations.domain.repository
 
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.verseannotations.domain.model.SavedVerse
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import kotlinx.coroutines.flow.Flow
 
 interface SavedVerseRepository {
     fun observeChapterSavedVerses(chapter: ChapterRef): Flow<Set<Int>>
+
+    fun observeVersionSavedVerses(bibleVersionId: String): Flow<List<SavedVerse>>
 
     suspend fun areAllSaved(refs: List<VerseRef>): Boolean
 

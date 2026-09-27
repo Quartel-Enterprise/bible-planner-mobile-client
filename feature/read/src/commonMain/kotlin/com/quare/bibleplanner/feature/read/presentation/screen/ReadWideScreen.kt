@@ -30,6 +30,7 @@ import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
+import com.quare.bibleplanner.feature.read.presentation.component.rememberVerseFlash
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
@@ -66,6 +67,13 @@ internal fun ReadWideScreen(
     val listState = rememberLazyListState()
     val chapters = (state.content as? ReadContentUiState.Success)?.chapters.orEmpty()
     val leadingItemCount = if (state.isLoadingPreviousChapter) CHAPTER_SHIMMER_ITEM_COUNT else 0
+    val verseFlash = rememberVerseFlash(
+        focus = state.verseFocus,
+        chapters = chapters,
+        listState = listState,
+        leadingItemCount = leadingItemCount,
+        onShown = { onEvent(ReadUiEvent.OnVerseFocusShown) },
+    )
     val visibleChapter = rememberVisibleChapter(
         chapters = chapters,
         listState = listState,
@@ -134,6 +142,7 @@ internal fun ReadWideScreen(
                                         header = state.header,
                                         settings = state.settings,
                                         focusedVerseNumber = null,
+                                        verseFlash = verseFlash,
                                         onEvent = onEvent,
                                     )
                                 }

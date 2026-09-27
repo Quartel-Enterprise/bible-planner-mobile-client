@@ -161,6 +161,7 @@ class BookDetailsViewModel(
                                         chapterModel.number == event.chapterNumber
                                     }?.isRead ?: return@launch,
                                 isFromBookDetails = true,
+                                targetVerseNumbers = emptyList(),
                             ),
                         )
                     }

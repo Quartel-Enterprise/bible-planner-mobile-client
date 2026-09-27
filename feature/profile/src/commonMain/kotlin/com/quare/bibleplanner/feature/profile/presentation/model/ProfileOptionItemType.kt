@@ -18,4 +18,5 @@ enum class ProfileOptionItemType {
     CONTACT_SUPPORT,
     RATE_APP,
     CHECK_FOR_UPDATE,
+    ANNOTATIONS,
 }

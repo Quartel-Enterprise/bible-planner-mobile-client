@@ -21,6 +21,10 @@ internal class VerseNoteRepositoryImpl(
             chapterNumber = chapter.chapterNumber,
         ).map { relations -> relations.map(verseNoteEntityMapper::toDomain) }
 
+    override fun observeVersionNotes(bibleVersionId: String): Flow<List<VerseNote>> = verseNoteDao
+        .getVersionNotesFlow(bibleVersionId)
+        .map { relations -> relations.map(verseNoteEntityMapper::toDomain) }
+
     override suspend fun getNote(noteId: String): VerseNote? = verseNoteDao
         .getNoteById(noteId)
         ?.takeUnless { it.note.isDeleted }

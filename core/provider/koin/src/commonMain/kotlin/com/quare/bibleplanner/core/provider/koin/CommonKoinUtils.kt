@@ -66,6 +66,7 @@ import com.quare.bibleplanner.feature.studysuggestion.di.featureStudySuggestionM
 import com.quare.bibleplanner.feature.subscriptiondetails.di.subscriptionDetailsModule
 import com.quare.bibleplanner.feature.themeselection.di.featureThemeSelectionModule
 import com.quare.bibleplanner.feature.verse.addnote.di.verseNoteModule
+import com.quare.bibleplanner.feature.verse.annotations.di.annotationsModule
 import com.quare.bibleplanner.feature.verse.selectionmenu.di.verseSelectionModule
 import com.quare.bibleplanner.feature.verse.share.di.shareVerseModule
 
@@ -79,6 +80,7 @@ object CommonKoinUtils {
         verseNoteModule,
         verseSelectionModule,
         shareVerseModule,
+        annotationsModule,
         platformModule,
         connectivityModule,
         dataStoreProviderModule,

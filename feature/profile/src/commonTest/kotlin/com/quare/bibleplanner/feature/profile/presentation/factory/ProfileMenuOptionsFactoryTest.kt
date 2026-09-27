@@ -31,6 +31,7 @@ internal class ProfileMenuOptionsFactoryTest {
             ProfileOptionItemType.PRIVACY_POLICY,
             ProfileOptionItemType.TERMS,
             ProfileOptionItemType.DONATE,
+            ProfileOptionItemType.ANNOTATIONS,
         )
 
         // When

@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.read.presentation.screen.content
 
 import androidx.compose.foundation.lazy.LazyListScope
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
+import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
@@ -21,6 +22,7 @@ internal fun LazyListScope.chapterContent(
     header: ReadHeaderUiModel,
     settings: ReaderSettingsModel,
     focusedVerseNumber: Int?,
+    verseFlash: VerseFlash,
     onEvent: (ReadUiEvent) -> Unit,
 ) {
     item(key = "chapter-header-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
@@ -36,9 +38,15 @@ internal fun LazyListScope.chapterContent(
         },
     ) { index ->
         val verse = chapter.verses[index]
+        val flashFocus = verseFlash.focus
+        val isFlashing = flashFocus != null &&
+            flashFocus.bookId == chapter.chapter.bookId &&
+            flashFocus.chapterNumber == chapter.chapter.chapterNumber &&
+            verse.number in flashFocus.verseNumbers
         VerseRow(
             verse = verse,
             settings = settings,
+            flashAlpha = verseFlash.alpha.takeIf { isFlashing },
             isDimmed = focusedVerseNumber != null && focusedVerseNumber != verse.number,
             onClick = {
                 onEvent(

@@ -27,6 +27,13 @@ internal class FakeVerseNoteDao(
             .map { note -> note.withVerses(currentVerses) }
     }
 
+    override fun getVersionNotesFlow(bibleVersionId: String): Flow<List<VerseNoteWithVerses>> =
+        combine(notes, verses) { currentNotes, currentVerses ->
+            currentNotes
+                .filter { it.bibleVersionId == bibleVersionId && !it.isDeleted }
+                .map { note -> note.withVerses(currentVerses) }
+        }
+
     override suspend fun getNoteById(noteId: String): VerseNoteWithVerses? =
         notes.value.find { it.id == noteId }?.withVerses(verses.value)
 

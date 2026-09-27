@@ -101,6 +101,7 @@ include(":feature:read")
 include(":feature:verse:share")
 include(":feature:verse:add_note")
 include(":feature:verse:selection_menu")
+include(":feature:verse:annotations")
 
 include(":feature:paywall")
 include(":feature:paywall_teaser")

@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.legal.LegalUrl
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
@@ -133,6 +134,8 @@ internal class ProfileViewModel(
                     ProfileOptionItemType.RATE_APP -> rateAppClick()
 
                     ProfileOptionItemType.CHECK_FOR_UPDATE -> checkForUpdateClick()
+
+                    ProfileOptionItemType.ANNOTATIONS -> goToRoute(AnnotationsNavRoute)
                 }
             }
 

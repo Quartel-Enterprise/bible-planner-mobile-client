@@ -26,6 +26,7 @@ kotlin {
             implementation(projects.core.sync)
             implementation(projects.core.verseAnnotations)
             implementation(projects.feature.verse.share)
+            implementation(projects.feature.verse.annotations)
             implementation(projects.feature.verse.addNote)
             implementation(projects.feature.verse.selectionMenu)
             implementation(projects.core.utils)

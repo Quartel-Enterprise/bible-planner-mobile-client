@@ -10,4 +10,5 @@ data class ReadUiState(
     val isLoadingPreviousChapter: Boolean,
     val isLoadingNextChapter: Boolean,
     val dayCompletionBanner: PlanDayLocationModel?,
+    val verseFocus: VerseFocusUiModel?,
 )

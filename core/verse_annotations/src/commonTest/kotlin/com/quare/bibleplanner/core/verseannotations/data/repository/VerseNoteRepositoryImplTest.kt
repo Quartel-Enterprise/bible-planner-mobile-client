@@ -222,6 +222,44 @@ internal class VerseNoteRepositoryImplTest {
         )
     }
 
+    @Test
+    fun `observes every live note of the version`() = runTest {
+        // Given
+        prepareScenario(
+            initialNotes = listOf(
+                noteEntity(id = "kept"),
+                noteEntity(
+                    id = "other-chapter",
+                    chapterNumber = 8,
+                ),
+                noteEntity(
+                    id = "deleted",
+                    isDeleted = true,
+                ),
+            ),
+            initialVerses = listOf(
+                VerseNoteVerseEntity(
+                    noteId = "kept",
+                    verseNumber = 2,
+                    position = 0,
+                ),
+            ),
+        )
+
+        // When
+        val notes = repository.observeVersionNotes(testChapter.bibleVersionId).first()
+
+        // Then
+        assertEquals(
+            expected = setOf("kept", "other-chapter"),
+            actual = notes.map { it.id }.toSet(),
+        )
+        assertEquals(
+            expected = listOf(2),
+            actual = notes.first { it.id == "kept" }.verseNumbers,
+        )
+    }
+
     private fun note(
         id: String,
         verseNumbers: List<Int>,

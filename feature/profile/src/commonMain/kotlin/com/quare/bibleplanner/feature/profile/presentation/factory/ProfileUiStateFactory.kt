@@ -11,6 +11,7 @@ import bibleplanner.feature.profile.generated.resources.theme_dark
 import bibleplanner.feature.profile.generated.resources.theme_light
 import bibleplanner.feature.profile.generated.resources.theme_system
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.theme.ContrastType
@@ -29,10 +30,12 @@ import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLangua
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveProfileWebAppEnabled
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveAnnotatedPassages
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
+import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.Flow
@@ -67,6 +70,8 @@ internal class ProfileUiStateFactory(
     private val getSelectedBible: GetSelectedBibleFlowUseCase,
     private val getAppLanguageFlow: GetAppLanguageFlow,
     private val observeStudySuggestionSettings: ObserveStudySuggestionSettings,
+    private val getSelectedVersionId: GetSelectedVersionIdFlow,
+    private val observeAnnotatedPassages: ObserveAnnotatedPassages,
     private val platform: Platform,
 ) {
     fun createInitialState(): ProfileUiState = ProfileUiState(
@@ -84,6 +89,7 @@ internal class ProfileUiStateFactory(
         bibleDownloadProgress = Loadable.Loading,
         planStartDate = Loadable.Loading,
         studySuggestion = Loadable.Loading,
+        annotationsSummary = Loadable.Loading,
         currentDate = getCurrentDate(),
         appVersion = ProfileBuildKonfig.APP_VERSION,
         isUpdateRowVisible = platform !is Platform.Desktop,
@@ -124,6 +130,9 @@ internal class ProfileUiStateFactory(
         observeAccountStatus().map { accountStatusModel ->
             { state: ProfileUiState -> state.copy(accountStatusModel = accountStatusModel) }
         },
+        observeAnnotationsSummary().map { summary ->
+            { state: ProfileUiState -> state.copy(annotationsSummary = Loadable.Loaded(summary)) }
+        },
         getBibleRowFlow().map { bibleRow ->
             { state: ProfileUiState ->
                 state.copy(
@@ -136,6 +145,16 @@ internal class ProfileUiStateFactory(
 
     private fun observeSubscriptionStatus(): Flow<SubscriptionStatus?> =
         getSubscriptionStatusFlow?.invoke() ?: flowOf(null)
+
+    private fun observeAnnotationsSummary(): Flow<AnnotationsSummaryModel> = getSelectedVersionId()
+        .flatMapLatest(observeAnnotatedPassages::invoke)
+        .map { passages ->
+            AnnotationsSummaryModel(
+                highlightCount = passages.count { it.highlightColor != null },
+                savedCount = passages.count { it.isSaved },
+                noteCount = passages.count { it.note != null },
+            )
+        }.distinctUntilChanged()
 
     private fun getBibleRowFlow(): Flow<BibleRow> = combine(
         getSelectedBible(),

@@ -18,6 +18,10 @@ internal class FakeVerseNoteRepository(
         current.filter { it.chapter == chapter }
     }
 
+    override fun observeVersionNotes(bibleVersionId: String): Flow<List<VerseNote>> = notes.map { current ->
+        current.filter { it.chapter.bibleVersionId == bibleVersionId }
+    }
+
     override suspend fun getNote(noteId: String): VerseNote? = notes.value.find { it.id == noteId }
 
     override suspend fun upsert(note: VerseNote) {

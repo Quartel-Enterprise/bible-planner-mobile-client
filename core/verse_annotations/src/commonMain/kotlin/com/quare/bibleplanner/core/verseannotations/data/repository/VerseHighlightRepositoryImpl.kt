@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.provider.room.dao.VerseHighlightDao
 import com.quare.bibleplanner.core.provider.room.entity.VerseHighlightEntity
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.model.VerseHighlight
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseHighlightRepository
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,22 @@ internal class VerseHighlightRepositoryImpl(
                         ?.let(HighlightColor::fromKey)
                         ?.let { color -> entity.verseNumber to color }
                 }.toMap()
+        }
+
+    override fun observeVersionHighlights(bibleVersionId: String): Flow<List<VerseHighlight>> = verseHighlightDao
+        .getVersionHighlightsFlow(bibleVersionId)
+        .map { entities ->
+            entities.mapNotNull { entity ->
+                entity.color
+                    ?.let(HighlightColor::fromKey)
+                    ?.let { color ->
+                        VerseHighlight(
+                            ref = entity.toVerseRef(),
+                            color = color,
+                            updatedAtEpochMillis = entity.updatedAtEpochMillis,
+                        )
+                    }
+            }
         }
 
     override suspend fun getColors(refs: List<VerseRef>): Map<VerseRef, HighlightColor?> {

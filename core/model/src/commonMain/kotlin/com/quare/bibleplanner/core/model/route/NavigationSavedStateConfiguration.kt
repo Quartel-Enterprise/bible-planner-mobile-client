@@ -13,6 +13,7 @@ val navigationSavedStateConfiguration = SavedStateConfiguration {
             subclass(MainNavRouteDestination.Books::class, MainNavRouteDestination.Books.serializer())
             subclass(MainNavRouteDestination.Profile::class, MainNavRouteDestination.Profile.serializer())
             subclass(AccountDetailsNavRoute::class, AccountDetailsNavRoute.serializer())
+            subclass(AnnotationsNavRoute::class, AnnotationsNavRoute.serializer())
             subclass(AddNotesFreeWarningNavRoute::class, AddNotesFreeWarningNavRoute.serializer())
             subclass(AppLanguageNavRoute::class, AppLanguageNavRoute.serializer())
             subclass(BibleVersionSelectorRoute::class, BibleVersionSelectorRoute.serializer())

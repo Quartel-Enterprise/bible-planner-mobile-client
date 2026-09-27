@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.presentation.content.component.AccountDataSection
+import com.quare.bibleplanner.feature.profile.presentation.content.component.AnnotationsCard
 import com.quare.bibleplanner.feature.profile.presentation.content.component.AppSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.CurrentAppVersionText
 import com.quare.bibleplanner.feature.profile.presentation.content.component.LegalSection
@@ -24,6 +25,7 @@ import com.quare.bibleplanner.feature.profile.presentation.content.component.Soc
 import com.quare.bibleplanner.feature.profile.presentation.content.component.SupportSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.WebSection
 import com.quare.bibleplanner.feature.profile.presentation.content.component.headerSection
+import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
@@ -41,6 +43,13 @@ internal fun ResponsiveContentScope.profileScreenLandscapeLayout(
         LoginCard(
             accountStatusModel = state.accountStatusModel,
             onEvent = onEvent,
+        )
+    }
+    item { VerticalSpacer() }
+    responsiveItem {
+        AnnotationsCard(
+            summary = state.annotationsSummary,
+            onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.ANNOTATIONS)) },
         )
     }
     item { VerticalSpacer() }
