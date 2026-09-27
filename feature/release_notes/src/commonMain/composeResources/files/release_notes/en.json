@@ -1,4 +1,9 @@
 {
+  "2.9.1": {
+    "common": [
+      "On the Annotations screen, going back with the system button or gesture while the search is open now just closes the search instead of leaving the screen."
+    ]
+  },
   "2.9.0": {
     "common": [
       "On the Profile tab, the list no longer jumps back to the top when you return from another screen, such as Become Pro or Release Notes: it stays where you left it, without briefly showing loading placeholders.",

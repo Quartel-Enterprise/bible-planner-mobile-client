@@ -1,4 +1,9 @@
 {
+  "2.9.1": {
+    "common": [
+      "Na tela Marcações, voltar pelo botão ou gesto do sistema com a busca aberta agora apenas fecha a busca, em vez de sair da tela."
+    ]
+  },
   "2.9.0": {
     "common": [
       "Na aba Perfil, a lista não volta mais para o topo quando você retorna de outra tela, como Seja Pro ou Notas de Atualização: ela fica onde você parou, sem mostrar por um instante os espaços de carregamento.",

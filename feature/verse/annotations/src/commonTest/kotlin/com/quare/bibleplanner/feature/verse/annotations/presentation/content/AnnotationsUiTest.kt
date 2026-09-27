@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
@@ -17,6 +18,10 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.NavigationEventDispatcher
+import androidx.navigationevent.NavigationEventDispatcherOwner
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import bibleplanner.feature.verse.annotations.generated.resources.Res
 import bibleplanner.feature.verse.annotations.generated.resources.empty_title
 import bibleplanner.feature.verse.annotations.generated.resources.highlight_color_section
@@ -45,6 +50,7 @@ import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
@@ -52,6 +58,8 @@ internal class AnnotationsUiTest {
     private val narrowWidth = 400.dp
     private val wideWidth = 1000.dp
     private lateinit var events: MutableList<AnnotationsUiEvent>
+    private lateinit var systemBackInput: DirectNavigationEventInput
+    private var hasLeftTheScreen = false
 
     private val factory = AnnotationsContentFactory(
         currentTimestampProvider = { sampleNow },
@@ -171,6 +179,53 @@ internal class AnnotationsUiTest {
     }
 
     @Test
+    fun `GIVEN an open search on a phone WHEN going back through the system THEN closes it and stays`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(state = loadedState().copy(isSearchOpen = true))
+
+            // When
+            runOnIdle { systemBackInput.backCompleted() }
+
+            // Then
+            assertEquals(
+                expected = listOf<AnnotationsUiEvent>(AnnotationsUiEvent.OnSearchCloseClick),
+                actual = events,
+            )
+            assertFalse(hasLeftTheScreen)
+        }
+
+    @Test
+    fun `GIVEN a closed search WHEN going back through the system THEN leaves the screen`() = runComposeUiTest {
+        // Given
+        prepareScenario(state = loadedState())
+
+        // When
+        runOnIdle { systemBackInput.backCompleted() }
+
+        // Then
+        assertTrue(events.isEmpty())
+        assertTrue(hasLeftTheScreen)
+    }
+
+    @Test
+    fun `GIVEN a wide window with the search open WHEN going back through the system THEN leaves the screen`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                state = loadedState().copy(isSearchOpen = true),
+                width = wideWidth,
+            )
+
+            // When
+            runOnIdle { systemBackInput.backCompleted() }
+
+            // Then
+            assertTrue(events.isEmpty())
+            assertTrue(hasLeftTheScreen)
+        }
+
+    @Test
     fun `GIVEN nothing marked WHEN showing the screen THEN explains how to mark verses`() = runComposeUiTest {
         // Given
         prepareScenario(state = loadedState(entries = emptyList()))
@@ -223,20 +278,29 @@ internal class AnnotationsUiTest {
         width: Dp = narrowWidth,
     ) {
         events = mutableListOf()
+        hasLeftTheScreen = false
+        systemBackInput = DirectNavigationEventInput()
+        val dispatcherOwner = object : NavigationEventDispatcherOwner {
+            override val navigationEventDispatcher = NavigationEventDispatcher(
+                onBackCompletedFallback = { hasLeftTheScreen = true },
+            ).apply { addInput(systemBackInput) }
+        }
         setUiTestContent {
-            Box(
-                modifier = Modifier
-                    .wrapContentWidth(
-                        align = Alignment.Start,
-                        unbounded = true,
-                    ).requiredWidth(width)
-                    .fillMaxHeight(),
-            ) {
-                AnnotationsScreen(
-                    platform = Platform.Android,
-                    state = state,
-                    onEvent = { event -> events += event },
-                )
+            CompositionLocalProvider(LocalNavigationEventDispatcherOwner provides dispatcherOwner) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth(
+                            align = Alignment.Start,
+                            unbounded = true,
+                        ).requiredWidth(width)
+                        .fillMaxHeight(),
+                ) {
+                    AnnotationsScreen(
+                        platform = Platform.Android,
+                        state = state,
+                        onEvent = { event -> events += event },
+                    )
+                }
             }
         }
     }

@@ -14,6 +14,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.verse.annotations.presentation.component.AnnotationsTopBar
@@ -42,6 +45,11 @@ internal fun AnnotationsScreen(
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWide = maxWidth >= wideLayoutMinWidth
         val loaded = state.content.valueOrNull()
+        NavigationBackHandler(
+            state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
+            isBackEnabled = state.isSearchOpen && !isWide,
+            onBackCompleted = { onEvent(AnnotationsUiEvent.OnSearchCloseClick) },
+        )
         Scaffold(
             topBar = {
                 AnnotationsTopBar(
