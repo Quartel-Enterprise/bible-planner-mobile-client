@@ -8,16 +8,20 @@
       "Al cerrar sesión sin conexión a internet, la app ahora te avisa que no pudo cerrar la sesión en lugar de mostrar que funcionó, y sigues con la sesión iniciada y tus datos hasta que lo intentes de nuevo."
     ],
     "android": [
-      "En las ventanas de confirmación, las acciones que borran algo ahora aparecen en rojo."
+      "En las ventanas de confirmación, las acciones que borran algo ahora aparecen en rojo.",
+      "El cambio entre pantallas ahora es más rápido y fluido, con un deslizamiento corto al estilo de Android; el gesto de volver muestra una vista previa de la pantalla anterior, y la barra inferior se queda quieta al cambiar de pestaña."
     ],
     "ios": [
       "La barra inferior de pestañas ahora es la del propio sistema — con el aspecto Liquid Glass en iOS 26 o posterior —, sigue el tema claro u oscuro de la app, y la pestaña de perfil muestra tu foto cuando iniciaste sesión.",
       "Los interruptores, controles deslizantes, indicadores de carga, selectores de fecha y hora, algunos avisos y los menús de opciones ahora usan los componentes del propio iOS, con el aspecto Liquid Glass en iOS 26 o posterior y siguiendo el tema claro u oscuro de la app.",
       "Las confirmaciones para cerrar sesión, eliminar una versión de la Biblia o un color de resaltado, editar tu nombre y renombrar un dispositivo ahora usan los avisos del propio iOS, con el aspecto Liquid Glass en iOS 26 o posterior.",
-      "Con el iPhone en horizontal y en el iPad, las pestañas de planes, libros y perfil ahora quedan en la barra de pestañas del propio sistema, en la parte de abajo, en lugar de una columna de pestañas al costado de la pantalla."
+      "Con el iPhone en horizontal y en el iPad, las pestañas de planes, libros y perfil ahora quedan en la barra de pestañas del propio sistema, en la parte de abajo, en lugar de una columna de pestañas al costado de la pantalla.",
+      "El cambio de pestañas ahora es instantáneo, como en otras apps del iPhone.",
+      "Los paneles y confirmaciones que se abren sobre la pantalla ya no oscurecen tanto el fondo, y el selector de fecha ya no hace zoom cuando la opción Reducir movimiento está activada."
     ],
     "desktop": [
-      "En las ventanas de confirmación, las acciones que borran algo ahora aparecen en rojo."
+      "En las ventanas de confirmación, las acciones que borran algo ahora aparecen en rojo.",
+      "El cambio entre pantallas ahora es más rápido y fluido, con un deslizamiento corto en lugar de un desvanecimiento lento."
     ]
   },
   "2.8.5": {

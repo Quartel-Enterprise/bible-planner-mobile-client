@@ -6,11 +6,14 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.accountDetails() {
     entry<AccountDetailsNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) {
         AccountDetailsSheet()
     }

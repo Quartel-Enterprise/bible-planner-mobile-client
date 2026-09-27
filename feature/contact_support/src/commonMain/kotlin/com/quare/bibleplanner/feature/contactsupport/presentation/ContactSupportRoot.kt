@@ -19,12 +19,15 @@ import com.quare.bibleplanner.feature.contactsupport.presentation.model.ContactS
 import com.quare.bibleplanner.feature.contactsupport.presentation.utils.ContactSupportUiActionCollector
 import com.quare.bibleplanner.feature.contactsupport.presentation.viewmodel.ContactSupportViewModel
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.contactSupport() {
     entry<ContactSupportNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) {
         val viewModel = koinViewModel<ContactSupportViewModel>()
         val uiState by viewModel.uiState.collectAsState()

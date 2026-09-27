@@ -52,6 +52,7 @@ import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.mainContentBottomInset
+import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
 import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -99,6 +100,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
         val onNavigateBack: () -> Unit = { backStackController.navigateBack(isWide) }
+        val navigationTransitions = rememberNavigationTransitions()
         NavigationCommandCollector(
             backStackController = backStackController,
             isWide = isWide,
@@ -123,6 +125,14 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                         remember(isWide) { VerseSelectionSceneStrategy(isWide = isWide) },
                     ),
                     sharedTransitionScope = this@SharedTransitionLayout,
+                    transitionSpec = { navigationTransitions.createForwardTransition(scope = this) },
+                    popTransitionSpec = { navigationTransitions.createBackwardTransition(scope = this) },
+                    predictivePopTransitionSpec = { swipeEdge ->
+                        navigationTransitions.createPredictiveBackTransition(
+                            scope = this,
+                            swipeEdge = swipeEdge,
+                        )
+                    },
                     entryDecorators = listOf(
                         rememberSaveableStateHolderNavEntryDecorator(),
                         rememberViewModelStoreNavEntryDecorator(),

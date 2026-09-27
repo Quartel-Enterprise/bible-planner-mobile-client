@@ -1,13 +1,11 @@
 package com.quare.bibleplanner.feature.main.presentation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,10 +31,12 @@ import com.quare.bibleplanner.feature.main.presentation.screen.MainNavigationRai
 import com.quare.bibleplanner.feature.main.presentation.viewmodel.MainScreenViewModel
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.isNativeNavigationBar
+import com.quare.bibleplanner.ui.utils.transition.rememberNavigationTransitions
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-private const val TAB_TRANSITION_DURATION_MILLIS = 300
+private const val NAVIGATION_BAR_SHARED_KEY = "main_navigation_bar"
+private const val NAVIGATION_RAIL_SHARED_KEY = "main_navigation_rail"
 
 fun EntryProviderScope<NavKey>.mainScreen(tabEntries: MainTabEntries) {
     entry<MainNavRoute> {
@@ -47,6 +47,7 @@ fun EntryProviderScope<NavKey>.mainScreen(tabEntries: MainTabEntries) {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun MainRootContent(
     tabEntries: MainTabEntries,
@@ -68,49 +69,71 @@ private fun MainRootContent(
     val language by mainViewModel.languageState.collectAsState()
     val mainNavigationModels by mainViewModel.mainNavigationItemModels.collectAsState()
     val onEvent = mainViewModel::onEvent
+    val navigationTransitions = rememberNavigationTransitions()
     NavigationForwardHandler(
         state = rememberNavigationEventState(currentInfo = NavigationEventInfo.None),
         isForwardEnabled = tabState.canGoForward,
         onForwardCompleted = tabState::goForward,
     )
-    NavDisplay(
-        entries = tabState.toDecoratedEntries(
-            entryProvider {
-                tabEntries.register(
-                    scope = this,
-                    navigationBar = { modifier ->
-                        MainNavigationBar(
-                            modifier = modifier,
-                            isNativeBarVisible = !isNativeNavigationBar || animatedContentScope.transition.isSettled(),
-                            selectedRoute = tabState.selectedTab,
-                            mainNavigationModels = mainNavigationModels,
-                            language = language,
-                            onEvent = onEvent,
-                        )
-                    },
-                    navigationRail = {
-                        MainNavigationRail(
-                            selectedRoute = tabState.selectedTab,
-                            mainNavigationModels = mainNavigationModels,
-                            language = language,
-                            onEvent = onEvent,
-                        )
-                    },
-                    animatedContentScope = animatedContentScope,
-                )
-            },
-        ),
-        modifier = Modifier.fillMaxSize(),
-        onBack = tabState::goBack,
-        transitionSpec = { createTabTransitionSpec() },
-        popTransitionSpec = { createTabTransitionSpec() },
-        predictivePopTransitionSpec = { createTabTransitionSpec() },
-    )
+    SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
+        NavDisplay(
+            entries = tabState.toDecoratedEntries(
+                entryProvider {
+                    tabEntries.register(
+                        scope = this,
+                        navigationBar = { modifier ->
+                            MainNavigationBar(
+                                modifier = keepStillAcrossTabs(
+                                    modifier = modifier,
+                                    key = NAVIGATION_BAR_SHARED_KEY,
+                                ),
+                                isNativeBarVisible =
+                                    !isNativeNavigationBar || animatedContentScope.transition.isSettled(),
+                                selectedRoute = tabState.selectedTab,
+                                mainNavigationModels = mainNavigationModels,
+                                language = language,
+                                onEvent = onEvent,
+                            )
+                        },
+                        navigationRail = {
+                            MainNavigationRail(
+                                modifier = keepStillAcrossTabs(
+                                    modifier = Modifier,
+                                    key = NAVIGATION_RAIL_SHARED_KEY,
+                                ),
+                                selectedRoute = tabState.selectedTab,
+                                mainNavigationModels = mainNavigationModels,
+                                language = language,
+                                onEvent = onEvent,
+                            )
+                        },
+                        animatedContentScope = animatedContentScope,
+                    )
+                },
+            ),
+            modifier = Modifier.fillMaxSize(),
+            sharedTransitionScope = this@SharedTransitionLayout,
+            onBack = tabState::goBack,
+            transitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
+            popTransitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
+            predictivePopTransitionSpec = { navigationTransitions.createTabSwitchTransition(scope = this) },
+        )
+    }
 }
 
-private fun createTabTransitionSpec(): ContentTransform =
-    fadeIn(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS)) togetherWith
-        fadeOut(animationSpec = tween(TAB_TRANSITION_DURATION_MILLIS))
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.keepStillAcrossTabs(
+    modifier: Modifier,
+    key: String,
+): Modifier = if (isNativeNavigationBar) {
+    modifier
+} else {
+    modifier.sharedElement(
+        sharedContentState = rememberSharedContentState(key = key),
+        animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+    )
+}
 
 private fun Transition<EnterExitState>.isSettled(): Boolean =
     currentState == EnterExitState.Visible && targetState == EnterExitState.Visible

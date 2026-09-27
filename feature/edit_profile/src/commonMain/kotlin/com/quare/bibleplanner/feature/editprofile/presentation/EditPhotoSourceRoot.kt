@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.model.route.EditPhotoSourceNavRoute
 import com.quare.bibleplanner.feature.editprofile.presentation.content.PhotoSourceSheetContent
 import com.quare.bibleplanner.feature.editprofile.presentation.viewmodel.ProfilePhotoViewModel
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
+import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -22,7 +23,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.editPhotoSource() {
     entry<EditPhotoSourceNavRoute>(
-        metadata = DialogSceneStrategy.dialog(DialogProperties(usePlatformDefaultWidth = false)),
+        metadata = DialogSceneStrategy.dialog(
+            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
+        ),
     ) {
         val viewModel = koinViewModel<ProfilePhotoViewModel>()
         val navigator = koinInject<Navigator>()
