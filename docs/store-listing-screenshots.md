@@ -217,14 +217,20 @@ in the root `build.gradle.kts`; every other generator feeds both.
 
 ## How they reach the stores
 
-- **A production release refreshes both listings.** `release.yml` renders and uploads the iOS
-  screenshots on its macOS job (`fastlane ios upload_screenshots`, which runs
-  `stageAppStoreScreenshots`) to the editable version **before** submitting the build for review —
-  a submitted version's screenshots are locked — and calls the `store screenshots` workflow for
-  Play (`stagePlayStoreScreenshots`, on Linux) after the AAB is on the production track with a
-  completed rollout. Every screenshot step is non-blocking: a failure
-  ships the release with the previous images, visibly, and never holds the binary. Betas, test
-  tracks and drafts skip both.
+- **A production release refreshes both listings.** `release.yml` renders the iOS screenshots on a
+  macOS job of their own (`stageAppStoreScreenshots`) while the IPA builds, and a second job
+  uploads them (`fastlane ios upload_screenshots skip_render:true`) to the editable version
+  **before** the build is submitted for review — a submitted version's screenshots are locked. It
+  calls the `store screenshots` workflow for Play (`stagePlayStoreScreenshots`, on Linux) after the
+  AAB is on the production track with a completed rollout. Every screenshot job is non-blocking:
+  a failure ships the release with the previous images, visibly, and never holds the binary.
+  Betas, test tracks and drafts skip both.
+- **Rendering and uploading are separate jobs**, for both stores, with the images handed over as
+  a build artifact (`app-store-screenshots`, `store-screenshots`). The render is the slow half and
+  the store's API the one that fails, so retrying a failed upload sends the images that were
+  already rendered. Run by hand without `skip_render`, both `upload_screenshots` lanes still
+  render first. Either way they refuse to upload from an empty folder: both stores replace the
+  listing's screenshots with what is staged, so that would wipe it.
 - **Between releases**, the `store screenshots` workflow (Actions → *store screenshots* → Run
   workflow) republishes Play's listing on demand; App Store screenshots can only change with a new
   version. It defaults to `validate_only`, which regenerates and validates against the Play API

@@ -21,11 +21,18 @@ flowchart TD
     A([Trigger: Run workflow]) --> B[plan<br/>resolve version]
     B --> G{{Production gate<br/>manual approval}}
     G -->|rejected| X([Run stops — nothing built])
-    G -->|approved| D[android<br/>build AAB + upload to Play]
-    G -->|approved| E[ios<br/>build IPA + submit to App Store]
-    G -->|approved| H[desktop<br/>build dmg + msi + deb + rpm]
-    D --> F[finalize]
-    E --> F
+    G -->|approved| D1[android-build<br/>AAB]
+    G -->|approved| E1[ios-build<br/>IPA]
+    G -->|approved| S1[ios-screenshots-render]
+    G -->|approved| H[desktop-build<br/>dmg + msi + deb + rpm]
+    D1 --> D2[android-upload<br/>Google Play]
+    D2 --> D3[android-screenshots<br/>render + upload]
+    E1 --> E2[ios-upload<br/>binary to App Store Connect]
+    S1 --> S2[ios-screenshots-upload]
+    E2 --> E3[ios-submit<br/>listing + review submission]
+    S2 -.->|never blocks| E3
+    D2 --> F[finalize]
+    E3 --> F
     H --> F
     F --> F1[Create release/X.Y.Z branch + version bump]
     F1 --> F2[Open + squash-merge the merge-back PR into main]
@@ -37,15 +44,45 @@ flowchart TD
 | `plan` | ubuntu | no | Resolves the version and shows it in the run summary |
 | `android-build` | ubuntu | yes | Builds the signed AAB and saves it as a build artifact |
 | `android-upload` | ubuntu | yes | Uploads the AAB to Google Play |
+| `android-screenshots` | ubuntu | yes | Calls the `store screenshots` workflow: one job renders the Play screenshots, the next uploads them |
 | `ios-build` | macOS | yes | Builds the signed IPA and saves it as a build artifact |
-| `ios-upload` | macOS | yes | Uploads the IPA to App Store Connect and submits it for review |
+| `ios-upload` | macOS | yes | Uploads the IPA to App Store Connect — the binary only |
+| `ios-screenshots-render` | macOS | yes | Renders the App Store screenshots, next to `ios-build`, and saves them as a build artifact |
+| `ios-screenshots-upload` | macOS | yes | Uploads the rendered screenshots to the editable App Store version |
+| `ios-submit` | macOS | yes | Updates the App Store listing and submits the uploaded build for review |
 | `desktop-build` | macOS + windows + ubuntu | yes | Builds the `.dmg`, `.msi`, `.deb` and `.rpm` installers, one runner per OS |
 | `finalize` | ubuntu | no | Branch + version bump, merge-back PR, GitHub Release with the installers attached |
 
-Android and iOS split build and upload into separate jobs, so a failed upload can be retried
-(re-run just the `*-upload` job) without paying for another build. Desktop has no store to
-upload to: the installers are attached to the GitHub release by `finalize`. They are unsigned,
-so macOS Gatekeeper and Windows SmartScreen warn on first launch.
+Desktop has no store to upload to: the installers are attached to the GitHub release by
+`finalize`. They are unsigned, so macOS Gatekeeper and Windows SmartScreen warn on first launch.
+
+## Retrying a failed run
+
+**Re-run failed jobs** repeats whole jobs, never single steps, so every stage that can fail on
+its own is a job of its own, and what one produces reaches the next as a build artifact. Retrying
+picks up from the job that failed:
+
+| What failed | What runs again | What does not |
+|-------------|-----------------|---------------|
+| `android-upload` | The upload | The AAB build |
+| `ios-upload` | The binary upload | The IPA build |
+| `ios-screenshots-upload`, or the upload job of `android-screenshots` | The screenshot upload | The render |
+| `ios-submit` | The listing update and the review submission | The IPA build, the binary upload, the screenshots |
+
+The jobs that depend on the retried one run again after it. Two of them are built for that:
+
+- `ios-upload` looks the build up on App Store Connect first and skips the upload when it is
+  already there, since App Store Connect refuses a build number it has already taken.
+- `finalize` does nothing once the GitHub release is published, so a retry that comes after the
+  release was tagged — a screenshot upload that had left the build unsubmitted, say — does not
+  try to tag it a second time.
+
+The signed binaries are kept as artifacts for one day and the screenshots for seven, so a retry has
+to happen within that window. After it, start a new run.
+
+`finalize` runs only when `android-upload` and `ios-submit` both succeeded. The screenshot jobs
+are the exception to everything above: they never hold a release, see
+[Store listing screenshots](#store-listing-screenshots).
 
 ## Triggering a release
 
@@ -195,10 +232,14 @@ held back by a release whose notes are all for other platforms.
 
 ## Store listing screenshots
 
-A production release also refreshes both stores' listing screenshots: the iOS set is uploaded
-to the editable version before the build is submitted for review, and the Play set goes up
-through the `store screenshots` workflow once the AAB is on the production track with a
-completed rollout. Every screenshot step is non-blocking, so a failure never holds the binary.
+A production release also refreshes both stores' listing screenshots: the iOS set is rendered
+while the IPA builds and uploaded to the editable version before the build is submitted for
+review, and the Play set goes up through the `store screenshots` workflow once the AAB is on the
+production track with a completed rollout. Every screenshot job is non-blocking, so a failure
+never holds the binary: the iOS ones are listed as failed without failing the run, and
+`ios-submit` goes ahead with the screenshots the version already has. The one case where it holds
+the review submission back, and only that, is a locale left with no screenshots at all, which
+Apple would reject — retry `ios-screenshots-upload` and `ios-submit` submits after it.
 How the images are generated, edited and republished between releases is covered in
 [Store listing screenshots](store-listing-screenshots.md).
 
@@ -248,7 +289,7 @@ To bump versions outside the pipeline (Android, iOS and Desktop at once):
 | Item | Value |
 |------|-------|
 | Workflow | `.github/workflows/release.yml` |
-| Fastlane lanes | `fastlane/Fastfile` (`android release`, `ios release`) |
+| Fastlane lanes | `fastlane/Fastfile` (`android build`, `upload`, `upload_screenshots`; `ios build`, `upload`, `upload_screenshots`, `submit`) |
 | iOS certificates | fastlane match — private repo `bible-planner-certs` |
 | Approval gate | `Production` GitHub Environment (required reviewers) |
 

@@ -223,15 +223,19 @@ platform :android do
   desc "Upload only the store listing screenshots to Google Play — no build, no release."
   desc "Regenerates them first, so what is uploaded always matches the current app."
   desc "Runs whenever: Play keeps the listing separate from the release, so this needs no version."
-  lane :upload_screenshots do
+  desc "Options: skip_render (true|false) — upload what is already staged under"
+  desc "fastlane/metadata/android/, which is how CI hands over the images a job of its own rendered."
+  lane :upload_screenshots do |options|
     repo_root = File.expand_path("..")
+    metadata_path = File.join(repo_root, "fastlane/metadata/android")
 
-    gradle(task: "stagePlayStoreScreenshots", project_dir: repo_root)
+    gradle(task: "stagePlayStoreScreenshots", project_dir: repo_root) unless options[:skip_render]
+    ensure_screenshots_staged(File.join(metadata_path, "*", "images", "*", "*.png"))
 
     upload_to_play_store(
       package_name: ANDROID_PACKAGE,
       json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
-      metadata_path: File.join(repo_root, "fastlane/metadata/android"),
+      metadata_path: metadata_path,
       # Listing assets only: no artifact, no track, nothing else about the listing.
       skip_upload_aab: true,
       skip_upload_apk: true,
@@ -324,7 +328,7 @@ platform :ios do
     # unsymbolicated (the "Missing dSYM" alerts). gym already collected every
     # dSYM (app + widget + the Kotlin `shared` framework) into one zip.
     #
-    # Non-fatal, like the release-notes staging in the `upload` lane: a flaky
+    # Non-fatal, like the release-notes staging in the `submit` lane: a flaky
     # symbol upload must not fail the build or cost a rebuild. The persistent
     # "Missing dSYM" alert is the backstop — re-run scripts/upload_dsyms.sh by
     # hand if it ever slips through.
@@ -345,8 +349,47 @@ platform :ios do
     end
   end
 
-  desc "Upload an already-built IPA (from the `build` lane) to App Store Connect"
+  desc "Upload an already-built IPA (from the `build` lane) to App Store Connect — the binary only."
+  desc "The listing and the review submission belong to the `submit` lane, so a failure there is"
+  desc "retried without a second upload."
   lane :upload do
+    # fastlane runs the lane from fastlane/; the repo root is its parent.
+    repo_root = File.expand_path("..")
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_P8"),
+      is_key_content_base64: true,
+      set_spaceship_token: true,
+    )
+
+    version, version_code = app_version(repo_root)
+    if app_store_build_uploaded?(version, version_code)
+      UI.important("Build #{version} (#{version_code}) is already on App Store Connect — skipping the upload.")
+      next
+    end
+
+    upload_to_app_store(
+      api_key: api_key,
+      ipa: File.join(repo_root, "build/ios/BiblePlanner.ipa"),
+      # The binary only: the listing, the screenshots and the submission have lanes of their own.
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      run_precheck_before_submit: false,
+      # The App Store version belongs to the listing, and upload_screenshots may be creating it at
+      # this very moment from another job. A binary needs no version to land in TestFlight.
+      skip_app_version_update: true,
+      force: true,
+      precheck_include_in_app_purchases: false,
+    )
+  end
+
+  desc "Update the App Store listing and submit the uploaded build (from the `upload` lane) for review."
+  desc "Reads the version and the build number off the IPA, and waits for App Store Connect to"
+  desc "finish processing that build before selecting it."
+  lane :submit do
     # fastlane runs the lane from fastlane/; the repo root is its parent.
     repo_root = File.expand_path("..")
 
@@ -368,21 +411,22 @@ platform :ios do
     end
 
     # Submitting for review needs a valid "What's New". If the release notes
-    # could not be staged, upload the build without submitting so the run does
-    # not hard-fail — finish the submission from App Store Connect.
+    # could not be staged, leave the build unsubmitted so the run does not
+    # hard-fail — finish the submission from App Store Connect.
     submit_requested = ENV.fetch("SUBMIT_FOR_REVIEW", "true").strip.downcase == "true"
     submit = submit_requested && has_release_notes
     if submit_requested && !has_release_notes
-      UI.important("No release notes staged — uploading the build without submitting it for review.")
+      UI.important("No release notes staged — leaving the build without submitting it for review.")
     end
 
-    # The IPA was produced by the `build` lane and restored from the build
-    # artifact into build/ios/. When SUBMIT_FOR_REVIEW is true and notes are
-    # present, the build is submitted for Apple review and auto-released once
-    # approved; otherwise it only lands in App Store Connect / TestFlight.
+    # The `upload` lane already sent the binary, so the IPA restored into build/ios/ is only read
+    # here: it names the version and the build to wait for and select. When SUBMIT_FOR_REVIEW is
+    # true and notes are present, that build is submitted for Apple review and auto-released once
+    # approved; otherwise it stays in App Store Connect / TestFlight.
     upload_to_app_store(
       api_key: api_key,
       ipa: File.join(repo_root, "build/ios/BiblePlanner.ipa"),
+      skip_binary_upload: true,
       metadata_path: File.join(repo_root, "fastlane/metadata"),
       # Uploads the whole listing, not just the notes: name, subtitle, keywords and
       # description are versioned under fastlane/metadata/<locale>/ (see
@@ -404,8 +448,11 @@ platform :ios do
   desc "Regenerates them first, so what is uploaded always matches the current app."
   desc "A live version's screenshots are read-only and a submitted one's are locked, so this runs"
   desc "before the release submits. APP_VERSION names the editable version, created if missing."
-  lane :upload_screenshots do
+  desc "Options: skip_render (true|false) — upload what is already staged under"
+  desc "fastlane/screenshots/, which is how CI hands over the images a job of its own rendered."
+  lane :upload_screenshots do |options|
     repo_root = File.expand_path("..")
+    screenshots_path = File.join(repo_root, "fastlane/screenshots")
 
     api_key = app_store_connect_api_key(
       key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
@@ -416,7 +463,8 @@ platform :ios do
     )
 
     # Renders every screen on the iOS simulator first, so this needs a Mac with Xcode.
-    gradle(task: "stageAppStoreScreenshots", project_dir: repo_root)
+    gradle(task: "stageAppStoreScreenshots", project_dir: repo_root) unless options[:skip_render]
+    ensure_screenshots_staged(File.join(screenshots_path, "*", "*.png"))
 
     begin
       upload_to_app_store(
@@ -425,7 +473,7 @@ platform :ios do
         # Names the version so deliver creates it when the screenshots arrive ahead of the binary;
         # unset, deliver falls back to the latest editable version.
         app_version: ENV["APP_VERSION"],
-        screenshots_path: File.join(repo_root, "fastlane/screenshots"),
+        screenshots_path: screenshots_path,
         # Listing assets only: no binary, no metadata, no review submission.
         skip_binary_upload: true,
         skip_metadata: true,
@@ -440,9 +488,9 @@ platform :ios do
     ensure
       # deliver deletes every existing screenshot before re-uploading (overwrite_screenshots: true),
       # so a run that fails partway — like the transient "Screenshot Set Already Exists!" race on
-      # Apple's side that prompted this check — can leave a locale with none at all. The submission
-      # lane below reads this to skip submit_for_review instead of having Apple reject the review
-      # submission outright with a bare "is not in valid state".
+      # Apple's side that prompted this check — can leave a locale with none at all. The workflow
+      # hands this to the `submit` lane's job, which then skips submit_for_review instead of having
+      # Apple reject the review submission outright with a bare "is not in valid state".
       report_app_store_screenshots_completeness(app_store_listing_locales)
     end
   end
@@ -460,6 +508,35 @@ platform :ios do
     )
     dedupe_app_store_screenshots
   end
+end
+
+# Both stores replace the listing's screenshots with what is staged, so uploading from an empty
+# folder — an artifact that did not download, a generator that rendered nothing — would wipe the
+# listing instead of failing. Stops before anything reaches the store.
+def ensure_screenshots_staged(glob)
+  staged = Dir.glob(glob)
+  UI.user_error!("No staged screenshots matching #{glob}") if staged.empty?
+  UI.message("Found #{staged.size} staged screenshot(s)")
+end
+
+# Whether App Store Connect already holds this iOS build, in any processing state. It refuses a
+# second upload of a build number it has taken ("The bundle version must be higher than the
+# previously uploaded version"), so re-running the `upload` lane after the binary landed — 2.9.1's
+# second attempt — has to skip the upload instead of dying on it. Never raises: when the lookup
+# itself fails, the upload goes ahead as it always did.
+def app_store_build_uploaded?(version, version_code)
+  require "spaceship"
+  app = Spaceship::ConnectAPI::App.find(APP_BUNDLE_ID)
+  Spaceship::ConnectAPI::Build.all(
+    app_id: app.id,
+    version: version,
+    build_number: version_code,
+    # The macOS app shares this record and its build numbers.
+    platform: Spaceship::ConnectAPI::Platform::IOS,
+  ).any?
+rescue => e
+  UI.error("Could not look build #{version} (#{version_code}) up on App Store Connect, uploading: #{e.message}")
+  false
 end
 
 # App Store Connect publishes a screenshot's checksum asynchronously, and deliver's post-upload check
