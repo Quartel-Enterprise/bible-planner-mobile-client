@@ -418,24 +418,33 @@ platform :ios do
     # Renders every screen on the iOS simulator first, so this needs a Mac with Xcode.
     gradle(task: "stageAppStoreScreenshots", project_dir: repo_root)
 
-    upload_to_app_store(
-      api_key: api_key,
-      app_identifier: APP_BUNDLE_ID,
-      # Names the version so deliver creates it when the screenshots arrive ahead of the binary;
-      # unset, deliver falls back to the latest editable version.
-      app_version: ENV["APP_VERSION"],
-      screenshots_path: File.join(repo_root, "fastlane/screenshots"),
-      # Listing assets only: no binary, no metadata, no review submission.
-      skip_binary_upload: true,
-      skip_metadata: true,
-      skip_screenshots: false,
-      submit_for_review: false,
-      force: true,
-      precheck_include_in_app_purchases: false,
-      overwrite_screenshots: true,
-    )
+    begin
+      upload_to_app_store(
+        api_key: api_key,
+        app_identifier: APP_BUNDLE_ID,
+        # Names the version so deliver creates it when the screenshots arrive ahead of the binary;
+        # unset, deliver falls back to the latest editable version.
+        app_version: ENV["APP_VERSION"],
+        screenshots_path: File.join(repo_root, "fastlane/screenshots"),
+        # Listing assets only: no binary, no metadata, no review submission.
+        skip_binary_upload: true,
+        skip_metadata: true,
+        skip_screenshots: false,
+        submit_for_review: false,
+        force: true,
+        precheck_include_in_app_purchases: false,
+        overwrite_screenshots: true,
+      )
 
-    dedupe_app_store_screenshots
+      dedupe_app_store_screenshots
+    ensure
+      # deliver deletes every existing screenshot before re-uploading (overwrite_screenshots: true),
+      # so a run that fails partway — like the transient "Screenshot Set Already Exists!" race on
+      # Apple's side that prompted this check — can leave a locale with none at all. The submission
+      # lane below reads this to skip submit_for_review instead of having Apple reject the review
+      # submission outright with a bare "is not in valid state".
+      report_app_store_screenshots_completeness(app_store_listing_locales)
+    end
   end
 
   desc "Remove duplicate screenshots from the editable App Store version, keeping each shelf's first."
@@ -486,6 +495,35 @@ def dedupe_app_store_screenshots
   else
     UI.success("Removed #{removed} duplicate screenshot(s) from App Store Connect")
   end
+end
+
+# The locales among `locales` whose editable App Store version has no screenshot at all right now.
+def locales_missing_app_store_screenshots(locales)
+  app = Spaceship::ConnectAPI::App.find(APP_BUNDLE_ID)
+  version = app.get_edit_app_store_version
+  return locales if version.nil?
+
+  present = version.get_app_store_version_localizations.select do |localization|
+    localization.get_app_screenshot_sets.any? { |set| set.app_screenshots.any? }
+  end.map(&:locale)
+
+  locales - present
+end
+
+# Writes screenshots_complete=true/false to $GITHUB_OUTPUT (a no-op outside CI) for the workflow
+# step that runs the `upload` lane to read, so it can skip submit_for_review when a locale ended
+# up with no screenshots at all. Never raises: this is a diagnostic on top of upload_screenshots,
+# not something that should mask whatever error the caller is already handling.
+def report_app_store_screenshots_completeness(locales)
+  incomplete = locales_missing_app_store_screenshots(locales)
+  UI.error("No App Store screenshots for: #{incomplete.join(', ')}") if incomplete.any?
+
+  output_path = ENV["GITHUB_OUTPUT"]
+  return unless output_path
+
+  File.open(output_path, "a") { |f| f.puts("screenshots_complete=#{incomplete.empty?}") }
+rescue => e
+  UI.error("Could not verify App Store screenshot completeness: #{e.message}")
 end
 
 # The jpackage runtime is a nested bundle with its own identifier, derived from the

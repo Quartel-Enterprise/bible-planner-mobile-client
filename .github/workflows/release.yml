@@ -377,10 +377,14 @@ jobs:
           printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
 
       # Listing assets only: no binary, no metadata, no review submission. A failure here must not
-      # block the release — the submission below still runs, carrying the previous screenshots.
+      # block the release — the submission below still runs, but skips submit_for_review if the
+      # `screenshots_complete` output says a locale ended up with no screenshots at all (deliver
+      # deletes before it re-uploads, so a partial failure here can leave one behind — see the
+      # report_app_store_screenshots_completeness comment in the Fastfile).
       - name: Upload the screenshots to App Store Connect
         if: ${{ !inputs.prerelease }}
         continue-on-error: true
+        id: screenshots
         run: fastlane ios upload_screenshots
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
@@ -394,7 +398,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-          SUBMIT_FOR_REVIEW: ${{ !inputs.prerelease && inputs.submit_ios_for_review }}
+          SUBMIT_FOR_REVIEW: ${{ !inputs.prerelease && inputs.submit_ios_for_review && steps.screenshots.outputs.screenshots_complete != 'false' }}
 
   desktop-build:
     name: Desktop — build the ${{ matrix.formats }}
