@@ -215,7 +215,17 @@ squash merge now:
 - Yes — squash merge and clean up the task
 - No — end the workflow here
 
-If yes, wait for the required checks, then merge:
+If yes, add the `merge-when-green` label instead of waiting on the checks yourself:
+
+```bash
+gh pr edit --add-label merge-when-green
+```
+
+The `merge-when-green` workflow squash merges the pull request once every check on its head commit
+has passed, including the ones that aren't required (see [docs/ci.md](../../../docs/ci.md#merge-when-green)).
+Tell the user the label is on and that `finish-task` cleans up once the merge happens.
+
+If the user asks to merge right away instead, wait for the required checks, then merge:
 
 ```bash
 for _ in $(seq 20); do gh pr checks --required 2>/dev/null | grep -q . && break; sleep 3; done

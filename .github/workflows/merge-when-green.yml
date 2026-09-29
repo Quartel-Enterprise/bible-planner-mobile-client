@@ -1,0 +1,83 @@
+name: merge-when-green
+
+# Squash merges a pull request labeled merge-when-green once every check on its head commit has
+# passed, required or not. GitHub's own auto-merge only waits for the required checks, so it would
+# merge before the ui-tests finish.
+#
+# It runs when the label is added (the checks may already be green) and whenever one of the pull
+# request workflows completes (the last one to finish is the one that finds everything green).
+on:
+  pull_request:
+    types:
+      - labeled
+  workflow_run:
+    workflows:
+      - build-and-test
+      - ui-tests
+      - static-analysis
+      - module-graph
+      - translations
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  merge:
+    if: >-
+      (github.event_name == 'pull_request' && github.event.label.name == 'merge-when-green') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: merge-when-green-${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
+    steps:
+      # A merge made with GITHUB_TOKEN triggers no other workflow, so neither the push to main
+      # (build-and-test, ui-tests, translations…) nor cleanup-pr-caches would run. The merge is made
+      # with a token of its own instead: a fine-grained personal access token restricted to this
+      # repository, with Contents and Pull requests set to Read and write.
+      - name: Merge the pull request if every check passed
+        env:
+          GH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::The MERGE_WHEN_GREEN_TOKEN secret is not set."
+            exit 1
+          fi
+
+          # Matching on the head commit ignores a pull request that was pushed to after these
+          # checks started: its new commit brings checks of its own.
+          pr=$(gh pr list --state open --label merge-when-green --json number,headRefOid \
+            --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number")
+          if [ -z "$pr" ]; then
+            echo "No open pull request labeled merge-when-green has $HEAD_SHA as its head."
+            exit 0
+          fi
+
+          # gh exits with 8 while checks are pending and with 1 when one failed or none exists yet.
+          # Those are answers here, not errors, so the JSON it prints is what gets inspected.
+          checks=$(gh pr checks "$pr" --json name,workflow,bucket) || true
+          if ! jq -e 'type == "array"' <<< "$checks" > /dev/null 2>&1; then
+            echo "#$pr has no checks yet."
+            exit 0
+          fi
+          others=$(jq '[.[] | select(.workflow != "merge-when-green")]' <<< "$checks")
+
+          # check-translations runs on every pull request, alongside the other workflows of the
+          # same push. Until it shows up, those workflows may not have registered their checks yet.
+          if ! jq -e 'any(.name == "check-translations")' <<< "$others" > /dev/null; then
+            echo "The checks of #$pr are not registered yet."
+            exit 0
+          fi
+
+          unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping") | "\(.name): \(.bucket)"' <<< "$others")
+          if [ -n "$unfinished" ]; then
+            echo "#$pr is not green yet:"
+            echo "$unfinished"
+            exit 0
+          fi
+
+          gh pr merge "$pr" --squash --match-head-commit "$HEAD_SHA"
