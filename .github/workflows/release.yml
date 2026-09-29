@@ -12,6 +12,10 @@ name: release
 #   3. Android and iOS are built and uploaded to the stores, and the desktop
 #      installers are built on one runner per OS. A full release also refreshes
 #      both store listings' screenshots; a pre-release leaves them alone.
+#      Every stage that can fail on its own is a job of its own — build, upload,
+#      screenshot render, screenshot upload, review submission — because
+#      "Re-run failed jobs" repeats whole jobs: what already landed is not
+#      built, rendered or uploaded a second time.
 #   4. `finalize` bumps the version on a release branch, opens and squash-merges
 #      the merge-back PR into main, and publishes the GitHub release with the
 #      desktop installers attached as assets. It runs for the `all` and `mobile`
@@ -215,8 +219,11 @@ jobs:
   # A job of its own rather than a step on android-upload, so a listing that fails to publish says
   # so plainly without implying the build did not land — and finalize, which does not wait on it,
   # tags and merges the release either way.
+  #
+  # The called workflow's jobs are listed as "<this name> / <their name>", so this one names the
+  # platform and the subject and leaves the verb — render, upload — to them.
   android-screenshots:
-    name: Android — upload the store listing screenshots
+    name: Android — store listing screenshots
     needs: android-upload
     # Play's listing is live the moment it changes, whatever track the build went to — so only a
     # completed production rollout advances it. A beta, a test track or a draft would put next
@@ -259,6 +266,20 @@ jobs:
 
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
+
+      # Same entry as the ios job of ui-tests. A release link uses none of the compiled library
+      # caches in it, only the toolchain and its dependencies, which are otherwise downloaded on
+      # every run.
+      - name: Read the Kotlin version
+        id: kotlin
+        run: echo "version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Kotlin/Native toolchain
+        uses: actions/cache@v6
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}-${{ hashFiles('gradle/libs.versions.toml') }}
+          restore-keys: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -303,6 +324,10 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+  # The binary only. The listing and the review submission are ios-submit's, so a submission that
+  # fails is retried without sending the build again — which App Store Connect refuses for a build
+  # number it already holds. The lane checks for the build first, so re-running this job after the
+  # binary landed is harmless too.
   ios-upload:
     name: iOS — upload to App Store Connect
     needs: [plan, ios-build]
@@ -333,41 +358,54 @@ jobs:
           name: ios-ipa
           path: build/ios/
 
-      # Screenshots are read-only on a live App Store version and locked on a submitted one, so
-      # they have to be in place before the upload step submits the build for review — afterwards
-      # would mean cancelling the submission by hand to touch them. APP_VERSION lets deliver create
-      # the release's version when this run is the first thing to reach it. Rendering the images
-      # needs Gradle, which this job does not otherwise use.
-      #
-      # A beta skips this: it goes to TestFlight without creating a version to hold the listing,
-      # so there is nothing editable for the screenshots to land on.
-      # These exist only to feed the screenshots step, so like it they must never take the
-      # binary upload down with them — a broken Gradle cache is not a reason to hold a release.
-      # The App Store shots render every screen on the iOS simulator before Robolectric frames
-      # them, so the step needs Xcode and the Kotlin/Native toolchain as well as Gradle.
+      - name: Upload to App Store Connect
+        run: fastlane ios upload
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  # The App Store shots render every screen on the iOS simulator before Robolectric frames them,
+  # which is the slow half of refreshing the listing and needs nothing from the build: it runs
+  # next to ios-build instead of after it, and hands the images over as an artifact.
+  #
+  # A beta skips both screenshot jobs: it goes to TestFlight without a version to hold the listing,
+  # so there is nothing editable for the screenshots to land on.
+  #
+  # Neither may hold the release, hence continue-on-error: a failed one is listed as failed, the
+  # run is not, and ios-submit goes ahead with the screenshots the version already has.
+  ios-screenshots-render:
+    name: iOS — render the store listing screenshots
+    needs: plan
+    if: ${{ !inputs.prerelease && (inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'ios') }}
+    runs-on: macos-latest
+    environment: Production
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
       - name: Select the latest stable Xcode
-        if: ${{ !inputs.prerelease }}
-        continue-on-error: true
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
+      - name: Bump version
+        run: ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
+
       - name: Setup Gradle and Java
-        if: ${{ !inputs.prerelease }}
-        continue-on-error: true
         uses: ./.github/actions/gradle
 
       # Same cache as the ios job of ui-tests: a cold ~/.konan spends about 15 minutes compiling
       # the library caches the simulator test binary links.
       - name: Read the Kotlin version
-        if: ${{ !inputs.prerelease }}
-        continue-on-error: true
         id: kotlin
         run: echo "version=$(sed -nE 's/^kotlin = "(.*)"$/\1/p' gradle/libs.versions.toml)" >> "$GITHUB_OUTPUT"
 
       - name: Cache the Kotlin/Native toolchain and library caches
-        if: ${{ !inputs.prerelease }}
-        continue-on-error: true
         uses: actions/cache@v6
         with:
           path: ~/.konan
@@ -375,8 +413,6 @@ jobs:
           restore-keys: konan-${{ runner.os }}-${{ steps.kotlin.outputs.version }}
 
       - name: Decode build secrets
-        if: ${{ !inputs.prerelease }}
-        continue-on-error: true
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
@@ -384,29 +420,111 @@ jobs:
           echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
           printf '%s\n' "$LOCAL_PROPERTIES" > local.properties
 
-      # Listing assets only: no binary, no metadata, no review submission. A failure here must not
-      # block the release — the submission below still runs, but skips submit_for_review if the
-      # `screenshots_complete` output says a locale ended up with no screenshots at all (deliver
-      # deletes before it re-uploads, so a partial failure here can leave one behind — see the
-      # report_app_store_screenshots_completeness comment in the Fastfile).
+      - name: Render the screenshots
+        run: ./gradlew stageAppStoreScreenshots
+
+      - name: Upload the rendered screenshots as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-store-screenshots
+          path: fastlane/screenshots/
+          retention-days: 7
+          if-no-files-found: error
+
+  # Screenshots are read-only on a live App Store version and locked on a submitted one, so they
+  # have to be in place before ios-submit sends the build for review — afterwards would mean
+  # cancelling the submission by hand to touch them. APP_VERSION lets deliver create the release's
+  # version when this job is the first thing to reach it.
+  #
+  # deliver deletes the version's screenshots before it uploads the new ones, so a failure halfway
+  # can leave a locale with none. `screenshots_complete` tells ios-submit whether that happened —
+  # see report_app_store_screenshots_completeness in the Fastfile. Re-running this job sends the
+  # rendered images again, without rendering them again.
+  ios-screenshots-upload:
+    name: iOS — upload the store listing screenshots
+    needs: [plan, ios-screenshots-render]
+    if: ${{ !inputs.prerelease && (inputs.platforms == 'all' || inputs.platforms == 'mobile' || inputs.platforms == 'ios') }}
+    runs-on: macos-latest
+    environment: Production
+    continue-on-error: true
+    outputs:
+      screenshots_complete: ${{ steps.screenshots.outputs.screenshots_complete }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      - name: Download the rendered screenshots
+        uses: actions/download-artifact@v8
+        with:
+          name: app-store-screenshots
+          path: fastlane/screenshots/
+
+      # Listing assets only: no binary, no metadata, no review submission.
       - name: Upload the screenshots to App Store Connect
-        if: ${{ !inputs.prerelease }}
-        continue-on-error: true
         id: screenshots
-        run: fastlane ios upload_screenshots
+        run: fastlane ios upload_screenshots skip_render:true
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
           APP_VERSION: ${{ needs.plan.outputs.version }}
 
-      - name: Upload to App Store Connect
-        run: fastlane ios upload
+  # Updates the listing and sends the uploaded build for review. It waits on the screenshot jobs
+  # only to come after them: !cancelled() lets it run when they failed or, on a beta, never ran,
+  # and the binary having landed is the one thing it requires.
+  ios-submit:
+    name: iOS — update the listing and submit for review
+    needs: [plan, ios-upload, ios-screenshots-upload]
+    if: ${{ !cancelled() && needs.ios-upload.result == 'success' }}
+    runs-on: macos-latest
+    environment: Production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Bump version
+        run: ./scripts/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane
+        run: gem install fastlane --no-document
+
+      # Not uploaded again: the lane reads the version and the build number off it, to know which
+      # build to wait for.
+      - name: Download the IPA build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ios-ipa
+          path: build/ios/
+
+      # Skips the submission when a locale was left with no screenshots at all, which Apple would
+      # reject: the listing is still updated and the build stays in App Store Connect. Re-running
+      # ios-screenshots-upload re-runs this job after it, and submits then.
+      - name: Update the listing and submit for review
+        run: fastlane ios submit
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-          SUBMIT_FOR_REVIEW: ${{ !inputs.prerelease && inputs.submit_ios_for_review && steps.screenshots.outputs.screenshots_complete != 'false' }}
+          SUBMIT_FOR_REVIEW: ${{ !inputs.prerelease && inputs.submit_ios_for_review && needs.ios-screenshots-upload.outputs.screenshots_complete != 'false' }}
 
   desktop-build:
     name: Desktop — build the ${{ matrix.formats }}
@@ -512,16 +630,24 @@ jobs:
 
   finalize:
     name: Tag, release notes and merge-back
-    needs: [plan, android-upload, ios-upload, desktop-build]
+    needs: [plan, android-upload, ios-submit, desktop-build]
     # `mobile` skips desktop-build, and a skipped dependency skips this job too
     # unless the condition carries a status check function — hence !cancelled(),
     # which replaces the implicit success() and forces the explicit result
     # checks below. Without them a failed upload would still be finalized.
+    #
+    # Both stores are asked for success by name, not just for the absence of a
+    # failure: a job whose own dependency failed is skipped, not failed, so a
+    # build that broke would otherwise reach this job as a harmless "skipped"
+    # upload and be tagged as released. Only desktop-build is allowed to be
+    # skipped — `mobile` and pre-releases do not build it.
     if: >-
       ${{ !cancelled()
       && (inputs.prerelease || inputs.track == 'production')
       && (inputs.platforms == 'all' || inputs.platforms == 'mobile')
       && needs.plan.result == 'success'
+      && needs.android-upload.result == 'success'
+      && needs.ios-submit.result == 'success'
       && !contains(needs.*.result, 'failure')
       && !contains(needs.*.result, 'cancelled') }}
     runs-on: ubuntu-latest
@@ -536,10 +662,25 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      # Re-running a job re-runs the ones that depend on it, so a retried screenshot upload or
+      # review submission brings this job back after it already finished. Publishing the GitHub
+      # release is its last step: once that exists there is nothing left to do, and doing it
+      # again would only fail on the version bump main already has.
+      - name: Check whether the release is already published
+        id: published
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${{ needs.plan.outputs.display_version }}" > /dev/null 2>&1; then
+            echo "::notice::${{ needs.plan.outputs.display_version }} is already published — nothing left to finalize."
+            echo "done=true" >> "$GITHUB_OUTPUT"
+          fi
+
       # A pre-release commits only the versionCode it consumed: versionName in
       # version.xcconfig stays at the last stable so the next run keeps
       # resolving the upcoming version from the release notes JSON.
       - name: Create release branch with version bump
+        if: ${{ steps.published.outputs.done != 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -560,6 +701,7 @@ jobs:
       # and publishing the result keeps the guard real, and GITHUB_TOKEN reports
       # it as the very GitHub Actions app the ruleset pins the context to.
       - name: Report check-translations for the merge-back branch
+        if: ${{ steps.published.outputs.done != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -572,6 +714,7 @@ jobs:
             -f conclusion=success
 
       - name: Open merge-back PR and squash into main
+        if: ${{ steps.published.outputs.done != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -596,7 +739,7 @@ jobs:
       # Nothing to download on a mobile-only run: the step would fail on the
       # missing artifacts, and the release goes out without desktop assets.
       - name: Download the desktop installers
-        if: ${{ needs.desktop-build.result == 'success' }}
+        if: ${{ steps.published.outputs.done != 'true' && needs.desktop-build.result == 'success' }}
         uses: actions/download-artifact@v8
         with:
           pattern: desktop-*
@@ -604,6 +747,7 @@ jobs:
           path: desktop-installers
 
       - name: Publish GitHub release
+        if: ${{ steps.published.outputs.done != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
