@@ -6,13 +6,13 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersion
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.di.initializeKoin
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.SetAppLanguage
 import com.quare.bibleplanner.feature.bibleversion.domain.DownloadBibleUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.InProcessBibleVersionDownloader
-import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import kotlinx.coroutines.cancel
 import org.koin.core.Koin
 import org.koin.core.context.stopKoin
@@ -69,7 +69,7 @@ internal class E2eApp {
         get<InitializeBooksIfNeededUseCase>()()
         get<InitializeBibleVersionsUseCase>()()
         get<SetAppLanguage>()(Language.ENGLISH)
-        get<SetSelectedVersionUseCase>()(FakeBibles.englishDefault.id)
+        get<SetSelectedVersion>()(FakeBibles.englishDefault.id)
         get<DownloadBibleUseCase>()(FakeBibles.englishDefault.id).getOrThrow()
     }
 

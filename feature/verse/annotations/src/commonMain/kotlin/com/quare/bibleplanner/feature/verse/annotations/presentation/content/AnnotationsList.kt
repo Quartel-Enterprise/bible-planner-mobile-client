@@ -18,16 +18,20 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.verse.annotations.presentation.component.AnnotationItemRow
+import com.quare.bibleplanner.feature.verse.annotations.presentation.component.OtherVersionsCard
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationGroupUiModel
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiEvent
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.OtherVersionAnnotationsUiModel
 import com.quare.bibleplanner.feature.verse.annotations.presentation.utils.text
 
 private val cardCorner = 16.dp
 private val dividerInset = 70.dp
+private const val OTHER_VERSIONS_KEY = "other-versions"
 
 @Composable
 internal fun AnnotationsList(
     groups: List<AnnotationGroupUiModel>,
+    otherVersions: List<OtherVersionAnnotationsUiModel>,
     openMenuItemKey: String?,
     isWide: Boolean,
     onEvent: (AnnotationsUiEvent) -> Unit,
@@ -38,6 +42,16 @@ internal fun AnnotationsList(
         modifier = modifier,
         contentPadding = contentPadding,
     ) {
+        if (otherVersions.isNotEmpty()) {
+            item(key = OTHER_VERSIONS_KEY) {
+                OtherVersionsCard(
+                    otherVersions = otherVersions,
+                    isEmptyState = false,
+                    onEvent = onEvent,
+                    modifier = Modifier.padding(bottom = 12.dp),
+                )
+            }
+        }
         groups.forEachIndexed { groupIndex, group ->
             item(key = "header-$groupIndex-${group.label}") {
                 Text(

@@ -276,6 +276,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [annotations_custom_range_opened](events/annotations_custom_range_opened.md) | P2 | Verse annotations |
 | [annotations_custom_range_dismissed](events/annotations_custom_range_dismissed.md) | P2 | Verse annotations |
 | [annotations_filters_cleared](events/annotations_filters_cleared.md) | P2 | Verse annotations |
+| [annotations_other_version_used](events/annotations_other_version_used.md) | P1 | Verse annotations |
 | [annotation_chapter_opened](events/annotation_chapter_opened.md) | P1 | Verse annotations |
 | [annotation_menu_opened](events/annotation_menu_opened.md) | P2 | Verse annotations |
 | [annotation_menu_dismissed](events/annotation_menu_dismissed.md) | P2 | Verse annotations |

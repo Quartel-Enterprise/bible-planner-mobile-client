@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.bibleversion.domain.usecase
 
-import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.books.testing.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
@@ -82,25 +81,6 @@ internal class VersionDownloadActionsUseCasesTest {
         assertEquals(
             expected = listOf("download $VERSION_ID"),
             actual = downloaderFacade.calls,
-        )
-    }
-
-    @Test
-    fun `selecting a version stores it as the selected one`() = runTest {
-        // Given
-        val repository = FakeBibleRepository(
-            bibles = emptyList(),
-            selectedVersionId = "ACF",
-        )
-        val useCase = SetSelectedVersionUseCase(repository)
-
-        // When
-        useCase(VERSION_ID)
-
-        // Then
-        assertEquals(
-            expected = listOf(VERSION_ID),
-            actual = repository.selectedVersionIds,
         )
     }
 

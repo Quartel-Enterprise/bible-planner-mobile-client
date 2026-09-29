@@ -245,6 +245,7 @@ object AnalyticsEventNames {
     const val ANNOTATIONS_CUSTOM_RANGE_OPENED = "annotations_custom_range_opened"
     const val ANNOTATIONS_CUSTOM_RANGE_DISMISSED = "annotations_custom_range_dismissed"
     const val ANNOTATIONS_FILTERS_CLEARED = "annotations_filters_cleared"
+    const val ANNOTATIONS_OTHER_VERSION_USED = "annotations_other_version_used"
     const val ANNOTATION_CHAPTER_OPENED = "annotation_chapter_opened"
     const val ANNOTATION_MENU_OPENED = "annotation_menu_opened"
     const val ANNOTATION_MENU_DISMISSED = "annotation_menu_dismissed"

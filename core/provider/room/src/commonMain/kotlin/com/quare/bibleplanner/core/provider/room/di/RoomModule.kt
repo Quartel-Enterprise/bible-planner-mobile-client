@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.provider.room.di
 
 import androidx.room3.RoomDatabase
+import com.quare.bibleplanner.core.provider.room.dao.AnnotatedVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
@@ -47,6 +48,7 @@ val roomModule = module {
     single<SavedVerseDao> { get<AppDatabase>().savedVerseDao() }
     single<VerseNoteDao> { get<AppDatabase>().verseNoteDao() }
     single<HighlightPaletteColorDao> { get<AppDatabase>().highlightPaletteColorDao() }
+    single<AnnotatedVersionDao> { get<AppDatabase>().annotatedVersionDao() }
 
     single<TableInvalidationObserver> { RoomTableInvalidationObserver(get()) }
 }

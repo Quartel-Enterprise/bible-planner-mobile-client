@@ -1,4 +1,9 @@
 {
+  "2.9.2": {
+    "common": [
+      "En la pantalla Anotaciones, si la versión de la Biblia elegida en tu dispositivo no tiene marcas pero otra versión sí (por ejemplo, porque las hiciste en otro dispositivo), ahora aparece un aviso como \"1 marca en A21\" con un botón para pasar a usar esa versión. Antes, la pantalla aparecía vacía."
+    ]
+  },
   "2.9.1": {
     "common": [
       "En la pantalla Anotaciones, volver con el botón o el gesto del sistema con la búsqueda abierta ahora solo cierra la búsqueda, en lugar de salir de la pantalla."

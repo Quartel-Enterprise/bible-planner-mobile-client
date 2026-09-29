@@ -28,12 +28,16 @@ import bibleplanner.feature.verse.annotations.generated.resources.highlight_colo
 import bibleplanner.feature.verse.annotations.generated.resources.item_count
 import bibleplanner.feature.verse.annotations.generated.resources.no_results_clear
 import bibleplanner.feature.verse.annotations.generated.resources.no_results_query
+import bibleplanner.feature.verse.annotations.generated.resources.other_version_count
+import bibleplanner.feature.verse.annotations.generated.resources.other_version_use
+import bibleplanner.feature.verse.annotations.generated.resources.other_versions_empty_title
 import bibleplanner.feature.verse.annotations.generated.resources.search
 import bibleplanner.feature.verse.annotations.generated.resources.search_hint_short
 import bibleplanner.feature.verse.annotations.generated.resources.type_notes
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.verseannotations.domain.model.VersionAnnotationCount
 import com.quare.bibleplanner.feature.verse.annotations.domain.model.AnnotationEntry
 import com.quare.bibleplanner.feature.verse.annotations.fixture.sampleNow
 import com.quare.bibleplanner.feature.verse.annotations.fixture.samplePassage
@@ -60,6 +64,11 @@ internal class AnnotationsUiTest {
     private lateinit var events: MutableList<AnnotationsUiEvent>
     private lateinit var systemBackInput: DirectNavigationEventInput
     private var hasLeftTheScreen = false
+
+    private val a21Count = VersionAnnotationCount(
+        bibleVersionId = "a21",
+        count = 1,
+    )
 
     private val factory = AnnotationsContentFactory(
         currentTimestampProvider = { sampleNow },
@@ -255,13 +264,96 @@ internal class AnnotationsUiTest {
             assertTrue(events.isEmpty())
         }
 
+    @Test
+    fun `GIVEN nothing marked here but marks in another version WHEN showing the screen THEN points to that version`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                state = loadedState(
+                    entries = emptyList(),
+                    otherVersionCounts = listOf(a21Count),
+                ),
+            )
+
+            // When
+            waitForIdle()
+
+            // Then
+            onNodeWithText(getString(Res.string.other_versions_empty_title)).assertIsDisplayed()
+            onNodeWithText(getPluralString(Res.plurals.other_version_count, 1, 1, "A21")).assertIsDisplayed()
+            onNodeWithText(getString(Res.string.empty_title)).assertDoesNotExist()
+        }
+
+    @Test
+    fun `GIVEN nothing marked here but marks in another version WHEN tapping to use it THEN asks to select it`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                state = loadedState(
+                    entries = emptyList(),
+                    otherVersionCounts = listOf(a21Count),
+                ),
+            )
+
+            // When
+            onNodeWithText(getString(Res.string.other_version_use, "A21")).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<AnnotationsUiEvent>(
+                    AnnotationsUiEvent.OnUseVersionClick(
+                        bibleVersionId = "a21",
+                        isEmptyState = true,
+                    ),
+                ),
+                actual = events,
+            )
+        }
+
+    @Test
+    fun `GIVEN nothing marked anywhere WHEN showing the screen THEN offers no other version`() = runComposeUiTest {
+        // Given
+        prepareScenario(state = loadedState(entries = emptyList()))
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithText(getString(Res.string.other_version_use, "A21")).assertDoesNotExist()
+    }
+
+    @Test
+    fun `GIVEN marks here and in another version WHEN tapping to use it above the list THEN asks to select it`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(state = loadedState(otherVersionCounts = listOf(a21Count)))
+            onNodeWithText(getPluralString(Res.plurals.other_version_count, 1, 1, "A21")).assertIsDisplayed()
+            onNodeWithText("For God so loved the world").assertIsDisplayed()
+
+            // When
+            onNodeWithText(getString(Res.string.other_version_use, "A21")).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<AnnotationsUiEvent>(
+                    AnnotationsUiEvent.OnUseVersionClick(
+                        bibleVersionId = "a21",
+                        isEmptyState = false,
+                    ),
+                ),
+                actual = events,
+            )
+        }
+
     private fun loadedState(
         entries: List<AnnotationEntry> = this.entries,
+        otherVersionCounts: List<VersionAnnotationCount> = emptyList(),
         filters: AnnotationsFilters = AnnotationsContentFactory.noFilters,
     ): AnnotationsUiState = AnnotationsUiState(
         content = Loadable.Loaded(
             factory.create(
                 entries = entries,
+                otherVersionCounts = otherVersionCounts,
                 filters = filters,
             ),
         ),

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import bibleplanner.feature.verse.annotations.generated.resources.Res
 import bibleplanner.feature.verse.annotations.generated.resources.annotation_removed
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
+import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersion
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.loadable.Loadable
@@ -17,6 +18,7 @@ import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemovePassageAnnotations
 import com.quare.bibleplanner.feature.verse.annotations.domain.usecase.ObserveAnnotationEntries
+import com.quare.bibleplanner.feature.verse.annotations.domain.usecase.ObserveOtherVersionAnnotationCounts
 import com.quare.bibleplanner.feature.verse.annotations.presentation.factory.AnnotationsContentFactory
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationDateRange
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationFilterMenu
@@ -48,10 +50,12 @@ import kotlin.time.Instant
 internal class AnnotationsViewModel(
     private val removePassageAnnotations: RemovePassageAnnotations,
     private val isWholeChapterRead: IsWholeChapterRead,
+    private val setSelectedVersion: SetSelectedVersion,
     private val navigator: Navigator,
     val platform: Platform,
     contentFactory: AnnotationsContentFactory,
     observeAnnotationEntries: ObserveAnnotationEntries,
+    observeOtherVersionAnnotationCounts: ObserveOtherVersionAnnotationCounts,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AnnotationsUiEvent>(trackEvent) {
     private val filters = MutableStateFlow(AnnotationsContentFactory.noFilters)
@@ -71,6 +75,7 @@ internal class AnnotationsViewModel(
     val uiState: StateFlow<AnnotationsUiState> = combine(
         combine(
             observeAnnotationEntries(),
+            observeOtherVersionAnnotationCounts(),
             filters,
             contentFactory::create,
         ).map<AnnotationsContentUiModel, Loadable<AnnotationsContentUiModel>> { content -> Loadable.Loaded(content) }
@@ -163,6 +168,10 @@ internal class AnnotationsViewModel(
             is AnnotationsUiEvent.OnRemoveConfirm -> remove(event.item)
 
             AnnotationsUiEvent.OnRemoveCancel -> overlay.update { it.copy(pendingRemoval = null) }
+
+            is AnnotationsUiEvent.OnUseVersionClick -> viewModelScope.launch {
+                setSelectedVersion(event.bibleVersionId)
+            }
         }
     }
 

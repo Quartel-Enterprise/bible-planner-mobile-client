@@ -193,6 +193,19 @@ internal sealed interface AnnotationsUiEvent : UiEvent {
         )
     }
 
+    data class OnUseVersionClick(
+        val bibleVersionId: String,
+        val isEmptyState: Boolean,
+    ) : AnnotationsUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.ANNOTATIONS_OTHER_VERSION_USED,
+            params = mapOf(
+                AnalyticsParams.VERSION_ID to bibleVersionId,
+                AnalyticsParams.SOURCE to if (isEmptyState) SOURCE_EMPTY_STATE else SOURCE_LIST,
+            ),
+        )
+    }
+
     data object OnRemoveCancel : AnnotationsUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.ANNOTATION_REMOVAL_CANCELLED,
@@ -203,6 +216,8 @@ internal sealed interface AnnotationsUiEvent : UiEvent {
     private companion object {
         const val SOURCE_ROW = "row"
         const val SOURCE_MENU = "menu"
+        const val SOURCE_EMPTY_STATE = "empty_state"
+        const val SOURCE_LIST = "list"
 
         fun AnnotationItemUiModel.toChapterOpenedAnalytics(source: String): EventAnalytics =
             EventAnalytics.Track.Automatic(

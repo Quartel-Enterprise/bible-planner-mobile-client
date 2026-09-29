@@ -55,6 +55,8 @@ import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionDownl
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCaseImpl
 import com.quare.bibleplanner.core.books.domain.usecase.ResetAllProgressUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersion
+import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.SyncBibleVersionsUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleBookFavoriteUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
@@ -156,6 +158,7 @@ val booksModule = module {
     factoryOf(::GetBookByIdFlowUseCase)
     factoryOf(::GetVersesWithTextsByChapterIdFlowUseCase)
     factoryOf(::GetSelectedVersionIdFlowUseCase).bind<GetSelectedVersionIdFlow>()
+    factoryOf(::SetSelectedVersionUseCase).bind<SetSelectedVersion>()
     factoryOf(::GetVersesShareContentUseCase).bind<GetVersesShareContent>()
     factoryOf(::GetChapterVerseTextsUseCase).bind<GetChapterVerseTexts>()
     factoryOf(::GetVerseReferenceUseCase).bind<GetVerseReference>()

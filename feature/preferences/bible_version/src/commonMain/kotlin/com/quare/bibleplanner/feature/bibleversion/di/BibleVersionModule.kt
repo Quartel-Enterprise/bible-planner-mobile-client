@@ -16,7 +16,6 @@ import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPentateuchI
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetPrioritizedBookIdsUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetRemoteContentVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.PauseBibleVersionDownloadUseCase
-import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.ShouldShowBibleUpdatePromptUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.BibleVersionViewModel
@@ -43,7 +42,6 @@ val bibleVersionModule = module {
     factoryOf(::GetBibleVersionsByLanguageUseCase)
     factoryOf(::SupabaseBookAbbreviationMapper)
     singleOf(::DownloadBibleUseCase)
-    factoryOf(::SetSelectedVersionUseCase)
     factoryOf(::GetNewTestamentIdsUseCase)
     factoryOf(::GetPentateuchIdsUseCase)
     factoryOf(::GetPrioritizedBookIdsUseCase)

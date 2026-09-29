@@ -47,4 +47,11 @@
         <item quantity="one">%1$d elemento</item>
         <item quantity="other">%1$d elementos</item>
     </plurals>
+    <string name="other_versions_empty_title">Nada marcado en esta versión</string>
+    <string name="other_versions_empty_body">Tus marcas quedan en la versión de la Biblia en la que las hiciste.</string>
+    <string name="other_version_use">Usar %1$s</string>
+    <plurals name="other_version_count">
+        <item quantity="one">%1$d marca en %2$s</item>
+        <item quantity="other">%1$d marcas en %2$s</item>
+    </plurals>
 </resources>
