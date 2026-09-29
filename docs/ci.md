@@ -70,6 +70,55 @@ all of it. Every job uploads its test reports when it fails.
 `:shared` joins the `desktop` and `android` jobs with the [end-to-end flows](testing/end-to-end-tests.md),
 and the script leaves it out of `ios`: the flows switch tabs, which on iOS are a native `UITabBar`.
 
+## iOS release link
+
+Most of the release workflow's `ios-build` job is one Gradle task,
+`:shared:linkReleaseFrameworkIosArm64`. Compiling the 79 modules it depends on takes under five
+minutes from a cold cache; the link takes the rest. A release framework is built with link-time
+optimization, every module compiled and optimized together, and for this app that needs about
+13 GB in the Gradle daemon and another 3 to 6 GB in the linker it starts. No standard runner has
+that much, so how long the link takes follows from the machine, not from the build's settings:
+
+| Machine | Link | Swap in use |
+|---|---|---|
+| `macos-latest`: M1, 3 cores, 7 GB | 26 min | 4.4 GB |
+| `macos-latest`: M2 Pro, 5 cores, 14 GB | 10 min | none |
+| `macos-15-intel`: 4 cores, 14 GB | 22 min | 4.2 GB |
+| A developer's M4 Max, 14 cores, 36 GB | 5 to 6 min | |
+
+`macos-latest` hands out either of the first two. Of 21 jobs measured in one evening, on
+2026-09-28, 7 were given the M2 Pro; the pinned labels (`macos-26`, `macos-15`, `macos-14`) gave
+the M1 in all 25. So `ios-build` stays on `macos-latest`, and its first step says on the run's page
+which machine it got.
+
+What was measured and ruled out, each of them once, with the heap of 8 GB `gradle.properties`
+asks for as the baseline:
+
+| Change | On the M1 runner | On the Intel runner | On the M4 Max |
+|---|---|---|---|
+| Heap of 6 GB | 16% slower | 43% slower | 8% slower |
+| Heap of 5 GB | | | runs out of heap |
+| Heap of 12 GB | | | no change |
+| Parallel collector, heap of 6 GB | not done after an hour | | not done after 18 minutes |
+| G1 returning unused heap (`G1PeriodicGCInterval`, `MaxHeapFreeRatio`) | no change | 21% slower | no change |
+
+The last one does lower the daemon's peak from 13 GB to 8.7 GB on the M4 Max. With 7 GB the link
+swaps either way. The Intel runner is no way out either: its link is four minutes shorter, and
+everything else on it is slower.
+
+What would shorten it, each at a price that is not the build's to pay on its own:
+
+- **A larger runner.** `macos-latest-xlarge` is the M2 Pro above, every time. It is billed per
+  minute on a public repository too, and needs a plan that offers larger runners.
+- **The release binary cache** (`kotlin.native.binary.enableReleaseBinaryCache`). Each module is
+  compiled into a cache of its own instead of all together: 10 minutes on the M1 instead of 26,
+  7 on the M2 Pro instead of 10, 37 seconds locally once the caches exist. It gives up link-time
+  optimization across modules, the static framework grows from 287 MB to 444 MB, and Kotlin's
+  documentation still calls its runtime performance a work in progress. That changes what ships.
+
+Xcode buffers the output of the build phase that runs Gradle, so the release's log cannot tell
+compiling from linking. To measure the link again, run the task on its own with `--profile`.
+
 ## Adding a workflow
 
 - Scope it with `paths` or `paths-ignore`, so a docs-only change doesn't run a build — unless it is
