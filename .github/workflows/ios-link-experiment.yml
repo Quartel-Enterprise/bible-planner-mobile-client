@@ -37,24 +37,30 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # The heap gradle.properties asks for, 8 GB, on the runner the release uses, 7 GB.
+          # Round 2. Round 1 showed that a smaller heap only makes it worse: 6 GB is 16% slower on
+          # arm64 and 43% slower on Intel, 5 GB runs out of heap, and the parallel collector
+          # thrashes at 6 GB.
+          #
+          # The heap gradle.properties asks for, 8 GB, on the runner the release uses, 7 GB. Again,
+          # to tell a difference between variants from the noise between two runs of the same one.
           - label: arm-default
             os: macos-latest
             properties: ''
-          # The smallest heap the link survives: 5 GB runs out of heap on a developer's Mac.
-          - label: arm-heap-6g
+          # Same heap, but G1 hands back what it is not using while LLVM works outside of it: on a
+          # developer's Mac the daemon peaks at 8.7 GB instead of 13 GB, in the same time.
+          - label: arm-periodic-gc
             os: macos-latest
-            properties: 'org.gradle.jvmargs=-Xmx6g -Dfile.encoding=UTF-8'
-          - label: arm-heap-6g-parallelgc
+            properties: 'org.gradle.jvmargs=-Xmx8192M -XX:G1PeriodicGCInterval=15000 -XX:MinHeapFreeRatio=5 -XX:MaxHeapFreeRatio=10 -Dfile.encoding=UTF-8'
+          - label: intel-periodic-gc
+            os: macos-15-intel
+            properties: 'org.gradle.jvmargs=-Xmx8192M -XX:G1PeriodicGCInterval=15000 -XX:MinHeapFreeRatio=5 -XX:MaxHeapFreeRatio=10 -Dfile.encoding=UTF-8'
+          # For reference only, since it changes what ships: no link-time optimization across
+          # modules, each one compiled into a cache of its own.
+          - label: arm-release-cache
             os: macos-latest
-            properties: 'org.gradle.jvmargs=-Xmx6g -XX:+UseParallelGC -Dfile.encoding=UTF-8'
-          # Twice the memory, slower cores.
-          - label: intel-default
-            os: macos-15-intel
-            properties: ''
-          - label: intel-heap-6g
-            os: macos-15-intel
-            properties: 'org.gradle.jvmargs=-Xmx6g -Dfile.encoding=UTF-8'
+            properties: |
+              kotlin.native.binary.enableReleaseBinaryCache=true
+              kotlin.internal.native.enableReleaseBinaryCache=true
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -131,6 +137,8 @@ jobs:
           kill "$(cat experiment/sampler.pid)" 2>/dev/null || true
           # The daemon outlives the build, and its command line is where the heap it really got is.
           echo "RESULT ${{ matrix.label }} daemon_jvm_args=$(pgrep -f GradleDaemon | head -1 | xargs -I{} ps -o command= -p {} | tr ' ' '\n' | grep -E '^-Xmx|^-XX:' | tr '\n' ' ')"
+          binary=shared/build/bin/iosArm64/releaseFramework/Shared.framework/Shared
+          if [ -f "$binary" ]; then echo "RESULT ${{ matrix.label }} framework_binary_bytes=$(stat -f %z "$binary")"; fi
           profile="$(ls -t build/reports/profile/profile-*.html 2>/dev/null | head -1)"
           if [ -n "$profile" ]; then cp "$profile" experiment/profile.html; fi
           python3 - "${{ matrix.label }}" <<'EOF'
