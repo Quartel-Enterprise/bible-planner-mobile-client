@@ -26,8 +26,26 @@ defaults:
     shell: bash
 
 jobs:
+  # Two jobs asking for macos-latest in the same run were handed different machines: an M1 with 3
+  # cores and 7 GB, and an M2 Pro with 5 cores and 14 GB, where the link takes a third of the time.
+  # This asks for a machine many times over, under each arm64 label, to see how they are dealt.
+  probe:
+    name: probe ${{ matrix.os }} ${{ matrix.replica }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-26, macos-15, macos-14]
+        replica: [1, 2, 3, 4]
+    steps:
+      - name: Describe the runner
+        run: echo "PROBE ${{ matrix.os }} cpu=$(sysctl -n machdep.cpu.brand_string) cores=$(sysctl -n hw.ncpu) memory_gb=$(( $(sysctl -n hw.memsize) / 1073741824 ))"
+
   link:
     name: ${{ matrix.label }}
+    # Rounds 1 and 2 are measured. Off while the probe runs.
+    if: ${{ false }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     env:
