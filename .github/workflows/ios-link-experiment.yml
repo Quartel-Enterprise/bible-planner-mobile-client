@@ -36,8 +36,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, macos-26, macos-15, macos-14]
-        replica: [1, 2, 3, 4]
+        # The first probe: 15 of 16 on the M1, and the one M2 Pro under macos-latest.
+        os: [macos-latest, macos-26]
+        replica: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     steps:
       - name: Describe the runner
         run: echo "PROBE ${{ matrix.os }} cpu=$(sysctl -n machdep.cpu.brand_string) cores=$(sysctl -n hw.ncpu) memory_gb=$(( $(sysctl -n hw.memsize) / 1073741824 ))"
