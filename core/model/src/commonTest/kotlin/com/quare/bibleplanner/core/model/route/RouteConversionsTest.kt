@@ -102,6 +102,7 @@ internal class RouteConversionsTest {
                 "day_study",
                 "day_study_detail",
                 "notes_limit",
+                "verse_notes_limit",
                 "chat",
                 "highlight_custom_color",
                 "day_fab",

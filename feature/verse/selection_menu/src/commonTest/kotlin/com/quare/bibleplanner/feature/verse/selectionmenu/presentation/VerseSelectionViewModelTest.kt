@@ -5,6 +5,8 @@ import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterRef
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
@@ -52,6 +54,7 @@ internal class VerseSelectionViewModelTest {
     private lateinit var appliedHighlights: MutableList<Pair<List<VerseRef>, HighlightColor>>
     private lateinit var clearedCount: MutableList<Unit>
     private lateinit var trackedEvents: MutableList<String>
+    private lateinit var trackedParams: MutableMap<String, Map<String, Any>>
     private lateinit var addedCustomColors: MutableList<HighlightColor.Custom>
     private lateinit var toggledSavedRefs: MutableList<List<VerseRef>>
 
@@ -262,6 +265,62 @@ internal class VerseSelectionViewModelTest {
     }
 
     @Test
+    fun `sends a free user at the verse notes limit to the free warning instead of a new note`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isAddVerseNoteBlocked = true)
+
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnNoteClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = NavigationCommand.Navigate(
+                    AddNotesFreeWarningNavRoute(
+                        maxFreeNotesAmount = MAX_FREE_VERSE_NOTES,
+                        type = AddNotesFreeWarningType.VERSE,
+                    ),
+                ),
+                actual = commands.single(),
+            )
+            assertEquals(
+                expected = mapOf<String, Any>(
+                    "max_free_notes" to MAX_FREE_VERSE_NOTES,
+                    "source" to "selection_menu",
+                ),
+                actual = trackedParams["verse_notes_limit_reached"],
+            )
+        }
+
+    @Test
+    fun `still opens an existing note when the verse notes limit is reached`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            isAddVerseNoteBlocked = true,
+            noteIdByVerse = mapOf(1 to "note-1"),
+        )
+
+        // When
+        viewModel.onEvent(VerseSelectionUiEvent.OnNoteClick)
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = NavigationCommand.Navigate(
+                VerseNoteNavRoute(
+                    bibleVersionId = testChapter.bibleVersionId,
+                    bookId = testChapter.bookId.name,
+                    chapterNumber = testChapter.chapterNumber,
+                    verseNumbers = listOf(1, 2),
+                    noteId = "note-1",
+                ),
+            ),
+            actual = commands.single(),
+        )
+    }
+
+    @Test
     fun `opens sharing for the selected passage`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -388,12 +447,15 @@ internal class VerseSelectionViewModelTest {
     private fun TestScope.prepareScenario(
         isPro: Boolean = true,
         isColorApplied: Boolean = true,
+        isAddVerseNoteBlocked: Boolean = false,
+        noteIdByVerse: Map<Int, String> = emptyMap(),
     ) {
         addedCustomColors = mutableListOf()
         toggledSavedRefs = mutableListOf()
         appliedHighlights = mutableListOf()
         clearedCount = mutableListOf()
         trackedEvents = mutableListOf()
+        trackedParams = mutableMapOf()
         selection = MutableStateFlow(verseSelection(listOf(1, 2)))
         viewModel = VerseSelectionViewModel(
             observeVerseSelection = { selection },
@@ -403,7 +465,7 @@ internal class VerseSelectionViewModelTest {
                     ChapterAnnotations(
                         highlightColorByVerse = emptyMap(),
                         savedVerseNumbers = emptySet(),
-                        noteIdByVerse = emptyMap(),
+                        noteIdByVerse = noteIdByVerse,
                     ),
                 )
             },
@@ -425,9 +487,14 @@ internal class VerseSelectionViewModelTest {
                     versionAbbreviation = "ARC",
                 )
             },
+            shouldBlockAddVerseNote = { isAddVerseNoteBlocked },
+            getMaxFreeVerseNotesAmount = { MAX_FREE_VERSE_NOTES },
             platform = Platform.Android,
             navigator = navigator,
-            trackEvent = { name, _ -> trackedEvents += name },
+            trackEvent = { name, params ->
+                trackedEvents += name
+                trackedParams[name] = params
+            },
         )
         actions = mutableListOf<VerseSelectionUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
@@ -435,5 +502,9 @@ internal class VerseSelectionViewModelTest {
         commands = mutableListOf<NavigationCommand>().also { collected ->
             backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
+    }
+
+    private companion object {
+        const val MAX_FREE_VERSE_NOTES = 3
     }
 }

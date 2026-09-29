@@ -8,6 +8,8 @@ import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersion
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
@@ -16,7 +18,9 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.GetMaxFreeVerseNotesAmount
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemovePassageAnnotations
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ShouldBlockAddVerseNote
 import com.quare.bibleplanner.feature.verse.annotations.domain.usecase.ObserveAnnotationEntries
 import com.quare.bibleplanner.feature.verse.annotations.domain.usecase.ObserveOtherVersionAnnotationCounts
 import com.quare.bibleplanner.feature.verse.annotations.presentation.factory.AnnotationsContentFactory
@@ -51,6 +55,8 @@ internal class AnnotationsViewModel(
     private val removePassageAnnotations: RemovePassageAnnotations,
     private val isWholeChapterRead: IsWholeChapterRead,
     private val setSelectedVersion: SetSelectedVersion,
+    private val shouldBlockAddVerseNote: ShouldBlockAddVerseNote,
+    private val getMaxFreeVerseNotesAmount: GetMaxFreeVerseNotesAmount,
     private val navigator: Navigator,
     val platform: Platform,
     contentFactory: AnnotationsContentFactory,
@@ -295,13 +301,36 @@ internal class AnnotationsViewModel(
     private fun openNote(item: AnnotationItemUiModel) {
         closeItemMenu()
         val passage = item.passage
+        viewModelScope.launch {
+            if (passage.note == null && shouldBlockAddVerseNote()) {
+                blockAddVerseNote()
+            } else {
+                navigator.navigate(
+                    VerseNoteNavRoute(
+                        bibleVersionId = passage.chapter.bibleVersionId,
+                        bookId = passage.chapter.bookId.name,
+                        chapterNumber = passage.chapter.chapterNumber,
+                        verseNumbers = passage.note?.verseNumbers ?: passage.verseNumbers,
+                        noteId = passage.note?.id,
+                    ),
+                )
+            }
+        }
+    }
+
+    private suspend fun blockAddVerseNote() {
+        val maxFreeVerseNotes = getMaxFreeVerseNotesAmount()
+        trackEvent(
+            name = AnalyticsEventNames.VERSE_NOTES_LIMIT_REACHED,
+            params = mapOf(
+                AnalyticsParams.MAX_FREE_NOTES to maxFreeVerseNotes,
+                AnalyticsParams.SOURCE to VERSE_NOTES_LIMIT_SOURCE,
+            ),
+        )
         navigator.navigate(
-            VerseNoteNavRoute(
-                bibleVersionId = passage.chapter.bibleVersionId,
-                bookId = passage.chapter.bookId.name,
-                chapterNumber = passage.chapter.chapterNumber,
-                verseNumbers = passage.note?.verseNumbers ?: passage.verseNumbers,
-                noteId = passage.note?.id,
+            AddNotesFreeWarningNavRoute(
+                maxFreeNotesAmount = maxFreeVerseNotes,
+                type = AddNotesFreeWarningType.VERSE,
             ),
         )
     }
@@ -329,5 +358,6 @@ internal class AnnotationsViewModel(
     private companion object {
         const val STOP_TIMEOUT_MILLIS = 5_000L
         const val ALL_BOOKS = "all"
+        const val VERSE_NOTES_LIMIT_SOURCE = "annotations"
     }
 }

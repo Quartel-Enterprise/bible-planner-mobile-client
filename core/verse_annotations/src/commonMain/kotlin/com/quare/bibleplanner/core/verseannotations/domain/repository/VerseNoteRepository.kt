@@ -11,6 +11,8 @@ interface VerseNoteRepository {
 
     suspend fun getNote(noteId: String): VerseNote?
 
+    suspend fun countNotes(): Int
+
     suspend fun upsert(note: VerseNote)
 
     suspend fun delete(noteId: String)

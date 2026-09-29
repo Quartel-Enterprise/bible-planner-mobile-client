@@ -19,7 +19,8 @@ The `source` is a required constructor parameter of `PaywallNavRoute`, so a new 
 | `profile_menu` | `feature/profile/.../ProfileViewModel.kt` — `ProfileOptionItemType.BECOME_PRO` |
 | `day_study` | `feature/day/.../DayViewModel.kt` — the locked AI-study card on the Day screen |
 | `day_study_detail` | `feature/day_study/.../DayStudyRouteViewModel.kt` — the same card on the day-study detail pane |
-| `notes_limit` | `feature/add_notes_free_warning/.../AddNotesFreeWarningUiActionCollector.kt` |
+| `notes_limit` | `feature/add_notes_free_warning/.../AddNotesFreeWarningViewModel.kt` — the free-notes warning opened from a day note (`AddNotesFreeWarningType.DAY`) |
+| `verse_notes_limit` | `feature/add_notes_free_warning/.../AddNotesFreeWarningViewModel.kt` — the same warning opened from a verse note (`AddNotesFreeWarningType.VERSE`) |
 | `chat` | `feature/chat/.../ChatViewModel.kt` — the locked input bar after the free question quota runs out |
 | `highlight_custom_color` | `feature/paywall_teaser/.../PaywallTeaserUiActionCollector.kt` — the paywall teaser sheet shown for `PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR` |
 

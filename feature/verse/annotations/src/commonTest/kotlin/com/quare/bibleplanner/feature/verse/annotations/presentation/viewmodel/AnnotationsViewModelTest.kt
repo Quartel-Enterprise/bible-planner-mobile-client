@@ -7,6 +7,8 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
@@ -599,6 +601,62 @@ internal class AnnotationsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the verse notes limit is reached WHEN adding a note to an unnoted passage THEN opens the warning`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareLoadedScenario(isAddVerseNoteBlocked = true)
+
+            // When
+            viewModel.onEvent(AnnotationsUiEvent.OnNoteClick(item(highlightedPassage)))
+
+            // Then
+            assertEquals(
+                expected = listOf(
+                    NavigationCommand.Navigate(
+                        AddNotesFreeWarningNavRoute(
+                            maxFreeNotesAmount = MAX_FREE_VERSE_NOTES,
+                            type = AddNotesFreeWarningType.VERSE,
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+            assertEquals(
+                expected = mapOf<String, Any>(
+                    AnalyticsParams.MAX_FREE_NOTES to MAX_FREE_VERSE_NOTES,
+                    AnalyticsParams.SOURCE to "annotations",
+                ),
+                actual = trackedEvents.single { it.first == AnalyticsEventNames.VERSE_NOTES_LIMIT_REACHED }.second,
+            )
+        }
+
+    @Test
+    fun `GIVEN the verse notes limit is reached WHEN opening an existing note THEN still opens the editor`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareLoadedScenario(isAddVerseNoteBlocked = true)
+
+            // When
+            viewModel.onEvent(AnnotationsUiEvent.OnNoteClick(item(notedPassage)))
+
+            // Then
+            assertEquals(
+                expected = listOf(
+                    NavigationCommand.Navigate(
+                        VerseNoteNavRoute(
+                            bibleVersionId = "arc",
+                            bookId = "GEN",
+                            chapterNumber = 3,
+                            verseNumbers = listOf(15),
+                            noteId = notedPassage.note?.id,
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
     fun `GIVEN an item menu WHEN dismissing it THEN closes it`() = runTest(testDispatcher) {
         // Given
         prepareLoadedScenario()
@@ -808,13 +866,22 @@ internal class AnnotationsViewModelTest {
         ?.first { it.passage == passage }
         ?: error("No item for $passage")
 
-    private suspend fun TestScope.prepareLoadedScenario(isChapterRead: Boolean = false) {
-        prepareScenario(isChapterRead = isChapterRead)
+    private suspend fun TestScope.prepareLoadedScenario(
+        isChapterRead: Boolean = false,
+        isAddVerseNoteBlocked: Boolean = false,
+    ) {
+        prepareScenario(
+            isChapterRead = isChapterRead,
+            isAddVerseNoteBlocked = isAddVerseNoteBlocked,
+        )
         entries.emit(listOf(highlightedPassage.toEntry(), notedPassage.toEntry()))
         runCurrent()
     }
 
-    private fun TestScope.prepareScenario(isChapterRead: Boolean = false) {
+    private fun TestScope.prepareScenario(
+        isChapterRead: Boolean = false,
+        isAddVerseNoteBlocked: Boolean = false,
+    ) {
         val navigator = Navigator()
         entries = MutableSharedFlow(replay = 1)
         trackedEvents = mutableListOf()
@@ -825,6 +892,8 @@ internal class AnnotationsViewModelTest {
             removePassageAnnotations = { passage -> removedPassages += passage },
             isWholeChapterRead = { _, _ -> isChapterRead },
             setSelectedVersion = { versionId -> selectedVersionIds += versionId },
+            shouldBlockAddVerseNote = { isAddVerseNoteBlocked },
+            getMaxFreeVerseNotesAmount = { MAX_FREE_VERSE_NOTES },
             navigator = navigator,
             platform = Platform.Android,
             contentFactory = AnnotationsContentFactory(
@@ -844,5 +913,9 @@ internal class AnnotationsViewModelTest {
         actions = mutableListOf<AnnotationsUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
         }
+    }
+
+    private companion object {
+        const val MAX_FREE_VERSE_NOTES = 3
     }
 }

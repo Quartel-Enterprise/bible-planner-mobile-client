@@ -202,6 +202,42 @@ internal class VerseNoteDaoTest {
         assertTrue(dao.getPendingSyncNotes().isEmpty())
     }
 
+    @Test
+    fun `GIVEN live and deleted notes WHEN counting THEN counts the live ones only`() = runTest {
+        // Given
+        dao.upsertNote(
+            note = note(updatedAt = 10L),
+            verses = verses(1),
+        )
+        dao.upsertNote(
+            note = note(
+                id = "other",
+                updatedAt = 10L,
+            ),
+            verses = verses(2),
+        )
+        dao.upsertNote(
+            note = note(
+                id = "deleted",
+                updatedAt = 10L,
+            ),
+            verses = verses(3),
+        )
+        dao.markNoteDeleted(
+            noteId = "deleted",
+            updatedAt = 30L,
+        )
+
+        // When
+        val count = dao.countActiveNotes()
+
+        // Then
+        assertEquals(
+            expected = 2,
+            actual = count,
+        )
+    }
+
     private fun verses(vararg numbers: Int): List<VerseNoteVerseEntity> = numbers.mapIndexed { index, number ->
         VerseNoteVerseEntity(
             noteId = NOTE_ID,

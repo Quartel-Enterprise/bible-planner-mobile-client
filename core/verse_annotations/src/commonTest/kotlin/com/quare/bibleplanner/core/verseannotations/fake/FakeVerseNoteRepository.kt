@@ -24,6 +24,8 @@ internal class FakeVerseNoteRepository(
 
     override suspend fun getNote(noteId: String): VerseNote? = notes.value.find { it.id == noteId }
 
+    override suspend fun countNotes(): Int = notes.value.size
+
     override suspend fun upsert(note: VerseNote) {
         notes.value = notes.value.filterNot { it.id == note.id } + note
     }

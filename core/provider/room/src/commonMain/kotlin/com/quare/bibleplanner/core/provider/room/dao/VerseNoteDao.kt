@@ -30,6 +30,9 @@ interface VerseNoteDao {
     @Query("SELECT * FROM verse_notes WHERE bibleVersionId = :bibleVersionId AND isDeleted = 0")
     fun getVersionNotesFlow(bibleVersionId: String): Flow<List<VerseNoteWithVerses>>
 
+    @Query("SELECT COUNT(*) FROM verse_notes WHERE isDeleted = 0")
+    suspend fun countActiveNotes(): Int
+
     @Transaction
     @Query("SELECT * FROM verse_notes WHERE id = :noteId")
     suspend fun getNoteById(noteId: String): VerseNoteWithVerses?
