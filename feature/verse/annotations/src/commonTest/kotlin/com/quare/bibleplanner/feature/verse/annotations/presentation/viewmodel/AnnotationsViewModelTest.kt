@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.verseannotations.domain.model.AnnotatedPassage
+import com.quare.bibleplanner.core.verseannotations.domain.model.VersionAnnotationCount
 import com.quare.bibleplanner.feature.verse.annotations.domain.model.AnnotationEntry
 import com.quare.bibleplanner.feature.verse.annotations.fixture.sampleNow
 import com.quare.bibleplanner.feature.verse.annotations.fixture.samplePassage
@@ -29,8 +30,10 @@ import com.quare.bibleplanner.feature.verse.annotations.presentation.model.Annot
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiAction
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiEvent
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiState
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.OtherVersionAnnotationsUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -68,6 +71,8 @@ internal class AnnotationsViewModelTest {
     private lateinit var actions: List<AnnotationsUiAction>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var removedPassages: MutableList<AnnotatedPassage>
+    private lateinit var otherVersionCounts: MutableStateFlow<List<VersionAnnotationCount>>
+    private lateinit var selectedVersionIds: MutableList<String>
 
     @BeforeTest
     fun setUp() {
@@ -665,6 +670,121 @@ internal class AnnotationsViewModelTest {
         )
     }
 
+    @Test
+    fun `GIVEN marks only in another version WHEN observing THEN shows nothing here and offers that version`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            otherVersionCounts.value = listOf(
+                VersionAnnotationCount(
+                    bibleVersionId = "a21",
+                    count = 1,
+                ),
+            )
+            entries.emit(emptyList())
+
+            // Then
+            val content = states
+                .last()
+                .content
+                .valueOrNull()
+            assertEquals(
+                expected = 0,
+                actual = content?.totalCount,
+            )
+            assertEquals(
+                expected = listOf(
+                    OtherVersionAnnotationsUiModel(
+                        bibleVersionId = "a21",
+                        versionAbbreviation = "A21",
+                        count = 1,
+                    ),
+                ),
+                actual = content?.otherVersions,
+            )
+        }
+
+    @Test
+    fun `GIVEN marks in other versions WHEN they change THEN lists the most marked version first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareLoadedScenario()
+
+            // When
+            otherVersionCounts.value = listOf(
+                VersionAnnotationCount(
+                    bibleVersionId = "a21",
+                    count = 1,
+                ),
+                VersionAnnotationCount(
+                    bibleVersionId = "nvi",
+                    count = 3,
+                ),
+            )
+
+            // Then
+            assertEquals(
+                expected = listOf("nvi" to 3, "a21" to 1),
+                actual = states
+                    .last()
+                    .content
+                    .valueOrNull()
+                    ?.otherVersions
+                    ?.map { it.bibleVersionId to it.count },
+            )
+        }
+
+    @Test
+    fun `GIVEN an offered version WHEN choosing to use it THEN selects it and tracks where it was chosen`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareLoadedScenario()
+
+            // When
+            viewModel.onEvent(
+                AnnotationsUiEvent.OnUseVersionClick(
+                    bibleVersionId = "a21",
+                    isEmptyState = true,
+                ),
+            )
+
+            // Then
+            assertEquals(
+                expected = listOf("a21"),
+                actual = selectedVersionIds,
+            )
+            assertEquals(
+                expected = AnalyticsEventNames.ANNOTATIONS_OTHER_VERSION_USED to mapOf<String, Any>(
+                    AnalyticsParams.VERSION_ID to "a21",
+                    AnalyticsParams.SOURCE to "empty_state",
+                ),
+                actual = trackedEvents.last(),
+            )
+        }
+
+    @Test
+    fun `GIVEN an offered version above the list WHEN choosing to use it THEN tracks the list as the source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareLoadedScenario()
+
+            // When
+            viewModel.onEvent(
+                AnnotationsUiEvent.OnUseVersionClick(
+                    bibleVersionId = "nvi",
+                    isEmptyState = false,
+                ),
+            )
+
+            // Then
+            assertEquals(
+                expected = "list",
+                actual = trackedEvents.last().second[AnalyticsParams.SOURCE],
+            )
+        }
+
     private fun utcMillisOf(day: Int): Long = LocalDate(
         year = 2026,
         month = 9,
@@ -699,9 +819,12 @@ internal class AnnotationsViewModelTest {
         entries = MutableSharedFlow(replay = 1)
         trackedEvents = mutableListOf()
         removedPassages = mutableListOf()
+        otherVersionCounts = MutableStateFlow(emptyList())
+        selectedVersionIds = mutableListOf()
         viewModel = AnnotationsViewModel(
             removePassageAnnotations = { passage -> removedPassages += passage },
             isWholeChapterRead = { _, _ -> isChapterRead },
+            setSelectedVersion = { versionId -> selectedVersionIds += versionId },
             navigator = navigator,
             platform = Platform.Android,
             contentFactory = AnnotationsContentFactory(
@@ -709,6 +832,7 @@ internal class AnnotationsViewModelTest {
                 localDateTimeProvider = utcLocalDateTimeProvider,
             ),
             observeAnnotationEntries = { entries },
+            observeOtherVersionAnnotationCounts = { otherVersionCounts },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         states = mutableListOf<AnnotationsUiState>().also { collected ->

@@ -1,4 +1,9 @@
 {
+  "2.9.2": {
+    "common": [
+      "Na tela Marcações, se a versão da Bíblia escolhida no aparelho não tem marcações, mas outra versão tem (por exemplo, porque você marcou em outro aparelho), agora aparece um aviso como \"1 marcação em A21\", com um botão para passar a usar essa versão. Antes, a tela aparecia vazia."
+    ]
+  },
   "2.9.1": {
     "common": [
       "Na tela Marcações, voltar pelo botão ou gesto do sistema com a busca aberta agora apenas fecha a busca, em vez de sair da tela."

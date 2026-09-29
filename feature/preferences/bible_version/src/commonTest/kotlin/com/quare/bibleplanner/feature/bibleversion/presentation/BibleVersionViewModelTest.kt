@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
+import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
 import com.quare.bibleplanner.core.books.testing.FakeBibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.NavigationCommand
@@ -13,7 +14,6 @@ import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.DeleteBibleVersionDownloadUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.GetBibleVersionsByLanguageUseCase
-import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.fake.InMemoryBibleVersionDao
 import com.quare.bibleplanner.feature.bibleversion.fake.NoOpDeleteVerseDao

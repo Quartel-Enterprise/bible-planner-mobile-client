@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BorderColor
@@ -22,12 +23,22 @@ import androidx.compose.ui.unit.dp
 import bibleplanner.feature.verse.annotations.generated.resources.Res
 import bibleplanner.feature.verse.annotations.generated.resources.empty_body
 import bibleplanner.feature.verse.annotations.generated.resources.empty_title
+import bibleplanner.feature.verse.annotations.generated.resources.other_versions_empty_body
+import bibleplanner.feature.verse.annotations.generated.resources.other_versions_empty_title
+import com.quare.bibleplanner.feature.verse.annotations.presentation.component.OtherVersionsCard
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsUiEvent
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.OtherVersionAnnotationsUiModel
 import org.jetbrains.compose.resources.stringResource
 
 private const val ICON_BACKGROUND_ALPHA = 0.12f
 
 @Composable
-internal fun AnnotationsEmptyContent(modifier: Modifier = Modifier) {
+internal fun AnnotationsEmptyContent(
+    otherVersions: List<OtherVersionAnnotationsUiModel>,
+    onEvent: (AnnotationsUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val hasOtherVersions = otherVersions.isNotEmpty()
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -55,16 +66,30 @@ internal fun AnnotationsEmptyContent(modifier: Modifier = Modifier) {
             )
         }
         Text(
-            text = stringResource(Res.string.empty_title),
+            text = stringResource(
+                if (hasOtherVersions) Res.string.other_versions_empty_title else Res.string.empty_title,
+            ),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 6.dp),
         )
         Text(
-            text = stringResource(Res.string.empty_body),
+            text = stringResource(
+                if (hasOtherVersions) Res.string.other_versions_empty_body else Res.string.empty_body,
+            ),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+        if (hasOtherVersions) {
+            OtherVersionsCard(
+                otherVersions = otherVersions,
+                isEmptyState = true,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .padding(top = 12.dp)
+                    .widthIn(max = 420.dp),
+            )
+        }
     }
 }

@@ -16,4 +16,5 @@ internal data class AnnotationsContentUiModel(
     val today: LocalDate,
     val hasActiveFilters: Boolean,
     val groups: List<AnnotationGroupUiModel>,
+    val otherVersions: List<OtherVersionAnnotationsUiModel>,
 )

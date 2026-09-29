@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.verseannotations.domain.model.AnnotatedPassage
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.model.VersionAnnotationCount
 import com.quare.bibleplanner.feature.verse.annotations.domain.model.AnnotationEntry
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationDateRange
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationGroupLabel
@@ -18,6 +19,7 @@ import com.quare.bibleplanner.feature.verse.annotations.presentation.model.Annot
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.BookFilterUiModel
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.ColorFilterUiModel
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.DatedAnnotationEntry
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.OtherVersionAnnotationsUiModel
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.PeriodFilterUiModel
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.TypeFilterUiModel
 import com.quare.bibleplanner.ui.utils.removeAccents
@@ -30,6 +32,7 @@ internal class AnnotationsContentFactory(
 ) {
     fun create(
         entries: List<AnnotationEntry>,
+        otherVersionCounts: List<VersionAnnotationCount>,
         filters: AnnotationsFilters,
     ): AnnotationsContentUiModel {
         val today = toLocalDate(currentTimestampProvider.getCurrentTimestamp())
@@ -80,8 +83,18 @@ internal class AnnotationsContentFactory(
                 shownEntries = shownEntries,
                 today = today,
             ),
+            otherVersions = otherVersionCounts
+                .sortedByDescending { it.count }
+                .map(::toOtherVersion),
         )
     }
+
+    private fun toOtherVersion(versionCount: VersionAnnotationCount): OtherVersionAnnotationsUiModel =
+        OtherVersionAnnotationsUiModel(
+            bibleVersionId = versionCount.bibleVersionId,
+            versionAbbreviation = versionCount.bibleVersionId.uppercase(),
+            count = versionCount.count,
+        )
 
     private fun createTypeFilters(
         datedEntries: List<DatedAnnotationEntry>,

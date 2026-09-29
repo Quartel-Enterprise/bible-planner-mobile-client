@@ -47,4 +47,11 @@
         <item quantity="one">%1$d item</item>
         <item quantity="other">%1$d items</item>
     </plurals>
+    <string name="other_versions_empty_title">Nothing marked in this version</string>
+    <string name="other_versions_empty_body">Your marks stay with the Bible version you made them in.</string>
+    <string name="other_version_use">Use %1$s</string>
+    <plurals name="other_version_count">
+        <item quantity="one">%1$d mark in %2$s</item>
+        <item quantity="other">%1$d marks in %2$s</item>
+    </plurals>
 </resources>

@@ -71,7 +71,10 @@ internal fun AnnotationsScreen(
                 when {
                     loaded == null -> AnnotationsLoadingContent()
 
-                    loaded.totalCount == 0 -> AnnotationsEmptyContent()
+                    loaded.totalCount == 0 -> AnnotationsEmptyContent(
+                        otherVersions = loaded.otherVersions,
+                        onEvent = onEvent,
+                    )
 
                     isWide -> WideAnnotationsContent(
                         content = loaded,
@@ -183,6 +186,7 @@ private fun AnnotationsResultsContent(
     } else {
         AnnotationsList(
             groups = content.groups,
+            otherVersions = content.otherVersions,
             openMenuItemKey = state.openMenuItemKey,
             isWide = isWide,
             onEvent = onEvent,

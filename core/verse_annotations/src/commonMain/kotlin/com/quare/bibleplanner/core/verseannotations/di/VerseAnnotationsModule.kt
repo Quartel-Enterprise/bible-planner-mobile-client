@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.verseannotations.data.mapper.SyncTimestampMap
 import com.quare.bibleplanner.core.verseannotations.data.mapper.VerseHighlightMapper
 import com.quare.bibleplanner.core.verseannotations.data.mapper.VerseNoteEntityMapper
 import com.quare.bibleplanner.core.verseannotations.data.mapper.VerseNoteSyncMapper
+import com.quare.bibleplanner.core.verseannotations.data.repository.AnnotatedVersionRepositoryImpl
 import com.quare.bibleplanner.core.verseannotations.data.repository.HighlightPaletteRepositoryImpl
 import com.quare.bibleplanner.core.verseannotations.data.repository.SavedVerseRepositoryImpl
 import com.quare.bibleplanner.core.verseannotations.data.repository.VerseHighlightRepositoryImpl
@@ -19,6 +20,7 @@ import com.quare.bibleplanner.core.verseannotations.data.sync.VerseHighlightRemo
 import com.quare.bibleplanner.core.verseannotations.data.sync.VerseNoteLocalStore
 import com.quare.bibleplanner.core.verseannotations.data.sync.VerseNoteRemoteStore
 import com.quare.bibleplanner.core.verseannotations.domain.factory.AnnotatedPassageFactory
+import com.quare.bibleplanner.core.verseannotations.domain.repository.AnnotatedVersionRepository
 import com.quare.bibleplanner.core.verseannotations.domain.repository.HighlightPaletteRepository
 import com.quare.bibleplanner.core.verseannotations.domain.repository.SavedVerseRepository
 import com.quare.bibleplanner.core.verseannotations.domain.repository.VerseHighlightRepository
@@ -33,6 +35,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveAnnota
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveHighlightPalette
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseSelection
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVersionAnnotationCounts
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemoveCustomHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemovePassageAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
@@ -47,6 +50,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveA
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveChapterAnnotationsUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveHighlightPaletteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveVerseSelectionUseCase
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveVersionAnnotationCountsUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.RemoveCustomHighlightColorUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.RemovePassageAnnotationsUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.SaveVerseNoteUseCase
@@ -71,6 +75,7 @@ val verseAnnotationsModule = module {
     singleOf(::VerseNoteRepositoryImpl).bind<VerseNoteRepository>()
     singleOf(::HighlightPaletteRepositoryImpl).bind<HighlightPaletteRepository>()
     singleOf(::VerseSelectionRepositoryImpl).bind<VerseSelectionRepository>()
+    singleOf(::AnnotatedVersionRepositoryImpl).bind<AnnotatedVersionRepository>()
 
     factoryOf(::ObserveChapterAnnotationsUseCase).bind<ObserveChapterAnnotations>()
     factoryOf(::ApplyHighlightColorUseCase).bind<ApplyHighlightColor>()
@@ -86,6 +91,7 @@ val verseAnnotationsModule = module {
     factoryOf(::ClearVerseSelectionUseCase).bind<ClearVerseSelection>()
     factoryOf(::ObserveAnnotatedPassagesUseCase).bind<ObserveAnnotatedPassages>()
     factoryOf(::RemovePassageAnnotationsUseCase).bind<RemovePassageAnnotations>()
+    factoryOf(::ObserveVersionAnnotationCountsUseCase).bind<ObserveVersionAnnotationCounts>()
 
     factoryOf(::VerseHighlightLocalStore)
     factoryOf(::VerseHighlightRemoteStore)

@@ -23,6 +23,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleSavedVerses
 import com.quare.bibleplanner.e2e.harness.E2eApp
 import com.quare.bibleplanner.e2e.harness.E2eWindow
+import com.quare.bibleplanner.e2e.harness.FakeBibles
 import com.quare.bibleplanner.e2e.harness.awaitGone
 import com.quare.bibleplanner.e2e.harness.awaitNode
 import com.quare.bibleplanner.e2e.harness.awaitText
@@ -37,6 +38,7 @@ import kotlin.test.Test
 @OptIn(ExperimentalTestApi::class)
 internal class AnnotationsFlowUiTest {
     private val app = E2eApp()
+    private val otherVersionId = FakeBibles.englishAlternative.id
 
     @AfterTest
     fun tearDown() {
@@ -105,6 +107,27 @@ internal class AnnotationsFlowUiTest {
         awaitText("1 highlight · 1 saved · 0 notes")
     }
 
+    @Test
+    fun `GIVEN a verse marked only in a version not downloaded WHEN using that version THEN lists the mark`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                window = E2eWindow.PORTRAIT,
+                arrange = { highlightInAnotherVersion() },
+            )
+            clickText("Profile")
+            clickText("Annotations")
+            awaitText("Nothing marked in this version")
+            awaitText("1 mark in $otherVersionId")
+
+            // When
+            clickText("Use $otherVersionId")
+
+            // Then
+            awaitText("Job 38:4")
+            awaitGone(hasText("Nothing marked in this version"))
+        }
+
     private fun ComposeUiTest.openTheAnnotations() {
         clickText("Profile")
         awaitText("1 highlight · 1 saved · 1 note")
@@ -150,11 +173,30 @@ internal class AnnotationsFlowUiTest {
         )
     }
 
-    private suspend fun ComposeUiTest.prepareScenario(window: E2eWindow) {
+    private suspend fun Koin.highlightInAnotherVersion() {
+        get<ApplyHighlightColor>().invoke(
+            refs = listOf(
+                VerseRef(
+                    chapter = ChapterRef(
+                        bibleVersionId = otherVersionId,
+                        bookId = BookId.JOB,
+                        chapterNumber = 38,
+                    ),
+                    verseNumber = 4,
+                ),
+            ),
+            color = HighlightColor.Preset(PresetHighlightColor.YELLOW),
+        )
+    }
+
+    private suspend fun ComposeUiTest.prepareScenario(
+        window: E2eWindow,
+        arrange: suspend Koin.() -> Unit = { markSomeVerses() },
+    ) {
         with(app) {
             launch(
                 window = window,
-                arrange = { markSomeVerses() },
+                arrange = arrange,
             )
         }
     }

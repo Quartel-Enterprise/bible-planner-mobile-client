@@ -6,6 +6,7 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.quare.bibleplanner.core.provider.room.converter.BibleVersionDownloadStatusConverter
+import com.quare.bibleplanner.core.provider.room.dao.AnnotatedVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
@@ -120,4 +121,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun verseNoteDao(): VerseNoteDao
 
     abstract fun highlightPaletteColorDao(): HighlightPaletteColorDao
+
+    abstract fun annotatedVersionDao(): AnnotatedVersionDao
 }

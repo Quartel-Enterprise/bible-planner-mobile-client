@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.verseannotations.domain.model.AnnotatedPassage
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.model.VersionAnnotationCount
 import com.quare.bibleplanner.feature.verse.annotations.domain.model.AnnotationEntry
 import com.quare.bibleplanner.feature.verse.annotations.fixture.daysAgo
 import com.quare.bibleplanner.feature.verse.annotations.fixture.sampleNow
@@ -17,6 +18,7 @@ import com.quare.bibleplanner.feature.verse.annotations.presentation.model.Annot
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationTypeFilter
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsContentUiModel
 import com.quare.bibleplanner.feature.verse.annotations.presentation.model.AnnotationsFilters
+import com.quare.bibleplanner.feature.verse.annotations.presentation.model.OtherVersionAnnotationsUiModel
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlin.test.Test
@@ -60,10 +62,51 @@ internal class AnnotationsContentFactoryTest {
     private val entries = listOf(highlighted, saved, noted, lastYear)
 
     @Test
+    fun `GIVEN marks in other versions WHEN creating the content THEN offers them from the most marked`() {
+        // When
+        val content = factory.create(
+            entries = emptyList(),
+            otherVersionCounts = listOf(
+                VersionAnnotationCount(
+                    bibleVersionId = "a21",
+                    count = 1,
+                ),
+                VersionAnnotationCount(
+                    bibleVersionId = "nvi",
+                    count = 2,
+                ),
+            ),
+            filters = AnnotationsContentFactory.noFilters,
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                OtherVersionAnnotationsUiModel(
+                    bibleVersionId = "nvi",
+                    versionAbbreviation = "NVI",
+                    count = 2,
+                ),
+                OtherVersionAnnotationsUiModel(
+                    bibleVersionId = "a21",
+                    versionAbbreviation = "A21",
+                    count = 1,
+                ),
+            ),
+            actual = content.otherVersions,
+        )
+        assertEquals(
+            expected = 0,
+            actual = content.totalCount,
+        )
+    }
+
+    @Test
     fun `groups passages into today and yesterday and the months before`() {
         // When
         val content = factory.create(
             entries = entries,
+            otherVersionCounts = emptyList(),
             filters = AnnotationsContentFactory.noFilters,
         )
 
@@ -103,6 +146,7 @@ internal class AnnotationsContentFactoryTest {
         // When
         val content = factory.create(
             entries = entries,
+            otherVersionCounts = emptyList(),
             filters = AnnotationsContentFactory.noFilters.copy(type = AnnotationTypeFilter.NOTES),
         )
 
@@ -139,6 +183,7 @@ internal class AnnotationsContentFactoryTest {
         // When
         val content = factory.create(
             entries = entries + customEntry,
+            otherVersionCounts = emptyList(),
             filters = AnnotationsContentFactory.noFilters.copy(
                 color = yellow,
                 period = AnnotationPeriod.LAST_30_DAYS,
@@ -170,6 +215,7 @@ internal class AnnotationsContentFactoryTest {
         // When
         val content = factory.create(
             entries = entries,
+            otherVersionCounts = emptyList(),
             filters = AnnotationsContentFactory.noFilters.copy(bookId = BookId.PSA),
         )
 
@@ -197,6 +243,7 @@ internal class AnnotationsContentFactoryTest {
         // When
         val content = factory.create(
             entries = entries,
+            otherVersionCounts = emptyList(),
             filters = AnnotationsContentFactory.noFilters.copy(period = AnnotationPeriod.LAST_7_DAYS),
         )
 
@@ -226,6 +273,7 @@ internal class AnnotationsContentFactoryTest {
         // When
         val content = factory.create(
             entries = entries,
+            otherVersionCounts = emptyList(),
             filters = AnnotationsContentFactory.noFilters.copy(
                 period = AnnotationPeriod.CUSTOM,
                 customRange = AnnotationDateRange(
@@ -278,6 +326,7 @@ internal class AnnotationsContentFactoryTest {
         // When
         val content = factory.create(
             entries = entries + pinkEntries,
+            otherVersionCounts = emptyList(),
             filters = AnnotationsContentFactory.noFilters,
         )
 
@@ -309,6 +358,7 @@ internal class AnnotationsContentFactoryTest {
             factory
                 .create(
                     entries = listOf(reference, text, note, lastYear),
+                    otherVersionCounts = emptyList(),
                     filters = AnnotationsContentFactory.noFilters.copy(query = query),
                 ).shownPassages()
         }
@@ -346,6 +396,7 @@ internal class AnnotationsContentFactoryTest {
                 highlighted.copy(text = "light"),
                 noted.copy(text = "light"),
             ),
+            otherVersionCounts = emptyList(),
             filters = AnnotationsContentFactory.noFilters.copy(
                 query = "light",
                 type = AnnotationTypeFilter.NOTES,
@@ -373,6 +424,7 @@ internal class AnnotationsContentFactoryTest {
         // When
         val content = factory.create(
             entries = listOf(highlighted, sameVersesWithNote),
+            otherVersionCounts = emptyList(),
             filters = AnnotationsFilters(
                 type = AnnotationTypeFilter.ALL,
                 color = null,

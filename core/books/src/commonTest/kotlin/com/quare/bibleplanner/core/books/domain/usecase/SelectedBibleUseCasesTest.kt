@@ -131,6 +131,25 @@ internal class SelectedBibleUseCasesTest {
         downloadStatus = DownloadStatusModel.InProgress.Downloading(progress),
     )
 
+    @Test
+    fun `GIVEN a stored selection WHEN selecting another version THEN stores it as the selected one`() = runTest {
+        // Given
+        prepareScenario(bibles = emptyList())
+
+        // When
+        SetSelectedVersionUseCase(repository)("A21")
+
+        // Then
+        assertEquals(
+            expected = listOf("A21"),
+            actual = repository.selectedVersionIds,
+        )
+        assertEquals(
+            expected = "A21",
+            actual = GetSelectedVersionIdFlowUseCase(repository)().first(),
+        )
+    }
+
     private fun bible(
         id: String,
         isSelected: Boolean,

@@ -3,13 +3,13 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.usecase.InitializeBibleVersionsUseCase
+import com.quare.bibleplanner.core.books.domain.usecase.SetSelectedVersion
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.DeleteVersionNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestDownloadNotificationPermissionUseCase
-import com.quare.bibleplanner.feature.bibleversion.domain.usecase.SetSelectedVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.domain.usecase.UpdateBibleVersionUseCase
 import com.quare.bibleplanner.feature.bibleversion.presentation.factory.BibleVersionsUiStateFactory
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiAction
@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class BibleVersionViewModel(
-    private val setSelectedVersion: SetSelectedVersionUseCase,
+    private val setSelectedVersion: SetSelectedVersion,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val initializeBibleVersions: InitializeBibleVersionsUseCase,
     private val updateBibleVersion: UpdateBibleVersionUseCase,
