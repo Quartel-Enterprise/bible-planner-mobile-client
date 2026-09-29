@@ -15,7 +15,10 @@ internal class NavigationSavedStateConfigurationTest {
         MainNavRouteDestination.Profile,
         AccountDetailsNavRoute,
         AnnotationsNavRoute,
-        AddNotesFreeWarningNavRoute(maxFreeNotesAmount = 3),
+        AddNotesFreeWarningNavRoute(
+            maxFreeNotesAmount = 3,
+            type = AddNotesFreeWarningType.VERSE,
+        ),
         AppLanguageNavRoute,
         BibleVersionSelectorRoute,
         BookDetailsNavRoute(bookId = "GEN"),

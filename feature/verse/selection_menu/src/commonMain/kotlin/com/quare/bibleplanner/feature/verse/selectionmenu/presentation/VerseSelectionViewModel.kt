@@ -5,6 +5,8 @@ import bibleplanner.feature.verse.selection_menu.generated.resources.Res
 import bibleplanner.feature.verse.selection_menu.generated.resources.copied_to_clipboard
 import com.quare.bibleplanner.core.books.domain.usecase.GetVersesShareContent
 import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
@@ -21,9 +23,11 @@ import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.AddCustomHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ApplyHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ClearVerseSelection
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.GetMaxFreeVerseNotesAmount
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveHighlightPalette
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseSelection
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ShouldBlockAddVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleSavedVerses
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.CustomColorUiModel
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiAction
@@ -58,6 +62,8 @@ internal class VerseSelectionViewModel(
     private val addCustomHighlightColor: AddCustomHighlightColor,
     private val toggleSavedVerses: ToggleSavedVerses,
     private val getVersesShareContent: GetVersesShareContent,
+    private val shouldBlockAddVerseNote: ShouldBlockAddVerseNote,
+    private val getMaxFreeVerseNotesAmount: GetMaxFreeVerseNotesAmount,
     val platform: Platform,
     private val navigator: Navigator,
     observeChapterAnnotations: ObserveChapterAnnotations,
@@ -260,13 +266,36 @@ internal class VerseSelectionViewModel(
                 AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size,
             ),
         )
+        viewModelScope.launch {
+            if (noteId == null && shouldBlockAddVerseNote()) {
+                blockAddVerseNote()
+            } else {
+                navigator.navigate(
+                    VerseNoteNavRoute(
+                        bibleVersionId = selection.chapter.bibleVersionId,
+                        bookId = selection.chapter.bookId.name,
+                        chapterNumber = selection.chapter.chapterNumber,
+                        verseNumbers = selection.verseNumbers,
+                        noteId = noteId,
+                    ),
+                )
+            }
+        }
+    }
+
+    private suspend fun blockAddVerseNote() {
+        val maxFreeVerseNotes = getMaxFreeVerseNotesAmount()
+        trackEvent(
+            name = AnalyticsEventNames.VERSE_NOTES_LIMIT_REACHED,
+            params = mapOf(
+                AnalyticsParams.MAX_FREE_NOTES to maxFreeVerseNotes,
+                AnalyticsParams.SOURCE to VERSE_NOTES_LIMIT_SOURCE,
+            ),
+        )
         navigator.navigate(
-            VerseNoteNavRoute(
-                bibleVersionId = selection.chapter.bibleVersionId,
-                bookId = selection.chapter.bookId.name,
-                chapterNumber = selection.chapter.chapterNumber,
-                verseNumbers = selection.verseNumbers,
-                noteId = noteId,
+            AddNotesFreeWarningNavRoute(
+                maxFreeNotesAmount = maxFreeVerseNotes,
+                type = AddNotesFreeWarningType.VERSE,
             ),
         )
     }
@@ -309,5 +338,9 @@ internal class VerseSelectionViewModel(
 
     private fun emitAction(action: VerseSelectionUiAction) {
         viewModelScope.launch { uiAction.emit(action) }
+    }
+
+    companion object {
+        private const val VERSE_NOTES_LIMIT_SOURCE = "selection_menu"
     }
 }

@@ -30,6 +30,8 @@ internal class VerseNoteRepositoryImpl(
         ?.takeUnless { it.note.isDeleted }
         ?.let(verseNoteEntityMapper::toDomain)
 
+    override suspend fun countNotes(): Int = verseNoteDao.countActiveNotes()
+
     override suspend fun upsert(note: VerseNote) {
         val stamped = note.copy(updatedAtEpochMillis = currentTimestampProvider.getCurrentTimestamp())
         verseNoteDao.upsertNote(

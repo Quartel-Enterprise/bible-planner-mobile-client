@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.addnotesfreewarning.presentation.viewmode
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -49,6 +50,24 @@ internal class AddNotesFreeWarningViewModelTest {
     }
 
     @Test
+    fun `GIVEN the verse notes warning WHEN subscribing to pro THEN replaces it with the verse notes limit paywall`() =
+        runTest {
+            // Given
+            prepareScenario(type = AddNotesFreeWarningType.VERSE)
+
+            // When
+            viewModel.onEvent(AddNotesFreeWarningUiEvent.OnSubscribeToPro)
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(
+                    NavigationCommand.NavigateReplacingTop(PaywallNavRoute(PaywallEntrySource.VERSE_NOTES_LIMIT)),
+                ),
+                commands,
+            )
+        }
+
+    @Test
     fun `GIVEN the warning WHEN cancelling THEN closes it`() = runTest {
         // Given
         prepareScenario()
@@ -61,14 +80,17 @@ internal class AddNotesFreeWarningViewModelTest {
         assertEquals(listOf(AnalyticsEventNames.ADD_NOTES_FREE_WARNING_DISMISSED), trackedEvents)
     }
 
-    private fun TestScope.prepareScenario() {
+    private fun TestScope.prepareScenario(type: AddNotesFreeWarningType = AddNotesFreeWarningType.DAY) {
         val navigator = Navigator()
         commands = mutableListOf()
         trackedEvents = mutableListOf()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { navigator.commands.collect(commands::add) }
         viewModel = AddNotesFreeWarningViewModel(
             navigator = navigator,
-            route = AddNotesFreeWarningNavRoute(maxFreeNotesAmount = MAX_FREE_NOTES),
+            route = AddNotesFreeWarningNavRoute(
+                maxFreeNotesAmount = MAX_FREE_NOTES,
+                type = type,
+            ),
             trackEvent = { name, _ -> trackedEvents += name },
         )
     }

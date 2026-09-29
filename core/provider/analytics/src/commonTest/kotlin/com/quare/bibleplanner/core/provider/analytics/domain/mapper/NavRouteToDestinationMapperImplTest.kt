@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.provider.analytics.domain.mapper
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AccountDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
@@ -73,7 +74,10 @@ class NavRouteToDestinationMapperImplTest {
             MainNavRouteDestination.Plans to ("plans" to DestinationType.SCREEN),
             MainNavRouteDestination.Books to ("books" to DestinationType.SCREEN),
             MainNavRouteDestination.Profile to ("profile" to DestinationType.SCREEN),
-            AddNotesFreeWarningNavRoute(maxFreeNotesAmount = 3) to
+            AddNotesFreeWarningNavRoute(
+                maxFreeNotesAmount = 3,
+                type = AddNotesFreeWarningType.DAY,
+            ) to
                 ("add_notes_free_warning" to DestinationType.DIALOG),
             AppLanguageNavRoute to ("app_language" to DestinationType.RESPONSIVE),
             BibleVersionSelectorRoute to ("bible_version_selector" to DestinationType.RESPONSIVE),
@@ -129,10 +133,21 @@ class NavRouteToDestinationMapperImplTest {
     }
 
     @Test
-    fun `GIVEN AddNotesFreeWarningNavRoute WHEN mapping THEN carries max_free_notes param`() {
-        val destination = mapper.map(AddNotesFreeWarningNavRoute(maxFreeNotesAmount = 5))
+    fun `GIVEN AddNotesFreeWarningNavRoute WHEN mapping THEN carries max_free_notes and type params`() {
+        val destination = mapper.map(
+            AddNotesFreeWarningNavRoute(
+                maxFreeNotesAmount = 5,
+                type = AddNotesFreeWarningType.VERSE,
+            ),
+        )
 
-        assertEquals(mapOf(AnalyticsParams.MAX_FREE_NOTES to 5), destination?.params)
+        assertEquals(
+            mapOf(
+                AnalyticsParams.MAX_FREE_NOTES to 5,
+                AnalyticsParams.TYPE to "verse",
+            ),
+            destination?.params,
+        )
     }
 
     @Test

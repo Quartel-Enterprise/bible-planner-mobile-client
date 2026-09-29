@@ -19,6 +19,7 @@ fun EntryProviderScope<NavKey>.addNotesFreeWarning() {
         val viewModel = koinViewModel<AddNotesFreeWarningViewModel> { parametersOf(route) }
         AddNotesFreeWarningDialog(
             maxFreeNotesAmount = viewModel.maxFreeNotesAmount,
+            type = viewModel.type,
             onEvent = viewModel::onEvent,
         )
     }

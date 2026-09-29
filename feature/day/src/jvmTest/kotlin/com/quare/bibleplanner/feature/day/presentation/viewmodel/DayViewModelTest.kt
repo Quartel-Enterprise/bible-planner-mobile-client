@@ -20,6 +20,7 @@ import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -600,7 +601,17 @@ internal class DayViewModelTest {
 
             // Then
             assertEquals(listOf(DayUiAction.ClearFocus), actions.value)
-            assertEquals(listOf(NavigationCommand.Navigate(AddNotesFreeWarningNavRoute(3))), commands.value)
+            assertEquals(
+                listOf(
+                    NavigationCommand.Navigate(
+                        AddNotesFreeWarningNavRoute(
+                            maxFreeNotesAmount = 3,
+                            type = AddNotesFreeWarningType.DAY,
+                        ),
+                    ),
+                ),
+                commands.value,
+            )
             assertEquals(
                 mapOf<String, Any>("max_free_notes" to 3),
                 trackedParams(AnalyticsEventNames.NOTES_LIMIT_REACHED),

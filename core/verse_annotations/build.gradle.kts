@@ -15,9 +15,11 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.provider.billing)
             implementation(projects.core.provider.room)
             implementation(projects.core.provider.supabase)
             implementation(projects.core.provider.connectivity)
+            implementation(projects.core.remoteConfig)
             implementation(projects.core.sync)
             implementation(projects.core.user)
             implementation(projects.core.date)

@@ -76,7 +76,10 @@ sealed interface VerseSelectionUiEvent : UiEvent {
 
     data object OnNoteClick : VerseSelectionUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
-            AnalyticsEventNames.VERSE_NOTE_OPENED,
+            setOf(
+                AnalyticsEventNames.VERSE_NOTE_OPENED,
+                AnalyticsEventNames.VERSE_NOTES_LIMIT_REACHED,
+            ),
         )
     }
 

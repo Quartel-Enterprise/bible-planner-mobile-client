@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.addnotesfreewarning.presentation.viewmode
 
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -14,12 +15,18 @@ internal class AddNotesFreeWarningViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AddNotesFreeWarningUiEvent>(trackEvent) {
     val maxFreeNotesAmount = route.maxFreeNotesAmount
+    val type = route.type
 
     override fun handleEvent(event: AddNotesFreeWarningUiEvent) = when (event) {
         AddNotesFreeWarningUiEvent.OnCancel -> navigator.navigateBack()
 
         AddNotesFreeWarningUiEvent.OnSubscribeToPro -> navigator.navigateReplacingTop(
-            PaywallNavRoute(PaywallEntrySource.NOTES_LIMIT),
+            PaywallNavRoute(type.toPaywallEntrySource()),
         )
+    }
+
+    private fun AddNotesFreeWarningType.toPaywallEntrySource(): PaywallEntrySource = when (this) {
+        AddNotesFreeWarningType.DAY -> PaywallEntrySource.NOTES_LIMIT
+        AddNotesFreeWarningType.VERSE -> PaywallEntrySource.VERSE_NOTES_LIMIT
     }
 }

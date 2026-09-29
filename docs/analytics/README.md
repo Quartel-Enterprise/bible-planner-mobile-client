@@ -130,7 +130,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `MainNavRouteDestination.Profile` | `profile` | `screen` | — |
 | `AccountDetailsNavRoute` | `account_details` | `responsive` | — |
 | `AnnotationsNavRoute` | `annotations` | `screen` | — |
-| `AddNotesFreeWarningNavRoute` | `add_notes_free_warning` | `dialog` | `max_free_notes` |
+| `AddNotesFreeWarningNavRoute` | `add_notes_free_warning` | `dialog` | `max_free_notes`, `type` (`day` \| `verse`) |
 | `AppLanguageNavRoute` | `app_language` | `responsive` | — |
 | `BibleVersionSelectorRoute` | `bible_version_selector` | `responsive` | — |
 | `BookDetailsNavRoute` | `book_details` | `screen` | `book_id` |
@@ -254,6 +254,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [highlight_custom_color_delete_cancelled](events/highlight_custom_color_delete_cancelled.md) | P2 | Verse annotations |
 | [verse_saved_toggled](events/verse_saved_toggled.md) | P1 | Verse annotations |
 | [verse_note_opened](events/verse_note_opened.md) | P1 | Verse annotations |
+| [verse_notes_limit_reached](events/verse_notes_limit_reached.md) | P1 | Verse annotations |
 | [verse_note_saved](events/verse_note_saved.md) | P1 | Verse annotations |
 | [verse_note_dismissed](events/verse_note_dismissed.md) | P2 | Verse annotations |
 | [verses_copied](events/verses_copied.md) | P1 | Verse annotations |

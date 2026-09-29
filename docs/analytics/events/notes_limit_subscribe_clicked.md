@@ -19,5 +19,6 @@ None.
 ## Notes
 
 - Pairs with [add_notes_free_warning_dismissed](add_notes_free_warning_dismissed.md), the cancel half of the same dialog.
-- Navigates to the paywall replacing the dialog on the stack, so the resulting impression is [paywall_viewed](paywall_viewed.md) with `source=notes_limit`.
-- Funnel: [notes_limit_reached](notes_limit_reached.md) → `notes_limit_subscribe_clicked` → [paywall_viewed](paywall_viewed.md) → [purchase_completed](purchase_completed.md).
+- Navigates to the paywall replacing the dialog on the stack, so the resulting impression is [paywall_viewed](paywall_viewed.md) with `source=notes_limit` (day notes) or `source=verse_notes_limit` (verse notes).
+- The same dialog serves both gates; its `screen_view` carries `type` (`day` | `verse`) to tell them apart.
+- Funnel: [notes_limit_reached](notes_limit_reached.md) / [verse_notes_limit_reached](verse_notes_limit_reached.md) → `notes_limit_subscribe_clicked` → [paywall_viewed](paywall_viewed.md) → [purchase_completed](purchase_completed.md).
