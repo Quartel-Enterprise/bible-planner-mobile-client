@@ -1,7 +1,8 @@
 {
   "2.9.2": {
     "common": [
-      "On the Annotations screen, if the Bible version chosen on your device has no marks but another version does (for example, because you marked them on another device), you now see a notice like \"1 mark in A21\" with a button to switch to that version. Before, the screen looked empty."
+      "On the Annotations screen, if the Bible version chosen on your device has no marks but another version does (for example, because you marked them on another device), you now see a notice like \"1 mark in A21\" with a button to switch to that version. Before, the screen looked empty.",
+      "On the Profile tab, the Annotations card now also shows when you have marks in other Bible versions, for example \"1 mark in A21\"."
     ]
   },
   "2.9.1": {

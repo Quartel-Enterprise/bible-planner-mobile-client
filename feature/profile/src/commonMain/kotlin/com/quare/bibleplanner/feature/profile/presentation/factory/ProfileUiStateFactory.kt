@@ -30,12 +30,16 @@ import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLangua
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.web.ObserveProfileWebAppEnabled
+import com.quare.bibleplanner.core.verseannotations.domain.model.AnnotatedPassage
+import com.quare.bibleplanner.core.verseannotations.domain.model.VersionAnnotationCount
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveAnnotatedPassages
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVersionAnnotationCounts
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
+import com.quare.bibleplanner.feature.profile.presentation.model.OtherVersionAnnotationCountModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.flow.Flow
@@ -72,6 +76,7 @@ internal class ProfileUiStateFactory(
     private val observeStudySuggestionSettings: ObserveStudySuggestionSettings,
     private val getSelectedVersionId: GetSelectedVersionIdFlow,
     private val observeAnnotatedPassages: ObserveAnnotatedPassages,
+    private val observeVersionAnnotationCounts: ObserveVersionAnnotationCounts,
     private val platform: Platform,
 ) {
     fun createInitialState(): ProfileUiState = ProfileUiState(
@@ -147,14 +152,37 @@ internal class ProfileUiStateFactory(
         getSubscriptionStatusFlow?.invoke() ?: flowOf(null)
 
     private fun observeAnnotationsSummary(): Flow<AnnotationsSummaryModel> = getSelectedVersionId()
-        .flatMapLatest(observeAnnotatedPassages::invoke)
-        .map { passages ->
-            AnnotationsSummaryModel(
-                highlightCount = passages.count { it.highlightColor != null },
-                savedCount = passages.count { it.isSaved },
-                noteCount = passages.count { it.note != null },
-            )
+        .flatMapLatest { versionId ->
+            combine(
+                observeAnnotatedPassages(versionId),
+                observeVersionAnnotationCounts(),
+            ) { passages, versionCounts ->
+                createAnnotationsSummary(
+                    selectedVersionId = versionId,
+                    passages = passages,
+                    versionCounts = versionCounts,
+                )
+            }
         }.distinctUntilChanged()
+
+    private fun createAnnotationsSummary(
+        selectedVersionId: String,
+        passages: List<AnnotatedPassage>,
+        versionCounts: List<VersionAnnotationCount>,
+    ): AnnotationsSummaryModel = AnnotationsSummaryModel(
+        highlightCount = passages.count { it.highlightColor != null },
+        savedCount = passages.count { it.isSaved },
+        noteCount = passages.count { it.note != null },
+        otherVersions = versionCounts
+            .filter { it.bibleVersionId != selectedVersionId }
+            .sortedByDescending { it.count }
+            .map { versionCount ->
+                OtherVersionAnnotationCountModel(
+                    versionAbbreviation = versionCount.bibleVersionId.uppercase(),
+                    count = versionCount.count,
+                )
+            },
+    )
 
     private fun getBibleRowFlow(): Flow<BibleRow> = combine(
         getSelectedBible(),

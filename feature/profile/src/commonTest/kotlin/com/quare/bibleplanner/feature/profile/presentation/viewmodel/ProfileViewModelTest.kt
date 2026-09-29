@@ -552,6 +552,7 @@ internal class ProfileViewModelTest {
                 },
                 getSelectedVersionId = { flowOf("NVI") },
                 observeAnnotatedPassages = { flowOf(emptyList()) },
+                observeVersionAnnotationCounts = { flowOf(emptyList()) },
                 platform = platform,
             ),
             trackEvent = { name, params -> collectedEvents += name to params },

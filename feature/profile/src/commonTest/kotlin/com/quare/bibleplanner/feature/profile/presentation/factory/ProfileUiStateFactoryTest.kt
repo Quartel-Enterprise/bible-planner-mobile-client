@@ -36,12 +36,14 @@ import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.core.verseannotations.domain.model.AnnotatedPassage
 import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
+import com.quare.bibleplanner.core.verseannotations.domain.model.VersionAnnotationCount
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.domain.usecase.GetSelectedVersionDownloadedChaptersFlowUseCase
 import com.quare.bibleplanner.feature.profile.domain.usecase.ObserveShowDonateOptionUseCase
 import com.quare.bibleplanner.feature.profile.fake.FakeObserveBooleanRemoteConfig
 import com.quare.bibleplanner.feature.profile.generated.ProfileBuildKonfig
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
+import com.quare.bibleplanner.feature.profile.presentation.model.OtherVersionAnnotationCountModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import io.github.jan.supabase.auth.status.RefreshFailureCause
 import io.github.jan.supabase.auth.status.SessionStatus
@@ -171,6 +173,53 @@ internal class ProfileUiStateFactoryTest {
                     highlightCount = 1,
                     savedCount = 2,
                     noteCount = 0,
+                    otherVersions = emptyList(),
+                ),
+            ),
+            actual = states.last().annotationsSummary,
+        )
+    }
+
+    @Test
+    fun `GIVEN marks only in other versions WHEN observing THEN lists those versions from the most marked`() = runTest {
+        // Given
+        prepareScenario(
+            versionCounts = listOf(
+                VersionAnnotationCount(
+                    bibleVersionId = selectedVersion.id,
+                    count = 5,
+                ),
+                VersionAnnotationCount(
+                    bibleVersionId = "a21",
+                    count = 1,
+                ),
+                VersionAnnotationCount(
+                    bibleVersionId = "nvi",
+                    count = 2,
+                ),
+            ),
+        )
+
+        // When
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = Loadable.Loaded(
+                AnnotationsSummaryModel(
+                    highlightCount = 0,
+                    savedCount = 0,
+                    noteCount = 0,
+                    otherVersions = listOf(
+                        OtherVersionAnnotationCountModel(
+                            versionAbbreviation = "NVI",
+                            count = 2,
+                        ),
+                        OtherVersionAnnotationCountModel(
+                            versionAbbreviation = "A21",
+                            count = 1,
+                        ),
+                    ),
                 ),
             ),
             actual = states.last().annotationsSummary,
@@ -569,6 +618,7 @@ internal class ProfileUiStateFactoryTest {
         downloadedChapters: Int = 0,
         totalChapters: Int = 1189,
         annotatedPassages: List<AnnotatedPassage> = emptyList(),
+        versionCounts: List<VersionAnnotationCount> = emptyList(),
     ) {
         val bibleRepository = FakeBibleRepository(
             bibles = listOf(
@@ -623,6 +673,7 @@ internal class ProfileUiStateFactoryTest {
             observeAnnotatedPassages = { versionId ->
                 flowOf(annotatedPassages.filter { it.chapter.bibleVersionId == versionId })
             },
+            observeVersionAnnotationCounts = { flowOf(versionCounts) },
             platform = platform,
         )
         states = mutableListOf<ProfileUiState>().also { collected ->

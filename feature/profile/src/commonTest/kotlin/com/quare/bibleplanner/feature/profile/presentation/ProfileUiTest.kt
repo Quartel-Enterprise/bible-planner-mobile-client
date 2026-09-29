@@ -16,6 +16,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.v2.runComposeUiTest
 import bibleplanner.feature.profile.generated.resources.Res
+import bibleplanner.feature.profile.generated.resources.annotations_option
+import bibleplanner.feature.profile.generated.resources.annotations_other_version_count
+import bibleplanner.feature.profile.generated.resources.annotations_summary_empty
 import bibleplanner.feature.profile.generated.resources.app_language_option
 import bibleplanner.feature.profile.generated.resources.bible_version_option
 import bibleplanner.feature.profile.generated.resources.delete_account_option
@@ -30,16 +33,20 @@ import bibleplanner.feature.profile.generated.resources.study_suggestion_option
 import bibleplanner.feature.profile.generated.resources.theme_option
 import bibleplanner.feature.profile.generated.resources.theme_system
 import bibleplanner.ui.component.generated.resources.language_english
+import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
 import com.quare.bibleplanner.feature.profile.fixture.SAMPLE_BIBLE_VERSION_NAME
 import com.quare.bibleplanner.feature.profile.fixture.profileUiState
 import com.quare.bibleplanner.feature.profile.fixture.samplePlanStartDate
 import com.quare.bibleplanner.feature.profile.fixture.sampleUserProfile
+import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
+import com.quare.bibleplanner.feature.profile.presentation.model.OtherVersionAnnotationCountModel
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import com.quare.bibleplanner.ui.utils.toStringResource
+import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,6 +55,10 @@ import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 @OptIn(ExperimentalTestApi::class)
 internal class ProfileUiTest {
     private val signedInStatus = AccountStatusModel.LoggedIn(profile = sampleUserProfile)
+    private val a21Count = OtherVersionAnnotationCountModel(
+        versionAbbreviation = "A21",
+        count = 1,
+    )
     private lateinit var events: MutableList<ProfileUiEvent>
 
     @Test
@@ -223,6 +234,64 @@ internal class ProfileUiTest {
         // Then
         assertEquals(expected = listOf<ProfileUiEvent>(ProfileUiEvent.OnLogoutClick), actual = events)
     }
+
+    @Test
+    fun `GIVEN marks only in another version WHEN rendered THEN the annotations card points to that version`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = annotationsState(otherVersions = listOf(a21Count)))
+
+            // When
+            waitForIdle()
+
+            // Then
+            onListNodeWithText(getString(Res.string.annotations_summary_empty)).assertIsDisplayed()
+            onListNodeWithText(getPluralString(Res.plurals.annotations_other_version_count, 1, 1, "A21"))
+                .assertIsDisplayed()
+        }
+
+    @Test
+    fun `GIVEN marks in another version WHEN clicking the annotations card THEN emits OnItemClick for ANNOTATIONS`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = annotationsState(otherVersions = listOf(a21Count)))
+
+            // When
+            onListNodeWithText(getString(Res.string.annotations_option)).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ProfileUiEvent>(ProfileUiEvent.OnItemClick(ProfileOptionItemType.ANNOTATIONS)),
+                actual = events,
+            )
+        }
+
+    @Test
+    fun `GIVEN no marks in other versions WHEN rendered THEN the annotations card mentions no other version`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = annotationsState(otherVersions = emptyList()))
+
+            // When
+            waitForIdle()
+
+            // Then
+            onListNodeWithText(getString(Res.string.annotations_summary_empty)).assertIsDisplayed()
+            onNode(hasText(getPluralString(Res.plurals.annotations_other_version_count, 1, 1, "A21")))
+                .assertDoesNotExist()
+        }
+
+    private fun annotationsState(otherVersions: List<OtherVersionAnnotationCountModel>): ProfileUiState =
+        profileUiState(accountStatusModel = AccountStatusModel.LoggedOut).copy(
+            annotationsSummary = Loadable.Loaded(
+                AnnotationsSummaryModel(
+                    highlightCount = 0,
+                    savedCount = 0,
+                    noteCount = 0,
+                    otherVersions = otherVersions,
+                ),
+            ),
+        )
 
     private fun ComposeUiTest.onListNodeWithText(text: String): SemanticsNodeInteraction {
         val matcher = hasText(text)
