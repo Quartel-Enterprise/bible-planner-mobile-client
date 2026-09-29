@@ -4,4 +4,5 @@ internal data class AnnotationsSummaryModel(
     val highlightCount: Int,
     val savedCount: Int,
     val noteCount: Int,
+    val otherVersions: List<OtherVersionAnnotationCountModel>,
 )

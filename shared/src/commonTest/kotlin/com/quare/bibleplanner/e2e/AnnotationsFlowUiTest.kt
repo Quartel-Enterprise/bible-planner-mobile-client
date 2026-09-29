@@ -116,6 +116,7 @@ internal class AnnotationsFlowUiTest {
                 arrange = { highlightInAnotherVersion() },
             )
             clickText("Profile")
+            awaitText("1 mark in $otherVersionId")
             clickText("Annotations")
             awaitText("Nothing marked in this version")
             awaitText("1 mark in $otherVersionId")

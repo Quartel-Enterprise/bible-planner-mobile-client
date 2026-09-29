@@ -23,10 +23,12 @@ import bibleplanner.feature.profile.generated.resources.Res
 import bibleplanner.feature.profile.generated.resources.annotations_highlight_count
 import bibleplanner.feature.profile.generated.resources.annotations_note_count
 import bibleplanner.feature.profile.generated.resources.annotations_option
+import bibleplanner.feature.profile.generated.resources.annotations_other_version_count
 import bibleplanner.feature.profile.generated.resources.annotations_saved_count
 import bibleplanner.feature.profile.generated.resources.annotations_summary_empty
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.feature.profile.presentation.model.AnnotationsSummaryModel
+import com.quare.bibleplanner.feature.profile.presentation.model.OtherVersionAnnotationCountModel
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
@@ -86,11 +88,20 @@ internal fun AnnotationsCard(
                             .height(12.dp),
                     )
 
-                    is Loadable.Loaded -> Text(
-                        text = summary.value.toText(),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    is Loadable.Loaded -> {
+                        Text(
+                            text = summary.value.toText(),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        if (summary.value.otherVersions.isNotEmpty()) {
+                            Text(
+                                text = summary.value.otherVersions.toText(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    }
                 }
             }
             Icon(
@@ -101,6 +112,16 @@ internal fun AnnotationsCard(
         }
     }
 }
+
+@Composable
+private fun List<OtherVersionAnnotationCountModel>.toText(): String = map { otherVersion ->
+    pluralStringResource(
+        Res.plurals.annotations_other_version_count,
+        otherVersion.count,
+        otherVersion.count,
+        otherVersion.versionAbbreviation,
+    )
+}.joinToString(separator = SUMMARY_SEPARATOR)
 
 @Composable
 private fun AnnotationsSummaryModel.toText(): String {

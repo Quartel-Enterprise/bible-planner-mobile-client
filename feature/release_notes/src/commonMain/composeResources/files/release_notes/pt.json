@@ -1,7 +1,8 @@
 {
   "2.9.2": {
     "common": [
-      "Na tela Marcações, se a versão da Bíblia escolhida no aparelho não tem marcações, mas outra versão tem (por exemplo, porque você marcou em outro aparelho), agora aparece um aviso como \"1 marcação em A21\", com um botão para passar a usar essa versão. Antes, a tela aparecia vazia."
+      "Na tela Marcações, se a versão da Bíblia escolhida no aparelho não tem marcações, mas outra versão tem (por exemplo, porque você marcou em outro aparelho), agora aparece um aviso como \"1 marcação em A21\", com um botão para passar a usar essa versão. Antes, a tela aparecia vazia.",
+      "No Perfil, o cartão Marcações agora também mostra quando há marcações em outras versões da Bíblia, por exemplo \"1 marcação em A21\"."
     ]
   },
   "2.9.1": {

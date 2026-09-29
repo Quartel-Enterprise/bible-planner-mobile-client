@@ -58,6 +58,7 @@ internal fun profileUiState(accountStatusModel: AccountStatusModel): ProfileUiSt
             highlightCount = 3,
             savedCount = 2,
             noteCount = 1,
+            otherVersions = emptyList(),
         ),
     ),
     currentDate = LocalDate(

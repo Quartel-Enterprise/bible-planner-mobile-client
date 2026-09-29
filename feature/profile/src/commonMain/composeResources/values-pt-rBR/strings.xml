@@ -78,4 +78,8 @@
         <item quantity="one">%1$d anotação</item>
         <item quantity="other">%1$d anotações</item>
     </plurals>
+    <plurals name="annotations_other_version_count">
+        <item quantity="one">%1$d marcação em %2$s</item>
+        <item quantity="other">%1$d marcações em %2$s</item>
+    </plurals>
 </resources>
