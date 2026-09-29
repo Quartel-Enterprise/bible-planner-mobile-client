@@ -242,6 +242,14 @@ jobs:
     runs-on: macos-latest
     environment: Production
     steps:
+      # macos-latest hands out one of two machines, and the release link that takes most of this
+      # job runs in 26 minutes on one and in 10 on the other: see "iOS release link" in
+      # docs/ci.md. Said on the run's page, so a slow build can be told from a slow machine.
+      - name: Describe the runner
+        run: |
+          machine="$(sysctl -n machdep.cpu.brand_string), $(sysctl -n hw.ncpu) cores, $(( $(sysctl -n hw.memsize) / 1073741824 )) GB"
+          echo "::notice title=iOS build runner::$machine"
+
       - name: Checkout code
         uses: actions/checkout@v5
         with:
