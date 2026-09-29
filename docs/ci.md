@@ -41,8 +41,9 @@ keyed by its sources. It sets up Gradle only when the jar has to be rebuilt.
 ## Merge when green
 
 Adding the `merge-when-green` label to a pull request makes the `merge-when-green` workflow squash
-merge it once every check on its head commit has passed. GitHub's own auto-merge is not enough here:
-it waits only for the required checks, and `ui-tests` is not one of them.
+merge it once every check on its head commit has passed, then remove the label. GitHub's own
+auto-merge is not enough here: it waits only for the required checks, and `ui-tests` is not one of
+them.
 
 The workflow runs when the label is added and each time a pull request workflow completes, so the
 last check to finish is the one that triggers the merge. A push to the pull request moves its head

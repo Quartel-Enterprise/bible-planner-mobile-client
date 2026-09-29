@@ -81,3 +81,6 @@ jobs:
           fi
 
           gh pr merge "$pr" --squash --match-head-commit "$HEAD_SHA"
+
+          # The label only means "merge this once it is green", so it goes once that is done.
+          gh api --method DELETE "repos/$GH_REPO/issues/$pr/labels/merge-when-green" > /dev/null
