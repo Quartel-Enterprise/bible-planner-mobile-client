@@ -81,7 +81,10 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
 
         is AddNotesFreeWarningNavRoute -> createDialogDestination(
             name = "add_notes_free_warning",
-            params = mapOf(AnalyticsParams.MAX_FREE_NOTES to route.maxFreeNotesAmount),
+            params = mapOf(
+                AnalyticsParams.MAX_FREE_NOTES to route.maxFreeNotesAmount,
+                AnalyticsParams.TYPE to route.type.key,
+            ),
         )
 
         is AppLanguageNavRoute -> createResponsiveDestination("app_language")

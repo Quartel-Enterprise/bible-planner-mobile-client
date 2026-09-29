@@ -30,6 +30,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.AddCustomHigh
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ApplyHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ClearVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.DeleteVerseNote
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.GetMaxFreeVerseNotesAmount
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.GetVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveAnnotatedPassages
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveChapterAnnotations
@@ -39,12 +40,14 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVersio
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemoveCustomHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.RemovePassageAnnotations
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.ShouldBlockAddVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleSavedVerses
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.AddCustomHighlightColorUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ApplyHighlightColorUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ClearVerseSelectionUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.DeleteVerseNoteUseCase
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.GetMaxFreeVerseNotesAmountUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.GetVerseNoteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveAnnotatedPassagesUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveChapterAnnotationsUseCase
@@ -54,6 +57,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ObserveV
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.RemoveCustomHighlightColorUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.RemovePassageAnnotationsUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.SaveVerseNoteUseCase
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ShouldBlockAddVerseNoteUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ToggleSavedVersesUseCase
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.impl.ToggleVerseSelectionUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -83,6 +87,8 @@ val verseAnnotationsModule = module {
     factoryOf(::SaveVerseNoteUseCase).bind<SaveVerseNote>()
     factoryOf(::GetVerseNoteUseCase).bind<GetVerseNote>()
     factoryOf(::DeleteVerseNoteUseCase).bind<DeleteVerseNote>()
+    factoryOf(::GetMaxFreeVerseNotesAmountUseCase).bind<GetMaxFreeVerseNotesAmount>()
+    factoryOf(::ShouldBlockAddVerseNoteUseCase).bind<ShouldBlockAddVerseNote>()
     factoryOf(::ObserveHighlightPaletteUseCase).bind<ObserveHighlightPalette>()
     factoryOf(::AddCustomHighlightColorUseCase).bind<AddCustomHighlightColor>()
     factoryOf(::RemoveCustomHighlightColorUseCase).bind<RemoveCustomHighlightColor>()

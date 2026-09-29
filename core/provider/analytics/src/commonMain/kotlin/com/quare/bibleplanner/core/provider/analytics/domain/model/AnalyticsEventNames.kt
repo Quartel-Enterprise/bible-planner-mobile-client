@@ -223,6 +223,7 @@ object AnalyticsEventNames {
     const val HIGHLIGHT_CUSTOM_COLOR_DELETE_CANCELLED = "highlight_custom_color_delete_cancelled"
     const val VERSE_SAVED_TOGGLED = "verse_saved_toggled"
     const val VERSE_NOTE_OPENED = "verse_note_opened"
+    const val VERSE_NOTES_LIMIT_REACHED = "verse_notes_limit_reached"
     const val VERSE_NOTE_SAVED = "verse_note_saved"
     const val VERSE_NOTE_DISMISSED = "verse_note_dismissed"
     const val VERSES_COPIED = "verses_copied"

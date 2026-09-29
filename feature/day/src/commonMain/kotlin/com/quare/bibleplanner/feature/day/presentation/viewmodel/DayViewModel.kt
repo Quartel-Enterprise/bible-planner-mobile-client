@@ -11,6 +11,7 @@ import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
+import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningType
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -420,7 +421,12 @@ internal class DayViewModel(
             params = mapOf(AnalyticsParams.MAX_FREE_NOTES to maxFreeNotes),
         )
         uiAction.emit(DayUiAction.ClearFocus)
-        navigator.navigate(AddNotesFreeWarningNavRoute(maxFreeNotes))
+        navigator.navigate(
+            AddNotesFreeWarningNavRoute(
+                maxFreeNotesAmount = maxFreeNotes,
+                type = AddNotesFreeWarningType.DAY,
+            ),
+        )
     }
 
     private fun updateLoadedState(transform: (DayUiState.Loaded) -> DayUiState.Loaded) {

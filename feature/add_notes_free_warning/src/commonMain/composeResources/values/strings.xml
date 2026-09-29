@@ -1,6 +1,7 @@
 <resources>
     <string name="add_notes_free_warning_title">Upgrade to Pro</string>
     <string name="add_notes_free_warning_message">Free users can add notes to up to %1$d days. Subscribe to Pro to add unlimited notes.</string>
+    <string name="add_verse_notes_free_warning_message">Free users can add up to %1$d verse notes. Subscribe to Pro to add unlimited notes.</string>
     <string name="see_plans">See Plans</string>
     <string name="cancel">Cancel</string>
 </resources>

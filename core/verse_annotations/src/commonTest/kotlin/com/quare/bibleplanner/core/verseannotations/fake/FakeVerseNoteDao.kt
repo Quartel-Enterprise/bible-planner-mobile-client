@@ -34,6 +34,8 @@ internal class FakeVerseNoteDao(
                 .map { note -> note.withVerses(currentVerses) }
         }
 
+    override suspend fun countActiveNotes(): Int = notes.value.count { !it.isDeleted }
+
     override suspend fun getNoteById(noteId: String): VerseNoteWithVerses? =
         notes.value.find { it.id == noteId }?.withVerses(verses.value)
 
