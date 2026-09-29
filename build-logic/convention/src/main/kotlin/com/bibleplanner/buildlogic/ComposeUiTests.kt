@@ -24,6 +24,7 @@ private const val DEVICE_TEST_MIN_SDK = 30
 private const val UI_TESTS_PROPERTY = "uiTests"
 private const val UI_TESTS_EXCLUDED = "exclude"
 private const val UI_TESTS_ONLY = "only"
+private const val AWT_HEADLESS_PROPERTY = "java.awt.headless"
 
 private val Project.hasDeviceTests: Boolean
     get() = file("src/$DEVICE_TEST_SOURCE_SET").isDirectory
@@ -35,6 +36,14 @@ private val Project.isBuildingDeviceTests: Boolean
     get() = gradle.startParameter.taskNames.any { taskName -> taskName.endsWith(DEVICE_TEST_TASK_SUFFIX) }
 
 fun Project.configureComposeUiTests() {
+    // A test JVM that touches AWT, as Compose does on the jvm target, becomes a macOS app: a Duke
+    // icon in the Dock that takes the keyboard focus from whatever the user is typing in. Headless
+    // AWT never registers with the window server, and CI's Linux runners, which have no display,
+    // already run the tests this way.
+    tasks.withType<Test>().configureEach {
+        systemProperty(AWT_HEADLESS_PROPERTY, true)
+    }
+
     if (path == UI_TESTING_MODULE) return
     extensions.configure<KotlinMultiplatformExtension> {
         sourceSets.named("commonTest") {
