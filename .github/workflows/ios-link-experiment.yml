@@ -31,6 +31,9 @@ jobs:
   # This asks for a machine many times over, under each arm64 label, to see how they are dealt.
   probe:
     name: probe ${{ matrix.os }} ${{ matrix.replica }}
+    # Two probes are in: macos-latest dealt the M2 Pro 5 times out of 16, the pinned labels never
+    # in 24. Off while round 3 runs.
+    if: ${{ false }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
     strategy:
@@ -45,8 +48,6 @@ jobs:
 
   link:
     name: ${{ matrix.label }}
-    # Rounds 1 and 2 are measured. Off while the probe runs.
-    if: ${{ false }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     env:
@@ -56,27 +57,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Round 2. Round 1 showed that a smaller heap only makes it worse: 6 GB is 16% slower on
-          # arm64 and 43% slower on Intel, 5 GB runs out of heap, and the parallel collector
-          # thrashes at 6 GB.
-          #
-          # The heap gradle.properties asks for, 8 GB, on the runner the release uses, 7 GB. Again,
-          # to tell a difference between variants from the noise between two runs of the same one.
-          - label: arm-default
-            os: macos-latest
-            properties: ''
-          # Same heap, but G1 hands back what it is not using while LLVM works outside of it: on a
-          # developer's Mac the daemon peaks at 8.7 GB instead of 13 GB, in the same time.
-          - label: arm-periodic-gc
-            os: macos-latest
-            properties: 'org.gradle.jvmargs=-Xmx8192M -XX:G1PeriodicGCInterval=15000 -XX:MinHeapFreeRatio=5 -XX:MaxHeapFreeRatio=10 -Dfile.encoding=UTF-8'
-          - label: intel-periodic-gc
-            os: macos-15-intel
-            properties: 'org.gradle.jvmargs=-Xmx8192M -XX:G1PeriodicGCInterval=15000 -XX:MinHeapFreeRatio=5 -XX:MaxHeapFreeRatio=10 -Dfile.encoding=UTF-8'
-          # For reference only, since it changes what ships: no link-time optimization across
-          # modules, each one compiled into a cache of its own.
-          - label: arm-release-cache
-            os: macos-latest
+          # Round 3. Round 2's release cache job was dealt an M2 Pro, so it says nothing about the
+          # machine the release usually gets. macos-26 has only ever handed out the M1.
+          - label: m1-release-cache
+            os: macos-26
             properties: |
               kotlin.native.binary.enableReleaseBinaryCache=true
               kotlin.internal.native.enableReleaseBinaryCache=true
