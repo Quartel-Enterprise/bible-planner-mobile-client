@@ -38,6 +38,29 @@ coming from the cache, even for a pull request that doesn't touch the app's code
 The ktlint action caches its own things: the CLI, keyed by version, and the custom ruleset jar,
 keyed by its sources. It sets up Gradle only when the jar has to be rebuilt.
 
+## Merge when green
+
+Adding the `merge-when-green` label to a pull request makes the `merge-when-green` workflow squash
+merge it once every check on its head commit has passed, then remove the label. GitHub's own
+auto-merge is not enough here: it waits only for the required checks, and `ui-tests` is not one of
+them.
+
+The workflow runs when the label is added and each time a pull request workflow completes, so the
+last check to finish is the one that triggers the merge. A push to the pull request moves its head
+commit and the new checks have to pass again. A failed check leaves the pull request open with the
+label on; re-running the check and getting it green merges it.
+
+The merge uses the `MERGE_WHEN_GREEN_TOKEN` secret, not `GITHUB_TOKEN`: a merge made with
+`GITHUB_TOKEN` triggers no other workflow, so the push to `main` would run no checks and
+`cleanup-pr-caches` would not delete the pull request's caches. The secret is a fine-grained personal
+access token restricted to this repository, with Contents and Pull requests set to Read and write.
+The merge shows up as made by the token's owner. When the token expires, the workflow fails with an
+error that names the secret.
+
+When a workflow is added to or renamed in the pull request checks, update the `workflow_run` list in
+`merge-when-green.yml` too. A workflow missing from it still blocks the merge while running, but its
+completion does not trigger one.
+
 ## UI tests
 
 The `ui-tests` workflow runs the [Compose UI tests](testing/compose-ui-tests.md) of every module
