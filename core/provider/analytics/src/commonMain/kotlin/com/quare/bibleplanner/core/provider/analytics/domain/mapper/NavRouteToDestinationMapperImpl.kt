@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
 import com.quare.bibleplanner.core.model.route.ContactSupportNavRoute
@@ -127,6 +128,14 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
             ),
         )
 
+        is ChapterStudyNavRoute -> createScreenDestination(
+            name = "chapter_study",
+            params = mapOf(
+                AnalyticsParams.BOOK_ID to route.bookId,
+                AnalyticsParams.CHAPTER_NUMBER to route.chapterNumber,
+            ),
+        )
+
         is ChatNavRoute -> createScreenDestination(
             name = "ai_chat",
             params = buildMap {
@@ -134,6 +143,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
                 route.readingPlanType?.let { put(AnalyticsParams.PLAN_TYPE, it.toPlanTypeAnalyticsValue()) }
                 route.weekNumber?.let { put(AnalyticsParams.WEEK_NUMBER, it) }
                 route.dayNumber?.let { put(AnalyticsParams.DAY_NUMBER, it) }
+                route.bookId?.let { put(AnalyticsParams.BOOK_ID, it) }
+                route.chapterNumber?.let { put(AnalyticsParams.CHAPTER_NUMBER, it) }
             },
         )
 

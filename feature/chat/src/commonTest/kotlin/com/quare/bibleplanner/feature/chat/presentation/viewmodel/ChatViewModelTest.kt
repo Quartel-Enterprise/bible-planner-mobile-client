@@ -71,6 +71,9 @@ internal class ChatViewModelTest {
     private var chatSuggestions: List<String> = emptyList()
     private var defaultSuggestions: List<String> = emptyList()
     private var entrySource: ChatEntrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+    private var chapterBookId: String? = null
+    private var chapterNumber: Int? = null
+    private val requestedContextRoutes = mutableListOf<ChatNavRoute>()
 
     @BeforeTest
     fun setUp() {
@@ -799,6 +802,33 @@ internal class ChatViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN a chat opened from a chapter study WHEN it loads THEN asks for the context of that chapter`() =
+        runTest(testDispatcher) {
+            // Given
+            entrySource = ChatEntrySource.CHAPTER_STUDY
+            chapterBookId = "GEN"
+            chapterNumber = 3
+
+            // When
+            createViewModel()
+
+            // Then
+            assertEquals(
+                expected = listOf(
+                    ChatNavRoute(
+                        source = ChatEntrySource.CHAPTER_STUDY,
+                        dayNumber = null,
+                        weekNumber = null,
+                        readingPlanType = null,
+                        bookId = "GEN",
+                        chapterNumber = 3,
+                    ),
+                ),
+                actual = requestedContextRoutes,
+            )
+        }
+
     private fun createViewModelWithSuggestion(): ChatViewModel {
         entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
         chatContext = readingContext()
@@ -828,6 +858,8 @@ internal class ChatViewModelTest {
             dayNumber = null,
             weekNumber = null,
             readingPlanType = null,
+            bookId = chapterBookId,
+            chapterNumber = chapterNumber,
         ),
         observeAuthenticatedUserId = { authenticatedUserId },
         getDefaultSuggestions = { defaultSuggestions },
@@ -844,7 +876,10 @@ internal class ChatViewModelTest {
             getSuggestions = { chatSuggestions },
             observeDraft = ObserveChatDraftUseCase(repository),
             saveDraft = SaveChatDraftUseCase(repository),
-            getContext = { chatContext },
+            getContext = { route ->
+                requestedContextRoutes += route
+                chatContext
+            },
         ),
         coordinator = coordinator,
         messageUiMapper = ChatMessageUiMapper(),

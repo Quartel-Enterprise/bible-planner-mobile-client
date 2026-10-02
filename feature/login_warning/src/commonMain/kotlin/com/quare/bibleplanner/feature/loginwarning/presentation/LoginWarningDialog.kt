@@ -34,7 +34,7 @@ internal fun LoginWarningDialog(
 
 internal fun LoginWarningReason.toMessageResource(): StringResource = when (this) {
     LoginWarningReason.Purchase -> Res.string.login_warning_message_purchase
-    LoginWarningReason.DayStudy -> Res.string.login_warning_message_day_study
+    LoginWarningReason.DayStudy, LoginWarningReason.ChapterStudy -> Res.string.login_warning_message_day_study
     LoginWarningReason.AiChat -> Res.string.login_warning_message_ai_chat
     LoginWarningReason.Preferences.Theme -> Res.string.login_warning_message_theme
     LoginWarningReason.Preferences.Language -> Res.string.login_warning_message_language

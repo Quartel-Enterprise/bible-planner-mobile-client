@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.daystudy.data.datasource.DayStudyLocalDataSource
 import com.quare.bibleplanner.core.daystudy.data.datasource.DayStudyRemoteDataSource
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyResponseDto
+import com.quare.bibleplanner.core.daystudy.data.exception.isLimitReachedFailure
 import com.quare.bibleplanner.core.daystudy.data.mapper.DayStudyCacheKeyFactory
 import com.quare.bibleplanner.core.daystudy.data.mapper.DayStudyContentMapper
 import com.quare.bibleplanner.core.daystudy.data.mapper.DayStudyEntityMapper
@@ -17,8 +18,6 @@ import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyStatusModel
 import com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository
 import com.quare.bibleplanner.core.model.plan.PassageModel
-import io.github.jan.supabase.exceptions.RestException
-import io.ktor.client.plugins.sse.SSEClientException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
@@ -138,20 +137,10 @@ internal class DayStudyRepositoryImpl(
     }
 
     private fun mapFailure(throwable: Throwable): Throwable {
-        if (throwable.isLimitReached()) {
+        if (throwable.isLimitReachedFailure()) {
             return LimitReachedException()
         }
         Logger.e(throwable) { "Failed to fetch day study" }
         return throwable
-    }
-
-    private fun Throwable.isLimitReached(): Boolean = when (this) {
-        is RestException -> statusCode == LIMIT_EXCEEDED_STATUS
-        is SSEClientException -> response?.status?.value == LIMIT_EXCEEDED_STATUS
-        else -> false
-    }
-
-    companion object {
-        private const val LIMIT_EXCEEDED_STATUS = 402
     }
 }

@@ -11,13 +11,8 @@
     <string name="ai_study_exhausted_subtitle">Has usado tus %1$d análisis gratis</string>
     <string name="ai_study_pro_badge">PRO</string>
     <string name="ai_study_generated">Generado</string>
-    <string name="ai_study_error">No se pudo cargar el estudio. Inténtalo de nuevo.</string>
-    <string name="ai_study_generation_error_title">La generación falló</string>
-    <string name="ai_study_connection_error_message">Se perdió la conexión mientras se generaba el estudio. Verifica tu internet e inténtalo de nuevo.</string>
-    <string name="ai_study_retry">Intentar de nuevo</string>
     <string name="ai_study_limit_reached_message">Ya usaste todos tus análisis gratis.</string>
     <string name="ai_study_offline_message">No tienes conexión a internet en este momento, por eso no es posible generar el estudio.</string>
-    <string name="ai_study_generating_title">Preparando tu estudio</string>
     <string name="ai_study_generating_subtitle">La IA está leyendo los pasajes de hoy. Esto puede tardar hasta 1 minuto — puedes cerrar y volver cuando quieras.</string>
     <string name="ai_study_generating_card_title">Generando tu estudio…</string>
     <string name="ai_study_phase_reading">Leyendo los pasajes de hoy</string>
@@ -39,7 +34,6 @@
     <string name="ai_summary_takeaways">En resumen</string>
     <string name="ai_context_title">Contexto histórico</string>
     <string name="ai_questions_title">Preguntas comunes</string>
-    <string name="ai_disclaimer">Contenido generado por IA para apoyar la comprensión. No sustituye la lectura del texto completo.</string>
     <plurals name="ai_study_wait_for_generations">
         <item quantity="one">Espera a que termine el análisis en curso antes de generar uno nuevo.</item>
         <item quantity="other">Espera a que terminen los %1$d análisis en curso antes de generar uno nuevo.</item>

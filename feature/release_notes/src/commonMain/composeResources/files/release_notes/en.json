@@ -1,4 +1,10 @@
 {
+  "2.10.0": {
+    "common": [
+      "New: AI chapter study. While reading a chapter, tap \"Study\" at the top of the screen, or \"Study this chapter\" at the end of the text, to see a summary, the context, the chapter's outline, its people and places, the key verse, cross references and questions to reflect on. Some studies are free; with Pro, they are unlimited.",
+      "In the chapter study, tap a part of the outline to go back to the text right at that passage, a cross reference to open it, \"Share\" to send the key verse, or \"Chat\" to ask the AI about the chapter."
+    ]
+  },
   "2.9.2": {
     "common": [
       "On the Annotations screen, if the Bible version chosen on your device has no marks but another version does (for example, because you marked them on another device), you now see a notice like \"1 mark in A21\" with a button to switch to that version. Before, the screen looked empty.",

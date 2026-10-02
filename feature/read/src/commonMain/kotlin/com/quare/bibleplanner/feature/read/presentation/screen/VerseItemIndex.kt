@@ -3,7 +3,7 @@ package com.quare.bibleplanner.feature.read.presentation.screen
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
 
-private const val CHAPTER_EXTRA_ITEM_COUNT = 2
+private const val CHAPTER_EXTRA_ITEM_COUNT = 3
 
 internal fun findVerseItemIndex(
     chapters: List<ReadChapterUiModel>,

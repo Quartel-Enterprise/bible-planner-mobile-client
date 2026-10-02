@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chapter_study_title">AI study</string>
+    <string name="chapter_study_generating_subtitle">The AI is reading %1$s. This can take up to 1 minute — you can close and come back anytime.</string>
+    <string name="chapter_study_phase_reading">Reading %1$s</string>
+    <string name="chapter_study_phase_summary">Summarizing the chapter</string>
+    <string name="chapter_study_phase_context">Gathering context and characters</string>
+    <string name="chapter_study_phase_questions">Preparing reflection questions</string>
+    <string name="chapter_study_section_summary">SUMMARY</string>
+    <string name="chapter_study_section_context">CONTEXT</string>
+    <string name="chapter_study_section_outline">OUTLINE</string>
+    <string name="chapter_study_section_people_and_places">PEOPLE AND PLACES</string>
+    <string name="chapter_study_section_key_verse">KEY VERSE · %1$s</string>
+    <string name="chapter_study_section_cross_references">CROSS REFERENCES</string>
+    <string name="chapter_study_section_reflection">TO REFLECT ON</string>
+    <string name="chapter_study_key_verse_caption">%1$s · %2$s</string>
+    <string name="chapter_study_share">Share</string>
+    <string name="chapter_study_chat">Chat</string>
+</resources>

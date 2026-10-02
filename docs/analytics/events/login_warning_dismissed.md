@@ -16,7 +16,7 @@ The user dismisses the login-warning dialog (close button, scrim tap or back).
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `reason` | string | `preferences_theme` | `LoginWarningReason` key of the gated action: `purchase` \| `day_study` \| `preferences_theme` \| `preferences_language` |
+| `reason` | string | `preferences_theme` | `LoginWarningReason` key of the gated action: `purchase` \| `day_study` \| `chapter_study` \| `preferences_theme` \| `preferences_language` |
 
 ## Notes
 

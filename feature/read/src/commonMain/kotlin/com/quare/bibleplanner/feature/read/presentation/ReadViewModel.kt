@@ -6,16 +6,23 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.books.util.toBookNameResource
-import com.quare.bibleplanner.core.daystudy.domain.usecase.PrefetchDayStudyQuota
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyAccessModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.PendingVerseFocusModel
 import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIfNeeded
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
@@ -29,6 +36,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsPara
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.RequestDownloadNotificationPermission
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ClearVerseSelection
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseSelection
@@ -42,6 +50,7 @@ import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.GetPreviousChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.ObserveReaderSettings
+import com.quare.bibleplanner.feature.read.domain.usecase.ReadStudyUseCases
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFocusAid
 import com.quare.bibleplanner.feature.read.presentation.factory.ObserveReadData
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
@@ -63,6 +72,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -81,7 +91,7 @@ class ReadViewModel(
     private val toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus,
     private val isWholeChapterRead: IsWholeChapterRead,
     private val getCompletedDayForChapter: GetCompletedDayForChapter,
-    private val prefetchDayStudyQuota: PrefetchDayStudyQuota,
+    private val studyUseCases: ReadStudyUseCases,
     private val requestLoginNudgeIfNeeded: RequestLoginNudgeIfNeeded,
     private val downloaderFacade: BibleVersionDownloaderFacade,
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlow,
@@ -125,6 +135,8 @@ class ReadViewModel(
     private val pendingReadOverrides = MutableStateFlow<Map<ChapterLocationModel, Boolean>>(emptyMap())
 
     private val dayCompletionBanner = MutableStateFlow<PlanDayLocationModel?>(null)
+
+    private val isOpeningChapterStudy = MutableStateFlow(false)
 
     private val verseFocus = MutableStateFlow(
         route.targetVerseNumbers.takeIf { it.isNotEmpty() }?.let { verseNumbers ->
@@ -224,10 +236,12 @@ class ReadViewModel(
         },
         dayCompletionBanner,
         verseFocus,
-    ) { state, banner, focus ->
+        isOpeningChapterStudy,
+    ) { state, banner, focus, isOpeningStudy ->
         state.copy(
             dayCompletionBanner = banner,
             verseFocus = focus,
+            isOpeningChapterStudy = isOpeningStudy,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -251,6 +265,54 @@ class ReadViewModel(
         ) {
             navigator.navigate(VerseSelectionNavRoute)
         }
+        observe(studyUseCases.pendingVerseFocusStore.pending.filterNotNull(), ::focusPendingVerses)
+    }
+
+    private fun focusPendingVerses(pending: PendingVerseFocusModel) {
+        if (!isShowingChapter(pending)) return
+        studyUseCases.pendingVerseFocusStore.consume(pending)
+        verseFocus.update {
+            VerseFocusUiModel(
+                bookId = pending.bookId,
+                chapterNumber = pending.chapterNumber,
+                verseNumbers = pending.verseNumbers,
+            )
+        }
+    }
+
+    private fun isShowingChapter(pending: PendingVerseFocusModel): Boolean =
+        (uiState.value.content as? ReadContentUiState.Success)
+            ?.chapters
+            .orEmpty()
+            .any { it.chapter.bookId == pending.bookId && it.chapter.chapterNumber == pending.chapterNumber }
+
+    private fun openChapterStudy(event: ReadUiEvent.OnChapterStudyClick) {
+        if (isOpeningChapterStudy.value) return
+        isOpeningChapterStudy.update { true }
+        viewModelScope.launch {
+            val access = suspendRunCatching {
+                studyUseCases.getChapterStudyAccess(
+                    ChapterStudyTargetModel(
+                        bookId = event.bookId,
+                        chapterNumber = event.chapterNumber,
+                    ),
+                )
+            }.getOrDefault(ChapterStudyAccessModel.OPEN)
+            navigator.navigate(
+                when (access) {
+                    ChapterStudyAccessModel.OPEN -> ChapterStudyNavRoute(
+                        bookId = event.bookId.name,
+                        chapterNumber = event.chapterNumber,
+                    )
+
+                    ChapterStudyAccessModel.LOGIN_REQUIRED -> LoginWarningNavRoute(LoginWarningReason.ChapterStudy.key)
+
+                    ChapterStudyAccessModel.LIMIT_REACHED ->
+                        PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT)
+                },
+            )
+            isOpeningChapterStudy.update { false }
+        }
     }
 
     /**
@@ -264,7 +326,7 @@ class ReadViewModel(
                 .distinctUntilChanged()
                 .filter { days -> days.isNotEmpty() },
         ) { days ->
-            days.forEach { day -> prefetchDayStudyQuota(day) }
+            days.forEach { day -> studyUseCases.prefetchDayStudyQuota(day) }
         }
     }
 
@@ -309,6 +371,7 @@ class ReadViewModel(
             is ReadUiEvent.OnNavigationSuggestionClick -> navigateToSuggestion(event.suggestion)
             is ReadUiEvent.OnVerseClick -> selectVerse(event)
             ReadUiEvent.OnAppearanceClick -> navigator.navigate(ReaderAppearanceNavRoute)
+            is ReadUiEvent.OnChapterStudyClick -> openChapterStudy(event)
             ReadUiEvent.OnRulerDismissClick -> dismissRuler()
             ReadUiEvent.OnReachedEnd -> appendNextChapter()
             ReadUiEvent.OnReachedStart -> prependPreviousChapter()
@@ -548,6 +611,7 @@ class ReadViewModel(
         isLoadingNextChapter = isLoadingNextChapter,
         dayCompletionBanner = null,
         verseFocus = null,
+        isOpeningChapterStudy = false,
     )
 
     private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterLocationModel, Boolean>): ReadHeaderUiModel {
@@ -629,6 +693,7 @@ class ReadViewModel(
         isLoadingNextChapter = false,
         dayCompletionBanner = null,
         verseFocus = null,
+        isOpeningChapterStudy = false,
     )
 
     private companion object {

@@ -11,6 +11,7 @@ enum class PaywallEntrySource {
     VERSE_NOTES_LIMIT,
     CHAT,
     HIGHLIGHT_CUSTOM_COLOR,
+    CHAPTER_STUDY,
     ;
 
     val key: String

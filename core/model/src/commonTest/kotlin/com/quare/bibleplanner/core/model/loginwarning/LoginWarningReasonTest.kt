@@ -8,6 +8,7 @@ internal class LoginWarningReasonTest {
     private val reasons = listOf(
         LoginWarningReason.Purchase,
         LoginWarningReason.DayStudy,
+        LoginWarningReason.ChapterStudy,
         LoginWarningReason.AiChat,
         LoginWarningReason.Preferences.Theme,
         LoginWarningReason.Preferences.Language,
@@ -33,6 +34,7 @@ internal class LoginWarningReasonTest {
             listOf(
                 "purchase",
                 "day_study",
+                "chapter_study",
                 "ai_chat",
                 "preferences_theme",
                 "preferences_language",

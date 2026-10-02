@@ -12,4 +12,10 @@
     <string name="language_english">Inglês</string>
     <string name="language_portuguese_brazil">Português (Brasil)</string>
     <string name="language_spanish">Espanhol</string>
+    <string name="ai_study_generating_title">Preparando seu estudo</string>
+    <string name="ai_study_generation_error_title">A geração falhou</string>
+    <string name="ai_study_error">Não foi possível carregar o estudo. Tente novamente.</string>
+    <string name="ai_study_connection_error_message">A conexão caiu durante a geração do estudo. Verifique sua internet e tente novamente.</string>
+    <string name="ai_study_retry">Tentar novamente</string>
+    <string name="ai_disclaimer">Conteúdo gerado por IA para apoiar o entendimento. Não substitui a leitura do texto completo.</string>
 </resources>

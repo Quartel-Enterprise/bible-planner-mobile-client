@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.model.route
 import androidx.navigation3.runtime.contains
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 internal class RouteConversionsTest {
     private val dayRoute = DayNavRoute(
@@ -105,9 +106,12 @@ internal class RouteConversionsTest {
                 "verse_notes_limit",
                 "chat",
                 "highlight_custom_color",
+                "chapter_study",
                 "day_fab",
                 "day_study_questions",
+                "chapter_study",
                 "highlight_custom_color",
+                "chapter_study_limit",
             ),
             keys,
         )
@@ -138,6 +142,25 @@ internal class RouteConversionsTest {
         )
     }
 
+    @Test
+    fun `GIVEN a chat opened from a chapter study WHEN going to its day THEN has no day`() {
+        // Given
+        val chatRoute = ChatNavRoute(
+            source = ChatEntrySource.CHAPTER_STUDY,
+            dayNumber = null,
+            weekNumber = null,
+            readingPlanType = null,
+            bookId = "GEN",
+            chapterNumber = 3,
+        )
+
+        // When
+        val result = chatRoute.toDayNavRoute()
+
+        // Then
+        assertNull(result)
+    }
+
     private fun chatRoute(
         dayNumber: Int?,
         weekNumber: Int?,
@@ -147,5 +170,7 @@ internal class RouteConversionsTest {
         dayNumber = dayNumber,
         weekNumber = weekNumber,
         readingPlanType = readingPlanType,
+        bookId = null,
+        chapterNumber = null,
     )
 }

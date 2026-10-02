@@ -16,18 +16,18 @@ import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_chat_entry_title
 import bibleplanner.feature.day_study.generated.resources.ai_context_title
 import bibleplanner.feature.day_study.generated.resources.ai_questions_title
-import bibleplanner.feature.day_study.generated.resources.ai_study_connection_error_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_error
 import bibleplanner.feature.day_study.generated.resources.ai_study_exhausted_subtitle
 import bibleplanner.feature.day_study.generated.resources.ai_study_generate
-import bibleplanner.feature.day_study.generated.resources.ai_study_generating_title
-import bibleplanner.feature.day_study.generated.resources.ai_study_generation_error_title
-import bibleplanner.feature.day_study.generated.resources.ai_study_retry
 import bibleplanner.feature.day_study.generated.resources.ai_study_subscribe
 import bibleplanner.feature.day_study.generated.resources.ai_summary_takeaways
 import bibleplanner.feature.day_study.generated.resources.ai_tab_context
 import bibleplanner.feature.day_study.generated.resources.ai_tab_questions
 import bibleplanner.feature.day_study.generated.resources.ai_tab_summary
+import bibleplanner.ui.component.generated.resources.ai_study_connection_error_message
+import bibleplanner.ui.component.generated.resources.ai_study_error
+import bibleplanner.ui.component.generated.resources.ai_study_generating_title
+import bibleplanner.ui.component.generated.resources.ai_study_generation_error_title
+import bibleplanner.ui.component.generated.resources.ai_study_retry
 import bibleplanner.ui.component.generated.resources.back
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
@@ -172,7 +172,7 @@ internal class DayStudyUiTest {
             waitForIdle()
 
             // Then
-            onNodeWithText(getString(Res.string.ai_study_generating_title)).assertIsDisplayed()
+            onNodeWithText(getString(ComponentRes.string.ai_study_generating_title)).assertIsDisplayed()
             DayStudyGenerationPhase.entries.forEach { phase ->
                 onNodeWithText(getString(phase.titleRes)).assertIsDisplayed()
             }
@@ -185,11 +185,11 @@ internal class DayStudyUiTest {
         prepareScenario(uiState = cardUiState.copy(generationError = DayStudyGenerationError.GENERIC))
 
         // When
-        onNodeWithText(getString(Res.string.ai_study_retry)).performClick()
+        onNodeWithText(getString(ComponentRes.string.ai_study_retry)).performClick()
 
         // Then
-        onNodeWithText(getString(Res.string.ai_study_generation_error_title)).assertIsDisplayed()
-        onNodeWithText(getString(Res.string.ai_study_error)).assertIsDisplayed()
+        onNodeWithText(getString(ComponentRes.string.ai_study_generation_error_title)).assertIsDisplayed()
+        onNodeWithText(getString(ComponentRes.string.ai_study_error)).assertIsDisplayed()
         assertEquals(
             expected = listOf<DayStudyRouteUiEvent>(DayStudyRouteUiEvent.OnRetryClick),
             actual = events,
@@ -205,8 +205,8 @@ internal class DayStudyUiTest {
         waitForIdle()
 
         // Then
-        onNodeWithText(getString(Res.string.ai_study_connection_error_message)).assertIsDisplayed()
-        onNodeWithText(getString(Res.string.ai_study_error)).assertDoesNotExist()
+        onNodeWithText(getString(ComponentRes.string.ai_study_connection_error_message)).assertIsDisplayed()
+        onNodeWithText(getString(ComponentRes.string.ai_study_error)).assertDoesNotExist()
     }
 
     @Test

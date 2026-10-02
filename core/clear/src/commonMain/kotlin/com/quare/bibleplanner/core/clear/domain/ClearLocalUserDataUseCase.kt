@@ -19,6 +19,7 @@ internal class ClearLocalUserDataUseCase(
     private val clearLocalReadingData: ClearLocalReadingDataUseCase,
     private val clearAllSyncedLocalData: ClearAllSyncedLocalData,
     private val clearDayStudyLocalData: ClearDayStudyLocalData,
+    private val clearChapterStudyLocalData: ClearChapterStudyLocalData,
     private val clearChatLocalData: ClearChatLocalData,
     private val ensureDefaultPlanStartDate: EnsureDefaultPlanStartDateUseCase,
 ) : ClearLocalUserData {
@@ -26,6 +27,7 @@ internal class ClearLocalUserDataUseCase(
         coroutineScope {
             launch { clearLocalReadingData() }
             launch { clearDayStudyLocalData() }
+            launch { clearChapterStudyLocalData() }
             launch { clearChatLocalData() }
             launch {
                 clearAllSyncedLocalData()

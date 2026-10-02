@@ -17,6 +17,10 @@ sealed interface LoginWarningReason {
         override val key: String = "day_study"
     }
 
+    data object ChapterStudy : LoginWarningReason {
+        override val key: String = "chapter_study"
+    }
+
     data object AiChat : LoginWarningReason {
         override val key: String = "ai_chat"
     }
@@ -39,6 +43,7 @@ sealed interface LoginWarningReason {
         fun fromKey(key: String): LoginWarningReason = listOf(
             Purchase,
             DayStudy,
+            ChapterStudy,
             AiChat,
             Preferences.Theme,
             Preferences.Language,

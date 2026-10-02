@@ -27,6 +27,7 @@ internal class ClearLocalUserDataUseCaseTest {
             clearLocalReadingData = ClearLocalReadingDataUseCase(RecordingBookDao(calls)),
             clearAllSyncedLocalData = { calls += "clearAllSyncedLocalData" },
             clearDayStudyLocalData = { calls += "clearDayStudyLocalData" },
+            clearChapterStudyLocalData = { calls += "clearChapterStudyLocalData" },
             clearChatLocalData = { calls += "clearChatLocalData" },
             ensureDefaultPlanStartDate = EnsureDefaultPlanStartDateUseCase(
                 planRepository = SeedRecordingPlanRepository(calls),
@@ -46,12 +47,13 @@ internal class ClearLocalUserDataUseCaseTest {
                 "resetAllBooksProgress",
                 "clearAllSyncedLocalData",
                 "clearDayStudyLocalData",
+                "clearChapterStudyLocalData",
                 "clearChatLocalData",
                 "seedDefaultStartDate($now)",
             ),
             calls.toSet(),
         )
-        assertEquals(5, calls.size)
+        assertEquals(6, calls.size)
     }
 
     @Test

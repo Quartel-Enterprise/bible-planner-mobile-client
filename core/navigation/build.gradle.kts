@@ -50,6 +50,7 @@ kotlin {
             implementation(projects.feature.verse.selectionMenu)
             implementation(projects.feature.notificationPermission)
             implementation(projects.feature.dayStudy)
+            implementation(projects.feature.chapterStudy)
             implementation(projects.feature.dayReadingComplete)
             implementation(projects.feature.chat)
             implementation(projects.feature.subscriptionDetails)

@@ -9,10 +9,12 @@ import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
-import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
+import com.quare.bibleplanner.feature.chat.domain.model.ChatContextModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatPlanDayModel
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
@@ -85,9 +87,15 @@ internal class GetChatContextUseCaseTest {
     }
 
     @Test
-    fun `GIVEN no day WHEN loading the chat context THEN there is none`() = runTest {
+    fun `GIVEN neither a day nor a chapter WHEN loading the chat context THEN there is none`() = runTest {
         // When
-        val context = useCase(null)
+        val context = useCase(
+            chatRoute(
+                dayNumber = null,
+                bookId = null,
+                chapterNumber = null,
+            ),
+        )
 
         // Then
         assertNull(context)
@@ -98,10 +106,10 @@ internal class GetChatContextUseCaseTest {
         runTest {
             // When
             val context = useCase(
-                DayNavRoute(
+                chatRoute(
                     dayNumber = 1,
-                    weekNumber = 1,
-                    readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
+                    bookId = null,
+                    chapterNumber = null,
                 ),
             )
 
@@ -128,16 +136,110 @@ internal class GetChatContextUseCaseTest {
     fun `GIVEN a day without passages WHEN loading the chat context THEN there is none`() = runTest {
         // When
         val context = useCase(
-            DayNavRoute(
+            chatRoute(
                 dayNumber = 2,
-                weekNumber = 1,
-                readingPlanType = ReadingPlanType.BOOKS.name,
+                bookId = null,
+                chapterNumber = null,
             ),
         )
 
         // Then
         assertNull(context)
     }
+
+    @Test
+    fun `GIVEN a chapter WHEN loading the chat context THEN it is that single chapter without a plan day`() = runTest {
+        // When
+        val context = useCase(
+            chatRoute(
+                dayNumber = null,
+                bookId = BookId.GEN.name,
+                chapterNumber = 3,
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = ChatContextModel(
+                label = "${getString(BookId.GEN.toBookNameResource())} 3",
+                passages = listOf(
+                    PassageModel(
+                        bookId = BookId.GEN,
+                        chapters = listOf(
+                            ChapterModel(
+                                number = 3,
+                                startVerse = null,
+                                endVerse = null,
+                                bookId = BookId.GEN,
+                            ),
+                        ),
+                        isRead = false,
+                        chapterRanges = "3",
+                    ),
+                ),
+                planDay = null,
+            ),
+            actual = context,
+        )
+    }
+
+    @Test
+    fun `GIVEN a day and a chapter WHEN loading the chat context THEN the day wins`() = runTest {
+        // When
+        val context = useCase(
+            chatRoute(
+                dayNumber = 1,
+                bookId = BookId.EXO.name,
+                chapterNumber = 3,
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(BookId.GEN),
+            actual = context?.passages?.map(PassageModel::bookId),
+        )
+    }
+
+    @Test
+    fun `GIVEN only a book or only a chapter WHEN loading the chat context THEN there is none`() = runTest {
+        // When
+        val contexts = listOf(
+            useCase(
+                chatRoute(
+                    dayNumber = null,
+                    bookId = BookId.GEN.name,
+                    chapterNumber = null,
+                ),
+            ),
+            useCase(
+                chatRoute(
+                    dayNumber = null,
+                    bookId = null,
+                    chapterNumber = 3,
+                ),
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = listOf(null, null),
+            actual = contexts,
+        )
+    }
+
+    private fun chatRoute(
+        dayNumber: Int?,
+        bookId: String?,
+        chapterNumber: Int?,
+    ): ChatNavRoute = ChatNavRoute(
+        source = ChatEntrySource.DAY_FAB,
+        dayNumber = dayNumber,
+        weekNumber = dayNumber?.let { 1 },
+        readingPlanType = dayNumber?.let { ReadingPlanType.CHRONOLOGICAL.name },
+        bookId = bookId,
+        chapterNumber = chapterNumber,
+    )
 
     private fun day(
         number: Int,

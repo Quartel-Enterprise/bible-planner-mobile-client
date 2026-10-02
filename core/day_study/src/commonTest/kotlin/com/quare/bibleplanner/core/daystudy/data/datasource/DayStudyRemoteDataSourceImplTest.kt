@@ -5,11 +5,11 @@ import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyRequestDto
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyResponseDto
 import com.quare.bibleplanner.core.daystudy.data.dto.DayStudyStatusDto
 import com.quare.bibleplanner.core.daystudy.data.dto.PassageRequestDto
-import com.quare.bibleplanner.core.daystudy.data.exception.DayStudyStreamStalledException
+import com.quare.bibleplanner.core.daystudy.data.exception.StudyStreamStalledException
 import com.quare.bibleplanner.core.daystudy.data.model.DayStudyStreamEvent
-import com.quare.bibleplanner.core.daystudy.fake.RecordedRequest
-import com.quare.bibleplanner.core.daystudy.fake.SseMockEngine
 import com.quare.bibleplanner.core.daystudy.fake.dayStudyResponse
+import com.quare.bibleplanner.core.provider.supabase.testing.RecordedRequest
+import com.quare.bibleplanner.core.provider.supabase.testing.SseMockEngine
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.functions.functions
@@ -237,7 +237,7 @@ internal class DayStudyRemoteDataSourceImplTest {
         val result = runCatching { dataSource.streamDayStudy(request).toList() }
 
         // Then
-        assertTrue(result.exceptionOrNull() is DayStudyStreamStalledException)
+        assertTrue(result.exceptionOrNull() is StudyStreamStalledException)
     }
 
     @Test
@@ -349,7 +349,7 @@ internal class DayStudyRemoteDataSourceImplTest {
             install(Functions)
         }
         dataSource = DayStudyRemoteDataSourceImpl(
-            functions = client.functions,
+            client = StudyFunctionClient(client.functions),
             json = json,
         )
     }

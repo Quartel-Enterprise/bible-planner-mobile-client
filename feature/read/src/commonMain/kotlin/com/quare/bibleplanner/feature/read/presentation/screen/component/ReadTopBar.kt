@@ -3,6 +3,7 @@ package com.quare.bibleplanner.feature.read.presentation.screen.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,9 +13,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
@@ -35,6 +38,7 @@ internal fun ReadTopBar(
     header: ReadHeaderUiModel,
     visibleChapter: ReadChapterUiModel?,
     isTitleVisible: Boolean,
+    isOpeningChapterStudy: Boolean,
     topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadUiEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -65,6 +69,19 @@ internal fun ReadTopBar(
                 imageVector = Icons.Default.TextFormat,
                 contentDescription = stringResource(Res.string.reader_appearance),
                 onClick = { onEvent(ReadUiEvent.OnAppearanceClick) },
+            )
+            ChapterStudyPill(
+                isLoading = isOpeningChapterStudy,
+                onClick = {
+                    onEvent(
+                        ReadUiEvent.OnChapterStudyClick(
+                            bookId = visibleChapter?.chapter?.bookId ?: header.bookId,
+                            chapterNumber = chapterNumber,
+                            source = ChapterStudyEntrySource.TOP_BAR,
+                        ),
+                    )
+                },
+                modifier = Modifier.padding(end = 6.dp),
             )
             BibleVersionChip(
                 versionName = header.versionAbbreviation,

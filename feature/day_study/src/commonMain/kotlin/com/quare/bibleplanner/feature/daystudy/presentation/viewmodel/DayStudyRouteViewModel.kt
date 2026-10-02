@@ -136,6 +136,8 @@ internal class DayStudyRouteViewModel(
                 dayNumber = dayRoute.dayNumber,
                 weekNumber = dayRoute.weekNumber,
                 readingPlanType = dayRoute.readingPlanType,
+                bookId = null,
+                chapterNumber = null,
             ),
         )
     }

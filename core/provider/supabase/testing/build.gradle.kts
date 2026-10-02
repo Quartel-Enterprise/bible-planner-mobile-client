@@ -16,6 +16,10 @@ kotlin {
             api(project.dependencies.platform(libs.supabase.bom))
             api(libs.supabase.realtime)
 
+            // Ktor
+            api(libs.ktor.client.core)
+            api(libs.ktor.client.mock)
+
             // Serialization
             implementation(libs.kotlinx.serialization.json)
 

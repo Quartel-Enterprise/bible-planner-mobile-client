@@ -16,7 +16,7 @@ The user taps the sign-in button on the login-warning dialog; the app navigates 
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `reason` | string | `day_study` | `LoginWarningReason` key of the gated action: `purchase` \| `day_study` \| `preferences_theme` \| `preferences_language` |
+| `reason` | string | `day_study` | `LoginWarningReason` key of the gated action: `purchase` \| `day_study` \| `chapter_study` \| `preferences_theme` \| `preferences_language` |
 
 ## Notes
 

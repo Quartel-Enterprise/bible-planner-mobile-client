@@ -16,6 +16,7 @@ import com.quare.bibleplanner.feature.applanguage.presentation.appLanguage
 import com.quare.bibleplanner.feature.bibleversion.presentation.bibleVersionSelectionRoot
 import com.quare.bibleplanner.feature.bibleversion.presentation.pendingBibleUpdates
 import com.quare.bibleplanner.feature.bookdetails.presentation.bookDetails
+import com.quare.bibleplanner.feature.chapterstudy.presentation.chapterStudy
 import com.quare.bibleplanner.feature.chat.presentation.chat
 import com.quare.bibleplanner.feature.congrats.presentation.congrats
 import com.quare.bibleplanner.feature.contactsupport.presentation.contactSupport
@@ -69,6 +70,7 @@ internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKe
         dayStudySection = RootDayStudySection,
     )
     dayStudy()
+    chapterStudy()
     dayReadingComplete()
     chat()
     themeSettings()

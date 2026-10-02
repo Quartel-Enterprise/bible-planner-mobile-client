@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.route.AddNotesFreeWarningNavRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.CropPhotoNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
@@ -52,6 +53,7 @@ internal class CommonKoinGraphTest {
     private val navigationParameterTypes: List<KClass<*>> = listOf(
         AddNotesFreeWarningNavRoute::class,
         BookDetailsNavRoute::class,
+        ChapterStudyNavRoute::class,
         ChatNavRoute::class,
         CropPhotoNavRoute::class,
         DayNavRoute::class,

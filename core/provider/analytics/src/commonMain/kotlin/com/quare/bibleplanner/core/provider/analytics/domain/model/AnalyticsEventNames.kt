@@ -55,6 +55,16 @@ object AnalyticsEventNames {
     const val DAY_STUDY_BG_CARD_OPENED = "day_study_bg_card_opened"
     const val DAY_STUDY_BG_CARD_DISMISSED = "day_study_bg_card_dismissed"
 
+    const val CHAPTER_STUDY_ENTRY_CLICKED = "chapter_study_entry_clicked"
+    const val CHAPTER_STUDY_GENERATION_STARTED = "chapter_study_generation_started"
+    const val CHAPTER_STUDY_GENERATION_COMPLETED = "chapter_study_generation_completed"
+    const val CHAPTER_STUDY_GENERATION_FAILED = "chapter_study_generation_failed"
+    const val CHAPTER_STUDY_OPENED = "chapter_study_opened"
+    const val CHAPTER_STUDY_RETRY_CLICKED = "chapter_study_retry_clicked"
+    const val CHAPTER_STUDY_OUTLINE_CLICKED = "chapter_study_outline_clicked"
+    const val CHAPTER_STUDY_KEY_VERSE_SHARE_CLICKED = "chapter_study_key_verse_share_clicked"
+    const val CHAPTER_STUDY_CROSS_REFERENCE_CLICKED = "chapter_study_cross_reference_clicked"
+
     const val AI_CHAT_ENTRY_CLICKED = "ai_chat_entry_clicked"
     const val AI_CHAT_MESSAGE_SENT = "ai_chat_message_sent"
     const val AI_CHAT_SUGGESTION_CLICKED = "ai_chat_suggestion_clicked"

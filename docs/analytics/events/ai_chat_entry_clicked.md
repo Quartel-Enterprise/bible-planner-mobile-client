@@ -12,12 +12,13 @@ The user taps the "Ask the AI" button on the day screen (a FAB in portrait, an i
 
 `feature/day/.../presentation/viewmodel/DayViewModel.kt` — `DayUiEvent.OnAskAiClick`
 `feature/day_study/.../presentation/viewmodel/DayStudyRouteViewModel.kt` — `DayStudyRouteUiEvent.OnAskAiClick`
+`feature/chapter_study/.../presentation/viewmodel/ChapterStudyViewModel.kt` — `ChapterStudyUiEvent.OnAskAiClick`
 
 ## Parameters
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `source` | string | `day_fab` | `day_fab` \| `day_study_questions` (snake_case of `ChatEntrySource`) |
+| `source` | string | `day_fab` | `day_fab` \| `day_study_questions` \| `chapter_study` (snake_case of `ChatEntrySource`) |
 
 ## Notes
 
