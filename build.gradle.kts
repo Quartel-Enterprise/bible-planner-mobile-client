@@ -100,8 +100,14 @@ kover {
                     "androidx.compose.ui.tooling.preview.Preview",
                 )
                 // The annotation leaves behind the top-level Dp constants of the composable-only
-                // packages, which no unit test can reach either
-                packages("*.presentation.content", "*.presentation.component")
+                // packages, which no unit test can reach either. The reader keeps its screen under
+                // presentation/screen, so its content and component packages are listed as well.
+                packages(
+                    "*.presentation.content",
+                    "*.presentation.component",
+                    "*.presentation.screen.content",
+                    "*.presentation.screen.component",
+                )
                 // Koin modules are wiring, with no behaviour of their own
                 packages("*.di")
                 // Navigation entries: EntryProviderScope extensions that only hand a route to a
