@@ -62,6 +62,9 @@ internal class ChapterStudyViewModel(
         AnalyticsParams.CHAPTER_NUMBER to target.chapterNumber,
     )
 
+    /** On a wide window the study opens beside the reader, so the chapter's verses stay in sight. */
+    private var isBesideReader: Boolean = false
+
     val uiState: StateFlow<ChapterStudyUiState>
         field = MutableStateFlow<ChapterStudyUiState>(
             ChapterStudyUiState(
@@ -83,6 +86,7 @@ internal class ChapterStudyViewModel(
             ChapterStudyUiEvent.OnShareKeyVerseClick -> onShareKeyVerseClick()
             is ChapterStudyUiEvent.OnCrossReferenceClick -> onCrossReferenceClick(event.reference)
             ChapterStudyUiEvent.OnAskAiClick -> onAskAiClick()
+            is ChapterStudyUiEvent.OnWidthClassChanged -> isBesideReader = event.isWide
         }
     }
 
@@ -215,7 +219,9 @@ internal class ChapterStudyViewModel(
                 verseNumbers = (section.startVerse..section.endVerse).toList(),
             ),
         )
-        navigator.navigateBack()
+        if (!isBesideReader) {
+            navigator.navigateBack()
+        }
     }
 
     private fun onShareKeyVerseClick() {

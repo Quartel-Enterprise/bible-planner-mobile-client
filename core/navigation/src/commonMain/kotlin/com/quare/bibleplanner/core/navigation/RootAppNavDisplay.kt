@@ -39,7 +39,7 @@ import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
-import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrategy
+import com.quare.bibleplanner.core.navigation.strategy.StudyPanelSceneStrategy
 import com.quare.bibleplanner.core.navigation.strategy.VerseSelectionSceneStrategy
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
@@ -116,7 +116,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                     sceneStrategies = listOf(
                         DialogSceneStrategy(),
                         remember(isWide, dayStudyReadingFraction) {
-                            DayStudyPanelSceneStrategy(
+                            StudyPanelSceneStrategy(
                                 isWide = isWide,
                                 readingFraction = dayStudyReadingFraction,
                                 onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,

@@ -2,7 +2,8 @@
   "2.10.0": {
     "common": [
       "Novo: estudo do capítulo com IA. Enquanto lê um capítulo, toque em \"Estudo\" no topo da tela, ou em \"Estudar este capítulo\" no fim do texto, para ver um resumo, o contexto, a estrutura do capítulo, os personagens e lugares, o versículo-chave, referências cruzadas e perguntas para refletir. Alguns estudos são grátis; com o Pro, são ilimitados.",
-      "No estudo do capítulo, toque em uma parte da estrutura para voltar ao texto já naquele trecho, em uma referência cruzada para abrir a passagem, em \"Compartilhar\" para enviar o versículo-chave, ou em \"Conversar\" para tirar dúvidas sobre o capítulo com a IA."
+      "No estudo do capítulo, toque em uma parte da estrutura para voltar ao texto já naquele trecho, em uma referência cruzada para abrir a passagem, em \"Compartilhar\" para enviar o versículo-chave, ou em \"Conversar\" para tirar dúvidas sobre o capítulo com a IA.",
+      "Em tablets e com o celular deitado, o estudo do capítulo abre ao lado do texto: o capítulo fica à esquerda e o estudo à direita, e tocar em uma parte da estrutura destaca aquele trecho sem fechar o estudo."
     ]
   },
   "2.9.2": {

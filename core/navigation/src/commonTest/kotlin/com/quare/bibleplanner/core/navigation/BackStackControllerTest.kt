@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.navigation
 
 import androidx.navigation3.runtime.NavKey
+import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRoute
@@ -23,6 +24,14 @@ internal class BackStackControllerTest {
         readingPlanType = READING_PLAN_TYPE,
     )
     private val dayStudyRoute: NavKey = dayRoute.toDayStudyNavRoute()
+    private val genesisStudyRoute: NavKey = ChapterStudyNavRoute(
+        bookId = "GEN",
+        chapterNumber = 1,
+    )
+    private val exodusStudyRoute: NavKey = ChapterStudyNavRoute(
+        bookId = "EXO",
+        chapterNumber = 1,
+    )
 
     private lateinit var backStackController: BackStackController
     private lateinit var backStack: MutableList<NavKey>
@@ -50,6 +59,30 @@ internal class BackStackControllerTest {
 
         // Then
         assertEquals(listOf(mainRoute, themeRoute, logoutRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN a chapter study on top WHEN navigating to another chapter study THEN takes its place`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, themeRoute, genesisStudyRoute))
+
+        // When
+        backStackController.navigate(exodusStudyRoute)
+
+        // Then
+        assertEquals(listOf(mainRoute, themeRoute, exodusStudyRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN a chapter study under the top WHEN navigating to another chapter study THEN pushes it on top`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, genesisStudyRoute, themeRoute))
+
+        // When
+        backStackController.navigate(exodusStudyRoute)
+
+        // Then
+        assertEquals(listOf(mainRoute, genesisStudyRoute, themeRoute, exodusStudyRoute), backStack)
     }
 
     @Test

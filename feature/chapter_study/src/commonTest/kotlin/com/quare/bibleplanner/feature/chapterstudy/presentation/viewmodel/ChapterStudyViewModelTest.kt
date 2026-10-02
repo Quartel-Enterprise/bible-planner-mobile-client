@@ -335,6 +335,32 @@ internal class ChapterStudyViewModelTest {
         }
 
     @Test
+    fun `GIVEN a study beside the reader WHEN clicking an outline section THEN shows those verses and stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(cachedStudy = study)
+            settle()
+            viewModel.onEvent(ChapterStudyUiEvent.OnWidthClassChanged(isWide = true))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ChapterStudyUiEvent.OnOutlineSectionClick(study.outline.first()))
+            settle()
+
+            // Then
+            assertEquals(
+                expected = PendingVerseFocusModel(
+                    bookId = BookId.GEN,
+                    chapterNumber = 3,
+                    verseNumbers = listOf(1, 2, 3, 4, 5, 6, 7),
+                ),
+                actual = pendingVerseFocusStore.pending.value,
+            )
+            assertEquals(expected = emptyList(), actual = commands)
+            assertEquals(expected = listOf("chapter_study_outline_clicked" to targetParams), actual = trackedEvents)
+        }
+
+    @Test
     fun `GIVEN a study WHEN sharing the key verse THEN opens the share sheet for its verses`() =
         runTest(testDispatcher) {
             // Given

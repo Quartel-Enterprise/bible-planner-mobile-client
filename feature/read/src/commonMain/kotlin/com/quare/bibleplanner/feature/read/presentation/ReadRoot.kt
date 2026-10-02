@@ -20,6 +20,7 @@ import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppeara
 import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighlightColorDialog
 import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighlightColorViewModel
 import com.quare.bibleplanner.feature.read.presentation.screen.ReadScreen
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ReaderWidthLayout
 import com.quare.bibleplanner.feature.read.presentation.utils.DeleteHighlightColorUiActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import com.quare.bibleplanner.ui.component.dialog.toNativeAlertDialogProperties
@@ -33,12 +34,14 @@ fun EntryProviderScope<NavKey>.read(dayCompletionBanner: DayCompletionBannerSlot
     entry<ReadNavRoute>(metadata = getReaderPane()) { route ->
         val viewModel = koinViewModel<ReadViewModel> { parametersOf(route) }
         val state by viewModel.uiState.collectAsState()
-        ReadScreen(
-            platform = viewModel.platform,
-            state = state,
-            onEvent = viewModel::onEvent,
-            dayCompletionBanner = dayCompletionBanner,
-        )
+        ReaderWidthLayout {
+            ReadScreen(
+                platform = viewModel.platform,
+                state = state,
+                onEvent = viewModel::onEvent,
+                dayCompletionBanner = dayCompletionBanner,
+            )
+        }
     }
 
     entry<ReaderAppearanceNavRoute>(
