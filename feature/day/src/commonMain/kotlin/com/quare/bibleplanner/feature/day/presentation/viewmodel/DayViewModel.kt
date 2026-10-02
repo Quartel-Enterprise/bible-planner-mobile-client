@@ -175,6 +175,8 @@ internal class DayViewModel(
                 dayNumber = dayNumber,
                 weekNumber = weekNumber,
                 readingPlanType = readingPlanType.name,
+                bookId = null,
+                chapterNumber = null,
             ),
         )
     }

@@ -140,7 +140,8 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `DayNavRoute` | `day` | `screen` | `plan_type`, `week_number`, `day_number` |
 | `DayStudyNavRoute` | `day_study` | `screen` | `plan_type`, `week_number`, `day_number` |
 | `DayReadingCompleteNavRoute` | `day_reading_complete` | `responsive` | `plan_type`, `week_number`, `day_number` |
-| `ChatNavRoute` | `ai_chat` | `screen` | `source`, and `plan_type`, `week_number`, `day_number` when opened from a reading |
+| `ChapterStudyNavRoute` | `chapter_study` | `screen` | `book_id`, `chapter_number` |
+| `ChatNavRoute` | `ai_chat` | `screen` | `source`, plus `plan_type`, `week_number`, `day_number` when opened from a reading, or `book_id`, `chapter_number` when opened from a chapter study |
 | `DeleteAllProgressNavRoute` | `delete_all_progress` | `dialog` | — |
 | `DeleteNotesRoute` | `delete_notes` | `dialog` | `plan_type`, `week_number`, `day_number` |
 | `DeleteVersionNavRoute` | `delete_version` | `dialog` | `version_id` |
@@ -327,6 +328,20 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [day_study_generation_time](events/day_study_generation_time.md) | P1 | DayStudy |
 | [day_study_bg_card_opened](events/day_study_bg_card_opened.md) | P2 | DayStudy |
 | [day_study_bg_card_dismissed](events/day_study_bg_card_dismissed.md) | P2 | DayStudy |
+
+### Chapter Study (AI)
+
+| Event | Tier | Domain |
+|---|---|---|
+| [chapter_study_entry_clicked](events/chapter_study_entry_clicked.md) | P1 | ChapterStudy |
+| [chapter_study_generation_started](events/chapter_study_generation_started.md) | P1 | ChapterStudy |
+| [chapter_study_generation_completed](events/chapter_study_generation_completed.md) | P1 | ChapterStudy |
+| [chapter_study_generation_failed](events/chapter_study_generation_failed.md) | P1 | ChapterStudy |
+| [chapter_study_opened](events/chapter_study_opened.md) | P2 | ChapterStudy |
+| [chapter_study_retry_clicked](events/chapter_study_retry_clicked.md) | P2 | ChapterStudy |
+| [chapter_study_outline_clicked](events/chapter_study_outline_clicked.md) | P2 | ChapterStudy |
+| [chapter_study_key_verse_share_clicked](events/chapter_study_key_verse_share_clicked.md) | P2 | ChapterStudy |
+| [chapter_study_cross_reference_clicked](events/chapter_study_cross_reference_clicked.md) | P2 | ChapterStudy |
 
 ### Day Reading Complete
 

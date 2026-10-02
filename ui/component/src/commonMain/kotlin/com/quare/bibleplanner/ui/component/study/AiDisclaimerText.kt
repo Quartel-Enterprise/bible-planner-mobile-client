@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.feature.daystudy.presentation.component
+package com.quare.bibleplanner.ui.component.study
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,12 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_disclaimer
+import bibleplanner.ui.component.generated.resources.Res
+import bibleplanner.ui.component.generated.resources.ai_disclaimer
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun DayStudyDisclaimerText(modifier: Modifier = Modifier) {
+fun AiDisclaimerText(modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),

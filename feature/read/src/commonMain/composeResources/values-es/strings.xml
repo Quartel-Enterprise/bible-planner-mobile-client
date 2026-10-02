@@ -50,4 +50,8 @@
         <item quantity="one">%1$d línea</item>
         <item quantity="other">%1$d líneas</item>
     </plurals>
+    <string name="chapter_study_pill">Estudio</string>
+    <string name="chapter_study_card_title">Estudiar este capítulo</string>
+    <string name="chapter_study_card_subtitle">Resumen, contexto y reflexiones · IA</string>
+    <string name="chapter_study_card_subtitle_with_chapter">%1$s · Resumen, contexto y reflexiones · IA</string>
 </resources>

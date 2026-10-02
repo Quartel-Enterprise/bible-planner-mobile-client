@@ -48,8 +48,8 @@ When two features need the same thing, it goes down, never sideways:
 
 | Need | Where it goes | Example |
 |---|---|---|
-| Domain or data another feature reads | A `:core:*` module holding the `domain/` and `data/` layers; the feature keeps `presentation/` | `core/day_study`, `core/in_app_update`, `core/preferences/{theme_selection,material_you,study_suggestion}` |
-| A string or composable another feature shows | `ui/component` | the language names, `Language.toStringResource()` |
+| Domain or data another feature reads | A `:core:*` module holding the `domain/` and `data/` layers; the feature keeps `presentation/` | `core/day_study`, `core/chapter_study`, `core/in_app_update`, `core/preferences/{theme_selection,material_you,study_suggestion}` |
+| A string or composable another feature shows | `ui/component` | the language names, `Language.toStringResource()`, the AI study states both studies show (`AiStudyGeneratingContent`, `AiStudyErrorContent`, `AiDisclaimerText`) |
 | A feature's screen drawn inside another's | The host declares a slot interface; `:core:navigation` implements it with the other feature's composable and passes it to the host's entry | `DayStudySectionSlot` (study card in Day), `DayCompletionBannerSlot` (banner in Read) |
 | A host composing other features' entries | The host takes them as a parameter from `:core:navigation` | `MainTabEntries` (Plans, Books and Profile tabs) |
 

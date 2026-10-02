@@ -62,6 +62,31 @@ internal class PaywallTeaserViewModelTest {
     }
 
     @Test
+    fun `GIVEN the chapter study limit reason WHEN subscribing THEN opens the paywall from the chapter study`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(reason = PaywallTeaserReason.CHAPTER_STUDY_LIMIT)
+
+            // When
+            viewModel.onEvent(PaywallTeaserUiEvent.OnSubscribeClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.NavigateReplacingTop(
+                        PaywallNavRoute(PaywallEntrySource.CHAPTER_STUDY),
+                    ),
+                ),
+                actual = commands,
+            )
+            assertEquals(
+                expected = "paywall_teaser_subscribe_clicked" to mapOf("reason" to "chapter_study_limit"),
+                actual = trackedEvents.single(),
+            )
+        }
+
+    @Test
     fun `dismissing pops the sheet without touching the paywall`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -81,10 +106,10 @@ internal class PaywallTeaserViewModelTest {
         )
     }
 
-    private fun TestScope.prepareScenario() {
+    private fun TestScope.prepareScenario(reason: PaywallTeaserReason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR) {
         trackedEvents = mutableListOf()
         viewModel = PaywallTeaserViewModel(
-            route = PaywallTeaserNavRoute(PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
+            route = PaywallTeaserNavRoute(reason),
             navigator = navigator,
             trackEvent = { name, params -> trackedEvents += name to params },
         )

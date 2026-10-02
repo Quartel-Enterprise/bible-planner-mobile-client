@@ -31,12 +31,14 @@ import bibleplanner.feature.read.generated.resources.reader_appearance
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
 import com.quare.bibleplanner.feature.read.presentation.component.rememberVerseFlash
+import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.component.BibleVersionChip
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterStudyPill
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadStatusPill
 import com.quare.bibleplanner.feature.read.presentation.screen.content.CHAPTER_SHIMMER_ITEM_COUNT
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ChapterShimmerPosition
@@ -100,6 +102,7 @@ internal fun ReadWideScreen(
                     platform = platform,
                     header = state.header,
                     visibleChapter = visibleChapter,
+                    isOpeningChapterStudy = state.isOpeningChapterStudy,
                     onEvent = onEvent,
                 )
                 Box(
@@ -176,6 +179,7 @@ private fun ReadWideHeader(
     platform: Platform,
     header: ReadHeaderUiModel,
     visibleChapter: ReadChapterUiModel?,
+    isOpeningChapterStudy: Boolean,
     onEvent: (ReadUiEvent) -> Unit,
 ) = BoxWithConstraints {
     val hasRoomForTitle = maxWidth >= titleMinColumnWidth
@@ -210,6 +214,18 @@ private fun ReadWideHeader(
                     ReadUiEvent.ToggleReadStatus(
                         bookId = bookId,
                         chapterNumber = chapterNumber,
+                    ),
+                )
+            },
+        )
+        ChapterStudyPill(
+            isLoading = isOpeningChapterStudy,
+            onClick = {
+                onEvent(
+                    ReadUiEvent.OnChapterStudyClick(
+                        bookId = bookId,
+                        chapterNumber = chapterNumber,
+                        source = ChapterStudyEntrySource.TOP_BAR,
                     ),
                 )
             },

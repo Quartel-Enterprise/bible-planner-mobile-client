@@ -6,6 +6,11 @@ import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyAccessModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.PendingVerseFocusModel
+import com.quare.bibleplanner.core.chapterstudy.domain.store.PendingVerseFocusStore
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyAccess
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -16,7 +21,11 @@ import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
@@ -33,10 +42,12 @@ import com.quare.bibleplanner.feature.read.domain.model.ReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
 import com.quare.bibleplanner.feature.read.domain.usecase.GetPreviousChapter
+import com.quare.bibleplanner.feature.read.domain.usecase.ReadStudyUseCases
 import com.quare.bibleplanner.feature.read.fake.FakeObserveReadData
 import com.quare.bibleplanner.feature.read.fake.FakeVerseSelectionStore
 import com.quare.bibleplanner.feature.read.fake.RecordingBibleVersionDownloaderFacade
 import com.quare.bibleplanner.feature.read.fake.ThrowingBibleVersionDownloaderFacade
+import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
@@ -94,6 +105,20 @@ internal class ReadViewModelTest {
     private lateinit var prefetchedDays: MutableList<PlanDayLocationModel>
     private lateinit var focusAidWrites: MutableList<ReaderFocusAid>
     private lateinit var trackedEventParams: MutableList<Pair<String, Map<String, Any>>>
+    private lateinit var pendingVerseFocusStore: PendingVerseFocusStore
+    private lateinit var chapterStudyAccessTargets: MutableList<ChapterStudyTargetModel>
+
+    private val chapterStudyClick = ReadUiEvent.OnChapterStudyClick(
+        bookId = BookId.GEN,
+        chapterNumber = 3,
+        source = ChapterStudyEntrySource.TOP_BAR,
+    )
+    private val chapterStudyCommand: NavigationCommand = NavigationCommand.Navigate(
+        ChapterStudyNavRoute(
+            bookId = "GEN",
+            chapterNumber = 3,
+        ),
+    )
     private var notificationPermissionRequests = 0
 
     @BeforeTest
@@ -745,6 +770,215 @@ internal class ReadViewModelTest {
         )
     }
 
+    @Test
+    fun `GIVEN an open chapter study WHEN clicking the study entry THEN opens the study of that chapter`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(getChapterStudyAccess = { ChapterStudyAccessModel.OPEN })
+
+            // When
+            viewModel.onEvent(
+                ReadUiEvent.OnChapterStudyClick(
+                    bookId = BookId.EXO,
+                    chapterNumber = 7,
+                    source = ChapterStudyEntrySource.CHAPTER_END,
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        ChapterStudyNavRoute(
+                            bookId = "EXO",
+                            chapterNumber = 7,
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+            assertEquals(
+                expected = listOf(
+                    ChapterStudyTargetModel(
+                        bookId = BookId.EXO,
+                        chapterNumber = 7,
+                    ),
+                ),
+                actual = chapterStudyAccessTargets,
+            )
+            assertEquals(
+                expected = listOf<Map<String, Any>>(
+                    mapOf(
+                        "book_id" to "EXO",
+                        "chapter_number" to 7,
+                        "source" to "chapter_end",
+                    ),
+                ),
+                actual = trackedEventParams
+                    .filter { (name, _) -> name == "chapter_study_entry_clicked" }
+                    .map { (_, params) -> params },
+            )
+        }
+
+    @Test
+    fun `GIVEN a signed out reader WHEN clicking the study entry THEN warns that the study needs a login`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(getChapterStudyAccess = { ChapterStudyAccessModel.LOGIN_REQUIRED })
+
+            // When
+            viewModel.onEvent(chapterStudyClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(LoginWarningNavRoute(reason = "chapter_study")),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN the free studies used up WHEN clicking the study entry THEN opens the paywall teaser`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(getChapterStudyAccess = { ChapterStudyAccessModel.LIMIT_REACHED })
+
+            // When
+            viewModel.onEvent(chapterStudyClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT)),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN the access check fails WHEN clicking the study entry THEN opens the study anyway`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(getChapterStudyAccess = { error("offline") })
+
+            // When
+            viewModel.onEvent(chapterStudyClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf(chapterStudyCommand),
+                actual = commands,
+            )
+            assertFalse(viewModel.uiState.value.isOpeningChapterStudy)
+        }
+
+    @Test
+    fun `GIVEN the access still resolving WHEN clicking the study entry again THEN ignores the second click`() =
+        runTest(testDispatcher) {
+            // Given
+            val access = CompletableDeferred<ChapterStudyAccessModel>()
+            prepareScenario(getChapterStudyAccess = { access.await() })
+            viewModel.onEvent(chapterStudyClick)
+            runCurrent()
+            val isOpeningWhileResolving = viewModel.uiState.value.isOpeningChapterStudy
+
+            // When
+            viewModel.onEvent(chapterStudyClick)
+            access.complete(ChapterStudyAccessModel.OPEN)
+            runCurrent()
+
+            // Then
+            assertTrue(isOpeningWhileResolving)
+            assertEquals(
+                expected = 1,
+                actual = chapterStudyAccessTargets.size,
+            )
+            assertEquals(
+                expected = listOf(chapterStudyCommand),
+                actual = commands,
+            )
+            assertFalse(viewModel.uiState.value.isOpeningChapterStudy)
+        }
+
+    @Test
+    fun `GIVEN a pending verse focus on the chapter shown WHEN it is requested THEN focuses it and consumes it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            pendingVerseFocusStore.request(
+                PendingVerseFocusModel(
+                    bookId = BookId.GEN,
+                    chapterNumber = 3,
+                    verseNumbers = listOf(2, 3),
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = VerseFocusUiModel(
+                    bookId = BookId.GEN,
+                    chapterNumber = 3,
+                    verseNumbers = listOf(2, 3),
+                ),
+                actual = viewModel.uiState.value.verseFocus,
+            )
+            assertNull(pendingVerseFocusStore.pending.value)
+        }
+
+    @Test
+    fun `GIVEN a pending verse focus on another chapter WHEN it is requested THEN leaves it for that chapter`() =
+        runTest(testDispatcher) {
+            // Given
+            val pending = PendingVerseFocusModel(
+                bookId = BookId.GEN,
+                chapterNumber = 4,
+                verseNumbers = listOf(1),
+            )
+            prepareScenario()
+
+            // When
+            pendingVerseFocusStore.request(pending)
+            runCurrent()
+
+            // Then
+            assertNull(viewModel.uiState.value.verseFocus)
+            assertEquals(
+                expected = pending,
+                actual = pendingVerseFocusStore.pending.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a pending verse focus while the chapter is not loaded WHEN it is requested THEN leaves it pending`() =
+        runTest(testDispatcher) {
+            // Given
+            val pending = PendingVerseFocusModel(
+                bookId = BookId.GEN,
+                chapterNumber = 3,
+                verseNumbers = listOf(1),
+            )
+            prepareScenario(content = ReadContentUiState.Loading)
+
+            // When
+            pendingVerseFocusStore.request(pending)
+            runCurrent()
+
+            // Then
+            assertNull(viewModel.uiState.value.verseFocus)
+            assertEquals(
+                expected = pending,
+                actual = pendingVerseFocusStore.pending.value,
+            )
+        }
+
     private fun TestScope.prepareScenario(
         toggleWholeChapterReadStatus: ToggleWholeChapterReadStatus = ToggleWholeChapterReadStatus {
             _,
@@ -772,7 +1006,10 @@ internal class ReadViewModelTest {
         isWholeChapterRead: IsWholeChapterRead = IsWholeChapterRead { _, _ -> error("unused") },
         downloaderFacade: BibleVersionDownloaderFacade = ThrowingBibleVersionDownloaderFacade,
         getSelectedVersionIdFlow: GetSelectedVersionIdFlow = GetSelectedVersionIdFlow { error("unused") },
+        getChapterStudyAccess: GetChapterStudyAccess = GetChapterStudyAccess { error("unused") },
     ) {
+        pendingVerseFocusStore = PendingVerseFocusStore()
+        chapterStudyAccessTargets = mutableListOf()
         prefetchedDays = mutableListOf()
         focusAidWrites = mutableListOf()
         trackedEventParams = mutableListOf()
@@ -832,7 +1069,14 @@ internal class ReadViewModelTest {
             isWholeChapterRead = isWholeChapterRead,
             getCompletedDayForChapter = getCompletedDayForChapter,
             observeDayCompletionCandidates = ObserveDayCompletionCandidates { flowOf(dayCompletionCandidates) },
-            prefetchDayStudyQuota = { day -> prefetchedDays += day },
+            studyUseCases = ReadStudyUseCases(
+                prefetchDayStudyQuota = { day -> prefetchedDays += day },
+                getChapterStudyAccess = { target ->
+                    chapterStudyAccessTargets += target
+                    getChapterStudyAccess(target)
+                },
+                pendingVerseFocusStore = pendingVerseFocusStore,
+            ),
             observeStudySuggestionSettings = { flowOf(studySuggestionSettings) },
             requestLoginNudgeIfNeeded = { },
             downloaderFacade = downloaderFacade,

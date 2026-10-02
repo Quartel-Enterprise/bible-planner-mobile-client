@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chapter_study_title">Estudo com IA</string>
+    <string name="chapter_study_generating_subtitle">A IA está lendo %1$s. Isso pode levar até 1 minuto — pode fechar e voltar quando quiser.</string>
+    <string name="chapter_study_phase_reading">Lendo %1$s</string>
+    <string name="chapter_study_phase_summary">Resumindo o capítulo</string>
+    <string name="chapter_study_phase_context">Levantando contexto e personagens</string>
+    <string name="chapter_study_phase_questions">Preparando perguntas de reflexão</string>
+    <string name="chapter_study_section_summary">RESUMO</string>
+    <string name="chapter_study_section_context">CONTEXTO</string>
+    <string name="chapter_study_section_outline">ESTRUTURA</string>
+    <string name="chapter_study_section_people_and_places">PERSONAGENS E LUGARES</string>
+    <string name="chapter_study_section_key_verse">VERSÍCULO-CHAVE · %1$s</string>
+    <string name="chapter_study_section_cross_references">REFERÊNCIAS CRUZADAS</string>
+    <string name="chapter_study_section_reflection">PARA REFLETIR</string>
+    <string name="chapter_study_key_verse_caption">%1$s · %2$s</string>
+    <string name="chapter_study_share">Compartilhar</string>
+    <string name="chapter_study_chat">Conversar</string>
+</resources>

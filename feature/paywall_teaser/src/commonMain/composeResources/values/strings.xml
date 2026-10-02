@@ -4,4 +4,7 @@
     <string name="paywall_teaser_highlight_custom_color_title">Custom colors are Pro</string>
     <string name="paywall_teaser_highlight_custom_color_body">The default palette stays free. With Pro you can mix your own colors to tell topics, promises and prayers apart.</string>
     <string name="paywall_teaser_highlight_custom_color_dismiss">Use the default palette</string>
+    <string name="paywall_teaser_chapter_study_limit_title">Your free studies are used up</string>
+    <string name="paywall_teaser_chapter_study_limit_body">You have used your free chapter studies. With Pro you can study any chapter with AI, as many times as you want — along with unlimited day studies and chat.</string>
+    <string name="paywall_teaser_chapter_study_limit_dismiss">Not now</string>
 </resources>

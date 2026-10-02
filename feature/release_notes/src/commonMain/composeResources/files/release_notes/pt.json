@@ -1,4 +1,10 @@
 {
+  "2.10.0": {
+    "common": [
+      "Novo: estudo do capítulo com IA. Enquanto lê um capítulo, toque em \"Estudo\" no topo da tela, ou em \"Estudar este capítulo\" no fim do texto, para ver um resumo, o contexto, a estrutura do capítulo, os personagens e lugares, o versículo-chave, referências cruzadas e perguntas para refletir. Alguns estudos são grátis; com o Pro, são ilimitados.",
+      "No estudo do capítulo, toque em uma parte da estrutura para voltar ao texto já naquele trecho, em uma referência cruzada para abrir a passagem, em \"Compartilhar\" para enviar o versículo-chave, ou em \"Conversar\" para tirar dúvidas sobre o capítulo com a IA."
+    ]
+  },
   "2.9.2": {
     "common": [
       "Na tela Marcações, se a versão da Bíblia escolhida no aparelho não tem marcações, mas outra versão tem (por exemplo, porque você marcou em outro aparelho), agora aparece um aviso como \"1 marcação em A21\", com um botão para passar a usar essa versão. Antes, a tela aparecia vazia.",

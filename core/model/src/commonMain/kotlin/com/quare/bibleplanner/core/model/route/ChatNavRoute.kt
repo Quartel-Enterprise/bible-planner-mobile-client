@@ -8,6 +8,8 @@ data class ChatNavRoute(
     val dayNumber: Int?,
     val weekNumber: Int?,
     val readingPlanType: String?,
+    val bookId: String?,
+    val chapterNumber: Int?,
 ) : NavRoute
 
 fun ChatNavRoute.toDayNavRoute(): DayNavRoute? {

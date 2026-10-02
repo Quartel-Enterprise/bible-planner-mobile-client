@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 enum class ChatEntrySource {
     DAY_FAB,
     DAY_STUDY_QUESTIONS,
+    CHAPTER_STUDY,
     ;
 
     val key: String

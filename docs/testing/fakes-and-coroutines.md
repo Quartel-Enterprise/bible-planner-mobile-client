@@ -29,11 +29,12 @@ submodule instead of being copied into each test source set:
 | `:core:books:testing` | `FakeBooksRepository`, `FakeBibleRepository`, `FakeBibleVersionRepository`, `FakeBibleVersionDownloaderFacade` |
 | `:core:plan:testing` | `FakePlanRepository`, `FakeDayRepository` |
 | `:core:day_study:testing` | `FakeDayStudyRepository`, `FakeDayStudyGenerationCoordinator` |
+| `:core:chapter_study:testing` | `FakeChapterStudyRepository`, `FakeChapterStudyGenerationCoordinator` |
 | `:core:preferences:theme_selection:testing` | `FakeThemeSelectionRepository` |
 | `:core:preferences:material_you:testing` | `FakeMaterialYouRepository` |
 | `:core:provider:data_store:testing` | `FakePreferencesDataStore` |
 | `:core:provider:room:testing` | `FakeSyncedPreferenceDao`, `FakeBibleVersionDao` |
-| `:core:provider:supabase:testing` | `FakeRealtime` |
+| `:core:provider:supabase:testing` | `FakeRealtime`, `SseMockEngine` |
 
 Depend on it from a test source set only (`commonTest.dependencies { implementation(projects.core.books.testing) }`);
 `assertModuleGraph` rejects a production dependency on a `:testing` module, and Kover does not measure

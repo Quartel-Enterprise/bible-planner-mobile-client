@@ -6,7 +6,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 
-private const val CHAPTER_EXTRA_ITEM_COUNT = 2
+private const val CHAPTER_EXTRA_ITEM_COUNT = 3
 
 /**
  * Which chapter the top of the list is sitting in. Each chapter lays out its header, one item per

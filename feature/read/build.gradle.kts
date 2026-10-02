@@ -30,6 +30,7 @@ kotlin {
             implementation(projects.core.verseAnnotations)
             implementation(projects.core.utils)
             implementation(projects.core.dayStudy)
+            implementation(projects.core.chapterStudy)
             implementation(projects.core.preferences.studySuggestion)
 
             // UI

@@ -111,6 +111,7 @@ internal fun ReadNarrowScreen(
                     header = state.header,
                     visibleChapter = visibleChapter,
                     isTitleVisible = isTitleVisible,
+                    isOpeningChapterStudy = state.isOpeningChapterStudy,
                     topAppBarScrollBehavior = topBarScrollBehavior,
                     onEvent = onEvent,
                 )

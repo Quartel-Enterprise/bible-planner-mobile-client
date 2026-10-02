@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,10 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -33,11 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_study_connection_error_message
-import bibleplanner.feature.day_study.generated.resources.ai_study_error
 import bibleplanner.feature.day_study.generated.resources.ai_study_generate
-import bibleplanner.feature.day_study.generated.resources.ai_study_generation_error_title
-import bibleplanner.feature.day_study.generated.resources.ai_study_retry
 import bibleplanner.feature.day_study.generated.resources.ai_study_subscribe
 import bibleplanner.feature.day_study.generated.resources.ai_study_title
 import bibleplanner.feature.day_study.generated.resources.ai_study_view
@@ -51,6 +44,8 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenera
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.component.study.AiStudyErrorContent
+import com.quare.bibleplanner.ui.component.study.AiStudyHeroIcon
 import org.jetbrains.compose.resources.stringResource
 
 private val descriptionMaxWidth = 300.dp
@@ -95,8 +90,8 @@ internal fun DayStudyPane(
                 modifier = Modifier.fillMaxSize(),
             )
 
-            generationError != null -> DayStudyErrorContent(
-                error = generationError,
+            generationError != null -> AiStudyErrorContent(
+                isOffline = generationError == DayStudyGenerationError.OFFLINE,
                 onRetryClick = onRetryClick,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -119,59 +114,6 @@ internal fun DayStudyPane(
 }
 
 @Composable
-private fun DayStudyErrorContent(
-    error: DayStudyGenerationError,
-    onRetryClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .padding(
-                horizontal = 38.dp,
-                vertical = 40.dp,
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        HeroIcon(icon = Icons.Rounded.CloudOff)
-        VerticalSpacer(20)
-        Text(
-            text = stringResource(Res.string.ai_study_generation_error_title),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-        )
-        VerticalSpacer(10)
-        Text(
-            text = stringResource(
-                when (error) {
-                    DayStudyGenerationError.GENERIC -> Res.string.ai_study_error
-                    DayStudyGenerationError.OFFLINE -> Res.string.ai_study_connection_error_message
-                },
-            ),
-            modifier = Modifier.widthIn(max = descriptionMaxWidth),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        VerticalSpacer(24)
-        Button(
-            onClick = onRetryClick,
-            modifier = Modifier.height(50.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Refresh,
-                contentDescription = null,
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-            )
-            HorizontalSpacer(ButtonDefaults.IconSpacing)
-            Text(text = stringResource(Res.string.ai_study_retry))
-        }
-    }
-}
-
-@Composable
 private fun DayStudyPaneHero(
     card: DayStudyCardUiModel,
     isOpening: Boolean,
@@ -189,7 +131,7 @@ private fun DayStudyPaneHero(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        HeroIcon(icon = if (isLocked) Icons.Rounded.Lock else Icons.Rounded.AutoAwesome)
+        AiStudyHeroIcon(icon = if (isLocked) Icons.Rounded.Lock else Icons.Rounded.AutoAwesome)
         VerticalSpacer(20)
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -215,26 +157,6 @@ private fun DayStudyPaneHero(
             mode = card.mode,
             isLoading = isOpening,
             onClick = onClick,
-        )
-    }
-}
-
-@Composable
-private fun HeroIcon(icon: ImageVector) {
-    Box(
-        modifier = Modifier
-            .size(64.dp)
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(20.dp),
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(34.dp),
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
         )
     }
 }

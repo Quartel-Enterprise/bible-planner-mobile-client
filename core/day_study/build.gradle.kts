@@ -56,6 +56,7 @@ kotlin {
             implementation(projects.core.books.testing)
             implementation(projects.core.dayStudy.testing)
             implementation(projects.core.plan.testing)
+            implementation(projects.core.provider.supabase.testing)
         }
         jvmTest.dependencies {
             implementation(libs.androidx.room.runtime)

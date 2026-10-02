@@ -1,6 +1,9 @@
 package com.quare.bibleplanner.feature.paywallteaser.presentation.mapper
 
 import bibleplanner.feature.paywall_teaser.generated.resources.Res
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_body
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_dismiss
+import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_chapter_study_limit_title
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_highlight_custom_color_body
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_highlight_custom_color_dismiss
 import bibleplanner.feature.paywall_teaser.generated.resources.paywall_teaser_highlight_custom_color_title
@@ -21,6 +24,22 @@ internal class PaywallTeaserCopyMapperTest {
                 title = Res.string.paywall_teaser_highlight_custom_color_title,
                 body = Res.string.paywall_teaser_highlight_custom_color_body,
                 dismiss = Res.string.paywall_teaser_highlight_custom_color_dismiss,
+            ),
+            copy,
+        )
+    }
+
+    @Test
+    fun `GIVEN the chapter study limit reason WHEN mapping it to the copy THEN explains the used up studies`() {
+        // When
+        val copy = PaywallTeaserReason.CHAPTER_STUDY_LIMIT.toCopy()
+
+        // Then
+        assertEquals(
+            PaywallTeaserCopy(
+                title = Res.string.paywall_teaser_chapter_study_limit_title,
+                body = Res.string.paywall_teaser_chapter_study_limit_body,
+                dismiss = Res.string.paywall_teaser_chapter_study_limit_dismiss,
             ),
             copy,
         )

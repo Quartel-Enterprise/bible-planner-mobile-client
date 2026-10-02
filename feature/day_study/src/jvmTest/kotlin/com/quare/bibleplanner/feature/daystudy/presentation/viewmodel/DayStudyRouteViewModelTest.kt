@@ -484,6 +484,8 @@ internal class DayStudyRouteViewModelTest {
                         dayNumber = 2,
                         weekNumber = 3,
                         readingPlanType = "BOOKS",
+                        bookId = null,
+                        chapterNumber = null,
                     ),
                 ),
             ),

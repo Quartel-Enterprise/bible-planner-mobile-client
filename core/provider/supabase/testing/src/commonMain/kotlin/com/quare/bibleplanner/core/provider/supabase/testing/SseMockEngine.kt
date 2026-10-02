@@ -1,4 +1,4 @@
-package com.quare.bibleplanner.core.daystudy.fake
+package com.quare.bibleplanner.core.provider.supabase.testing
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -11,7 +11,7 @@ import io.ktor.client.request.ResponseAdapterAttributeKey
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
 
-internal class SseMockEngine(
+class SseMockEngine(
     private val delegate: MockEngine,
 ) : HttpClientEngine by delegate {
     override val supportedCapabilities: Set<HttpClientEngineCapability<*>> =

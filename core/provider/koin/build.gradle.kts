@@ -63,6 +63,8 @@ kotlin {
             implementation(projects.feature.day)
             implementation(projects.feature.dayStudy)
             implementation(projects.core.dayStudy)
+            implementation(projects.feature.chapterStudy)
+            implementation(projects.core.chapterStudy)
             implementation(projects.feature.dayReadingComplete)
             implementation(projects.feature.chat)
             implementation(projects.feature.preferences.editPlanStartDate)

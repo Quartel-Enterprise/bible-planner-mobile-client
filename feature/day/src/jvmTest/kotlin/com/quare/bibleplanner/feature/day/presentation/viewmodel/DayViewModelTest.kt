@@ -800,6 +800,8 @@ internal class DayViewModelTest {
                         dayNumber = 1,
                         weekNumber = 1,
                         readingPlanType = "BOOKS",
+                        bookId = null,
+                        chapterNumber = null,
                     ),
                 ),
             ),

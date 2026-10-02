@@ -4,16 +4,22 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollToNodeAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.v2.runComposeUiTest
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.change_bible_version
 import bibleplanner.feature.read.generated.resources.chapter_not_downloaded_error
+import bibleplanner.feature.read.generated.resources.chapter_study_card_subtitle_with_chapter
+import bibleplanner.feature.read.generated.resources.chapter_study_card_title
+import bibleplanner.feature.read.generated.resources.chapter_study_pill
 import bibleplanner.feature.read.generated.resources.download_version
 import bibleplanner.feature.read.generated.resources.manage_bible_versions
 import bibleplanner.feature.read.generated.resources.mark_as_read
@@ -30,6 +36,7 @@ import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestion
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.fixture.NoDayCompletionBanner
 import com.quare.bibleplanner.feature.read.fixture.readUiState
+import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
@@ -271,6 +278,98 @@ internal class ReadUiTest {
                 ),
                 actual = userEvents,
             )
+        }
+
+    @Test
+    fun `GIVEN a loaded chapter WHEN clicking the study pill THEN emits OnChapterStudyClick from the top bar`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = loadedUiState)
+
+            // When
+            onNodeWithText(getString(Res.string.chapter_study_pill)).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadUiEvent>(
+                    ReadUiEvent.OnChapterStudyClick(
+                        bookId = BookId.GEN,
+                        chapterNumber = CHAPTER,
+                        source = ChapterStudyEntrySource.TOP_BAR,
+                    ),
+                ),
+                actual = userEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a wide layout WHEN clicking the study pill THEN emits OnChapterStudyClick from the top bar`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState,
+                isWideLayout = true,
+            )
+
+            // When
+            onNodeWithText(getString(Res.string.chapter_study_pill)).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadUiEvent>(
+                    ReadUiEvent.OnChapterStudyClick(
+                        bookId = BookId.GEN,
+                        chapterNumber = CHAPTER,
+                        source = ChapterStudyEntrySource.TOP_BAR,
+                    ),
+                ),
+                actual = userEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a loaded chapter WHEN clicking the study card THEN emits OnChapterStudyClick from the chapter end`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = loadedUiState)
+            val cardTitle = getString(Res.string.chapter_study_card_title)
+            onNode(hasScrollToNodeAction()).performScrollToNode(hasText(cardTitle))
+
+            // When
+            onNodeWithText(cardTitle).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadUiEvent>(
+                    ReadUiEvent.OnChapterStudyClick(
+                        bookId = BookId.GEN,
+                        chapterNumber = CHAPTER,
+                        source = ChapterStudyEntrySource.CHAPTER_END,
+                    ),
+                ),
+                actual = userEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN vertical reading WHEN reaching the study card THEN it names the chapter it studies`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState.copy(
+                    settings = loadedUiState.settings.copy(isVerticalReadingEnabled = true),
+                ),
+            )
+            val subtitle = getString(
+                Res.string.chapter_study_card_subtitle_with_chapter,
+                "${getString(genesisName)} $CHAPTER",
+            )
+
+            // When
+            onNode(hasScrollToNodeAction()).performScrollToNode(hasText(subtitle))
+
+            // Then
+            onNodeWithText(subtitle).assertIsDisplayed()
         }
 
     private fun ComposeUiTest.prepareScenario(

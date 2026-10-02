@@ -1,0 +1,275 @@
+package com.quare.bibleplanner.feature.chapterstudy.presentation.viewmodel
+
+import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.chapterstudy.domain.coordinator.ChapterStudyGenerationCoordinator
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerationJob
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerationStatus
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyPhaseModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.CrossReferenceModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.KeyVerseModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.OutlineSectionModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.PendingVerseFocusModel
+import com.quare.bibleplanner.core.chapterstudy.domain.store.PendingVerseFocusStore
+import com.quare.bibleplanner.core.model.Navigator
+import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
+import com.quare.bibleplanner.core.model.route.ChatEntrySource
+import com.quare.bibleplanner.core.model.route.ChatNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
+import com.quare.bibleplanner.core.model.route.ReadNavRoute
+import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
+import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.feature.chapterstudy.domain.usecase.ChapterStudyUseCases
+import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyContentUiState
+import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiEvent
+import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiState
+import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+
+internal class ChapterStudyViewModel(
+    private val useCases: ChapterStudyUseCases,
+    private val generationCoordinator: ChapterStudyGenerationCoordinator,
+    private val pendingVerseFocusStore: PendingVerseFocusStore,
+    private val navigator: Navigator,
+    route: ChapterStudyNavRoute,
+    platform: Platform,
+    trackEvent: TrackEvent,
+) : TrackedViewModel<ChapterStudyUiEvent>(trackEvent) {
+    private val target = ChapterStudyTargetModel(
+        bookId = BookId.valueOf(route.bookId),
+        chapterNumber = route.chapterNumber,
+    )
+    private val completionPause: Duration = 700.milliseconds
+    private val targetParams: Map<String, Any> = mapOf(
+        AnalyticsParams.BOOK_ID to target.bookId.name,
+        AnalyticsParams.CHAPTER_NUMBER to target.chapterNumber,
+    )
+
+    val uiState: StateFlow<ChapterStudyUiState>
+        field = MutableStateFlow<ChapterStudyUiState>(
+            ChapterStudyUiState(
+                bookId = target.bookId,
+                chapterNumber = target.chapterNumber,
+                platform = platform,
+                content = ChapterStudyContentUiState.Loading,
+            ),
+        )
+
+    init {
+        viewModelScope.launch { openStudy() }
+    }
+
+    override fun handleEvent(event: ChapterStudyUiEvent) {
+        when (event) {
+            ChapterStudyUiEvent.OnRetryClick -> onRetryClick()
+            is ChapterStudyUiEvent.OnOutlineSectionClick -> onOutlineSectionClick(event.section)
+            ChapterStudyUiEvent.OnShareKeyVerseClick -> onShareKeyVerseClick()
+            is ChapterStudyUiEvent.OnCrossReferenceClick -> onCrossReferenceClick(event.reference)
+            ChapterStudyUiEvent.OnAskAiClick -> onAskAiClick()
+        }
+    }
+
+    private suspend fun openStudy() {
+        if (!hasGenerationJob()) {
+            val cachedStudy = useCases.findCachedStudy(target)
+            if (cachedStudy != null) {
+                showStudy(
+                    study = cachedStudy,
+                    isCached = true,
+                )
+                useCases.refreshCache(target)
+                return
+            }
+            startGeneration()
+        }
+        observeGenerationJob()
+    }
+
+    private fun hasGenerationJob(): Boolean = generationCoordinator.jobs.value.any { it.target == target }
+
+    private fun observeGenerationJob() {
+        generationCoordinator.jobs
+            .map { jobs -> jobs.firstOrNull { it.target == target } }
+            .distinctUntilChanged()
+            .onEach(::onJobUpdate)
+            .launchIn(viewModelScope)
+    }
+
+    private suspend fun onJobUpdate(job: ChapterStudyGenerationJob?) {
+        when (val status = job?.status) {
+            null -> Unit
+
+            ChapterStudyGenerationStatus.Generating -> showContent(
+                ChapterStudyContentUiState.Generating(currentPhaseIndex = job.phase?.ordinal ?: 0),
+            )
+
+            is ChapterStudyGenerationStatus.Done -> onGenerationDone(status.study)
+
+            is ChapterStudyGenerationStatus.Failed -> onGenerationFailed(status)
+        }
+    }
+
+    private suspend fun onGenerationDone(study: ChapterStudyModel) {
+        if (uiState.value.content is ChapterStudyContentUiState.Generating) {
+            showContent(ChapterStudyContentUiState.Generating(currentPhaseIndex = ChapterStudyPhaseModel.entries.size))
+            delay(completionPause)
+        }
+        showStudy(
+            study = study,
+            isCached = false,
+        )
+        generationCoordinator.acknowledge(target)
+    }
+
+    private fun onGenerationFailed(status: ChapterStudyGenerationStatus.Failed) {
+        generationCoordinator.acknowledge(target)
+        if (status.isLimitReached) {
+            navigator.navigateReplacingTop(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT))
+        } else {
+            showContent(ChapterStudyContentUiState.Failed(isOffline = status.isOffline))
+        }
+    }
+
+    private suspend fun startGeneration() {
+        val isPro = useCases.observeIsProUser().first()
+        if (!useCases.isConnected()) {
+            trackEvent(
+                name = AnalyticsEventNames.CHAPTER_STUDY_GENERATION_FAILED,
+                params = targetParams + mapOf(
+                    AnalyticsParams.REASON to OFFLINE_REASON,
+                    AnalyticsParams.IS_PRO to isPro,
+                ),
+            )
+            showContent(ChapterStudyContentUiState.Failed(isOffline = true))
+            return
+        }
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_STUDY_GENERATION_STARTED,
+            params = targetParams + mapOf(AnalyticsParams.IS_PRO to isPro),
+        )
+        showContent(ChapterStudyContentUiState.Generating(currentPhaseIndex = 0))
+        generationCoordinator.start(target)
+    }
+
+    private suspend fun showStudy(
+        study: ChapterStudyModel,
+        isCached: Boolean,
+    ) {
+        showContent(
+            ChapterStudyContentUiState.Loaded(
+                study = study,
+                keyVerseText = study.keyVerse?.let { keyVerse -> loadKeyVerseText(keyVerse) },
+            ),
+        )
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_STUDY_OPENED,
+            params = targetParams + mapOf(AnalyticsParams.IS_CACHED to isCached),
+        )
+    }
+
+    private suspend fun loadKeyVerseText(keyVerse: KeyVerseModel): String? = useCases
+        .getVersesShareContent(
+            bookId = target.bookId,
+            chapterNumber = target.chapterNumber,
+            verseNumbers = keyVerse.toVerseNumbers(),
+        )?.text
+
+    private fun showContent(content: ChapterStudyContentUiState) {
+        uiState.update { it.copy(content = content) }
+    }
+
+    private fun onRetryClick() {
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_STUDY_RETRY_CLICKED,
+            params = targetParams,
+        )
+        viewModelScope.launch { startGeneration() }
+    }
+
+    private fun onOutlineSectionClick(section: OutlineSectionModel) {
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_STUDY_OUTLINE_CLICKED,
+            params = targetParams,
+        )
+        pendingVerseFocusStore.request(
+            PendingVerseFocusModel(
+                bookId = target.bookId,
+                chapterNumber = target.chapterNumber,
+                verseNumbers = (section.startVerse..section.endVerse).toList(),
+            ),
+        )
+        navigator.navigateBack()
+    }
+
+    private fun onShareKeyVerseClick() {
+        val keyVerse = (uiState.value.content as? ChapterStudyContentUiState.Loaded)?.study?.keyVerse ?: return
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_STUDY_KEY_VERSE_SHARE_CLICKED,
+            params = targetParams,
+        )
+        navigator.navigate(
+            ShareVerseNavRoute(
+                bookId = target.bookId.name,
+                chapterNumber = target.chapterNumber,
+                verseNumbers = keyVerse.toVerseNumbers(),
+            ),
+        )
+    }
+
+    private fun onCrossReferenceClick(reference: CrossReferenceModel) {
+        viewModelScope.launch {
+            navigator.navigate(
+                ReadNavRoute(
+                    bookId = reference.bookId.name,
+                    chapterNumber = reference.chapterNumber,
+                    isChapterRead = useCases.isWholeChapterRead(
+                        chapterNumber = reference.chapterNumber,
+                        bookId = reference.bookId,
+                    ),
+                    isFromBookDetails = false,
+                    targetVerseNumbers = (reference.startVerse..reference.endVerse).toList(),
+                ),
+            )
+        }
+    }
+
+    private fun onAskAiClick() {
+        trackEvent(
+            name = AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
+            params = mapOf(AnalyticsParams.SOURCE to ChatEntrySource.CHAPTER_STUDY.key),
+        )
+        navigator.navigate(
+            ChatNavRoute(
+                source = ChatEntrySource.CHAPTER_STUDY,
+                dayNumber = null,
+                weekNumber = null,
+                readingPlanType = null,
+                bookId = target.bookId.name,
+                chapterNumber = target.chapterNumber,
+            ),
+        )
+    }
+
+    private fun KeyVerseModel.toVerseNumbers(): List<Int> = (startVerse..endVerse).toList()
+
+    private companion object {
+        const val OFFLINE_REASON = "offline"
+    }
+}

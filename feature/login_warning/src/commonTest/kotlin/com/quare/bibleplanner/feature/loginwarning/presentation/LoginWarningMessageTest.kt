@@ -18,6 +18,7 @@ internal class LoginWarningMessageTest {
         val reasons = listOf(
             LoginWarningReason.Purchase,
             LoginWarningReason.DayStudy,
+            LoginWarningReason.ChapterStudy,
             LoginWarningReason.AiChat,
             LoginWarningReason.Preferences.Theme,
             LoginWarningReason.Preferences.Language,
@@ -31,6 +32,7 @@ internal class LoginWarningMessageTest {
         assertEquals(
             listOf(
                 Res.string.login_warning_message_purchase,
+                Res.string.login_warning_message_day_study,
                 Res.string.login_warning_message_day_study,
                 Res.string.login_warning_message_ai_chat,
                 Res.string.login_warning_message_theme,

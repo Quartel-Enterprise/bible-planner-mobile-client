@@ -4,4 +4,7 @@
     <string name="paywall_teaser_highlight_custom_color_title">Los colores personalizados son Pro</string>
     <string name="paywall_teaser_highlight_custom_color_body">La paleta predeterminada sigue siendo gratis. Con Pro puedes crear tus propios colores para diferenciar temas, promesas y oraciones.</string>
     <string name="paywall_teaser_highlight_custom_color_dismiss">Usar la paleta predeterminada</string>
+    <string name="paywall_teaser_chapter_study_limit_title">Tus estudios gratis se acabaron</string>
+    <string name="paywall_teaser_chapter_study_limit_body">Ya usaste tus estudios de capítulo gratis. Con Pro puedes estudiar cualquier capítulo con IA, cuantas veces quieras — además del estudio del día y el chat sin límites.</string>
+    <string name="paywall_teaser_chapter_study_limit_dismiss">Ahora no</string>
 </resources>

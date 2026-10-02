@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
@@ -87,6 +88,8 @@ class NavRouteToDestinationMapperImplTest {
                 dayNumber = 1,
                 weekNumber = 2,
                 readingPlanType = "chronological",
+                bookId = null,
+                chapterNumber = null,
             ) to ("ai_chat" to DestinationType.SCREEN),
             CongratsNavRoute to ("congrats" to DestinationType.BOTTOM_SHEET),
             ContactSupportNavRoute to ("contact_support" to DestinationType.RESPONSIVE),
@@ -185,6 +188,8 @@ class NavRouteToDestinationMapperImplTest {
                 dayNumber = 3,
                 weekNumber = 2,
                 readingPlanType = ReadingPlanType.CHRONOLOGICAL.name,
+                bookId = null,
+                chapterNumber = null,
             ),
         )
 
@@ -207,12 +212,63 @@ class NavRouteToDestinationMapperImplTest {
                 dayNumber = null,
                 weekNumber = null,
                 readingPlanType = null,
+                bookId = null,
+                chapterNumber = null,
             ),
         )
 
         assertEquals(
             mapOf(AnalyticsParams.SOURCE to ChatEntrySource.DAY_FAB.key),
             destination?.params,
+        )
+    }
+
+    @Test
+    fun `GIVEN ChatNavRoute opened from a chapter study WHEN mapping THEN carries book_id and chapter_number`() {
+        // When
+        val destination = mapper.map(
+            ChatNavRoute(
+                source = ChatEntrySource.CHAPTER_STUDY,
+                dayNumber = null,
+                weekNumber = null,
+                readingPlanType = null,
+                bookId = "GEN",
+                chapterNumber = 3,
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = mapOf(
+                AnalyticsParams.SOURCE to "chapter_study",
+                AnalyticsParams.BOOK_ID to "GEN",
+                AnalyticsParams.CHAPTER_NUMBER to 3,
+            ),
+            actual = destination?.params,
+        )
+    }
+
+    @Test
+    fun `GIVEN ChapterStudyNavRoute WHEN mapping THEN is a screen carrying book_id and chapter_number`() {
+        // When
+        val destination = mapper.map(
+            ChapterStudyNavRoute(
+                bookId = "GEN",
+                chapterNumber = 3,
+            ),
+        )
+
+        // Then
+        assertEquals(
+            expected = "chapter_study" to DestinationType.SCREEN,
+            actual = destination?.let { it.name to it.type },
+        )
+        assertEquals(
+            expected = mapOf(
+                AnalyticsParams.BOOK_ID to "GEN",
+                AnalyticsParams.CHAPTER_NUMBER to 3,
+            ),
+            actual = destination?.params,
         )
     }
 

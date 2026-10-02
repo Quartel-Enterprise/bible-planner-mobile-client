@@ -1,13 +1,18 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.content
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
+import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterEndNavigationRow
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterHeader
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterStudyEntryCard
 import com.quare.bibleplanner.feature.read.presentation.screen.component.VerseRow
 import org.jetbrains.compose.resources.stringResource
 
@@ -56,6 +61,22 @@ internal fun LazyListScope.chapterContent(
                     ),
                 )
             },
+        )
+    }
+    item(key = "chapter-study-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
+        val bookName = stringResource(chapter.bookStringResource)
+        ChapterStudyEntryCard(
+            chapterLabel = "$bookName ${chapter.chapter.chapterNumber}".takeIf { settings.isVerticalReadingEnabled },
+            onClick = {
+                onEvent(
+                    ReadUiEvent.OnChapterStudyClick(
+                        bookId = chapter.chapter.bookId,
+                        chapterNumber = chapter.chapter.chapterNumber,
+                        source = ChapterStudyEntrySource.CHAPTER_END,
+                    ),
+                )
+            },
+            modifier = Modifier.padding(top = 28.dp),
         )
     }
     item(key = "chapter-end-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {

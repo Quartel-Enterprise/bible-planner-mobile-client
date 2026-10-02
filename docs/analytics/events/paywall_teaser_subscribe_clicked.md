@@ -18,7 +18,7 @@ The teaser is reused by every feature that gates a capability behind Pro; `reaso
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `reason` | string | `highlight_custom_color` | Why the teaser was shown: `PaywallTeaserReason` in `core/model/.../route/`, lowercased |
+| `reason` | string | `highlight_custom_color` | Why the teaser was shown: `PaywallTeaserReason` in `core/model/.../route/`, lowercased (`highlight_custom_color` \| `chapter_study_limit`) |
 
 ## Notes
 

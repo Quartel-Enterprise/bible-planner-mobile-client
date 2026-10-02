@@ -23,6 +23,7 @@ The `source` is a required constructor parameter of `PaywallNavRoute`, so a new 
 | `verse_notes_limit` | `feature/add_notes_free_warning/.../AddNotesFreeWarningViewModel.kt` — the same warning opened from a verse note (`AddNotesFreeWarningType.VERSE`) |
 | `chat` | `feature/chat/.../ChatViewModel.kt` — the locked input bar after the free question quota runs out |
 | `highlight_custom_color` | `feature/paywall_teaser/.../PaywallTeaserUiActionCollector.kt` — the paywall teaser sheet shown for `PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR` |
+| `chapter_study` | `feature/paywall_teaser/.../PaywallTeaserViewModel.kt` — the paywall teaser sheet shown for `PaywallTeaserReason.CHAPTER_STUDY_LIMIT`, when a free user has no chapter studies left |
 
 ## Parameters
 

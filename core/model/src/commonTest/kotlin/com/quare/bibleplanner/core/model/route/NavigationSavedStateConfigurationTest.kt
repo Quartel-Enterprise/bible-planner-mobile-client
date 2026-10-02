@@ -22,11 +22,25 @@ internal class NavigationSavedStateConfigurationTest {
         AppLanguageNavRoute,
         BibleVersionSelectorRoute,
         BookDetailsNavRoute(bookId = "GEN"),
+        ChapterStudyNavRoute(
+            bookId = "GEN",
+            chapterNumber = 3,
+        ),
         ChatNavRoute(
             source = ChatEntrySource.DAY_FAB,
             dayNumber = 2,
             weekNumber = 3,
             readingPlanType = "BOOKS",
+            bookId = null,
+            chapterNumber = null,
+        ),
+        ChatNavRoute(
+            source = ChatEntrySource.CHAPTER_STUDY,
+            dayNumber = null,
+            weekNumber = null,
+            readingPlanType = null,
+            bookId = "GEN",
+            chapterNumber = 3,
         ),
         CongratsNavRoute,
         ContactSupportNavRoute,
@@ -71,6 +85,7 @@ internal class NavigationSavedStateConfigurationTest {
         NotificationPermissionNavRoute,
         PaywallNavRoute(source = PaywallEntrySource.CHAT),
         PaywallTeaserNavRoute(reason = PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR),
+        PaywallTeaserNavRoute(reason = PaywallTeaserReason.CHAPTER_STUDY_LIMIT),
         PendingBibleUpdatesNavRoute,
         PixQrNavRoute,
         ReadNavRoute(

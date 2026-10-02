@@ -66,6 +66,21 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
+    data class OnChapterStudyClick(
+        val bookId: BookId,
+        val chapterNumber: Int,
+        val source: ChapterStudyEntrySource,
+    ) : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.CHAPTER_STUDY_ENTRY_CLICKED,
+            params = mapOf(
+                AnalyticsParams.BOOK_ID to bookId.name,
+                AnalyticsParams.CHAPTER_NUMBER to chapterNumber,
+                AnalyticsParams.SOURCE to source.key,
+            ),
+        )
+    }
+
     data object OnAppearanceClick : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
             name = AnalyticsEventNames.READER_APPEARANCE_OPENED,

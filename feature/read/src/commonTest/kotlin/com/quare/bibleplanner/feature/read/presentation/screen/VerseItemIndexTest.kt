@@ -37,7 +37,7 @@ internal class VerseItemIndexTest {
 
         // Then
         assertEquals(
-            expected = 2 + 5 + 1 + 2,
+            expected = 2 + 6 + 1 + 2,
             actual = index,
         )
     }

@@ -24,6 +24,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.component.tab.Questi
 import com.quare.bibleplanner.feature.daystudy.presentation.component.tab.SummaryTabContent
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyTab
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.component.study.AiDisclaimerText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -83,7 +84,7 @@ internal fun DayStudyTabbedContent(
                         )
                     }
                     VerticalSpacer(20)
-                    DayStudyDisclaimerText()
+                    AiDisclaimerText()
                 }
             }
         }

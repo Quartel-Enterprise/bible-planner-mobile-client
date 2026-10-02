@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.provider.room.dao.AnnotatedVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BibleVersionDao
 import com.quare.bibleplanner.core.provider.room.dao.BookDao
 import com.quare.bibleplanner.core.provider.room.dao.ChapterDao
+import com.quare.bibleplanner.core.provider.room.dao.ChapterStudyDao
 import com.quare.bibleplanner.core.provider.room.dao.ChatDao
 import com.quare.bibleplanner.core.provider.room.dao.ChatDraftDao
 import com.quare.bibleplanner.core.provider.room.dao.DayDao
@@ -25,6 +26,11 @@ import com.quare.bibleplanner.core.provider.room.dao.VerseNoteDao
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
 import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChapterStudyCrossReferenceEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChapterStudyEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChapterStudyNameEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChapterStudyOutlineSectionEntity
+import com.quare.bibleplanner.core.provider.room.entity.ChapterStudyQuestionEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChatConversationEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChatDraftEntity
 import com.quare.bibleplanner.core.provider.room.entity.ChatMessageEntity
@@ -69,8 +75,13 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         VerseNoteEntity::class,
         VerseNoteVerseEntity::class,
         HighlightPaletteColorEntity::class,
+        ChapterStudyEntity::class,
+        ChapterStudyOutlineSectionEntity::class,
+        ChapterStudyNameEntity::class,
+        ChapterStudyCrossReferenceEntity::class,
+        ChapterStudyQuestionEntity::class,
     ],
-    version = 18,
+    version = 19,
     autoMigrations = [
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
@@ -86,6 +97,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         // 17 is skipped on purpose: schemas/17.json is a development-only schema that never shipped, and a
         // device still on it must fall back to a fresh database instead of passing for this one.
         AutoMigration(from = 16, to = 18, spec = Migration16To18Spec::class),
+        AutoMigration(from = 18, to = 19),
     ],
     exportSchema = true,
 )
@@ -105,6 +117,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun syncedPreferenceDao(): SyncedPreferenceDao
 
     abstract fun dayStudyDao(): DayStudyDao
+
+    abstract fun chapterStudyDao(): ChapterStudyDao
 
     abstract fun userDeviceDao(): UserDeviceDao
 

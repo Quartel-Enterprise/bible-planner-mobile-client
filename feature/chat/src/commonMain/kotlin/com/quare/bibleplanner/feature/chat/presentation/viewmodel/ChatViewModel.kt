@@ -8,7 +8,6 @@ import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
-import com.quare.bibleplanner.core.model.route.toDayNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -61,7 +60,7 @@ internal class ChatViewModel(
     private val messageUiMapper: ChatMessageUiMapper,
     private val conversationGroupMapper: ChatConversationGroupMapper,
     private val navigator: Navigator,
-    route: ChatNavRoute,
+    private val route: ChatNavRoute,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<ChatUiEvent>(trackEvent) {
     val uiState: StateFlow<ChatUiState>
@@ -99,8 +98,6 @@ internal class ChatViewModel(
     private val draftDebounceDelay: Duration = 2.seconds
     private val answerWaitWindow: Duration = 2.minutes
     private val answerWaitRecheck: Duration = 5.seconds
-
-    private val dayRoute = route.toDayNavRoute()
 
     private val activeConversationId: MutableStateFlow<String?> = MutableStateFlow(null)
     private var conversations: List<ChatConversationModel> = emptyList()
@@ -248,7 +245,7 @@ internal class ChatViewModel(
 
     private fun loadContext() {
         viewModelScope.launch {
-            val loaded = useCases.getContext(dayRoute)
+            val loaded = useCases.getContext(route)
             dayContext = loaded
             context = loaded
             refreshThreadKey()
