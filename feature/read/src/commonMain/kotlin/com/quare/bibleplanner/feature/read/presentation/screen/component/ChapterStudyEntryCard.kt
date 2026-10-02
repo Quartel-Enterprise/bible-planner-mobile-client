@@ -28,8 +28,6 @@ import bibleplanner.feature.read.generated.resources.chapter_study_card_subtitle
 import bibleplanner.feature.read.generated.resources.chapter_study_card_title
 import org.jetbrains.compose.resources.stringResource
 
-private val iconBoxSize = 44.dp
-private val iconSize = 22.dp
 private const val ACCENT_ALPHA = 0.14f
 private const val BORDER_ALPHA = 0.3f
 
@@ -56,7 +54,7 @@ internal fun ChapterStudyEntryCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(iconBoxSize)
+                    .size(44.dp)
                     .background(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = ACCENT_ALPHA),
                         shape = RoundedCornerShape(12.dp),
@@ -66,7 +64,7 @@ internal fun ChapterStudyEntryCard(
                 Icon(
                     imageVector = Icons.Rounded.AutoAwesome,
                     contentDescription = null,
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.size(22.dp),
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }

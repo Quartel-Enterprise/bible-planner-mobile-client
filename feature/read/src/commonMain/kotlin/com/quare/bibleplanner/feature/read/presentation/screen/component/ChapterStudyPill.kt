@@ -22,8 +22,6 @@ import bibleplanner.feature.read.generated.resources.chapter_study_pill
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import org.jetbrains.compose.resources.stringResource
 
-private val pillHeight = 36.dp
-private val iconSize = 17.dp
 private const val CONTAINER_ALPHA = 0.14f
 
 @Composable
@@ -34,7 +32,7 @@ internal fun ChapterStudyPill(
 ) {
     Surface(
         onClick = onClick,
-        modifier = modifier.height(pillHeight),
+        modifier = modifier.height(36.dp),
         shape = CircleShape,
         color = MaterialTheme.colorScheme.primary.copy(alpha = CONTAINER_ALPHA),
         contentColor = MaterialTheme.colorScheme.primary,
@@ -46,7 +44,7 @@ internal fun ChapterStudyPill(
         ) {
             if (isLoading) {
                 AdaptiveCircularProgressIndicator(
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.size(17.dp),
                     strokeWidth = 2.dp,
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -54,7 +52,7 @@ internal fun ChapterStudyPill(
                 Icon(
                     imageVector = Icons.Rounded.AutoAwesome,
                     contentDescription = null,
-                    modifier = Modifier.size(iconSize),
+                    modifier = Modifier.size(17.dp),
                 )
             }
             Text(
