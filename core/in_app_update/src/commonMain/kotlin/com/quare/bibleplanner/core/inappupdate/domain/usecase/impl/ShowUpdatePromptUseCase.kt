@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import com.quare.bibleplanner.core.inappupdate.domain.usecase.StartUpdate
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
+import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
@@ -22,10 +23,24 @@ internal class ShowUpdatePromptUseCase(
     private val trackEvent: TrackEvent,
 ) : ShowUpdatePrompt {
     override suspend fun invoke(
-        availability: UpdateAvailability.Available,
+        availability: UpdateAvailability.Pending,
         source: String,
     ) {
         updatePromptPreferences.setLastPromptedAt(currentTimestampProvider.getCurrentTimestamp())
+        when (availability) {
+            is UpdateAvailability.Available -> showAvailableUpdate(
+                availability = availability,
+                source = source,
+            )
+
+            UpdateAvailability.Downloaded -> navigator.navigate(UpdateDownloadedNavRoute)
+        }
+    }
+
+    private suspend fun showAvailableUpdate(
+        availability: UpdateAvailability.Available,
+        source: String,
+    ) {
         if (platform.isAndroid()) {
             trackEvent(
                 name = AnalyticsEventNames.UPDATE_PROMPT_SHOWN,

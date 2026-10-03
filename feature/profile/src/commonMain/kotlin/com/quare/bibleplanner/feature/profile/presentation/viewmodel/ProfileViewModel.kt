@@ -182,7 +182,7 @@ internal class ProfileViewModel(
             val availability = checkForUpdate()
             isCheckingForUpdate.value = false
             when (availability) {
-                is UpdateAvailability.Available -> showUpdatePrompt(
+                is UpdateAvailability.Pending -> showUpdatePrompt(
                     availability = availability,
                     source = UpdatePromptSource.MANUAL,
                 )

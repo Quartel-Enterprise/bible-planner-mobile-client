@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.inappupdate.fake.FakeUpdatePromptPreferences
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.InAppUpdateNavRoute
+import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.platform.Platform
@@ -78,6 +79,33 @@ internal class ShowUpdatePromptUseCaseTest {
             )
             assertFalse(didStartUpdate)
         }
+
+    @Test
+    fun `GIVEN a downloaded update WHEN showing the prompt THEN opens the restart sheet without starting it`() =
+        runTest {
+            val useCase = prepareScenario(platform = Platform.Android)
+
+            useCase(
+                availability = UpdateAvailability.Downloaded,
+                source = UpdatePromptSource.STARTUP,
+            )
+
+            assertEquals(listOf<NavigationCommand>(NavigationCommand.Navigate(UpdateDownloadedNavRoute)), commands)
+            assertFalse(didStartUpdate)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a downloaded update WHEN showing the prompt THEN records it so the cooldown also covers it`() = runTest {
+        val useCase = prepareScenario(platform = Platform.Android)
+
+        useCase(
+            availability = UpdateAvailability.Downloaded,
+            source = UpdatePromptSource.STARTUP,
+        )
+
+        assertEquals(NOW, preferences.getLastPromptedAt())
+    }
 
     @Test
     fun `GIVEN a manual check WHEN showing the prompt THEN records it so the cooldown also covers it`() = runTest {

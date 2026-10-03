@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.inappupdate.domain.usecase.RequestUpdatePromp
 import com.quare.bibleplanner.core.inappupdate.domain.usecase.ShowUpdatePrompt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 internal class RequestUpdatePromptIfNeededUseCase(
     private val checkForUpdate: CheckForUpdate,
@@ -16,20 +17,32 @@ internal class RequestUpdatePromptIfNeededUseCase(
     private val hasCooldownElapsed: HasCooldownElapsedUseCase,
     private val showUpdatePrompt: ShowUpdatePrompt,
 ) : RequestUpdatePromptIfNeeded {
-    private val promptCooldown: Duration = 1.hours
+    private val availablePromptCooldown: Duration = 1.hours
+    private val downloadedPromptCooldown: Duration = 15.minutes
 
     override suspend fun invoke() {
-        val hasElapsed = hasCooldownElapsed(
-            lastOccurredAt = updatePromptPreferences.getLastPromptedAt(),
-            cooldown = promptCooldown,
+        val lastPromptedAt = updatePromptPreferences.getLastPromptedAt()
+        val hasShortestCooldownElapsed = hasCooldownElapsed(
+            lastOccurredAt = lastPromptedAt,
+            cooldown = downloadedPromptCooldown,
         )
-        if (!hasElapsed) return
+        if (!hasShortestCooldownElapsed) return
         val availability = checkForUpdate()
-        if (availability is UpdateAvailability.Available) {
+        if (availability !is UpdateAvailability.Pending) return
+        val hasElapsed = hasCooldownElapsed(
+            lastOccurredAt = lastPromptedAt,
+            cooldown = availability.getPromptCooldown(),
+        )
+        if (hasElapsed) {
             showUpdatePrompt(
                 availability = availability,
                 source = UpdatePromptSource.STARTUP,
             )
         }
+    }
+
+    private fun UpdateAvailability.Pending.getPromptCooldown(): Duration = when (this) {
+        is UpdateAvailability.Available -> availablePromptCooldown
+        UpdateAvailability.Downloaded -> downloadedPromptCooldown
     }
 }
