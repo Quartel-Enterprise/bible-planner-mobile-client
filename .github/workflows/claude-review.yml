@@ -1,0 +1,61 @@
+name: claude-review
+
+# Reviews a pull request with Claude when it gets the ai-review label, and posts the findings as
+# inline comments. The create-pr skill already reviews every change before the pull request opens,
+# so this one is a second opinion asked for by hand, on the changes that deserve it. It runs on the
+# maintainer's Claude subscription, which day-to-day work shares, so nothing triggers it on its own.
+#
+# The review only comments: the job fails only when the run itself does (an expired token, the
+# timeout), never because of what it found. Every label added to a pull request starts this
+# workflow, and a label other than ai-review leaves a skipped review check on the head commit.
+on:
+  pull_request:
+    types:
+      - labeled
+
+# Keyed by label too: otherwise adding another label, such as merge-when-green, while a review runs
+# would cancel it.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}-${{ github.event.label.name }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # GitHub withholds secrets from pull requests opened from forks, so the review can't run there.
+    # The run is skipped and the label stays on.
+    if: >-
+      github.event.label.name == 'ai-review' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      # The same review as /code-review in the create-pr skill. The --allowedTools line has to stay:
+      # the action only starts the server that posts inline comments when it names that tool.
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          plugin_marketplaces: https://github.com/anthropics/claude-code.git
+          plugins: code-review@claude-code-plugins
+          prompt: /code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+          claude_args: >-
+            --model sonnet
+            --allowedTools "mcp__github_inline_comment__create_inline_comment"
+
+      # The label means "review this once", so it goes when the run ends, whatever the outcome. Adding
+      # it again starts another run, but the review skips a pull request it has already commented on.
+      - name: Remove the ai-review label
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh api --method DELETE "repos/$GH_REPO/issues/$PR_NUMBER/labels/ai-review" > /dev/null

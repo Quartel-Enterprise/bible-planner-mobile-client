@@ -17,6 +17,7 @@ on:
       - static-analysis
       - module-graph
       - translations
+      - claude-review
     types:
       - completed
 
