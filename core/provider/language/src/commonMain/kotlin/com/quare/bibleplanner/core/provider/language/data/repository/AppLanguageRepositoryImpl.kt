@@ -14,12 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/**
- * The language lives in the device-local DataStore (the render source). When the account-global sync
- * flag is on, a user write is also mirrored into the synced key-value store ([SyncedPreferenceDao]);
- * inbound remote values are written back through [applySyncedLanguage], which skips the mirror to
- * avoid an echo loop.
- */
+// Why: DataStore is the render source; user writes are mirrored to SyncedPreferenceDao when sync
+// is on, but applySyncedLanguage skips the mirror to avoid an echo loop.
 internal class AppLanguageRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
     private val mapper: AppLanguageMapper,

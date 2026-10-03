@@ -2,9 +2,8 @@ package com.quare.bibleplanner.core.chapterstudy.domain.model
 
 data class ChapterStudyQuotaModel(
     val freeLimit: Int,
-    /** Free studies left once the ones still generating are counted as used. */
+    // Why: studies still generating already count as used, so this is lower than the server count.
     val remainingFree: Int,
-    /** Whether this chapter's study was already paid for, so generating it spends nothing. */
     val isUnlocked: Boolean,
     val rewardedRemainingToday: Int,
 )

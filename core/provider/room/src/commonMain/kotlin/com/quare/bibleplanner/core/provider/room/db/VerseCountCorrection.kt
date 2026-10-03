@@ -2,20 +2,14 @@ package com.quare.bibleplanner.core.provider.room.db
 
 import com.quare.bibleplanner.core.model.book.BookId
 
-/** A chapter whose verse rows have to number exactly [verses] — see [Migration16To18Spec]. */
 data class VerseCountCorrection(
     val bookId: BookId,
     val chapter: Int,
     val verses: Int,
 )
 
-/**
- * Every chapter whose bundled verse count disagreed with the Bible text in Storage, set to the highest
- * verse number any of the nine versions (A21, ACF, ARA, ESV, KJV, NIV, RVR1960, RVR1995, WEB) uses.
- *
- * It mirrors the corrected `books_by_chapter` files new installs are seeded from, so a device that
- * migrates ends up with exactly the rows a fresh install gets.
- */
+// Why: each count is the highest verse number any of the nine versions in Storage uses, and
+// mirrors the corrected books_by_chapter seed files so migrated devices match fresh installs.
 internal val VERSE_COUNT_CORRECTIONS: List<VerseCountCorrection> = listOf(
     VerseCountCorrection(bookId = BookId.GEN, chapter = 34, verses = 31),
     VerseCountCorrection(bookId = BookId.GEN, chapter = 35, verses = 29),

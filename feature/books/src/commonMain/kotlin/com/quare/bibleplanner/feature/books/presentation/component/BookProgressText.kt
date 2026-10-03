@@ -21,7 +21,7 @@ internal fun BookProgressText(
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.labelSmall,
 ) {
-    val progressText = book.chapterProgressText // "12 / 50"
+    val progressText = book.chapterProgressText
     val parts = progressText.split(" ")
     val numerator = parts.getOrNull(0) ?: ""
     val slash = parts.getOrNull(1) ?: " / "

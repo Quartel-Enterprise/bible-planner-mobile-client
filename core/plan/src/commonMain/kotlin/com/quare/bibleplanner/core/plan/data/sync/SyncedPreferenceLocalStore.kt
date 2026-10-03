@@ -7,12 +7,8 @@ import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Adapts the generic `synced_preferences` table to the sync engine. This drives the whole scalar
- * key-value store (currently the reading-plan preferences; future scalar settings just add a key and
- * are synced through here automatically). The one-time DataStore→Room migration runs at startup, not
- * here, so logged-out existing users keep their data before the session-scoped sync starts.
- */
+// Why: the one-time DataStore to Room migration runs at startup, not here, so logged-out
+// existing users keep their data before the session-scoped sync starts.
 internal class SyncedPreferenceLocalStore(
     private val dao: SyncedPreferenceDao,
     private val mapper: UserPreferenceMapper,

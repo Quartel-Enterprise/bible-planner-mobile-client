@@ -8,15 +8,8 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Adapts whole-chapter read state on the `chapters` table to the generic sync engine. Read state lives
- * as columns on each chapter row ([ChapterEntity.isRead], [ChapterEntity.readUpdatedAt],
- * [ChapterEntity.isReadPendingSync]).
- *
- * When a remote chapter read is applied it is cascaded down to the chapter's verses so the chapter
- * screen — which derives its checkmark from `verses.all { isRead }` — stays consistent across devices
- * without syncing every verse individually.
- */
+// Why: a remote chapter read is cascaded to its verses because the chapter screen derives its
+// checkmark from verses.all { isRead }; this keeps devices consistent without per-verse sync.
 internal class ChapterReadLocalStore(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,
@@ -60,7 +53,6 @@ internal class ChapterReadLocalStore(
         entity = entity,
     )
 
-    /** Marks pre-sync chapter reads pending on first launch so they reach the backend. */
     override suspend fun seed(now: Long) {
         chapterDao.markLegacyChapterReadsPending(now)
     }

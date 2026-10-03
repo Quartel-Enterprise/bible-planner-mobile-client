@@ -17,10 +17,8 @@ import bibleplanner.ui.theme.generated.resources.open_dyslexic
 import bibleplanner.ui.theme.generated.resources.playfair_display
 import org.jetbrains.compose.resources.Font
 
-/**
- * Each family ships a single Regular file; bold and italic are synthesised, which is all the reader
- * and the share card ask for.
- */
+// Why: each family ships a single Regular file; bold and italic are synthesised, which is
+// all the reader and the share card need.
 @Composable
 fun ReaderFont.toFontFamily(): FontFamily = when (this) {
     ReaderFont.LORA -> FontFamily(Font(Res.font.lora))
@@ -44,6 +42,5 @@ fun ShareCardFont.toFontFamily(): FontFamily = when (this) {
     ShareCardFont.MONTSERRAT -> FontFamily(Font(Res.font.montserrat))
 }
 
-/** The serif the chapter header and quote blocks are set in, regardless of the reader's choice. */
 @Composable
 fun displaySerifFontFamily(): FontFamily = FontFamily(Font(Res.font.lora))

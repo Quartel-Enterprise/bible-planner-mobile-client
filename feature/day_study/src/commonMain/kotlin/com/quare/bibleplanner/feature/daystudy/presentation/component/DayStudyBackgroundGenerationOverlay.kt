@@ -81,10 +81,6 @@ private const val DIVIDER_ALPHA = 0.5f
 private const val PULSE_MAX_SCALE = 1.09f
 private const val PULSE_HALF_CYCLE_MILLIS = 950
 
-/**
- * App-wide floating card that surfaces day-study generations running in the background (i.e. not
- * currently shown in a foreground sheet/pane on the day). Rendered once at the root over any screen.
- */
 @Composable
 fun DayStudyBackgroundGenerationOverlay(modifier: Modifier = Modifier) {
     val viewModel = koinViewModel<DayStudyBackgroundGenerationViewModel>()

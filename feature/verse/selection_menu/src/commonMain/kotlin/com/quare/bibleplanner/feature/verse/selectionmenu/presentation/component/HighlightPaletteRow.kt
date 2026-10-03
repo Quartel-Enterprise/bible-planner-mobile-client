@@ -68,11 +68,8 @@ private val lockedCustomSwatchBrush = Brush.sweepGradient(
     ),
 )
 
-/**
- * The six preset colours, then whatever custom ones the user has mixed, then the swatch that opens
- * the picker. Tapping the colour the selection already carries is what removes the highlight, so the
- * active swatch is marked with a check rather than a separate "remove" button.
- */
+// Why: tapping the active colour removes the highlight, so it is marked with a check
+// instead of a separate remove button.
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun HighlightPaletteRow(

@@ -16,8 +16,8 @@ internal class ObserveCurrentDeviceRevokedUseCase(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val observeDevices: ObserveDevices,
 ) : ObserveCurrentDeviceRevoked {
-    // Scoped per session so account switches restart the detection from scratch (never carrying a
-    // previous session's "present" state into the next one).
+    // Why: scoped per session via flatMapLatest so an account switch restarts detection
+    // and never carries the previous session's "present" state.
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun invoke(): Flow<Unit> = observeAuthenticatedUserId().flatMapLatest { userId ->
         if (userId == null) {
@@ -26,8 +26,10 @@ internal class ObserveCurrentDeviceRevokedUseCase(
             observeDevices()
                 .map { devices -> devices.any { it.isCurrentDevice } }
                 .distinctUntilChanged()
-                .dropWhile { isPresent -> !isPresent } // wait until this device is registered
-                .filter { isPresent -> !isPresent } // then fire when it disappears
+                // Why: only a device that was seen registered can be revoked; until then its absence
+                // is not a revocation (a fresh login has no row yet).
+                .dropWhile { isPresent -> !isPresent }
+                .filter { isPresent -> !isPresent }
                 .map { }
         }
     }

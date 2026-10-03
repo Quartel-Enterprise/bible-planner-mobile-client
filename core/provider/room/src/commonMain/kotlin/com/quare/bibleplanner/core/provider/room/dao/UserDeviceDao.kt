@@ -18,7 +18,6 @@ interface UserDeviceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(device: UserDeviceEntity)
 
-    // Local rename → marks the row pending; the sync engine pushes it while online.
     @Query("UPDATE user_devices SET name = :name, updatedAt = :now, isNamePendingSync = 1 WHERE id = :id")
     suspend fun renameLocal(
         id: String,
@@ -32,14 +31,15 @@ interface UserDeviceDao {
     @Query("SELECT * FROM user_devices WHERE isNamePendingSync = 1")
     suspend fun getPending(): List<UserDeviceEntity>
 
-    // Clears pending only if the row was not renamed again after the push started (LWW guard).
+    // Why: LWW guard; pending is cleared only if the row was not renamed again after the
+    // push started.
     @Query("UPDATE user_devices SET isNamePendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
     suspend fun markNameSynced(
         id: String,
         syncedUpdatedAt: Long,
     )
 
-    // Server-authoritative fields are always applied from the remote row.
+    // Why: these fields are server-authoritative, so they are applied without an LWW check.
     @Query(
         "UPDATE user_devices SET deviceId = :deviceId, platform = :platform, formFactor = :formFactor, " +
             "locationCity = :locationCity, locationCountry = :locationCountry, lastActiveAt = :lastActiveAt " +
@@ -55,7 +55,7 @@ interface UserDeviceDao {
         lastActiveAt: Long,
     )
 
-    // Name is overwritten by the remote only when the local row is not pending and strictly older (LWW).
+    // Why: LWW; the remote name wins only over a non-pending, strictly older local row.
     @Query(
         "UPDATE user_devices SET name = :name, updatedAt = :remoteUpdatedAt " +
             "WHERE id = :id AND isNamePendingSync = 0 AND updatedAt < :remoteUpdatedAt",

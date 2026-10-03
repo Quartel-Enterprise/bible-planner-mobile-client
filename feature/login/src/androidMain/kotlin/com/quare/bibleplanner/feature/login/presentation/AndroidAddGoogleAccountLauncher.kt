@@ -4,12 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 
-/**
- * Sends the user to the system "add account" screen, pre-filtered to Google accounts.
- *
- * Launched from outside an Activity context, so it needs [Intent.FLAG_ACTIVITY_NEW_TASK]. Wrapped
- * in [runCatching] because the screen may be unavailable on some devices.
- */
+// Why: started from a non-Activity context, so it needs FLAG_ACTIVITY_NEW_TASK; runCatching
+// because the add-account screen is unavailable on some devices.
 internal class AndroidAddGoogleAccountLauncher(
     private val context: Context,
 ) : AddGoogleAccountLauncher {

@@ -4,10 +4,6 @@ import androidx.compose.runtime.Composable
 import com.quare.bibleplanner.core.model.book.BookId
 import org.jetbrains.compose.resources.getString
 
-/**
- * Compacts verse numbers into the reader's reference notation, collapsing runs into ranges:
- * `[1, 2, 3, 7]` becomes `1-3, 7`.
- */
 fun List<Int>.toVerseNumbersLabel(): String = sorted()
     .distinct()
     .fold(mutableListOf<MutableList<Int>>()) { runs, verseNumber ->
@@ -22,7 +18,6 @@ fun List<Int>.toVerseNumbersLabel(): String = sorted()
         if (run.size == 1) run.first().toString() else "${run.first()}-${run.last()}"
     }
 
-/** Full reference of a selection, e.g. `Gênesis 3:1-3, 7`. */
 @Composable
 fun verseReferenceLabel(
     bookId: BookId,
@@ -34,7 +29,6 @@ fun verseReferenceLabel(
     verseNumbers = verseNumbers,
 )
 
-/** Suspend variant of [verseReferenceLabel] for use outside composition. */
 suspend fun getVerseReferenceLabel(
     bookId: BookId,
     chapterNumber: Int,

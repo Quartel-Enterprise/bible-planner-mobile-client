@@ -2,7 +2,7 @@ package com.quare.bibleplanner.feature.applanguage.presentation
 
 import androidx.compose.runtime.Composable
 
-// JVM applies runtime language changes through the ObserveAppLocale use case (Locale.setDefault), so no
-// extra composable handling is needed here.
+// Why: JVM applies language changes through ObserveAppLocale (Locale.setDefault), so
+// no composable handling is needed.
 @Composable
 actual fun ApplyAppLocaleEffect() = Unit

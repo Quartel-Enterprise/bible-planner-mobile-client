@@ -17,12 +17,6 @@ class GetReadNavigationSuggestionsModelUseCase(
     private val planRepository: PlanRepository,
     private val booksRepository: BooksRepository,
 ) {
-    /**
-     * Get read navigation suggestions model
-     * @param shouldForceCanonOrder if true we should get the model from the canon order, if not we should verify the selected plan
-     * @param currentBookId the book id reference to calculate next and previous
-     * @param currentChapterNumber the chapter number reference to calculate next and previous
-     */
     operator fun invoke(
         shouldForceCanonOrder: Boolean,
         currentBookId: BookId,

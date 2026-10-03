@@ -13,5 +13,5 @@ sealed interface SubscriptionDetailsUiState {
         val willRenew: Boolean,
     ) : SubscriptionDetailsUiState
 
-    data object Error : SubscriptionDetailsUiState // Fallback if somehow not pro
+    data object Error : SubscriptionDetailsUiState
 }

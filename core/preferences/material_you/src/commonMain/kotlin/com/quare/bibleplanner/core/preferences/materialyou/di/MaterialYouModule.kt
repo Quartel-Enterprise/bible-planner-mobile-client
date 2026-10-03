@@ -17,10 +17,8 @@ import org.koin.dsl.module
 val materialYouModule = module {
     includes(MaterialYouPlatformModule)
 
-    // Data
     singleOf(::MaterialYouRepositoryImpl).bind<MaterialYouRepository>()
 
-    // Domain
     factoryOf(::MaterialYouUseCases)
     factoryOf(::GetIsDynamicColorsEnabledFlowUseCase).bind<GetIsDynamicColorsEnabledFlow>()
     factoryOf(::SetIsDynamicColorsEnabledUseCase).bind<SetIsDynamicColorsEnabled>()

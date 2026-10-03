@@ -1,5 +1,9 @@
 package com.quare.bibleplanner.feature.verse.selectionmenu.presentation
 
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
@@ -47,6 +51,7 @@ internal class VerseSelectionViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private val yellow = HighlightColor.Preset(PresetHighlightColor.YELLOW)
     private lateinit var viewModel: VerseSelectionViewModel
+    private lateinit var viewModelStore: ViewModelStore
     private lateinit var actions: List<VerseSelectionUiAction>
     private val navigator = Navigator()
     private lateinit var commands: List<NavigationCommand>
@@ -65,6 +70,7 @@ internal class VerseSelectionViewModelTest {
 
     @AfterTest
     fun tearDown() {
+        viewModelStore.clear()
         Dispatchers.resetMain()
     }
 
@@ -223,6 +229,71 @@ internal class VerseSelectionViewModelTest {
         assertTrue(actions.isEmpty())
         assertTrue(commands.isEmpty())
     }
+
+    @Test
+    fun `GIVEN a selection of several verses WHEN the reader deselects them one by one THEN never navigates back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            selection.value = verseSelection(listOf(1, 2, 3))
+            runCurrent()
+
+            // When
+            selection.value = verseSelection(listOf(1, 3))
+            runCurrent()
+            selection.value = verseSelection(listOf(3))
+            runCurrent()
+            selection.value = null
+            runCurrent()
+
+            // Then
+            assertNull(viewModel.uiState.value)
+            assertTrue(commands.none { it == NavigationCommand.NavigateBack })
+            assertTrue(commands.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an open selection menu WHEN system back drops it THEN clears the selection without navigating`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            runCurrent()
+
+            // When
+            viewModelStore.clear()
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = 1,
+                actual = clearedCount.size,
+            )
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the close button was tapped WHEN the entry is dropped THEN clears again without navigating twice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(VerseSelectionUiEvent.OnClearSelectionClick)
+            runCurrent()
+
+            // When
+            viewModelStore.clear()
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = 2,
+                actual = clearedCount.size,
+            )
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
+            )
+        }
 
     @Test
     fun `copies the passage as it is shared`() = runTest(testDispatcher) {
@@ -457,45 +528,53 @@ internal class VerseSelectionViewModelTest {
         trackedEvents = mutableListOf()
         trackedParams = mutableMapOf()
         selection = MutableStateFlow(verseSelection(listOf(1, 2)))
-        viewModel = VerseSelectionViewModel(
-            observeVerseSelection = { selection },
-            clearVerseSelection = { clearedCount += Unit },
-            observeChapterAnnotations = { _ ->
-                flowOf(
-                    ChapterAnnotations(
-                        highlightColorByVerse = emptyMap(),
-                        savedVerseNumbers = emptySet(),
-                        noteIdByVerse = noteIdByVerse,
-                    ),
-                )
+        viewModelStore = ViewModelStore()
+        viewModel = ViewModelProvider.create(
+            store = viewModelStore,
+            factory = viewModelFactory {
+                initializer {
+                    VerseSelectionViewModel(
+                        observeVerseSelection = { selection },
+                        clearVerseSelection = { clearedCount += Unit },
+                        observeChapterAnnotations = { _ ->
+                            flowOf(
+                                ChapterAnnotations(
+                                    highlightColorByVerse = emptyMap(),
+                                    savedVerseNumbers = emptySet(),
+                                    noteIdByVerse = noteIdByVerse,
+                                ),
+                            )
+                        },
+                        observeHighlightPalette = { flowOf(emptyList()) },
+                        applyHighlightColor = { refs, color ->
+                            appliedHighlights += refs to color
+                            isColorApplied
+                        },
+                        addCustomHighlightColor = { color -> addedCustomColors += color },
+                        toggleSavedVerses = { refs ->
+                            toggledSavedRefs += refs
+                            true
+                        },
+                        observeIsProUser = { flowOf(isPro) },
+                        getVersesShareContent = { _, _, _ ->
+                            VersesShareContentModel(
+                                text = "Verse text",
+                                reference = "Gênesis 3:1-2",
+                                versionAbbreviation = "ARC",
+                            )
+                        },
+                        shouldBlockAddVerseNote = { isAddVerseNoteBlocked },
+                        getMaxFreeVerseNotesAmount = { MAX_FREE_VERSE_NOTES },
+                        platform = Platform.Android,
+                        navigator = navigator,
+                        trackEvent = { name, params ->
+                            trackedEvents += name
+                            trackedParams[name] = params
+                        },
+                    )
+                }
             },
-            observeHighlightPalette = { flowOf(emptyList()) },
-            applyHighlightColor = { refs, color ->
-                appliedHighlights += refs to color
-                isColorApplied
-            },
-            addCustomHighlightColor = { color -> addedCustomColors += color },
-            toggleSavedVerses = { refs ->
-                toggledSavedRefs += refs
-                true
-            },
-            observeIsProUser = { flowOf(isPro) },
-            getVersesShareContent = { _, _, _ ->
-                VersesShareContentModel(
-                    text = "Verse text",
-                    reference = "Gênesis 3:1-2",
-                    versionAbbreviation = "ARC",
-                )
-            },
-            shouldBlockAddVerseNote = { isAddVerseNoteBlocked },
-            getMaxFreeVerseNotesAmount = { MAX_FREE_VERSE_NOTES },
-            platform = Platform.Android,
-            navigator = navigator,
-            trackEvent = { name, params ->
-                trackedEvents += name
-                trackedParams[name] = params
-            },
-        )
+        )[VerseSelectionViewModel::class]
         actions = mutableListOf<VerseSelectionUiAction>().also { collected ->
             backgroundScope.launch { viewModel.uiAction.collect { collected += it } }
         }

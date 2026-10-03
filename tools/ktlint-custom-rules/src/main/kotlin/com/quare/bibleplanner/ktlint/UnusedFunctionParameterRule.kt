@@ -12,14 +12,6 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 
-/**
- * A parameter the function never reads is a promise the signature does not keep: every caller has to
- * produce a value that changes nothing.
- *
- * Functions whose signature is dictated from outside are skipped — `override`, `open`, `abstract`,
- * `operator`, `expect` / `actual`, `external` and interface members — as is anything annotated with
- * `@Suppress("UNUSED_PARAMETER")`.
- */
 class UnusedFunctionParameterRule : BiblePlannerRule("unused-function-parameter") {
     private val externallyDictatedModifiers = listOf(
         KtTokens.OVERRIDE_KEYWORD,

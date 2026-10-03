@@ -60,8 +60,8 @@ internal class IosBibleVersionDownloaderFacade(
     }
 
     override suspend fun pauseDownload(versionId: String) {
-        // Mark as PAUSED in DB first so that any in-flight processDownloadedChapter
-        // coroutines see the new status and skip writing chapters after this point.
+        // Why: mark PAUSED in the DB first so in-flight processDownloadedChapter coroutines see it and
+        // skip writing chapters after this point.
         pauseBibleVersion(versionId)
         downloadSession.cancelDownloads(versionId)
         downloadSession.pauseLiveActivity(versionId)

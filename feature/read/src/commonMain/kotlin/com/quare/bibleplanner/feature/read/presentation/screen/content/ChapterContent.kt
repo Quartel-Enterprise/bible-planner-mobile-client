@@ -18,12 +18,8 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val CHAPTER_HEADER_AND_END_ITEM_COUNT = 2
 
-/**
- * One chapter as list items: its header, its verses, and the end-of-chapter controls. Vertical
- * reading calls this once per chapter into the same list, which is what makes the text continue, and
- * drops the chapter arrows: the next chapter is already below, so the only decision left is the read
- * status.
- */
+// Why: vertical reading emits every chapter into one list, so the next chapter is already below
+// and the chapter arrows are dropped.
 internal fun LazyListScope.chapterContent(
     chapter: ReadChapterUiModel,
     header: ReadHeaderUiModel,

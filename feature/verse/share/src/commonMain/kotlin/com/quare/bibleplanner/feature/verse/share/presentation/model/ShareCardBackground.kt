@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.verse.share.presentation.model
 
 import androidx.compose.ui.graphics.Color
 
-/** The backgrounds offered for the share card, each with the text colours that stay legible on it. */
 enum class ShareCardBackground(
     val startColor: Color,
     val endColor: Color,

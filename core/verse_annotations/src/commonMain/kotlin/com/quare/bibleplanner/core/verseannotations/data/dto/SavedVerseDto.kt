@@ -3,7 +3,6 @@ package com.quare.bibleplanner.core.verseannotations.data.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** Remote row of the `saved_verses` table. */
 @Serializable
 internal data class SavedVerseDto(
     @SerialName("user_id") val userId: String,

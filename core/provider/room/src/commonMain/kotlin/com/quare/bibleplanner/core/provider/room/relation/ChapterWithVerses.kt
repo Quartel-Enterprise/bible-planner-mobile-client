@@ -5,12 +5,9 @@ import androidx.room3.Relation
 import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 
-/**
- * Deliberately stops at [VerseEntity] instead of [VerseWithTexts]: nothing reading a whole book
- * needs the verse text, and pulling it in would make every query over this relation carry every
- * downloaded version's text — and, worse, make the relation observe `verse_texts`, so a Bible
- * download would re-materialise the whole Bible on every write.
- */
+// Why: stops at VerseEntity, not VerseWithTexts: pulling text in would carry every
+// version's text and observe verse_texts, re-materialising the Bible on every
+// download write.
 data class ChapterWithVerses(
     @Embedded
     val chapter: ChapterEntity,

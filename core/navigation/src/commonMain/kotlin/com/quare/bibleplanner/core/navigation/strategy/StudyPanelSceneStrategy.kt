@@ -13,17 +13,13 @@ import com.quare.bibleplanner.core.model.route.DayStudyMainPaneKey
 import com.quare.bibleplanner.core.model.route.ReaderPaneKey
 import com.quare.bibleplanner.core.navigation.scene.StudyPanelScene
 
-/**
- * On a wide window a study sits beside what it studies instead of covering it: the day beside its
- * study, and the chapter being read beside its chapter study. Each study only came along with its
- * pane, so going back leaves both.
- */
+// Why: on wide windows a study sits beside what it studies instead of covering it; the study only
+// came along with its pane, so going back leaves both.
 class StudyPanelSceneStrategy(
     private val isWide: Boolean,
     private val readingFraction: Float,
     private val onReadingFractionCommit: (Float) -> Unit,
 ) : SceneStrategy<NavKey> {
-    /** Each study pane, keyed to the pane it has to sit beside. */
     private val mainPaneKeys: Map<NavMetadataKey<Boolean>, NavMetadataKey<Boolean>> = mapOf(
         DayStudyDetailPaneKey to DayStudyMainPaneKey,
         ChapterStudyPaneKey to ReaderPaneKey,

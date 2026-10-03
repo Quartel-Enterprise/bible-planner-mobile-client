@@ -6,10 +6,6 @@ import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 
 class CalculateAllChaptersReadStatusUseCase {
-    /**
-     * Calculate the read status for each chapter in each passage.
-     * Returns a map where the key is (passageIndex, chapterIndex) and the value is whether the chapter is read.
-     */
     operator fun invoke(
         passages: List<PassageModel>,
         books: List<BookDataModel>,
@@ -26,9 +22,6 @@ class CalculateAllChaptersReadStatusUseCase {
         return statusMap
     }
 
-    /**
-     * Check if a specific chapter within a passage is read by checking the book data.
-     */
     private fun isChapterRead(
         passage: PassageModel,
         chapter: ChapterModel,

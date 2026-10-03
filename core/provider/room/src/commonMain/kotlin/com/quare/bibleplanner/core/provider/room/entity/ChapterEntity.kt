@@ -24,7 +24,7 @@ data class ChapterEntity(
     val number: Int,
     val bookId: String,
     val isRead: Boolean,
-    // Read-state sync metadata (Last-Write-Wins by readUpdatedAt; pending flag drives the push loop).
+    // Why: last-write-wins by readUpdatedAt; the pending flag drives the push loop.
     @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long?,
     @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean,
 )

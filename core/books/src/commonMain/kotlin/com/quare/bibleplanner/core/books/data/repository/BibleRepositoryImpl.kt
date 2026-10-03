@@ -38,11 +38,8 @@ internal class BibleRepositoryImpl(
 ) : BibleRepository {
     private val bibleVersionKey = stringPreferencesKey(BIBLE_VERSION_KEY)
 
-    /**
-     * Counting downloaded chapters walks every downloaded verse, and a download writes thousands of
-     * times: re-running it per write is what makes the rest of the app stutter while a Bible comes
-     * down. The count is refreshed at most once per window instead.
-     */
+    // Why: counting downloaded chapters walks every verse and a download writes thousands
+    // of times; recounting per write made the app stutter, so it is throttled.
     private val downloadedChaptersThrottle: Duration = 1.seconds
 
     private val sharedBiblesFlow: Flow<List<BibleModel>> by lazy {
@@ -74,10 +71,8 @@ internal class BibleRepositoryImpl(
             )
     }
 
-    /**
-     * Every screen that shows a Bible version subscribes to this, so it is shared: otherwise each
-     * subscriber pays for its own remote listing and its own chapter count.
-     */
+    // Why: shared because every screen showing a version subscribes; otherwise each one
+    // pays for its own remote listing and chapter count.
     override fun getBiblesFlow(): Flow<List<BibleModel>> = sharedBiblesFlow
 
     override fun getSelectedVersionIdFlow(): Flow<String> = dataStore.data

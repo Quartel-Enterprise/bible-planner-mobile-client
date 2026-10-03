@@ -7,10 +7,6 @@ import androidx.compose.runtime.remember
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.screen.content.getChapterStartIndices
 
-/**
- * Which chapter the top of the list is sitting in, offset by the [leadingItemCount] the placeholder
- * for the previous chapter takes while it loads.
- */
 @Composable
 internal fun rememberVisibleChapter(
     chapters: List<ReadChapterUiModel>,

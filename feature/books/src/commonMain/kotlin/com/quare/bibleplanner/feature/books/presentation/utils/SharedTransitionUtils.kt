@@ -13,12 +13,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
-/**
- * An [SharedTransitionScope.OverlayClip] that returns null for the clip path,
- * effectively disabling clipping in the overlay during transitions.
- * This is useful for preserving shadows (like those on ElevatedCard) that
- * would otherwise be clipped by the default bounds-based clipping.
- */
+// Why: the default bounds-based overlay clip cuts off ElevatedCard shadows during
+// shared transitions.
 @OptIn(ExperimentalSharedTransitionApi::class)
 val NoClip = object : SharedTransitionScope.OverlayClip {
     override fun getClipPath(
@@ -29,17 +25,9 @@ val NoClip = object : SharedTransitionScope.OverlayClip {
     ): Path? = null
 }
 
-/**
- * A specialized [OverlayClip] for cards with shadows.
- * It uses a 16dp margin to ensure shadows are not clipped.
- */
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun getShadowClip(shape: Shape) = OverlayClip(shape, padding = 16.dp)
 
-/**
- * An [SharedTransitionScope.OverlayClip] that clips to a specific [Shape] with optional padding.
- * Padding is useful to maintain the shape while allowing shadows to be visible.
- */
 @OptIn(ExperimentalSharedTransitionApi::class)
 private fun OverlayClip(
     shape: Shape,

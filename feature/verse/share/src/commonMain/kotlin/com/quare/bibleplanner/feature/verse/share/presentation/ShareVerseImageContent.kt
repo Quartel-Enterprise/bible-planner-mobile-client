@@ -90,10 +90,8 @@ internal fun ShareVerseImageContent(
     }
 }
 
-/**
- * The card keeps its portrait shape and the design's fixed 300dp column width even on a wide
- * dialog — only the controls beside it grow, matching how the desktop composer is laid out.
- */
+// Why: the card keeps the design fixed 300dp portrait width on wide dialogs; only the controls
+// grow, matching the desktop composer.
 @Composable
 internal fun ShareVerseImageWideContent(
     uiState: ShareVerseUiState,

@@ -19,15 +19,8 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtProperty
 
-/**
- * A top-level `private val` / `private const val` that only one top-level class or object ever reads belongs to
- * that type: constants in its `private companion object`, everything else in its class body.
- *
- * The rule works off the reference sites, which is what keeps the documented exceptions out of it without any
- * type resolution: a constant read by a top-level `@Composable` has a reference outside every class, a default
- * for a constructor parameter is read from the primary constructor, and a file with no class has no owner to
- * move anything into.
- */
+// Why: works off reference sites, which excludes the documented exceptions without type
+// resolution: top-level @Composable reads, constructor defaults and class-less files.
 class TopLevelValOwnershipRule : BiblePlannerRule("top-level-val-ownership") {
     private val classifierElementTypes = setOf(CLASS, OBJECT_DECLARATION)
 

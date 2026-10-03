@@ -29,10 +29,6 @@ private val compactPillHeight = 34.dp
 private val iconSize = 18.dp
 private const val SOFT_PRIMARY_ALPHA = 0.12f
 
-/**
- * The chapter's read state as a single pill that keeps the same outlined shape in both states and
- * only swaps the neutral treatment for a soft primary one, so they never look like two controls.
- */
 @Composable
 internal fun ReadStatusPill(
     isRead: Boolean,

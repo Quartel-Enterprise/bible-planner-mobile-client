@@ -421,6 +421,73 @@ internal class ChatViewModelTest {
     }
 
     @Test
+    fun `GIVEN an open thread WHEN a streamed answer appears and its tokens arrive THEN it scrolls once`() =
+        runTest(testDispatcher) {
+            // Given
+            repository.conversations.value = listOf(conversation(planDay = null))
+            repository.messages.value = mapOf(CONVERSATION_ID to listOf(question()))
+            val viewModel = createViewModel()
+            viewModel.onEvent(ChatUiEvent.OnConversationClick(CONVERSATION_ID))
+            val actions = mutableListOf<ChatUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+
+            // When
+            streamAnswer(
+                listOf(
+                    "Caim",
+                    "Caim matou",
+                    "Caim matou Abel",
+                    "Caim matou Abel por inveja.",
+                ),
+            )
+
+            // Then
+            assertEquals(
+                expected = listOf<ChatUiAction>(ChatUiAction.ScrollToBottom),
+                actual = actions,
+            )
+        }
+
+    @Test
+    fun `GIVEN a streamed answer WHEN it finishes THEN it scrolls once more and never per token`() =
+        runTest(testDispatcher) {
+            // Given
+            repository.conversations.value = listOf(conversation(planDay = null))
+            repository.messages.value = mapOf(CONVERSATION_ID to listOf(question()))
+            val viewModel = createViewModel()
+            viewModel.onEvent(ChatUiEvent.OnConversationClick(CONVERSATION_ID))
+            val actions = mutableListOf<ChatUiAction>()
+            backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+            streamAnswer(
+                listOf(
+                    "Caim",
+                    "Caim matou",
+                    "Caim matou Abel por inveja.",
+                ),
+            )
+
+            // When
+            repository.messages.value = mapOf(
+                CONVERSATION_ID to listOf(
+                    question(),
+                    answer(
+                        content = "Caim matou Abel por inveja.",
+                        isStreaming = false,
+                    ),
+                ),
+            )
+
+            // Then
+            assertEquals(
+                expected = listOf<ChatUiAction>(
+                    ChatUiAction.ScrollToBottom,
+                    ChatUiAction.ScrollToBottom,
+                ),
+                actual = actions,
+            )
+        }
+
+    @Test
     fun `GIVEN a signed-out reader WHEN tapping a suggestion THEN the chip is kept`() = runTest(testDispatcher) {
         authenticatedUserId.value = null
         val viewModel = createViewModelWithSuggestion()
@@ -829,6 +896,41 @@ internal class ChatViewModelTest {
             )
         }
 
+    private fun streamAnswer(tokens: List<String>) {
+        tokens.forEach { content ->
+            repository.messages.value = mapOf(
+                CONVERSATION_ID to listOf(
+                    question(),
+                    answer(
+                        content = content,
+                        isStreaming = true,
+                    ),
+                ),
+            )
+        }
+    }
+
+    private fun question(): ChatMessageModel = ChatMessageModel(
+        id = "question-1",
+        role = ChatRoleModel.USER,
+        content = SUGGESTION,
+        isStreaming = false,
+        isFailed = false,
+        createdAt = Instant.parse("2026-08-06T15:00:00Z"),
+    )
+
+    private fun answer(
+        content: String,
+        isStreaming: Boolean,
+    ): ChatMessageModel = ChatMessageModel(
+        id = "answer-1",
+        role = ChatRoleModel.ASSISTANT,
+        content = content,
+        isStreaming = isStreaming,
+        isFailed = false,
+        createdAt = Instant.parse("2026-08-06T15:00:01Z"),
+    )
+
     private fun createViewModelWithSuggestion(): ChatViewModel {
         entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
         chatContext = readingContext()
@@ -892,5 +994,6 @@ internal class ChatViewModelTest {
         const val SUGGESTION = "Por que Caim matou Abel?"
         const val STARTER = "Resuma esta leitura"
         const val DAY_DRAFT_KEY = "day:CHRONOLOGICAL:1:4"
+        const val CONVERSATION_ID = "day-conversation"
     }
 }

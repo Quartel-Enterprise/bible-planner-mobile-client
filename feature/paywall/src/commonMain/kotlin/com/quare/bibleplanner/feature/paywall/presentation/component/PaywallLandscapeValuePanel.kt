@@ -28,10 +28,6 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val BACK_ICON_BOTTOM_SPACING = 18
 
-/**
- * Value proposition beside the plans when the screen is wide: what Pro is and what it unlocks.
- * A phone in landscape opens it with a compact bar, while a desktop-sized window gets the full hero.
- */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun PaywallLandscapeValuePanel(

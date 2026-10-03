@@ -4,12 +4,8 @@ import com.quare.bibleplanner.core.provider.language.domain.repository.AppLangua
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveLanguageSync
 import kotlinx.coroutines.flow.combine
 
-/**
- * App-scoped collector that applies a synced language into the device-local store while the sync flag
- * is on. The existing [ObserveAppLocaleUseCase] then re-applies the OS locale from the language flow,
- * so an inbound change takes effect with no extra wiring. Writing through `applySyncedLanguage`
- * (DataStore-only) avoids re-pushing the value.
- */
+// Why: written through applySyncedLanguage (DataStore-only) so an inbound value is not re-pushed;
+// ObserveAppLocaleUseCase then re-applies the OS locale from the language flow.
 internal class ObserveLanguageSyncUseCase(
     private val repository: AppLanguageRepository,
 ) : ObserveLanguageSync {

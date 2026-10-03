@@ -20,7 +20,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val profileModule = module {
-    // Data
     factoryOf(::ProfileMapper)
     factoryOf(::UserProfileMapper)
     singleOf(::ProfileLocalStore)
@@ -29,10 +28,8 @@ val profileModule = module {
         AvatarRemoteStore(bucketApi = get(named(AVATARS_BUCKET)))
     }
 
-    // Repository
     singleOf(::ProfileRepositoryImpl).bind<ProfileRepository>()
 
-    // Sync
     single<Synchronizer>(named("profileSync")) {
         ProfileSynchronizer(
             delegate = OfflineFirstSynchronizer(
@@ -50,6 +47,5 @@ val profileModule = module {
         )
     }
 
-    // Domain
     factoryOf(::ObserveUserProfileUseCase).bind<ObserveUserProfile>()
 }

@@ -6,10 +6,8 @@ import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.first
 
-/**
- * Warms the study quota of a day that is about to matter. It is a courtesy, not a step anyone waits
- * on, so a failure here only means the screen asks for the quota itself later.
- */
+// Why: best-effort prefetch nobody waits on; a failure is swallowed and the screen
+// simply fetches the quota itself later.
 class PrefetchDayStudyQuotaUseCase(
     private val getDayPassagesForDayStudy: GetDayPassagesForDayStudyUseCase,
     private val getDayStudyQuota: GetDayStudyQuotaUseCase,

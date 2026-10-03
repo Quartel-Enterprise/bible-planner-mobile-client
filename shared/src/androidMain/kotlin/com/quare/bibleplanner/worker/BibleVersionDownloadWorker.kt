@@ -35,7 +35,8 @@ internal class BibleVersionDownloadWorker(
     private val bibleRepository: BibleRepository by inject()
     private val observeDownloadProgress: ObserveBibleVersionDownloadProgress by inject()
 
-    // Required for expedited work: used to run the worker as a foreground service / expedited job.
+    // Why: WorkManager requires this for expedited work, which runs as a foreground service before
+    // Android 12.
     override suspend fun getForegroundInfo(): ForegroundInfo {
         val versionId = inputData.getString(KEY_VERSION_ID).orEmpty()
         return notifier.buildForegroundInfo(
@@ -48,8 +49,8 @@ internal class BibleVersionDownloadWorker(
         val versionId = inputData.getString(KEY_VERSION_ID) ?: return Result.failure()
 
         bibleVersionDao.updateStatus(id = versionId, status = DownloadStatus.IN_PROGRESS)
-        // If foreground promotion is refused (started while backgrounded on Android 12+), keep
-        // downloading in the background instead of crashing.
+        // Why: Android 12+ refuses foreground promotion when started in the background; keep downloading
+        // in the background instead of crashing.
         suspendRunCatching { setForeground(getForegroundInfo()) }
             .onFailure { error ->
                 Log.w(LOG_TAG, "Foreground promotion refused; continuing download in background", error)

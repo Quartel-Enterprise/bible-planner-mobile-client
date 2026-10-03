@@ -15,100 +15,90 @@ import com.quare.bibleplanner.core.model.book.BookId
 
 class BookGroupMapper {
     fun fromBookId(bookId: BookId): BookGroup = when (bookId) {
-        // Pentateuch
-        BookId.GEN, // Genesis
-        BookId.EXO, // Exodus
-        BookId.LEV, // Leviticus
-        BookId.NUM, // Numbers
-        BookId.DEU, // Deuteronomy
+        BookId.GEN,
+        BookId.EXO,
+        BookId.LEV,
+        BookId.NUM,
+        BookId.DEU,
         -> Pentateuch
 
-        // Historical Books
-        BookId.JOS, // Joshua
-        BookId.JDG, // Judges
-        BookId.RUT, // Ruth
-        BookId.FIRST_SA, // 1 Samuel
-        BookId.SECOND_SA, // 2 Samuel
-        BookId.FIRST_KI, // 1 Kings
-        BookId.SECOND_KI, // 2 Kings
-        BookId.FIRST_CH, // 1 Chronicles
-        BookId.SECOND_CH, // 2 Chronicles
-        BookId.EZR, // Ezra
-        BookId.NEH, // Nehemiah
-        BookId.EST, // Esther
+        BookId.JOS,
+        BookId.JDG,
+        BookId.RUT,
+        BookId.FIRST_SA,
+        BookId.SECOND_SA,
+        BookId.FIRST_KI,
+        BookId.SECOND_KI,
+        BookId.FIRST_CH,
+        BookId.SECOND_CH,
+        BookId.EZR,
+        BookId.NEH,
+        BookId.EST,
         -> HistoricalBooks
 
-        // Wisdom Books
-        BookId.JOB, // Job
-        BookId.PSA, // Psalms
-        BookId.PRO, // Proverbs
-        BookId.ECC, // Ecclesiastes
-        BookId.SNG, // Song of Songs
+        BookId.JOB,
+        BookId.PSA,
+        BookId.PRO,
+        BookId.ECC,
+        BookId.SNG,
         -> WisdomBooks
 
-        // Major Prophets
-        BookId.ISA, // Isaiah
-        BookId.JER, // Jeremiah
-        BookId.LAM, // Lamentations
-        BookId.EZK, // Ezekiel
-        BookId.DAN, // Daniel
+        BookId.ISA,
+        BookId.JER,
+        BookId.LAM,
+        BookId.EZK,
+        BookId.DAN,
         -> MajorProphets
 
-        // Minor Prophets
-        BookId.HOS, // Hosea
-        BookId.JOL, // Joel
-        BookId.AMO, // Amos
-        BookId.OBA, // Obadiah
-        BookId.JON, // Jonah
-        BookId.MIC, // Micah
-        BookId.NAM, // Nahum
-        BookId.HAB, // Habakkuk
-        BookId.ZEP, // Zephaniah
-        BookId.HAG, // Haggai
-        BookId.ZEC, // Zechariah
-        BookId.MAL, // Malachi
+        BookId.HOS,
+        BookId.JOL,
+        BookId.AMO,
+        BookId.OBA,
+        BookId.JON,
+        BookId.MIC,
+        BookId.NAM,
+        BookId.HAB,
+        BookId.ZEP,
+        BookId.HAG,
+        BookId.ZEC,
+        BookId.MAL,
         -> MinorProphets
 
-        // Gospels
-        BookId.MAT, // Matthew
-        BookId.MRK, // Mark
-        BookId.LUK, // Luke
-        BookId.JHN, // John
+        BookId.MAT,
+        BookId.MRK,
+        BookId.LUK,
+        BookId.JHN,
         -> Gospels
 
-        // Acts
-        BookId.ACT, // Acts of the Apostles
+        BookId.ACT,
         -> Acts
 
-        // Pauline Epistles
-        BookId.ROM, // Romans
-        BookId.FIRST_CO, // 1 Corinthians
-        BookId.SECOND_CO, // 2 Corinthians
-        BookId.GAL, // Galatians
-        BookId.EPH, // Ephesians
-        BookId.PHP, // Philippians
-        BookId.COL, // Colossians
-        BookId.FIRST_TH, // 1 Thessalonians
-        BookId.SECOND_TH, // 2 Thessalonians
-        BookId.FIRST_TI, // 1 Timothy
-        BookId.SECOND_TI, // 2 Timothy
-        BookId.TIT, // Titus
-        BookId.PHM, // Philemon
+        BookId.ROM,
+        BookId.FIRST_CO,
+        BookId.SECOND_CO,
+        BookId.GAL,
+        BookId.EPH,
+        BookId.PHP,
+        BookId.COL,
+        BookId.FIRST_TH,
+        BookId.SECOND_TH,
+        BookId.FIRST_TI,
+        BookId.SECOND_TI,
+        BookId.TIT,
+        BookId.PHM,
         -> PaulineEpistles
 
-        // General Epistles
-        BookId.HEB, // Hebrews
-        BookId.JAS, // James
-        BookId.FIRST_PE, // 1 Peter
-        BookId.SECOND_PE, // 2 Peter
-        BookId.FIRST_JN, // 1 John
-        BookId.SECOND_JN, // 2 John
-        BookId.THIRD_JN, // 3 John
-        BookId.JUD, // Jude
+        BookId.HEB,
+        BookId.JAS,
+        BookId.FIRST_PE,
+        BookId.SECOND_PE,
+        BookId.FIRST_JN,
+        BookId.SECOND_JN,
+        BookId.THIRD_JN,
+        BookId.JUD,
         -> GeneralEpistles
 
-        // Revelation
-        BookId.REV, // Revelation
+        BookId.REV,
         -> Revelation
     }
 }

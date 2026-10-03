@@ -18,11 +18,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-/**
- * Loads bundled reading-plan JSON and holds the legacy reading-plan preferences that predate the
- * synced key-value store. The legacy accessors exist only to support the one-time migration into
- * `synced_preferences`; the live read/write path is the synced store (see `PlanRepositoryImpl`).
- */
+// Why: the legacy accessors exist only for the one-time migration into
+// synced_preferences; live reads and writes go through PlanRepositoryImpl.
 @OptIn(ExperimentalResourceApi::class)
 class PlanLocalDataSource(
     private val dataStore: DataStore<Preferences>,
@@ -42,7 +39,6 @@ class PlanLocalDataSource(
 
     suspend fun getLegacySelectedReadingPlan(): String? = dataStore.read(selectedReadingPlanKey)
 
-    /** Drops the legacy keys and records that the migration ran, so it never repeats. */
     suspend fun finishPlanPreferencesMigration() {
         dataStore.edit { preferences ->
             preferences -= startDateKey

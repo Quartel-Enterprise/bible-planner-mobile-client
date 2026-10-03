@@ -29,7 +29,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val devicesModule = module {
-    // Data
     singleOf(::UserDevicesRemoteStore)
     factoryOf(::UserDeviceDtoToEntityMapper)
     factoryOf(::UserDeviceEntityToDomainMapper)
@@ -46,7 +45,6 @@ val devicesModule = module {
         )
     }
 
-    // Domain
     factoryOf(::ObserveDevicesUseCase).bind<ObserveDevices>()
     factoryOf(::RenameDeviceUseCase).bind<RenameDevice>()
     factoryOf(::SignOutDeviceUseCase).bind<SignOutDevice>()

@@ -34,7 +34,6 @@ class BooksLocalDataSource(
         val bookIdString = fileName.removeSuffix(".json")
         val bookId = fileNameToBookIdMapper.map(bookIdString) ?: return null
 
-        // Use Compose Resources API - path is relative to composeResources/files
         val resourcePath = "files/$BOOKS_DIRECTORY/$fileName"
         val jsonBytes: ByteArray = Res.readBytes(resourcePath)
         val jsonContent = jsonBytes.decodeToString()

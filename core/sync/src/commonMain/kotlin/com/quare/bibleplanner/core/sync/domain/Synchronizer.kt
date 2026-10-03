@@ -1,29 +1,18 @@
 package com.quare.bibleplanner.core.sync.domain
 
-/**
- * One dataset's sync unit, driven by [com.quare.bibleplanner.core.sync.data.SyncCoordinator]. The
- * non-generic supertype lets the coordinator hold heterogeneous datasets together;
- * [com.quare.bibleplanner.core.sync.data.OfflineFirstSynchronizer] implements it generically.
- */
 interface Synchronizer {
-    /** One-time per-session hook (legacy migration, provisional defaults). */
     suspend fun seed(now: Long)
 
-    /** Continuously pushes pending local changes while online; suspends forever. */
+    // Why: suspends forever; run it in its own coroutine.
     suspend fun runPushLoop()
 
-    /** Pushes the current pending set once (best-effort flush, e.g. before logout). */
     suspend fun pushPendingOnce()
 
-    /** Applies live remote changes; suspends forever. */
+    // Why: suspends forever; run it in its own coroutine.
     suspend fun observeRealtime()
 
-    /**
-     * Fetches the full remote snapshot (used on every realtime reconnection); the returned
-     * [FetchedSnapshot] applies it locally.
-     */
     suspend fun fetchSnapshot(): FetchedSnapshot
 
-    /** Wipes this dataset's local state on logout, without scheduling a push. */
+    // Why: logout wipe must not schedule a push of the cleared state.
     suspend fun clearLocal()
 }

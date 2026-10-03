@@ -5,6 +5,5 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val deleteProgressModule = module {
-    // Presentation
     viewModelOf(::DeleteAllProgressViewModel)
 }
