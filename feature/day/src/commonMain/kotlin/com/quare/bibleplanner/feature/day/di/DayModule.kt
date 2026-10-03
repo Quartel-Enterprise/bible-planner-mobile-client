@@ -10,8 +10,6 @@ import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.domain.mapper.LocalDateTimeToDateMapper
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
-import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase
-import com.quare.bibleplanner.feature.day.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.IsChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ShouldBlockAddNotesUseCase
@@ -45,9 +43,7 @@ val dayModule = module {
     factoryOf(::IsChapterReadStatusUseCase)
     factoryOf(::CalculateAllChaptersReadStatusUseCase)
     factoryOf(::ToggleChapterReadStatusUseCase)
-    factoryOf(::ConvertUtcDateToLocalDateUseCase)
     factoryOf(::UpdateDayReadTimestampWithDateAndTimeUseCase)
-    factoryOf(::ConvertTimestampToDatePickerInitialDateUseCase)
     factoryOf(::EditDaySelectableDates)
     factoryOf(::LocalDateTimeToDateMapper)
     factoryOf(::ShouldBlockAddNotesUseCase)

@@ -15,6 +15,7 @@
     <string name="platform_android">Android</string>
     <string name="platform_ios">iOS</string>
     <string name="platform_desktop">Desktop</string>
+    <string name="platform_web">Web</string>
     <string name="open_email_button">Abrir e-mail</string>
     <string name="copy_email_address_button">Copiar endereço de e-mail</string>
     <string name="support_email_copied_message">E-mail copiado para a área de transferência</string>

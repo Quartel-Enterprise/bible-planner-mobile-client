@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.editplanstartdate.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.bibleplanner.core.date.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
@@ -11,7 +12,6 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
-import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 import com.quare.bibleplanner.ui.utils.observe

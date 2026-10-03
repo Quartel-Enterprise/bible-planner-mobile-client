@@ -17,6 +17,7 @@ val Platform.shareIcon: ImageVector
         Platform.Desktop.Linux,
         Platform.Desktop.Windows,
         Platform.Android,
+        Platform.Web,
         -> Icons.Default.Share
     }
 

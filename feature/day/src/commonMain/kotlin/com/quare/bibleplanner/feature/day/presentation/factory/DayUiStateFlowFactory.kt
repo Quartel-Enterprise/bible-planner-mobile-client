@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.day.presentation.factory
 
 import com.quare.bibleplanner.core.books.domain.isRangeRead
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
+import com.quare.bibleplanner.core.date.ConvertTimestampToDatePickerInitialDateUseCase
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.plan.ChapterModel
@@ -10,7 +11,6 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.feature.day.domain.EditDaySelectableDates
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
-import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.presentation.mapper.ReadDateFormatter
 import com.quare.bibleplanner.feature.day.presentation.model.DatePickerUiState

@@ -11,8 +11,7 @@ import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.datastore.read
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.data.dto.WeekPlanDto
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import com.quare.bibleplanner.core.utils.ioDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -46,13 +45,13 @@ class PlanLocalDataSource(
     /** Drops the legacy keys and records that the migration ran, so it never repeats. */
     suspend fun finishPlanPreferencesMigration() {
         dataStore.edit { preferences ->
-            preferences.remove(startDateKey)
-            preferences.remove(selectedReadingPlanKey)
+            preferences -= startDateKey
+            preferences -= selectedReadingPlanKey
             preferences[migratedKey] = true
         }
     }
 
-    suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanDto> = withContext(Dispatchers.IO) {
+    suspend fun getPlans(readingPlanType: ReadingPlanType): List<WeekPlanDto> = withContext(ioDispatcher) {
         val directory = when (readingPlanType) {
             ReadingPlanType.BOOKS -> BOOKS_ORDER_DIRECTORY
             ReadingPlanType.CHRONOLOGICAL -> CHRONOLOGICAL_ORDER_DIRECTORY

@@ -5,6 +5,8 @@ sealed interface Platform {
 
     data object Ios : Platform
 
+    data object Web : Platform
+
     sealed interface Desktop : Platform {
         data object MacOs : Desktop
 

@@ -25,7 +25,7 @@ class Migration16To18Spec(
         corrections.forEach { correction -> connection.apply(correction) }
     }
 
-    private fun SQLiteConnection.apply(correction: VerseCountCorrection) {
+    private suspend fun SQLiteConnection.apply(correction: VerseCountCorrection) {
         val bookId = correction.bookId.name
         val count = correction.verses
         val chapterId = "(SELECT id FROM chapters WHERE bookId = '$bookId' AND number = ${correction.chapter})"

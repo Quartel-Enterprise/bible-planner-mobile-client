@@ -12,7 +12,7 @@ plans, progress tracking, and a beautiful, customizable interface.
 
 | Android | iOS | Web | Desktop |
 | -- | -- | -- | -- |
-| [Google Play Store](https://play.google.com/store/apps/details?id=com.quare.bibleplanner&hl=en) | [App Store](https://apps.apple.com/us/app/bible-planner-reading-plans/id6756151777) | Not available yet | Available just for development at the moment |
+| [Google Play Store](https://play.google.com/store/apps/details?id=com.quare.bibleplanner&hl=en) | [App Store](https://apps.apple.com/us/app/bible-planner-reading-plans/id6756151777) | Available just for development at the moment | Available just for development at the moment |
 
 ## 📱 Screenshots
 

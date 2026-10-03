@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.editplanstartdate.presentation.viewmodel
 
+import com.quare.bibleplanner.core.date.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
 import com.quare.bibleplanner.core.date.toTimestampUTC
 import com.quare.bibleplanner.core.model.NavigationCommand
@@ -7,7 +8,6 @@ import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.plan.domain.usecase.SetPlanStartTimeUseCase
 import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
-import com.quare.bibleplanner.feature.editplanstartdate.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiEvent
 import com.quare.bibleplanner.feature.editplanstartdate.presentation.model.EditPlanStartDateUiState
 import kotlinx.coroutines.Dispatchers
