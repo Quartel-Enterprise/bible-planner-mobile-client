@@ -25,6 +25,13 @@ RELEASE_NOTES_DIR = "feature/release_notes/src/commonMain/composeResources/files
 PLAY_CHANGELOG_MAX_CHARS = 500
 APP_STORE_RELEASE_NOTES_MAX_CHARS = 4000
 
+# How often, and how far apart, the App Store screenshot upload is tried again when App Store
+# Connect has not yet finished deleting the screenshot sets it replaces — see
+# retrying_screenshot_set_race.
+SCREENSHOT_SET_RACE_MESSAGE = "Screenshot Set Already Exists".freeze
+SCREENSHOT_SET_RACE_ATTEMPTS = 3
+SCREENSHOT_SET_RACE_WAIT_SECONDS = 30
+
 # Appended on its own line when items had to be dropped to fit the limit.
 TRUNCATION_SUFFIX = {
   "en" => "…and more",
@@ -467,28 +474,30 @@ platform :ios do
     ensure_screenshots_staged(File.join(screenshots_path, "*", "*.png"))
 
     begin
-      upload_to_app_store(
-        api_key: api_key,
-        app_identifier: APP_BUNDLE_ID,
-        # Names the version so deliver creates it when the screenshots arrive ahead of the binary;
-        # unset, deliver falls back to the latest editable version.
-        app_version: ENV["APP_VERSION"],
-        screenshots_path: screenshots_path,
-        # Listing assets only: no binary, no metadata, no review submission.
-        skip_binary_upload: true,
-        skip_metadata: true,
-        skip_screenshots: false,
-        submit_for_review: false,
-        force: true,
-        precheck_include_in_app_purchases: false,
-        overwrite_screenshots: true,
-      )
+      retrying_screenshot_set_race do
+        upload_to_app_store(
+          api_key: api_key,
+          app_identifier: APP_BUNDLE_ID,
+          # Names the version so deliver creates it when the screenshots arrive ahead of the binary;
+          # unset, deliver falls back to the latest editable version.
+          app_version: ENV["APP_VERSION"],
+          screenshots_path: screenshots_path,
+          # Listing assets only: no binary, no metadata, no review submission.
+          skip_binary_upload: true,
+          skip_metadata: true,
+          skip_screenshots: false,
+          submit_for_review: false,
+          force: true,
+          precheck_include_in_app_purchases: false,
+          overwrite_screenshots: true,
+        )
+      end
 
       dedupe_app_store_screenshots
     ensure
       # deliver deletes every existing screenshot before re-uploading (overwrite_screenshots: true),
-      # so a run that fails partway — like the transient "Screenshot Set Already Exists!" race on
-      # Apple's side that prompted this check — can leave a locale with none at all. The workflow
+      # so a run that fails partway — like the "Screenshot Set Already Exists!" race once its
+      # retries run out — can leave a locale with none at all. The workflow
       # hands this to the `submit` lane's job, which then skips submit_for_review instead of having
       # Apple reject the review submission outright with a bare "is not in valid state".
       report_app_store_screenshots_completeness(app_store_listing_locales)
@@ -537,6 +546,29 @@ def app_store_build_uploaded?(version, version_code)
 rescue => e
   UI.error("Could not look build #{version} (#{version_code}) up on App Store Connect, uploading: #{e.message}")
   false
+end
+
+# deliver deletes the version's screenshots and then recreates each locale's screenshot sets, but
+# App Store Connect finishes deleting a set a little after it reports it gone. A set recreated too
+# soon is refused with "Screenshot Set Already Exists!" (2.9.1 and 2.10.0 both lost their release
+# submission to it) and deliver gives up on the whole upload. Waiting and running deliver again
+# recovers: it deletes whatever the failed attempt uploaded and starts over on settled sets. Any
+# other error, or the race outlasting every attempt, is raised as before.
+def retrying_screenshot_set_race
+  attempt = 1
+  begin
+    yield
+  rescue => e
+    raise unless e.message.include?(SCREENSHOT_SET_RACE_MESSAGE) && attempt < SCREENSHOT_SET_RACE_ATTEMPTS
+
+    UI.important(
+      "App Store Connect still holds a deleted screenshot set (attempt #{attempt} of " \
+      "#{SCREENSHOT_SET_RACE_ATTEMPTS}), uploading again in #{SCREENSHOT_SET_RACE_WAIT_SECONDS}s",
+    )
+    sleep(SCREENSHOT_SET_RACE_WAIT_SECONDS)
+    attempt += 1
+    retry
+  end
 end
 
 # App Store Connect publishes a screenshot's checksum asynchronously, and deliver's post-upload check

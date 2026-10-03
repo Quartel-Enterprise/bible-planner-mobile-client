@@ -241,6 +241,11 @@ in the root `build.gradle.kts`; every other generator feeds both.
   screenshot when App Store Connect has not yet published its checksum, so a shelf can end up with
   the same file twice; the iOS lane walks the editable version afterwards and drops every later
   copy. `fastlane ios dedupe_screenshots` runs that pass on its own while a version is editable.
+- **"Screenshot Set Already Exists!" is retried in place.** `deliver` deletes the version's
+  screenshots before it uploads, and App Store Connect can still hold a deleted screenshot set when
+  `deliver` recreates it. The iOS lane waits 30 seconds and runs the upload again, up to three
+  attempts. If the race outlasts them, the locales left empty keep `ios-submit` from submitting
+  the build, and re-running `ios-screenshots-upload` submits it once the upload goes through.
 
 The Play service account needs the **Manage store presence** permission for listing uploads;
 release permissions alone let AAB uploads through while screenshot validation fails with "the
