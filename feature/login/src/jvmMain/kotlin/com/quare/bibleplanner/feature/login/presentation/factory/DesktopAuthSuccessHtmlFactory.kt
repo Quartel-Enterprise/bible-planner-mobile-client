@@ -33,6 +33,7 @@ internal class DesktopAuthSuccessHtmlFactory(
                 appendLine("}")
             }
         }
+        // Why: base CSS first so the theme rules win in the cascade.
         val styles = "$baseCss\n$themeCss"
 
         val strings = languageToDesktopAuthSuccessStringsMapper.map(language)

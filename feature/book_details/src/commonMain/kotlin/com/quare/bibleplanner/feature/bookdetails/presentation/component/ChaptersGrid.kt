@@ -85,6 +85,7 @@ fun ChaptersGrid(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            // Why: 50dp fits six chapters per row with the spacing.
             val itemWidth = 50.dp
 
             chapters.forEach { chapter ->

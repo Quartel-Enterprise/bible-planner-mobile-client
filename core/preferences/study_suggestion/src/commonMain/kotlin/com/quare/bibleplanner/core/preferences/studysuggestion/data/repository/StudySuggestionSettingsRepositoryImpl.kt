@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+// Why: DataStore is the render source; with the sync flag on, user writes are mirrored into
+// SyncedPreferenceDao for the sync engine. applySynced* skip the mirror to avoid an echo loop.
 internal class StudySuggestionSettingsRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
     private val syncedPreferenceDao: SyncedPreferenceDao,

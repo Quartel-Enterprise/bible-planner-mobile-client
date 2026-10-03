@@ -19,6 +19,8 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtProperty
 
+// Why: works off reference sites, which excludes the documented exceptions without type
+// resolution: top-level @Composable reads, constructor defaults and class-less files.
 class TopLevelValOwnershipRule : BiblePlannerRule("top-level-val-ownership") {
     private val classifierElementTypes = setOf(CLASS, OBJECT_DECLARATION)
 

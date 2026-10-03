@@ -13,6 +13,9 @@ class DownloadBooksInParallelUseCase(
 ) {
     private val bookSemaphore = Semaphore(permits = MAX_CONCURRENT_BOOKS)
 
+    // Why: limits open books, not requests (chapters have a tighter limit); several open
+    // books hide each book's write pause, measured ~2x faster than half this number.
+    // Opening all 66 would only lose the priority order.
     suspend operator fun invoke(versionId: String): Result<Unit> = suspendRunCatching {
         val results = supervisorScope {
             getPrioritizedBookIds()

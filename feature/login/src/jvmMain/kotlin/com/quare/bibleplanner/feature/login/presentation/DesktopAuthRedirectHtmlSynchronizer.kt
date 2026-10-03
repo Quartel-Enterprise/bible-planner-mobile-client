@@ -28,6 +28,8 @@ internal class DesktopAuthRedirectHtmlSynchronizer(
                         }
                 }.launchIn(this)
 
+            // Why: the first render must be installed before block() opens the OAuth tab, or a fast callback
+            // races the watcher and shows the default supabase-kt page.
             val firstOutcome = firstResult.await()
 
             try {

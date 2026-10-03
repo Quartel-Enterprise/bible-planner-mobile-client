@@ -3,6 +3,8 @@ package com.quare.bibleplanner.feature.logout.domain.usecase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+// Why: pending changes are flushed while still authenticated; a failed flush aborts logout so
+// unsynced changes are not lost, unless the user chose to sign out anyway (shouldFlushPending).
 class LogoutUseCase(
     private val flushPendingChanges: FlushPendingChangesUseCase,
     private val endSession: EndSession,

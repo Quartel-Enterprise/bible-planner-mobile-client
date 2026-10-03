@@ -6,6 +6,8 @@ import com.quare.bibleplanner.feature.login.presentation.factory.DesktopAuthSucc
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
+// Why: rendering errors (e.g. a missing classpath resource) are emitted as Result.failure so the
+// synchronizer reports them instead of crashing the OAuth flow.
 internal class GetDesktopAuthSuccessHtmlFlow(
     private val getThemeOptionFlow: GetThemeOptionFlow,
     private val getAppLanguageFlow: GetAppLanguageFlow,

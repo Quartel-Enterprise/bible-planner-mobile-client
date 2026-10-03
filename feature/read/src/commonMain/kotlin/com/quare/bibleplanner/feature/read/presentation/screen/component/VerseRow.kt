@@ -73,6 +73,8 @@ internal fun VerseRow(
         fontFamily = settings.font.toFontFamily(),
         fontSize = fontSize,
         lineHeight = fontSize * LINE_HEIGHT_RATIO,
+        // Why: Compose trims leading above the first and below the last line by default, so
+        // verses sat closer than their own lines; Trim.None keeps one even rhythm.
         lineHeightStyle = LineHeightStyle(
             alignment = LineHeightStyle.Alignment.Proportional,
             trim = LineHeightStyle.Trim.None,
@@ -93,6 +95,8 @@ internal fun VerseRow(
             },
     ) {
         verse.heading?.let { heading ->
+            // Why: the heading titles the section, so it stays out of the tap target (it would pick
+            // an arbitrary verse) and is selectable so the title can be copied.
             SelectionContainer {
                 Text(
                     modifier = Modifier.padding(top = 18.dp, bottom = 2.dp),
@@ -105,6 +109,8 @@ internal fun VerseRow(
                 )
             }
         }
+        // Why: align by baseline, not top: the 1.75 line height puts the first baseline well
+        // below the box top, and a fixed offset would drift with text size.
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
@@ -165,6 +171,8 @@ private fun DrawScope.drawSelectionUnderline(
     }
 }
 
+// Why: a span background hugs the words on every line like a marker, unlike a
+// background on the whole Text.
 @Composable
 private fun String.withHighlight(highlightColor: HighlightColor?): AnnotatedString = buildAnnotatedString {
     val background = highlightColor?.toBackgroundColor()

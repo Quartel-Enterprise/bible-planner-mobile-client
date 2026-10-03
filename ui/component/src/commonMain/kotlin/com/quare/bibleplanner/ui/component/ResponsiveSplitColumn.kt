@@ -18,6 +18,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+// Why: both columns are full-width LazyColumns so vertical scroll also works in the empty side
+// margins around the centered content.
 @Composable
 fun ResponsiveSplitColumn(
     modifier: Modifier = Modifier,

@@ -3,6 +3,8 @@ package com.quare.bibleplanner.core.plan.data.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+// Why: the day's read state is deliberately not stored here; it derives from chapter/verse read
+// state on each device.
 @Serializable
 internal data class DayMetaDto(
     @SerialName("user_id") val userId: String,

@@ -7,6 +7,7 @@ import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
+// Why: the day's read state is not synced here; it derives from chapter/verse read state.
 internal class DayMetaLocalStore(
     private val dayDao: DayDao,
     private val dayMetaMapper: DayMetaMapper,

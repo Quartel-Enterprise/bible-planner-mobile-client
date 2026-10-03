@@ -135,6 +135,8 @@ private fun CloseableContent(
     }
 }
 
+// Why: a centred title shares its row with the close button, so it uses the smaller size and
+// is inset to clear it; left-aligned titles keep the display size.
 @Composable
 private fun DialogHeader(
     title: String,

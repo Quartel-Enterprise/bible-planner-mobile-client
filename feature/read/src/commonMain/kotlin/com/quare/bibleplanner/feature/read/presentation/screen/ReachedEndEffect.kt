@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.map
 
 private const val PREFETCH_ITEM_COUNT = 6
 
+// Why: asking one screen early lets the next chapter arrive before the reader gets there,
+// so vertical reading never waits at a chapter end.
 @Composable
 internal fun ReachedEndEffect(
     listState: LazyListState,

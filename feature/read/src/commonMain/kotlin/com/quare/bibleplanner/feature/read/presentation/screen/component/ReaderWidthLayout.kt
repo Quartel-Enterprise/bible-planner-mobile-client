@@ -8,6 +8,8 @@ import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 
 private val wideReaderMinWidth = 520.dp
 
+// Why: with the chapter study beside it the reader gets only part of a wide window; below
+// wideReaderMinWidth (what the wide header needs) it uses the phone layout.
 @Composable
 internal fun ReaderWidthLayout(content: @Composable () -> Unit) {
     BoxWithConstraints {

@@ -29,6 +29,7 @@ abstract class SyncedPreferenceDao {
         updatedAt: Long,
     )
 
+    // Why: the updatedAt guard keeps a change made while the push was in flight pending.
     @Query("UPDATE synced_preferences SET pendingSync = 0 WHERE key = :key AND updatedAt = :syncedUpdatedAt")
     abstract suspend fun markSynced(
         key: String,
@@ -58,6 +59,8 @@ abstract class SyncedPreferenceDao {
         }
     }
 
+    // Why: updatedAt = 0 marks the row provisional, so any remote value wins over it and
+    // adoptProvisional later promotes rows still at 0 to pending.
     @Query(
         "INSERT OR IGNORE INTO synced_preferences (key, value, updatedAt, pendingSync) " +
             "VALUES (:key, :value, 0, 0)",

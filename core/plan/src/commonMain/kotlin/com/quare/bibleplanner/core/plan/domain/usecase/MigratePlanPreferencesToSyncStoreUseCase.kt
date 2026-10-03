@@ -5,6 +5,9 @@ import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
 import com.quare.bibleplanner.core.plan.data.sync.PlanPreferenceKeys
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 
+// Why: runs at startup regardless of auth so logged-out users keep their data; values
+// are written pending so they reach the backend after login. Idempotent via a
+// persisted flag, and legacy keys are dropped afterwards.
 class MigratePlanPreferencesToSyncStoreUseCase(
     private val planLocalDataSource: PlanLocalDataSource,
     private val syncedPreferenceDao: SyncedPreferenceDao,

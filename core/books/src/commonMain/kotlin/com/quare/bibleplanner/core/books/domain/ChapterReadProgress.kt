@@ -2,6 +2,8 @@ package com.quare.bibleplanner.core.books.domain
 
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 
+// Why: a chapter flagged read counts as fully read, so progress matches the read
+// indicators even when individual verse flags are incomplete.
 val BookChapterModel.readVersesCount: Int
     get() = if (isRead) verses.size else verses.count { it.isRead }
 

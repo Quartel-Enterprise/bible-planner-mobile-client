@@ -4,6 +4,8 @@ import com.quare.bibleplanner.core.provider.language.domain.repository.AppLangua
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveLanguageSync
 import kotlinx.coroutines.flow.combine
 
+// Why: written through applySyncedLanguage (DataStore-only) so an inbound value is not re-pushed;
+// ObserveAppLocaleUseCase then re-applies the OS locale from the language flow.
 internal class ObserveLanguageSyncUseCase(
     private val repository: AppLanguageRepository,
 ) : ObserveLanguageSync {

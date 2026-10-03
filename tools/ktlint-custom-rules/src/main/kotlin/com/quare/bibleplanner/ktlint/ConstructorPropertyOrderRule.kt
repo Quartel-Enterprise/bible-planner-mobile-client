@@ -5,6 +5,8 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.CLASS
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 
+// Why: not autocorrected because moving a parameter changes the meaning of every
+// positional call.
 class ConstructorPropertyOrderRule : BiblePlannerRule("constructor-property-order") {
     override fun beforeVisitChildNodes(
         node: ASTNode,

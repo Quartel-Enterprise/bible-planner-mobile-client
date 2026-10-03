@@ -28,6 +28,8 @@ internal class UserDeviceLocalStore(
         userDeviceDao.markNameSynced(id = entity.id, syncedUpdatedAt = entity.updatedAt)
     }
 
+    // Why: server-authoritative fields always apply; the name is Last-Write-Wins (only when the local
+    // row is not pending and strictly older); an unseen row is inserted as-is.
     suspend fun applyRemote(dto: UserDeviceDto) {
         val entity = dtoToEntityMapper.map(dto)
         if (userDeviceDao.getById(entity.id) == null) {

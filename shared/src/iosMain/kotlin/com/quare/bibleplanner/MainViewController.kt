@@ -38,6 +38,8 @@ import kotlin.experimental.ExperimentalNativeApi
 
 private var isInitialized = false
 
+// Why: Koin starts before any UI so the background URLSession handler can reach the graph when
+// the app launches only for background events; repeated calls are ignored.
 @OptIn(ExperimentalNativeApi::class)
 fun initializeKoinForIos(
     remoteConfigService: RemoteConfigDataSource,
@@ -75,6 +77,8 @@ fun initializeKoinForIos(
                 },
             ),
         )
+        // Why: force-create the facade so setBridge runs now; on a background-only URLSession relaunch
+        // there is no UI to request it from Koin.
         KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
         configureRevenueCat(isDebug = Platform.isDebugBinary)
         crashReporter.configure(isDebug = Platform.isDebugBinary)
@@ -119,6 +123,8 @@ fun MainViewController(
     )
 }
 
+// Why: called from Swift onOpenURL for the Live Activity Pause/Resume/Cancel buttons; the action
+// strings must match the deep links the widget sends.
 fun handleDownloadAction(
     action: String,
     versionId: String,

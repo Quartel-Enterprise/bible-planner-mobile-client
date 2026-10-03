@@ -29,6 +29,6 @@ class BiblePlannerRuleSetProvider : RuleSetProviderV3(RuleSetId(RULE_SET_ID)) {
         RuleProvider { TwoBranchWhenRule() },
         RuleProvider { CompanionObjectDurationRule() },
         RuleProvider { SuspendRunCatchingRule() },
-        RuleProvider { NoCommentsRule() },
+        RuleProvider { CommentsSayWhyRule() },
     )
 }

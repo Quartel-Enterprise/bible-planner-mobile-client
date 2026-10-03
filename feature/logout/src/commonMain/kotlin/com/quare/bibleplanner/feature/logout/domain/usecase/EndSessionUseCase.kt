@@ -7,6 +7,10 @@ import com.quare.bibleplanner.core.utils.suspendRunCatching
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.realtime.Realtime
 
+// Why: unregister and leave realtime while still authenticated (others see the device leave
+// live; phx_leave isn't sent during auth teardown) and disconnect so a stale pooled socket can't
+// stall the next login. signOut stops sync re-pulls; local data is cleared only after it
+// succeeds, so an offline failure keeps the data and the session.
 class EndSessionUseCase(
     private val auth: Auth,
     private val realtime: Realtime,

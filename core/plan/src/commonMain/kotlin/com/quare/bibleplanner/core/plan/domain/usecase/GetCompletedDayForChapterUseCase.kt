@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.plan.domain.findCompletedDayFor
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import kotlinx.coroutines.flow.first
 
+// Why: only the selected plan is considered, since that is the plan the reader follows.
 class GetCompletedDayForChapterUseCase(
     private val getPlansByWeekUseCase: GetPlansByWeekUseCase,
     private val planRepository: PlanRepository,

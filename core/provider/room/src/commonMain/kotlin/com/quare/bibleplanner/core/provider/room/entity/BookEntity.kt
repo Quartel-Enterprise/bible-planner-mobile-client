@@ -6,6 +6,7 @@ import androidx.room3.PrimaryKey
 
 @Entity(tableName = "books")
 data class BookEntity(
+    // Why: stores BookId.name, so renaming a BookId entry breaks rows already persisted and synced.
     @PrimaryKey
     val id: String,
     @ColumnInfo(defaultValue = "0") val isRead: Boolean,

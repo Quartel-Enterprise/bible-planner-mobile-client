@@ -89,6 +89,7 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
         return parameter.name
     }
 
+    // Why: a method reference cannot carry type arguments or a trailing lambda.
     private fun KtLambdaExpression.findSingleForwardingCall(parameterName: String): KtCallExpression? {
         val call = functionLiteral.bodyExpression?.statements?.singleOrNull() as? KtCallExpression ?: return null
         if (call.typeArgumentList != null) return null

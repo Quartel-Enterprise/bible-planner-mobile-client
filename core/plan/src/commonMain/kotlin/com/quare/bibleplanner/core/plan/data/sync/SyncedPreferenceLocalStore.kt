@@ -7,6 +7,8 @@ import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
+// Why: the one-time DataStore to Room migration runs at startup, not here, so logged-out
+// existing users keep their data before the session-scoped sync starts.
 internal class SyncedPreferenceLocalStore(
     private val dao: SyncedPreferenceDao,
     private val mapper: UserPreferenceMapper,

@@ -8,6 +8,8 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
+// Why: a remote chapter read is cascaded to its verses because the chapter screen derives its
+// checkmark from verses.all { isRead }; this keeps devices consistent without per-verse sync.
 internal class ChapterReadLocalStore(
     private val chapterDao: ChapterDao,
     private val verseDao: VerseDao,

@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 
+// Why: started from a non-Activity context, so it needs FLAG_ACTIVITY_NEW_TASK; runCatching
+// because the add-account screen is unavailable on some devices.
 internal class AndroidAddGoogleAccountLauncher(
     private val context: Context,
 ) : AddGoogleAccountLauncher {

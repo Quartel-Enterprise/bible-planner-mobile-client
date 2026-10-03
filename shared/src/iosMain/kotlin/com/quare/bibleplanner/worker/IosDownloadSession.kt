@@ -24,6 +24,7 @@ interface IosDownloadSession {
 
     fun endLiveActivity(versionId: String)
 
+    // Why: must be called only after every addDownloadTask call for the version has been made.
     fun notifyAllTasksRegistered(
         versionId: String,
         totalTaskCount: Int,

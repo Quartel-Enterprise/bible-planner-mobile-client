@@ -37,6 +37,7 @@ class WeekPlanDtoToModelMapper(
     private fun mapBook(bookDto: BookPlanDto): PassageModel? {
         val bookId = mapBookNameToBookId(bookDto.name) ?: return null
 
+        // Why: null chapters means the whole book (e.g. single-chapter Obadiah).
         val chaptersDto = bookDto.chapters ?: return PassageModel(
             bookId = bookId,
             chapters = emptyList(),

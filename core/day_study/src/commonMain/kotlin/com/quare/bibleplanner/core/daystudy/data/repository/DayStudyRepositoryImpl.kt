@@ -101,6 +101,8 @@ internal class DayStudyRepositoryImpl(
         return status
     }
 
+    // Why: a stale server cache token means the local copy is outdated; dropping it makes the next
+    // getDayStudy refetch, which is free because the unlock ledger is untouched.
     private suspend fun invalidateStaleLocalCache(
         cacheKey: String,
         currentToken: String,

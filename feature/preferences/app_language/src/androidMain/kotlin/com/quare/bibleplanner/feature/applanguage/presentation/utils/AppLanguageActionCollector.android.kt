@@ -17,6 +17,8 @@ actual fun rememberApplyLanguage(): (Language) -> Unit {
     }
 }
 
+// Why: guarded against the stored value so re-applying the active locale (startup or a
+// sync echo) does not cause an activity recreate loop.
 internal fun Context.applyAppLanguageLocale(language: Language) {
     val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     val currentTag = prefs.getString(KEY_APP_LANGUAGE, null)

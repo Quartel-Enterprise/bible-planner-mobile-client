@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.verseannotations.data.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+// Why: the passage is payload, not identity, so editing a note's verses keeps the same id.
 @Serializable
 internal data class VerseNoteDto(
     @SerialName("user_id") val userId: String,

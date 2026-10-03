@@ -32,6 +32,9 @@ class OfflineFirstSynchronizer<E, D>(
         localStore.seed(now)
     }
 
+    // Why: gated on OS connectivity, not the socket, since the upsert is plain REST. The
+    // session is re-read every attempt: without it the client falls back to the anon key,
+    // fails RLS and the backoff would retry forever.
     override suspend fun runPushLoop() {
         combine(
             localStore.observePending(),

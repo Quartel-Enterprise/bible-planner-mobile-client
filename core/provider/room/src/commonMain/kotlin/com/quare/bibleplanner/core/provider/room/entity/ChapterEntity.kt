@@ -24,6 +24,7 @@ data class ChapterEntity(
     val number: Int,
     val bookId: String,
     val isRead: Boolean,
+    // Why: last-write-wins by readUpdatedAt; the pending flag drives the push loop.
     @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long?,
     @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean,
 )

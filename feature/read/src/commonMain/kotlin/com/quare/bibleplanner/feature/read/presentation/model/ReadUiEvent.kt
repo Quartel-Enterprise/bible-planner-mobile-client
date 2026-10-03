@@ -23,6 +23,8 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
+    // Why: carries the chapter because vertical reading keeps two chapters and two read pills
+    // on the same screen.
     data class ToggleReadStatus(
         val bookId: BookId,
         val chapterNumber: Int,
@@ -98,6 +100,7 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
+    // Why: NotTracked because the banner tracks its own dismissal.
     data object OnDayCompletionBannerDismissed : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }

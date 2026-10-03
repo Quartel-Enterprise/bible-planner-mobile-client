@@ -7,6 +7,8 @@ import com.quare.bibleplanner.feature.read.domain.usecase.ObserveReaderSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+// Why: clamps on the way out so a size stored by an older build, or under older slider bounds,
+// can never render the chapter unreadable.
 internal class ObserveReaderSettingsUseCase(
     private val readerSettingsRepository: ReaderSettingsRepository,
 ) : ObserveReaderSettings {

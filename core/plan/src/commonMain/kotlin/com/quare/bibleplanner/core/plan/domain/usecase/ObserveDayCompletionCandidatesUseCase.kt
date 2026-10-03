@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 
+// Why: precomputed so the celebration opens instantly on tap; only the scheduled books are
+// observed because re-reading whole-Bible read state on every change is far too heavy.
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveDayCompletionCandidatesUseCase(
     private val planRepository: PlanRepository,

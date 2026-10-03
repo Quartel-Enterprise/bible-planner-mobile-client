@@ -437,6 +437,8 @@ private fun ChatScrollEffect(
 ) {
     var hasLanded by rememberSaveable { mutableStateOf(false) }
     var isFollowing by remember { mutableStateOf(true) }
+    // Why: driven by the thread itself because the view model's scroll request is a one-shot event
+    // the screen is not yet collecting when a thread opens.
     LaunchedEffect(hasThread) {
         if (!hasThread || hasLanded) return@LaunchedEffect
         snapshotFlow { listState.layoutInfo.totalItemsCount }.first { count -> count > 0 }
@@ -444,6 +446,8 @@ private fun ChatScrollEffect(
         listState.settleAtEnd()
         hasLanded = true
     }
+    // Why: a drag releases the end and returning to it takes hold again; streaming only follows while
+    // held, so an answer being written never drags the list from under someone reading above.
     LaunchedEffect(listState) {
         listState.interactionSource.interactions.collect { interaction ->
             if (interaction is DragInteraction.Start) isFollowing = false
@@ -471,6 +475,8 @@ private fun ChatScrollEffect(
     }
 }
 
+// Why: a manual or newer scroll cancels the one in flight; that cancellation must not reach the
+// collector or it would end for the screen's life and no later answer would reach the end.
 private suspend fun LazyListState.ignoringInterruption(scroll: suspend LazyListState.() -> Unit) {
     try {
         scroll()
@@ -480,6 +486,8 @@ private suspend fun LazyListState.ignoringInterruption(scroll: suspend LazyListS
     }
 }
 
+// Why: scrolling to the last item leaves its start at the top, which for an answer taller than
+// the screen is far from the end, so the remaining overshoot is scrolled too.
 private suspend fun LazyListState.animateToEnd() {
     val lastIndex = layoutInfo.totalItemsCount - 1
     if (lastIndex < 0) return

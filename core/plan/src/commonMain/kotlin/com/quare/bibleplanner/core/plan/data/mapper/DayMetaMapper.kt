@@ -5,6 +5,8 @@ import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import kotlin.time.Instant
 
 internal class DayMetaMapper {
+    // Why: the 0L fallback never applies; only pending rows are pushed and they always carry
+    // metaUpdatedAt.
     fun toDto(
         userId: String,
         entity: DayEntity,

@@ -47,6 +47,8 @@ private val dismissButtonSize = 20.dp
 private val dismissIconSize = 12.dp
 private val dismissInset = 8.dp
 
+// Why: covers the bars too so the band is the one lit thing; only the grip and close button
+// take taps so verses under the dimmed area stay reachable.
 @Composable
 internal fun ReadingRulerOverlay(
     lineHeight: Dp,
@@ -105,6 +107,7 @@ private fun RulerBandBox(
     }
 }
 
+// Why: filled rather than bare so it never reads as part of the verse it sits over.
 @Composable
 private fun DismissButton(
     onDismiss: () -> Unit,

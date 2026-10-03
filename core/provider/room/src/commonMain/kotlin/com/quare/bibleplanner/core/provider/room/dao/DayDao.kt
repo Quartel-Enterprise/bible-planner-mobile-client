@@ -134,11 +134,15 @@ interface DayDao {
     )
     suspend fun markLegacyDayMetaPending(now: Long)
 
+    // Why: the logout wipe must not schedule a push, or it would propagate to the account's
+    // remote rows.
     @Query(
         "UPDATE days SET isRead = 0, readTimestamp = NULL, notes = NULL, metaUpdatedAt = NULL, isMetaPendingSync = 0",
     )
     suspend fun clearAllDayMetaSync()
 
+    // Why: keeps notes, and marks pending only days that already had a remote row
+    // (metaUpdatedAt not null) so the deletion propagates to other devices.
     @Query(
         "UPDATE days SET isRead = 0, readTimestamp = NULL, " +
             "isMetaPendingSync = CASE WHEN metaUpdatedAt IS NOT NULL THEN 1 ELSE isMetaPendingSync END, " +

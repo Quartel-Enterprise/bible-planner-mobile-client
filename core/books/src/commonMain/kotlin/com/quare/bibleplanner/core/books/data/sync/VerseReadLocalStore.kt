@@ -7,6 +7,8 @@ import com.quare.bibleplanner.core.provider.room.relation.PendingVerseRead
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
+// Why: only verses read as part of a verse range carry sync metadata; whole-chapter
+// reads sync at chapter level through ChapterReadLocalStore.
 internal class VerseReadLocalStore(
     private val verseDao: VerseDao,
     private val verseReadMapper: VerseReadMapper,

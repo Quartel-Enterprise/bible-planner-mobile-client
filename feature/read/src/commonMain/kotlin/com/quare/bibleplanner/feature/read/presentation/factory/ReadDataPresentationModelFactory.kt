@@ -144,8 +144,12 @@ internal class ReadDataPresentationModelFactory(
             return@flow
         }
         emitAll(
+            // Why: the version leads because annotations are scoped to it; switching version must
+            // resubscribe them instead of showing the previous version's annotations.
             getSelectedVersionIdFlow().flatMapLatest { versionId ->
                 combine(
+                    // Why: Room re-runs the query on any verse-table write, so a version download re-emits
+                    // identical rows thousands of times; dropping them avoids rebuilding every verse on main.
                     getVersesWithTextsByChapterIdFlow(chapterId).distinctUntilChanged(),
                     observeChapterAnnotations(
                         ChapterRef(

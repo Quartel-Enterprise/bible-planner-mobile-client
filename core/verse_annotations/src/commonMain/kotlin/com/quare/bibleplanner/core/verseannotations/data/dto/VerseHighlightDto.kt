@@ -3,6 +3,8 @@ package com.quare.bibleplanner.core.verseannotations.data.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+// Why: a null color is the tombstone of a removed highlight; the sync engine never deletes rows,
+// so the removal travels as a payload.
 @Serializable
 internal data class VerseHighlightDto(
     @SerialName("user_id") val userId: String,

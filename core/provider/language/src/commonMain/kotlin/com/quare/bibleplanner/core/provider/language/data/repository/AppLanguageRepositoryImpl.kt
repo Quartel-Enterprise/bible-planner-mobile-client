@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+// Why: DataStore is the render source; user writes are mirrored to SyncedPreferenceDao when sync
+// is on, but applySyncedLanguage skips the mirror to avoid an echo loop.
 internal class AppLanguageRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
     private val mapper: AppLanguageMapper,

@@ -119,6 +119,8 @@ class DayReadingCompleteViewModel(
         }
     }
 
+    // Why: the celebration shows as soon as the day is known; only the CTA waits for the network
+    // quota, so the earned moment is never traded for a spinner.
     private fun loadDay() {
         viewModelScope.launch {
             val day = getScheduledDay(
@@ -160,6 +162,8 @@ class DayReadingCompleteViewModel(
         }
     }
 
+    // Why: a prefetched quota is a head start, not the truth, so the fresh one always lands on top;
+    // tracking fires once, on what the reader actually saw first.
     private suspend fun showCta(
         quota: DayStudyQuotaModel,
         isPro: Boolean,

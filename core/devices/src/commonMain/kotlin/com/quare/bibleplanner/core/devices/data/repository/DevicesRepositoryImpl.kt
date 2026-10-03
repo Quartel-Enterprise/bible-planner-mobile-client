@@ -38,6 +38,7 @@ internal class DevicesRepositoryImpl(
         )
     }
 
+    // Why: offline-first; the rename is only written locally as pending and the sync engine pushes it.
     override suspend fun renameDevice(
         deviceRowId: String,
         name: String,

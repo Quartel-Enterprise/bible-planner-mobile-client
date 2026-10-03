@@ -34,5 +34,7 @@ class WhenEntrySingleStatementBracesRule : BiblePlannerRule("when-entry-single-s
         )
     }
 
+    // Why: a lambda literal as the sole statement is the block's return value; collapsing the
+    // braces would execute it eagerly instead of returning a deferred lambda.
     private fun ASTNode.isReturnedLambda(): Boolean = elementType == LAMBDA_EXPRESSION
 }

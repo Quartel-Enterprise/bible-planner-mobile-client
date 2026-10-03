@@ -5,6 +5,8 @@ import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotati
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 
 internal class ChapterVersesUiModelMapper {
+    // Why: the index has a row for every verse any version uses (ESV and NIV lack Matthew 17:21), so
+    // a missing text is skipped; an empty result means the chapter still has to be downloaded.
     fun map(
         versesWithTexts: List<VerseWithTexts>,
         versionId: String,

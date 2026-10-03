@@ -12,6 +12,8 @@ fun <T> MutableStateFlow<T>.updateValue(value: T) {
     update { value }
 }
 
+// Why: unlike sample, the first value is not withheld for a window, so a throttled stream
+// still paints its initial state right away.
 fun <T> Flow<T>.throttleLatest(window: Duration): Flow<T> = conflate().transform { value ->
     emit(value)
     delay(window)

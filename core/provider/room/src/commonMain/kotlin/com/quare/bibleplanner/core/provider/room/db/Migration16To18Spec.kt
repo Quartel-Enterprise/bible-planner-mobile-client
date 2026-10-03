@@ -4,6 +4,9 @@ import androidx.room3.migration.AutoMigrationSpec
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
+// Why: bundled books_by_chapter verse counts were wrong (Genesis 34-45, tradition splits such as
+// Deut 12-13); missing rows silently dropped downloaded verses, so a chapter that gains rows
+// loses its texts and its DONE versions go back to IN_PROGRESS (as Migration8To9Spec) to refetch.
 class Migration16To18Spec(
     private val corrections: List<VerseCountCorrection> = VERSE_COUNT_CORRECTIONS,
 ) : AutoMigrationSpec {
@@ -16,6 +19,8 @@ class Migration16To18Spec(
         val count = correction.verses
         val chapterId = "(SELECT id FROM chapters WHERE bookId = '$bookId' AND number = ${correction.chapter})"
         val chapterVerseIds = "(SELECT id FROM verses WHERE chapterId = $chapterId)"
+        // Why: evaluated before any row changes; once the missing rows exist the chapter no longer
+        // lacks them.
         val lacksRows = "(SELECT COUNT(*) FROM verses WHERE chapterId = $chapterId) < $count"
 
         execSQL(

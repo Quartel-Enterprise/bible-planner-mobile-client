@@ -132,6 +132,7 @@ internal class DayUiStateFlowFactory(
 
         passages.forEach { passage ->
             if (passage.chapters.isEmpty()) {
+                // Why: an empty chapter list means the whole book, counted as a single item.
                 totalCount++
                 if (passage.isRead) {
                     completedCount++

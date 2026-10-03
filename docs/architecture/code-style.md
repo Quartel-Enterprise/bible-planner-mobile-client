@@ -646,31 +646,46 @@ Not held to the list:
 Enforced by the custom ktlint rule `bible-planner-style:composable-naming-suffix`. A genuinely new kind of UI gets
 a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — not a one-off exception.
 
-## No Comments in Production Code
+## Comments Say Why, Never What
 
-Production Kotlin carries no comments: no `//`, no `/* */` and no KDoc `/** */`. A name that needs a comment to be
-understood is the wrong name; a constraint worth knowing belongs in a name, a type, a test or the docs under
-`docs/`, where it cannot silently drift from the code next to it. This holds even in a package whose neighbours
-used to be documented.
+Production Kotlin explains **what** it does through names, never through comments: no narration, no section
+labels, no KDoc (`/** */`) and no block comments (`/* */`). A name that needs a comment to be understood is the wrong
+name.
+
+What a name cannot carry is **why** the code is the way it is, and losing that is how a "simplification"
+reintroduces a bug. That knowledge stays, as a `// Why:` comment right above the code it explains:
+
+- a workaround for a platform or library bug, with its issue id or link, so it can go once the fix ships;
+- a rule or invariant the code relies on (a sync that is last-write-wins, an ordering, a lifecycle constraint);
+- a choice that looks wrong but is deliberate;
+- a constraint that lives outside the repository (a dashboard setting, a store policy).
 
 ```kotlin
 // Correct
+// Why: CMP-10789 crashes on unattached insets when Nav3 moves a screen between scenes.
+val insets = WindowInsets.safeDrawing.asStable()
+
 private val maxRetriesBeforeGivingUp = 3
 
-// Wrong
+// Wrong — narrates what a name could say
 private val retries = 3 // after this many attempts the sync gives up
 ```
 
-Comments stay welcome where they are structure rather than narration:
+A `// Why:` runs on over plain `//` lines directly below it. When the reason is a behaviour, a test that guarantees
+it is better still: name the test after the rule, and keep the comment to the one line a reader of the production
+code needs.
+
+Comments stay welcome everywhere they are structure rather than narration:
 
 - **Tests** — every test source set (`commonTest`, `jvmTest`, `androidHostTest`, `androidDeviceTest`, `iosTest`,
   `iosSimulatorArm64Test`, `test`) and the `:testing` fake modules, starting with the `// Given` / `// When` /
   `// Then` markers.
 - **The build** — Gradle scripts (`*.kts`), `build-logic` and the version catalog.
 
-Enforced by the custom ktlint rule `bible-planner-style:no-comments`; the exemptions above are sections of
-`.editorconfig` that disable it. It is not autocorrected: deleting a comment is easy, deciding whether what it said
-should become a name or a test is not.
+Enforced by the custom ktlint rule `bible-planner-style:comments-say-why`, which accepts only `// Why:` comments and
+their continuation lines; the exemptions above are sections of `.editorconfig` that disable it. The rule checks the
+form, not the content: whether a `// Why:` really explains a reason is for the review. It is not autocorrected:
+deciding whether a comment should become a name, a test or a `// Why:` is a human call.
 
 ## Two Branches Are an `if`
 

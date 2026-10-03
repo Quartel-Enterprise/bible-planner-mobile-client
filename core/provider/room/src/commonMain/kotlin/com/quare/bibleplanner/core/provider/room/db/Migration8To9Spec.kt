@@ -5,6 +5,8 @@ import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import com.quare.bibleplanner.core.model.book.BookId
 
+// Why: JHN wrongly shared the "Jo" abbreviation with JOB, so John texts came from Job; versions
+// go back to IN_PROGRESS and the texts are deleted so the resumed download refetches John.
 class Migration8To9Spec : AutoMigrationSpec {
     override suspend fun onPostMigrate(connection: SQLiteConnection) {
         connection.execSQL(

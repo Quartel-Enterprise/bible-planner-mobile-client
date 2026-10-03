@@ -123,6 +123,8 @@ internal fun ReadNarrowScreen(
                 )
             },
             bottomBar = {
+                // Why: vertical reading has no single chapter to act on and each chapter ends with its
+                // own read pill, so the bar would name only the route's start chapter.
                 if (!state.settings.isVerticalReadingEnabled) {
                     ReadBottomBar(
                         modifier = Modifier.onSizeChanged { size -> bottomOverlayHeightPx = size.height.toFloat() },
@@ -135,6 +137,8 @@ internal fun ReadNarrowScreen(
             contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
         ) { paddingValues ->
             contentTopOffset = paddingValues.calculateTopPadding()
+            // Why: scaffold padding shrinks to zero as the bars auto-hide; consuming it and
+            // re-applying the remaining system-bar insets keeps text clear without double padding.
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -187,6 +191,8 @@ internal fun ReadNarrowScreen(
                 }
             }
         }
+        // Why: drawn over the whole screen, not just the text, so the bars dim too and the
+        // band is the only lit area.
         if (state.settings.isRulerEnabled) {
             ReadingRulerOverlay(
                 lineHeight = (state.settings.fontSizeSp * LINE_HEIGHT_RATIO).dp,

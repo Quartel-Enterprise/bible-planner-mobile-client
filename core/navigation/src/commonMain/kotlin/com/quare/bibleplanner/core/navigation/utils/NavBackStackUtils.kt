@@ -19,6 +19,7 @@ internal fun rememberDisplayBackStack(
     isWide: Boolean,
     backStack: MutableList<NavKey>,
 ): List<NavKey> {
+    // Why: saved because rotation recreates the activity and the new one must know it was wide.
     var wasWide by rememberSaveable { mutableStateOf(isWide) }
     val isCollapsingCompanion = !isWide && wasWide && backStack.hasStudyCompanionOnTop()
     val topRoute = backStack.lastOrNull()

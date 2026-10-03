@@ -6,6 +6,8 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
 class ConvertTimestampToDatePickerInitialDateUseCase {
+    // Why: the DatePicker expects a UTC timestamp, so the date is snapped to midnight in the
+    // local timezone to make the picker show the correct local date.
     operator fun invoke(timestamp: Long): Long {
         val localTimeZone = TimeZone.currentSystemDefault()
 

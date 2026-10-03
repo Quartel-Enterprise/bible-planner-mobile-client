@@ -7,6 +7,7 @@ import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
 sealed interface ReaderAppearanceUiEvent : UiEvent {
+    // Why: fired continuously while the slider is dragged, so only the committed value is tracked.
     data class OnFontSizeChange(
         val fontSizeSp: Float,
     ) : ReaderAppearanceUiEvent {

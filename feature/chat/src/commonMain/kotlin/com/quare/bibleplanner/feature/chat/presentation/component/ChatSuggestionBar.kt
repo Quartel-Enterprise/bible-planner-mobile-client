@@ -126,6 +126,8 @@ internal fun ChatSuggestionBar(
     }
 }
 
+// Why: the thumb uses the average item height; rows differ by a line at most, so the
+// approximation is close enough.
 private fun Modifier.verticalScrollbar(
     listState: LazyListState,
     color: Color,

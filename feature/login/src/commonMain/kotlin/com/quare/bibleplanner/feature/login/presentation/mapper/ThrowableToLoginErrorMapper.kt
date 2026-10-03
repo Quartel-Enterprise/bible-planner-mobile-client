@@ -10,6 +10,9 @@ internal class ThrowableToLoginErrorMapper {
         else -> LoginError.GENERIC
     }
 
+    // Why: Supabase rejects sign-ins without a provider email (e.g. Apple with the email scope
+    // withheld) while "Allow users without an email" is off; matched by message since GoTrue
+    // exposes no error code yet (supabase/auth#2584).
     private fun Throwable?.isMissingProviderEmail(): Boolean =
         this?.message?.contains(MISSING_PROVIDER_EMAIL_MESSAGE, ignoreCase = true) == true
 

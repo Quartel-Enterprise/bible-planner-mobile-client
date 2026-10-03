@@ -19,6 +19,8 @@ import org.jetbrains.compose.resources.stringResource
 
 private val buttonSize = 44.dp
 
+// Why: keeps its slot when there is no suggestion so the read pill between the arrows
+// does not shift on the first or last chapter.
 @Composable
 internal fun ChapterNavigationButton(
     suggestion: ReadNavigationSuggestionModel?,

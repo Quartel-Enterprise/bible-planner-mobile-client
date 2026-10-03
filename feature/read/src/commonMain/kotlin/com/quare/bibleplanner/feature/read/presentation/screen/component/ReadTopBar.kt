@@ -26,6 +26,8 @@ import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.utils.asStable
 import org.jetbrains.compose.resources.stringResource
 
+// Why: titles visibleChapter, not the opened one, because vertical reading scrolls
+// through chapters without leaving the screen.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReadTopBar(

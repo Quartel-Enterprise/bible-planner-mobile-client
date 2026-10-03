@@ -39,6 +39,9 @@ class IosBackgroundDownloadBridge(
         explicitNulls = false
     }
 
+    // Why: counts are kept in step with writes because recounting walks every downloaded verse
+    // once per chapter. Seeded when the download is planned, and on the first chapter of a
+    // session iOS resumed on its own after relaunch.
     private val downloadedChapters = mutableMapOf<String, Int>()
     private val downloadedChaptersMutex = Mutex()
 
@@ -123,6 +126,8 @@ class IosBackgroundDownloadBridge(
                 val entity = bibleVersionDao.getVersionById(versionId) ?: return@launch
                 if (entity.status == DownloadStatus.DONE) return@launch
                 var downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
+                // Why: SQLite WAL read-after-write race; after all Swift onComplete() callbacks the count can
+                // briefly see a stale snapshot, so within 1 chapter of the total retry once after a delay.
                 if (downloaded == entity.totalChapters - 1) {
                     delay(300.milliseconds)
                     downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
@@ -139,6 +144,8 @@ class IosBackgroundDownloadBridge(
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
                     notifier.showComplete(versionId, name)
                 } else {
+                    // Why: some tasks failed permanently after iOS-side retries; PAUSED lets the user retry and
+                    // getPendingDownloads refetches only the missing chapters.
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.PAUSED)
                     notifier.showError(versionId, name)
                 }

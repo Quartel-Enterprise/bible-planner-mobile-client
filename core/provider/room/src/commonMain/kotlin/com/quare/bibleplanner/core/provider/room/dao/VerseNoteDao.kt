@@ -76,6 +76,8 @@ interface VerseNoteDao {
         syncedUpdatedAt: Long,
     )
 
+    // Why: LWW on the note row; its verses are replaced only when that row changed, or a
+    // rejected remote update would still overwrite the local passage.
     @Transaction
     suspend fun applyRemoteNote(
         note: VerseNoteEntity,

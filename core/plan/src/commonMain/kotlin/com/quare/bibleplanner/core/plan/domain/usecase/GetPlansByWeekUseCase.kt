@@ -35,6 +35,7 @@ class GetPlansByWeekUseCase(
         )
     }
 
+    // Why: callers that know their plan skip scoring the other plan's 52 weeks against the Bible.
     operator fun invoke(readingPlanType: ReadingPlanType): Flow<List<WeekPlanModel>> =
         observeReadingProgress { books, startDate, today ->
             weeksOf(readingPlanType, books, startDate, today)

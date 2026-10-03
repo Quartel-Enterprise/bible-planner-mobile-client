@@ -72,6 +72,8 @@ internal class VerseSelectionViewModel(
     )
     private val customColorPicker = MutableStateFlow<CustomColorUiModel?>(null)
 
+    // Why: the panel opens on the selection alone instead of waiting for Room, which
+    // delayed the sheet noticeably; annotations fill in when they land.
     private val emptyAnnotations = ChapterAnnotations(
         highlightColorByVerse = emptyMap(),
         savedVerseNumbers = emptySet(),
@@ -117,6 +119,9 @@ internal class VerseSelectionViewModel(
         initialValue = null,
     )
 
+    // Why: system back drops this entry without the close button, so the selection is
+    // cleared here. Never close by watching the selection empty: that back would also
+    // pop the reader.
     override fun onCleared() {
         clearVerseSelection()
         super.onCleared()

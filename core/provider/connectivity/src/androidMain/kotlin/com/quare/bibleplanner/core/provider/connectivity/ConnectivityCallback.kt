@@ -4,6 +4,8 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 
+// Why: tracks networks from the event payload because re-querying the active network during
+// teardown can still report the dying network as connected.
 internal class ConnectivityCallback(
     private val onConnectivityChange: (isConnected: Boolean) -> Unit,
 ) : ConnectivityManager.NetworkCallback() {

@@ -133,6 +133,8 @@ internal class ChapterStudyViewModel(
         observeGenerationJob()
     }
 
+    // Why: the user id is combined only to re-emit on login: signing in or subscribing
+    // changes what generating costs.
     private fun observeHero() {
         combine(
             useCases.observeAuthenticatedUserId(),
@@ -282,6 +284,8 @@ internal class ChapterStudyViewModel(
     private fun onGenerationFailed(status: ChapterStudyGenerationStatus.Failed) {
         generationCoordinator.acknowledge(target)
         if (status.isLimitReached && isCompanion) {
+            // Why: beside the reader the study stays put and shows the limit instead of navigating
+            // to the unlock flow.
             viewModelScope.launch {
                 showContent(ChapterStudyContentUiState.Loading)
                 showHero(useCases.observeIsProUser().first())

@@ -5,6 +5,8 @@ import com.quare.bibleplanner.core.preferences.studysuggestion.domain.repository
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.ObserveStudySuggestionSync
 import kotlinx.coroutines.flow.combine
 
+// Why: writes go through the DataStore-only applySynced* methods so applying a synced
+// value does not push it back again.
 internal class ObserveStudySuggestionSyncUseCase(
     private val repository: StudySuggestionSettingsRepository,
 ) : ObserveStudySuggestionSync {

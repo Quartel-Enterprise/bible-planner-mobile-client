@@ -4,6 +4,8 @@ private const val CUSTOM_PREFIX = "c"
 private const val KEY_SEPARATOR = ":"
 private const val CUSTOM_KEY_PARTS = 3
 
+// Why: a custom colour carries its HSL components in the key so a highlight renders on devices
+// whose palette never had that colour.
 sealed interface HighlightColor {
     val key: String
 

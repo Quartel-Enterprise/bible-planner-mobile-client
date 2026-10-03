@@ -18,6 +18,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
+// Why: the legacy accessors exist only for the one-time migration into
+// synced_preferences; live reads and writes go through PlanRepositoryImpl.
 @OptIn(ExperimentalResourceApi::class)
 class PlanLocalDataSource(
     private val dataStore: DataStore<Preferences>,

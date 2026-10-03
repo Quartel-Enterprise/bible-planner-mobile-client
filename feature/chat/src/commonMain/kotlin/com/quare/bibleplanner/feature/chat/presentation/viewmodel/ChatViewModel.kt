@@ -320,6 +320,8 @@ internal class ChatViewModel(
         scrollOnNewMessage(messages)
     }
 
+    // Why: scrolls only when the newest (id, isStreaming) changes; scrolling on every streamed token
+    // would drag the list from under someone reading further up.
     private fun scrollOnNewMessage(messages: List<ChatMessageModel>) {
         val newest = messages.lastOrNull()?.let { message -> message.id to message.isStreaming }
         if (newest == null || newest == newestMessage) return
@@ -401,6 +403,7 @@ internal class ChatViewModel(
                 failure = send?.failure?.takeUnless { send.isAccepted && it is ChatSendFailureModel.Generic },
             )
         }
+        // Why: the pending question shows before the server echoes it, so it needs its own scroll.
         if (pending != null && !hadPendingQuestion) emitAction(ChatUiAction.ScrollToBottom)
         when (val failure = send?.failure) {
             is ChatSendFailureModel.RateLimited -> startCooldown(failure.retryAfterSeconds)
@@ -554,6 +557,8 @@ internal class ChatViewModel(
         viewModelScope.launch { useCases.loadMessages(conversationId) }
     }
 
+    // Why: only this screen's own day: another day's thread needs passages not loaded here, and
+    // offering this day's questions under it would be worse than none.
     private fun restoreContextOf(conversation: ChatConversationModel?) {
         if (context != null) return
         if (conversation?.planDay == null || conversation.planDay != dayContext?.planDay) return

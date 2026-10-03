@@ -10,9 +10,12 @@ interface AppLanguageRepository {
 
     fun getLanguageSyncEnabledFlow(): Flow<Boolean>
 
+    // Why: enabling sync mirrors this device's language as the authoritative value so it
+    // propagates to the other devices.
     suspend fun setLanguageSyncEnabled(enabled: Boolean)
 
     fun observeSyncedLanguage(): Flow<Language?>
 
+    // Why: writes locally without re-pushing, to avoid a sync echo loop.
     suspend fun applySyncedLanguage(language: Language)
 }

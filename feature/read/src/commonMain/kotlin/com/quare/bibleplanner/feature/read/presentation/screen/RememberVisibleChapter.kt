@@ -8,6 +8,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 
 private const val CHAPTER_EXTRA_ITEM_COUNT = 3
 
+// Why: boundaries mirror chapterContent's items per chapter (verses + CHAPTER_EXTRA_ITEM_COUNT),
+// offset by leadingItemCount for the previous chapter's loading placeholder.
 @Composable
 internal fun rememberVisibleChapter(
     chapters: List<ReadChapterUiModel>,
