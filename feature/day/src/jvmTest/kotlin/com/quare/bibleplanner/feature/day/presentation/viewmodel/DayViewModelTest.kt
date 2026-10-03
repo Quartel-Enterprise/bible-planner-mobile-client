@@ -1066,8 +1066,13 @@ internal class DayViewModelTest {
                 monthPresentationMapper = MonthPresentationMapper(),
                 localDateTimeProvider = localDateTimeProvider,
             ),
-            editDaySelectableDates = EditDaySelectableDates(),
-            convertTimestampToDatePickerInitialDate = ConvertTimestampToDatePickerInitialDateUseCase(),
+            editDaySelectableDates = EditDaySelectableDates(
+                currentTimestampProvider = { now },
+                localDateTimeProvider = localDateTimeProvider,
+            ),
+            convertTimestampToDatePickerInitialDate = ConvertTimestampToDatePickerInitialDateUseCase(
+                localDateTimeProvider,
+            ),
             calculateAllChaptersReadStatus = CalculateAllChaptersReadStatusUseCase(),
             localDateTimeProvider = localDateTimeProvider,
         )

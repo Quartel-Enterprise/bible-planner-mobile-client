@@ -2,7 +2,8 @@
   "2.11.0": {
     "common": [
       "Después de iniciar sesión o volver a estar en línea, tu progreso de lectura, tus marcas y tu foto de perfil aparecen mucho más rápido.",
-      "Con la lectura vertical en tabletas, en computadoras y con el teléfono de lado, el estudio junto al texto y el nombre del capítulo en la parte superior ahora pasan al siguiente capítulo en cuanto llega a la parte superior de la pantalla, en lugar de quedarse atrás, e ir a un versículo te lleva directo a él."
+      "Con la lectura vertical en tabletas, en computadoras y con el teléfono de lado, el estudio junto al texto y el nombre del capítulo en la parte superior ahora pasan al siguiente capítulo en cuanto llega a la parte superior de la pantalla, en lugar de quedarse atrás, e ir a un versículo te lleva directo a él.",
+      "Corregimos el calendario para cambiar la fecha en que leíste un día, que en lugares como Japón o Australia podía abrirse en el día anterior y no dejar elegir el día de hoy."
     ],
     "android": [
       "¿Usaste tus estudios con IA gratis? Ahora, además de suscribirte a Pro, puedes ver un video corto para desbloquear un estudio más del capítulo o del día. Toca \"Desbloquear\" para elegir. La cantidad de videos por día es limitada.",

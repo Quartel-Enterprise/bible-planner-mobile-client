@@ -396,8 +396,13 @@ internal class DayUiStateFlowFactoryTest {
                 monthPresentationMapper = MonthPresentationMapper(),
                 localDateTimeProvider = localDateTimeProvider,
             ),
-            editDaySelectableDates = EditDaySelectableDates(),
-            convertTimestampToDatePickerInitialDate = ConvertTimestampToDatePickerInitialDateUseCase(),
+            editDaySelectableDates = EditDaySelectableDates(
+                currentTimestampProvider = { 0L },
+                localDateTimeProvider = localDateTimeProvider,
+            ),
+            convertTimestampToDatePickerInitialDate = ConvertTimestampToDatePickerInitialDateUseCase(
+                localDateTimeProvider,
+            ),
             calculateAllChaptersReadStatus = CalculateAllChaptersReadStatusUseCase(),
             localDateTimeProvider = localDateTimeProvider,
         )
