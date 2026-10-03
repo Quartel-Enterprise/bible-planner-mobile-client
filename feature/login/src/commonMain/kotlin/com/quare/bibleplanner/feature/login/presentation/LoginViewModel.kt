@@ -136,10 +136,6 @@ internal class LoginViewModel(
         }
     }
 
-    /**
-     * The message to show for [result], or `null` when there is nothing to show — the user signed
-     * in, closed the sheet, or is being offered the Google-unavailable dialog instead.
-     */
     private fun findLoginErrorOrNull(result: NativeSignInResult): LoginError? = when (result) {
         is NativeSignInResult.Success, is NativeSignInResult.ClosedByUser -> null
 
@@ -206,7 +202,6 @@ internal class LoginViewModel(
     }
 
     private companion object {
-        /** Reason reported when the platform could not provide a Google credential at all. */
         const val GOOGLE_UNAVAILABLE_REASON = "google_unavailable"
     }
 }

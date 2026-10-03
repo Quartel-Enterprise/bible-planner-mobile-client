@@ -94,7 +94,7 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
         AutoMigration(from = 13, to = 14),
         AutoMigration(from = 14, to = 15),
         AutoMigration(from = 15, to = 16),
-        // 17 is skipped on purpose: schemas/17.json is a development-only schema that never shipped, and a
+        // Why: 17 is skipped on purpose: schemas/17.json is a dev-only schema that never shipped, and a
         // device still on it must fall back to a fresh database instead of passing for this one.
         AutoMigration(from = 16, to = 18, spec = Migration16To18Spec::class),
         AutoMigration(from = 18, to = 19),

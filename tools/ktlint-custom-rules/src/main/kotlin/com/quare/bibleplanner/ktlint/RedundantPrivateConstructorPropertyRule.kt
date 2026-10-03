@@ -17,14 +17,6 @@ import org.jetbrains.kotlin.psi.KtValueArgumentName
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 
-/**
- * A `private val` in the primary constructor that is only read while the instance is being built — by a
- * property initializer, a delegate or an `init` block — never needed to be a property: a plain constructor
- * parameter reaches the same places and keeps the class one field smaller.
- *
- * The rule has no type resolution, so it only reports what it can prove: a single read from a method, a
- * property accessor, a nested class or through a qualifier (`this.x`, `other.x`) keeps the property.
- */
 class RedundantPrivateConstructorPropertyRule : BiblePlannerRule("redundant-private-constructor-property") {
     override fun beforeVisitChildNodes(
         node: ASTNode,

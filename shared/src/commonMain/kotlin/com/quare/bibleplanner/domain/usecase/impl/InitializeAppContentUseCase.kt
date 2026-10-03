@@ -46,11 +46,12 @@ internal class InitializeAppContentUseCase(
     private val observeSessionLoss: ObserveSessionLoss,
     private val syncBillingUserId: SyncBillingUserId,
     private val gatherAdsConsentIfEnabled: GatherAdsConsentIfEnabled,
-    private val remoteConfig: RemoteConfigService, // Don't delete it, it is necessary to initialize remote config
+    // Why: unused, but injecting it initializes remote config; do not remove.
+    private val remoteConfig: RemoteConfigService,
 ) : InitializeAppContent {
     override operator fun invoke(coroutineScope: CoroutineScope) {
         coroutineScope.launch {
-            // Move legacy DataStore plan preferences into the synced store before anything reads them.
+            // Why: legacy DataStore plan preferences must reach the synced store before anything reads them.
             migratePlanPreferencesToSyncStore()
             val initializeBooksDeferred = async { initializeBooksIfNeeded() }
             val initializeBibleVersionsDeferred = async { initializeBibleVersions() }
@@ -68,12 +69,11 @@ internal class InitializeAppContentUseCase(
             launch { observeStudySuggestionSync() }
             launch { observeTesterUserProperty() }
             launch { observeDeviceRegistration() }
-            // A remote sign-out deletes this device's row; end the local session as soon as we see it.
             launch { observeCurrentDeviceRevoked().collect { handleCurrentDeviceRevoked() } }
             launch { observeSessionLoss() }
             launch { syncBillingUserId() }
             launch { gatherAdsConsentIfEnabled() }
-            // Launched after book rows exist so remote favorites can be applied to them.
+            // Why: launched after book rows exist so remote favorites can be applied to them.
             launch { observeSync() }
             observeSelectedVersion()
         }

@@ -8,7 +8,6 @@ import org.koin.dsl.module
 
 val featureBooksModule = module {
 
-    // Presentation
     viewModelOf(::BooksViewModel)
     factoryOf(::BookCategorizationMapper)
 }

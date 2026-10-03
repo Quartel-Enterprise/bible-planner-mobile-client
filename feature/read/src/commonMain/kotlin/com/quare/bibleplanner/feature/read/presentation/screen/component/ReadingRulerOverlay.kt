@@ -47,14 +47,8 @@ private val dismissButtonSize = 20.dp
 private val dismissIconSize = 12.dp
 private val dismissInset = 8.dp
 
-/**
- * Dims everything but a band of the reader's chosen height, so the eye has somewhere to sit while
- * scrolling. It covers the whole screen, bars included: with the ruler on, the band is the one lit
- * thing. The band starts at [initialBandOffset] and is dragged by the grip on its left, because
- * where the eye wants the line is not something the app can guess.
- *
- * Only the grip and the close button take taps: the verses under the dimmed area stay reachable.
- */
+// Why: covers the bars too so the band is the one lit thing; only the grip and close button
+// take taps so verses under the dimmed area stay reachable.
 @Composable
 internal fun ReadingRulerOverlay(
     lineHeight: Dp,
@@ -113,7 +107,7 @@ private fun RulerBandBox(
     }
 }
 
-/** Filled rather than bare, so it never reads as part of the verse it sits over. */
+// Why: filled rather than bare so it never reads as part of the verse it sits over.
 @Composable
 private fun DismissButton(
     onDismiss: () -> Unit,

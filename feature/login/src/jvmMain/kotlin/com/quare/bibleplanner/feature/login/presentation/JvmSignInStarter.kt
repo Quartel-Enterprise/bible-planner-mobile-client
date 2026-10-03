@@ -20,8 +20,8 @@ internal class JvmSignInStarter(
         redirectHtmlSynchronizer.withSyncedRedirectHtml(
             onError = { capturedError = it },
         ) {
-            // On success the supabase Auth plugin updates sessionStatus to
-            // Authenticated, and LoginViewModel's observer closes the bottom sheet.
+            // Why: on success the Auth plugin sets sessionStatus to Authenticated and LoginViewModel's
+            // observer closes the sheet, so only failures are captured here.
             suspendRunCatching { signInWith(provider) }
                 .onFailure { throwable -> capturedError = throwable }
         }

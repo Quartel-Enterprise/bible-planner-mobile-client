@@ -76,7 +76,6 @@ internal fun ResponsiveContentScope.portraitPassageList(
                             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                         }
                     } else {
-                        // Show each chapter as a separate item
                         passage.chapters.forEachIndexed { chapterIndex, chapter ->
                             Box(
                                 modifier = Modifier

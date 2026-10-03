@@ -47,7 +47,6 @@ internal fun BookGridItemComponent(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp)),
         ) {
-            // Preview area / Icon area
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
@@ -60,11 +59,10 @@ internal fun BookGridItemComponent(
                         .fillMaxWidth()
                         .height(100.dp),
                     iconSize = 48.dp,
-                    shape = RoundedCornerShape(0.dp), // Full width at top
+                    shape = RoundedCornerShape(0.dp),
                     iconAlpha = 0.4f,
                 )
 
-                // Favorite button positioned in the corner
                 Box(
                     modifier = Modifier.matchParentSize(),
                     contentAlignment = Alignment.TopEnd,

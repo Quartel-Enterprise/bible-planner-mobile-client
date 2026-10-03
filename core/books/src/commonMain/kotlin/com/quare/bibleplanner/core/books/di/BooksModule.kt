@@ -77,7 +77,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val booksModule = module {
-    // Data sources
     singleOf(::BooksLocalDataSource)
     factory<BibleVersionsRemoteDataSource> {
         BibleVersionsRemoteDataSourceImpl(
@@ -100,19 +99,15 @@ val booksModule = module {
     singleOf(::BibleVersionRepositoryImpl).bind<BibleVersionRepository>()
     factoryOf(::BibleMapper)
 
-    // Providers
     singleOf(::BookMapsProvider)
 
-    // Mappers
     factoryOf(::BooksWithChapterMapper)
     factoryOf(::FileNameToBookIdMapper)
     factoryOf(::BookGroupMapper)
 
-    // Repository
     singleOf(::BooksRepositoryImpl).bind<BooksRepository>()
     singleOf(::BibleRepositoryImpl).bind<BibleRepository>()
 
-    // Sync
     single<Synchronizer>(named("favoritesSync")) {
         OfflineFirstSynchronizer(
             localStore = get<FavoritesLocalStore>(),
@@ -145,10 +140,8 @@ val booksModule = module {
     }
     factoryOf(::ClearLocalReadingDataUseCase)
 
-    // Mappers
     factoryOf(::BookGroupMapper)
 
-    // Use cases
     factoryOf(::SyncBibleVersionsUseCase)
     factoryOf(::InitializeBibleVersionsUseCaseImpl).bind<InitializeBibleVersionsUseCase>()
     factoryOf(::ObserveBibleVersionsUseCaseImpl).bind<ObserveBibleVersionsUseCase>()

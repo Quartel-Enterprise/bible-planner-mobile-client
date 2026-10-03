@@ -38,11 +38,8 @@ import kotlin.experimental.ExperimentalNativeApi
 
 private var isInitialized = false
 
-/**
- * Initializes Koin early — before the UI is shown — so that the URLSession background download
- * handler can access the Koin graph even when the app is launched solely for background events.
- * Safe to call multiple times; only the first call takes effect.
- */
+// Why: Koin starts before any UI so the background URLSession handler can reach the graph when
+// the app launches only for background events; repeated calls are ignored.
 @OptIn(ExperimentalNativeApi::class)
 fun initializeKoinForIos(
     remoteConfigService: RemoteConfigDataSource,
@@ -80,9 +77,8 @@ fun initializeKoinForIos(
                 },
             ),
         )
-        // Force-create the facade so setBridge is called immediately.
-        // Required when the app relaunches solely for background URLSession events
-        // (no UI = no one else requests the facade from Koin).
+        // Why: force-create the facade so setBridge runs now; on a background-only URLSession relaunch
+        // there is no UI to request it from Koin.
         KoinPlatform.getKoin().get<BibleVersionDownloaderFacade>()
         configureRevenueCat(isDebug = Platform.isDebugBinary)
         crashReporter.configure(isDebug = Platform.isDebugBinary)
@@ -127,13 +123,8 @@ fun MainViewController(
     )
 }
 
-/**
- * Routes a deep link action from the Live Activity buttons to the download facade.
- * Called by Swift via onOpenURL when the user taps Pause / Resume / Cancel.
- *
- * @param action One of: "pause", "resume", "cancel"
- * @param versionId The Bible version ID (e.g. "nvi")
- */
+// Why: called from Swift onOpenURL for the Live Activity Pause/Resume/Cancel buttons; the action
+// strings must match the deep links the widget sends.
 fun handleDownloadAction(
     action: String,
     versionId: String,

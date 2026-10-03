@@ -35,10 +35,7 @@ class GetPlansByWeekUseCase(
         )
     }
 
-    /**
-     * The weeks of a single plan, for callers that already know which plan they are asking about —
-     * scoring the other plan's 52 weeks against the whole Bible is pure waste for them.
-     */
+    // Why: callers that know their plan skip scoring the other plan's 52 weeks against the Bible.
     operator fun invoke(readingPlanType: ReadingPlanType): Flow<List<WeekPlanModel>> =
         observeReadingProgress { books, startDate, today ->
             weeksOf(readingPlanType, books, startDate, today)
@@ -123,7 +120,6 @@ class GetPlansByWeekUseCase(
     ): PassageModel {
         val book = books.find { it.id == passage.bookId } ?: return passage.copy(isRead = false)
 
-        // If no chapters specified (empty list), check if entire book is read
         val allChaptersRead = if (passage.chapters.isEmpty()) {
             book.isRead
         } else {
@@ -157,7 +153,6 @@ class GetPlansByWeekUseCase(
     ): Int {
         val book = books.find { it.id == passage.bookId } ?: return 0
 
-        // If no chapters specified (empty list), count all verses in the book
         if (passage.chapters.isEmpty()) {
             return book.chapters.sumOf { it.verses.size }
         }
@@ -178,13 +173,8 @@ class GetPlansByWeekUseCase(
         val endVerse = chapterPlan.endVerse
 
         return when {
-            // If verse range is specified, count those specific verses
             startVerse != null && endVerse != null -> endVerse - startVerse + 1
-
-            // If only start verse is specified, count from that verse to end of chapter
             startVerse != null -> chapter.verses.count { it.number >= startVerse }
-
-            // If no verse range specified, count all verses in the chapter
             else -> chapter.verses.size
         }
     }
@@ -202,7 +192,6 @@ class GetPlansByWeekUseCase(
     ): Int {
         val book = books.find { it.id == passage.bookId } ?: return 0
 
-        // If no chapters specified (empty list), count all read verses in the book
         if (passage.chapters.isEmpty()) {
             return book.chapters.sumOf { it.readVersesCount }
         }
@@ -223,18 +212,15 @@ class GetPlansByWeekUseCase(
         val endVerse = chapterPlan.endVerse
 
         return when {
-            // If verse range is specified, count read verses in that range
             startVerse != null && endVerse != null ->
                 (startVerse..endVerse).count { verseNumber -> chapter.isVerseRead(verseNumber) }
 
-            // If only start verse is specified, count read verses from that verse to end of chapter
             startVerse != null -> {
                 chapter.verses.count { verse ->
                     verse.number >= startVerse && chapter.isVerseRead(verse.number)
                 }
             }
 
-            // If no verse range specified, count all read verses in the chapter
             else -> chapter.readVersesCount
         }
     }

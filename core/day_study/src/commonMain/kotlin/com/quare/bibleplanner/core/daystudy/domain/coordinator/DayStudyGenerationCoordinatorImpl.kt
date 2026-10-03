@@ -45,16 +45,17 @@ class DayStudyGenerationCoordinatorImpl(
     override val jobs: StateFlow<List<DayStudyGenerationJob>>
         field = MutableStateFlow<List<DayStudyGenerationJob>>(emptyList())
 
-    // The day currently on screen. Its own card/sheet already shows the state, so the global
-    // floating card suppresses this key (only backgrounded days show there).
+    // Why: the day on screen already shows its own card/sheet, so the global floating card
+    // suppresses this key and only shows backgrounded days.
     override val activeKey: StateFlow<String?>
         field = MutableStateFlow<String?>(null)
 
-    // One-shot request (from the card's "Open") for the arriving day screen to open the study.
+    // Why: the card's Open navigates first; the arriving day screen consumes this one-shot key
+    // to open the study.
     override val pendingOpenKey: StateFlow<String?>
         field = MutableStateFlow<String?>(null)
 
-    // Keys the user dismissed from the card. Generation keeps running (and caching) regardless.
+    // Why: dismissing only hides the card; generation keeps running and caching regardless.
     override val dismissedKeys: StateFlow<Set<String>>
         field = MutableStateFlow<Set<String>>(emptySet())
 

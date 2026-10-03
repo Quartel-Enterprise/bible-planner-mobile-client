@@ -10,12 +10,10 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val featureProfileModule = module {
-    // Domain
     factoryOf(::GetInstagramUrlUseCase)
     factoryOf(::ObserveShowDonateOptionUseCase)
     factoryOf(::GetSelectedVersionDownloadedChaptersFlowUseCase)
 
-    // Presentation
     factoryOf(::ProfileUiStateFactory)
     viewModelOf(::ProfileViewModel)
 }

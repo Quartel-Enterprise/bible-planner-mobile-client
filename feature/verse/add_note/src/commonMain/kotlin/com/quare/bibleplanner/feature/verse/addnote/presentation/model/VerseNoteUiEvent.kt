@@ -5,7 +5,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytic
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
 sealed interface VerseNoteUiEvent : UiEvent {
-    /** Typing is not an action to attribute; only the explicit save is. */
+    // Why: typing is not an action to attribute; only the explicit save is tracked.
     data class OnTextChange(
         val text: String,
     ) : VerseNoteUiEvent {

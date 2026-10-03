@@ -21,10 +21,6 @@ import com.quare.bibleplanner.feature.paywall.presentation.component.subscriptio
 import com.quare.bibleplanner.feature.paywall.presentation.component.subscription.option.component.SubscriptionPlanSurface
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
-/**
- * Plan option laid out as a column — radio and name on top, the price standing out below it.
- * Used side by side with the other plans when the screen is wide enough for it.
- */
 @Composable
 internal fun SubscriptionPlanColumnCard(
     title: String,

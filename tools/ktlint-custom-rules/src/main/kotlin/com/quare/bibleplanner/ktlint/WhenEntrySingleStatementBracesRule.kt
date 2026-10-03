@@ -34,12 +34,7 @@ class WhenEntrySingleStatementBracesRule : BiblePlannerRule("when-entry-single-s
         )
     }
 
-    /**
-     * A bare lambda literal as the sole statement is the block's return value (e.g. a branch typed
-     * `() -> Unit`). The outer braces are the required block syntax and cannot be collapsed into the
-     * lambda's own braces without changing meaning (eager execution instead of a deferred lambda).
-     *
-     * @return whether this statement is a lambda literal.
-     */
+    // Why: a lambda literal as the sole statement is the block's return value; collapsing the
+    // braces would execute it eagerly instead of returning a deferred lambda.
     private fun ASTNode.isReturnedLambda(): Boolean = elementType == LAMBDA_EXPRESSION
 }

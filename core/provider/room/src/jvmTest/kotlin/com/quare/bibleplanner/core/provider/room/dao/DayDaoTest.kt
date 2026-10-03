@@ -77,6 +77,50 @@ internal class DayDaoTest {
         )
     }
 
+    @Test
+    fun `GIVEN synced and never synced days WHEN resetting the meta THEN keeps notes and flags only the synced ones`() =
+        runTest {
+            // Given
+            val synced = day(
+                dayNumber = 1,
+                notes = "Loved it",
+            ).copy(isMetaPendingSync = false)
+            val neverSynced = day(
+                dayNumber = 2,
+                notes = "Read it twice",
+            ).copy(
+                metaUpdatedAt = null,
+                isMetaPendingSync = false,
+            )
+            val ids = dao.insertDays(listOf(synced, neverSynced))
+
+            // When
+            dao.resetAllDayMetaForSync(now = 200L)
+
+            // Then
+            assertEquals(
+                expected = listOf(
+                    synced.copy(
+                        id = ids[0],
+                        isRead = false,
+                        readTimestamp = null,
+                        metaUpdatedAt = 200L,
+                        isMetaPendingSync = true,
+                    ),
+                    neverSynced.copy(
+                        id = ids[1],
+                        isRead = false,
+                        readTimestamp = null,
+                    ),
+                ),
+                actual = dao
+                    .getDaysByWeek(
+                        weekNumber = 1,
+                        readingPlanType = PLAN_TYPE,
+                    ).sortedBy { it.dayNumber },
+            )
+        }
+
     private fun day(
         dayNumber: Int,
         notes: String?,

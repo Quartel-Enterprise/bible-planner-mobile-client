@@ -7,10 +7,7 @@ import com.quare.bibleplanner.core.provider.room.entity.DayEntity
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Adapts per-day metadata (read timestamp + notes) on the `days` table to the generic sync engine.
- * The day's read state is not synced here — it derives from chapter/verse read state.
- */
+// Why: the day's read state is not synced here; it derives from chapter/verse read state.
 internal class DayMetaLocalStore(
     private val dayDao: DayDao,
     private val dayMetaMapper: DayMetaMapper,
@@ -65,7 +62,6 @@ internal class DayMetaLocalStore(
         entity = entity,
     )
 
-    /** Marks pre-sync day metadata pending on first launch so it reaches the backend. */
     override suspend fun seed(now: Long) {
         dayDao.markLegacyDayMetaPending(now)
     }

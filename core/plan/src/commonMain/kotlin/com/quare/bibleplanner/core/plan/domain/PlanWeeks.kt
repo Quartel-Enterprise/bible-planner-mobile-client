@@ -10,11 +10,8 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.model.ScheduledPlanDayModel
 
-/**
- * The first day of the plan that both schedules this chapter and is now fully read. A chapter can be
- * scheduled more than once, so plan order decides — the earlier day is the one the reader is
- * catching up on.
- */
+// Why: a chapter can be scheduled more than once; plan order decides and the earlier
+// day is the one the reader is catching up on.
 internal fun List<WeekPlanModel>.findCompletedDayFor(
     bookId: BookId,
     chapterNumber: Int,
@@ -31,7 +28,6 @@ internal fun List<WeekPlanModel>.findCompletedDayFor(
         }
 }
 
-/** The day each chapter is scheduled in, keeping the plan order for chapters scheduled twice. */
 internal fun List<WeekPlanModel>.scheduledDaysFor(
     chapters: List<ChapterLocationModel>,
     readingPlanType: ReadingPlanType,
@@ -53,10 +49,6 @@ internal fun List<WeekPlanModel>.scheduledDaysFor(
         }
     }.toMap()
 
-/**
- * Whether the day would count as fully read once [assumedReadChapter] is marked read — the question
- * a screen asks before the write, so it already knows what the tap will mean.
- */
 internal fun DayModel.isFullyReadAssuming(
     assumedReadChapter: ChapterLocationModel,
     books: List<BookDataModel>,

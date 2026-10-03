@@ -11,12 +11,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.rememberAppIconPainter
 
-/**
- * A reusable composable wrapper around [IconButton] and [Icon] that standardizes
- * the appearance and accessibility of icon-only buttons across the app.
- *
- * This version uses an [ImageVector].
- */
 @Composable
 fun CommonIconButton(
     modifier: Modifier = Modifier,
@@ -37,12 +31,6 @@ fun CommonIconButton(
     }
 }
 
-/**
- * A reusable composable wrapper around [IconButton] and [Icon] that standardizes
- * the appearance and accessibility of icon-only buttons across the app.
- *
- * This version uses a [Painter].
- */
 @Composable
 fun CommonIconButton(
     modifier: Modifier = Modifier,

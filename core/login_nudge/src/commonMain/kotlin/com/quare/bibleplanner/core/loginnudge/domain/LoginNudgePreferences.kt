@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.core.loginnudge.domain
 
-/**
- * Device-local persistence for the login nudge throttling. Not synced: the snooze and the
- * permanent dismissal are a per-device UX preference, not user data.
- */
+// Why: not synced on purpose; snooze and permanent dismissal are a per-device UX preference,
+// not user data.
 interface LoginNudgePreferences {
     suspend fun getSnoozedAt(): Long?
 
@@ -13,7 +11,6 @@ interface LoginNudgePreferences {
 
     suspend fun setDontShowAgain()
 
-    /** Timestamp of the first nudge-eligible action, used for the post-install grace period. */
     suspend fun getFirstActionAt(): Long?
 
     suspend fun setFirstActionAt(timestamp: Long)

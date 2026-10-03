@@ -123,10 +123,8 @@ internal fun ReadNarrowScreen(
                 )
             },
             bottomBar = {
-            /*
-             * Vertical reading has no single chapter to act on, and every chapter already ends with
-             * its own read pill, so the bar would only name whichever one the route started at.
-             */
+                // Why: vertical reading has no single chapter to act on and each chapter ends with its
+                // own read pill, so the bar would name only the route's start chapter.
                 if (!state.settings.isVerticalReadingEnabled) {
                     ReadBottomBar(
                         modifier = Modifier.onSizeChanged { size -> bottomOverlayHeightPx = size.height.toFloat() },
@@ -139,12 +137,8 @@ internal fun ReadNarrowScreen(
             contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
         ) { paddingValues ->
             contentTopOffset = paddingValues.calculateTopPadding()
-        /*
-         * The bars auto-hide as the reader scrolls, and the padding the scaffold hands out shrinks
-         * with them — down to zero. Consuming that padding and then re-applying whatever system-bar
-         * inset is left keeps the text clear of the status and navigation bars once the app's own
-         * bars are gone, without double-padding while they are still on screen.
-         */
+            // Why: scaffold padding shrinks to zero as the bars auto-hide; consuming it and
+            // re-applying the remaining system-bar insets keeps text clear without double padding.
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -165,10 +159,6 @@ internal fun ReadNarrowScreen(
                     }
 
                     is ReadContentUiState.Success -> {
-                    /*
-                     * While the ruler is on, the column gives up the width its grip and close button
-                     * stand in, so a word reflows to the next line instead of sitting under them.
-                     */
                         val horizontalPadding = if (state.settings.isRulerEnabled) {
                             rulerContentPadding
                         } else {
@@ -201,10 +191,8 @@ internal fun ReadNarrowScreen(
                 }
             }
         }
-        /*
-         * Drawn over the whole screen rather than only the text, so the bars lose their prominence
-         * with everything else: while the ruler is on, the band is the one lit thing.
-         */
+        // Why: drawn over the whole screen, not just the text, so the bars dim too and the
+        // band is the only lit area.
         if (state.settings.isRulerEnabled) {
             ReadingRulerOverlay(
                 lineHeight = (state.settings.fontSizeSp * LINE_HEIGHT_RATIO).dp,

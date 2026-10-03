@@ -14,14 +14,8 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 
-/**
- * Keeps the reader on screen underneath its selection panel, because the selection is built by
- * tapping the very verses the panel acts on — covering them with a modal sheet would end the
- * interaction it exists to serve.
- *
- * Narrow windows get the panel as a sheet along the bottom edge; wide ones get it as a column beside
- * the text, the same shape the day and its study take.
- */
+// Why: the reader stays visible under the selection panel because the selection is built by
+// tapping verses; a modal sheet covering them would end that interaction.
 internal class VerseSelectionScene(
     override val key: Any,
     private val readerEntry: NavEntry<NavKey>,

@@ -6,14 +6,6 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlin.time.Duration
 
 class GetFinalTimestampAfterEditionUseCase {
-    /**
-     * Calculates the final timestamp by combining a local date with a duration.
-     * The duration is added to the start of the day in the current system timezone.
-     *
-     * @param selectedLocalDate The local date to use as the base
-     * @param eventDuration The duration to add to the start of the day
-     * @return The final timestamp in milliseconds
-     */
     operator fun invoke(
         selectedLocalDate: LocalDate,
         eventDuration: Duration = Duration.ZERO,

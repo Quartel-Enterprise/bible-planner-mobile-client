@@ -1,17 +1,12 @@
 package com.quare.bibleplanner.core.books.data.datasource
 
-/**
- * Contains the list of all Bible book identifiers.
- */
 object BibleBooks {
     private val bookIds: List<String> = listOf(
-        // Pentateuch
         "GEN",
         "EXO",
         "LEV",
         "NUM",
         "DEU",
-        // Historical Books
         "JOS",
         "JDG",
         "RUT",
@@ -24,19 +19,16 @@ object BibleBooks {
         "EZR",
         "NEH",
         "EST",
-        // Wisdom Books
         "JOB",
         "PSA",
         "PRO",
         "ECC",
         "SNG",
-        // Major Prophets
         "ISA",
         "JER",
         "LAM",
         "EZK",
         "DAN",
-        // Minor Prophets
         "HOS",
         "JOL",
         "AMO",
@@ -49,14 +41,11 @@ object BibleBooks {
         "HAG",
         "ZEC",
         "MAL",
-        // Gospels
         "MAT",
         "MRK",
         "LUK",
         "JHN",
-        // Acts
         "ACT",
-        // Pauline Epistles
         "ROM",
         "1CO",
         "2CO",
@@ -70,7 +59,6 @@ object BibleBooks {
         "2TI",
         "TIT",
         "PHM",
-        // General Epistles
         "HEB",
         "JAS",
         "1PE",
@@ -79,7 +67,6 @@ object BibleBooks {
         "2JN",
         "3JN",
         "JUD",
-        // Revelation
         "REV",
     )
 

@@ -8,13 +8,11 @@ private const val CUSTOM_SATURATION = 0.8f
 private const val CUSTOM_BACKGROUND_ALPHA = 0.35f
 private const val PERCENT = 100f
 
-/** The colour of the palette swatch: the full-strength ink of the highlight. */
 fun HighlightColor.toSwatchColor(): Color = when (this) {
     is HighlightColor.Preset -> preset.swatchColor
     is HighlightColor.Custom -> toColor(alpha = 1f)
 }
 
-/** The wash drawn behind the verse text, translucent so the text stays readable in both themes. */
 fun HighlightColor.toBackgroundColor(): Color = when (this) {
     is HighlightColor.Preset -> preset.swatchColor.copy(alpha = preset.backgroundAlpha)
     is HighlightColor.Custom -> toColor(alpha = CUSTOM_BACKGROUND_ALPHA)

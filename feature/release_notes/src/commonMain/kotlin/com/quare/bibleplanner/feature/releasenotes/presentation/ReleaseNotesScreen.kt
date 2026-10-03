@@ -120,7 +120,6 @@ fun ReleaseNotesScreen(
 
                         is ReleaseNotesUiState.Success -> {
                             responsiveItem {
-                                // Tabs
                                 val availableTabs = uiState.availableTabs
                                 val selectedTabIndex = availableTabs.indexOf(uiState.currentTab).coerceAtLeast(0)
 

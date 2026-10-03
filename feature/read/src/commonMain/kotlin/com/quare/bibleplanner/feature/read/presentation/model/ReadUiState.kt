@@ -12,6 +12,5 @@ data class ReadUiState(
     val dayCompletionBanner: PlanDayLocationModel?,
     val verseFocus: VerseFocusUiModel?,
     val isOpeningChapterStudy: Boolean,
-    /** On a wide window the chapter study sits beside the text, so the reader offers no way to open it. */
     val isChapterStudyBeside: Boolean,
 )

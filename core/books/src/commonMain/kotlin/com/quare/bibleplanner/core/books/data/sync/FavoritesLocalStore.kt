@@ -7,11 +7,6 @@ import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Adapts the favorites state on the `books` table to the generic sync engine. Favorite state lives as
- * columns on each book row ([BookEntity.isFavorite], [BookEntity.favoriteUpdatedAt],
- * [BookEntity.isFavoritePendingSync]).
- */
 internal class FavoritesLocalStore(
     private val bookDao: BookDao,
     private val bookFavoriteMapper: BookFavoriteMapper,
@@ -45,7 +40,6 @@ internal class FavoritesLocalStore(
         entity = entity,
     )
 
-    /** Marks pre-sync favorites pending on first launch so they reach the backend. */
     override suspend fun seed(now: Long) {
         bookDao.markLegacyFavoritesPending(now)
     }

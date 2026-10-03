@@ -40,7 +40,6 @@ class PaywallUiStateFactory(
                     Logger.e { "No subscription plans available for store: $storeName" }
                     PaywallInitializationResult(PaywallUiState.Error, storePackages = emptyList())
                 } else {
-                    // Select Annual by default if available, otherwise first
                     val initialPlans = subscriptionPlans
                         .map { plan ->
                             if (plan.type == SubscriptionPlanType.Annual) {
@@ -49,7 +48,6 @@ class PaywallUiStateFactory(
                                 plan
                             }
                         }.let { plans ->
-                            // If no annual plan, select the first one
                             if (plans.none { it.isSelected } && plans.isNotEmpty()) {
                                 plans.mapIndexed { index, plan ->
                                     if (index == 0) plan.copy(isSelected = true) else plan

@@ -14,9 +14,7 @@ internal fun ScrollToTopEffect(
 ) {
     LaunchedEffect(scrollToTop) {
         if (scrollToTop) {
-            // Scroll to top
             lazyListState.animateScrollToItem(0, scrollOffset = 0)
-            // Wait for scroll animation to complete
             delay(400)
             onEvent(ReadingPlanUiEvent.OnScrollToTopCompleted)
         }
