@@ -91,7 +91,7 @@ internal class ProfileViewModelTest {
     private lateinit var commands: List<NavigationCommand>
     private lateinit var actions: List<ProfileUiAction>
     private lateinit var trackedEvents: List<Pair<String, Map<String, Any>>>
-    private lateinit var shownPrompts: List<Pair<UpdateAvailability.Available, String>>
+    private lateinit var shownPrompts: List<Pair<UpdateAvailability.Pending, String>>
 
     @BeforeTest
     fun setUp() {
@@ -387,6 +387,26 @@ internal class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN a downloaded update WHEN checking for updates THEN shows the manual update prompt`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(checkForUpdate = { UpdateAvailability.Downloaded })
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.CHECK_FOR_UPDATE))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<Pair<UpdateAvailability.Pending, String>>(
+                    UpdateAvailability.Downloaded to UpdatePromptSource.MANUAL,
+                ),
+                actual = shownPrompts,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the app is up to date WHEN checking for updates THEN says it is up to date`() = runTest(testDispatcher) {
         // Given
         prepareScenario(checkForUpdate = { UpdateAvailability.NotAvailable })
@@ -488,7 +508,7 @@ internal class ProfileViewModelTest {
         checkForUpdate: suspend () -> UpdateAvailability = { UpdateAvailability.NotAvailable },
     ) {
         val collectedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
-        val collectedPrompts = mutableListOf<Pair<UpdateAvailability.Available, String>>()
+        val collectedPrompts = mutableListOf<Pair<UpdateAvailability.Pending, String>>()
         trackedEvents = collectedEvents
         shownPrompts = collectedPrompts
         navigator = Navigator()

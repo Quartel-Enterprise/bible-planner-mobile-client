@@ -23,4 +23,5 @@ No parameters.
 
 - **Android only** — this dialog exists only for the flexible in-app update flow.
 - The install still completes silently on a later app restart, covered by Firebase's auto-collected `app_update`.
+- The dialog comes back while the update stays pending: on the next return to the foreground (at most once every 15 minutes, counted from the same timestamp as the hourly cooldown of [update_prompt_shown](update_prompt_shown.md)) and on a manual "Buscar atualizações". A user can therefore postpone the same version more than once.
 - Pair: [update_install_started](update_install_started.md).

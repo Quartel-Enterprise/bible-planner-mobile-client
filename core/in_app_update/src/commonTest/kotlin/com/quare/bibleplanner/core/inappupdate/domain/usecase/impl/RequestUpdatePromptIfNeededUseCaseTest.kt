@@ -13,7 +13,7 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 internal class RequestUpdatePromptIfNeededUseCaseTest {
-    private var shownAvailability: UpdateAvailability.Available? = null
+    private var shownAvailability: UpdateAvailability.Pending? = null
     private var shownSource: String? = null
     private var checked = false
 
@@ -32,6 +32,16 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
         }
 
     @Test
+    fun `GIVEN a downloaded update WHEN requesting THEN shows it with the startup source`() = runTest {
+        val useCase = prepareScenario(availability = UpdateAvailability.Downloaded)
+
+        useCase()
+
+        assertEquals(UpdateAvailability.Downloaded, shownAvailability)
+        assertEquals(UpdatePromptSource.STARTUP, shownSource)
+    }
+
+    @Test
     fun `GIVEN no available update WHEN requesting THEN shows nothing`() = runTest {
         val useCase = prepareScenario(availability = UpdateAvailability.NotAvailable)
 
@@ -41,7 +51,20 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
     }
 
     @Test
-    fun `GIVEN the last prompt was less than an hour ago WHEN requesting THEN does not check again`() = runTest {
+    fun `GIVEN the last prompt was less than 15 minutes ago WHEN requesting THEN does not check again`() = runTest {
+        val useCase = prepareScenario(
+            availability = UpdateAvailability.Downloaded,
+            lastPromptedAt = NOW - 14.minutes.inWholeMilliseconds,
+        )
+
+        useCase()
+
+        assertFalse(checked)
+        assertNull(shownAvailability)
+    }
+
+    @Test
+    fun `GIVEN an available update prompted less than an hour ago WHEN requesting THEN shows nothing`() = runTest {
         val useCase = prepareScenario(
             availability = UpdateAvailability.Available(versionName = "2.0.0"),
             lastPromptedAt = NOW - 59.minutes.inWholeMilliseconds,
@@ -49,8 +72,19 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
 
         useCase()
 
-        assertFalse(checked)
         assertNull(shownAvailability)
+    }
+
+    @Test
+    fun `GIVEN a downloaded update prompted 15 minutes ago WHEN requesting THEN shows it again`() = runTest {
+        val useCase = prepareScenario(
+            availability = UpdateAvailability.Downloaded,
+            lastPromptedAt = NOW - 15.minutes.inWholeMilliseconds,
+        )
+
+        useCase()
+
+        assertEquals(UpdateAvailability.Downloaded, shownAvailability)
     }
 
     @Test
@@ -66,7 +100,7 @@ internal class RequestUpdatePromptIfNeededUseCaseTest {
     }
 
     private fun onShowUpdatePrompt(
-        availability: UpdateAvailability.Available,
+        availability: UpdateAvailability.Pending,
         source: String,
     ) {
         shownAvailability = availability

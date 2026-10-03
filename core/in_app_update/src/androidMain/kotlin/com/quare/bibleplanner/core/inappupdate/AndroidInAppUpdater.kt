@@ -35,10 +35,10 @@ internal class AndroidInAppUpdater(
 
     suspend fun check(): UpdateAvailability = suspendRunCatching {
         val info = appUpdateManager.appUpdateInfo.await()
-        if (info.isFlexibleUpdateAvailable()) {
-            UpdateAvailability.Available(versionName = null)
-        } else {
-            UpdateAvailability.NotAvailable
+        when {
+            info.installStatus() == InstallStatus.DOWNLOADED -> UpdateAvailability.Downloaded
+            info.isFlexibleUpdateAvailable() -> UpdateAvailability.Available(versionName = null)
+            else -> UpdateAvailability.NotAvailable
         }
     }.getOrElse { throwable ->
         Logger.w(tag = TAG, throwable = throwable, messageString = "Failed to check for in-app update")
