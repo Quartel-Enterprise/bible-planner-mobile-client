@@ -82,10 +82,12 @@ internal class AndroidRewardedAdDataSource(
         applicationScope.launch { MobileAds.initialize(context) }
     }
 
-    private fun LoadAdError.toFailureReason(): RewardedAdFailureReason = when (code) {
-        AdRequest.ERROR_CODE_NO_FILL, AdRequest.ERROR_CODE_MEDIATION_NO_FILL -> RewardedAdFailureReason.NO_FILL
-        else -> RewardedAdFailureReason.LOAD_ERROR
-    }
+    private fun LoadAdError.toFailureReason(): RewardedAdFailureReason =
+        if (code == AdRequest.ERROR_CODE_NO_FILL || code == AdRequest.ERROR_CODE_MEDIATION_NO_FILL) {
+            RewardedAdFailureReason.NO_FILL
+        } else {
+            RewardedAdFailureReason.LOAD_ERROR
+        }
 
     private companion object {
         const val LOG_TAG = "RewardedAd"

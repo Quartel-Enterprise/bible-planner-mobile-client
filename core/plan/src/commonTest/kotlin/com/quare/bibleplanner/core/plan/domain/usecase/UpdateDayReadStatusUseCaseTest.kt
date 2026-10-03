@@ -287,6 +287,7 @@ private class BookStateBookDao(
                 isRead = book.isRead,
                 favoriteUpdatedAt = null,
                 isFavoritePendingSync = false,
+                isFavorite = false,
             )
         }
 
@@ -319,6 +320,8 @@ private class BookStateChapterDao(
                     number = chapter.number,
                     bookId = bookId,
                     isRead = chapter.isRead,
+                    readUpdatedAt = null,
+                    isReadPendingSync = false,
                 )
             }
         }

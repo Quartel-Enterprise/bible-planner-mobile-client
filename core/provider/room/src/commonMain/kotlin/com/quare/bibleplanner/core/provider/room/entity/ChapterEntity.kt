@@ -20,10 +20,10 @@ import androidx.room3.PrimaryKey
 )
 data class ChapterEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long,
     val number: Int,
     val bookId: String,
-    val isRead: Boolean = false,
-    @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long? = null,
-    @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean = false,
+    val isRead: Boolean,
+    @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long?,
+    @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean,
 )

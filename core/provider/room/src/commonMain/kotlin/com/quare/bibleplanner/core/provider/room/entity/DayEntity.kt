@@ -11,13 +11,13 @@ import androidx.room3.PrimaryKey
 )
 data class DayEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long,
     val weekNumber: Int,
     val dayNumber: Int,
     @ColumnInfo(defaultValue = "'BOOKS'") val readingPlanType: String,
-    @ColumnInfo(defaultValue = "0") val isRead: Boolean = false,
-    val readTimestamp: Long? = null,
-    val notes: String? = null,
-    @ColumnInfo(defaultValue = "NULL") val metaUpdatedAt: Long? = null,
-    @ColumnInfo(defaultValue = "0") val isMetaPendingSync: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val isRead: Boolean,
+    val readTimestamp: Long?,
+    val notes: String?,
+    @ColumnInfo(defaultValue = "NULL") val metaUpdatedAt: Long?,
+    @ColumnInfo(defaultValue = "0") val isMetaPendingSync: Boolean,
 )

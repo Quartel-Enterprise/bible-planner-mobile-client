@@ -30,21 +30,25 @@ internal object ProfileMenuOptionsFactory {
         name = Res.string.become_pro,
         icon = ProfileIcon.SystemIcon(AppIcon.Star),
         type = ProfileOptionItemType.BECOME_PRO,
+        subtitle = null,
     )
     val theme = ProfileMenuItemPresentationModel(
         name = Res.string.theme_option,
         icon = ProfileIcon.SystemIcon(AppIcon.Palette),
         type = ProfileOptionItemType.THEME,
+        subtitle = null,
     )
     val appLanguage = ProfileMenuItemPresentationModel(
         name = Res.string.app_language_option,
         icon = ProfileIcon.SystemIcon(AppIcon.Translate),
         type = ProfileOptionItemType.APP_LANGUAGE,
+        subtitle = null,
     )
     val instagram = ProfileMenuItemPresentationModel(
         name = Res.string.instagram,
         icon = ProfileIcon.DrawableResourceIcon(Res.drawable.ic_instagram),
         type = ProfileOptionItemType.INSTAGRAM,
+        subtitle = null,
     )
     val webApp = ProfileMenuItemPresentationModel(
         name = Res.string.web_app,
@@ -68,11 +72,13 @@ internal object ProfileMenuOptionsFactory {
         name = Res.string.study_suggestion_option,
         icon = ProfileIcon.SystemIcon(AppIcon.AutoAwesome),
         type = ProfileOptionItemType.STUDY_SUGGESTION,
+        subtitle = null,
     )
     val editStartDate = ProfileMenuItemPresentationModel(
         name = Res.string.start_date,
         icon = ProfileIcon.SystemIcon(AppIcon.EditCalendar),
         type = ProfileOptionItemType.EDIT_PLAN_START_DAY,
+        subtitle = null,
     )
     val releaseNotes = ProfileMenuItemPresentationModel(
         name = Res.string.release_notes_option,
@@ -84,20 +90,24 @@ internal object ProfileMenuOptionsFactory {
         name = Res.string.bible_version_option,
         icon = ProfileIcon.SystemIcon(AppIcon.MenuBook),
         type = ProfileOptionItemType.BIBLE_VERSION,
+        subtitle = null,
     )
     val contactSupport = ProfileMenuItemPresentationModel(
         name = Res.string.contact_support_option,
         icon = ProfileIcon.SystemIcon(AppIcon.SupportAgent),
         type = ProfileOptionItemType.CONTACT_SUPPORT,
+        subtitle = null,
     )
     val rateApp = ProfileMenuItemPresentationModel(
         name = Res.string.rate_app_option,
         icon = ProfileIcon.SystemIcon(AppIcon.RateReview),
         type = ProfileOptionItemType.RATE_APP,
+        subtitle = null,
     )
     val checkForUpdate = ProfileMenuItemPresentationModel(
         name = Res.string.check_for_updates_option,
         icon = ProfileIcon.SystemIcon(AppIcon.Update),
         type = ProfileOptionItemType.CHECK_FOR_UPDATE,
+        subtitle = null,
     )
 }

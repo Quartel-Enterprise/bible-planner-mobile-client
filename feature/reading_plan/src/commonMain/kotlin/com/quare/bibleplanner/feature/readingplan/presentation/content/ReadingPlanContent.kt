@@ -279,7 +279,8 @@ private fun WeekGroup.isExpanded(state: ReadingPlanUiState.Loaded): Boolean = wh
     WeekGroup.Current -> true
 }
 
-private fun WeekGroup.toToggleEvent(): ReadingPlanUiEvent = when (this) {
-    WeekGroup.Completed -> ReadingPlanUiEvent.OnToggleCompletedExpanded
-    else -> ReadingPlanUiEvent.OnToggleUpcomingExpanded
+private fun WeekGroup.toToggleEvent(): ReadingPlanUiEvent = if (this == WeekGroup.Completed) {
+    ReadingPlanUiEvent.OnToggleCompletedExpanded
+} else {
+    ReadingPlanUiEvent.OnToggleUpcomingExpanded
 }

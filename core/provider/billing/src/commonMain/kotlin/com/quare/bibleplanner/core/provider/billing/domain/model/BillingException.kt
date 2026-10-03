@@ -12,6 +12,6 @@ sealed class BillingException : Exception() {
     class BrowserCheckoutNotConfirmed : BillingException()
 
     data class Unknown(
-        override val message: String? = null,
+        override val message: String?,
     ) : BillingException()
 }

@@ -136,6 +136,7 @@ internal class IsChapterReadStatusUseCaseTest {
                     id = BookId.GEN,
                     chapters = emptyList(),
                     isRead = false,
+                    isFavorite = false,
                 ),
             ),
         )
@@ -182,6 +183,7 @@ internal class IsChapterReadStatusUseCaseTest {
                     ),
                 ),
                 isRead = false,
+                isFavorite = false,
             ),
         ),
     ) {

@@ -111,6 +111,8 @@ internal class UpdateWholeBookReadStatusIfNeededUseCaseTest {
                         number = index + 1,
                         bookId = BookId.GEN.name,
                         isRead = isRead,
+                        readUpdatedAt = null,
+                        isReadPendingSync = false,
                     )
                 },
             ),

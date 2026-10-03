@@ -61,6 +61,7 @@ internal class PaywallViewModelTest {
         title = "Monthly",
         description = "Monthly plan",
         type = StorePackageType.MONTHLY,
+        originalObject = null,
     )
 
     private val annualPackage = StorePackage(
@@ -70,6 +71,7 @@ internal class PaywallViewModelTest {
         title = "Annual",
         description = "Annual plan",
         type = StorePackageType.ANNUAL,
+        originalObject = null,
     )
 
     @BeforeTest
@@ -288,7 +290,10 @@ internal class PaywallViewModelTest {
                 ),
                 trackedEvents.last(),
             )
-            assertEquals(listOf(PaywallUiAction.ShowSnackbar(Res.string.error_purchase_cancelled)), actions)
+            assertEquals(
+                listOf(PaywallUiAction.ShowSnackbar(Res.string.error_purchase_cancelled, args = emptyList())),
+                actions,
+            )
             assertFalse(assertIs<PaywallUiState.Success>(viewModel.uiState.value).isPurchasing)
             assertTrue(commands.isEmpty())
         }

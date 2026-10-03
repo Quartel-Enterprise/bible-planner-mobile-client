@@ -81,6 +81,8 @@ internal class ProfileUiStateFactory(
     private val adsConsentService: AdsConsentService,
     private val platform: Platform,
 ) {
+    private val settledStatuses = setOf(DownloadStatus.DONE, DownloadStatus.NOT_STARTED)
+
     fun createInitialState(): ProfileUiState = ProfileUiState(
         accountStatusModel = AccountStatusModel.Loading,
         subscriptionStatus = Loadable.Loading,
@@ -196,9 +198,10 @@ internal class ProfileUiStateFactory(
         getSelectedVersionDownloadedChapters(),
     ) { selectedBible, allVersions, downloadedChaptersCount ->
         val bibleVersionEntity = allVersions.find { it.id == selectedBible?.version?.id }
-        val downloadProgress = when (bibleVersionEntity?.status) {
-            DownloadStatus.DONE, DownloadStatus.NOT_STARTED, null -> null
-            else -> downloadedChaptersCount.toFloat() / bibleVersionEntity.totalChapters
+        val downloadProgress = if (bibleVersionEntity == null || bibleVersionEntity.status in settledStatuses) {
+            null
+        } else {
+            downloadedChaptersCount.toFloat() / bibleVersionEntity.totalChapters
         }
         BibleRow(
             name = selectedBible?.version?.name,
@@ -244,15 +247,18 @@ internal class ProfileUiStateFactory(
         }
     }
 
-    private fun RemoteConfigs.toHeaderRes(): StringResource = when {
-        shouldShowDonate -> Res.string.pro_and_support
-        else -> Res.string.pro_section
+    private fun RemoteConfigs.toHeaderRes(): StringResource = if (shouldShowDonate) {
+        Res.string.pro_and_support
+    } else {
+        Res.string.pro_section
     }
 
-    private fun ThemeConfiguration.toContrastRes(): StringResource? = when {
-        isDynamicColorsEnabled && isDynamicColorSupported() -> Res.string.dynamic_colors
-        else -> contrast.toStringResource()
-    }
+    private fun ThemeConfiguration.toContrastRes(): StringResource? =
+        if (isDynamicColorsEnabled && isDynamicColorSupported()) {
+            Res.string.dynamic_colors
+        } else {
+            contrast.toStringResource()
+        }
 
     private data class BibleRow(
         val name: String?,

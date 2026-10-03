@@ -1,12 +1,12 @@
 package com.quare.bibleplanner.feature.login.presentation
 
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.Apple
 import io.github.jan.supabase.auth.providers.Google
 import io.github.jan.supabase.compose.auth.composable.NativeSignInState
-import kotlinx.coroutines.CancellationException
 
 internal class JvmSignInStarter(
     private val supabaseClient: SupabaseClient,
@@ -20,13 +20,8 @@ internal class JvmSignInStarter(
         redirectHtmlSynchronizer.withSyncedRedirectHtml(
             onError = { capturedError = it },
         ) {
-            try {
-                signInWith(provider)
-            } catch (cancellation: CancellationException) {
-                throw cancellation
-            } catch (throwable: Throwable) {
-                capturedError = throwable
-            }
+            suspendRunCatching { signInWith(provider) }
+                .onFailure { throwable -> capturedError = throwable }
         }
         return capturedError
             ?.let { Result.failure(it) }

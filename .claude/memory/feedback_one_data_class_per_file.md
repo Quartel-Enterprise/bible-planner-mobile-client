@@ -12,3 +12,5 @@ Every data class must have its own file — do not group multiple data classes (
 **Why:** Pierre corrected a batch of files I created (DayStudy.kt with 5 data classes, DTO files with several @Serializable classes, UiState file with model+enum) and asked for one file per data class.
 
 **How to apply:** when creating models/DTOs/UI models, produce one file per declaration named after the class. Related to [[feedback_uistate_no_defaults]].
+
+**Enforced** by the ktlint rule `bible-planner-style:data-class-own-file` for top-level data classes and enums; nested ones (e.g. sealed cases) are exempt.

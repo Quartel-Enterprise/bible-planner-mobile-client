@@ -47,6 +47,7 @@ internal class DayMetaLocalStore(
                     notes = dto.notes,
                     metaUpdatedAt = remoteUpdatedAt,
                     isMetaPendingSync = false,
+                    id = 0,
                 ),
             )
         }

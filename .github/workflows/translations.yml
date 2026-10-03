@@ -37,6 +37,11 @@ jobs:
       - name: Check unused strings
         run: python3 scripts/check_unused_strings.py
 
+      # Compose Resources shows a backslash-escaped apostrophe (\') as is, so
+      # strings.xml under composeResources must write the apostrophe unescaped
+      - name: Check escaped apostrophes
+        run: python3 scripts/check_compose_apostrophes.py
+
       # Same gate for the in-app release notes JSON: the three languages must
       # declare the same versions and platform buckets
       - name: Check release notes

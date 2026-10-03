@@ -17,8 +17,10 @@ internal class CheckRemoteSessionStateUseCase(
             onFailure = { it.toRemoteSessionState() },
         )
 
-    private fun Throwable.toRemoteSessionState(): RemoteSessionState = when {
-        this is RestException && statusCode in clientErrorStatusCodes -> RemoteSessionState.REVOKED
-        else -> RemoteSessionState.UNKNOWN
-    }
+    private fun Throwable.toRemoteSessionState(): RemoteSessionState =
+        if (this is RestException && statusCode in clientErrorStatusCodes) {
+            RemoteSessionState.REVOKED
+        } else {
+            RemoteSessionState.UNKNOWN
+        }
 }

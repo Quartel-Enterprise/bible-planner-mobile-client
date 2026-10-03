@@ -98,6 +98,7 @@ class DownloadChaptersUseCase(
                         bibleVersionId = versionId,
                         text = verseDto.text,
                         heading = verseDto.heading,
+                        id = 0,
                     )
                 }
             }

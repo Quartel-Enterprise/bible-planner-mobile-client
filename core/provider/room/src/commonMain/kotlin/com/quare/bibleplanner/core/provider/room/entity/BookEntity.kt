@@ -8,8 +8,8 @@ import androidx.room3.PrimaryKey
 data class BookEntity(
     @PrimaryKey
     val id: String,
-    @ColumnInfo(defaultValue = "0") val isRead: Boolean = false,
-    @ColumnInfo(defaultValue = "0") val isFavorite: Boolean = false,
+    @ColumnInfo(defaultValue = "0") val isRead: Boolean,
+    @ColumnInfo(defaultValue = "0") val isFavorite: Boolean,
     val favoriteUpdatedAt: Long?,
     @ColumnInfo(defaultValue = "0") val isFavoritePendingSync: Boolean,
 )

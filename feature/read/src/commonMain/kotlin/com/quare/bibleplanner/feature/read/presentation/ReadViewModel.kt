@@ -341,6 +341,7 @@ class ReadViewModel(
     private fun ChapterStudyTargetModel.toChapterStudyNavRoute(): ChapterStudyNavRoute = ChapterStudyNavRoute(
         bookId = bookId.name,
         chapterNumber = chapterNumber,
+        isCompanion = false,
     )
 
     private fun ChapterStudyTargetModel.toRewardedUnlockRequestKey(): String = listOf(

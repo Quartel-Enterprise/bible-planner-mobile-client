@@ -30,9 +30,9 @@ import androidx.room3.PrimaryKey
 )
 data class VerseTextEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long,
     val verseId: Long,
     val bibleVersionId: String,
     val text: String,
-    @ColumnInfo(defaultValue = "NULL") val heading: String? = null,
+    @ColumnInfo(defaultValue = "NULL") val heading: String?,
 )

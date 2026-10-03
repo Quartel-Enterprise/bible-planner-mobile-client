@@ -164,7 +164,7 @@ internal class PaywallViewModel(
                                     )
                                     uiState.update { currentState.copy(isPurchasing = false) }
                                     val messageRes = exceptionMapper.map(error)
-                                    uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes))
+                                    uiAction.emit(PaywallUiAction.ShowSnackbar(messageRes, args = emptyList()))
                                 }
                         }
                     }
@@ -179,14 +179,14 @@ internal class PaywallViewModel(
                     )
                 }
                 uiState.update { currentState ->
-                    when (currentState) {
-                        is PaywallUiState.Success -> currentState.copy(
+                    if (currentState is PaywallUiState.Success) {
+                        currentState.copy(
                             subscriptionPlans = currentState.subscriptionPlans.map { plan ->
                                 plan.copy(isSelected = plan.type == event.planType)
                             },
                         )
-
-                        else -> currentState
+                    } else {
+                        currentState
                     }
                 }
             }

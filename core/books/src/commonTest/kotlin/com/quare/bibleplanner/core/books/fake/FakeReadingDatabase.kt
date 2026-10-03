@@ -55,6 +55,8 @@ internal class FakeReadingDatabase {
                 number = chapterNumber,
                 bookId = bookId.name,
                 isRead = chapterNumber in readChapters,
+                readUpdatedAt = null,
+                isReadPendingSync = false,
             )
             (1..verseCount).forEach { verseNumber ->
                 verses += VerseEntity(
@@ -62,6 +64,8 @@ internal class FakeReadingDatabase {
                     number = verseNumber,
                     chapterId = chapterId,
                     isRead = verseNumber in readVerses[chapterNumber].orEmpty(),
+                    readUpdatedAt = null,
+                    isReadPendingSync = false,
                 )
             }
         }

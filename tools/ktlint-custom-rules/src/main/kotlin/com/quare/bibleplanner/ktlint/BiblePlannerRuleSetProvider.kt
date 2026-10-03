@@ -24,6 +24,11 @@ class BiblePlannerRuleSetProvider : RuleSetProviderV3(RuleSetId(RULE_SET_ID)) {
         RuleProvider { UnusedFunctionParameterRule() },
         RuleProvider { ComposableNamingSuffixRule() },
         RuleProvider { ConstructorPropertyOrderRule() },
+        RuleProvider { DataClassDefaultValueRule() },
+        RuleProvider { DataClassOwnFileRule() },
+        RuleProvider { TwoBranchWhenRule() },
+        RuleProvider { CompanionObjectDurationRule() },
+        RuleProvider { SuspendRunCatchingRule() },
         RuleProvider { NoCommentsRule() },
     )
 }

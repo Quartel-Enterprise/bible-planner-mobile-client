@@ -71,6 +71,9 @@ class BooksRepositoryImpl(
                         number = chapter.number,
                         bookId = book.id.name,
                         isRead = chapter.isRead,
+                        id = 0,
+                        readUpdatedAt = null,
+                        isReadPendingSync = false,
                     )
                 }
                 val chapterIds = chapterDao.insertChapters(chapterEntities)
@@ -83,6 +86,8 @@ class BooksRepositoryImpl(
                             number = verse.number,
                             chapterId = chapterId,
                             isRead = verse.isRead,
+                            readUpdatedAt = null,
+                            isReadPendingSync = false,
                         )
                     }
                     verseDao.upsertVerses(verseEntities)

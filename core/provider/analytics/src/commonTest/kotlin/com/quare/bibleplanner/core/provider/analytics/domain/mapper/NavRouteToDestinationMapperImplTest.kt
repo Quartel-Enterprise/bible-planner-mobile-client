@@ -255,6 +255,7 @@ class NavRouteToDestinationMapperImplTest {
             ChapterStudyNavRoute(
                 bookId = "GEN",
                 chapterNumber = 3,
+                isCompanion = false,
             ),
         )
 

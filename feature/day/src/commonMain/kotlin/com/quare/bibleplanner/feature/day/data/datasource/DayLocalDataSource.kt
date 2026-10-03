@@ -50,6 +50,7 @@ class DayLocalDataSource(
                     notes = null,
                     metaUpdatedAt = metaUpdatedAt,
                     isMetaPendingSync = true,
+                    id = 0,
                 ),
             )
         }
@@ -83,6 +84,7 @@ class DayLocalDataSource(
                         notes = notes,
                         metaUpdatedAt = metaUpdatedAt,
                         isMetaPendingSync = true,
+                        id = 0,
                     ),
                 )
             }

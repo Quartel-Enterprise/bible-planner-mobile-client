@@ -30,6 +30,7 @@ internal class CalculateBibleProgressUseCaseTest {
                     readUpdatedAt = null,
                 ),
             ),
+            isFavorite = false,
         )
         val useCase = CalculateBibleProgressUseCase(FakeBooksRepository(listOf(book)))
 

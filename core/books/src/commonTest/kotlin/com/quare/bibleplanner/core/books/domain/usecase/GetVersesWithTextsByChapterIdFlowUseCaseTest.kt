@@ -36,6 +36,8 @@ internal class GetVersesWithTextsByChapterIdFlowUseCaseTest {
             verseId = firstVerse.id,
             bibleVersionId = "WEB",
             text = "In the beginning",
+            id = 0,
+            heading = null,
         )
 
         // When

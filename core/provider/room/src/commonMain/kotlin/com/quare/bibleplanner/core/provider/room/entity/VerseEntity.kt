@@ -26,7 +26,7 @@ data class VerseEntity(
     val id: Long,
     val number: Int,
     val chapterId: Long,
-    val isRead: Boolean = false,
-    @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long? = null,
-    @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean = false,
+    val isRead: Boolean,
+    @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long?,
+    @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean,
 )

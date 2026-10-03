@@ -50,6 +50,7 @@ internal class StudyPanelSceneStrategyTest {
         key = ChapterStudyNavRoute(
             bookId = "GEN",
             chapterNumber = 1,
+            isCompanion = false,
         ),
         metadata = getChapterStudyPane(),
     )

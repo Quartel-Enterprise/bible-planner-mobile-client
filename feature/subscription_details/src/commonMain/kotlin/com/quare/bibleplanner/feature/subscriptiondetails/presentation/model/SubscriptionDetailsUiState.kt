@@ -10,7 +10,7 @@ sealed interface SubscriptionDetailsUiState {
         val planType: ProPlanType,
         val purchaseDate: LocalDateTime?,
         val expirationDate: LocalDateTime?,
-        val willRenew: Boolean = true,
+        val willRenew: Boolean,
     ) : SubscriptionDetailsUiState
 
     data object Error : SubscriptionDetailsUiState

@@ -18,7 +18,7 @@ import androidx.room3.PrimaryKey
     indices = [Index("cacheKey")],
 )
 data class DayStudyFactEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long,
     val cacheKey: String,
     val position: Int,
     val label: String,

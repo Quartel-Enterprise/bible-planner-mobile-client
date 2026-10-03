@@ -25,6 +25,7 @@ internal class NavigationSavedStateConfigurationTest {
         ChapterStudyNavRoute(
             bookId = "GEN",
             chapterNumber = 3,
+            isCompanion = false,
         ),
         ChatNavRoute(
             source = ChatEntrySource.DAY_FAB,
