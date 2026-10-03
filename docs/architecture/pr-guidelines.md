@@ -6,4 +6,5 @@
   edge cases: the AI reviewers only learn the intent of the change from it (see
   [docs/ci.md](../ci.md#ai-review))
 - Before opening the PR, the change goes through `/code-review` and the `review-conventions` skill;
-  the `create-pr` skill runs both. Add the `ai-review` label for a second review on GitHub
+  the `create-pr` skill runs both. Claude reviews it again on GitHub when it opens,
+  and again whenever the `ai-review` label is added

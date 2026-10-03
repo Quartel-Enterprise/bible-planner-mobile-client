@@ -18,6 +18,7 @@ on:
       - module-graph
       - translations
       - claude-review
+      - claude-review-on-request
     types:
       - completed
 
