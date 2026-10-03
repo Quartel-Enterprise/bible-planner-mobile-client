@@ -108,10 +108,24 @@ internal class OfflineFirstSynchronizerTest {
         remote.snapshot = listOf("GEN", "EXO")
 
         // When
-        sync.pullSnapshot()
+        sync.fetchSnapshot().apply()
 
         // Then
         assertEquals(listOf("GEN", "EXO"), local.applyRemoteCalls)
+    }
+
+    @Test
+    fun `GIVEN a remote snapshot WHEN only fetching THEN nothing is applied locally yet`() = runTest {
+        // Given
+        val sync = prepareScenario(online = true)
+        remote.snapshot = listOf("GEN", "EXO")
+
+        // When
+        sync.fetchSnapshot()
+
+        // Then
+        assertTrue(local.applyRemoteCalls.isEmpty())
+        assertTrue(local.adoptProvisionalDefaultsCalls.isEmpty())
     }
 
     @Test
@@ -121,7 +135,7 @@ internal class OfflineFirstSynchronizerTest {
         remote.snapshot = listOf("GEN")
 
         // When
-        sync.pullSnapshot()
+        sync.fetchSnapshot().apply()
 
         // Then
         assertEquals(listOf(NOW), local.adoptProvisionalDefaultsCalls)
@@ -135,7 +149,7 @@ internal class OfflineFirstSynchronizerTest {
         userId.value = null
 
         // When
-        sync.pullSnapshot()
+        sync.fetchSnapshot().apply()
 
         // Then
         assertTrue(local.adoptProvisionalDefaultsCalls.isEmpty())

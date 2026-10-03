@@ -3,6 +3,7 @@ package com.quare.bibleplanner.core.sync.data
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.date.CurrentTimestampProvider
 import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
+import com.quare.bibleplanner.core.sync.domain.FetchedSnapshot
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import com.quare.bibleplanner.core.sync.domain.SyncRemoteStore
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
@@ -23,7 +24,7 @@ import kotlin.time.Duration.Companion.seconds
  *    pending and the device is online (gated on OS connectivity so they flush the moment the network
  *    returns); the pending flag is cleared only if the row was not re-touched meanwhile (guarded in
  *    [SyncLocalStore.markSynced]).
- *  - **pull** ([pullSnapshot]) — the full remote set is fetched and applied; driven by
+ *  - **pull** ([fetchSnapshot]) — the full remote set is fetched and applied; driven by
  *    [SyncCoordinator] on every realtime CONNECTED transition (including cold start). Covers changes
  *    missed while offline, and is what tells the local store its provisional defaults are absent for
  *    this account (via [SyncLocalStore.adoptProvisionalDefaults]).
@@ -103,10 +104,13 @@ class OfflineFirstSynchronizer<E, D>(
             .collect(localStore::applyRemote)
     }
 
-    override suspend fun pullSnapshot() {
-        val userId = getAuthenticatedUserId() ?: return
-        remoteStore.fetch(userId).forEach { localStore.applyRemote(it) }
-        localStore.adoptProvisionalDefaults(currentTimestampProvider.getCurrentTimestamp())
+    override suspend fun fetchSnapshot(): FetchedSnapshot {
+        val userId = getAuthenticatedUserId() ?: return FetchedSnapshot {}
+        val dtos = remoteStore.fetch(userId)
+        return FetchedSnapshot {
+            dtos.forEach { localStore.applyRemote(it) }
+            localStore.adoptProvisionalDefaults(currentTimestampProvider.getCurrentTimestamp())
+        }
     }
 
     override suspend fun clearLocal() {

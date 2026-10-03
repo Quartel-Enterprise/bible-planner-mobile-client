@@ -18,8 +18,11 @@ interface Synchronizer {
     /** Applies live remote changes; suspends forever. */
     suspend fun observeRealtime()
 
-    /** Fetches and applies the full remote snapshot (used on every realtime reconnection). */
-    suspend fun pullSnapshot()
+    /**
+     * Fetches the full remote snapshot (used on every realtime reconnection); the returned
+     * [FetchedSnapshot] applies it locally.
+     */
+    suspend fun fetchSnapshot(): FetchedSnapshot
 
     /** Wipes this dataset's local state on logout, without scheduling a push. */
     suspend fun clearLocal()

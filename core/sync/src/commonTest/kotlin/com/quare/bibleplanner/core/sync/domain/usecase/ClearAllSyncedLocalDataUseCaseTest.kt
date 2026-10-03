@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.sync.domain.usecase
 
+import com.quare.bibleplanner.core.sync.domain.FetchedSnapshot
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -33,7 +34,7 @@ private class ClearableSynchronizer : Synchronizer {
 
     override suspend fun observeRealtime() = error("unused")
 
-    override suspend fun pullSnapshot() = error("unused")
+    override suspend fun fetchSnapshot(): FetchedSnapshot = error("unused")
 
     override suspend fun clearLocal() {
         hasCleared = true

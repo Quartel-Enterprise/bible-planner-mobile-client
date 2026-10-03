@@ -2,6 +2,7 @@ package com.quare.bibleplanner.core.sync.data
 
 import com.quare.bibleplanner.core.model.AppForegroundStateHolder
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.sync.domain.FetchedSnapshot
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.SupabaseSerializer
@@ -112,8 +113,8 @@ internal class SyncCoordinatorTest {
         runCurrent()
 
         // Then
-        assertTrue("pullSnapshot" in first.calls)
-        assertTrue("pullSnapshot" in second.calls)
+        assertTrue("applySnapshot" in first.calls)
+        assertTrue("applySnapshot" in second.calls)
         assertEquals(
             expected = listOf(AnalyticsEventNames.SYNC_COMPLETED),
             actual = trackedEvents,
@@ -203,8 +204,9 @@ private class RecordingSynchronizer : Synchronizer {
         awaitCancellation()
     }
 
-    override suspend fun pullSnapshot() {
-        calls += "pullSnapshot"
+    override suspend fun fetchSnapshot(): FetchedSnapshot {
+        calls += "fetchSnapshot"
+        return FetchedSnapshot { calls += "applySnapshot" }
     }
 
     override suspend fun clearLocal() {
