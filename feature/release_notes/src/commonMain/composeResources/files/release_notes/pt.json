@@ -1,7 +1,8 @@
 {
   "2.11.0": {
     "common": [
-      "Depois de entrar na sua conta ou voltar a ficar online, seu progresso de leitura, suas marcações e sua foto de perfil aparecem bem mais rápido."
+      "Depois de entrar na sua conta ou voltar a ficar online, seu progresso de leitura, suas marcações e sua foto de perfil aparecem bem mais rápido.",
+      "Corrigimos o calendário para alterar a data em que você leu um dia, que em lugares como o Japão ou a Austrália podia abrir no dia anterior e não deixar escolher o dia de hoje."
     ],
     "android": [
       "Usou seus estudos com IA grátis? Agora, além de assinar o Pro, você pode assistir a um vídeo curto para liberar mais um estudo do capítulo ou do dia. Toque em \"Desbloquear\" para escolher. O número de vídeos por dia é limitado.",

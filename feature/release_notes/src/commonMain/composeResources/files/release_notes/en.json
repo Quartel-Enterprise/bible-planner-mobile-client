@@ -1,7 +1,8 @@
 {
   "2.11.0": {
     "common": [
-      "After you sign in or come back online, your reading progress, your highlights and notes, and your profile photo show up much faster."
+      "After you sign in or come back online, your reading progress, your highlights and notes, and your profile photo show up much faster.",
+      "Fixed the calendar for changing the date you read a day, which in places such as Japan or Australia could open on the day before and not let you pick today."
     ],
     "android": [
       "Used up your free AI studies? Besides subscribing to Pro, you can now watch a short video to unlock one more chapter or day study. Tap \"Unlock\" to choose. The number of videos per day is limited.",

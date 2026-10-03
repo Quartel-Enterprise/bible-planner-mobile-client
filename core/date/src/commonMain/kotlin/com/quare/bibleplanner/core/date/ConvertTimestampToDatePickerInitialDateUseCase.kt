@@ -1,34 +1,12 @@
 package com.quare.bibleplanner.core.date
 
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
-
-class ConvertTimestampToDatePickerInitialDateUseCase {
-    /**
-     * Converts a timestamp to a UTC timestamp at midnight (local time) for the date picker.
-     * The DatePicker expects a UTC timestamp, but we need to ensure it represents
-     * midnight in the local timezone so the correct date is displayed.
-     *
-     * @param timestamp The timestamp in milliseconds (can be any time of day)
-     * @return A UTC timestamp representing midnight in local timezone for the date
-     */
-    operator fun invoke(timestamp: Long): Long {
-        // Get the local timezone once
-        val localTimeZone = TimeZone.currentSystemDefault()
-
-        // Convert timestamp to LocalDateTime in local timezone to get the date
-        val localDateTime = Instant
-            .fromEpochMilliseconds(timestamp)
-            .toLocalDateTime(localTimeZone)
-
-        // Extract the date components using the shared extension
-        val localDate = localDateTime.toLocalDate()
-
-        // Convert the local date to midnight in LOCAL timezone, then get UTC timestamp
-        // This ensures the DatePicker shows the correct local date
-        val localMidnight = localDate.atStartOfDayIn(localTimeZone)
-        return localMidnight.toEpochMilliseconds()
-    }
+class ConvertTimestampToDatePickerInitialDateUseCase(
+    private val localDateTimeProvider: LocalDateTimeProvider,
+) {
+    // Why: the DatePicker reads initialSelectedDateMillis as a UTC date, so the local date must be sent as its UTC
+    // midnight; its local midnight falls on the previous UTC day east of UTC and preselects the wrong day.
+    operator fun invoke(timestamp: Long): Long = localDateTimeProvider
+        .getLocalDateTime(timestamp)
+        .toLocalDate()
+        .toTimestampUTC()
 }
