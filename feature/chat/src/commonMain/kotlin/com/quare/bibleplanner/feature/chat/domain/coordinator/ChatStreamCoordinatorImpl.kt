@@ -5,12 +5,12 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendEventModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendFailureModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendModel
 import com.quare.bibleplanner.feature.chat.domain.model.ChatSendRequestModel
 import com.quare.bibleplanner.feature.chat.domain.usecase.SendChatMessageUseCase
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,26 +51,23 @@ class ChatStreamCoordinatorImpl(
     }
 
     private suspend fun stream(request: ChatSendRequestModel) {
-        try {
-            sendChatMessage(request).collect(::onEvent)
-            send.value = null
-        } catch (cancellation: CancellationException) {
-            throw cancellation
-        } catch (throwable: Throwable) {
-            val failure = sendChatMessage.mapFailure(throwable)
-            if (failure == ChatSendFailureModel.ConversationGone && request.conversationId != null) {
-                val newConversationRequest = request.copy(conversationId = null)
-                send.update { current ->
-                    current?.copy(
-                        request = newConversationRequest,
-                        conversationId = null,
-                    )
+        suspendRunCatching { sendChatMessage(request).collect(::onEvent) }
+            .onSuccess { send.value = null }
+            .onFailure { throwable ->
+                val failure = sendChatMessage.mapFailure(throwable)
+                if (failure == ChatSendFailureModel.ConversationGone && request.conversationId != null) {
+                    val newConversationRequest = request.copy(conversationId = null)
+                    send.update { current ->
+                        current?.copy(
+                            request = newConversationRequest,
+                            conversationId = null,
+                        )
+                    }
+                    stream(newConversationRequest)
+                } else {
+                    onFailure(throwable, failure)
                 }
-                stream(newConversationRequest)
-                return
             }
-            onFailure(throwable, failure)
-        }
     }
 
     private fun onEvent(event: ChatSendEventModel) {

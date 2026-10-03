@@ -440,6 +440,30 @@ of the file — and says where it goes. It decides by **where the value is read*
 without type resolution: a constant read by a top-level `@Composable` has a reader outside every class, and a
 constructor default is read from the primary constructor.
 
+### Durations
+
+A `kotlin.time.Duration` — a backoff, a timeout, a poll interval — is a `private val` in the class body, in
+`lowerCamelCase`, never a companion object member, whether private or public. A `Duration` cannot be `const`, so
+it is never one of the constants a companion holds.
+
+```kotlin
+// Correct
+class DevicesSynchronizer(...) {
+    private val initialBackoff: Duration = 2.seconds
+}
+
+// Wrong
+class DevicesSynchronizer(...) {
+    companion object {
+        val INITIAL_BACKOFF = 2.seconds
+    }
+}
+```
+
+Enforced by the custom ktlint rule `bible-planner-style:companion-object-duration`, which recognises a `Duration`
+by its declared type or by an initializer such as `2.seconds`, `Duration.parse(...)` or `.toDuration(...)`. A
+private one is already reported by `companion-object-constants`, so this rule covers the public and internal ones.
+
 ## Interface and Implementation in Separate Files
 
 An interface and a class that implements it never share a file. The interface is the contract a consumer imports;
@@ -526,6 +550,61 @@ Enforced by the custom ktlint rule `bible-planner-style:dto-serial-name`, on eve
 ends in `Dto`. A `*Dto` that is not serialized (e.g. `ProfileDto`, built by hand from a `JsonObject`) is not held
 to it.
 
+## Data Classes
+
+### No default values
+
+A data class never gives a property a default value — not a `UiState`, not a domain model, not a Room entity.
+Every place that builds one says what each value is, and a property added later cannot silently take a default at
+call sites that never decided on it.
+
+```kotlin
+// Correct
+data class ChapterEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean,
+)
+
+ChapterEntity(id = 0, isReadPendingSync = false)
+
+// Wrong
+data class ChapterEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean = false,
+)
+```
+
+A Room `@ColumnInfo(defaultValue = ...)` is a schema default, not a Kotlin one, and stays. For a JSON payload
+whose fields may be missing, see [DTOs](#dtos): the type is nullable instead, or the mapper reads the
+`JsonObject` directly.
+
+Enforced by the custom ktlint rule `bible-planner-style:data-class-default-value`. A `@Serializable` `*Dto` is left
+to `dto-serial-name`, which reports the same thing with a DTO-specific message.
+
+### One per file
+
+Every top-level data class and enum lives in a file of its own, named after it — even when it is small and only
+used next to another declaration. A file never groups several models, nor a model with the class that uses it.
+
+```kotlin
+// Correct — DayStudy.kt
+data class DayStudy(...)
+
+// Correct — DayStudyFact.kt
+data class DayStudyFact(...)
+
+// Wrong — DayStudy.kt
+data class DayStudy(...)
+
+data class DayStudyFact(...)
+```
+
+A data class nested inside another declaration (the cases of a `sealed interface`, a private row model inside the
+class that builds it) belongs to that declaration and stays where it is. Tests follow the rule too: a fixture
+model moves to its own `internal` file in the test source set.
+
+Enforced by the custom ktlint rule `bible-planner-style:data-class-own-file`.
+
 ## Composable Naming
 
 A `@Composable` that emits UI ends in a word that says **what kind of UI it is**, taken from a closed list, so the
@@ -566,3 +645,55 @@ Not held to the list:
 
 Enforced by the custom ktlint rule `bible-planner-style:composable-naming-suffix`. A genuinely new kind of UI gets
 a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — not a one-off exception.
+
+## Two Branches Are an `if`
+
+A `when` with one branch besides `else` is an `if`/`else` with heavier syntax. Reserve `when` for three or more
+branches and for exhaustive dispatch over a sealed type or an enum (which has no `else`).
+
+```kotlin
+// Correct
+private fun RemoteConfigs.toHeaderRes(): StringResource = if (shouldShowDonate) {
+    Res.string.pro_and_support
+} else {
+    Res.string.pro_section
+}
+
+// Wrong
+private fun RemoteConfigs.toHeaderRes(): StringResource = when {
+    shouldShowDonate -> Res.string.pro_and_support
+    else -> Res.string.pro_section
+}
+```
+
+A branch matching several values becomes an `||` (or an `in` on a set the class holds). Enforced by the custom
+ktlint rule `bible-planner-style:two-branch-when`, which flags any `when` with exactly two entries, one of them
+`else`.
+
+## Catching Exceptions in Coroutines
+
+Code that must let a `CancellationException` through and catch everything else uses `suspendRunCatching`
+(`core/utils`) and handles the `Result` with `onSuccess` / `onFailure`. Both are inline, so suspend calls and
+`return` work inside them.
+
+```kotlin
+// Correct
+suspendRunCatching { signInWith(provider) }
+    .onFailure { throwable -> capturedError = throwable }
+
+// Wrong
+try {
+    signInWith(provider)
+} catch (cancellation: CancellationException) {
+    throw cancellation
+} catch (throwable: Throwable) {
+    capturedError = throwable
+}
+```
+
+`suspendRunCatching` catches `Exception`, so an `Error` keeps propagating. A `try` that handles cancellation
+itself (e.g. `BibleVersionDownloadWorker` showing a paused state) or that catches a specific exception type is a
+different intent and stays a `try`.
+
+Enforced by the custom ktlint rule `bible-planner-style:suspend-run-catching`: it flags a `try` with a catch
+clause that only rethrows its `CancellationException` and another that catches `Exception` or `Throwable`.

@@ -34,6 +34,7 @@ internal class DayStudyEntityMapper {
                 position = index,
                 title = chapterSummary.title,
                 body = chapterSummary.body,
+                id = 0,
             )
         },
         takeaways = response.content.takeaways.mapIndexed { index, takeaway ->
@@ -41,6 +42,7 @@ internal class DayStudyEntityMapper {
                 cacheKey = cacheKey,
                 position = index,
                 text = takeaway,
+                id = 0,
             )
         },
         facts = response.content.context.facts.mapIndexed { index, fact ->
@@ -49,6 +51,7 @@ internal class DayStudyEntityMapper {
                 position = index,
                 label = fact.label,
                 value = fact.value,
+                id = 0,
             )
         },
         questions = response.content.commonQuestions.mapIndexed { index, question ->
@@ -57,6 +60,7 @@ internal class DayStudyEntityMapper {
                 position = index,
                 question = question.question,
                 answer = question.answer,
+                id = 0,
             )
         },
     )

@@ -127,6 +127,7 @@ internal class ReadViewModelTest {
         ChapterStudyNavRoute(
             bookId = "GEN",
             chapterNumber = 3,
+            isCompanion = false,
         ),
     )
     private var notificationPermissionRequests = 0
@@ -861,6 +862,7 @@ internal class ReadViewModelTest {
                         ChapterStudyNavRoute(
                             bookId = "EXO",
                             chapterNumber = 7,
+                            isCompanion = false,
                         ),
                     ),
                 ),

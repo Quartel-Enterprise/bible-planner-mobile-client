@@ -194,6 +194,7 @@ internal class CalculateAllChaptersReadStatusUseCaseTest {
         id = id,
         chapters = chapters,
         isRead = false,
+        isFavorite = false,
     )
 
     private fun bookChapter(

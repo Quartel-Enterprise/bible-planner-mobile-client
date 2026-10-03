@@ -77,6 +77,7 @@ internal class DayUiStateFlowFactoryTest {
             ),
         ),
         isRead = true,
+        isFavorite = false,
     )
     private val readObadiah = BookDataModel(
         id = BookId.OBA,
@@ -88,6 +89,7 @@ internal class DayUiStateFlowFactoryTest {
             ),
         ),
         isRead = true,
+        isFavorite = false,
     )
     private lateinit var factory: DayUiStateFlowFactory
 

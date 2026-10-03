@@ -17,3 +17,6 @@ called this out on `PlatformFile.toPickedEvent`, which used a two-clause `when {
 **How to apply:** count the branches before reaching for `when`. Two → `if/else`. Note ktlint may
 then collapse the body onto the signature line (`= if (...) {`) — run `ktlintFormat` and keep its
 output. Related: [[feedback_named_args_multiline]], [[feedback_prefer_method_references]].
+
+**Enforced** by the ktlint rule `bible-planner-style:two-branch-when` (any `when` with exactly two
+entries, one of them `else`).

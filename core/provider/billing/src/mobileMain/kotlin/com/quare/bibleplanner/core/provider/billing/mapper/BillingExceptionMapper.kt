@@ -4,13 +4,13 @@ import com.quare.bibleplanner.core.provider.billing.domain.model.BillingExceptio
 import com.revenuecat.purchases.kmp.models.PurchasesErrorCode
 import com.revenuecat.purchases.kmp.models.PurchasesException
 
-internal fun Throwable.toBillingException(): BillingException = when (this) {
-    is PurchasesException -> when (code) {
+internal fun Throwable.toBillingException(): BillingException = if (this is PurchasesException) {
+    when (code) {
         PurchasesErrorCode.PurchaseCancelledError -> BillingException.UserCancelled()
         PurchasesErrorCode.NetworkError -> BillingException.NetworkError()
         PurchasesErrorCode.PaymentPendingError -> BillingException.PaymentPending()
         else -> BillingException.Unknown(message)
     }
-
-    else -> BillingException.Unknown(message)
+} else {
+    BillingException.Unknown(message)
 }

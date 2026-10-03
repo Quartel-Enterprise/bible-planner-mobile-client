@@ -32,11 +32,15 @@ internal class GetVersesShareContentUseCaseTest {
                     verseId = verse.id,
                     bibleVersionId = "web",
                     text = " Text ${verse.number} ",
+                    id = 0,
+                    heading = null,
                 )
                 database.verseTexts += VerseTextEntity(
                     verseId = verse.id,
                     bibleVersionId = "kjv",
                     text = "Other ${verse.number}",
+                    id = 0,
+                    heading = null,
                 )
             }
         useCase = GetVersesShareContentUseCase(

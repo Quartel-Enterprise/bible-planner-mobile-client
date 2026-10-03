@@ -9,6 +9,6 @@ import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 data class BibleVersionEntity(
     @PrimaryKey val id: String,
     val status: DownloadStatus,
-    @ColumnInfo(defaultValue = "1189") val totalChapters: Int = 1189,
-    @ColumnInfo(defaultValue = "") val contentVersion: String = "",
+    @ColumnInfo(defaultValue = "1189") val totalChapters: Int,
+    @ColumnInfo(defaultValue = "") val contentVersion: String,
 )

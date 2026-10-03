@@ -218,12 +218,6 @@ internal class RewardedAdServiceImplTest {
     }
 }
 
-private enum class ShowOutcome {
-    EARNED,
-    DISMISSED,
-    FAILED,
-}
-
 private class FakeRewardedAdDataSource(
     override val isSupported: Boolean,
     private val loadFailure: RewardedAdFailureReason?,

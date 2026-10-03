@@ -134,12 +134,6 @@ internal class KermitSupabaseLoggingProcessorTest {
     }
 }
 
-private data class LogEntry(
-    val severity: Severity,
-    val tag: String,
-    val throwable: Throwable?,
-)
-
 private class RecordingLogWriter : LogWriter() {
     val entries = mutableListOf<LogEntry>()
 

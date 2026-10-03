@@ -43,6 +43,7 @@ internal class GetReleaseNotesUseCaseTest {
     private fun note(version: String): ReleaseNoteModel = ReleaseNoteModel(
         version = version,
         changes = listOf("Change in $version"),
+        dateRepresentation = null,
     )
 
     private fun prepareScenario(result: Result<List<ReleaseNoteModel>>) {

@@ -24,7 +24,7 @@ class PaywallUiStateFactory(
 ) {
     data class PaywallInitializationResult(
         val uiState: PaywallUiState,
-        val storePackages: List<StorePackage> = emptyList(),
+        val storePackages: List<StorePackage>,
     )
 
     suspend fun create(storeName: String): PaywallInitializationResult {
@@ -38,7 +38,7 @@ class PaywallUiStateFactory(
 
                 if (subscriptionPlans.isEmpty()) {
                     Logger.e { "No subscription plans available for store: $storeName" }
-                    PaywallInitializationResult(PaywallUiState.Error)
+                    PaywallInitializationResult(PaywallUiState.Error, storePackages = emptyList())
                 } else {
                     // Select Annual by default if available, otherwise first
                     val initialPlans = subscriptionPlans
@@ -72,7 +72,7 @@ class PaywallUiStateFactory(
             },
             onFailure = { throwable ->
                 Logger.e(throwable) { "Failed to initialize paywall" }
-                PaywallInitializationResult(PaywallUiState.Error)
+                PaywallInitializationResult(PaywallUiState.Error, storePackages = emptyList())
             },
         )
     }

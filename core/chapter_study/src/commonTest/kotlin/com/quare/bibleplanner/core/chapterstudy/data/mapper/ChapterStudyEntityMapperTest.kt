@@ -58,6 +58,7 @@ internal class ChapterStudyEntityMapperTest {
                         startVerse = 1,
                         endVerse = 7,
                         title = "The temptation and the fall",
+                        id = 0,
                     ),
                     ChapterStudyOutlineSectionEntity(
                         cacheKey = CACHE_KEY,
@@ -65,6 +66,7 @@ internal class ChapterStudyEntityMapperTest {
                         startVerse = 8,
                         endVerse = 24,
                         title = "The judgement of God",
+                        id = 0,
                     ),
                 ),
                 names = listOf(
@@ -72,16 +74,19 @@ internal class ChapterStudyEntityMapperTest {
                         cacheKey = CACHE_KEY,
                         position = 0,
                         name = "The serpent",
+                        id = 0,
                     ),
                     ChapterStudyNameEntity(
                         cacheKey = CACHE_KEY,
                         position = 1,
                         name = "Eve",
+                        id = 0,
                     ),
                     ChapterStudyNameEntity(
                         cacheKey = CACHE_KEY,
                         position = 2,
                         name = "Garden of Eden",
+                        id = 0,
                     ),
                 ),
                 crossReferences = listOf(
@@ -92,6 +97,7 @@ internal class ChapterStudyEntityMapperTest {
                         chapterNumber = 5,
                         startVerse = 12,
                         endVerse = 19,
+                        id = 0,
                     ),
                 ),
                 questions = listOf(
@@ -99,6 +105,7 @@ internal class ChapterStudyEntityMapperTest {
                         cacheKey = CACHE_KEY,
                         position = 0,
                         text = "Where do you tend to doubt God's goodness?",
+                        id = 0,
                     ),
                 ),
             ),
@@ -168,6 +175,7 @@ internal class ChapterStudyEntityMapperTest {
                     chapterNumber = 15,
                     startVerse = 21,
                     endVerse = 22,
+                    id = 0,
                 ),
                 ChapterStudyCrossReferenceEntity(
                     cacheKey = CACHE_KEY,
@@ -176,6 +184,7 @@ internal class ChapterStudyEntityMapperTest {
                     chapterNumber = 12,
                     startVerse = 9,
                     endVerse = 9,
+                    id = 0,
                 ),
             ),
             actual = content.crossReferences,
@@ -309,6 +318,7 @@ internal class ChapterStudyEntityMapperTest {
                     chapterNumber = 1,
                     startVerse = 1,
                     endVerse = 2,
+                    id = 0,
                 ),
             ),
         )
@@ -347,6 +357,7 @@ internal class ChapterStudyEntityMapperTest {
                 startVerse = 8,
                 endVerse = 24,
                 title = "Second section",
+                id = 0,
             ),
             ChapterStudyOutlineSectionEntity(
                 cacheKey = CACHE_KEY,
@@ -354,6 +365,7 @@ internal class ChapterStudyEntityMapperTest {
                 startVerse = 1,
                 endVerse = 7,
                 title = "First section",
+                id = 0,
             ),
         ),
         names = listOf(
@@ -361,11 +373,13 @@ internal class ChapterStudyEntityMapperTest {
                 cacheKey = CACHE_KEY,
                 position = 1,
                 name = "Second name",
+                id = 0,
             ),
             ChapterStudyNameEntity(
                 cacheKey = CACHE_KEY,
                 position = 0,
                 name = "First name",
+                id = 0,
             ),
         ),
         crossReferences = listOf(
@@ -376,6 +390,7 @@ internal class ChapterStudyEntityMapperTest {
                 chapterNumber = 12,
                 startVerse = 9,
                 endVerse = 9,
+                id = 0,
             ),
             ChapterStudyCrossReferenceEntity(
                 cacheKey = CACHE_KEY,
@@ -384,6 +399,7 @@ internal class ChapterStudyEntityMapperTest {
                 chapterNumber = 5,
                 startVerse = 12,
                 endVerse = 19,
+                id = 0,
             ),
         ),
         questions = listOf(
@@ -391,11 +407,13 @@ internal class ChapterStudyEntityMapperTest {
                 cacheKey = CACHE_KEY,
                 position = 1,
                 text = "Second question",
+                id = 0,
             ),
             ChapterStudyQuestionEntity(
                 cacheKey = CACHE_KEY,
                 position = 0,
                 text = "First question",
+                id = 0,
             ),
         ),
     )

@@ -39,6 +39,7 @@ internal class ChapterStudyEntityMapper(
                 startVerse = section.startVerse,
                 endVerse = section.endVerse,
                 title = section.title,
+                id = 0,
             )
         },
         names = response.content.peopleAndPlaces.mapIndexed { index, name ->
@@ -46,6 +47,7 @@ internal class ChapterStudyEntityMapper(
                 cacheKey = cacheKey,
                 position = index,
                 name = name,
+                id = 0,
             )
         },
         crossReferences = response.content.crossReferences
@@ -59,6 +61,7 @@ internal class ChapterStudyEntityMapper(
                     chapterNumber = reference.chapter,
                     startVerse = reference.startVerse,
                     endVerse = reference.endVerse,
+                    id = 0,
                 )
             },
         questions = response.content.reflectionQuestions.mapIndexed { index, question ->
@@ -66,6 +69,7 @@ internal class ChapterStudyEntityMapper(
                 cacheKey = cacheKey,
                 position = index,
                 text = question,
+                id = 0,
             )
         },
     )

@@ -12,3 +12,5 @@ Data classes must not declare default values on their properties. Originally sta
 **Why:** Defaults hide what the actual value is at construction and let new fields silently default when added later, masking missing decisions. For UiState, every field must be passed explicitly when the ViewModel constructs the initial `MutableStateFlow`.
 
 **How to apply:** Never write `val x: Type = default` in a data class. For UiState, pass values explicitly from the ViewModel (documented in `docs/architecture/state-management.md`). For serialization DTOs where JSON fields are optional, prefer avoiding the DTO altogether — e.g. read keys directly from the `JsonObject` (see `SessionUserMapper`) — rather than adding defaulted properties.
+
+**Enforced** by the ktlint rule `bible-planner-style:data-class-default-value` (`tools/ktlint-custom-rules`; see `docs/architecture/code-style.md#no-default-values`).

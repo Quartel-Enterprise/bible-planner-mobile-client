@@ -130,6 +130,7 @@ internal class DayMetaLocalStoreTest {
                     notes = "Remote note",
                     metaUpdatedAt = 2_000L,
                     isMetaPendingSync = false,
+                    id = 0,
                 ),
             ),
             dayDao.insertedDays,

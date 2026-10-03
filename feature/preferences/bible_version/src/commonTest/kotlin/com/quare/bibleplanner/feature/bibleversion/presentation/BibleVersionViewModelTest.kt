@@ -285,6 +285,8 @@ internal class BibleVersionViewModelTest {
                 BibleVersionEntity(
                     id = OTHER_ID,
                     status = DownloadStatus.DONE,
+                    totalChapters = 1189,
+                    contentVersion = "",
                 ),
             ),
         )

@@ -20,11 +20,11 @@ import androidx.room3.PrimaryKey
 )
 data class ChapterEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long,
     val number: Int,
     val bookId: String,
-    val isRead: Boolean = false,
+    val isRead: Boolean,
     // Read-state sync metadata (Last-Write-Wins by readUpdatedAt; pending flag drives the push loop).
-    @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long? = null,
-    @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean = false,
+    @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long?,
+    @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean,
 )

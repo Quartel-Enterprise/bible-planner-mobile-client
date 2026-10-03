@@ -156,6 +156,7 @@ internal class ReleaseNotesViewModelTest {
                 ReleaseNoteModel(
                     version = "0.0.1",
                     changes = listOf("First change"),
+                    dateRepresentation = null,
                 ),
             ),
         ),

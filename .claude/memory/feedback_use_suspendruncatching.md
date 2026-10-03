@@ -21,3 +21,6 @@ swallow `CancellationException`) consistently across the codebase.
 is a clean swallow/log/retry. Do NOT convert blocks that catch only `CancellationException` for
 special handling (e.g. `BibleVersionDownloadWorker` shows a "paused" state on cancel) — there the
 intent differs. The module using it needs `implementation(projects.core.utils)`.
+
+**Enforced** by the ktlint rule `bible-planner-style:suspend-run-catching` (a catch that only rethrows
+`CancellationException` next to a catch of `Exception`/`Throwable`).
