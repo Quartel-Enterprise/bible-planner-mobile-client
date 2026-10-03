@@ -78,12 +78,14 @@ internal fun ReadNarrowScreen(
         chapters = chapters,
         listState = listState,
         leadingItemCount = leadingItemCount,
+        isChapterStudyBeside = state.isChapterStudyBeside,
         onShown = { onEvent(ReadUiEvent.OnVerseFocusShown) },
     )
     val visibleChapter = rememberVisibleChapter(
         chapters = chapters,
         listState = listState,
         leadingItemCount = leadingItemCount,
+        isChapterStudyBeside = state.isChapterStudyBeside,
     )
     VisibleChapterEffect(
         visibleChapter = visibleChapter,
