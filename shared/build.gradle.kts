@@ -107,6 +107,7 @@ kotlin {
             implementation(projects.core.studyUnlock)
             api(projects.core.utils)
             implementation(projects.core.devices)
+            implementation(projects.core.installAttribution)
 
             // UI
             api(projects.ui.theme)

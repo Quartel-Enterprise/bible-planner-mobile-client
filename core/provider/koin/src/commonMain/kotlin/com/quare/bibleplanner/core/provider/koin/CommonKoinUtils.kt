@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.daystudy.di.dayStudyModule
 import com.quare.bibleplanner.core.devices.di.devicesModule
 import com.quare.bibleplanner.core.di.modelModule
 import com.quare.bibleplanner.core.inappupdate.di.inAppUpdateModule
+import com.quare.bibleplanner.core.installattribution.di.installAttributionModule
 import com.quare.bibleplanner.core.loginnudge.di.loginNudgeModule
 import com.quare.bibleplanner.core.network.data.di.networkModule
 import com.quare.bibleplanner.core.plan.di.planModule
@@ -129,6 +130,7 @@ object CommonKoinUtils {
         subscriptionDetailsModule,
         accountDetailsModule,
         devicesModule,
+        installAttributionModule,
         profileModule,
         editProfileModule,
         contactSupportModule,
