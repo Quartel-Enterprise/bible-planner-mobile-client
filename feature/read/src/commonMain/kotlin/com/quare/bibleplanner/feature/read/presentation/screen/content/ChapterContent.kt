@@ -16,6 +16,8 @@ import com.quare.bibleplanner.feature.read.presentation.screen.component.Chapter
 import com.quare.bibleplanner.feature.read.presentation.screen.component.VerseRow
 import org.jetbrains.compose.resources.stringResource
 
+private const val CHAPTER_HEADER_AND_END_ITEM_COUNT = 2
+
 // Why: vertical reading emits every chapter into one list, so the next chapter is already below
 // and the chapter arrows are dropped.
 internal fun LazyListScope.chapterContent(
@@ -60,7 +62,7 @@ internal fun LazyListScope.chapterContent(
             },
         )
     }
-    if (!isChapterStudyBeside) {
+    if (shouldListChapterStudyCard(isChapterStudyBeside)) {
         item(key = "chapter-study-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
             val bookName = stringResource(chapter.bookStringResource)
             ChapterStudyEntryCard(
@@ -96,3 +98,18 @@ internal fun LazyListScope.chapterContent(
         )
     }
 }
+
+internal fun getChapterStartIndices(
+    chapters: List<ReadChapterUiModel>,
+    leadingItemCount: Int,
+    isChapterStudyBeside: Boolean,
+): List<Int> {
+    // Why: must match the items chapterContent emits, or the visible chapter and the verse scroll
+    // target drift by one item per chapter.
+    val studyCardItemCount = if (shouldListChapterStudyCard(isChapterStudyBeside)) 1 else 0
+    return chapters.runningFold(leadingItemCount) { start, chapter ->
+        start + CHAPTER_HEADER_AND_END_ITEM_COUNT + chapter.verses.size + studyCardItemCount
+    }
+}
+
+private fun shouldListChapterStudyCard(isChapterStudyBeside: Boolean): Boolean = !isChapterStudyBeside

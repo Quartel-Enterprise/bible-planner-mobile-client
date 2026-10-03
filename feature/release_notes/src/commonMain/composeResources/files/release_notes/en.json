@@ -2,6 +2,7 @@
   "2.11.0": {
     "common": [
       "After you sign in or come back online, your reading progress, your highlights and notes, and your profile photo show up much faster.",
+      "With vertical reading on tablets, on computers and with your phone turned sideways, the study beside the text and the chapter name at the top now switch to the next chapter as soon as it reaches the top of the screen, instead of lagging behind, and jumping to a verse lands right on it.",
       "Fixed the calendar for changing the date you read a day, which in places such as Japan or Australia could open on the day before and not let you pick today."
     ],
     "android": [

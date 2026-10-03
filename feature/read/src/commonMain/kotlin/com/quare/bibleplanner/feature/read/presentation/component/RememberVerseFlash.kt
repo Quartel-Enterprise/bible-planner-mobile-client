@@ -29,6 +29,7 @@ internal fun rememberVerseFlash(
     chapters: List<ReadChapterUiModel>,
     listState: LazyListState,
     leadingItemCount: Int,
+    isChapterStudyBeside: Boolean,
     onShown: () -> Unit,
 ): VerseFlash {
     val alpha = remember { Animatable(0f) }
@@ -36,6 +37,7 @@ internal fun rememberVerseFlash(
     val topMarginPx = with(LocalDensity.current) { topMargin.toPx() }
     val currentChapters by rememberUpdatedState(chapters)
     val currentLeadingItemCount by rememberUpdatedState(leadingItemCount)
+    val currentIsChapterStudyBeside by rememberUpdatedState(isChapterStudyBeside)
     val currentOnShown by rememberUpdatedState(onShown)
     val hasChapters = chapters.isNotEmpty()
     LaunchedEffect(focus, hasChapters) {
@@ -43,6 +45,7 @@ internal fun rememberVerseFlash(
         val index = findVerseItemIndex(
             chapters = currentChapters,
             leadingItemCount = currentLeadingItemCount,
+            isChapterStudyBeside = currentIsChapterStudyBeside,
             focus = safeFocus,
         )
         if (index != null) {
