@@ -49,16 +49,6 @@ private val handleHeight = 4.dp
 private val sheetElevation = 8.dp
 private const val NARROW_SHEET_MAX_HEIGHT_FRACTION = 0.9f
 
-/**
- * The selection tools: a bottom sheet over the chapter on a narrow window, a plain panel filling its
- * own pane on a wide one.
- *
- * Neither is modal — there is no scrim and the chapter stays tappable, so the selection can be
- * extended verse by verse while this is open. That rules out [androidx.compose.material3.ModalBottomSheet],
- * whose scrim would swallow those taps, so the drag it would have given us is built here instead:
- * the sheet follows the finger down and closes when thrown or dragged past its middle, and springs
- * back otherwise.
- */
 @Composable
 internal fun SelectionSheet(
     selection: VerseSelectionUiState,
@@ -84,11 +74,6 @@ internal fun SelectionSheet(
     val dragOffset = remember { Animatable(OFF_SCREEN_OFFSET_PX) }
     var sheetHeightPx by remember { mutableFloatStateOf(0f) }
     var isEntered by remember { mutableStateOf(false) }
-    /*
-     * The sheet waits well below the screen until it knows its own height, then slides up, and
-     * leaves the same way: closing waits for the slide-out before the entry is actually popped.
-     * The scene swap itself is instant, so this is the only motion the user sees.
-     */
     LaunchedEffect(sheetHeightPx) {
         if (isEntered || sheetHeightPx == 0f) return@LaunchedEffect
         dragOffset.snapTo(sheetHeightPx)

@@ -3,13 +3,6 @@ package com.quare.bibleplanner.feature.login.presentation.mapper
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.login.presentation.model.DesktopAuthSuccessStrings
 
-/**
- * Maps the user's selected in-app [Language] to the strings shown on the desktop OAuth
- * success page. These literals are intentionally hardcoded here (and NOT pulled from
- * `Res.string.*`) because rendering happens outside any composable scope and Compose
- * Multiplatform's `getString` suspend API resolves against the platform locale rather
- * than an arbitrary [Language] of our choosing.
- */
 internal class LanguageToDesktopAuthSuccessStringsMapper {
     fun map(language: Language): DesktopAuthSuccessStrings = when (language) {
         Language.PORTUGUESE_BRAZIL -> DesktopAuthSuccessStrings(

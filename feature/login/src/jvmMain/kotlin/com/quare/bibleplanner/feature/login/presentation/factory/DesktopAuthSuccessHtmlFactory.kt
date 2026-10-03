@@ -5,24 +5,6 @@ import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.login.presentation.GetResourcesAsTextResult
 import com.quare.bibleplanner.feature.login.presentation.mapper.LanguageToDesktopAuthSuccessStringsMapper
 
-/**
- * Builds the HTML shown in the browser after a successful desktop OAuth login.
- *
- * The template, both theme stylesheets, and the script are bundled under
- * `jvmMain/resources/com/quare/bibleplanner/feature/login/auth/`. All resource reads go
- * through [GetResourcesAsTextResult] so a missing or unreadable file is surfaced as
- * [Result.failure] rather than a thrown exception.
- *
- * Layout / typography / animation live in a single `_base.css` shared by both themes.
- * Each theme stylesheet only declares the color overrides.
- *
- * - When `theme` is [Theme.SYSTEM] both theme stylesheets are inlined inside
- *   `@media (prefers-color-scheme: …)` blocks so the browser picks the right palette.
- * - When the user pinned [Theme.LIGHT] or [Theme.DARK] explicitly, only that stylesheet
- *   is inlined unconditionally.
- *
- * `language` selects the heading/message strings via the injected mapper.
- */
 internal class DesktopAuthSuccessHtmlFactory(
     private val getResourcesAsTextResult: GetResourcesAsTextResult,
     private val languageToDesktopAuthSuccessStringsMapper: LanguageToDesktopAuthSuccessStringsMapper,
@@ -51,7 +33,6 @@ internal class DesktopAuthSuccessHtmlFactory(
                 appendLine("}")
             }
         }
-        // Base FIRST so the theme rules win in the cascade.
         val styles = "$baseCss\n$themeCss"
 
         val strings = languageToDesktopAuthSuccessStringsMapper.map(language)

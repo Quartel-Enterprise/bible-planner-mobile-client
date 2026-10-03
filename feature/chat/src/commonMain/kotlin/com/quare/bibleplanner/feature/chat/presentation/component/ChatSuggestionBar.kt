@@ -98,8 +98,6 @@ internal fun ChatSuggestionBar(
             ) {
                 val listState = rememberLazyListState()
                 val thumbColor = MaterialTheme.colorScheme.outlineVariant
-                // Capped and scrollable: the questions a study hands over run long, and the list
-                // must not grow until it is the screen.
                 LazyColumn(
                     state = listState,
                     modifier = Modifier
@@ -128,11 +126,6 @@ internal fun ChatSuggestionBar(
     }
 }
 
-/**
- * The list's own scrollbar, since there are more suggestions than fit and nothing else says so.
- * Drawn from an average item height: the rows differ by a line at most, and the thumb only has to
- * report roughly where the reader is.
- */
 private fun Modifier.verticalScrollbar(
     listState: LazyListState,
     color: Color,

@@ -6,10 +6,6 @@ import com.quare.bibleplanner.core.provider.room.dao.UserDeviceDao
 import com.quare.bibleplanner.core.provider.room.entity.UserDeviceEntity
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Local (Room) source of truth for the device list. The UI reads it through the repository; the
- * [com.quare.bibleplanner.core.devices.data.sync.DevicesSynchronizer] reconciles it with the remote.
- */
 internal class UserDeviceLocalStore(
     private val userDeviceDao: UserDeviceDao,
     private val dtoToEntityMapper: UserDeviceDtoToEntityMapper,
@@ -32,8 +28,6 @@ internal class UserDeviceLocalStore(
         userDeviceDao.markNameSynced(id = entity.id, syncedUpdatedAt = entity.updatedAt)
     }
 
-    // Server-authoritative fields are always applied; the name follows Last-Write-Wins (only when the
-    // local row is not pending and strictly older). A row we've never seen is inserted as-is.
     suspend fun applyRemote(dto: UserDeviceDto) {
         val entity = dtoToEntityMapper.map(dto)
         if (userDeviceDao.getById(entity.id) == null) {

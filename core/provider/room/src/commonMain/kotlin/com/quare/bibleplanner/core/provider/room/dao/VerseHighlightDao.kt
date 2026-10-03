@@ -60,11 +60,6 @@ interface VerseHighlightDao {
         syncedUpdatedAt: Long,
     )
 
-    /**
-     * Last-Write-Wins: the insert creates the row only when this device has never seen the verse, and
-     * the update overwrites an existing row only when it holds no pending local edit and the remote
-     * change is strictly newer. Together they make the echo of our own push a no-op.
-     */
     @Transaction
     suspend fun applyRemoteHighlight(highlight: VerseHighlightEntity) {
         insertHighlightIfAbsent(highlight)
@@ -96,7 +91,6 @@ interface VerseHighlightDao {
         remoteUpdatedAt: Long,
     )
 
-    /** Logout wipe: drops the local rows without scheduling a push. */
     @Query("DELETE FROM verse_highlights")
     suspend fun deleteAllHighlights()
 }

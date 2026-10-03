@@ -10,11 +10,6 @@ internal sealed interface LogoutUiState {
         val phase: LogoutPhase,
     ) : LogoutUiState
 
-    /**
-     * Logout was aborted because pending changes couldn't be synced; the user can retry or stay
-     * signed in. [pendingResource] names what failed to sync (e.g. favorites) and is interpolated
-     * into the error message template.
-     */
     data class PendingChangesError(
         val pendingResource: StringResource,
     ) : LogoutUiState

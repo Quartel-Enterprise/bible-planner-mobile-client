@@ -21,12 +21,6 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 
 private val pillMaxWidth = 280.dp
 
-/**
- * Repeats the bottom bar's controls at the end of the text, naming the chapters this time: at the
- * end of a chapter the next step is the decision, not a bar the reader has scrolled past. A null
- * [suggestions] drops the arrows altogether, leaving the read pill centred on its own: it keeps the
- * width it had between the arrows rather than stretching over the whole column.
- */
 @Composable
 internal fun ChapterEndNavigationRow(
     suggestions: ReadNavigationSuggestionsModel?,

@@ -29,10 +29,6 @@ actual fun shareContent(
                 file,
             )
             putExtra(Intent.EXTRA_STREAM, contentUri)
-            /*
-             * The chooser renders its own preview before a target is picked, and it can only read
-             * the file if the URI is also in the clip data — the extra alone grants nothing to it.
-             */
             clipData = ClipData.newRawUri(null, contentUri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }

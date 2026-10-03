@@ -8,10 +8,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
 
-// Brand marks are not part of the Material icon set, so they are rebuilt here from the SVG paths in
-// the design. The Google mark keeps its four brand colors (render with Image); the Apple mark is
-// monochrome (render with Icon so it takes the content color).
-
 private val logoSize = 24.dp
 private const val VIEWPORT = 24f
 private const val GOOGLE_BLUE_PATH = "M22.5 12.2c0-.7-.06-1.4-.18-2.06H12v3.9h5.9a5.04 5.04 0 0 1-2.19 " +

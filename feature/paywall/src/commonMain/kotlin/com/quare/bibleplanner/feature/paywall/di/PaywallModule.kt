@@ -9,7 +9,6 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val paywallModule = module {
-    // Presentation
     factoryOf(::PaywallExceptionMapper)
     factoryOf(::PaywallAnalyticsReasonMapper)
     factoryOf(::PaywallUiStateFactory)

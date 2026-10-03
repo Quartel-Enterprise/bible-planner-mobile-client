@@ -119,11 +119,6 @@ class DayReadingCompleteViewModel(
         }
     }
 
-    /**
-     * The celebration is shown as soon as the day is known; only the call to action waits for the
-     * quota, which needs the network. Blocking the whole sheet on it would trade a moment the reader
-     * earned for a spinner.
-     */
     private fun loadDay() {
         viewModelScope.launch {
             val day = getScheduledDay(
@@ -165,10 +160,6 @@ class DayReadingCompleteViewModel(
         }
     }
 
-    /**
-     * A prefetched quota is a head start, not the truth, so the fresh one always lands on top of it.
-     * What was tracked is what the reader actually saw first.
-     */
     private suspend fun showCta(
         quota: DayStudyQuotaModel,
         isPro: Boolean,

@@ -26,10 +26,6 @@ import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.Ver
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * Everything the user can do with the verses they picked. It is deliberately not modal: the reader
- * stays tappable underneath so the selection can be extended while the panel is open.
- */
 @Composable
 internal fun SelectionPanel(
     selection: VerseSelectionUiState,
@@ -44,7 +40,6 @@ internal fun SelectionPanel(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        // The label is centred on the sheet, not on the space left over by the close button.
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,

@@ -17,12 +17,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
 
-/**
- * Reads/writes the reading-plan scalar preferences through the synced key-value store
- * ([SyncedPreferenceDao]); bundled JSON plans still come from [PlanLocalDataSource]. A user write
- * flags the value pending so the sync engine pushes it; a provisional default
- * ([seedDefaultStartDate]) is non-pending so it never overwrites a real remote value.
- */
 class PlanRepositoryImpl(
     private val planLocalDataSource: PlanLocalDataSource,
     private val weekPlanDtoToModelMapper: WeekPlanDtoToModelMapper,
@@ -31,11 +25,6 @@ class PlanRepositoryImpl(
     private val syncedPreferenceDao: SyncedPreferenceDao,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : PlanRepository {
-    /**
-     * The bundled plans never change while the app runs, and reading them means parsing 52 JSON
-     * files per plan, so the mapped weeks are kept for the process. The lock is what makes the
-     * parallel callers of a cold cache wait for one parse instead of each starting their own.
-     */
     private val plansByType = mutableMapOf<ReadingPlanType, List<WeekPlanModel>>()
     private val plansMutex = Mutex()
 

@@ -26,11 +26,6 @@ import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.utils.asStable
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * The title only appears once the chapter's own oversized header has scrolled away, so the two never
- * name the chapter at the same time. It names [visibleChapter] rather than the one the screen was
- * opened on, because vertical reading scrolls through chapters without leaving the screen.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReadTopBar(
@@ -71,7 +66,6 @@ internal fun ReadTopBar(
                 contentDescription = stringResource(Res.string.reader_appearance),
                 onClick = { onEvent(ReadUiEvent.OnAppearanceClick) },
             )
-            // On a wide window the study already sits beside the text.
             if (!isChapterStudyBeside) {
                 ChapterStudyPill(
                     isLoading = isOpeningChapterStudy,

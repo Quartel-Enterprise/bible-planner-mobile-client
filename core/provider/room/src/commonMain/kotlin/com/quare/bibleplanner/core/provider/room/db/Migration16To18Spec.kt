@@ -4,20 +4,6 @@ import androidx.room3.migration.AutoMigrationSpec
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 
-/**
- * Brings each chapter's verse rows in line with the verse numbers the Bible versions really have.
- *
- * Verse rows are seeded from the bundled `books_by_chapter` counts, and some of those were wrong:
- * Genesis 34-45 carried their neighbours' counts, and chapters whose verse division differs between
- * traditions (Deuteronomy 12-13, Jeremiah 8-9, Daniel 3-4...) had the other tradition's. A chapter with
- * more rows than a version has verses never opened in the reader, and one with fewer rows silently
- * lost its last verses on download, because a verse's text is only saved when its row exists.
- *
- * For every [VerseCountCorrection] this drops the rows past the real count and adds the missing ones,
- * which inherit the chapter's read state. A chapter that gains rows also loses its downloaded texts,
- * and every version that had them goes from DONE back to IN_PROGRESS — as [Migration8To9Spec] does for
- * John — so the launch-time download fetches the chapter again, this time keeping every verse.
- */
 class Migration16To18Spec(
     private val corrections: List<VerseCountCorrection> = VERSE_COUNT_CORRECTIONS,
 ) : AutoMigrationSpec {
@@ -30,7 +16,6 @@ class Migration16To18Spec(
         val count = correction.verses
         val chapterId = "(SELECT id FROM chapters WHERE bookId = '$bookId' AND number = ${correction.chapter})"
         val chapterVerseIds = "(SELECT id FROM verses WHERE chapterId = $chapterId)"
-        // Evaluated before any row changes: once the missing rows exist, the chapter no longer lacks them.
         val lacksRows = "(SELECT COUNT(*) FROM verses WHERE chapterId = $chapterId) < $count"
 
         execSQL(

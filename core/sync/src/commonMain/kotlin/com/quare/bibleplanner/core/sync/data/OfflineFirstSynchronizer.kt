@@ -16,23 +16,6 @@ import kotlinx.coroutines.flow.combine
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * Generic offline-first + realtime synchronizer for one dataset. The local Room state is the source
- * of truth the UI observes; this reconciles it with Supabase using Last-Write-Wins by timestamp:
- *
- *  - **push** ([runPushLoop]) — pending local changes are upserted whenever there is something
- *    pending and the device is online (gated on OS connectivity so they flush the moment the network
- *    returns); the pending flag is cleared only if the row was not re-touched meanwhile (guarded in
- *    [SyncLocalStore.markSynced]).
- *  - **pull** ([fetchSnapshot]) — the full remote set is fetched and applied; driven by
- *    [SyncCoordinator] on every realtime CONNECTED transition (including cold start). Covers changes
- *    missed while offline, and is what tells the local store its provisional defaults are absent for
- *    this account (via [SyncLocalStore.adoptProvisionalDefaults]).
- *  - **realtime** ([observeRealtime]) — live inserts/updates are applied as they arrive.
- *
- * Remote writes go through [SyncLocalStore.applyRemote], which only overwrites strictly older,
- * non-pending rows.
- */
 class OfflineFirstSynchronizer<E, D>(
     private val localStore: SyncLocalStore<E, D>,
     private val remoteStore: SyncRemoteStore<D>,
@@ -49,17 +32,6 @@ class OfflineFirstSynchronizer<E, D>(
         localStore.seed(now)
     }
 
-    /**
-     * Gating on OS connectivity (rather than the realtime socket status) flushes pending writes the
-     * moment the network returns — the upsert is a plain REST call and doesn't need the websocket. The
-     * bounded backoff only handles transient failures that happen while online; each new pending change
-     * or reconnection re-triggers this block (via [collectLatest]) with a fresh backoff.
-     *
-     * The session is re-read at the start of every attempt (not captured once): if it is gone the loop
-     * stops instead of pushing, since the Supabase client would otherwise fall back to the anonymous key
-     * and the write would fail the row-level security policy — a permanent error the backoff would retry
-     * forever.
-     */
     override suspend fun runPushLoop() {
         combine(
             localStore.observePending(),

@@ -5,12 +5,6 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.CLASS
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 
-/**
- * In a primary constructor the properties (`val` / `var`) come first and the plain parameters last, so
- * what the instance keeps reads as one block and what it only consumes while being built as another.
- *
- * It is not autocorrected: moving a parameter changes the meaning of every positional call.
- */
 class ConstructorPropertyOrderRule : BiblePlannerRule("constructor-property-order") {
     override fun beforeVisitChildNodes(
         node: ASTNode,

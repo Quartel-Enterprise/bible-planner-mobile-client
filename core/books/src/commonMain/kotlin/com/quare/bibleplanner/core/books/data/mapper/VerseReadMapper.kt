@@ -5,10 +5,6 @@ import com.quare.bibleplanner.core.provider.room.relation.PendingVerseRead
 import kotlin.time.Instant
 
 internal class VerseReadMapper {
-    /**
-     * Maps a pending verse read projection to the remote payload. [PendingVerseRead.readUpdatedAt] is
-     * assumed non-null: callers only push rows flagged pending, which always have a timestamp.
-     */
     fun toDto(
         userId: String,
         entity: PendingVerseRead,

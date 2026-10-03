@@ -39,12 +39,6 @@ class IosBackgroundDownloadBridge(
         explicitNulls = false
     }
 
-    /**
-     * How many chapters of each version are on disk, kept in step with the writes instead of being
-     * counted again per chapter: counting walks every downloaded verse of every version, and a
-     * download would pay for that walk once per chapter. Seeded when the download is planned, and
-     * again on the first chapter of a session iOS resumed on its own after the app was relaunched.
-     */
     private val downloadedChapters = mutableMapOf<String, Int>()
     private val downloadedChaptersMutex = Mutex()
 
@@ -128,10 +122,6 @@ class IosBackgroundDownloadBridge(
                 val entity = bibleVersionDao.getVersionById(versionId) ?: return@launch
                 if (entity.status == DownloadStatus.DONE) return@launch
                 var downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
-                // Guard against a SQLite WAL read-after-write race: all Swift onComplete()
-                // callbacks have fired (meaning all DB writes completed), but the count query
-                // may briefly observe a stale snapshot. If we're within 1 chapter of the total,
-                // retry once after a short delay before deciding the version isn't fully done.
                 if (downloaded == entity.totalChapters - 1) {
                     delay(300.milliseconds)
                     downloaded = verseDao.countChaptersWithVersesByVersion(versionId)
@@ -148,9 +138,6 @@ class IosBackgroundDownloadBridge(
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.DONE)
                     notifier.showComplete(versionId, name)
                 } else {
-                    // Some tasks failed permanently after exhausting retries on the iOS side.
-                    // Move to PAUSED so the user can retry — getPendingDownloads will only
-                    // re-fetch the missing chapters on the next attempt.
                     bibleVersionDao.updateStatus(versionId, DownloadStatus.PAUSED)
                     notifier.showError(versionId, name)
                 }

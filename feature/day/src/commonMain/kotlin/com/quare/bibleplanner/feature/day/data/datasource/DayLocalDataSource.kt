@@ -31,7 +31,6 @@ class DayLocalDataSource(
         val metaUpdatedAt = currentTimestampProvider.getCurrentTimestamp()
         val existingDay = dayDao.getDayByWeekAndDay(weekNumber, dayNumber, readingPlanType)
         if (existingDay != null) {
-            // Use @Update annotation instead of custom query to ensure Room Flow emits
             dayDao.updateDay(
                 existingDay.copy(
                     isRead = isRead,

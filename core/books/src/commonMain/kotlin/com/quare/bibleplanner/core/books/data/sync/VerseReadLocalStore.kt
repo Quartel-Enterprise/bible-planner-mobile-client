@@ -7,12 +7,6 @@ import com.quare.bibleplanner.core.provider.room.relation.PendingVerseRead
 import com.quare.bibleplanner.core.sync.domain.SyncLocalStore
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Adapts verse-range read state on the `verses` table to the generic sync engine. Only verses read as
- * part of a verse range carry sync metadata; whole-chapter reads sync at chapter level
- * ([ChapterReadLocalStore]). The pending rows are projected with their stable cross-device identity
- * (book id + chapter number + verse number) via [PendingVerseRead].
- */
 internal class VerseReadLocalStore(
     private val verseDao: VerseDao,
     private val verseReadMapper: VerseReadMapper,
@@ -50,7 +44,6 @@ internal class VerseReadLocalStore(
         entity = entity,
     )
 
-    /** Marks pre-sync verse-range reads pending on first launch so they reach the backend. */
     override suspend fun seed(now: Long) {
         verseDao.markLegacyVerseReadsPending(now)
     }

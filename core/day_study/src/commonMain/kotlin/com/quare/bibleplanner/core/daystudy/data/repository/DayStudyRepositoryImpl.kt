@@ -101,8 +101,6 @@ internal class DayStudyRepositoryImpl(
         return status
     }
 
-    // Drop the local copy when the server's cache token no longer matches, so the next
-    // getDayStudy re-fetches fresh content (free — the unlock ledger is untouched).
     private suspend fun invalidateStaleLocalCache(
         cacheKey: String,
         currentToken: String,

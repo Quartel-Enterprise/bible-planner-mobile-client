@@ -7,7 +7,7 @@ import androidx.room3.PrimaryKey
 @Entity(tableName = "books")
 data class BookEntity(
     @PrimaryKey
-    val id: String, // BookId enum value as string
+    val id: String,
     @ColumnInfo(defaultValue = "0") val isRead: Boolean = false,
     @ColumnInfo(defaultValue = "0") val isFavorite: Boolean = false,
     val favoriteUpdatedAt: Long?,

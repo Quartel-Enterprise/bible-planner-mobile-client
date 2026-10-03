@@ -15,12 +15,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/**
- * The settings live in the device-local DataStore (the render source). When the account-global sync
- * flag is on, user writes are also mirrored into the synced key-value store ([SyncedPreferenceDao])
- * so the sync engine pushes them; inbound remote values are written back through the `applySynced*`
- * methods, which skip the mirror to avoid an echo loop.
- */
 internal class StudySuggestionSettingsRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
     private val syncedPreferenceDao: SyncedPreferenceDao,

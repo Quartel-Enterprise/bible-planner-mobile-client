@@ -8,10 +8,6 @@ import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.flow.first
 
-/**
- * Writes the dynamic-colors preference to the device-local store and, when theme sync is on and the OS
- * supports Material You, mirrors it into the synced store so it propagates to the user's other devices.
- */
 internal class SetIsDynamicColorsEnabledUseCase(
     private val repository: MaterialYouRepository,
     private val isDynamicColorSupported: IsDynamicColorSupported,

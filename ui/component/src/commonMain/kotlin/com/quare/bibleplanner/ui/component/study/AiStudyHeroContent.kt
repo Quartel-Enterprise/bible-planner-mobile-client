@@ -28,10 +28,6 @@ import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
 private val descriptionMaxWidth = 300.dp
 
-/**
- * What an AI study pane shows before its study exists: what it is, what generating it costs, and
- * the one button that generates it — or that unlocks it once the free ones are used.
- */
 @Composable
 fun AiStudyHeroContent(
     icon: ImageVector,

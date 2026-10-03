@@ -5,10 +5,6 @@ import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import kotlin.time.Instant
 
 internal class BookFavoriteMapper {
-    /**
-     * Maps a local book row to the remote favorite payload. [BookEntity.favoriteUpdatedAt] is assumed non-null:
-     * callers only push rows flagged pending, which always have a timestamp.
-     */
     fun toDto(
         userId: String,
         entity: BookEntity,

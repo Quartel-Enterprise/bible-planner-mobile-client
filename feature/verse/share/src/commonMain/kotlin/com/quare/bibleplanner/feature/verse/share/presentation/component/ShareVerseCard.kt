@@ -44,10 +44,6 @@ private val referenceFontSize = 10.5.sp
 private val referenceLetterSpacing = 1.6.sp
 private val logoSize = 22.dp
 
-/**
- * The card as it will be shared. It is a plain composable so the same tree serves both the preview
- * and the capture, which is what guarantees the image matches what the user approved.
- */
 @Composable
 internal fun ShareVerseCard(
     uiState: ShareVerseUiState,
@@ -67,11 +63,6 @@ internal fun ShareVerseCard(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            /*
-             * The mark is set on a line shorter than itself, the way the design draws it: at nearly
-             * three times the body size its own leading would otherwise eat the room the passage
-             * needs.
-             */
             Text(
                 text = "“",
                 fontFamily = uiState.font.toFontFamily(),
@@ -79,21 +70,11 @@ internal fun ShareVerseCard(
                 lineHeight = QUOTE_MARK_LINE_HEIGHT_RATIO.em,
                 color = background.subtitleColor,
             )
-            /*
-             * The card is a fixed shape, so the passage has to meet it rather than the other way
-             * round: the type shrinks step by step until the whole selection fits the space left
-             * between the quote mark and the reference. A long passage lands small, but whole.
-             */
             BasicText(
                 modifier = Modifier.weight(1f),
                 text = uiState.quote,
                 style = TextStyle(
                     fontFamily = uiState.font.toFontFamily(),
-                    /*
-                     * Relative to the type rather than a fixed size: an absolute line height would
-                     * hold every line as tall as it started, so shrinking the glyphs would never
-                     * shorten the block enough to fit.
-                     */
                     lineHeight = QUOTE_LINE_HEIGHT_RATIO.em,
                     fontStyle = FontStyle.Italic,
                     color = background.textColor,

@@ -22,7 +22,6 @@ class UpdateChapterReadStatusUseCase(
         isRead: Boolean,
         readingPlanType: ReadingPlanType,
     ): Result<Unit> {
-        // Get the day to access its passages
         val errorResult = Result.failure<Unit>(IllegalStateException())
         val plansModel = getPlansByWeek().first()
         val weeks = when (readingPlanType) {
@@ -37,14 +36,11 @@ class UpdateChapterReadStatusUseCase(
 
         val passage = day.passages[passageIndex]
 
-        // If chapterIndex is null, it means the passage has no chapters (entire book)
-        // Otherwise, create a passage with just the specific chapter
         val passageToUpdate = when (strategy) {
             is UpdateReadStatusOfPassageStrategy.Chapter -> {
                 val chapterIndex = strategy.chapterIndex
                 if (chapterIndex < 0 || chapterIndex >= passage.chapters.size) return errorResult
                 val chapter = passage.chapters[chapterIndex]
-                // Create a passage with just this chapter
                 PassageModel(
                     bookId = passage.bookId,
                     chapters = listOf(chapter),
@@ -56,10 +52,8 @@ class UpdateChapterReadStatusUseCase(
             is UpdateReadStatusOfPassageStrategy.EntireBook -> passage
         }
 
-        // Update the specific chapter
         markPassagesRead(passageToUpdate)
 
-        // Check if all passages are now read
         val updatedPlansModel = getPlansByWeek().first()
         val updatedWeeks = when (readingPlanType) {
             ReadingPlanType.CHRONOLOGICAL -> updatedPlansModel.chronologicalOrder
@@ -68,7 +62,6 @@ class UpdateChapterReadStatusUseCase(
         val updatedWeek = updatedWeeks.find { it.number == weekNumber } ?: return errorResult
         val updatedDay = updatedWeek.days.find { it.number == dayNumber } ?: return errorResult
 
-        // If all passages are read, update day read status
         val allPassagesRead = updatedDay.passages.all { it.isRead }
         dayRepository.run {
             if (allPassagesRead) {
@@ -81,7 +74,6 @@ class UpdateChapterReadStatusUseCase(
                     readTimestamp = readTimestamp,
                 )
             } else {
-                // If not all passages are read, unmark day as read
                 updateDayReadStatus(
                     weekNumber = weekNumber,
                     dayNumber = dayNumber,

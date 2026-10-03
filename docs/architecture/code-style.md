@@ -566,3 +566,29 @@ Not held to the list:
 
 Enforced by the custom ktlint rule `bible-planner-style:composable-naming-suffix`. A genuinely new kind of UI gets
 a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — not a one-off exception.
+
+## No Comments in Production Code
+
+Production Kotlin carries no comments: no `//`, no `/* */` and no KDoc `/** */`. A name that needs a comment to be
+understood is the wrong name; a constraint worth knowing belongs in a name, a type, a test or the docs under
+`docs/`, where it cannot silently drift from the code next to it. This holds even in a package whose neighbours
+used to be documented.
+
+```kotlin
+// Correct
+private val maxRetriesBeforeGivingUp = 3
+
+// Wrong
+private val retries = 3 // after this many attempts the sync gives up
+```
+
+Comments stay welcome where they are structure rather than narration:
+
+- **Tests** — every test source set (`commonTest`, `jvmTest`, `androidHostTest`, `androidDeviceTest`, `iosTest`,
+  `iosSimulatorArm64Test`, `test`) and the `:testing` fake modules, starting with the `// Given` / `// When` /
+  `// Then` markers.
+- **The build** — Gradle scripts (`*.kts`), `build-logic` and the version catalog.
+
+Enforced by the custom ktlint rule `bible-planner-style:no-comments`; the exemptions above are sections of
+`.editorconfig` that disable it. It is not autocorrected: deleting a comment is easy, deciding whether what it said
+should become a name or a test is not.

@@ -14,11 +14,10 @@ data class DayEntity(
     val id: Long = 0,
     val weekNumber: Int,
     val dayNumber: Int,
-    @ColumnInfo(defaultValue = "'BOOKS'") val readingPlanType: String, // CHRONOLOGICAL or BOOKS
+    @ColumnInfo(defaultValue = "'BOOKS'") val readingPlanType: String,
     @ColumnInfo(defaultValue = "0") val isRead: Boolean = false,
-    val readTimestamp: Long? = null, // Epoch milliseconds, null if not read
+    val readTimestamp: Long? = null,
     val notes: String? = null,
-    // Day-meta sync metadata (readTimestamp + notes; isRead itself derives from chapter/verse state).
     @ColumnInfo(defaultValue = "NULL") val metaUpdatedAt: Long? = null,
     @ColumnInfo(defaultValue = "0") val isMetaPendingSync: Boolean = false,
 )

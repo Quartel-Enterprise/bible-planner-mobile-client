@@ -29,6 +29,20 @@ ktlint_function_signature_body_expression_wrapping = default
 [**/src/{commonTest,jvmTest,androidHostTest,iosSimulatorArm64Test}/**]
 ktlint_bible-planner-style_value-returning-function-naming = disabled
 
+# Comments are for tests (Given/When/Then), the :testing fake modules and the build: Gradle scripts and
+# build-logic. Production Kotlin stays comment-free (bible-planner-style:no-comments).
+[**/src/{commonTest,jvmTest,androidHostTest,androidDeviceTest,iosTest,iosSimulatorArm64Test,test}/**]
+ktlint_bible-planner-style_no-comments = disabled
+
+[**/testing/src/**]
+ktlint_bible-planner-style_no-comments = disabled
+
+[*.kts]
+ktlint_bible-planner-style_no-comments = disabled
+
+[build-logic/**]
+ktlint_bible-planner-style_no-comments = disabled
+
 # Markdown files
 [*.md]
 trim_trailing_whitespace = false

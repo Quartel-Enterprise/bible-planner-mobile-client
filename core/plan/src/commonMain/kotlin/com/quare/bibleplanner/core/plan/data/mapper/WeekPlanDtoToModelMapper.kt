@@ -37,8 +37,6 @@ class WeekPlanDtoToModelMapper(
     private fun mapBook(bookDto: BookPlanDto): PassageModel? {
         val bookId = mapBookNameToBookId(bookDto.name) ?: return null
 
-        // If chapters is null, create a passage with empty chapters list
-        // This represents reading the entire book (e.g., Obadiah - single chapter book)
         val chaptersDto = bookDto.chapters ?: return PassageModel(
             bookId = bookId,
             chapters = emptyList(),
@@ -53,7 +51,6 @@ class WeekPlanDtoToModelMapper(
             val endVerse = chaptersDto.end.verse
 
             if (startChapter == endChapter) {
-                // Single chapter range
                 add(
                     ChapterModel(
                         number = startChapter,
@@ -63,7 +60,6 @@ class WeekPlanDtoToModelMapper(
                     ),
                 )
             } else {
-                // Multiple chapters
                 (startChapter..endChapter).forEachIndexed { index, chapterNumber ->
                     val chapterStartVerse = if (index == 0) startVerse else null
                     val chapterEndVerse = if (index == (endChapter - startChapter)) {

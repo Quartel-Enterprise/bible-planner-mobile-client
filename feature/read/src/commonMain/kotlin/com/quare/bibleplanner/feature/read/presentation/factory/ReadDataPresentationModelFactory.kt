@@ -32,10 +32,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import org.jetbrains.compose.resources.StringResource
 
-/**
- * Assembles what the reader renders: the chapter's verses decorated with the user's annotations,
- * plus the header the screen keeps showing even when the text itself failed to load.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ReadDataPresentationModelFactory(
     private val getSelectedVersionIdFlow: GetSelectedVersionIdFlowUseCase,
@@ -46,11 +42,6 @@ internal class ReadDataPresentationModelFactory(
     private val observeChapterAnnotations: ObserveChapterAnnotations,
     private val chapterVersesUiModelMapper: ChapterVersesUiModelMapper,
 ) : ObserveReadData {
-    /**
-     * Every chapter in [prependedChapters] and [appendedChapters] is observed alongside this one and
-     * laid out before or after it, so vertical reading keeps going in both directions for as long as
-     * the reader asks for more.
-     */
     override fun invoke(
         bookId: BookId,
         chapterNumber: Int,
@@ -153,18 +144,8 @@ internal class ReadDataPresentationModelFactory(
             return@flow
         }
         emitAll(
-            /*
-             * The version leads: annotations are scoped to it, so switching version has to
-             * resubscribe them rather than keep showing the ones made in the previous one.
-             */
             getSelectedVersionIdFlow().flatMapLatest { versionId ->
                 combine(
-                    /*
-                     * Room re-runs the query on any write to the verse tables, so downloading a
-                     * version re-emits this chapter thousands of times over with the very same
-                     * rows. Dropping those here keeps the reader from rebuilding — on the main
-                     * thread — every verse on screen for a write that touched another chapter.
-                     */
                     getVersesWithTextsByChapterIdFlow(chapterId).distinctUntilChanged(),
                     observeChapterAnnotations(
                         ChapterRef(

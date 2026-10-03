@@ -23,11 +23,6 @@ internal class VerseNoteSyncMapper(
         updatedAt = syncTimestampMapper.toIso(relation.note.updatedAtEpochMillis),
     )
 
-    /**
-     * The remote row carries no creation stamp, so a note this device has never seen is created with
-     * its update time: it only orders notes within a chapter, and the backend's own ordering is the
-     * same one the originating device produced.
-     */
     fun toEntity(dto: VerseNoteDto): VerseNoteEntity {
         val updatedAt = syncTimestampMapper.toEpochMillis(dto.updatedAt)
         return VerseNoteEntity(

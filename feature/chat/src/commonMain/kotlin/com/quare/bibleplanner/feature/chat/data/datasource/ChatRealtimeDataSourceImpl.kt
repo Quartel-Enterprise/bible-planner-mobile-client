@@ -52,9 +52,6 @@ internal class ChatRealtimeDataSourceImpl(
             this.table = table
             filter(USER_ID_COLUMN, FilterOperator.EQ, userId)
         }
-        // Unfiltered on purpose: Postgres cannot check a row policy against a row that no longer
-        // exists, so Realtime strips the old record of an RLS table down to its primary key and a
-        // user_id filter would match nothing.
         val deletions = channel.postgresChangeFlow<PostgresAction.Delete>(schema = SCHEMA) {
             this.table = table
         }

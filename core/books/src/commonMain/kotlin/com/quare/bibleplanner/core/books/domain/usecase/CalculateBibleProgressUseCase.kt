@@ -5,10 +5,6 @@ import com.quare.bibleplanner.core.books.domain.repository.BooksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-/**
- * Calculates the overall Bible reading progress based on all verses in the Bible,
- * regardless of the reading plan type.
- */
 class CalculateBibleProgressUseCase(
     private val booksRepository: BooksRepository,
 ) {

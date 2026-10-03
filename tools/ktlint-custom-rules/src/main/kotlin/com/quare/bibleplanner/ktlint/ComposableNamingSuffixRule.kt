@@ -6,14 +6,6 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.IDENTIFIER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
-/**
- * A `@Composable` that emits UI ends in a word that says what kind of UI it is, taken from a closed list,
- * so a name alone tells a screen from a row from a side effect.
- *
- * Only UI emitters are held to it: a composable that returns a value (`rememberDayProgress`, `chapterCountText`)
- * is lowercase and follows the value-returning naming rule instead, and a `@Preview` is named after what
- * it previews.
- */
 class ComposableNamingSuffixRule : BiblePlannerRule("composable-naming-suffix") {
     private val allowedSuffixes = ALLOWED_SUFFIXES.split(' ')
 

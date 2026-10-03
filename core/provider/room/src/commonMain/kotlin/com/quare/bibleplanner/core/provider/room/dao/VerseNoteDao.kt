@@ -76,10 +76,6 @@ interface VerseNoteDao {
         syncedUpdatedAt: Long,
     )
 
-    /**
-     * Last-Write-Wins for the note row, and the verses it covers are replaced only when that row
-     * actually moved — otherwise a rejected remote update would still overwrite the local passage.
-     */
     @Transaction
     suspend fun applyRemoteNote(
         note: VerseNoteEntity,

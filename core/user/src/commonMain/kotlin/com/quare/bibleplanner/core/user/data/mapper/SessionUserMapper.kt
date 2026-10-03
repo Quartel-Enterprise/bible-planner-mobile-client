@@ -9,8 +9,6 @@ import kotlinx.serialization.json.contentOrNull
 class SessionUserMapper {
     fun map(sessionUser: UserInfo): UserModel? = sessionUser.userMetadata?.let { metadata ->
         UserModel(
-            // The available metadata keys vary per provider — e.g. Google provides
-            // avatar_url while Apple does not, and Apple uses full_name alongside name.
             photo = metadata.stringOrNull(KEY_AVATAR_URL),
             name = metadata.stringOrNull(KEY_NAME)
                 ?: metadata.stringOrNull(KEY_FULL_NAME),

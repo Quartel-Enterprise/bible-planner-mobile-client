@@ -6,6 +6,5 @@ actual fun shareContent(
     message: String,
     imageBytes: ByteArray?,
 ) {
-    // No-op for JVM
     Logger.d { "Sharing on JVM: $message" }
 }

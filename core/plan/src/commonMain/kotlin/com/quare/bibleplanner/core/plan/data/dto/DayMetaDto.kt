@@ -3,13 +3,6 @@ package com.quare.bibleplanner.core.plan.data.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- * Remote row of the `day_meta` table: user-scoped per-day metadata (read timestamp + notes), keyed by
- * (`user_id`, `week_number`, `day_number`, `plan_type`), reconciled by `updated_at` (Last-Write-Wins).
- *
- * The day's read state itself is not stored here: it derives from chapter/verse read state on each
- * device.
- */
 @Serializable
 internal data class DayMetaDto(
     @SerialName("user_id") val userId: String,

@@ -72,9 +72,6 @@ import com.quare.bibleplanner.core.model.book.BookId
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * Maps BookId to the corresponding string resource
- */
 fun BookId.toBookNameResource(): StringResource = when (this) {
     BookId.GEN -> Res.string.book_gen
     BookId.EXO -> Res.string.book_exo
@@ -144,8 +141,5 @@ fun BookId.toBookNameResource(): StringResource = when (this) {
     BookId.REV -> Res.string.book_rev
 }
 
-/**
- * Get book name as a localized string using string resources
- */
 @Composable
 fun BookId.getBookName(): String = stringResource(toBookNameResource())

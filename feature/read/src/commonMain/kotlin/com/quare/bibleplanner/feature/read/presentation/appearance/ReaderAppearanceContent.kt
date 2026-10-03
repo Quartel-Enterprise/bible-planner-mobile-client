@@ -76,10 +76,6 @@ private val rowIconSize = 20.dp
 private val trackHeight = 4.dp
 private val thumbSize = 20.dp
 
-/**
- * Every setting sits on its own card, the way the design groups them, so the sheet reads as a short
- * list of things to change rather than as a form.
- */
 @Composable
 internal fun ReaderAppearanceContent(
     uiState: ReaderAppearanceUiState,
@@ -114,7 +110,6 @@ internal fun ReaderAppearanceContent(
                 )
             },
         ) {
-            // The height only means anything while the band is on screen.
             AnimatedVisibility(visible = uiState.settings.isRulerEnabled) {
                 RulerHeightRow(
                     lines = uiState.settings.rulerLines,
@@ -196,11 +191,6 @@ private fun SampleLetterText(fontSize: TextUnit) {
     )
 }
 
-/**
- * A plain track and a round knob: the stock slider marks every step it can stop at, which turns a
- * twenty-position range into a row of dots. The steps still quantise the value, they are just not
- * drawn.
- */
 @Composable
 private fun TextSizeSlider(
     fontSizeSp: Float,
@@ -219,11 +209,6 @@ private fun TextSizeSlider(
     )
 }
 
-/**
- * A plain track and a round knob: the stock slider marks every step it can stop at, which turns a
- * twenty-position range into a row of beads. The steps still quantise the value, they are just not
- * drawn.
- */
 @Composable
 private fun PlainSlider(
     value: Float,

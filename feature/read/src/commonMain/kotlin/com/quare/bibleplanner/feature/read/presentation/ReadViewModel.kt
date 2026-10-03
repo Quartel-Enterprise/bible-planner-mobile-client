@@ -84,11 +84,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * The reader owns the chapter and the tapping; what can be *done* with the tapped verses belongs to
- * the selection panel, which is its own entry. The two meet at the shared selection store: this
- * writes to it and pushes the panel's route the moment it stops being empty.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadViewModel(
     private val route: ReadNavRoute,
@@ -122,20 +117,10 @@ class ReadViewModel(
     private val bookStringResource = bookId.toBookNameResource()
     private val retryCount = MutableStateFlow(0)
 
-    /**
-     * The chapters vertical reading has pulled in behind this one. It grows one chapter at a time as
-     * the reader reaches the end, so the scroll has no fixed limit, and empties when the setting goes
-     * off or the reader lands on another chapter.
-     */
     private val appendedChapters = MutableStateFlow<List<ReadNavigationSuggestionModel>>(emptyList())
 
     private val prependedChapters = MutableStateFlow<List<ReadNavigationSuggestionModel>>(emptyList())
 
-    /**
-     * Read-status flips the user just tapped, shown before the Room write that backs [dataFlow]
-     * commits and re-emits. An entry is dropped once [dataFlow] reports the same value, so a write
-     * that lands on a different value than guessed (or never lands) never leaves the UI stuck.
-     */
     private val pendingReadOverrides = MutableStateFlow<Map<ChapterLocationModel, Boolean>>(emptyMap())
 
     private val dayCompletionBanner = MutableStateFlow<PlanDayLocationModel?>(null)
@@ -155,10 +140,6 @@ class ReadViewModel(
         },
     )
 
-    /**
-     * How the reader celebrates a finished plan day is the user's call: the full sheet, the quiet
-     * banner, or nothing. Kept warm so the tap that ends the day never waits on the preference.
-     */
     private val studySuggestionSettings: StateFlow<StudySuggestionSettingsModel?> =
         observeStudySuggestionSettings()
             .stateIn(
@@ -167,11 +148,6 @@ class ReadViewModel(
                 initialValue = null,
             )
 
-    /**
-     * Which chapters on screen would finish a reading-plan day the moment they are marked read, kept
-     * up to date while the reader is open. Scoring the plan costs a trip through the whole read
-     * state, so it is paid while the user reads rather than on the tap that ends the day.
-     */
     private val dayCompletionCandidates: StateFlow<Map<ChapterLocationModel, PlanDayLocationModel>> =
         combine(
             prependedChapters,
@@ -262,11 +238,6 @@ class ReadViewModel(
         prefetchStudyQuotaForDaysAboutToFinish()
         observeVerticalReading()
         showStudyOfVisibleChapter()
-        /*
-         * Pushing is driven by the store rather than by the tap so it survives any other way the
-         * selection could start, and it is idempotent: the navigator ignores a route already on the
-         * stack. Closing is never reactive — see the panel's own note on why.
-         */
         observe(
             observeVerseSelection()
                 .map { it != null }
@@ -378,10 +349,6 @@ class ReadViewModel(
         chapterNumber.toString(),
     ).joinToString(REQUEST_KEY_SEPARATOR)
 
-    /**
-     * The day's study quota is a network round trip, so it is asked for while the reader is still on
-     * the chapter that would end the day. By the time the celebration opens, the answer is in hand.
-     */
     private fun prefetchStudyQuotaForDaysAboutToFinish() {
         observe(
             dayCompletionCandidates
@@ -393,11 +360,6 @@ class ReadViewModel(
         }
     }
 
-    /**
-     * The chapters on either side of the ones on screen are resolved while the user is still reading,
-     * so reaching an end pulls the neighbour in right away instead of waiting on a walk through the
-     * whole plan. Nothing is kept, or looked up, once the setting is off.
-     */
     private fun observeVerticalReading() {
         observe(
             observeReaderSettings()
@@ -418,7 +380,6 @@ class ReadViewModel(
         }
     }
 
-    /** A selection only means something over the chapter it was made in. */
     override fun onCleared() {
         clearVerseSelection()
         super.onCleared()
@@ -465,10 +426,6 @@ class ReadViewModel(
         }
     }
 
-    /**
-     * Vertical reading scrolls from one chapter into the next without leaving the reader, so the
-     * study beside it is asked for again whenever the chapter at the top changes.
-     */
     private fun showStudyOfVisibleChapter() {
         observe(
             combine(
@@ -495,7 +452,6 @@ class ReadViewModel(
         )
         val verseNumbers = selection?.verseNumbers.orEmpty()
         if (selection == null) {
-            // The last verse was deselected, so the panel has nothing left to act on.
             navigator.navigateBack()
         }
         trackEvent(
@@ -550,13 +506,6 @@ class ReadViewModel(
             ?: false
     }
 
-    /**
-     * The safety net for a tap that beat [dayCompletionCandidates] to it — a cold screen, or a
-     * chapter that was not on screen. It reaches the same sheet, just after the write instead of
-     * with it. The reader never learns which plan day it was opened for, so either way the day is
-     * looked up from the chapter itself: any chapter can be the one that finishes a day, no matter
-     * which screen led here.
-     */
     private suspend fun checkDayCompletion(
         bookId: BookId,
         chapterNumber: Int,
@@ -568,10 +517,6 @@ class ReadViewModel(
         presentCompletedDay(day)
     }
 
-    /**
-     * Settings not yet loaded fall back to the sheet, the long-standing default, rather than
-     * swallowing a celebration the reader just earned.
-     */
     private fun presentCompletedDay(day: PlanDayLocationModel) {
         val settings = studySuggestionSettings.value
         when {
@@ -614,10 +559,6 @@ class ReadViewModel(
         }
     }
 
-    /**
-     * The request stands until the reading order answers it, so an end reached before the lookup
-     * settles is served the moment it does instead of stalling until the reader scrolls again.
-     */
     private fun appendNextChapter() {
         if (!uiState.value.settings.isVerticalReadingEnabled) return
         isAppendRequested.update { true }

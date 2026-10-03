@@ -16,10 +16,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val loginNudgeModule = module {
-    // Data
     singleOf(::LoginNudgePreferencesImpl).bind<LoginNudgePreferences>()
 
-    // Domain
     factoryOf(::ShouldShowLoginNudgeUseCase).bind<ShouldShowLoginNudge>()
     factoryOf(::RequestLoginNudgeIfNeededUseCase).bind<RequestLoginNudgeIfNeeded>()
     factoryOf(::SnoozeLoginNudgeUseCase).bind<SnoozeLoginNudge>()

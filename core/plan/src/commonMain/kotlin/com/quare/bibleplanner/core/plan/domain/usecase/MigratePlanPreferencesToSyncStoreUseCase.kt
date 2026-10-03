@@ -5,13 +5,6 @@ import com.quare.bibleplanner.core.plan.data.datasource.PlanLocalDataSource
 import com.quare.bibleplanner.core.plan.data.sync.PlanPreferenceKeys
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 
-/**
- * One-time migration of the reading-plan preferences from the legacy DataStore into the synced
- * key-value store. Runs at app startup (regardless of auth) so logged-out existing users keep their
- * data once reads move to the synced store. Existing values are written as pending so they reach the
- * backend once the user is authenticated (mirroring how legacy favorites are preserved). Idempotent:
- * gated by a persisted flag and the legacy keys are dropped afterwards.
- */
 class MigratePlanPreferencesToSyncStoreUseCase(
     private val planLocalDataSource: PlanLocalDataSource,
     private val syncedPreferenceDao: SyncedPreferenceDao,

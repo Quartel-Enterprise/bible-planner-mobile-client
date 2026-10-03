@@ -14,7 +14,6 @@ interface ChatDao {
     fun observeConversations(): Flow<List<ChatConversationEntity>>
 
     @Query(
-        // isFromUser breaks ties: on equal timestamps the question has to come before its answer.
         "SELECT * FROM chat_messages WHERE conversationId = :conversationId " +
             "ORDER BY createdAtEpochMillis ASC, isFromUser DESC, id ASC",
     )

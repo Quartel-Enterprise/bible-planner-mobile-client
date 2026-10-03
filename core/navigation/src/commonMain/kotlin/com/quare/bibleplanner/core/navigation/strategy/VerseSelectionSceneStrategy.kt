@@ -22,20 +22,11 @@ class VerseSelectionSceneStrategy(
             key = readerEntry.contentKey,
             readerEntry = readerEntry,
             selectionEntry = selectionEntry,
-            /*
-             * Only the panel is dropped: it sits over the reader rather than replacing it, so going
-             * back from here must land on the chapter, not on whatever opened it.
-             */
             previousEntries = entries.dropLast(1),
             isWide = isWide,
         )
     }
 
-    /**
-     * The entry right under the selection, or the one under it when that is a chapter study open
-     * beside the reader: the verses are tapped on the reader, so the panel takes the study's place
-     * until the selection ends and the study comes back.
-     */
     private fun List<NavEntry<NavKey>>.findReaderUnderSelection(): NavEntry<NavKey>? {
         val underSelection = getOrNull(lastIndex - 1) ?: return null
         val candidate = if (ChapterStudyPaneKey in underSelection.metadata) {

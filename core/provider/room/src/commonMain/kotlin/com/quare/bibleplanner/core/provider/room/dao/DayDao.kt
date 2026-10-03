@@ -114,7 +114,6 @@ interface DayDao {
         syncedUpdatedAt: Long,
     )
 
-    /** Applies a remote day-meta row with Last-Write-Wins. Returns the number of rows changed. */
     @Query(
         "UPDATE days SET readTimestamp = :readTimestamp, notes = :notes, metaUpdatedAt = :remoteUpdatedAt " +
             "WHERE weekNumber = :weekNumber AND dayNumber = :dayNumber AND readingPlanType = :readingPlanType " +
@@ -129,23 +128,17 @@ interface DayDao {
         remoteUpdatedAt: Long,
     ): Int
 
-    /** Marks pre-sync day metadata pending on first launch so it reaches the backend. */
     @Query(
         "UPDATE days SET isMetaPendingSync = 1, metaUpdatedAt = :now " +
             "WHERE metaUpdatedAt IS NULL AND (readTimestamp IS NOT NULL OR (notes IS NOT NULL AND notes != ''))",
     )
     suspend fun markLegacyDayMetaPending(now: Long)
 
-    /** Logout wipe: clears day progress, notes and sync metadata without scheduling a push. */
     @Query(
         "UPDATE days SET isRead = 0, readTimestamp = NULL, notes = NULL, metaUpdatedAt = NULL, isMetaPendingSync = 0",
     )
     suspend fun clearAllDayMetaSync()
 
-    /**
-     * Delete-progress wipe: clears day read state (keeps notes) and schedules a push for days that
-     * already had a remote row (metaUpdatedAt not null), so the deletion propagates to other devices.
-     */
     @Query(
         "UPDATE days SET isRead = 0, readTimestamp = NULL, " +
             "isMetaPendingSync = CASE WHEN metaUpdatedAt IS NOT NULL THEN 1 ELSE isMetaPendingSync END, " +

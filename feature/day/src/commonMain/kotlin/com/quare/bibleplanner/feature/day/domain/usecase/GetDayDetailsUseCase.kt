@@ -27,18 +27,17 @@ class GetDayDetailsUseCase(
             val week = weeks.find { it.number == weekNumber } ?: return@combine null
             val dayFromPlans = week.days.find { it.number == dayNumber } ?: return@combine null
 
-            // Use the day from repository (which has readTimestamp and notes) but merge with updated read status from plans
             dayFromRepository?.copy(
                 passages = dayFromPlans.passages,
                 isRead = dayFromPlans.isRead,
                 totalVerses = dayFromPlans.totalVerses,
                 readVerses = dayFromPlans.readVerses,
-                readTimestamp = dayFromRepository.readTimestamp, // Preserve readTimestamp from repository
-                plannedReadDate = dayFromPlans.plannedReadDate, // Preserve plannedReadDate from plans
-                notes = dayFromRepository.notes, // Preserve notes from repository
+                readTimestamp = dayFromRepository.readTimestamp,
+                plannedReadDate = dayFromPlans.plannedReadDate,
+                notes = dayFromRepository.notes,
             ) ?: dayFromPlans.copy(
-                readTimestamp = null, // Ensure readTimestamp is set even if dayFromRepository is null
-                notes = null, // Ensure notes is set even if dayFromRepository is null
+                readTimestamp = null,
+                notes = null,
             )
         }
     }

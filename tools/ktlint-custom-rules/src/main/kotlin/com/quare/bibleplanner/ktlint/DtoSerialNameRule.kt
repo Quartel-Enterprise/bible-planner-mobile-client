@@ -6,12 +6,6 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtParameter
 
-/**
- * A `@Serializable` `*Dto` mirrors a wire format, so every field names its JSON key with `@SerialName` — renaming the
- * Kotlin property can then never change the contract — and none of them carries a default value: what the
- * server may leave out is modelled as a nullable type, and `explicitNulls = false` reads an absent key as
- * `null`.
- */
 class DtoSerialNameRule : BiblePlannerRule("dto-serial-name") {
     override fun beforeVisitChildNodes(
         node: ASTNode,

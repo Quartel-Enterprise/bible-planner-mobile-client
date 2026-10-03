@@ -7,12 +7,6 @@ import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.flow.combine
 
-/**
- * App-scoped collector that applies a synced dynamic-colors value into the device-local store while
- * theme sync is on. No-op on devices that do not support Material You, so an incoming value from an
- * Android device never affects an unsupported one. Writes straight through the repository (no mirror),
- * so applying an inbound change does not push it back.
- */
 internal class ObserveDynamicColorsSyncUseCase(
     private val repository: MaterialYouRepository,
     private val isDynamicColorSupported: IsDynamicColorSupported,

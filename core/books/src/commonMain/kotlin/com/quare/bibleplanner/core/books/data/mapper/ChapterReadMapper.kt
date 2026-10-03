@@ -5,10 +5,6 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import kotlin.time.Instant
 
 internal class ChapterReadMapper {
-    /**
-     * Maps a local chapter row to the remote read payload. [ChapterEntity.readUpdatedAt] is assumed
-     * non-null: callers only push rows flagged pending, which always have a timestamp.
-     */
     fun toDto(
         userId: String,
         entity: ChapterEntity,

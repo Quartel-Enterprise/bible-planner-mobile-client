@@ -62,7 +62,6 @@ fun SubscriptionDetailsDialog(
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState()),
                 ) {
-                    // Subscription Status
                     SectionHeader(stringResource(Res.string.subscription_status_title))
                     ListItem(
                         headlineContent = {
@@ -105,7 +104,6 @@ fun SubscriptionDetailsDialog(
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
-                    // Purchase Details
                     SectionHeader(stringResource(Res.string.purchase_details_title))
 
                     loadedState.purchaseDate?.let { date ->

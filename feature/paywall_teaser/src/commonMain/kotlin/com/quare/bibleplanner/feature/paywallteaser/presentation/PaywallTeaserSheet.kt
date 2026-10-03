@@ -38,11 +38,6 @@ private val iconBoxCornerRadius = 16.dp
 private val iconSize = 28.dp
 private val bodyMaxWidth = 300.dp
 
-/**
- * A small "why Pro" step shown before the real paywall, reused by every feature that gates a
- * capability behind a subscription: the reason picks the copy, and confirming always lands on the
- * same [com.quare.bibleplanner.core.model.route.PaywallNavRoute].
- */
 @Composable
 internal fun PaywallTeaserSheet(
     reason: PaywallTeaserReason,

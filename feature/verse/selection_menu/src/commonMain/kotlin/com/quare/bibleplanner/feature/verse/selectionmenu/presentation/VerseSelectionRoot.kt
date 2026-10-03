@@ -18,12 +18,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private val instantTransition: ContentTransform = EnterTransition.None togetherWith ExitTransition.None
 
-/**
- * The scene swap is declared instant. NavDisplay keys its transition on the scene's class, so
- * going from the reader alone to reader-plus-panel would run the default 700ms cross-fade — and
- * because the reader is movable content it can only be composed in one of the two scenes at a
- * time, so it vanishes for the duration. The sheet animates itself into place instead.
- */
 fun EntryProviderScope<NavKey>.verseSelection() {
     entry<VerseSelectionNavRoute>(
         metadata = getVerseSelectionPane() +

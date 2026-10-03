@@ -9,15 +9,6 @@ import kotlinx.coroutines.flow.first
 internal class IsChapterReadStatusUseCase(
     private val getBooksFlow: GetBooksFlowUseCase,
 ) {
-    /**
-     * Calculates the new read status for a chapter after toggling.
-     * Returns the new status (toggled from the current status).
-     *
-     * @param passage The passage containing the chapter
-     * @param strategy The strategy to determine the new read status
-     * @return The new read status (true if should be marked as read, false otherwise)
-     * @return null if the chapter index is invalid
-     */
     suspend operator fun invoke(
         passage: PassageModel,
         strategy: UpdateReadStatusOfPassageStrategy,
@@ -42,7 +33,6 @@ internal class IsChapterReadStatusUseCase(
         val book = getBooksFlow().first().find { it.id == passage.bookId } ?: return errorResult
         val bookChapter = book.chapters.find { it.number == chapter.number } ?: return errorResult
 
-        // Check if a chapter is read based on verse ranges
         val isCurrentlyRead = bookChapter.isRangeRead(chapter.startVerse, chapter.endVerse)
         return Result.success(!isCurrentlyRead)
     }

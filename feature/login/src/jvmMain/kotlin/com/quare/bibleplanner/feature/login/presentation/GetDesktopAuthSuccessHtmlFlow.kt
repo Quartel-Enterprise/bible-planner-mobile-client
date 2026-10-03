@@ -6,12 +6,6 @@ import com.quare.bibleplanner.feature.login.presentation.factory.DesktopAuthSucc
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
-/**
- * Emits the desktop OAuth success page (wrapped in [Result]) every time the user's theme
- * or language preference changes. A [Result.failure] reflects a rendering problem (e.g.
- * a missing classpath resource) and lets the downstream synchronizer report the error
- * instead of crashing the OAuth flow.
- */
 internal class GetDesktopAuthSuccessHtmlFlow(
     private val getThemeOptionFlow: GetThemeOptionFlow,
     private val getAppLanguageFlow: GetAppLanguageFlow,

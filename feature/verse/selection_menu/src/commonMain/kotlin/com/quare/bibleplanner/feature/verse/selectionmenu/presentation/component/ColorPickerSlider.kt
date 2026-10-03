@@ -25,11 +25,6 @@ private val thumbSize = 22.dp
 private val thumbBorderWidth = 2.dp
 private val thumbElevation = 2.dp
 
-/**
- * A slider whose track *is* the value being picked: the gradient shows every colour on offer, so
- * there is no active/inactive split to draw and no tick marks to read. The thumb is a plain white
- * knob, which stays visible over any hue the track runs through.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ColorPickerSlider(
@@ -39,10 +34,6 @@ internal fun ColorPickerSlider(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    /*
-     * Forced to the thumb's height so the two sliders can sit as close as the design puts them: the
-     * stock slider reserves a 48dp touch row, which on its own pushed them far apart.
-     */
     Slider(
         modifier = modifier.requiredHeight(thumbSize),
         value = value,

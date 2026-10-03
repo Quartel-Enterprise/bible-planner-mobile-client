@@ -12,10 +12,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val reviewModule = module {
-    // Data
     singleOf(::ReviewPreferencesImpl).bind<ReviewPreferences>()
 
-    // Domain
     factory<ShouldRequestReview> {
         ShouldRequestReviewUseCase(
             reviewPreferences = get(),

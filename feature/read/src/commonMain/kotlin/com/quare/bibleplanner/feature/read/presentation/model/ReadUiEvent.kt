@@ -23,10 +23,6 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
-    /**
-     * Carries the chapter because vertical reading keeps two chapters — and two read pills — on the
-     * same screen.
-     */
     data class ToggleReadStatus(
         val bookId: BookId,
         val chapterNumber: Int,
@@ -88,7 +84,6 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
-    /** The end of the loaded text came into view, so vertical reading pulls in the next chapter. */
     data object OnReachedEnd : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
@@ -103,7 +98,6 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
-    /** Bridge for the banner's own dismissal, which the banner tracks itself. */
     data object OnDayCompletionBannerDismissed : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
@@ -118,7 +112,6 @@ sealed interface ReadUiEvent : UiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
 
-    /** The chapter at the top of the text changed, so the study beside it follows. */
     data class OnVisibleChapterChanged(
         val bookId: BookId,
         val chapterNumber: Int,

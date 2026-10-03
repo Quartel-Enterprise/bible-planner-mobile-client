@@ -18,22 +18,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/**
- * Variant of [ResponsiveColumn] that renders the landscape layout as TWO independent
- * scrollable columns (left panel + right list).
- *
- * Both columns are [LazyColumn]s that fill the full screen width split by [leftWeight] /
- * [rightWeight], so vertical scroll keeps working in the empty side margins around the
- * centered content (each margin scrolls the column on its side).
- *
- * In portrait (width <= [maxPortraitWidth]) it falls back to the same behavior as
- * [ResponsiveColumn]: a single LazyColumn filling the screen with items centered at
- * [maxContentWidth].
- *
- * @param lazyListState state for the main scrollable list. Used in portrait, and for the
- * RIGHT column in landscape — typically where the long, dynamic content lives.
- * @param leftLazyListState state for the LEFT column in landscape only.
- */
 @Composable
 fun ResponsiveSplitColumn(
     modifier: Modifier = Modifier,

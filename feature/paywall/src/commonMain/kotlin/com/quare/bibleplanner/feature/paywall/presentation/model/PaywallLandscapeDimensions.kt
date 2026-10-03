@@ -28,10 +28,6 @@ internal data class PaywallLandscapeDimensions(
     val actionButtonTopPadding: Dp,
     val actionButtonHeight: Dp,
 ) {
-    /**
-     * Configuration of the premium icon above the panel title. Absent on a phone in landscape,
-     * where the panel opens with a compact bar instead of the full hero.
-     */
     data class HeroIcon(
         val boxSize: Dp,
         val boxCornerRadius: Dp,

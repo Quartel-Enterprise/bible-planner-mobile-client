@@ -8,21 +8,6 @@ import com.quare.bibleplanner.core.provider.room.relation.BookWithChapters
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-/**
- * Maps Room relation entities ([BookWithChapters]) to domain models ([BookDataModel]).
- *
- * Memoized by `book.id`: a click that marks 1 verse as read causes Room to re-emit the
- * full list of 66 books, but only 1 book's entity tree actually changed. The cache lets
- * us return the previous [BookDataModel] reference for the other 65 books — avoiding
- * ~98% of per-emission allocations (VerseModel × ~50k, BookChapterModel × ~2k).
- *
- * This was the dominant GC pressure on iOS/Kotlin Native: each emission allocated the
- * full object tree and immediately discarded it on the next emission, keeping the
- * GC thread busy ~25% of the time.
- *
- * Thread-safety: [mapModel] is suspending and guarded by a [Mutex]. Cache mutations
- * are atomic. Cache size is bounded by the number of books (currently 66).
- */
 class BooksWithChapterMapper {
     private val cacheMutex = Mutex()
     private val cache = mutableMapOf<String, CacheEntry>()
@@ -37,12 +22,10 @@ class BooksWithChapterMapper {
 
     suspend fun mapModel(bookWithChapters: BookWithChapters): BookDataModel {
         val key = bookWithChapters.book.id
-        // Fast path: cache hit with structural equality of the source entity
         val cached = cacheMutex.withLock { cache[key] }
         if (cached != null && cached.source == bookWithChapters) {
             return cached.result
         }
-        // Cache miss or entity changed: compute outside the lock to avoid blocking other books
         val mapped = computeModel(bookWithChapters)
         cacheMutex.withLock {
             cache[key] = CacheEntry(bookWithChapters, mapped)
@@ -59,7 +42,6 @@ class BooksWithChapterMapper {
                 )
             }
 
-            // Derive chapter read status: either the flag is true, or all verses are read
             val isChapterRead = chapterWithVerses.chapter.isRead || (
                 versesModel.isNotEmpty() && versesModel.all { it.isRead }
             )
@@ -77,7 +59,6 @@ class BooksWithChapterMapper {
             )
         }
 
-        // Derive book read status: either the flag is true, or all chapters are read
         val isBookRead = book.isRead || (
             chaptersModel.isNotEmpty() && chaptersModel.all { it.isRead }
         )

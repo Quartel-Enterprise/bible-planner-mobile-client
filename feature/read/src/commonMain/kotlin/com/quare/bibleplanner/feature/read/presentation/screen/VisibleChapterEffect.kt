@@ -6,10 +6,6 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 
-/**
- * Tells the reader which chapter is at the top of the text, or the one it opened on until the text
- * is laid out, so what follows the reading can follow it.
- */
 @Composable
 internal fun VisibleChapterEffect(
     visibleChapter: ReadChapterUiModel?,

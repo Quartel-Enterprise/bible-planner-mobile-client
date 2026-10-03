@@ -9,11 +9,6 @@ import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.flow.first
 
-/**
- * Toggles the account-global theme sync flag. The repository handles the flag plus the theme/contrast
- * snapshot; dynamic colors are mirrored here too (only on a device where Material You is supported) so
- * the whole theme appearance becomes authoritative when sync is enabled.
- */
 internal class SetThemeSyncEnabledUseCase(
     private val repository: ThemeSelectionRepository,
     private val getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,

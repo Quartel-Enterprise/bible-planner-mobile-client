@@ -54,15 +54,6 @@ private val hueBrush = Brush.horizontalGradient(
     ),
 )
 
-/**
- * Hue and lightness only: saturation is fixed so every mix stays legible behind verse text.
- *
- * Each track is painted in the colours it selects — the full hue wheel, and the lightness ramp of
- * the hue the user is on — so the sliders read as the choice they offer rather than as a value.
- *
- * The 4dp between them lands the tracks the 12dp apart the design asks for: each slider is only as
- * tall as its thumb, which overhangs the track by 4dp on each side.
- */
 @Composable
 internal fun CustomColorPicker(
     color: CustomColorUiModel,
@@ -143,7 +134,6 @@ internal fun CustomColorPicker(
     }
 }
 
-/** The lightness ramp is drawn in the hue the user is on, so the track previews the actual choice. */
 private fun Int.toLightnessBrush(): Brush = Brush.horizontalGradient(
     listOf(
         Color.hsl(

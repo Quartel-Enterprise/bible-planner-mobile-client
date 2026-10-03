@@ -22,7 +22,6 @@ internal fun ChapterStudyScreen(
 ) {
     Scaffold(
         topBar = {
-            // Beside the reader the chapter is already in sight, and back leaves both panes.
             if (!isBesideReader) {
                 ChapterStudyTopBar(
                     uiState = uiState,

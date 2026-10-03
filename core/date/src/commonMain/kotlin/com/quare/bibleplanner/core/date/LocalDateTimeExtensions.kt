@@ -5,9 +5,6 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
-/**
- * Converts a LocalDateTime to a LocalDate by extracting the date components.
- */
 fun LocalDateTime.toLocalDate(): LocalDate = LocalDate(
     year = year,
     month = month,

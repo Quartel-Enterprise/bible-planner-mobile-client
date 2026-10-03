@@ -100,10 +100,6 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
         val displayedEntryCount = displayBackStack.size
-        /*
-         * NavDisplay calls back once for every entry the scene leaves, and navigateBack already
-         * leaves a study together with the entry it sits beside, so the calls after it pop nothing.
-         */
         val onNavigateBack: () -> Unit = {
             if (backStack.size >= displayedEntryCount) {
                 backStackController.navigateBack(isWide)

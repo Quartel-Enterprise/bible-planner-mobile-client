@@ -22,8 +22,6 @@ internal class JvmSignInStarter(
         ) {
             try {
                 signInWith(provider)
-                // On success the supabase Auth plugin updates sessionStatus to
-                // Authenticated, and LoginViewModel's observer closes the bottom sheet.
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (throwable: Throwable) {

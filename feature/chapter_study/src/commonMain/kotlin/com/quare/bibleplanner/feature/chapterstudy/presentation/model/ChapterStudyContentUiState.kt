@@ -5,7 +5,6 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyModel
 internal sealed interface ChapterStudyContentUiState {
     data object Loading : ChapterStudyContentUiState
 
-    /** The study beside the reader waits for the user to ask for it, so it never spends a study on its own. */
     data class NotGenerated(
         val hero: ChapterStudyHeroUiModel,
         val isStarting: Boolean,

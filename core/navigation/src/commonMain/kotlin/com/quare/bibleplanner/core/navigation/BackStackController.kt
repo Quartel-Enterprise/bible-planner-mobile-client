@@ -27,7 +27,6 @@ internal class BackStackController(
         isWide: Boolean,
     ) {
         if (route != backStack.lastOrNull()) {
-            // The study beside the top entry belongs to it, so it goes too instead of being replaced.
             if (isWide && backStack.hasStudyCompanionOnTop()) {
                 backStack.removeLastOrNull()
             }
@@ -48,11 +47,6 @@ internal class BackStackController(
         forwardStack.removeLastOrNull()?.asReversed()?.forEach(backStack::add)
     }
 
-    /**
-     * The reader asks for the study of whichever chapter is on screen, so the one beside it follows
-     * the text. Anything else on top, such as the verse selection, keeps its place: the study it
-     * covers is replaced the next time the reader asks.
-     */
     private fun showChapterStudyCompanion(route: ChapterStudyNavRoute) {
         when (backStack.lastOrNull()) {
             route -> Unit

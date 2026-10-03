@@ -5,7 +5,6 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytic
 import com.quare.bibleplanner.ui.utils.presentation.UiEvent
 
 sealed interface DeleteHighlightColorUiEvent : UiEvent {
-    /** Removing the colour from the palette does not have to remove what was marked with it. */
     data class OnConfirmClick(
         val shouldKeepHighlights: Boolean,
     ) : DeleteHighlightColorUiEvent {

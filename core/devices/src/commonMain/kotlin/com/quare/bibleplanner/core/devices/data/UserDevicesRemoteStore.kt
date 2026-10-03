@@ -83,7 +83,6 @@ internal class UserDevicesRemoteStore(
         }
     }
 
-    // RLS scopes the delete to the caller's own rows, so filtering by device_id is enough.
     suspend fun deleteOwnDevice(deviceId: String) {
         supabaseClient.from(TABLE).delete {
             filter { eq("device_id", deviceId) }

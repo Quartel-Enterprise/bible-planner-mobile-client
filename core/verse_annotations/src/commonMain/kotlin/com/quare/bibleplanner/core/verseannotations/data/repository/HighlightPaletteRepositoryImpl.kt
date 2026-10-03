@@ -23,11 +23,6 @@ internal class HighlightPaletteRepositoryImpl(
             }
         }
 
-    /**
-     * The palette keeps the most recent [MAX_CUSTOM_COLORS] mixes: the row is a shortcut to a colour
-     * the user might reuse, not a record, and highlights already made with an evicted colour keep
-     * rendering because the colour components live in the highlight's own key.
-     */
     override suspend fun add(color: HighlightColor.Custom) {
         highlightPaletteColorDao.upsertPaletteColor(
             HighlightPaletteColorEntity(

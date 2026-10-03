@@ -320,11 +320,6 @@ internal class ChatViewModel(
         scrollOnNewMessage(messages)
     }
 
-    /**
-     * A message arriving — the reader's own or the answer to it — brings the thread to its end. The
-     * answer being written does not, or every token would drag the list out from under whoever is
-     * reading further up; it lands once when it appears and again when it is finished.
-     */
     private fun scrollOnNewMessage(messages: List<ChatMessageModel>) {
         val newest = messages.lastOrNull()?.let { message -> message.id to message.isStreaming }
         if (newest == null || newest == newestMessage) return
@@ -406,8 +401,6 @@ internal class ChatViewModel(
                 failure = send?.failure?.takeUnless { send.isAccepted && it is ChatSendFailureModel.Generic },
             )
         }
-        // The question shows up in the thread before the server echoes it back, and it belongs at the
-        // bottom where the reader is looking.
         if (pending != null && !hadPendingQuestion) emitAction(ChatUiAction.ScrollToBottom)
         when (val failure = send?.failure) {
             is ChatSendFailureModel.RateLimited -> startCooldown(failure.retryAfterSeconds)
@@ -561,11 +554,6 @@ internal class ChatViewModel(
         viewModelScope.launch { useCases.loadMessages(conversationId) }
     }
 
-    /**
-     * Puts back the reading a conversation belongs to, which starting a fresh one had cleared away.
-     * Only for this screen's own day: another day's thread would need its passages, which are not
-     * loaded here, and offering this day's questions under it would be worse than offering none.
-     */
     private fun restoreContextOf(conversation: ChatConversationModel?) {
         if (context != null) return
         if (conversation?.planDay == null || conversation.planDay != dayContext?.planDay) return

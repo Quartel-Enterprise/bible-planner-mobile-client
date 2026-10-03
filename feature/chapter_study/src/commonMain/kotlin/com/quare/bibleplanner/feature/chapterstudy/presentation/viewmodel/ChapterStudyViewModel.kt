@@ -80,7 +80,6 @@ internal class ChapterStudyViewModel(
         AnalyticsParams.CHAPTER_NUMBER to target.chapterNumber,
     )
 
-    /** On a wide window the study opens beside the reader, so the chapter's verses stay in sight. */
     private var isBesideReader: Boolean = false
 
     val uiState: StateFlow<ChapterStudyUiState>
@@ -134,7 +133,6 @@ internal class ChapterStudyViewModel(
         observeGenerationJob()
     }
 
-    /** Logging in or subscribing changes what generating costs, so the offer follows the account. */
     private fun observeHero() {
         combine(
             useCases.observeAuthenticatedUserId(),
@@ -284,7 +282,6 @@ internal class ChapterStudyViewModel(
     private fun onGenerationFailed(status: ChapterStudyGenerationStatus.Failed) {
         generationCoordinator.acknowledge(target)
         if (status.isLimitReached && isCompanion) {
-            // The reader stays beside it, so the study shows the free ones are used up instead of leaving.
             viewModelScope.launch {
                 showContent(ChapterStudyContentUiState.Loading)
                 showHero(useCases.observeIsProUser().first())

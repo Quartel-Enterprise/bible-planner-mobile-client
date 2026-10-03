@@ -19,7 +19,6 @@ class UpdateDayReadStatusUseCase(
         isRead: Boolean,
         readingPlanType: ReadingPlanType,
     ) {
-        // Get the day to access its passages
         val plansModel = getPlansByWeekUseCase().first()
         val weeks = when (readingPlanType) {
             ReadingPlanType.CHRONOLOGICAL -> plansModel.chronologicalOrder
@@ -28,10 +27,8 @@ class UpdateDayReadStatusUseCase(
         val week = weeks.find { it.number == weekNumber } ?: return
         val day = week.days.find { it.number == dayNumber } ?: return
 
-        // Update all passages
         updatePassageReadStatus(day.passages)
 
-        // Update day read status with timestamp
         val readTimestamp = if (isRead) {
             currentTimestampProvider.getCurrentTimestamp()
         } else {

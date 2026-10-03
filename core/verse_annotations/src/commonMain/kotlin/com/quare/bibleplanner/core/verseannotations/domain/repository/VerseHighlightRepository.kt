@@ -13,7 +13,6 @@ interface VerseHighlightRepository {
 
     suspend fun getColors(refs: List<VerseRef>): Map<VerseRef, HighlightColor?>
 
-    /** A null [color] clears the highlight, which travels as a tombstone rather than a delete. */
     suspend fun setColor(
         refs: List<VerseRef>,
         color: HighlightColor?,
