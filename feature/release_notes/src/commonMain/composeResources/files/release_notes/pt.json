@@ -1,5 +1,8 @@
 {
   "2.11.0": {
+    "common": [
+      "Depois de entrar na sua conta ou voltar a ficar online, seu progresso de leitura, suas marcações e sua foto de perfil aparecem bem mais rápido."
+    ],
     "android": [
       "Usou seus estudos com IA grátis? Agora, além de assinar o Pro, você pode assistir a um vídeo curto para liberar mais um estudo do capítulo ou do dia. Toque em \"Desbloquear\" para escolher. O número de vídeos por dia é limitado.",
       "No Perfil, a nova opção \"Opções de privacidade\" permite rever suas escolhas sobre anúncios, nos lugares onde a lei pede esse consentimento."

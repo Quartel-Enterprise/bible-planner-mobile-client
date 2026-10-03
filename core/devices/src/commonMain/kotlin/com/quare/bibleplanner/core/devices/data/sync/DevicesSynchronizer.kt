@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.devices.data.local.UserDeviceLocalStore
 import com.quare.bibleplanner.core.devices.data.model.DeviceChange
 import com.quare.bibleplanner.core.provider.connectivity.NetworkConnectivityObserver
 import com.quare.bibleplanner.core.provider.room.entity.UserDeviceEntity
+import com.quare.bibleplanner.core.sync.domain.FetchedSnapshot
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import com.quare.bibleplanner.core.user.domain.usecase.GetAuthenticatedUserId
 import com.quare.bibleplanner.core.utils.suspendRunCatching
@@ -86,11 +87,13 @@ internal class DevicesSynchronizer(
             }
     }
 
-    override suspend fun pullSnapshot() {
-        val userId = getAuthenticatedUserId() ?: return
+    override suspend fun fetchSnapshot(): FetchedSnapshot {
+        val userId = getAuthenticatedUserId() ?: return FetchedSnapshot {}
         val dtos = remoteStore.fetch(userId)
-        dtos.forEach { localStore.applyRemote(it) }
-        localStore.retainOnly(dtos.map { it.id })
+        return FetchedSnapshot {
+            dtos.forEach { localStore.applyRemote(it) }
+            localStore.retainOnly(dtos.map { it.id })
+        }
     }
 
     override suspend fun clearLocal() {

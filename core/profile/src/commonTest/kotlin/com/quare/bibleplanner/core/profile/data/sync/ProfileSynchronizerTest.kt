@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.profile.fake.FakeProfileDao
 import com.quare.bibleplanner.core.profile.fake.RecordingSupabaseClient
 import com.quare.bibleplanner.core.provider.room.entity.ProfileEntity
 import com.quare.bibleplanner.core.provider.supabase.testing.FakeRealtime
+import com.quare.bibleplanner.core.sync.domain.FetchedSnapshot
 import com.quare.bibleplanner.core.sync.domain.Synchronizer
 import io.github.jan.supabase.storage.storage
 import io.ktor.http.HttpStatusCode
@@ -193,12 +194,12 @@ class ProfileSynchronizerTest {
         // When
         synchronizer.seed(now = 1L)
         synchronizer.observeRealtime()
-        synchronizer.pullSnapshot()
+        synchronizer.fetchSnapshot()
         synchronizer.clearLocal()
 
         // Then
         assertEquals(
-            expected = listOf("seed", "observeRealtime", "pullSnapshot", "clearLocal"),
+            expected = listOf("seed", "observeRealtime", "fetchSnapshot", "clearLocal"),
             actual = delegate.calls,
         )
     }
@@ -267,8 +268,9 @@ private class RecordingSynchronizer : Synchronizer {
         calls += "observeRealtime"
     }
 
-    override suspend fun pullSnapshot() {
-        calls += "pullSnapshot"
+    override suspend fun fetchSnapshot(): FetchedSnapshot {
+        calls += "fetchSnapshot"
+        return FetchedSnapshot {}
     }
 
     override suspend fun clearLocal() {
