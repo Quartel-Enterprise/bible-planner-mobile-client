@@ -37,6 +37,7 @@ kotlin {
             implementation(projects.core.network)
             implementation(projects.core.user)
             implementation(projects.core.devices)
+            implementation(projects.core.installAttribution)
             implementation(projects.core.profile)
             implementation(projects.feature.editProfile)
             implementation(projects.core.model)

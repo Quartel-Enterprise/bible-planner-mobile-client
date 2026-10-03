@@ -5,6 +5,7 @@ import com.quare.bibleplanner.core.books.domain.usecase.InitializeBooksIfNeededU
 import com.quare.bibleplanner.core.books.domain.usecase.ObserveBibleVersionsUseCase
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveCurrentDeviceRevoked
 import com.quare.bibleplanner.core.devices.domain.usecase.ObserveDeviceRegistration
+import com.quare.bibleplanner.core.installattribution.domain.usecase.ReportAppInstall
 import com.quare.bibleplanner.core.plan.domain.usecase.EnsureDefaultPlanStartDateUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.MigratePlanPreferencesToSyncStoreUseCase
 import com.quare.bibleplanner.core.preferences.materialyou.domain.usecase.ObserveDynamicColorsSync
@@ -46,6 +47,7 @@ internal class InitializeAppContentUseCase(
     private val observeSessionLoss: ObserveSessionLoss,
     private val syncBillingUserId: SyncBillingUserId,
     private val gatherAdsConsentIfEnabled: GatherAdsConsentIfEnabled,
+    private val reportAppInstall: ReportAppInstall,
     // Why: unused, but injecting it initializes remote config; do not remove.
     private val remoteConfig: RemoteConfigService,
 ) : InitializeAppContent {
@@ -73,6 +75,7 @@ internal class InitializeAppContentUseCase(
             launch { observeSessionLoss() }
             launch { syncBillingUserId() }
             launch { gatherAdsConsentIfEnabled() }
+            launch { reportAppInstall() }
             // Why: launched after book rows exist so remote favorites can be applied to them.
             launch { observeSync() }
             observeSelectedVersion()
