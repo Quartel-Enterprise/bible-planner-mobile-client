@@ -63,7 +63,7 @@ completion does not trigger one.
 
 ## AI review
 
-Claude reviews pull requests in two places:
+Claude reviews pull requests at three points:
 
 - **Before it opens**, the `create-pr` skill runs `/code-review high` for correctness bugs and the
   project's `review-conventions` skill, which checks the change against the docs under `docs/`, the
@@ -71,23 +71,36 @@ Claude reviews pull requests in two places:
   review. Findings stop the skill until the author fixes them or chooses to go on. It is skipped
   when the author asks, and when the branch only changes docs, release notes, the version, the
   version catalog or store metadata. This runs on the author's Claude subscription.
-- **On GitHub, on request**, adding the `ai-review` label runs `claude-review`, which posts the
-  findings of the official `code-review` plugin as inline comments, then removes the label. Use it
-  as a second opinion on a change that deserves one. The review skips a pull request it has already
-  commented on, so adding the label again after new pushes doesn't review it again.
+- **On GitHub, when it opens**, `claude-review` posts the findings of the official `code-review`
+  plugin as inline comments, as a second opinion. A draft is reviewed when it is marked ready for
+  review instead. The review skips a pull request it has already commented on, so pushes after the
+  pull request opens, and reopening it, don't review it again.
+- **On GitHub, on request**, adding the `ai-review` label runs `claude-review-on-request`, which
+  reviews the pull request again with the same plugin, then removes the label. The plugin can't
+  read inline comments, so the workflow hands it the ones Claude left before, for it not to raise
+  the same issues again. Use it after new pushes. When another review of the pull request is still
+  running, it starts nothing and only removes the label.
 
-`claude-review` only comments: it fails only when the run itself does (an expired token, the
-30-minute timeout), never because of what it found. It is skipped on pull requests from forks, which
-get no secrets, and the label then has to be removed by hand. The action also refuses to run when
-the pull request changes `claude-review.yml` itself: the file has to match the one on `main`, so a
-change to the workflow can only be tried out after it merges. The run then ends green with a
-"workflow validation" warning and posts nothing.
+Both only comment: they fail only when the run itself does (an expired token, the 30-minute
+timeout), never because of what they found. They are skipped on pull requests from forks, which get
+no secrets, and the `ai-review` label then has to be removed by hand. The action also refuses to run
+when the pull request changes the workflow file that started it: the file has to match the one on
+`main`, so a change to either workflow can only be tried out after it merges. The run then ends
+green with a "workflow validation" warning and posts nothing. The review step they share, in
+`.github/actions/claude-review`, is not checked: a change to it runs on the pull request that makes
+it, with the token. Only branches of this repository get there, since forks are skipped.
 
-Treat it as advisory, not as a gate. Every label added to a pull request starts the workflow, and a
-label other than `ai-review` leaves a skipped `review` check on the head commit. `merge-when-green`
-reads only the latest check of each name, so a later label hides a failed review, or one still
-running, and the pull request can merge without it. To wait for the comments, add
-`merge-when-green` once the review has finished.
+Treat them as advisory, not as a gate: their findings never fail a check. Since `claude-review` runs
+on the head commit the pull request opened with, `merge-when-green` waits for it to finish there,
+and a run that failed (an expired token) holds the merge until it is rerun. A later push brings a
+head commit with no review check, so the merge no longer waits for it.
+
+The review on request is a workflow of its own because every label added to a pull request starts
+it, and the job of a label other than `ai-review` is skipped. Its job is named `review-on-request`,
+so those skipped checks never hide the `review` check of the opening review. They do hide a review
+on request still running: `merge-when-green` reads only the latest check of each name, so adding a
+label after `ai-review`, `merge-when-green` included, lets the pull request merge without waiting
+for that review.
 
 It authenticates with the `CLAUDE_CODE_OAUTH_TOKEN` secret, created with `claude setup-token` on the
 maintainer's account, so the reviews count against that Claude subscription instead of being billed
@@ -96,7 +109,7 @@ and update the secret. The action posts as the Claude GitHub App, which has to b
 repository.
 
 Anthropic's managed Code Review is not used: it is only available on Team and Enterprise plans, and
-enabling it next to this workflow would review every pull request twice.
+enabling it next to these workflows would review every pull request twice.
 
 ## UI tests
 
