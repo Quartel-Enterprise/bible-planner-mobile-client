@@ -19,6 +19,7 @@ APPLE_TEAM_ID    = "TTV2A365LG".freeze
 XCODE_PROJECT    = "iosApp/iosApp.xcodeproj".freeze
 VERSION_XCCONFIG = "version.xcconfig".freeze
 RELEASE_NOTES_DIR = "feature/release_notes/src/commonMain/composeResources/files/release_notes".freeze
+PLAY_DATA_SAFETY_CSV = "fastlane/metadata/android/data_safety.csv".freeze
 
 # Per-store character limits for release notes. Google Play hard-fails the
 # upload when exceeded; App Store rejects the metadata at submit time.
@@ -252,6 +253,36 @@ platform :android do
       skip_upload_screenshots: false,
       validate_only: ENV.fetch("VALIDATE_ONLY", "false").strip.downcase == "true",
     )
+  end
+
+  desc "Upload the Play Data safety form from fastlane/metadata/android/data_safety.csv"
+  desc "The CSV is the Play Console's own export format (Data safety > Export to CSV): edit it in a PR,"
+  desc "never in the console, the same way as the listing copy. Runs with production releases."
+  lane :upload_data_safety do
+    require "googleauth"
+    require "net/http"
+
+    repo_root = File.expand_path("..")
+    csv_path = File.join(repo_root, PLAY_DATA_SAFETY_CSV)
+    UI.user_error!("#{PLAY_DATA_SAFETY_CSV} is missing") unless File.exist?(csv_path)
+
+    credentials = Google::Auth::ServiceAccountCredentials.make_creds(
+      json_key_io: File.open(ENV.fetch("PLAY_STORE_JSON_KEY_PATH")),
+      scope: "https://www.googleapis.com/auth/androidpublisher",
+    )
+    access_token = credentials.fetch_access_token!.fetch("access_token")
+
+    uri = URI("https://androidpublisher.googleapis.com/androidpublisher/v3/applications/#{ANDROID_PACKAGE}/dataSafety")
+    request = Net::HTTP::Post.new(uri)
+    request["Authorization"] = "Bearer #{access_token}"
+    request["Content-Type"] = "application/json"
+    request.body = JSON.generate(safetyLabels: File.read(csv_path))
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) { |http| http.request(request) }
+
+    unless response.is_a?(Net::HTTPSuccess)
+      UI.user_error!("Play rejected the Data safety form (#{response.code}): #{response.body}")
+    end
+    UI.success("Data safety form uploaded")
   end
 end
 

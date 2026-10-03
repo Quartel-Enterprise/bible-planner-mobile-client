@@ -12,12 +12,16 @@ internal class GenerateChapterStudyUseCase(
     private val repository: ChapterStudyRepository,
     private val scopeResolver: ChapterStudyScopeResolver,
 ) : GenerateChapterStudy {
-    override fun invoke(target: ChapterStudyTargetModel): Flow<ChapterStudyGenerationEventModel> = flow {
+    override fun invoke(
+        target: ChapterStudyTargetModel,
+        isRewarded: Boolean,
+    ): Flow<ChapterStudyGenerationEventModel> = flow {
         val scope = scopeResolver.resolve(target)
         emitAll(
             repository.generateChapterStudy(
                 chapter = scope.chapter,
                 languageCode = scope.languageCode,
+                isRewarded = isRewarded,
             ),
         )
     }

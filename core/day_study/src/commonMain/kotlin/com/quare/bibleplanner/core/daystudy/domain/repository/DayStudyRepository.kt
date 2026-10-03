@@ -10,6 +10,7 @@ interface DayStudyRepository {
         passages: List<PassageModel>,
         version: String,
         languageCode: String,
+        isRewarded: Boolean,
     ): Flow<DayStudyGenerationEventModel>
 
     suspend fun getDayStudyStatus(

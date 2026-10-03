@@ -5,4 +5,5 @@ data class DayStudyStatusModel(
     val usedCount: Int,
     val isUnlocked: Boolean,
     val cacheToken: String,
+    val rewardedRemainingToday: Int,
 )

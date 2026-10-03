@@ -243,6 +243,19 @@ Apple would reject — retry `ios-screenshots-upload` and `ios-submit` submits a
 How the images are generated, edited and republished between releases is covered in
 [Store listing screenshots](store-listing-screenshots.md).
 
+## Play Data safety
+
+The Play Data safety form is versioned too, in `fastlane/metadata/android/data_safety.csv`, the
+Play Console's own export format (**App content › Data safety › Export to CSV**). After the AAB is
+uploaded, `android-upload` runs `fastlane android upload_data_safety`, which posts the CSV through
+the Google Play Developer API (`applications.dataSafety`) — on production releases only, never on
+pre-releases or test tracks. To change the declarations, export the current CSV, edit it, and land
+it here: the next production release sends it, and editing the console instead gets overwritten.
+
+Not covered by any API, so still done by hand in the stores at release time: Play's **Ads**
+declaration ("Contains ads", under App content) and the App Store's **App Privacy** labels (the
+API key the pipeline uses cannot edit them).
+
 ## Approval gate
 
 The `android` and `ios` jobs target the `Production` GitHub Environment, which has **required
@@ -289,7 +302,7 @@ To bump versions outside the pipeline (Android, iOS and Desktop at once):
 | Item | Value |
 |------|-------|
 | Workflow | `.github/workflows/release.yml` |
-| Fastlane lanes | `fastlane/Fastfile` (`android build`, `upload`, `upload_screenshots`; `ios build`, `upload`, `upload_screenshots`, `submit`) |
+| Fastlane lanes | `fastlane/Fastfile` (`android build`, `upload`, `upload_screenshots`, `upload_data_safety`; `ios build`, `upload`, `upload_screenshots`, `submit`) |
 | iOS certificates | fastlane match — private repo `bible-planner-certs` |
 | Approval gate | `Production` GitHub Environment (required reviewers) |
 

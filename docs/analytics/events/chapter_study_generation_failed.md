@@ -23,6 +23,7 @@ Captures AI chapter-study generations that fail or are blocked before starting, 
 | `chapter_number` | int | `3` | 1-based chapter within the book |
 | `reason` | string | `limit_reached` | `limit_reached` \| `offline` \| `error` |
 | `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
+| `is_rewarded` | boolean | `false` | Whether this generation was unlocked with a rewarded video (the app sent `reward: true`). Absent when the ViewModel rejects the start before it reaches the coordinator (offline pre-check) |
 | `duration_ms` | int | `1200` | Time the generation ran before failing; absent when it was blocked before starting |
 
 ## Notes

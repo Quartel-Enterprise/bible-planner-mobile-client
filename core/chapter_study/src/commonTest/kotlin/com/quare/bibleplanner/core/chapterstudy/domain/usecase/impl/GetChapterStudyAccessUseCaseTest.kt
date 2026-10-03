@@ -272,6 +272,7 @@ internal class GetChapterStudyAccessUseCaseTest {
         usedCount = usedCount,
         isUnlocked = isUnlocked,
         cacheToken = "token",
+        rewardedRemainingToday = 2,
     )
 
     private fun prepareScenario(

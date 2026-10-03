@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.preferences.materialyou.di.materialYouModule
 import com.quare.bibleplanner.core.preferences.studysuggestion.di.studySuggestionModule
 import com.quare.bibleplanner.core.preferences.themeselection.di.themeSelectionModule
 import com.quare.bibleplanner.core.profile.di.profileModule
+import com.quare.bibleplanner.core.provider.ads.di.adsModule
 import com.quare.bibleplanner.core.provider.analytics.di.analyticsModule
 import com.quare.bibleplanner.core.provider.billing.di.billingProviderModule
 import com.quare.bibleplanner.core.provider.connectivity.di.connectivityModule
@@ -25,6 +26,7 @@ import com.quare.bibleplanner.core.provider.room.di.roomModule
 import com.quare.bibleplanner.core.provider.supabase.supabaseModule
 import com.quare.bibleplanner.core.remoteconfig.di.remoteConfigModule
 import com.quare.bibleplanner.core.review.di.reviewModule
+import com.quare.bibleplanner.core.studyunlock.di.studyUnlockModule
 import com.quare.bibleplanner.core.sync.di.syncModule
 import com.quare.bibleplanner.core.user.di.userModule
 import com.quare.bibleplanner.core.utils.di.utilsModule
@@ -65,6 +67,7 @@ import com.quare.bibleplanner.feature.profile.di.featureProfileModule
 import com.quare.bibleplanner.feature.readingplan.di.readingPlanModule
 import com.quare.bibleplanner.feature.releasenotes.di.releaseNotesModule
 import com.quare.bibleplanner.feature.studysuggestion.di.featureStudySuggestionModule
+import com.quare.bibleplanner.feature.studyunlock.di.featureStudyUnlockModule
 import com.quare.bibleplanner.feature.subscriptiondetails.di.subscriptionDetailsModule
 import com.quare.bibleplanner.feature.themeselection.di.featureThemeSelectionModule
 import com.quare.bibleplanner.feature.verse.addnote.di.verseNoteModule
@@ -97,6 +100,7 @@ object CommonKoinUtils {
         dayStudyModule,
         featureDayStudyModule,
         chapterStudyModule,
+        studyUnlockModule,
         featureChapterStudyModule,
         dayReadingCompleteModule,
         chatModule,
@@ -108,6 +112,7 @@ object CommonKoinUtils {
         editPlanStartDateModule,
         paywallModule,
         paywallTeaserModule,
+        featureStudyUnlockModule,
         roomModule,
         utilsModule,
         jsonReaderModule,
@@ -116,6 +121,7 @@ object CommonKoinUtils {
         billingProviderModule,
         analyticsModule,
         crashlyticsModule,
+        adsModule,
         congratsModule,
         mainModule,
         featureProfileModule,

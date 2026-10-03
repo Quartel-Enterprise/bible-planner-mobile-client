@@ -5,5 +5,8 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetM
 import kotlinx.coroutines.flow.Flow
 
 fun interface GenerateChapterStudy {
-    operator fun invoke(target: ChapterStudyTargetModel): Flow<ChapterStudyGenerationEventModel>
+    operator fun invoke(
+        target: ChapterStudyTargetModel,
+        isRewarded: Boolean,
+    ): Flow<ChapterStudyGenerationEventModel>
 }

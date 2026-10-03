@@ -131,6 +131,7 @@ internal class DayStudyRepositoryImplTest {
                     ),
                     version = "ACF",
                     language = "en",
+                    reward = false,
                 ),
                 remoteDataSource.streamedRequests.single(),
             )
@@ -181,6 +182,7 @@ internal class DayStudyRepositoryImplTest {
                 usedCount = 1,
                 isUnlocked = true,
                 cacheToken = "token-1",
+                rewardedRemainingToday = 2,
             ),
             status,
         )
@@ -245,6 +247,7 @@ internal class DayStudyRepositoryImplTest {
         passages = passages,
         version = "ACF",
         languageCode = "en",
+        isRewarded = false,
     )
 
     private suspend fun hasCachedStudy(): Boolean = repository.hasCachedStudy(
@@ -265,6 +268,7 @@ internal class DayStudyRepositoryImplTest {
         freeLimit = 3,
         isPro = false,
         clientCacheToken = cacheToken,
+        rewardedRemainingToday = 2,
     )
 }
 

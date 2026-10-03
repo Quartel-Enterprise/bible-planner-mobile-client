@@ -17,7 +17,10 @@ class GetDayStudyUseCase(
     private val getAppLanguageFlow: GetAppLanguageFlow,
     private val languageCodeMapper: LanguageCodeMapper,
 ) {
-    operator fun invoke(passages: List<PassageModel>): Flow<DayStudyGenerationEventModel> = flow {
+    operator fun invoke(
+        passages: List<PassageModel>,
+        isRewarded: Boolean,
+    ): Flow<DayStudyGenerationEventModel> = flow {
         val version = bibleRepository.getSelectedVersionIdFlow().first()
         val languageCode = languageCodeMapper.map(getAppLanguageFlow().first())
         emitAll(
@@ -25,6 +28,7 @@ class GetDayStudyUseCase(
                 passages = passages,
                 version = version,
                 languageCode = languageCode,
+                isRewarded = isRewarded,
             ),
         )
     }

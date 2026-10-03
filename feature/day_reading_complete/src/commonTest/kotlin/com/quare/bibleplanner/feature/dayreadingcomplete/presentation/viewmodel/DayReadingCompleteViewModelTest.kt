@@ -24,7 +24,10 @@ import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.remoteconfig.domain.usecase.base.GetIntRemoteConfig
+import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
@@ -84,6 +87,8 @@ internal class DayReadingCompleteViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var actions: List<DayReadingCompleteUiAction>
     private val navigator = Navigator()
+    private val studyUnlockResultStore = StudyUnlockResultStore()
+    private var isRewardedUnlockOffered = false
     private lateinit var commands: List<NavigationCommand>
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var coordinator: FakeDayStudyGenerationCoordinator
@@ -117,7 +122,14 @@ internal class DayReadingCompleteViewModelTest {
 
         val state = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(state)
-        assertEquals(StudyCtaState.FreeExhausted(limit = 3), state.ctaState.valueOrNull())
+        assertEquals(
+            expected = StudyCtaState.FreeExhausted(
+                limit = 3,
+                isRewardedUnlockOffered = false,
+                rewardedRemainingToday = 2,
+            ),
+            actual = state.ctaState.valueOrNull(),
+        )
     }
 
     @Test
@@ -152,6 +164,55 @@ internal class DayReadingCompleteViewModelTest {
             expected = NavigationCommand.Navigate(PaywallNavRoute(PaywallEntrySource.DAY_STUDY)),
             actual = commands.last(),
         )
+    }
+
+    @Test
+    fun `tapping the cta while exhausted with a video on offer opens the unlock sheet`() = runTest(testDispatcher) {
+        isRewardedUnlockOffered = true
+        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+        runCurrent()
+
+        viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+        runCurrent()
+
+        assertEquals(
+            expected = NavigationCommand.Navigate(
+                StudyUnlockNavRoute(
+                    surface = StudyUnlockSurface.DAY_READING_COMPLETE,
+                    paywallSource = PaywallEntrySource.DAY_STUDY,
+                    requestKey = SHEET_REQUEST_KEY,
+                    rewardedRemainingToday = 2,
+                ),
+            ),
+            actual = commands.last(),
+        )
+    }
+
+    @Test
+    fun `an earned reward starts a rewarded generation and opens the study`() = runTest(testDispatcher) {
+        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+        runCurrent()
+        viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+        runCurrent()
+
+        studyUnlockResultStore.publishEarned(SHEET_REQUEST_KEY)
+        runCurrent()
+
+        assertEquals(listOf(true), coordinator.startedRewardFlags)
+        assertEquals("Gênesis 1-3", coordinator.startedJobs.single().third)
+        assertIs<NavigationCommand.NavigateReplacingTop>(commands.last())
+    }
+
+    @Test
+    fun `tapping the cta with an unserved reward retries it without another video`() = runTest(testDispatcher) {
+        val viewModel = viewModel(isPro = false, freeLimit = 3, usedCount = 3)
+        runCurrent()
+        coordinator.unservedRewardKeys += SHEET_GENERATION_KEY
+
+        viewModel.onEvent(DayReadingCompleteUiEvent.OnCtaClick("Gênesis 1-3"))
+        runCurrent()
+
+        assertEquals(listOf(true), coordinator.startedRewardFlags)
     }
 
     @Test
@@ -233,6 +294,7 @@ internal class DayReadingCompleteViewModelTest {
                 remainingFree = 2,
                 isUnlockedForDay = false,
                 hasLocalStudy = false,
+                rewardedRemainingToday = 0,
             ),
         )
 
@@ -255,7 +317,11 @@ internal class DayReadingCompleteViewModelTest {
         val refreshedState = viewModel.uiState.value
         assertIs<DayReadingCompleteUiState.Loaded>(refreshedState)
         assertEquals(
-            expected = StudyCtaState.FreeExhausted(limit = 3),
+            expected = StudyCtaState.FreeExhausted(
+                limit = 3,
+                isRewardedUnlockOffered = false,
+                rewardedRemainingToday = 2,
+            ),
             actual = refreshedState.ctaState.valueOrNull(),
         )
     }
@@ -382,6 +448,7 @@ internal class DayReadingCompleteViewModelTest {
                 usedCount = usedCount,
                 isUnlocked = false,
                 cacheToken = "token",
+                rewardedRemainingToday = 2,
             ),
             statusError = null,
             events = emptyList(),
@@ -414,7 +481,9 @@ internal class DayReadingCompleteViewModelTest {
                 currentTimestampProvider = { 0L },
                 localDateTimeProvider = { LocalDateTime(testPlannedReadDate, LocalTime(12, 0)) },
             ),
-            resolveStudyCtaState = ResolveStudyCtaStateUseCase(),
+            resolveStudyCtaState = ResolveStudyCtaStateUseCase(
+                prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+            ),
             quotaPrefetchStore = DayStudyQuotaPrefetchStore().apply {
                 prefetchedQuota?.let {
                     put(
@@ -430,6 +499,7 @@ internal class DayReadingCompleteViewModelTest {
             generationCoordinator = coordinator,
             setStudySuggestionEnabled = { isEnabled -> disabledSuggestions += isEnabled },
             navigator = navigator,
+            studyUnlockResultStore = studyUnlockResultStore,
             trackEvent = { name, params -> trackedEvents += name to params },
         )
         actions = mutableListOf<DayReadingCompleteUiAction>().also { collected ->
@@ -439,5 +509,10 @@ internal class DayReadingCompleteViewModelTest {
             backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
         return viewModel
+    }
+
+    private companion object {
+        const val SHEET_GENERATION_KEY = "CHRONOLOGICAL|1|1"
+        const val SHEET_REQUEST_KEY = "day_reading_complete|$SHEET_GENERATION_KEY"
     }
 }

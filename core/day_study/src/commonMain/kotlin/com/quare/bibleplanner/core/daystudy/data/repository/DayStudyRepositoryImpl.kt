@@ -37,11 +37,13 @@ internal class DayStudyRepositoryImpl(
         passages: List<PassageModel>,
         version: String,
         languageCode: String,
+        isRewarded: Boolean,
     ): Flow<DayStudyGenerationEventModel> = flow {
         val request = requestMapper.map(
             passages = passages,
             version = version,
             languageCode = languageCode,
+            isRewarded = isRewarded,
         )
         val cacheKey = cacheKeyFactory.create(request).asStorageKey()
         val cached = localDataSource.getByCacheKey(cacheKey)
@@ -86,6 +88,7 @@ internal class DayStudyRepositoryImpl(
             passages = passages,
             version = version,
             languageCode = languageCode,
+            isRewarded = false,
         )
         val status = remoteDataSource
             .fetchStatus(request)
@@ -119,6 +122,7 @@ internal class DayStudyRepositoryImpl(
             passages = passages,
             version = version,
             languageCode = languageCode,
+            isRewarded = false,
         )
         return localDataSource.getByCacheKey(cacheKeyFactory.create(request).asStorageKey()) != null
     }

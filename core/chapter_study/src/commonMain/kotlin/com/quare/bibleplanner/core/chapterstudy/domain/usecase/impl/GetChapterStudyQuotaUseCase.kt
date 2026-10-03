@@ -26,6 +26,7 @@ internal class GetChapterStudyQuotaUseCase(
             freeLimit = status.freeLimit,
             remainingFree = (status.freeLimit - spentCount).coerceAtLeast(0),
             isUnlocked = status.isUnlocked,
+            rewardedRemainingToday = status.rewardedRemainingToday,
         )
     }
 }

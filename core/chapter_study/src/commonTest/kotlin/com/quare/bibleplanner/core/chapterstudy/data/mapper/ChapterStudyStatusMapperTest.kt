@@ -23,6 +23,7 @@ internal class ChapterStudyStatusMapperTest {
             freeLimit = 3,
             isPro = false,
             clientCacheToken = "token",
+            rewardedRemainingToday = 2,
         )
 
         // When
@@ -35,6 +36,7 @@ internal class ChapterStudyStatusMapperTest {
                 usedCount = 2,
                 isUnlocked = true,
                 cacheToken = "token",
+                rewardedRemainingToday = 2,
             ),
             actual = status,
         )

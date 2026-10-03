@@ -65,6 +65,13 @@ object AnalyticsEventNames {
     const val CHAPTER_STUDY_KEY_VERSE_SHARE_CLICKED = "chapter_study_key_verse_share_clicked"
     const val CHAPTER_STUDY_CROSS_REFERENCE_CLICKED = "chapter_study_cross_reference_clicked"
 
+    const val UNLOCK_SHEET_VIEWED = "unlock_sheet_viewed"
+    const val UNLOCK_SUBSCRIBE_CLICKED = "unlock_subscribe_clicked"
+    const val REWARDED_AD_STARTED = "rewarded_ad_started"
+    const val REWARDED_AD_EARNED = "rewarded_ad_earned"
+    const val REWARDED_AD_DISMISSED = "rewarded_ad_dismissed"
+    const val REWARDED_AD_FAILED = "rewarded_ad_failed"
+
     const val AI_CHAT_ENTRY_CLICKED = "ai_chat_entry_clicked"
     const val AI_CHAT_MESSAGE_SENT = "ai_chat_message_sent"
     const val AI_CHAT_SUGGESTION_CLICKED = "ai_chat_suggestion_clicked"

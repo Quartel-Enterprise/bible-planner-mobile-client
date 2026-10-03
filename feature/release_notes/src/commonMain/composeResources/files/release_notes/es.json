@@ -1,4 +1,17 @@
 {
+  "2.11.0": {
+    "common": [
+      "Después de iniciar sesión o volver a estar en línea, tu progreso de lectura, tus marcas y tu foto de perfil aparecen mucho más rápido."
+    ],
+    "android": [
+      "¿Usaste tus estudios con IA gratis? Ahora, además de suscribirte a Pro, puedes ver un video corto para desbloquear un estudio más del capítulo o del día. Toca \"Desbloquear\" para elegir. La cantidad de videos por día es limitada.",
+      "En el Perfil, la nueva opción \"Opciones de privacidad\" te permite revisar tus elecciones sobre anuncios, en los lugares donde la ley pide ese consentimiento."
+    ],
+    "ios": [
+      "¿Usaste tus estudios con IA gratis? Ahora, además de suscribirte a Pro, puedes ver un video corto para desbloquear un estudio más del capítulo o del día. Toca \"Desbloquear\" para elegir. La cantidad de videos por día es limitada.",
+      "En el Perfil, la nueva opción \"Opciones de privacidad\" te permite revisar tus elecciones sobre anuncios, en los lugares donde la ley pide ese consentimiento."
+    ]
+  },
   "2.10.0": {
     "common": [
       "Nuevo: estudio del capítulo con IA. Mientras lees un capítulo, toca \"Estudio\" en la parte superior de la pantalla, o \"Estudiar este capítulo\" al final del texto, para ver un resumen, el contexto, la estructura del capítulo, los personajes y lugares, el versículo clave, referencias cruzadas y preguntas para reflexionar. Algunos estudios son gratis; con Pro, son ilimitados.",

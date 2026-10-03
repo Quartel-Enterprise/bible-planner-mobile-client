@@ -8,6 +8,8 @@ sealed interface StudyCtaState {
 
     data class FreeExhausted(
         val limit: Int,
+        val isRewardedUnlockOffered: Boolean,
+        val rewardedRemainingToday: Int,
     ) : StudyCtaState
 
     data object Pro : StudyCtaState

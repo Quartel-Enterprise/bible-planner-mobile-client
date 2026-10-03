@@ -8,6 +8,8 @@ struct ComposeView: UIViewControllerRepresentable {
     let crashReporter: CrashReporter
     let downloadSession: BibleVersionDownloadSession
     let reviewRequester: StoreKitReviewRequester
+    let rewardedAdDataSource: IosRewardedAdDataSource
+    let adsConsentDataSource: IosAdsConsentDataSource
 
     func makeUIViewController(context: Context) -> UIViewController {
         MainViewControllerKt.MainViewController(
@@ -15,7 +17,9 @@ struct ComposeView: UIViewControllerRepresentable {
             analyticsService: analyticsService,
             crashReporter: crashReporter,
             downloadSession: downloadSession,
-            reviewRequester: reviewRequester
+            reviewRequester: reviewRequester,
+            rewardedAdDataSource: rewardedAdDataSource,
+            adsConsentDataSource: adsConsentDataSource
         )
     }
 
@@ -28,6 +32,8 @@ struct ContentView: View {
     let crashReporter: CrashReporter
     let downloadSession: BibleVersionDownloadSession
     let reviewRequester: StoreKitReviewRequester
+    let rewardedAdDataSource: IosRewardedAdDataSource
+    let adsConsentDataSource: IosAdsConsentDataSource
 
     var body: some View {
         ComposeView(
@@ -35,7 +41,9 @@ struct ContentView: View {
             analyticsService: analyticsService,
             crashReporter: crashReporter,
             downloadSession: downloadSession,
-            reviewRequester: reviewRequester
+            reviewRequester: reviewRequester,
+            rewardedAdDataSource: rewardedAdDataSource,
+            adsConsentDataSource: adsConsentDataSource
         )
         .ignoresSafeArea()
     }

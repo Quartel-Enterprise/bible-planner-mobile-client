@@ -27,6 +27,7 @@ Either a running generation fails, or a start attempt is blocked pre-flight:
 | `week_number` | int | `12` | 1-based week within the plan |
 | `day_number` | int | `3` | 1-based day within the week |
 | `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
+| `is_rewarded` | boolean | `false` | Whether this generation was unlocked with a rewarded video (the app sent `reward: true`). Absent when the ViewModel rejects the start before it reaches the coordinator (offline pre-check) |
 
 ## Notes
 

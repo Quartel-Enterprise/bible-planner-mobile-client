@@ -69,4 +69,5 @@ internal fun profileUiState(accountStatusModel: AccountStatusModel): ProfileUiSt
     appVersion = "3.0.0",
     isUpdateRowVisible = false,
     isCheckingForUpdate = false,
+    isPrivacyOptionsVisible = false,
 )

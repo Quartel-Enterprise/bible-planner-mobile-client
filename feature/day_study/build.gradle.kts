@@ -31,6 +31,7 @@ kotlin {
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.platform)
             implementation(projects.core.remoteConfig)
+            implementation(projects.core.studyUnlock)
 
             // UI
             implementation(projects.ui.component)

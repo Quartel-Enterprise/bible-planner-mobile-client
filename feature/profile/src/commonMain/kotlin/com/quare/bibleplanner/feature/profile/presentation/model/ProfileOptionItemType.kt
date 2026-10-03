@@ -7,6 +7,7 @@ enum class ProfileOptionItemType {
     STUDY_SUGGESTION,
     INSTAGRAM,
     PRIVACY_POLICY,
+    PRIVACY_OPTIONS,
     TERMS,
     DONATE,
     WEB_APP,

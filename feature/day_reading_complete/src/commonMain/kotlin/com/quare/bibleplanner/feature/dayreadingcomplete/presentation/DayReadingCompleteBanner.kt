@@ -38,6 +38,7 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_generate_today
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_view_other_day
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_cta_view_today
+import bibleplanner.ui.component.generated.resources.ai_study_unlock
 import com.quare.bibleplanner.core.books.util.toReadingLabel
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
@@ -55,6 +56,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 private val bannerCornerRadius = 18.dp
 private val bannerShadowElevation = 6.dp
@@ -264,7 +266,11 @@ private fun bannerCta(
     ctaState: StudyCtaState,
     isToday: Boolean,
 ): String = when (ctaState) {
-    is StudyCtaState.FreeExhausted -> stringResource(Res.string.day_reading_complete_banner_cta_subscribe)
+    is StudyCtaState.FreeExhausted -> if (ctaState.isRewardedUnlockOffered) {
+        stringResource(ComponentRes.string.ai_study_unlock)
+    } else {
+        stringResource(Res.string.day_reading_complete_banner_cta_subscribe)
+    }
 
     is StudyCtaState.FreeWithQuota -> if (isToday) {
         stringResource(Res.string.day_reading_complete_cta_generate_today)

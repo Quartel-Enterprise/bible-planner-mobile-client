@@ -14,6 +14,13 @@ plugins {
  */
 val releaseKeystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
 
+/*
+ * The Google Mobile Ads SDK refuses to start without an AdMob App ID in the manifest. It is not a
+ * secret: it ships inside every APK. Debug builds still only request Google's test ad units (see
+ * core/provider/ads).
+ */
+val admobAppId = "ca-app-pub-9748272108340789~1160645135"
+
 android {
     namespace = "com.quare.bibleplanner"
     compileSdk = libs.versions.android.compileSdk
@@ -29,6 +36,7 @@ android {
             .toInt()
         versionCode = project.property("versionCode").toString().toInt()
         versionName = project.property("versionName").toString()
+        manifestPlaceholders["admobAppId"] = admobAppId
     }
 
     packaging {

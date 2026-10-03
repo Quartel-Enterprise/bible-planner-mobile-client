@@ -122,6 +122,7 @@ internal class ChapterStudyRepositoryImplTest {
                     chapter = 3,
                     version = "ACF",
                     language = "en",
+                    reward = false,
                 ),
             ),
             actual = remoteDataSource.streamedRequests,
@@ -221,6 +222,7 @@ internal class ChapterStudyRepositoryImplTest {
                 usedCount = 1,
                 isUnlocked = true,
                 cacheToken = "token-1",
+                rewardedRemainingToday = 2,
             ),
             actual = status,
         )
@@ -231,6 +233,7 @@ internal class ChapterStudyRepositoryImplTest {
                     chapter = 3,
                     version = "ACF",
                     language = "en",
+                    reward = false,
                 ),
             ),
             actual = remoteDataSource.statusRequests,
@@ -313,6 +316,7 @@ internal class ChapterStudyRepositoryImplTest {
     private fun generateChapterStudy(): Flow<ChapterStudyGenerationEventModel> = repository.generateChapterStudy(
         chapter = chapter,
         languageCode = "en",
+        isRewarded = false,
     )
 
     private suspend fun findCachedStudy(): ChapterStudyModel? = repository.findCachedStudy(
@@ -347,6 +351,7 @@ internal class ChapterStudyRepositoryImplTest {
         freeLimit = 3,
         isPro = false,
         clientCacheToken = cacheToken,
+        rewardedRemainingToday = 2,
     )
 }
 

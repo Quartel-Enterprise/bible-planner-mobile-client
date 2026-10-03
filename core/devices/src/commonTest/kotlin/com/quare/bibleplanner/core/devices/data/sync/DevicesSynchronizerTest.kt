@@ -296,7 +296,7 @@ class DevicesSynchronizerTest {
         )
 
         // When
-        synchronizer.pullSnapshot()
+        synchronizer.fetchSnapshot().apply()
 
         // Then
         assertEquals(
@@ -318,7 +318,7 @@ class DevicesSynchronizerTest {
         )
 
         // When
-        synchronizer.pullSnapshot()
+        synchronizer.fetchSnapshot().apply()
 
         // Then
         assertTrue(dao.rows.value.isEmpty())
@@ -338,7 +338,7 @@ class DevicesSynchronizerTest {
         )
 
         // When
-        synchronizer.pullSnapshot()
+        synchronizer.fetchSnapshot().apply()
 
         // Then
         assertTrue(supabase.requests.isEmpty())

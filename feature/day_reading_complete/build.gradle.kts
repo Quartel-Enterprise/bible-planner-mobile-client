@@ -27,6 +27,7 @@ kotlin {
             implementation(projects.core.provider.billing)
             implementation(projects.core.provider.connectivity)
             implementation(projects.core.provider.platform)
+            implementation(projects.core.studyUnlock)
 
             // UI
             implementation(projects.ui.component)

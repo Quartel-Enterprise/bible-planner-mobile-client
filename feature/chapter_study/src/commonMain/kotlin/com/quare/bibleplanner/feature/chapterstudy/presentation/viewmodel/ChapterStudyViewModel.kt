@@ -20,14 +20,19 @@ import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.NavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.chapterstudy.domain.usecase.ChapterStudyUseCases
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyContentUiState
@@ -53,6 +58,7 @@ internal class ChapterStudyViewModel(
     private val useCases: ChapterStudyUseCases,
     private val generationCoordinator: ChapterStudyGenerationCoordinator,
     private val pendingVerseFocusStore: PendingVerseFocusStore,
+    private val studyUnlockResultStore: StudyUnlockResultStore,
     private val navigator: Navigator,
     route: ChapterStudyNavRoute,
     platform: Platform,
@@ -64,6 +70,11 @@ internal class ChapterStudyViewModel(
     )
     private val isCompanion: Boolean = route.isCompanion
     private val completionPause: Duration = 700.milliseconds
+    private val rewardedUnlockRequestKey: String = listOf(
+        REWARDED_UNLOCK_REQUEST_PREFIX,
+        target.bookId.name,
+        target.chapterNumber.toString(),
+    ).joinToString(REQUEST_KEY_SEPARATOR)
     private val targetParams: Map<String, Any> = mapOf(
         AnalyticsParams.BOOK_ID to target.bookId.name,
         AnalyticsParams.CHAPTER_NUMBER to target.chapterNumber,
@@ -84,6 +95,15 @@ internal class ChapterStudyViewModel(
 
     init {
         viewModelScope.launch { openStudy() }
+        observeRewardedUnlock()
+    }
+
+    private fun observeRewardedUnlock() {
+        viewModelScope.launch {
+            studyUnlockResultStore.observeEarned(rewardedUnlockRequestKey).collect {
+                startGeneration(isRewarded = true)
+            }
+        }
     }
 
     override fun handleEvent(event: ChapterStudyUiEvent) {
@@ -109,7 +129,7 @@ internal class ChapterStudyViewModel(
                 useCases.refreshCache(target)
                 return
             }
-            if (isCompanion) observeHero() else startGeneration()
+            if (isCompanion) observeHero() else startGeneration(isRewarded = false)
         }
         observeGenerationJob()
     }
@@ -129,11 +149,16 @@ internal class ChapterStudyViewModel(
         val content = uiState.value.content
         if (content != ChapterStudyContentUiState.Loading && content !is ChapterStudyContentUiState.NotGenerated) return
         val quota = suspendRunCatching { useCases.getQuota(target) }.getOrNull()
+        val hero = ChapterStudyHeroUiModel(
+            isPro = isPro,
+            quota = quota,
+            isRewardedUnlockOffered = false,
+        )
         showContent(
             ChapterStudyContentUiState.NotGenerated(
-                hero = ChapterStudyHeroUiModel(
-                    isPro = isPro,
-                    quota = quota,
+                hero = hero.copy(
+                    isRewardedUnlockOffered = hero.isLocked &&
+                        useCases.prepareRewardedUnlockOffer(quota?.rewardedRemainingToday ?: 0),
                 ),
                 isStarting = false,
             ),
@@ -144,14 +169,14 @@ internal class ChapterStudyViewModel(
         val notGenerated = uiState.value.content as? ChapterStudyContentUiState.NotGenerated ?: return
         if (notGenerated.isStarting) return
         if (notGenerated.hero.isLocked) {
-            navigator.navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT))
+            onLockedGenerateClick(notGenerated.hero)
             return
         }
         showContent(notGenerated.copy(isStarting = true))
         viewModelScope.launch {
             val access = suspendRunCatching { useCases.getAccess(target) }.getOrDefault(ChapterStudyAccessModel.OPEN)
             when (access) {
-                ChapterStudyAccessModel.OPEN -> startGeneration()
+                ChapterStudyAccessModel.OPEN -> startGeneration(isRewarded = false)
 
                 ChapterStudyAccessModel.LOGIN_REQUIRED -> {
                     showContent(notGenerated)
@@ -161,10 +186,63 @@ internal class ChapterStudyViewModel(
                 ChapterStudyAccessModel.LIMIT_REACHED -> {
                     showContent(notGenerated)
                     showHero(notGenerated.hero.isPro)
-                    navigator.navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT))
+                    navigateToUnlockOrTeaser(replacingTop = false)
                 }
             }
         }
+    }
+
+    private fun onLockedGenerateClick(hero: ChapterStudyHeroUiModel) {
+        if (generationCoordinator.hasUnservedReward(target)) {
+            viewModelScope.launch { startGeneration(isRewarded = true) }
+        } else {
+            navigateToUnlock(
+                hero = hero,
+                replacingTop = false,
+            )
+        }
+    }
+
+    private fun navigateToUnlockOrTeaser(replacingTop: Boolean) {
+        val hero = (uiState.value.content as? ChapterStudyContentUiState.NotGenerated)?.hero
+        if (hero == null) {
+            navigateTo(
+                route = PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT),
+                replacingTop = replacingTop,
+            )
+            return
+        }
+        navigateToUnlock(
+            hero = hero,
+            replacingTop = replacingTop,
+        )
+    }
+
+    private fun navigateToUnlock(
+        hero: ChapterStudyHeroUiModel,
+        replacingTop: Boolean,
+    ) {
+        val route = if (hero.isRewardedUnlockOffered) {
+            StudyUnlockNavRoute(
+                surface = StudyUnlockSurface.CHAPTER_STUDY,
+                paywallSource = PaywallEntrySource.CHAPTER_STUDY,
+                requestKey = rewardedUnlockRequestKey,
+                rewardedRemainingToday = hero.quota?.rewardedRemainingToday ?: 0,
+            )
+        } else {
+            PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT)
+        }
+        navigateTo(
+            route = route,
+            replacingTop = replacingTop && !hero.isRewardedUnlockOffered,
+        )
+    }
+
+    private fun navigateTo(
+        route: NavRoute,
+        replacingTop: Boolean,
+    ) {
+        if (replacingTop) navigator.navigateReplacingTop(route) else navigator.navigate(route)
     }
 
     private fun hasGenerationJob(): Boolean = generationCoordinator.jobs.value.any { it.target == target }
@@ -212,13 +290,17 @@ internal class ChapterStudyViewModel(
                 showHero(useCases.observeIsProUser().first())
             }
         } else if (status.isLimitReached) {
-            navigator.navigateReplacingTop(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT))
+            viewModelScope.launch {
+                showContent(ChapterStudyContentUiState.Loading)
+                showHero(useCases.observeIsProUser().first())
+                navigateToUnlockOrTeaser(replacingTop = true)
+            }
         } else {
             showContent(ChapterStudyContentUiState.Failed(isOffline = status.isOffline))
         }
     }
 
-    private suspend fun startGeneration() {
+    private suspend fun startGeneration(isRewarded: Boolean) {
         val isPro = useCases.observeIsProUser().first()
         if (!useCases.isConnected()) {
             trackEvent(
@@ -233,10 +315,16 @@ internal class ChapterStudyViewModel(
         }
         trackEvent(
             name = AnalyticsEventNames.CHAPTER_STUDY_GENERATION_STARTED,
-            params = targetParams + mapOf(AnalyticsParams.IS_PRO to isPro),
+            params = targetParams + mapOf(
+                AnalyticsParams.IS_PRO to isPro,
+                AnalyticsParams.IS_REWARDED to isRewarded,
+            ),
         )
         showContent(ChapterStudyContentUiState.Generating(currentPhaseIndex = 0))
-        generationCoordinator.start(target)
+        generationCoordinator.start(
+            target = target,
+            isRewarded = isRewarded,
+        )
     }
 
     private suspend fun showStudy(
@@ -271,7 +359,7 @@ internal class ChapterStudyViewModel(
             name = AnalyticsEventNames.CHAPTER_STUDY_RETRY_CLICKED,
             params = targetParams,
         )
-        viewModelScope.launch { startGeneration() }
+        viewModelScope.launch { startGeneration(isRewarded = generationCoordinator.hasUnservedReward(target)) }
     }
 
     private fun onOutlineSectionClick(section: OutlineSectionModel) {
@@ -344,5 +432,7 @@ internal class ChapterStudyViewModel(
 
     private companion object {
         const val OFFLINE_REASON = "offline"
+        const val REWARDED_UNLOCK_REQUEST_PREFIX = "chapter_study"
+        const val REQUEST_KEY_SEPARATOR = "|"
     }
 }

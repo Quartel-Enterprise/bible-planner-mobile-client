@@ -10,4 +10,5 @@ internal data class DayStudyStatusDto(
     @SerialName("free_limit") val freeLimit: Int,
     @SerialName("is_pro") val isPro: Boolean,
     @SerialName("client_cache_token") val clientCacheToken: String,
+    @SerialName("rewarded_remaining_today") val rewardedRemainingToday: Int,
 )

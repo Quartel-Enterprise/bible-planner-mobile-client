@@ -51,6 +51,7 @@ internal class PrefetchDayStudyQuotaUseCaseTest {
                 remainingFree = 1,
                 isUnlockedForDay = false,
                 hasLocalStudy = false,
+                rewardedRemainingToday = 2,
             ),
             store.findQuota(day),
         )
@@ -90,6 +91,7 @@ internal class PrefetchDayStudyQuotaUseCaseTest {
                 usedCount = 2,
                 isUnlocked = false,
                 cacheToken = "token",
+                rewardedRemainingToday = 2,
             ),
             statusError = statusError,
             events = emptyList(),

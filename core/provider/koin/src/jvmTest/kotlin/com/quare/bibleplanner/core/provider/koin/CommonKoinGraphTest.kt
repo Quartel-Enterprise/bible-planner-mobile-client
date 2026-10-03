@@ -22,6 +22,7 @@ import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.language.di.jvmLanguageProviderModule
 import com.quare.bibleplanner.core.provider.language.di.languageProviderModule
@@ -70,6 +71,7 @@ internal class CommonKoinGraphTest {
         ReadNavRoute::class,
         RenameDeviceNavRoute::class,
         ShareVerseNavRoute::class,
+        StudyUnlockNavRoute::class,
         VerseNoteNavRoute::class,
     )
 

@@ -78,6 +78,7 @@ each platform, is in [Getting started](docs/getting-started.md).
 | [Release process](docs/release-process.md) | How a version is cut and shipped to both stores. |
 | [Store listing screenshots](docs/store-listing-screenshots.md) | How these images — and the stores' — are generated. |
 | [RevenueCat setup](docs/setup_revenuecat.md) | Products, entitlements and the paywall. |
+| [AdMob setup](docs/setup_admob.md) | The rewarded video that unlocks an AI study: IDs, consent, Remote Config and store declarations. |
 | [Apple Sign-In setup](docs/setup_apple_signin.md) | The Supabase side of Sign in with Apple. |
 | [Sentry setup](docs/setup_sentry.md) | Desktop crash reporting, where Crashlytics has no JVM SDK. |
 | [Reset desktop data](docs/reset-desktop-data.md) | Wiping the local database and preferences while developing. |

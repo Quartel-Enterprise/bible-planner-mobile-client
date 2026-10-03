@@ -17,15 +17,21 @@ import com.quare.bibleplanner.core.daystudy.domain.usecase.GetDayStudyQuotaUseCa
 import com.quare.bibleplanner.core.daystudy.domain.usecase.HasCachedStudyUseCase
 import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyRepository
+import com.quare.bibleplanner.core.model.NavigationCommand
+import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.core.model.plan.ChapterModel
 import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
+import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.fake.DefaultIntRemoteConfig
 import com.quare.bibleplanner.feature.daystudy.fake.dayStudyModel
@@ -59,6 +65,9 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DayStudyViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val navigator = Navigator()
+    private val studyUnlockResultStore = StudyUnlockResultStore()
+    private var isRewardedUnlockOffered = false
     private val passages = listOf(
         PassageModel(
             bookId = BookId.GEN,
@@ -263,6 +272,7 @@ internal class DayStudyViewModelTest {
                     AnalyticsParams.DAY_NUMBER to 1,
                     AnalyticsParams.IS_PRO to false,
                     AnalyticsParams.REMAINING_FREE to 2,
+                    AnalyticsParams.IS_REWARDED to false,
                 ),
                 trackedParams(AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED),
             )
@@ -363,6 +373,75 @@ internal class DayStudyViewModelTest {
 
             // Then
             assertEquals(1, coordinator.startedJobs.size)
+        }
+
+    @Test
+    fun `GIVEN a rewarded video on offer WHEN tapping the locked card THEN opens the unlock sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            isRewardedUnlockOffered = true
+            prepareScenario(
+                hasCached = false,
+                status = status(usedCount = 3),
+            )
+            val commands = mutableListOf<NavigationCommand>()
+            backgroundScope.launch { navigator.commands.collect { commands += it } }
+            start()
+
+            // When
+            viewModel.onEvent(DayStudyUiEvent.OnCardClick)
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        StudyUnlockNavRoute(
+                            surface = StudyUnlockSurface.DAY_STUDY,
+                            paywallSource = PaywallEntrySource.DAY_STUDY,
+                            requestKey = "day_study_card|$jobKey",
+                            rewardedRemainingToday = 2,
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the unlock sheet WHEN the reward is earned THEN starts a rewarded generation and opens it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasCached = false,
+                status = status(usedCount = 3),
+            )
+            start()
+
+            // When
+            studyUnlockResultStore.publishEarned("day_study_card|$jobKey")
+
+            // Then
+            assertEquals(listOf(true), coordinator.startedRewardFlags)
+            assertEquals(listOf<DayStudyUiAction>(DayStudyUiAction.NavigateToStudy), actions)
+        }
+
+    @Test
+    fun `GIVEN an unserved reward WHEN tapping the locked card THEN retries it without another video`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                hasCached = false,
+                status = status(usedCount = 3),
+            )
+            coordinator.unservedRewardKeys += jobKey
+            start()
+
+            // When
+            viewModel.onEvent(DayStudyUiEvent.OnCardClick)
+
+            // Then
+            assertEquals(listOf(true), coordinator.startedRewardFlags)
         }
 
     @Test
@@ -515,6 +594,8 @@ internal class DayStudyViewModelTest {
                     ),
                 ),
                 isPro = false,
+                isRewardedUnlockOffered = false,
+                rewardedRemainingToday = 2,
             ),
             card(),
         )
@@ -631,6 +712,7 @@ internal class DayStudyViewModelTest {
         usedCount = usedCount,
         isUnlocked = isUnlocked,
         cacheToken = "token",
+        rewardedRemainingToday = 2,
     )
 
     private fun job(
@@ -693,7 +775,11 @@ internal class DayStudyViewModelTest {
                         generationCoordinator = coordinator,
                         observeIsProUser = observeIsProUser,
                         observeAuthenticatedUserId = { flowOf(userId) },
-                        cardUiModelFactory = DayStudyCardUiModelFactory(),
+                        cardUiModelFactory = DayStudyCardUiModelFactory(
+                            prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                        ),
+                        navigator = navigator,
+                        studyUnlockResultStore = studyUnlockResultStore,
                         trackEvent = { name, params -> trackedEvents += name to params },
                     )
                 }

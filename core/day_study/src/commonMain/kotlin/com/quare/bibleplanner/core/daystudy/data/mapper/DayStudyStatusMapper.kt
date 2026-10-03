@@ -9,5 +9,6 @@ internal class DayStudyStatusMapper {
         usedCount = dto.usedCount,
         isUnlocked = dto.isUnlocked,
         cacheToken = dto.clientCacheToken,
+        rewardedRemainingToday = dto.rewardedRemainingToday,
     )
 }

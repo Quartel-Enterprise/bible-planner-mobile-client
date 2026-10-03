@@ -38,6 +38,7 @@ internal class ChapterStudyRemoteDataSourceImplTest {
         chapter = 3,
         version = "NVI",
         language = "pt-BR",
+        reward = false,
     )
     private val response = chapterStudyResponse(cacheToken = "token-1")
     private lateinit var dataSource: ChapterStudyRemoteDataSourceImpl
@@ -140,7 +141,7 @@ internal class ChapterStudyRemoteDataSourceImplTest {
         )
         assertEquals(
             expected = json.parseToJsonElement(
-                """{"book":"GENESIS","chapter":3,"version":"NVI","language":"pt-BR"}""",
+                """{"book":"GENESIS","chapter":3,"version":"NVI","language":"pt-BR","reward":false}""",
             ),
             actual = json.parseToJsonElement(recorded.body),
         )
@@ -203,7 +204,7 @@ internal class ChapterStudyRemoteDataSourceImplTest {
         // Given
         prepareScenario(
             json(
-                """{"is_unlocked":true,"used_count":2,"free_limit":3,"is_pro":false,"client_cache_token":"abc"}""",
+                """{"is_unlocked":true,"used_count":2,"free_limit":3,"is_pro":false,"client_cache_token":"abc","rewarded_daily_limit":2,"rewarded_remaining_today":2}""",
             ),
         )
 
@@ -218,6 +219,7 @@ internal class ChapterStudyRemoteDataSourceImplTest {
                 freeLimit = 3,
                 isPro = false,
                 clientCacheToken = "abc",
+                rewardedRemainingToday = 2,
             ),
             actual = result.getOrThrow(),
         )
@@ -228,7 +230,7 @@ internal class ChapterStudyRemoteDataSourceImplTest {
         // Given
         prepareScenario(
             json(
-                """{"is_unlocked":false,"used_count":0,"free_limit":3,"is_pro":false,"client_cache_token":"abc"}""",
+                """{"is_unlocked":false,"used_count":0,"free_limit":3,"is_pro":false,"client_cache_token":"abc","rewarded_daily_limit":2,"rewarded_remaining_today":2}""",
             ),
         )
 
@@ -243,7 +245,7 @@ internal class ChapterStudyRemoteDataSourceImplTest {
         )
         assertEquals(
             expected = json.parseToJsonElement(
-                """{"book":"GENESIS","chapter":3,"version":"NVI","language":"pt-BR"}""",
+                """{"book":"GENESIS","chapter":3,"version":"NVI","language":"pt-BR","reward":false}""",
             ),
             actual = json.parseToJsonElement(recorded.body),
         )

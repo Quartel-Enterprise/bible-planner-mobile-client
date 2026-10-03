@@ -1,4 +1,17 @@
 {
+  "2.11.0": {
+    "common": [
+      "After you sign in or come back online, your reading progress, your highlights and notes, and your profile photo show up much faster."
+    ],
+    "android": [
+      "Used up your free AI studies? Besides subscribing to Pro, you can now watch a short video to unlock one more chapter or day study. Tap \"Unlock\" to choose. The number of videos per day is limited.",
+      "In Profile, the new \"Privacy options\" entry lets you review your ad choices, in places where the law asks for that consent."
+    ],
+    "ios": [
+      "Used up your free AI studies? Besides subscribing to Pro, you can now watch a short video to unlock one more chapter or day study. Tap \"Unlock\" to choose. The number of videos per day is limited.",
+      "In Profile, the new \"Privacy options\" entry lets you review your ad choices, in places where the law asks for that consent."
+    ]
+  },
   "2.10.0": {
     "common": [
       "New: AI chapter study. While reading a chapter, tap \"Study\" at the top of the screen, or \"Study this chapter\" at the end of the text, to see a summary, the context, the chapter's outline, its people and places, the key verse, cross references and questions to reflect on. Some studies are free; with Pro, they are unlimited.",
