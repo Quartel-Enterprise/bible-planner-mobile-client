@@ -94,7 +94,9 @@ Three rules that are easy to get wrong:
 Both are part of the normal release, described in [Release process](release-process.md):
 
 - **Google Play** — the `android upload` lane runs `upload_to_play_store` with
-  `skip_upload_metadata: false`, so the listing goes up with the AAB.
+  `skip_upload_metadata: false`, so the listing goes up with the AAB. On production releases the
+  `android upload_data_safety` lane then sends `data_safety.csv`, the Data safety form (see
+  [Release process](release-process.md#play-data-safety)).
 - **App Store** — the `ios upload` lane runs `upload_to_app_store` against
   `fastlane/metadata/`, which carries the listing copy and the staged "What's New" together.
   `skip_metadata` is tied to whether the notes could be staged, so a release that fails to build

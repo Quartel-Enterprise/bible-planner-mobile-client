@@ -213,6 +213,15 @@ jobs:
           PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
           COMPLETE_RELEASE: ${{ inputs.complete_android_release }}
 
+      # The Data safety form is versioned in fastlane/metadata/android/data_safety.csv, like the
+      # listing copy, and goes out with every production release so the store never declares less
+      # than the build that just shipped collects.
+      - name: Upload the Data safety form
+        if: ${{ !inputs.prerelease && inputs.track == 'production' }}
+        run: fastlane android upload_data_safety
+        env:
+          PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
+
   # Play would take these at any time, but a release is the moment the listing has something new to
   # say, so both stores end a run showing the version that just shipped.
   #
