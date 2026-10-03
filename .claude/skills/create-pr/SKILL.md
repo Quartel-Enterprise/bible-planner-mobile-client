@@ -1,12 +1,13 @@
 ---
 name: create-pr
-description: "Create a pull request following all project conventions: ktlint formatting, unit tests, release notes, Conventional Commits title, description template, assignee, and labels."
+description: "Create a pull request following all project conventions: ktlint formatting, AI review of the changes, unit tests, release notes, Conventional Commits title, description template, assignee, and labels."
 ---
 
 # Create PR
 
-This skill formats the code, runs the tests, commits any uncommitted changes, pushes the branch, and
-opens a pull request with a clear title and description inferred from the actual changes.
+This skill formats the code, reviews the changes, runs the tests, commits any uncommitted changes,
+pushes the branch, and opens a pull request with a clear title and description inferred from the
+actual changes.
 
 ## Step-by-step workflow
 
@@ -54,14 +55,15 @@ Also check the upstream tracking branch:
 git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null
 ```
 
-**If the current branch is `main`**, or the upstream tracking branch is `origin/main`, stop and ask
-whether the user wants to use the `start-task` skill instead — it's the preferred way to start new
+**If the current branch is `main`**, or it has no type prefix and its upstream tracking branch is
+`origin/main`, stop and ask whether the user wants to use the `start-task` skill instead — it's the preferred way to start new
 work and will ask whether to use a worktree or work in-place. If they'd rather branch directly here
 without going through that flow, continue to step 4 to determine the prefix, then create the branch
 in step 5.
 
 **If the current branch is already a feature/fix/enhancement/refactor/chore branch**, take the type
-from its prefix and go directly to step 6.
+from its prefix and go directly to step 6. Its upstream may well be `origin/main`: that is how
+`start-task` creates a branch, until step 12 pushes it.
 
 ### 4. Infer the change type
 
@@ -123,7 +125,71 @@ offer to run the `add-analytics-event` skill before committing:
 
 Do not block on it — if the user confirms the actions are deliberately `NotTracked`, continue.
 
-### 8. Run the unit tests (if needed)
+### 8. Write the pull request description
+
+Write the description now, before the review: the reviewers in step 9 don't see this conversation,
+so the description is the only place they learn what the change is meant to do. Write it in English,
+at a medium level of detail:
+
+- Describe the problem being solved or the feature being added
+- Describe the expected behavior, and the edge cases it covers (logged out, free vs Pro, offline,
+  another platform…) when they matter
+- Mention the affected screens or areas of the app
+- Explain the approach taken, and any decision a reviewer could take for a mistake
+- Do NOT list every file changed or describe code line by line
+- Do NOT include purely internal implementation details (e.g. which class was refactored)
+- Keep it to 3–8 sentences or a short bullet list
+
+The same text becomes the pull request body in step 13.
+
+### 9. Review the changes
+
+Skip this step when the user's request says so (e.g. "sem review", "pula a review"), or when every
+file the branch changes, as gathered in step 1 (commits ahead of `main` and uncommitted changes
+alike), is one of these:
+
+- Markdown (`.md`), skills included
+- The release notes under `feature/release_notes/src/commonMain/composeResources/files/release_notes/`
+- `version.xcconfig`, the only file a version bump touches
+- `gradle/libs.versions.toml`, for a dependency bump with no code changes
+- Store metadata under `fastlane/metadata/`
+
+Those changes have no code for the reviews to judge, and the two reviews take minutes. Say in one
+line that the review was skipped and why, then go on to step 10.
+
+Two reviews run on the whole change, the commits ahead of `main` and the uncommitted changes alike.
+Both start with a fresh context, so they judge the change rather than the conversation that produced
+it:
+
+- `/code-review high` looks for correctness bugs.
+- `review-conventions` checks the change against the docs under `docs/`, the product invariants, and
+  the description from step 8.
+
+`/code-review` reads `git diff @{upstream}...HEAD` plus `git diff HEAD`. The second leaves out files
+git doesn't track yet, so mark new files as intended to be added first:
+
+```bash
+git add -N .
+```
+
+The first covers the whole branch only while its upstream is `origin/main`. Once the branch has been
+pushed, its upstream is its own remote branch, and the pushed commits would drop out of the review.
+In that case, commit any uncommitted changes now (step 11) and pass the branch name as the target.
+
+Then invoke the `code-review` skill with `high` as its argument (`high <branch>` for a pushed
+branch), and the `review-conventions` skill with the description from step 8 as its argument. Wait
+for both results before going on.
+
+If neither reports anything, continue to step 10. Otherwise stop and show the user every finding,
+grouped by review, then use the `AskUserQuestion` tool to ask how to proceed:
+
+- Fix the findings (all of them, or the ones the user picks)
+- Continue without changes
+
+After fixing, run step 2 again if a Kotlin file changed, and update the description from step 8 if
+what the branch does changed. Don't run the reviews again unless the user asks.
+
+### 10. Run the unit tests (if needed)
 
 If every file the branch changes is Markdown (`.md`), as gathered in step 1 (commits ahead of
 `main` and uncommitted changes alike), skip this step. No test can read those files, and the run
@@ -141,7 +207,7 @@ either way), and the two coverage rules the `build-and-test` workflow enforces: 
 branch adds (see [docs/code-quality.md](../../../docs/code-quality.md#test-coverage)). If tests fail
 or a rule fails, stop and report it: write the missing tests rather than pushing a red branch.
 
-### 9. Commit all uncommitted changes
+### 11. Commit all uncommitted changes
 
 If the `release-notes-updater` skill was run in step 6, show the user what was written and ask:
 > "The release notes have been updated. Want me to commit now?"
@@ -163,13 +229,13 @@ The commit message must:
 
 If there are no uncommitted changes (the user already committed everything), skip this step.
 
-### 10. Push the branch
+### 12. Push the branch
 
 ```bash
 git push -u origin HEAD
 ```
 
-### 11. Create the pull request
+### 13. Create the pull request
 
 ```bash
 gh pr create \
@@ -188,13 +254,8 @@ If `gh` is not installed, ask the user before installing it (`brew install gh`, 
 
 **Title:** Same format as the commit message — type prefix + short imperative description.
 
-**Description:** Write a clear summary of what changed and why, at a medium level of detail:
-- Describe the problem being solved or the feature being added
-- Mention the affected screens or areas of the app
-- Explain the approach taken if it is not obvious
-- Do NOT list every file changed or describe code line by line
-- Do NOT include purely internal implementation details (e.g. which class was refactored)
-- Keep it to 3–8 sentences or a short bullet list
+**Description:** The one written in step 8, updated if the review fixes changed what the branch
+does.
 
 ## Example
 
@@ -206,7 +267,7 @@ Given uncommitted changes that remove a `navigationBarsPadding()` modifier from 
 - **PR description:**
   > The books screen had extra whitespace appearing below the search bar due to `navigationBarsPadding()` being applied to the top bar instead of the screen content. This modifier adds padding matching the system navigation bar height, which caused the top bar surface to grow downward unnecessarily. Removed the modifier from the top bar to fix the layout.
 
-### 12. Squash and merge (optional)
+### 14. Squash and merge (optional)
 
 If the user's request already asked for the merge (e.g. "abre o PR e mergeia"), skip the question
 and merge. Otherwise, after the PR is created, use the `AskUserQuestion` tool to ask whether to
@@ -279,7 +340,8 @@ the branch (and the worktree, if there is one), so don't duplicate its logic her
 - If `./scripts/ktlint.sh --format` fails, stop immediately — do not commit or push. The remaining
   errors are ones ktlint cannot autocorrect (e.g. custom `bible-planner-style:*` rules), so they
   must be fixed by hand
-- If there is nothing to commit and the branch is already pushed, go directly to PR creation
+- If there is nothing to commit and the branch is already pushed, still write the description and
+  run the reviews (steps 8 and 9), then go directly to PR creation
 - If the branch already has an open PR, notify the user instead of creating a duplicate
 - Always target `main` as the base branch for the PR
 - Release notes updates (step 6) are included in the same commit as the rest of the changes — do

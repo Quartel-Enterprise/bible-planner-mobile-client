@@ -61,6 +61,40 @@ When a workflow is added to or renamed in the pull request checks, update the `w
 `merge-when-green.yml` too. A workflow missing from it still blocks the merge while running, but its
 completion does not trigger one.
 
+## AI review
+
+Claude reviews pull requests in two places:
+
+- **Before it opens**, the `create-pr` skill runs `/code-review high` for correctness bugs and the
+  project's `review-conventions` skill, which checks the change against the docs under `docs/`, the
+  product invariants listed in the skill, and the pull request description written before the
+  review. Findings stop the skill until the author fixes them or chooses to go on. It is skipped
+  when the author asks, and when the branch only changes docs, release notes, the version, the
+  version catalog or store metadata. This runs on the author's Claude subscription.
+- **On GitHub, on request**, adding the `ai-review` label runs `claude-review`, which posts the
+  findings of the official `code-review` plugin as inline comments, then removes the label. Use it
+  as a second opinion on a change that deserves one. The review skips a pull request it has already
+  commented on, so adding the label again after new pushes doesn't review it again.
+
+`claude-review` only comments: it fails only when the run itself does (an expired token, the
+30-minute timeout), never because of what it found. It is skipped on pull requests from forks, which
+get no secrets, and the label then has to be removed by hand.
+
+Treat it as advisory, not as a gate. Every label added to a pull request starts the workflow, and a
+label other than `ai-review` leaves a skipped `review` check on the head commit. `merge-when-green`
+reads only the latest check of each name, so a later label hides a failed review, or one still
+running, and the pull request can merge without it. To wait for the comments, add
+`merge-when-green` once the review has finished.
+
+It authenticates with the `CLAUDE_CODE_OAUTH_TOKEN` secret, created with `claude setup-token` on the
+maintainer's account, so the reviews count against that Claude subscription instead of being billed
+per token. When the token expires or is revoked, the run fails on authentication: create a new one
+and update the secret. The action posts as the Claude GitHub App, which has to be installed on the
+repository.
+
+Anthropic's managed Code Review is not used: it is only available on Team and Enterprise plans, and
+enabling it next to this workflow would review every pull request twice.
+
 ## UI tests
 
 The `ui-tests` workflow runs the [Compose UI tests](testing/compose-ui-tests.md) of every module
