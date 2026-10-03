@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Button
@@ -56,6 +57,7 @@ import bibleplanner.feature.day_reading_complete.generated.resources.day_reading
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_early
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_on_time
 import bibleplanner.feature.day_reading_complete.generated.resources.day_reading_complete_title_overdue
+import bibleplanner.ui.component.generated.resources.ai_study_unlock
 import com.quare.bibleplanner.core.books.util.toReadingLabel
 import com.quare.bibleplanner.core.model.loadable.valueOrNull
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
@@ -66,6 +68,7 @@ import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 private val checkIconBoxSize = 52.dp
 private val checkIconSize = 28.dp
@@ -398,10 +401,10 @@ private fun cardTitleText(
     stringResource(Res.string.day_reading_complete_card_title_other_day, dayLabel)
 }
 
-private fun StudyCtaState.toIcon(): ImageVector = if (this is StudyCtaState.FreeExhausted) {
-    Icons.Rounded.WorkspacePremium
-} else {
-    Icons.Rounded.AutoAwesome
+private fun StudyCtaState.toIcon(): ImageVector = when {
+    this !is StudyCtaState.FreeExhausted -> Icons.Rounded.AutoAwesome
+    isRewardedUnlockOffered -> Icons.Rounded.LockOpen
+    else -> Icons.Rounded.WorkspacePremium
 }
 
 @Composable
@@ -409,7 +412,11 @@ private fun ctaText(
     ctaState: StudyCtaState,
     isToday: Boolean,
 ): String = when (ctaState) {
-    is StudyCtaState.FreeExhausted -> stringResource(Res.string.day_reading_complete_cta_subscribe)
+    is StudyCtaState.FreeExhausted -> if (ctaState.isRewardedUnlockOffered) {
+        stringResource(ComponentRes.string.ai_study_unlock)
+    } else {
+        stringResource(Res.string.day_reading_complete_cta_subscribe)
+    }
 
     is StudyCtaState.FreeWithQuota -> if (isToday) {
         stringResource(Res.string.day_reading_complete_cta_generate_today)

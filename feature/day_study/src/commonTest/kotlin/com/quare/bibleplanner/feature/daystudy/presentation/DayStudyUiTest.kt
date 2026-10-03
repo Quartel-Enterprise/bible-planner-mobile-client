@@ -300,6 +300,8 @@ internal class DayStudyUiTest {
                 ),
             ),
             isPro = isPro,
+            isRewardedUnlockOffered = false,
+            rewardedRemainingToday = 0,
         ),
     )
 

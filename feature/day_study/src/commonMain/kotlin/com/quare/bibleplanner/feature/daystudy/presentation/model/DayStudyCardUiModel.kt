@@ -7,4 +7,6 @@ data class DayStudyCardUiModel(
     val mode: DayStudyCardMode?,
     val quota: Loadable<DayStudyCardQuotaUiModel>,
     val isPro: Boolean,
+    val isRewardedUnlockOffered: Boolean,
+    val rewardedRemainingToday: Int,
 )

@@ -10,10 +10,12 @@ internal class ChapterStudyRequestMapper(
     fun map(
         chapter: ChapterRef,
         languageCode: String,
+        isRewarded: Boolean,
     ): ChapterStudyRequestDto = ChapterStudyRequestDto(
         book = bookIdWireNameMapper.map(chapter.bookId),
         chapter = chapter.chapterNumber,
         version = chapter.bibleVersionId,
         language = languageCode,
+        reward = isRewarded,
     )
 }

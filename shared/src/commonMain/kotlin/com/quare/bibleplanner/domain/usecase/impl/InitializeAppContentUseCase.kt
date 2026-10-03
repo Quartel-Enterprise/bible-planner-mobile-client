@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.Obs
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.ObserveTesterUserProperty
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.SyncBillingUserId
 import com.quare.bibleplanner.core.remoteconfig.domain.service.RemoteConfigService
+import com.quare.bibleplanner.core.studyunlock.domain.usecase.GatherAdsConsentIfEnabled
 import com.quare.bibleplanner.core.sync.domain.usecase.ObserveSync
 import com.quare.bibleplanner.domain.usecase.InitializeAppContent
 import com.quare.bibleplanner.feature.applanguage.domain.usecase.ObserveAppLocale
@@ -44,6 +45,7 @@ internal class InitializeAppContentUseCase(
     private val handleCurrentDeviceRevoked: HandleCurrentDeviceRevoked,
     private val observeSessionLoss: ObserveSessionLoss,
     private val syncBillingUserId: SyncBillingUserId,
+    private val gatherAdsConsentIfEnabled: GatherAdsConsentIfEnabled,
     private val remoteConfig: RemoteConfigService, // Don't delete it, it is necessary to initialize remote config
 ) : InitializeAppContent {
     override operator fun invoke(coroutineScope: CoroutineScope) {
@@ -70,6 +72,7 @@ internal class InitializeAppContentUseCase(
             launch { observeCurrentDeviceRevoked().collect { handleCurrentDeviceRevoked() } }
             launch { observeSessionLoss() }
             launch { syncBillingUserId() }
+            launch { gatherAdsConsentIfEnabled() }
             // Launched after book rows exist so remote favorites can be applied to them.
             launch { observeSync() }
             observeSelectedVersion()

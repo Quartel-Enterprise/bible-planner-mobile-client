@@ -13,10 +13,12 @@ internal class DayStudyRequestMapper(
         passages: List<PassageModel>,
         version: String,
         languageCode: String,
+        isRewarded: Boolean,
     ): DayStudyRequestDto = DayStudyRequestDto(
         passages = passages.map(::mapPassage),
         version = version,
         language = languageCode,
+        reward = isRewarded,
     )
 
     private fun mapPassage(passage: PassageModel): PassageRequestDto = PassageRequestDto(

@@ -18,6 +18,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.provider.ads)
             implementation(projects.core.provider.analytics)
             implementation(projects.core.provider.language)
             implementation(projects.core.provider.platform)
@@ -89,6 +90,7 @@ kotlin {
             implementation(projects.core.books.testing)
             implementation(projects.core.plan.testing)
             implementation(projects.core.provider.room.testing)
+            implementation(projects.core.provider.ads.testing)
         }
     }
 }

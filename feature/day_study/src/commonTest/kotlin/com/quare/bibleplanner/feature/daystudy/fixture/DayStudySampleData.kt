@@ -226,6 +226,8 @@ internal fun dayStudyUiState(
                     ),
                 ),
                 isPro = true,
+                isRewardedUnlockOffered = false,
+                rewardedRemainingToday = 0,
             ),
         ),
         generation = null,

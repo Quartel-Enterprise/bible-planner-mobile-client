@@ -17,6 +17,8 @@ import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.model.route.toDayStudyNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetScheduledDay
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -26,6 +28,7 @@ import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.language.domain.usecase.GetAppLanguageFlow
+import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.DayTimingState
 import com.quare.bibleplanner.feature.dayreadingcomplete.domain.model.StudyCtaState
@@ -57,6 +60,7 @@ class DayReadingCompleteBannerViewModel(
     private val quotaPrefetchStore: DayStudyQuotaPrefetchStore,
     private val generationCoordinator: DayStudyGenerationCoordinator,
     private val navigator: Navigator,
+    private val studyUnlockResultStore: StudyUnlockResultStore,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<DayReadingCompleteBannerUiEvent>(trackEvent) {
     val uiState: StateFlow<DayReadingCompleteUiState>
@@ -67,9 +71,23 @@ class DayReadingCompleteBannerViewModel(
 
     private var passages: List<PassageModel> = emptyList()
     private var hasTrackedShown = false
+    private var rewardedReadingLabel = ""
+    private val generationKey = generationCoordinator.keyOf(day.toDayNavRoute())
 
     init {
         loadDay()
+        observeRewardedUnlock()
+    }
+
+    private fun observeRewardedUnlock() {
+        viewModelScope.launch {
+            studyUnlockResultStore.observeEarned(REWARDED_UNLOCK_REQUEST_PREFIX + generationKey).collect {
+                startGeneration(
+                    readingLabel = rewardedReadingLabel,
+                    isRewarded = true,
+                )
+            }
+        }
     }
 
     override fun handleEvent(event: DayReadingCompleteBannerUiEvent) {
@@ -120,7 +138,7 @@ class DayReadingCompleteBannerViewModel(
         }
     }
 
-    private fun showCta(
+    private suspend fun showCta(
         quota: DayStudyQuotaModel,
         isPro: Boolean,
         timing: DayTimingState,
@@ -172,16 +190,49 @@ class DayReadingCompleteBannerViewModel(
             ),
         )
         when (ctaState) {
-            is StudyCtaState.FreeExhausted -> {
-                navigator.navigate(PaywallNavRoute(PaywallEntrySource.DAY_STUDY))
-                emitAction(DayReadingCompleteBannerUiAction.Dismiss)
-            }
+            is StudyCtaState.FreeExhausted -> onExhaustedCtaClick(
+                ctaState = ctaState,
+                readingLabel = readingLabel,
+            )
 
-            is StudyCtaState.FreeWithQuota, StudyCtaState.Pro -> startGeneration(readingLabel)
+            is StudyCtaState.FreeWithQuota, StudyCtaState.Pro -> startGeneration(
+                readingLabel = readingLabel,
+                isRewarded = false,
+            )
         }
     }
 
-    private fun startGeneration(readingLabel: String) {
+    private fun onExhaustedCtaClick(
+        ctaState: StudyCtaState.FreeExhausted,
+        readingLabel: String,
+    ) {
+        rewardedReadingLabel = readingLabel
+        when {
+            generationCoordinator.hasUnservedReward(generationKey) -> startGeneration(
+                readingLabel = readingLabel,
+                isRewarded = true,
+            )
+
+            ctaState.isRewardedUnlockOffered -> navigator.navigate(
+                StudyUnlockNavRoute(
+                    surface = StudyUnlockSurface.DAY_READING_COMPLETE,
+                    paywallSource = PaywallEntrySource.DAY_STUDY,
+                    requestKey = REWARDED_UNLOCK_REQUEST_PREFIX + generationKey,
+                    rewardedRemainingToday = ctaState.rewardedRemainingToday,
+                ),
+            )
+
+            else -> {
+                navigator.navigate(PaywallNavRoute(PaywallEntrySource.DAY_STUDY))
+                emitAction(DayReadingCompleteBannerUiAction.Dismiss)
+            }
+        }
+    }
+
+    private fun startGeneration(
+        readingLabel: String,
+        isRewarded: Boolean,
+    ) {
         viewModelScope.launch {
             if (!isConnected()) {
                 emitAction(
@@ -198,6 +249,7 @@ class DayReadingCompleteBannerViewModel(
                 passages = passages,
                 dayRoute = dayRoute,
                 label = readingLabel,
+                isRewarded = isRewarded,
             )
             navigator.navigate(dayRoute.toDayStudyNavRoute())
             emitAction(DayReadingCompleteBannerUiAction.Dismiss)
@@ -216,5 +268,6 @@ class DayReadingCompleteBannerViewModel(
 
     private companion object {
         const val SOURCE_VALUE = "day_reading_complete_banner"
+        const val REWARDED_UNLOCK_REQUEST_PREFIX = "day_reading_complete_banner|"
     }
 }

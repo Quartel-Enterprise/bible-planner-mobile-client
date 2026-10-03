@@ -59,10 +59,12 @@ koin = "4.2.2"
 ktor = "3.6.0"
 play-app-update = "2.1.0"
 play-review = "2.0.2"
+play-services-ads = "25.5.0"
 play-services-time = "16.0.1"
 revenuecat = "3.10.1"
 sentry = "8.58.0"
 supabase = "3.8.0"
+user-messaging-platform = "4.0.0"
 
 [libraries]
 # Gradle plugins consumed as libraries (build-logic)
@@ -162,6 +164,10 @@ play-app-update-ktx = { module = "com.google.android.play:app-update-ktx", versi
 play-review = { module = "com.google.android.play:review", version.ref = "play-review" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
 play-services-time = { module = "com.google.android.gms:play-services-time", version.ref = "play-services-time" }
+
+# Google Mobile Ads (AdMob) and its consent SDK
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "play-services-ads" }
+user-messaging-platform = { module = "com.google.android.ump:user-messaging-platform", version.ref = "user-messaging-platform" }
 
 # Calf
 calf-ui = { module = "com.mohamedrejeb.calf:calf-ui", version.ref = "calf" }

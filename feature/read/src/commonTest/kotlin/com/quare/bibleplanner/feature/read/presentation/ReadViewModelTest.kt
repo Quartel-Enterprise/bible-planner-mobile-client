@@ -7,10 +7,12 @@ import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedVersionIdFlow
 import com.quare.bibleplanner.core.books.domain.usecase.IsWholeChapterRead
 import com.quare.bibleplanner.core.books.domain.usecase.ToggleWholeChapterReadStatus
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyAccessModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyQuotaModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.PendingVerseFocusModel
 import com.quare.bibleplanner.core.chapterstudy.domain.store.PendingVerseFocusStore
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyAccess
+import com.quare.bibleplanner.core.chapterstudy.testing.FakeChapterStudyGenerationCoordinator
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
@@ -24,16 +26,20 @@ import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
 import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
@@ -76,6 +82,10 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 internal class ReadViewModelTest {
+    private val chapterStudyCoordinator = FakeChapterStudyGenerationCoordinator()
+    private val studyUnlockResultStore = StudyUnlockResultStore()
+    private var isRewardedUnlockOffered = false
+    private var chapterStudyQuota: ChapterStudyQuotaModel? = null
     private val dayReadingCompleteCommand: NavigationCommand = NavigationCommand.Navigate(
         DayReadingCompleteNavRoute(
             dayNumber = 2,
@@ -918,6 +928,76 @@ internal class ReadViewModelTest {
         }
 
     @Test
+    fun `GIVEN no free study left but a video on offer WHEN clicking the study entry THEN opens the unlock sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            isRewardedUnlockOffered = true
+            chapterStudyQuota = ChapterStudyQuotaModel(
+                freeLimit = 3,
+                remainingFree = 0,
+                isUnlocked = false,
+                rewardedRemainingToday = 2,
+            )
+            prepareScenario(getChapterStudyAccess = { ChapterStudyAccessModel.LIMIT_REACHED })
+
+            // When
+            viewModel.onEvent(chapterStudyClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        StudyUnlockNavRoute(
+                            surface = StudyUnlockSurface.CHAPTER_STUDY,
+                            paywallSource = PaywallEntrySource.CHAPTER_STUDY,
+                            requestKey = READER_REQUEST_KEY,
+                            rewardedRemainingToday = 2,
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN the unlock sheet from the reader WHEN the reward is earned THEN starts a rewarded study and opens it`() =
+        runTest(testDispatcher) {
+            // Given
+            isRewardedUnlockOffered = true
+            prepareScenario(getChapterStudyAccess = { ChapterStudyAccessModel.LIMIT_REACHED })
+            viewModel.onEvent(chapterStudyClick)
+            runCurrent()
+
+            // When
+            studyUnlockResultStore.publishEarned(READER_REQUEST_KEY)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(true), chapterStudyCoordinator.startedRewardFlags)
+            assertEquals(chapterStudyCommand, commands.last())
+        }
+
+    @Test
+    fun `GIVEN an unserved reward WHEN clicking the study entry THEN retries it without another video`() =
+        runTest(testDispatcher) {
+            // Given
+            chapterStudyCoordinator.unservedRewardTargets += ChapterStudyTargetModel(
+                bookId = BookId.GEN,
+                chapterNumber = 3,
+            )
+            prepareScenario(getChapterStudyAccess = { ChapterStudyAccessModel.LIMIT_REACHED })
+
+            // When
+            viewModel.onEvent(chapterStudyClick)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(true), chapterStudyCoordinator.startedRewardFlags)
+            assertEquals(listOf(chapterStudyCommand), commands)
+        }
+
+    @Test
     fun `GIVEN the access check fails WHEN clicking the study entry THEN opens the study anyway`() =
         runTest(testDispatcher) {
             // Given
@@ -1134,6 +1214,10 @@ internal class ReadViewModelTest {
                     getChapterStudyAccess(target)
                 },
                 pendingVerseFocusStore = pendingVerseFocusStore,
+                getChapterStudyQuota = { chapterStudyQuota },
+                chapterStudyGenerationCoordinator = chapterStudyCoordinator,
+                prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                studyUnlockResultStore = studyUnlockResultStore,
             ),
             observeStudySuggestionSettings = { flowOf(studySuggestionSettings) },
             requestLoginNudgeIfNeeded = { },
@@ -1162,5 +1246,9 @@ internal class ReadViewModelTest {
         commands = mutableListOf<NavigationCommand>().also { collected ->
             backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
+    }
+
+    private companion object {
+        const val READER_REQUEST_KEY = "reader_chapter_study|GEN|3"
     }
 }

@@ -10,6 +10,7 @@ interface ChapterStudyRepository {
     fun generateChapterStudy(
         chapter: ChapterRef,
         languageCode: String,
+        isRewarded: Boolean,
     ): Flow<ChapterStudyGenerationEventModel>
 
     suspend fun fetchStatus(

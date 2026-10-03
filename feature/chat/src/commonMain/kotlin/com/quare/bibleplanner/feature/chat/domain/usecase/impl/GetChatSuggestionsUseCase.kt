@@ -18,8 +18,10 @@ class GetChatSuggestionsUseCase(
         if (passages.isEmpty()) return emptyList()
         return suspendRunCatching {
             if (!hasCachedStudy(passages)) return@suspendRunCatching emptyList()
-            getDayStudy(passages)
-                .mapNotNull { event -> (event as? DayStudyGenerationEventModel.Completed)?.study }
+            getDayStudy(
+                passages = passages,
+                isRewarded = false,
+            ).mapNotNull { event -> (event as? DayStudyGenerationEventModel.Completed)?.study }
                 .first()
                 .commonQuestions
                 .map(QaModel::question)

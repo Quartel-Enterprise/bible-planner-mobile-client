@@ -40,6 +40,7 @@ class GetDayStudyQuotaUseCase(
                 remainingFree = (status.freeLimit - status.usedCount).coerceAtLeast(0),
                 isUnlockedForDay = status.isUnlocked || hasLocalStudy,
                 hasLocalStudy = hasLocalStudy,
+                rewardedRemainingToday = status.rewardedRemainingToday,
             )
         } else {
             val freeLimit = getIntRemoteConfig(
@@ -51,6 +52,7 @@ class GetDayStudyQuotaUseCase(
                 remainingFree = freeLimit,
                 isUnlockedForDay = hasLocalStudy,
                 hasLocalStudy = hasLocalStudy,
+                rewardedRemainingToday = 0,
             )
         }
     }

@@ -73,6 +73,8 @@ internal fun DayScreenshotContent(
                                             ),
                                         ),
                                         isPro = true,
+                                        isRewardedUnlockOffered = false,
+                                        rewardedRemainingToday = 0,
                                     ),
                                     generation = null,
                                     isOpening = false,

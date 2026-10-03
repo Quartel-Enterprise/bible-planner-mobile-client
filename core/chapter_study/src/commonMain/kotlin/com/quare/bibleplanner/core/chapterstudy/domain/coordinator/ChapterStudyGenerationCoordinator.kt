@@ -7,9 +7,14 @@ import kotlinx.coroutines.flow.StateFlow
 interface ChapterStudyGenerationCoordinator {
     val jobs: StateFlow<List<ChapterStudyGenerationJob>>
 
-    fun start(target: ChapterStudyTargetModel)
+    fun start(
+        target: ChapterStudyTargetModel,
+        isRewarded: Boolean,
+    )
 
     fun acknowledge(target: ChapterStudyTargetModel)
 
     fun getGeneratingCount(excluding: ChapterStudyTargetModel): Int
+
+    fun hasUnservedReward(target: ChapterStudyTargetModel): Boolean
 }

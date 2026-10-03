@@ -43,12 +43,15 @@ import com.quare.bibleplanner.core.model.route.DayStudyNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlannedReadDateForDayUseCase
 import com.quare.bibleplanner.core.plan.domain.usecase.GetPlansByWeekUseCase
 import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.daystudy.fake.DefaultIntRemoteConfig
 import com.quare.bibleplanner.feature.daystudy.presentation.factory.DayStudyCardUiModelFactory
@@ -88,6 +91,8 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DayStudyRouteViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
+    private val studyUnlockResultStore = StudyUnlockResultStore()
+    private var isRewardedUnlockOffered = false
     private val testTimeout = 5.seconds
     private val route = DayStudyNavRoute(
         dayNumber = 2,
@@ -224,6 +229,70 @@ internal class DayStudyRouteViewModelTest {
         }
 
     @Test
+    fun `GIVEN a rewarded video on offer WHEN tapping the locked card THEN opens the unlock sheet`() =
+        runTest(testDispatcher, testTimeout) {
+            // Given
+            isRewardedUnlockOffered = true
+            prepareScenario(usedCount = 3)
+            awaitPassages()
+
+            // When
+            viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        StudyUnlockNavRoute(
+                            surface = StudyUnlockSurface.DAY_STUDY,
+                            paywallSource = PaywallEntrySource.DAY_STUDY_DETAIL,
+                            requestKey = "day_study_detail|$jobKey",
+                            rewardedRemainingToday = 2,
+                        ),
+                    ),
+                ),
+                commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN the unlock sheet WHEN the reward is earned THEN starts a rewarded generation`() =
+        runTest(testDispatcher, testTimeout) {
+            // Given
+            prepareScenario(usedCount = 3)
+            awaitPassages()
+
+            // When
+            studyUnlockResultStore.publishEarned("day_study_detail|$jobKey")
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(true), coordinator.startedRewardFlags)
+            assertEquals(
+                true,
+                trackedParams(AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED)?.get(AnalyticsParams.IS_REWARDED),
+            )
+        }
+
+    @Test
+    fun `GIVEN an unserved reward WHEN tapping the locked card THEN retries it without another video`() =
+        runTest(testDispatcher, testTimeout) {
+            // Given
+            prepareScenario(usedCount = 3)
+            coordinator.unservedRewardKeys += jobKey
+            awaitPassages()
+
+            // When
+            viewModel.onEvent(DayStudyRouteUiEvent.OnCardClick)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(true), coordinator.startedRewardFlags)
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
     fun `GIVEN an exhausted free quota WHEN tapping the card THEN opens the paywall`() =
         runTest(testDispatcher, testTimeout) {
             // Given
@@ -294,6 +363,7 @@ internal class DayStudyRouteViewModelTest {
                     AnalyticsParams.DAY_NUMBER to 2,
                     AnalyticsParams.IS_PRO to false,
                     AnalyticsParams.REMAINING_FREE to 2,
+                    AnalyticsParams.IS_REWARDED to false,
                 ),
                 trackedParams(AnalyticsEventNames.DAY_STUDY_GENERATION_STARTED),
             )
@@ -706,6 +776,7 @@ internal class DayStudyRouteViewModelTest {
                 usedCount = usedCount,
                 isUnlocked = isUnlocked,
                 cacheToken = "token",
+                rewardedRemainingToday = 2,
             ),
             statusError = statusError,
             events = events,
@@ -781,8 +852,11 @@ internal class DayStudyRouteViewModelTest {
                         generationCoordinator = coordinator,
                         observeIsProUser = { flowOf(isPro) },
                         observeAuthenticatedUserId = { flowOf(userId) },
-                        cardUiModelFactory = DayStudyCardUiModelFactory(),
+                        cardUiModelFactory = DayStudyCardUiModelFactory(
+                            prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                        ),
                         navigator = navigator,
+                        studyUnlockResultStore = studyUnlockResultStore,
                         route = route,
                         platform = Platform.Android,
                         trackEvent = { name, params -> trackedEvents += name to params },

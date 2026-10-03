@@ -21,10 +21,13 @@ import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
 import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
@@ -65,6 +68,7 @@ import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import com.quare.bibleplanner.ui.utils.observe
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -137,6 +141,7 @@ class ReadViewModel(
     private val dayCompletionBanner = MutableStateFlow<PlanDayLocationModel?>(null)
 
     private val isOpeningChapterStudy = MutableStateFlow(false)
+    private var observeRewardedChapterStudyJob: Job? = null
     private val isChapterStudyBeside = MutableStateFlow(false)
     private val visibleChapter = MutableStateFlow<ChapterLocationModel?>(null)
 
@@ -295,30 +300,83 @@ class ReadViewModel(
         if (isOpeningChapterStudy.value) return
         isOpeningChapterStudy.update { true }
         viewModelScope.launch {
-            val access = suspendRunCatching {
-                studyUseCases.getChapterStudyAccess(
-                    ChapterStudyTargetModel(
-                        bookId = event.bookId,
-                        chapterNumber = event.chapterNumber,
-                    ),
-                )
-            }.getOrDefault(ChapterStudyAccessModel.OPEN)
-            navigator.navigate(
-                when (access) {
-                    ChapterStudyAccessModel.OPEN -> ChapterStudyNavRoute(
-                        bookId = event.bookId.name,
-                        chapterNumber = event.chapterNumber,
-                    )
-
-                    ChapterStudyAccessModel.LOGIN_REQUIRED -> LoginWarningNavRoute(LoginWarningReason.ChapterStudy.key)
-
-                    ChapterStudyAccessModel.LIMIT_REACHED ->
-                        PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT)
-                },
+            val target = ChapterStudyTargetModel(
+                bookId = event.bookId,
+                chapterNumber = event.chapterNumber,
             )
+            val access = suspendRunCatching {
+                studyUseCases.getChapterStudyAccess(target)
+            }.getOrDefault(ChapterStudyAccessModel.OPEN)
+            when (access) {
+                ChapterStudyAccessModel.OPEN -> navigator.navigate(target.toChapterStudyNavRoute())
+
+                ChapterStudyAccessModel.LOGIN_REQUIRED -> navigator.navigate(
+                    LoginWarningNavRoute(LoginWarningReason.ChapterStudy.key),
+                )
+
+                ChapterStudyAccessModel.LIMIT_REACHED -> onChapterStudyLimitReached(target)
+            }
             isOpeningChapterStudy.update { false }
         }
     }
+
+    private suspend fun onChapterStudyLimitReached(target: ChapterStudyTargetModel) {
+        if (studyUseCases.chapterStudyGenerationCoordinator.hasUnservedReward(target)) {
+            openRewardedChapterStudy(target)
+            return
+        }
+        val rewardedRemainingToday = suspendRunCatching { studyUseCases.getChapterStudyQuota(target) }
+            .getOrNull()
+            ?.rewardedRemainingToday
+            ?: 0
+        if (!studyUseCases.prepareRewardedUnlockOffer(rewardedRemainingToday)) {
+            navigator.navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT))
+            return
+        }
+        val requestKey = target.toRewardedUnlockRequestKey()
+        observeRewardedChapterStudyJob?.cancel()
+        observeRewardedChapterStudyJob = viewModelScope.launch {
+            studyUseCases.studyUnlockResultStore.observeEarned(requestKey).collect {
+                openRewardedChapterStudy(target)
+            }
+        }
+        navigator.navigate(
+            StudyUnlockNavRoute(
+                surface = StudyUnlockSurface.CHAPTER_STUDY,
+                paywallSource = PaywallEntrySource.CHAPTER_STUDY,
+                requestKey = requestKey,
+                rewardedRemainingToday = rewardedRemainingToday,
+            ),
+        )
+    }
+
+    private fun openRewardedChapterStudy(target: ChapterStudyTargetModel) {
+        trackEvent(
+            name = AnalyticsEventNames.CHAPTER_STUDY_GENERATION_STARTED,
+            params = mapOf(
+                AnalyticsParams.BOOK_ID to target.bookId.name,
+                AnalyticsParams.CHAPTER_NUMBER to target.chapterNumber,
+                AnalyticsParams.IS_PRO to false,
+                AnalyticsParams.IS_REWARDED to true,
+            ),
+        )
+        studyUseCases.chapterStudyGenerationCoordinator.start(
+            target = target,
+            isRewarded = true,
+        )
+        navigator.navigate(target.toChapterStudyNavRoute())
+    }
+
+    private fun ChapterStudyTargetModel.toChapterStudyNavRoute(): ChapterStudyNavRoute = ChapterStudyNavRoute(
+        bookId = bookId.name,
+        chapterNumber = chapterNumber,
+    )
+
+    private fun ChapterStudyTargetModel.toRewardedUnlockRequestKey(): String = listOf(
+        REWARDED_UNLOCK_REQUEST_PREFIX,
+        bookId.name,
+        chapterNumber.toString(),
+    ).joinToString(REQUEST_KEY_SEPARATOR)
 
     /**
      * The day's study quota is a network round trip, so it is asked for while the reader is still on
@@ -753,5 +811,7 @@ class ReadViewModel(
         const val SOURCE_RULER = "ruler"
         const val DIRECTION_PREVIOUS = "previous"
         const val DIRECTION_NEXT = "next"
+        const val REWARDED_UNLOCK_REQUEST_PREFIX = "reader_chapter_study"
+        const val REQUEST_KEY_SEPARATOR = "|"
     }
 }

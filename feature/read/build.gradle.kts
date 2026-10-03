@@ -31,6 +31,7 @@ kotlin {
             implementation(projects.core.utils)
             implementation(projects.core.dayStudy)
             implementation(projects.core.chapterStudy)
+            implementation(projects.core.studyUnlock)
             implementation(projects.core.preferences.studySuggestion)
 
             // UI
@@ -73,6 +74,7 @@ kotlin {
             // Shared fakes
             implementation(projects.core.books.testing)
             implementation(projects.core.plan.testing)
+            implementation(projects.core.chapterStudy.testing)
         }
         getByName("androidHostTest").dependencies {
             implementation(libs.storeScreenshots.library)

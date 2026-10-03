@@ -29,6 +29,7 @@ internal class ProfileMenuOptionsFactoryTest {
         // Given
         val rowsOutsideTheMenu = setOf(
             ProfileOptionItemType.PRIVACY_POLICY,
+            ProfileOptionItemType.PRIVACY_OPTIONS,
             ProfileOptionItemType.TERMS,
             ProfileOptionItemType.DONATE,
             ProfileOptionItemType.ANNOTATIONS,

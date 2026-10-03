@@ -33,6 +33,7 @@ import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
+import com.quare.bibleplanner.core.provider.ads.domain.service.AdsConsentService
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
@@ -66,6 +67,7 @@ internal class ProfileViewModel(
     private val isConnected: IsConnected,
     private val checkForUpdate: CheckForUpdate,
     private val showUpdatePrompt: ShowUpdatePrompt,
+    private val adsConsentService: AdsConsentService,
     private val navigator: Navigator,
     uiStateFactory: ProfileUiStateFactory,
     trackEvent: TrackEvent,
@@ -100,6 +102,10 @@ internal class ProfileViewModel(
                     ProfileOptionItemType.PRIVACY_POLICY -> emitAction(OpenLink(LegalUrl.PRIVACY_POLICY))
 
                     ProfileOptionItemType.TERMS -> emitAction(OpenLink(LegalUrl.TERMS_OF_SERVICE))
+
+                    ProfileOptionItemType.PRIVACY_OPTIONS -> viewModelScope.launch {
+                        adsConsentService.showPrivacyOptions()
+                    }
 
                     ProfileOptionItemType.BECOME_PRO ->
                         goToRoute(PaywallNavRoute(PaywallEntrySource.PROFILE_MENU))

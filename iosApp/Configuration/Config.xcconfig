@@ -10,3 +10,7 @@ PRODUCT_BUNDLE_IDENTIFIER=com.quare.bibleplanner.BiblePlanner$(TEAM_ID)
 
 CURRENT_PROJECT_VERSION=$(versionCode)
 MARKETING_VERSION=$(versionName)
+
+// AdMob App ID for the rewarded study unlock (Info.plist GADApplicationIdentifier). Not a secret: it
+// ships inside the app. Debug builds still only request Google's test ad units (core/provider/ads).
+ADMOB_APP_ID=ca-app-pub-9748272108340789~4106372672

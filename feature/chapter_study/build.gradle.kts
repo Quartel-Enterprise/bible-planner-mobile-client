@@ -26,6 +26,7 @@ kotlin {
             implementation(projects.core.provider.connectivity)
             implementation(projects.core.provider.platform)
             implementation(projects.core.user)
+            implementation(projects.core.studyUnlock)
 
             // UI
             implementation(projects.ui.component)

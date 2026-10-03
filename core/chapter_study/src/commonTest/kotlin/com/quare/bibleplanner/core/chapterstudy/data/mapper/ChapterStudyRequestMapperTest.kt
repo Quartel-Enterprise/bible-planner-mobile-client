@@ -29,6 +29,7 @@ internal class ChapterStudyRequestMapperTest {
         val request = mapper.map(
             chapter = chapter,
             languageCode = "pt-BR",
+            isRewarded = false,
         )
 
         // Then
@@ -38,6 +39,7 @@ internal class ChapterStudyRequestMapperTest {
                 chapter = 7,
                 version = "ACF",
                 language = "pt-BR",
+                reward = false,
             ),
             actual = request,
         )

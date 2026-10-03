@@ -25,6 +25,7 @@ interface DayStudyGenerationCoordinator {
         passages: List<PassageModel>,
         dayRoute: DayNavRoute,
         label: String,
+        isRewarded: Boolean,
     ): String
 
     fun setActive(key: String)
@@ -40,4 +41,6 @@ interface DayStudyGenerationCoordinator {
     fun acknowledge(key: String)
 
     fun getGeneratingCount(excludingKey: String?): Int
+
+    fun hasUnservedReward(key: String): Boolean
 }

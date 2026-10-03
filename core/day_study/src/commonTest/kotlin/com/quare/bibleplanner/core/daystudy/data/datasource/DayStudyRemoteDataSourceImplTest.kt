@@ -51,6 +51,7 @@ internal class DayStudyRemoteDataSourceImplTest {
         ),
         version = "NVI",
         language = "pt",
+        reward = false,
     )
     private val response = dayStudyResponse(cacheToken = "token-1")
     private lateinit var dataSource: DayStudyRemoteDataSourceImpl
@@ -103,7 +104,7 @@ internal class DayStudyRemoteDataSourceImplTest {
         )
         assertEquals(
             expected = json.parseToJsonElement(
-                """{"passages":[{"book":"GEN","chapters":[{"number":1}]}],"version":"NVI","language":"pt"}""",
+                """{"passages":[{"book":"GEN","chapters":[{"number":1}]}],"version":"NVI","language":"pt","reward":false}""",
             ),
             actual = json.parseToJsonElement(recorded.body),
         )
@@ -246,7 +247,7 @@ internal class DayStudyRemoteDataSourceImplTest {
         prepareScenario(
             responses = listOf(
                 json(
-                    """{"is_unlocked":true,"used_count":2,"free_limit":3,"is_pro":false,"client_cache_token":"abc"}""",
+                    """{"is_unlocked":true,"used_count":2,"free_limit":3,"is_pro":false,"client_cache_token":"abc","rewarded_daily_limit":2,"rewarded_remaining_today":2}""",
                 ),
             ),
         )
@@ -262,6 +263,7 @@ internal class DayStudyRemoteDataSourceImplTest {
                 freeLimit = 3,
                 isPro = false,
                 clientCacheToken = "abc",
+                rewardedRemainingToday = 2,
             ),
             actual = result.getOrThrow(),
         )

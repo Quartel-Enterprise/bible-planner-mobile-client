@@ -46,6 +46,7 @@ import com.quare.bibleplanner.core.model.route.RenameDeviceNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseImageNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
 import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.SubscriptionDetailsNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.route.UpdateDownloadedNavRoute
@@ -195,6 +196,11 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         is PaywallTeaserNavRoute -> createResponsiveDestination(
             name = "paywall_teaser",
             params = mapOf(AnalyticsParams.REASON to route.reason.key),
+        )
+
+        is StudyUnlockNavRoute -> createResponsiveDestination(
+            name = "study_unlock",
+            params = mapOf(AnalyticsParams.SURFACE to route.surface.key),
         )
 
         is PixQrNavRoute -> createDialogDestination("pix_qr")

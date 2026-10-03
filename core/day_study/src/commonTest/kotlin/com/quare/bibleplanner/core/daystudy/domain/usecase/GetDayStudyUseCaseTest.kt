@@ -45,7 +45,10 @@ internal class GetDayStudyUseCaseTest {
     @Test
     fun `WHEN invoking THEN forwards the selected version and mapped language to the repository`() = runTest {
         // When
-        useCase(passages).toList()
+        useCase(
+            passages = passages,
+            isRewarded = false,
+        ).toList()
 
         // Then
         assertEquals(
@@ -61,6 +64,18 @@ internal class GetDayStudyUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a rewarded unlock WHEN invoking THEN asks the repository for a rewarded study`() = runTest {
+        // When
+        useCase(
+            passages = passages,
+            isRewarded = true,
+        ).toList()
+
+        // Then
+        assertEquals(listOf(true), dayStudyRepository.studyRewardFlags)
+    }
+
+    @Test
     fun `WHEN invoking THEN emits the repository events`() = runTest {
         // Given
         dayStudyRepository.events = listOf(
@@ -69,7 +84,10 @@ internal class GetDayStudyUseCaseTest {
         )
 
         // When
-        val emitted = useCase(passages).toList()
+        val emitted = useCase(
+            passages = passages,
+            isRewarded = false,
+        ).toList()
 
         // Then
         assertEquals(dayStudyRepository.events, emitted)
@@ -82,7 +100,10 @@ internal class GetDayStudyUseCaseTest {
 
         // When & Then
         assertFailsWith<LimitReachedException> {
-            useCase(passages).toList()
+            useCase(
+                passages = passages,
+                isRewarded = false,
+            ).toList()
         }
     }
 

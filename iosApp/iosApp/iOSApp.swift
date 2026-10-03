@@ -13,6 +13,8 @@ struct iOSApp: App {
     let crashReporter: CrashReporter
     let downloadSession: BibleVersionDownloadSession
     let reviewRequester: StoreKitReviewRequester
+    let rewardedAdDataSource: IosRewardedAdDataSource
+    let adsConsentDataSource: IosAdsConsentDataSource
 
     init() {
         let downloadSession = BibleVersionDownloadSession()
@@ -23,6 +25,8 @@ struct iOSApp: App {
         analyticsService = IosAnalyticsService()
         crashReporter = IosCrashReporter()
         reviewRequester = StoreKitReviewRequester()
+        rewardedAdDataSource = IosRewardedAdDataSource()
+        adsConsentDataSource = IosAdsConsentDataSource()
 
         // Initialize Koin early so background URLSession events can access the Koin graph
         // even when the app is launched solely to process background download events.
@@ -31,7 +35,9 @@ struct iOSApp: App {
             analyticsService: analyticsService,
             crashReporter: crashReporter,
             downloadSession: downloadSession,
-            reviewRequester: reviewRequester
+            reviewRequester: reviewRequester,
+            rewardedAdDataSource: rewardedAdDataSource,
+            adsConsentDataSource: adsConsentDataSource
         )
 
         dlog("Koin initialized", tag: "INIT")
@@ -47,7 +53,9 @@ struct iOSApp: App {
                 analyticsService: analyticsService,
                 crashReporter: crashReporter,
                 downloadSession: downloadSession,
-                reviewRequester: reviewRequester
+                reviewRequester: reviewRequester,
+                rewardedAdDataSource: rewardedAdDataSource,
+                adsConsentDataSource: adsConsentDataSource
             )
             .onOpenURL { url in
                 guard url.scheme == "bibleplanner" else { return }

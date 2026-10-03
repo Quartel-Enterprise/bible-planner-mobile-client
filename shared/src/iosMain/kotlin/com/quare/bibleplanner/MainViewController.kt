@@ -5,6 +5,8 @@ import androidx.compose.ui.window.ComposeUIViewController
 import co.touchlab.kermit.Logger
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloadNotifier
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
+import com.quare.bibleplanner.core.provider.ads.domain.service.AdsConsentDataSource
+import com.quare.bibleplanner.core.provider.ads.domain.service.RewardedAdDataSource
 import com.quare.bibleplanner.core.provider.analytics.domain.service.AnalyticsService
 import com.quare.bibleplanner.core.provider.billing.configureRevenueCat
 import com.quare.bibleplanner.core.provider.crashlytics.configure
@@ -48,6 +50,8 @@ fun initializeKoinForIos(
     crashReporter: CrashReporter,
     downloadSession: IosDownloadSession,
     reviewRequester: IosReviewRequester,
+    rewardedAdDataSource: RewardedAdDataSource,
+    adsConsentDataSource: AdsConsentDataSource,
 ) {
     if (isInitialized) return
     try {
@@ -62,6 +66,8 @@ fun initializeKoinForIos(
                     single { remoteConfigService }
                     single { analyticsService }
                     single { crashReporter }
+                    single { rewardedAdDataSource }
+                    single { adsConsentDataSource }
                     single { downloadSession }.bind<IosDownloadSession>()
                     factory<RequestInAppReview> {
                         RequestInAppReview {
@@ -92,6 +98,8 @@ fun MainViewController(
     crashReporter: CrashReporter,
     downloadSession: IosDownloadSession,
     reviewRequester: IosReviewRequester,
+    rewardedAdDataSource: RewardedAdDataSource,
+    adsConsentDataSource: AdsConsentDataSource,
 ) = ComposeUIViewController(
     configure = {
         initializeKoinForIos(
@@ -100,6 +108,8 @@ fun MainViewController(
             crashReporter = crashReporter,
             downloadSession = downloadSession,
             reviewRequester = reviewRequester,
+            rewardedAdDataSource = rewardedAdDataSource,
+            adsConsentDataSource = adsConsentDataSource,
         )
     },
 ) {

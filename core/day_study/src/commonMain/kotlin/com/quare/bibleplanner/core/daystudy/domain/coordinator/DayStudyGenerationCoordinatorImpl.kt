@@ -58,6 +58,7 @@ class DayStudyGenerationCoordinatorImpl(
     override val dismissedKeys: StateFlow<Set<String>>
         field = MutableStateFlow<Set<String>>(emptySet())
 
+    private val unservedRewardKeys = MutableStateFlow<Set<String>>(emptySet())
     private val connectivityPollInterval: Duration = 3.seconds
     private val generationStartMarks: MutableMap<String, TimeMark> = mutableMapOf()
     private val phaseEntriesByKey: MutableMap<String, MutableMap<DayStudyPhaseModel, Long>> = mutableMapOf()
@@ -73,10 +74,12 @@ class DayStudyGenerationCoordinatorImpl(
         passages: List<PassageModel>,
         dayRoute: DayNavRoute,
         label: String,
+        isRewarded: Boolean,
     ): String {
         val key = keyOf(dayRoute)
         if (isGenerating(key)) return key
         dismissedKeys.update { it - key }
+        if (isRewarded) unservedRewardKeys.update { it + key }
         generationStartMarks[key] = TimeSource.Monotonic.markNow()
         putJob(
             DayStudyGenerationJob(
@@ -88,13 +91,21 @@ class DayStudyGenerationCoordinatorImpl(
             ),
         )
         applicationScope.launch {
-            val streamJob = launch { runGeneration(key = key, passages = passages, dayRoute = dayRoute) }
+            val streamJob = launch {
+                runGeneration(
+                    key = key,
+                    passages = passages,
+                    dayRoute = dayRoute,
+                    isRewarded = isRewarded,
+                )
+            }
             val connectivityWatcher = launch {
                 observeConnectivity().firstOrNull { isOnline -> !isOnline } ?: return@launch
                 streamJob.cancel()
                 failGeneration(
                     key = key,
                     dayRoute = dayRoute,
+                    isRewarded = isRewarded,
                     isLimitReached = false,
                     isOffline = true,
                 )
@@ -119,17 +130,20 @@ class DayStudyGenerationCoordinatorImpl(
         key: String,
         passages: List<PassageModel>,
         dayRoute: DayNavRoute,
+        isRewarded: Boolean,
     ) {
         suspendRunCatching {
             collectGeneration(
                 key = key,
                 dayRoute = dayRoute,
                 passages = passages,
+                isRewarded = isRewarded,
             )
         }.onFailure { throwable ->
             failGeneration(
                 key = key,
                 dayRoute = dayRoute,
+                isRewarded = isRewarded,
                 isLimitReached = throwable is LimitReachedException,
                 isOffline = false,
             )
@@ -140,9 +154,13 @@ class DayStudyGenerationCoordinatorImpl(
         key: String,
         dayRoute: DayNavRoute,
         passages: List<PassageModel>,
+        isRewarded: Boolean,
     ) {
         try {
-            getDayStudy(passages).collect { event ->
+            getDayStudy(
+                passages = passages,
+                isRewarded = isRewarded,
+            ).collect { event ->
                 when (event) {
                     is DayStudyGenerationEventModel.PhaseChanged -> {
                         recordPhaseEntry(
@@ -153,10 +171,12 @@ class DayStudyGenerationCoordinatorImpl(
                     }
 
                     is DayStudyGenerationEventModel.Completed -> {
+                        unservedRewardKeys.update { it - key }
                         updateJob(key) { it.copy(status = DayStudyGenerationStatus.Done(event.study)) }
                         trackGenerationEnd(
                             name = AnalyticsEventNames.DAY_STUDY_GENERATION_COMPLETED,
                             dayRoute = dayRoute,
+                            isRewarded = isRewarded,
                         )
                         trackGenerationTime(
                             key = key,
@@ -173,9 +193,11 @@ class DayStudyGenerationCoordinatorImpl(
     private suspend fun failGeneration(
         key: String,
         dayRoute: DayNavRoute,
+        isRewarded: Boolean,
         isLimitReached: Boolean,
         isOffline: Boolean,
     ) {
+        if (isLimitReached) unservedRewardKeys.update { it - key }
         val reason = when {
             isLimitReached -> LIMIT_REACHED_REASON
             isOffline -> OFFLINE_REASON
@@ -192,6 +214,7 @@ class DayStudyGenerationCoordinatorImpl(
         trackGenerationEnd(
             name = AnalyticsEventNames.DAY_STUDY_GENERATION_FAILED,
             dayRoute = dayRoute,
+            isRewarded = isRewarded,
             extraParams = mapOf(AnalyticsParams.REASON to reason),
         )
         trackGenerationTime(
@@ -228,6 +251,8 @@ class DayStudyGenerationCoordinatorImpl(
     override fun getGeneratingCount(excludingKey: String?): Int = jobs.value.count { job ->
         job.key != excludingKey && job.status == DayStudyGenerationStatus.Generating
     }
+
+    override fun hasUnservedReward(key: String): Boolean = key in unservedRewardKeys.value
 
     private fun isGenerating(key: String): Boolean =
         jobs.value.any { it.key == key && it.status == DayStudyGenerationStatus.Generating }
@@ -294,6 +319,7 @@ class DayStudyGenerationCoordinatorImpl(
     private suspend fun trackGenerationEnd(
         name: String,
         dayRoute: DayNavRoute,
+        isRewarded: Boolean,
         extraParams: Map<String, Any> = emptyMap(),
     ) {
         trackEvent(
@@ -303,6 +329,7 @@ class DayStudyGenerationCoordinatorImpl(
                 AnalyticsParams.WEEK_NUMBER to dayRoute.weekNumber,
                 AnalyticsParams.DAY_NUMBER to dayRoute.dayNumber,
                 AnalyticsParams.IS_PRO to observeIsProUser().first(),
+                AnalyticsParams.IS_REWARDED to isRewarded,
             ) + extraParams,
         )
     }

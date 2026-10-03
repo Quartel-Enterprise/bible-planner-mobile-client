@@ -17,5 +17,6 @@
     <string name="ai_study_error">No se pudo cargar el estudio. Inténtalo de nuevo.</string>
     <string name="ai_study_connection_error_message">Se perdió la conexión mientras se generaba el estudio. Verifica tu internet e inténtalo de nuevo.</string>
     <string name="ai_study_retry">Intentar de nuevo</string>
+    <string name="ai_study_unlock">Desbloquear</string>
     <string name="ai_disclaimer">Contenido generado por IA para apoyar la comprensión. No sustituye la lectura del texto completo.</string>
 </resources>

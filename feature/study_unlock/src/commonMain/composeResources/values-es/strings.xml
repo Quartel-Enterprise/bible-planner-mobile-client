@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="study_unlock_title">Desbloquear este estudio</string>
+    <string name="study_unlock_body">Ya usaste tus estudios gratis. Suscríbete a Pro para tener estudios con IA sin límites, o mira un video corto para desbloquear este.</string>
+    <string name="study_unlock_subscribe">Suscribirse a Pro</string>
+    <string name="study_unlock_watch_video">Ver un video corto</string>
+    <plurals name="study_unlock_remaining_today">
+        <item quantity="one">Te queda %1$d video hoy</item>
+        <item quantity="other">Te quedan %1$d videos hoy</item>
+    </plurals>
+    <string name="study_unlock_video_loading">Cargando el video…</string>
+    <string name="study_unlock_video_unavailable">No hay videos disponibles ahora</string>
+    <string name="study_unlock_not_now">Ahora no</string>
+</resources>

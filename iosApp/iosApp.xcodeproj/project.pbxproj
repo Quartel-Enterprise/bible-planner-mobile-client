@@ -18,6 +18,7 @@
 		CBAC93D52F09F72D005AB4B5 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93D42F09F72D005AB4B5 /* FirebaseCrashlytics */; };
 		CBAC93D72F09F72D005AB4B5 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93D62F09F72D005AB4B5 /* FirebasePerformance */; };
 		CBAC93D92F09F72D005AB4B5 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = CBAC93D82F09F72D005AB4B5 /* FirebaseRemoteConfig */; };
+		BBB2C0D00000000000000003 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = BBB2C0D00000000000000001 /* GoogleMobileAds */; };
 		CBF3A71C2F8B2E75008E92ED /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBF3A71B2F8B2E75008E92ED /* WidgetKit.framework */; };
 		CBF3A71E2F8B2E75008E92ED /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBF3A71D2F8B2E75008E92ED /* SwiftUI.framework */; };
 		CBF3A72F2F8B2E76008E92ED /* BibleDownloadWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CBF3A7192F8B2E75008E92ED /* BibleDownloadWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -128,6 +129,7 @@
 				CBAC93D52F09F72D005AB4B5 /* FirebaseCrashlytics in Frameworks */,
 				CBAC93D32F09F72D005AB4B5 /* FirebaseCore in Frameworks */,
 				CBAC93CB2F09F72D005AB4B5 /* FirebaseAnalyticsCore in Frameworks */,
+				BBB2C0D00000000000000003 /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +200,7 @@
 				CBAC93D42F09F72D005AB4B5 /* FirebaseCrashlytics */,
 				CBAC93D62F09F72D005AB4B5 /* FirebasePerformance */,
 				CBAC93D82F09F72D005AB4B5 /* FirebaseRemoteConfig */,
+				BBB2C0D00000000000000001 /* GoogleMobileAds */,
 			);
 			productName = iosApp;
 			productReference = 7EDE84642348A1E60E5BAA36 /* BiblePlanner.app */;
@@ -258,6 +261,7 @@
 				CBAC93C72F09F72D005AB4B5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				AAA1B0C00000000000000005 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				AAA1B0C00000000000000006 /* XCLocalSwiftPackageReference "exportedNativeBridge" */,
+				BBB2C0D00000000000000002 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 60DAEEE332E57B6736AFBE21 /* Products */;
@@ -658,6 +662,14 @@
 				minimumVersion = 12.7.0;
 			};
 		};
+		BBB2C0D00000000000000002 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.11.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -715,6 +727,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CBAC93C72F09F72D005AB4B5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseRemoteConfig;
+		};
+		BBB2C0D00000000000000001 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BBB2C0D00000000000000002 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

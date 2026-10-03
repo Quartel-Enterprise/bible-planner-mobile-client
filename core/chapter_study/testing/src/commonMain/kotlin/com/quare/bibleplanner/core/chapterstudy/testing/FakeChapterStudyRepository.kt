@@ -18,17 +18,20 @@ class FakeChapterStudyRepository(
     var neverCompletes = false
     var cacheClearCount = 0
     val generationRequests = mutableListOf<ChapterStudyRequest>()
+    val generationRewardFlags = mutableListOf<Boolean>()
     val statusRequests = mutableListOf<ChapterStudyRequest>()
     val cacheLookups = mutableListOf<ChapterStudyRequest>()
 
     override fun generateChapterStudy(
         chapter: ChapterRef,
         languageCode: String,
+        isRewarded: Boolean,
     ): Flow<ChapterStudyGenerationEventModel> = flow {
         generationRequests += ChapterStudyRequest(
             chapter = chapter,
             languageCode = languageCode,
         )
+        generationRewardFlags += isRewarded
         events.forEach { event -> emit(event) }
         eventsError?.let { error -> throw error }
         if (neverCompletes) awaitCancellation()

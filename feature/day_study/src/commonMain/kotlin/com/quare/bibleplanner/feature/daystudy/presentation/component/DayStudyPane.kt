@@ -17,10 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
-import bibleplanner.feature.day_study.generated.resources.ai_study_generate
-import bibleplanner.feature.day_study.generated.resources.ai_study_subscribe
 import bibleplanner.feature.day_study.generated.resources.ai_study_title
-import bibleplanner.feature.day_study.generated.resources.ai_study_view
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.daystudy.domain.model.DayStudyModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
@@ -109,7 +106,7 @@ private fun DayStudyPaneHero(
         title = stringResource(Res.string.ai_study_title),
         subtitle = dayStudyCardSubtitle(card),
         buttonIcon = getHeroButtonIcon(card.mode),
-        buttonLabel = stringResource(heroButtonLabel(card.mode)),
+        buttonLabel = stringResource(card.toButtonLabel()),
         isLoading = isOpening,
         onClick = onClick,
         modifier = modifier,
@@ -120,10 +117,4 @@ private fun DayStudyPaneHero(
 private fun getHeroButtonIcon(mode: DayStudyCardMode?): ImageVector = when (mode) {
     DayStudyCardMode.LOCKED -> Icons.Rounded.LockOpen
     null, DayStudyCardMode.GENERATE, DayStudyCardMode.VIEW -> Icons.Rounded.AutoAwesome
-}
-
-private fun heroButtonLabel(mode: DayStudyCardMode?) = when (mode) {
-    null, DayStudyCardMode.GENERATE -> Res.string.ai_study_generate
-    DayStudyCardMode.VIEW -> Res.string.ai_study_view
-    DayStudyCardMode.LOCKED -> Res.string.ai_study_subscribe
 }

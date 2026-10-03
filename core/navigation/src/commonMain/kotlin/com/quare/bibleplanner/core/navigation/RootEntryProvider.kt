@@ -49,6 +49,7 @@ import com.quare.bibleplanner.feature.paywallteaser.presentation.paywallTeaser
 import com.quare.bibleplanner.feature.read.presentation.read
 import com.quare.bibleplanner.feature.releasenotes.presentation.releaseNotes
 import com.quare.bibleplanner.feature.studysuggestion.presentation.studySuggestionSettings
+import com.quare.bibleplanner.feature.studyunlock.presentation.studyUnlock
 import com.quare.bibleplanner.feature.subscriptiondetails.presentation.subscriptionDetails
 import com.quare.bibleplanner.feature.themeselection.presentation.themeSettings
 import com.quare.bibleplanner.feature.verse.addnote.presentation.verseNote
@@ -84,6 +85,7 @@ internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKe
     releaseNotes(sharedTransitionScope)
     paywall(sharedTransitionScope)
     paywallTeaser()
+    studyUnlock()
     congrats()
     donation()
     pixQr()

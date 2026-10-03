@@ -9,4 +9,5 @@ internal data class ChapterStudyRequestDto(
     @SerialName("chapter") val chapter: Int,
     @SerialName("version") val version: String,
     @SerialName("language") val language: String,
+    @SerialName("reward") val reward: Boolean,
 )

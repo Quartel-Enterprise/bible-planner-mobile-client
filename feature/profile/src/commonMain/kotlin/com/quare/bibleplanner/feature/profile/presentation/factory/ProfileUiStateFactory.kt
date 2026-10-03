@@ -23,6 +23,7 @@ import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.Ob
 import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetContrastTypeFlow
 import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.GetThemeOptionFlow
 import com.quare.bibleplanner.core.profile.domain.usecase.ObserveUserProfile
+import com.quare.bibleplanner.core.provider.ads.domain.service.AdsConsentService
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.GetSubscriptionStatusFlowUseCase
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveInstagramLinkVisible
@@ -77,6 +78,7 @@ internal class ProfileUiStateFactory(
     private val getSelectedVersionId: GetSelectedVersionIdFlow,
     private val observeAnnotatedPassages: ObserveAnnotatedPassages,
     private val observeVersionAnnotationCounts: ObserveVersionAnnotationCounts,
+    private val adsConsentService: AdsConsentService,
     private val platform: Platform,
 ) {
     fun createInitialState(): ProfileUiState = ProfileUiState(
@@ -99,6 +101,7 @@ internal class ProfileUiStateFactory(
         appVersion = ProfileBuildKonfig.APP_VERSION,
         isUpdateRowVisible = platform !is Platform.Desktop,
         isCheckingForUpdate = false,
+        isPrivacyOptionsVisible = adsConsentService.isPrivacyOptionsRequired.value,
     )
 
     fun create(initialState: ProfileUiState): Flow<ProfileUiState> = merge(
@@ -137,6 +140,9 @@ internal class ProfileUiStateFactory(
         },
         observeAnnotationsSummary().map { summary ->
             { state: ProfileUiState -> state.copy(annotationsSummary = Loadable.Loaded(summary)) }
+        },
+        adsConsentService.isPrivacyOptionsRequired.map { isRequired ->
+            { state: ProfileUiState -> state.copy(isPrivacyOptionsVisible = isRequired) }
         },
         getBibleRowFlow().map { bibleRow ->
             { state: ProfileUiState ->

@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 internal class DayStudyGenerationCoordinatorImplTest {
@@ -39,7 +40,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         val coordinator = coordinator(repository)
 
         // When
-        coordinator.start(passages, dayRoute, LABEL)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
 
         // Then — synchronously generating before the stream is driven
         val generating = coordinator.jobs.value.single()
@@ -58,8 +59,8 @@ internal class DayStudyGenerationCoordinatorImplTest {
         val coordinator = coordinator(dayStudyRepository(events = listOf()))
 
         // When
-        coordinator.start(passages, dayRoute, LABEL)
-        coordinator.start(passages, dayRoute, LABEL)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
 
         // Then
         assertEquals(1, coordinator.jobs.value.size)
@@ -71,8 +72,8 @@ internal class DayStudyGenerationCoordinatorImplTest {
         val coordinator = coordinator(dayStudyRepository(events = listOf()))
 
         // When
-        coordinator.start(passages, dayRoute, LABEL)
-        coordinator.start(passages, otherDayRoute, "Gênesis 2")
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
+        coordinator.start(passages, otherDayRoute, "Gênesis 2", isRewarded = false)
 
         // Then
         assertEquals(2, coordinator.jobs.value.size)
@@ -82,7 +83,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `WHEN dismissing from card THEN the job keeps running but is marked dismissed`() = runTest {
         // Given
         val coordinator = coordinator(dayStudyRepository(events = listOf()))
-        val key = coordinator.start(passages, dayRoute, LABEL)
+        val key = coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
 
         // When
         coordinator.dismissFromCard(key)
@@ -100,7 +101,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         )
 
         // When
-        coordinator.start(passages, dayRoute, LABEL)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
         advanceUntilIdle()
 
         // Then
@@ -116,10 +117,59 @@ internal class DayStudyGenerationCoordinatorImplTest {
     }
 
     @Test
+    fun `GIVEN a rewarded unlock WHEN it completes THEN asks for a rewarded study and leaves no reward unserved`() =
+        runTest {
+            // Given
+            val repository = dayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study)))
+            val coordinator = coordinator(repository)
+
+            // When
+            val key = coordinator.start(passages, dayRoute, LABEL, isRewarded = true)
+            advanceUntilIdle()
+
+            // Then
+            assertEquals(listOf(true), repository.studyRewardFlags)
+            assertFalse(coordinator.hasUnservedReward(key))
+            val (_, params) = trackedEvents.single { it.first == "day_study_generation_completed" }
+            assertEquals(true, params["is_rewarded"])
+        }
+
+    @Test
+    fun `GIVEN a rewarded unlock WHEN the generation fails THEN the reward stays unserved for a free retry`() =
+        runTest {
+            // Given
+            val coordinator = coordinator(
+                dayStudyRepository(events = emptyList(), eventsError = IllegalStateException("boom")),
+            )
+
+            // When
+            val key = coordinator.start(passages, dayRoute, LABEL, isRewarded = true)
+            advanceUntilIdle()
+
+            // Then
+            assertTrue(coordinator.hasUnservedReward(key))
+        }
+
+    @Test
+    fun `GIVEN a rewarded unlock WHEN the server refuses it THEN the reward is dropped`() = runTest {
+        // Given
+        val coordinator = coordinator(
+            dayStudyRepository(events = emptyList(), eventsError = LimitReachedException()),
+        )
+
+        // When
+        val key = coordinator.start(passages, dayRoute, LABEL, isRewarded = true)
+        advanceUntilIdle()
+
+        // Then
+        assertFalse(coordinator.hasUnservedReward(key))
+    }
+
+    @Test
     fun `WHEN acknowledging a job THEN it is removed`() = runTest {
         // Given
         val coordinator = coordinator(dayStudyRepository(events = listOf()))
-        val key = coordinator.start(passages, dayRoute, LABEL)
+        val key = coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
 
         // When
         coordinator.acknowledge(key)
@@ -132,8 +182,8 @@ internal class DayStudyGenerationCoordinatorImplTest {
     fun `GIVEN two generating jobs WHEN counting THEN excluded key is not counted`() = runTest {
         // Given
         val coordinator = coordinator(dayStudyRepository(events = listOf()))
-        coordinator.start(passages, dayRoute, LABEL)
-        coordinator.start(passages, otherDayRoute, "Gênesis 2")
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
+        coordinator.start(passages, otherDayRoute, "Gênesis 2", isRewarded = false)
 
         // When / Then
         assertEquals(2, coordinator.getGeneratingCount(excludingKey = null))
@@ -146,7 +196,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         val coordinator = coordinator(
             dayStudyRepository(events = listOf(DayStudyGenerationEventModel.Completed(study))),
         )
-        coordinator.start(passages, dayRoute, LABEL)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
 
         // When
         advanceUntilIdle()
@@ -164,7 +214,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
             )
 
             // When
-            coordinator.start(passages, dayRoute, LABEL)
+            coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
             advanceUntilIdle()
 
             // Then
@@ -183,7 +233,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         )
 
         // When
-        coordinator.start(passages, dayRoute, LABEL)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
         advanceUntilIdle()
 
         // Then
@@ -209,7 +259,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         )
 
         // When
-        coordinator.start(passages, dayRoute, LABEL)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
         advanceUntilIdle()
 
         // Then
@@ -229,7 +279,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
                 neverCompletes = true,
             ),
         )
-        coordinator.start(passages, dayRoute, LABEL)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
 
         // When
         isConnectedFlow.value = false
@@ -259,7 +309,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
             )
 
             // When
-            coordinator.start(passages, dayRoute, LABEL)
+            coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
             advanceUntilIdle()
 
             // Then
@@ -277,7 +327,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
             )
 
             // When
-            coordinator.start(passages, dayRoute, LABEL)
+            coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
             advanceUntilIdle()
 
             // Then
@@ -293,7 +343,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
         )
 
         // When
-        coordinator.start(passages, dayRoute, LABEL)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
         advanceUntilIdle()
 
         // Then
