@@ -396,7 +396,8 @@ internal class DayViewModel(
 
         viewModelScope.launch {
             if (useCases.shouldBlockAddNotes()) {
-                // Ensure there are not notes in the ui due to a fast typing before the verification happens
+                // Why: the user can type a note before this check returns, so notes that slipped in
+                // are removed.
                 deleteNotesAsyncDueToBlockedAddNotes()
                 blockAddNotes()
             }

@@ -55,10 +55,6 @@ private val readingColumnMaxWidth = 640.dp
 private val titleMinColumnWidth = 520.dp
 private val bannerMaxWidth = 560.dp
 
-/**
- * On a wide window the selection tools move into a panel beside the text instead of covering it, so
- * the verses stay visible while the user works on them.
- */
 @Composable
 internal fun ReadWideScreen(
     platform: Platform,

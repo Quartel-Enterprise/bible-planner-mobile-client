@@ -49,11 +49,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Owns everything that can be done to the verses the reader picked. The selection itself is not its
- * own: it comes from the shared store the reader writes to, so tapping another verse updates this
- * panel without navigating.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class VerseSelectionViewModel(
     private val observeVerseSelection: ObserveVerseSelection,
@@ -77,12 +72,8 @@ internal class VerseSelectionViewModel(
     )
     private val customColorPicker = MutableStateFlow<CustomColorUiModel?>(null)
 
-    /**
-     * What the panel shows before the database answers. Both the annotations and the palette come
-     * from Room, and waiting for them would hold the whole panel back by a query or two — long
-     * enough to feel like a delay between tapping a verse and the sheet arriving. It opens on the
-     * selection alone and fills in the colour, the bookmark and the note when they land.
-     */
+    // Why: the panel opens on the selection alone instead of waiting for Room, which
+    // delayed the sheet noticeably; annotations fill in when they land.
     private val emptyAnnotations = ChapterAnnotations(
         highlightColorByVerse = emptyMap(),
         savedVerseNumbers = emptySet(),
@@ -128,14 +119,9 @@ internal class VerseSelectionViewModel(
         initialValue = null,
     )
 
-    /**
-     * Covers the system back, which drops this entry without going through the close button: the
-     * verses must not stay marked with no panel to act on them.
-     *
-     * Closing is never driven by watching the selection empty — that would fire here too, and the
-     * resulting back would pop the reader along with this entry. Both ways of closing say so
-     * explicitly instead.
-     */
+    // Why: system back drops this entry without the close button, so the selection is
+    // cleared here. Never close by watching the selection empty: that back would also
+    // pop the reader.
     override fun onCleared() {
         clearVerseSelection()
         super.onCleared()

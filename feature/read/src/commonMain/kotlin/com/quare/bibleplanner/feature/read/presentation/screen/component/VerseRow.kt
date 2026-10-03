@@ -59,13 +59,6 @@ private val flashCornerRadius = 8.dp
 private val selectionUnderlineDotWidth = 1.6.dp
 private val selectionUnderlineDotGap = 3.dp
 
-/**
- * A verse and, when the section starts here, its pericope heading. Tapping anywhere on the row
- * selects the verse — the whole row is the target, not just the words.
- *
- * The verse number's size and gutter are fractions of the reader's text size, so they grow with it
- * instead of shrinking into the margin.
- */
 @Composable
 internal fun VerseRow(
     verse: VerseUiModel,
@@ -80,12 +73,8 @@ internal fun VerseRow(
         fontFamily = settings.font.toFontFamily(),
         fontSize = fontSize,
         lineHeight = fontSize * LINE_HEIGHT_RATIO,
-        /*
-         * Compose trims the leading above the first line and below the last one by default, so a
-         * verse hugs its own text and consecutive verses end up closer together than the lines
-         * inside them. Keeping the leading untrimmed gives the chapter one even rhythm, and because
-         * the leading is a fraction of the text size it opens up as the reader enlarges the text.
-         */
+        // Why: Compose trims leading above the first and below the last line by default, so
+        // verses sat closer than their own lines; Trim.None keeps one even rhythm.
         lineHeightStyle = LineHeightStyle(
             alignment = LineHeightStyle.Alignment.Proportional,
             trim = LineHeightStyle.Trim.None,
@@ -106,11 +95,8 @@ internal fun VerseRow(
             },
     ) {
         verse.heading?.let { heading ->
-            /*
-             * The heading titles the section, not this verse, so it stays outside the tap target —
-             * selecting a verse by its heading would pick an arbitrary one. It is left selectable
-             * instead, so the section title can be copied through the platform's own control.
-             */
+            // Why: the heading titles the section, so it stays out of the tap target (it would pick
+            // an arbitrary verse) and is selectable so the title can be copied.
             SelectionContainer {
                 Text(
                     modifier = Modifier.padding(top = 18.dp, bottom = 2.dp),
@@ -123,11 +109,8 @@ internal fun VerseRow(
                 )
             }
         }
-        /*
-         * Both texts align by baseline rather than by top edge: the verse text carries a 1.75 line
-         * height, so its first baseline sits well below the top of its box, and any fixed offset on
-         * the number would drift the moment the reader changes the text size.
-         */
+        // Why: align by baseline, not top: the 1.75 line height puts the first baseline well
+        // below the box top, and a fixed offset would drift with text size.
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
@@ -188,10 +171,8 @@ private fun DrawScope.drawSelectionUnderline(
     }
 }
 
-/**
- * The wash is a span rather than a background on the whole Text so it hugs the words on every line,
- * the way a marker would, instead of painting a block the width of the column.
- */
+// Why: a span background hugs the words on every line like a marker, unlike a
+// background on the whole Text.
 @Composable
 private fun String.withHighlight(highlightColor: HighlightColor?): AnnotatedString = buildAnnotatedString {
     val background = highlightColor?.toBackgroundColor()

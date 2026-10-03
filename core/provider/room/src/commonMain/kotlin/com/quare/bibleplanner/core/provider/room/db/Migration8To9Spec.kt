@@ -5,14 +5,8 @@ import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import com.quare.bibleplanner.core.model.book.BookId
 
-/**
- * Repairs the gospel of John, whose verse texts were downloaded from the book of Job's remote
- * directory because [BookId.JHN] wrongly shared the abbreviation `"Jo"` with [BookId.JOB].
- *
- * Re-arms every version that holds corrupted John texts (DONE to IN_PROGRESS) so the launch-time
- * download resumes, then deletes those texts so the resumed download re-fetches John from the
- * corrected source instead of skipping the already-populated chapters.
- */
+// Why: JHN wrongly shared the "Jo" abbreviation with JOB, so John texts came from Job; versions
+// go back to IN_PROGRESS and the texts are deleted so the resumed download refetches John.
 class Migration8To9Spec : AutoMigrationSpec {
     override suspend fun onPostMigrate(connection: SQLiteConnection) {
         connection.execSQL(

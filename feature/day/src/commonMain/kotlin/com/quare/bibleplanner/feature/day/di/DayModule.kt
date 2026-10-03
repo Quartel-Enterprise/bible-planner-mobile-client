@@ -29,12 +29,10 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val dayModule = module {
-    // Data
     singleOf(::DayLocalDataSource)
     factoryOf(::DayEntityToModelMapper)
     singleOf(::DayRepositoryImpl).bind<DayRepository>()
 
-    // Domain
     factoryOf(::GetDayDetailsUseCase)
     factoryOf(::GetBooksFlowUseCase)
     factoryOf(::UpdateDayReadStatusUseCase)
@@ -48,15 +46,12 @@ val dayModule = module {
     factoryOf(::LocalDateTimeToDateMapper)
     factoryOf(::ShouldBlockAddNotesUseCase)
 
-    // Use cases container
     factoryOf(::DayUseCases)
 
-    // Presentation
     factoryOf(::DayUiStateFlowFactory)
     factoryOf(::ReadDateFormatter)
     factoryOf(::MonthPresentationMapper)
     factoryOf(::DeleteRouteNotesMapper)
 
-    // ViewModel
     viewModelOf(::DayViewModel)
 }

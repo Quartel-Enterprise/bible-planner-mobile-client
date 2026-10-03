@@ -16,9 +16,6 @@ import bibleplanner.ui.component.generated.resources.Res
 import bibleplanner.ui.component.generated.resources.favorite
 import org.jetbrains.compose.resources.stringResource
 
-/**
- * A reusable favorite icon that supports shared element transitions.
- */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FavoriteIcon(
@@ -49,9 +46,6 @@ fun FavoriteIcon(
     }
 }
 
-/**
- * A reusable favorite icon button that supports shared element transitions.
- */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FavoriteIconButton(

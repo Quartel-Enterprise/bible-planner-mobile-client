@@ -1,9 +1,7 @@
 package com.quare.bibleplanner.core.sync.domain.usecase
 
-/**
- * Wipes the local state of every registered synced dataset, without scheduling a push. Used on
- * logout so a different account on the same device never inherits the previous user's synced data.
- */
+// Why: must not schedule a push, so wiping on logout never propagates deletions to the server
+// while keeping the next account on this device from inheriting the previous user's data.
 fun interface ClearAllSyncedLocalData {
     suspend operator fun invoke()
 }

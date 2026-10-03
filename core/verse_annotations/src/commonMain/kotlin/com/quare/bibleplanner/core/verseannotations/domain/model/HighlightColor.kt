@@ -4,12 +4,8 @@ private const val CUSTOM_PREFIX = "c"
 private const val KEY_SEPARATOR = ":"
 private const val CUSTOM_KEY_PARTS = 3
 
-/**
- * A highlight colour, identified by the [key] that is stored and synced.
- *
- * A custom colour carries its own HSL components in the key instead of pointing at a palette entry,
- * so a highlight made on one device renders on another that never had that colour in its palette.
- */
+// Why: a custom colour carries its HSL components in the key so a highlight renders on devices
+// whose palette never had that colour.
 sealed interface HighlightColor {
     val key: String
 

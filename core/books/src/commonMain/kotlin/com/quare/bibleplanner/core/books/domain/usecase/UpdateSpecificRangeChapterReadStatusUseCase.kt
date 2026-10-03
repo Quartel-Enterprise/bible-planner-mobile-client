@@ -31,7 +31,6 @@ class UpdateSpecificRangeChapterReadStatusUseCase(
             updatedAt = updatedAt,
         )
 
-        // Check if Chapter status needs update after modifying verses
         val verses = verseDao.getVersesByChapterId(chapterEntity.id)
         val isChapterFullyRead = verses.isNotEmpty() && verses.all { it.isRead }
 

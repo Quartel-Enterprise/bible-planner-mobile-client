@@ -23,11 +23,9 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val themeSelectionModule = module {
-    // Data
     factoryOf(::ThemeSelectionRepositoryImpl).bind<ThemeSelectionRepository>()
     factoryOf(::ThemePreferenceMapperImpl).bind<ThemePreferenceMapper>()
 
-    // Domain
     factoryOf(::GetThemeOptionFlowUseCase).bind<GetThemeOptionFlow>()
     factoryOf(::SetThemeOptionUseCase).bind<SetThemeOption>()
     factoryOf(::GetContrastTypeFlowUseCase).bind<GetContrastTypeFlow>()

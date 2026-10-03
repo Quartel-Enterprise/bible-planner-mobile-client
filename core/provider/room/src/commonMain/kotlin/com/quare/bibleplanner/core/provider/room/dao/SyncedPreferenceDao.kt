@@ -8,11 +8,6 @@ import androidx.room3.Transaction
 import com.quare.bibleplanner.core.provider.room.entity.SyncedPreferenceEntity
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Generic key-value store for synced scalar preferences. Mirrors the favorites sync mechanics
- * (pending flag + updatedAt timestamp, Last-Write-Wins) so any scalar setting can be synced by
- * adding a key — no new sync plumbing per setting.
- */
 @Dao
 abstract class SyncedPreferenceDao {
     @Query("SELECT value FROM synced_preferences WHERE key = :key")
@@ -24,7 +19,6 @@ abstract class SyncedPreferenceDao {
     @Query("SELECT * FROM synced_preferences WHERE pendingSync = 1")
     abstract suspend fun getPending(): List<SyncedPreferenceEntity>
 
-    /** Local write: upserts [value] and flags it pending so it gets pushed. */
     @Query(
         "INSERT OR REPLACE INTO synced_preferences (key, value, updatedAt, pendingSync) " +
             "VALUES (:key, :value, :updatedAt, 1)",
@@ -35,18 +29,13 @@ abstract class SyncedPreferenceDao {
         updatedAt: Long,
     )
 
-    /** Clears the pending flag only if the row was not re-touched meanwhile (timestamp guard). */
+    // Why: the updatedAt guard keeps a change made while the push was in flight pending.
     @Query("UPDATE synced_preferences SET pendingSync = 0 WHERE key = :key AND updatedAt = :syncedUpdatedAt")
     abstract suspend fun markSynced(
         key: String,
         syncedUpdatedAt: Long,
     )
 
-    /**
-     * Applies a remote value with Last-Write-Wins: overwrites only a non-pending, strictly older row;
-     * inserts when the row is absent. A pending or newer local row always wins (the echo of our own
-     * write and stale remote rows are no-ops).
-     */
     @Transaction
     open suspend fun applyRemote(
         key: String,
@@ -70,7 +59,8 @@ abstract class SyncedPreferenceDao {
         }
     }
 
-    /** Seeds a provisional local default (non-pending, updatedAt = 0) only if the key is absent. */
+    // Why: updatedAt = 0 marks the row provisional, so any remote value wins over it and
+    // adoptProvisional later promotes rows still at 0 to pending.
     @Query(
         "INSERT OR IGNORE INTO synced_preferences (key, value, updatedAt, pendingSync) " +
             "VALUES (:key, :value, 0, 0)",

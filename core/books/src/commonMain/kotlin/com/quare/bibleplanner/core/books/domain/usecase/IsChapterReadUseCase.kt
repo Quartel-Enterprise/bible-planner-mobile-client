@@ -20,7 +20,6 @@ class IsChapterReadUseCase(
         val chapterId = chapter.id
 
         return when {
-            // If a verse range is specified, check those specific verses
             startVerse != null && endVerse != null -> {
                 val verses = verseDao.getVersesByChapterId(chapterId)
                 val requiredVerses = startVerse..endVerse
@@ -29,7 +28,6 @@ class IsChapterReadUseCase(
                 }
             }
 
-            // If only start verse is specified, check from that verse to end of chapter
             startVerse != null -> {
                 val verses = verseDao.getVersesByChapterId(chapterId)
                 verses
@@ -37,7 +35,6 @@ class IsChapterReadUseCase(
                     .all { it.isRead }
             }
 
-            // If no verse range specified, check if entire chapter is read
             else -> {
                 if (chapter.isRead) {
                     true

@@ -16,7 +16,6 @@ class IsPassageReadUseCase(
         val book = bookDao.getBookById(bookIdName) ?: return false
 
         return passage.chapters.run {
-            // If no chapters specified (empty list), check if entire book is read
             if (isEmpty()) {
                 if (book.isRead) {
                     true

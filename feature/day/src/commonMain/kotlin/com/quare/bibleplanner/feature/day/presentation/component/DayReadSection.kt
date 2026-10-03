@@ -25,7 +25,6 @@ internal fun DayReadSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        // Completed date section - show when day is marked as read
         AnimatedVisibility(
             visible = isRead,
             enter = fadeIn() + expandVertically(),

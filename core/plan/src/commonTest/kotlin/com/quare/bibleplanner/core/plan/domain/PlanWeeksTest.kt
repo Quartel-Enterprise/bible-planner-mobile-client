@@ -119,6 +119,110 @@ internal class PlanWeeksTest {
         assertNull(result)
     }
 
+    @Test
+    fun `GIVEN the chapter is scheduled on two read days of one week WHEN searching THEN returns the earlier day`() {
+        // Given
+        val weeks = listOf(
+            week(
+                number = 1,
+                days = listOf(
+                    day(number = 1, isRead = true, bookId = BookId.EXO, chapterNumbers = listOf(1)),
+                    day(number = 2, isRead = true, bookId = BookId.GEN, chapterNumbers = listOf(3)),
+                    day(number = 3, isRead = true, bookId = BookId.GEN, chapterNumbers = listOf(3, 4)),
+                ),
+            ),
+        )
+
+        // When
+        val result = weeks.findCompletedDayFor(
+            bookId = BookId.GEN,
+            chapterNumber = 3,
+            readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+        )
+
+        // Then
+        assertEquals(
+            expected = PlanDayLocationModel(
+                weekNumber = 1,
+                dayNumber = 2,
+                readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+            ),
+            actual = result,
+        )
+    }
+
+    @Test
+    fun `GIVEN the chapter is read on days of two weeks WHEN searching THEN returns the day of the earlier week`() {
+        // Given
+        val weeks = listOf(
+            week(
+                number = 1,
+                days = listOf(
+                    day(number = 7, isRead = true, bookId = BookId.PSA, chapterNumbers = listOf(23)),
+                ),
+            ),
+            week(
+                number = 2,
+                days = listOf(
+                    day(number = 1, isRead = true, bookId = BookId.PSA, chapterNumbers = listOf(23)),
+                ),
+            ),
+        )
+
+        // When
+        val result = weeks.findCompletedDayFor(
+            bookId = BookId.PSA,
+            chapterNumber = 23,
+            readingPlanType = ReadingPlanType.BOOKS,
+        )
+
+        // Then
+        assertEquals(
+            expected = PlanDayLocationModel(
+                weekNumber = 1,
+                dayNumber = 7,
+                readingPlanType = ReadingPlanType.BOOKS,
+            ),
+            actual = result,
+        )
+    }
+
+    @Test
+    fun `GIVEN the earlier day scheduling the chapter is unread WHEN searching THEN returns the later read day`() {
+        // Given
+        val weeks = listOf(
+            week(
+                number = 1,
+                days = listOf(
+                    day(number = 1, isRead = false, bookId = BookId.GEN, chapterNumbers = listOf(3)),
+                ),
+            ),
+            week(
+                number = 2,
+                days = listOf(
+                    day(number = 1, isRead = true, bookId = BookId.GEN, chapterNumbers = listOf(3)),
+                ),
+            ),
+        )
+
+        // When
+        val result = weeks.findCompletedDayFor(
+            bookId = BookId.GEN,
+            chapterNumber = 3,
+            readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+        )
+
+        // Then
+        assertEquals(
+            expected = PlanDayLocationModel(
+                weekNumber = 2,
+                dayNumber = 1,
+                readingPlanType = ReadingPlanType.CHRONOLOGICAL,
+            ),
+            actual = result,
+        )
+    }
+
     private fun week(
         number: Int,
         days: List<DayModel>,

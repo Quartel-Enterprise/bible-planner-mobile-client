@@ -40,7 +40,6 @@ internal class DayUiStateFlowFactory(
         if (day != null) {
             val existingDatePickerUiState = currentState?.datePickerUiState
 
-            // Calculate initial timestamp and date components
             val currentTimeMillis = Clock.System.now().toEpochMilliseconds()
             val derivedReadTimestamp = if (day.isRead) {
                 deriveCompletedTimestamp(
@@ -52,7 +51,6 @@ internal class DayUiStateFlowFactory(
             }
             val effectiveReadTimestamp = day.readTimestamp ?: derivedReadTimestamp
             val savedTimestamp = effectiveReadTimestamp ?: currentTimeMillis
-            // Convert to UTC midnight for DatePicker (DatePicker expects UTC midnight)
             val initialTimestamp = convertTimestampToDatePickerInitialDate(savedTimestamp)
             val initialDate = localDateTimeProvider.getLocalDateTime(savedTimestamp)
 
@@ -125,10 +123,6 @@ internal class DayUiStateFlowFactory(
             chapters.mapNotNull { it.readUpdatedAt }
         }.maxOrNull()
 
-    /**
-     * Calculate the total number of chapters/items displayed and how many are completed.
-     * Returns a Pair of (completedCount, totalCount).
-     */
     private fun calculatePassageCounts(
         passages: List<PassageModel>,
         books: List<BookDataModel>,
@@ -138,13 +132,12 @@ internal class DayUiStateFlowFactory(
 
         passages.forEach { passage ->
             if (passage.chapters.isEmpty()) {
-                // If no chapters specified, count as 1 item (the whole book)
+                // Why: an empty chapter list means the whole book, counted as a single item.
                 totalCount++
                 if (passage.isRead) {
                     completedCount++
                 }
             } else {
-                // Count each chapter as a separate item
                 passage.chapters.forEach { chapter ->
                     totalCount++
                     val isChapterRead = isChapterReadForCount(
@@ -162,9 +155,6 @@ internal class DayUiStateFlowFactory(
         return Pair(completedCount, totalCount)
     }
 
-    /**
-     * Check if a specific chapter within a passage is read by checking the book data.
-     */
     private fun isChapterReadForCount(
         passage: PassageModel,
         chapter: ChapterModel,

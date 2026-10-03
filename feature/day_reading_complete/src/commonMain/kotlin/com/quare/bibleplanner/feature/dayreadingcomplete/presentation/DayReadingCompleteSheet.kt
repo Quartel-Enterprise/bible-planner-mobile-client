@@ -107,7 +107,6 @@ internal fun DayReadingCompleteSheet(
     }
 }
 
-/** The loaded layout with the copy taken out, so nothing moves when the day arrives. */
 @Composable
 private fun LoadingContent(modifier: Modifier = Modifier) {
     SheetColumn(modifier = modifier) {

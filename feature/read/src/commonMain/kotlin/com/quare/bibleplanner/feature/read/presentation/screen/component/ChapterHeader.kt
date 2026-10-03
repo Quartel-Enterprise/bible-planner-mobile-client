@@ -17,13 +17,8 @@ private val bookNameFontSize = 15.sp
 private val bookNameLetterSpacing = 3.sp
 private val chapterNumberFontSize = 60.sp
 
-/**
- * The chapter opening: the book in small caps over an oversized numeral, which is what tells the
- * reader where they are without a title bar in the way.
- *
- * Deliberately not a shared element with the chapter label the reader was opened from: that label is
- * a list row, and matching bounds with it squeezes this header to the row's width.
- */
+// Why: deliberately not a shared element with the chapter label it opens from; that label
+// is a list row and matching bounds squeezes this header to the row's width.
 @Composable
 internal fun ChapterHeader(
     bookName: String,

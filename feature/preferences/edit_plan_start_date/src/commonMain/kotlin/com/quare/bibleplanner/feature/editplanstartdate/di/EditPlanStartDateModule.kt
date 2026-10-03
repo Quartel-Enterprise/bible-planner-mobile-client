@@ -7,9 +7,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val editPlanStartDateModule = module {
-    // Domain
     factoryOf(::SetPlanStartTimeUseCase)
 
-    // ViewModel
     viewModelOf(::EditPlanStartDateViewModel)
 }

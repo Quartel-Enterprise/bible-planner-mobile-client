@@ -7,11 +7,8 @@ import io.github.jan.supabase.auth.handleDeeplinks
 const val SUPABASE_DEEPLINK_SCHEME = "bibleplanner"
 const val SUPABASE_DEEPLINK_HOST = "auth-callback"
 
-/**
- * Imports the auth session delivered through the OAuth redirect deep link
- * (bibleplanner://auth-callback). Call it from the activity that receives the
- * VIEW intent, on both onCreate and onNewIntent.
- */
+// Why: must be called from the activity receiving the VIEW intent in both onCreate and
+// onNewIntent, or a redirect to an already-running activity drops the OAuth session.
 class SupabaseDeeplinkHandler(
     private val supabaseClient: SupabaseClient,
 ) {

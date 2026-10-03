@@ -171,8 +171,6 @@ private fun ChatThreadScaffold(
             ScaffoldDefaults.contentWindowInsets
         },
         topBar = {
-            // The header lifts off the thread once there is thread above it to lift off from, so a
-            // message scrolling past has an edge to disappear under instead of touching the bar.
             val isScrolled by remember { derivedStateOf { listState.canScrollBackward } }
             val elevation by animateDpAsState(if (isScrolled) headerElevation else 0.dp)
             Surface(shadowElevation = elevation) {
@@ -439,9 +437,8 @@ private fun ChatScrollEffect(
 ) {
     var hasLanded by rememberSaveable { mutableStateOf(false) }
     var isFollowing by remember { mutableStateOf(true) }
-    // Opening a thread lands on its newest message, and lands there rather than travelling: the
-    // reader is coming back to what was last said. Driven by the thread itself, because the scroll
-    // request the view model sends is a passing event that the screen is not yet listening for.
+    // Why: driven by the thread itself because the view model's scroll request is a one-shot event
+    // the screen is not yet collecting when a thread opens.
     LaunchedEffect(hasThread) {
         if (!hasThread || hasLanded) return@LaunchedEffect
         snapshotFlow { listState.layoutInfo.totalItemsCount }.first { count -> count > 0 }
@@ -449,9 +446,8 @@ private fun ChatScrollEffect(
         listState.settleAtEnd()
         hasLanded = true
     }
-    // Dragging up is the reader letting go of the end to read further back, and returning to the
-    // end is them taking hold of it again. Everything below follows that hold, so an answer being
-    // written never drags the list out from under someone reading above it.
+    // Why: a drag releases the end and returning to it takes hold again; streaming only follows while
+    // held, so an answer being written never drags the list from under someone reading above.
     LaunchedEffect(listState) {
         listState.interactionSource.interactions.collect { interaction ->
             if (interaction is DragInteraction.Start) isFollowing = false
@@ -462,8 +458,6 @@ private fun ChatScrollEffect(
             if (!isScrolling) isFollowing = listState.getEndOvershoot() <= 0f
         }
     }
-    // An answer arrives a few words at a time, and the thread stays at its end as they land, the
-    // way a chat does: the reader watches the words appear instead of chasing them.
     LaunchedEffect(
         listState,
         isAnswering,
@@ -481,11 +475,8 @@ private fun ChatScrollEffect(
     }
 }
 
-/**
- * A reader scrolling by hand, or another scroll of our own, takes the list away from the one in
- * flight and cancels it. That cancellation must not reach the collector around it: it would end the
- * collector for the rest of the screen's life, and no later answer would reach the end again.
- */
+// Why: a manual or newer scroll cancels the one in flight; that cancellation must not reach the
+// collector or it would end for the screen's life and no later answer would reach the end.
 private suspend fun LazyListState.ignoringInterruption(scroll: suspend LazyListState.() -> Unit) {
     try {
         scroll()
@@ -495,10 +486,8 @@ private suspend fun LazyListState.ignoringInterruption(scroll: suspend LazyListS
     }
 }
 
-/**
- * Reaching the bottom takes two moves: scrolling to the last item leaves its start at the top of
- * the viewport, which for an answer taller than the screen is nowhere near the end of it.
- */
+// Why: scrolling to the last item leaves its start at the top, which for an answer taller than
+// the screen is far from the end, so the remaining overshoot is scrolled too.
 private suspend fun LazyListState.animateToEnd() {
     val lastIndex = layoutInfo.totalItemsCount - 1
     if (lastIndex < 0) return

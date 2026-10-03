@@ -1,8 +1,5 @@
 package com.quare.bibleplanner.core.daystudy.domain.exception
 
-/**
- * Signals that the user has no free analyses left (server returned 402 Payment Required).
- * Carried in the failure channel of [getDayStudy][com.quare.bibleplanner.core.daystudy.domain.repository.DayStudyRepository.getDayStudy]
- * so the caller can lock the card instead of treating it as a generic error.
- */
+// Why: mapped from the server's 402 Payment Required (no free analyses left); kept distinct
+// so the caller locks the card instead of showing a generic error.
 class LimitReachedException : Exception()

@@ -6,11 +6,8 @@ import com.quare.bibleplanner.core.preferences.themeselection.domain.repository.
 import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.flow.combine
 
-/**
- * App-scoped collector that applies synced theme + contrast into the device-local store while the
- * sync flag is on. Writing through `applySynced*` (DataStore-only) means an inbound change does not
- * re-trigger an outbound push, so there is no echo loop.
- */
+// Why: inbound values are written through applySynced* (DataStore-only) so an inbound change
+// never re-triggers an outbound push (no echo loop).
 internal class ObserveThemeSyncUseCase(
     private val repository: ThemeSelectionRepository,
 ) : ObserveThemeSync {

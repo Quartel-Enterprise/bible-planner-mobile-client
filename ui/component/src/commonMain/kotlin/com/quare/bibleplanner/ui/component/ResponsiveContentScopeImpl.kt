@@ -86,9 +86,6 @@ internal class ResponsiveContentScopeImpl(
         }
     }
 
-    /**
-     * Helper to wrap an item in a centered box with a max width.
-     */
     private fun LazyListScope.centeredItem(
         contentMaxWidth: Dp,
         key: Any? = null,

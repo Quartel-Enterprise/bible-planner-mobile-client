@@ -15,18 +15,13 @@ class ChaptersRangeMapper {
         for (chapter in sortedChapters) {
             when {
                 currentRangeStart == null -> {
-                    // Start a new range
                     currentRangeStart = chapter
                     currentRangeEnd = chapter
                 }
 
-                canGroupChapters(currentRangeEnd!!, chapter) -> {
-                    // Extend the current range
-                    currentRangeEnd = chapter
-                }
+                canGroupChapters(currentRangeEnd!!, chapter) -> currentRangeEnd = chapter
 
                 else -> {
-                    // Finish current range and start a new one
                     ranges.add(formatChapterRange(currentRangeStart, currentRangeEnd))
                     currentRangeStart = chapter
                     currentRangeEnd = chapter
@@ -34,7 +29,6 @@ class ChaptersRangeMapper {
             }
         }
 
-        // Add the last range
         if (currentRangeStart != null) {
             ranges.add(formatChapterRange(currentRangeStart, currentRangeEnd))
         }
@@ -46,14 +40,11 @@ class ChaptersRangeMapper {
         first: ChapterModel,
         second: ChapterModel,
     ): Boolean {
-        // Can only group if chapters are consecutive
         if (second.number != first.number + 1) return false
 
-        // Can group if neither has specific verse ranges
         val firstHasVerses = first.startVerse != null || first.endVerse != null
         val secondHasVerses = second.startVerse != null || second.endVerse != null
 
-        // Only group if both don't have verses (full chapters)
         return !firstHasVerses && !secondHasVerses
     }
 
@@ -67,7 +58,6 @@ class ChaptersRangeMapper {
 
         return when {
             start.number == endChapter.number -> {
-                // Single chapter
                 if (startVerseStr != null) {
                     "${start.number}:$startVerseStr"
                 } else {
@@ -75,25 +65,14 @@ class ChaptersRangeMapper {
                 }
             }
 
-            startVerseStr != null && endVerseStr != null -> {
-                // Range with verses: "5:1-10-12:5-8"
+            startVerseStr != null && endVerseStr != null ->
                 "${start.number}:$startVerseStr-${endChapter.number}:$endVerseStr"
-            }
 
-            startVerseStr != null -> {
-                // Start has verses, end doesn't: "5:1-10-12"
-                "${start.number}:$startVerseStr-${endChapter.number}"
-            }
+            startVerseStr != null -> "${start.number}:$startVerseStr-${endChapter.number}"
 
-            endVerseStr != null -> {
-                // End has verses, start doesn't: "5-12:5-8"
-                "${start.number}-${endChapter.number}:$endVerseStr"
-            }
+            endVerseStr != null -> "${start.number}-${endChapter.number}:$endVerseStr"
 
-            else -> {
-                // No verses: "5-12"
-                "${start.number}-${endChapter.number}"
-            }
+            else -> "${start.number}-${endChapter.number}"
         }
     }
 

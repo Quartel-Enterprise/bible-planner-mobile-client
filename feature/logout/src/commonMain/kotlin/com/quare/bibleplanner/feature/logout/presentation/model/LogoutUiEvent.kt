@@ -17,7 +17,6 @@ internal sealed interface LogoutUiEvent : UiEvent {
             )
         }
 
-        /** Sign out without flushing pending changes — chosen after a [LogoutUiState.PendingChangesError]. */
         data object OnForceLogout : ConfirmLogoutClick {
             override val shouldFlushPending: Boolean = false
             override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(

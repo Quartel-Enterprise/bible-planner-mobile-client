@@ -18,12 +18,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
-/**
- * Offline-first + realtime sync for the connected-devices list. Room is the source of truth the UI
- * observes; the device rows are server-authoritative except for the user-editable `name`, which is
- * reconciled Last-Write-Wins. Unlike [com.quare.bibleplanner.core.sync.data.OfflineFirstSynchronizer]
- * this handles remote DELETEs (a session revoked elsewhere removes the row).
- */
+// Why: rows are server-authoritative except the user-editable name (Last-Write-Wins), and unlike
+// OfflineFirstSynchronizer this must handle remote DELETEs (a session revoked elsewhere).
 internal class DevicesSynchronizer(
     private val localStore: UserDeviceLocalStore,
     private val remoteStore: UserDevicesRemoteStore,

@@ -31,14 +31,12 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val bibleVersionModule = module {
-    // Data
     single {
         Json {
             ignoreUnknownKeys = true
         }
     }
 
-    // Domain
     factoryOf(::GetBibleVersionsByLanguageUseCase)
     factoryOf(::SupabaseBookAbbreviationMapper)
     singleOf(::DownloadBibleUseCase)
@@ -64,7 +62,6 @@ val bibleVersionModule = module {
     factoryOf(::DeleteBibleVersionDownloadUseCase)
     factoryOf(::BibleVersionsUiStateFactory)
 
-    // Presentation
     viewModelOf(::BibleVersionViewModel)
     viewModelOf(::PendingBibleUpdatesViewModel)
     viewModelOf(::PendingBibleUpdatesPromptViewModel)

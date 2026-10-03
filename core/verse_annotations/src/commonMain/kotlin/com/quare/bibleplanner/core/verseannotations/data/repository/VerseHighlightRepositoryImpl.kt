@@ -62,10 +62,8 @@ internal class VerseHighlightRepositoryImpl(
         }
     }
 
-    /**
-     * Rows already holding the requested colour are left untouched: re-marking them pending would
-     * cost a push and a realtime broadcast per device for a value nobody changed.
-     */
+    // Why: rows already holding the colour are skipped; re-marking them pending would cost a push and
+    // a realtime broadcast per device for an unchanged value.
     override suspend fun setColor(
         refs: List<VerseRef>,
         color: HighlightColor?,
@@ -89,7 +87,7 @@ internal class VerseHighlightRepositoryImpl(
         )
     }
 
-    /** Colours belong to the palette, which is version-independent, so this clears every version. */
+    // Why: colours belong to the version-independent palette, so this clears every version.
     override suspend fun removeAllWithColor(colorKey: String) {
         val now = currentTimestampProvider.getCurrentTimestamp()
         val cleared = verseHighlightDao.getHighlightsByColor(colorKey).map { entity ->

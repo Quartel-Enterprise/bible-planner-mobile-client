@@ -37,11 +37,8 @@ interface ChapterDao {
     @Update
     suspend fun updateChapter(chapter: ChapterEntity)
 
-    /**
-     * `isRead <> :isRead` keeps a re-set of the value the row already holds from becoming a write:
-     * without it the row is marked pending and pushed to the backend, where it costs a row version
-     * and a realtime broadcast to every device — for a value nobody changed.
-     */
+    // Why: `isRead <> :isRead` keeps re-setting the same value from marking the row pending,
+    // which would cost a backend row version and a realtime broadcast to every device.
     @Query(
         "UPDATE chapters SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
             "WHERE id = :chapterId AND isRead <> :isRead",
@@ -52,11 +49,8 @@ interface ChapterDao {
         updatedAt: Long,
     )
 
-    /**
-     * Same guard, and this is where it matters most: without `isRead <> :isRead` this marks *every*
-     * chapter of the book pending — 50 rows for Genesis, 150 for Psalms — whether or not any of them
-     * actually changed. Each one is then upserted and broadcast.
-     */
+    // Why: without `isRead <> :isRead` every chapter of the book (150 for Psalms) is marked
+    // pending, upserted and broadcast even when none changed.
     @Query(
         "UPDATE chapters SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
             "WHERE bookId = :bookId AND isRead <> :isRead",
@@ -83,10 +77,8 @@ interface ChapterDao {
         syncedUpdatedAt: Long,
     )
 
-    /**
-     * Applies a remote chapter read with Last-Write-Wins. Returns the number of rows changed so the
-     * caller knows whether to cascade the state down to the chapter's verses.
-     */
+    // Why: Last-Write-Wins; the returned row count tells the caller whether to cascade
+    // the state down to the chapter's verses.
     @Query(
         "UPDATE chapters SET isRead = :isRead, readUpdatedAt = :remoteUpdatedAt " +
             "WHERE bookId = :bookId AND number = :chapterNumber AND isReadPendingSync = 0 " +
@@ -99,21 +91,18 @@ interface ChapterDao {
         remoteUpdatedAt: Long,
     ): Int
 
-    /** Marks pre-sync chapter reads pending on first launch so they reach the backend. */
     @Query(
         "UPDATE chapters SET isReadPendingSync = 1, readUpdatedAt = :now " +
             "WHERE isRead = 1 AND readUpdatedAt IS NULL",
     )
     suspend fun markLegacyChapterReadsPending(now: Long)
 
-    /** Logout wipe: clears chapter read state without scheduling a push. */
+    // Why: logout wipe; must not schedule a push, or the wipe would reach other devices.
     @Query("UPDATE chapters SET isRead = 0, readUpdatedAt = NULL, isReadPendingSync = 0")
     suspend fun clearAllChapterReadSync()
 
-    /**
-     * Delete-progress wipe: clears chapter read state and schedules a push for chapters that already
-     * had a remote row (readUpdatedAt not null), so the deletion propagates to other devices.
-     */
+    // Why: delete-progress wipe; only chapters that already had a remote row are marked
+    // pending so the deletion propagates to other devices.
     @Query(
         "UPDATE chapters SET isRead = 0, " +
             "isReadPendingSync = CASE WHEN readUpdatedAt IS NOT NULL THEN 1 ELSE isReadPendingSync END, " +

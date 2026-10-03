@@ -43,10 +43,7 @@ class GetVersesShareContentUseCase(
         )
     }
 
-    /**
-     * One verse per line. A lone verse skips its number, because the reference above it already
-     * names the only one there is.
-     */
+    // Why: a lone verse omits its number because the reference above already names it.
     private fun List<Pair<Int, String>>.toShareText(): String = if (size == 1) {
         first().second
     } else {

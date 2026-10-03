@@ -35,7 +35,6 @@ import org.koin.dsl.module
 
 val readingPlanModule = module {
 
-    // Domain
     factoryOf(::GetSelectedReadingPlanFlowUseCase).bind<GetSelectedReadingPlanFlow>()
     factoryOf(::SetSelectedReadingPlanUseCase).bind<SetSelectedReadingPlan>()
     factoryOf(::FindFirstWeekWithUnreadBookUseCase).bind<FindFirstWeekWithUnreadBook>()
@@ -50,7 +49,6 @@ val readingPlanModule = module {
     factory<ObservePlansByWeek> { ObservePlansByWeek(get<GetPlansByWeekUseCase>()::invoke) }
     factory<UpdateDayReadStatus> { UpdateDayReadStatus(get<UpdateDayReadStatusUseCase>()::invoke) }
 
-    // Presentation
     viewModelOf(::ReadingPlanViewModel)
     factoryOf(::ReadingPlanStateFactory)
     factoryOf(::WeeksPlanPresentationMapper)

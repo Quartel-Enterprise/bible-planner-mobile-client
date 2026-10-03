@@ -15,16 +15,6 @@ import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
-/**
- * Flags a lambda that exists only to hand its parameter to a function — `{ day -> mapDay(day) }` where
- * `::mapDay` says the same thing.
- *
- * Deliberately narrow. Ktlint resolves no types, so the rule only fires on a call to a function declared
- * in the *same file*, where it can read the declaration and rule out the shapes a reference cannot take:
- * `suspend` functions (their reference does not fit a plain function type), `@Composable` functions, and
- * anything reached through a receiver. A forwarding lambda around a function from another file is left
- * alone rather than guessed at.
- */
 class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
     override fun beforeVisitChildNodes(
         node: ASTNode,
@@ -54,12 +44,6 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
             }
     }
 
-    /**
-     * A `suspend` function's reference has a `suspend` function type, which does not fit the plain function
-     * type `let`, `map` and `forEach` declare; `@Composable` functions cannot be referenced at all.
-     *
-     * @return whether a reference to this function fits a plain function type.
-     */
     private fun KtNamedFunction.isReferenceable(): Boolean {
         if (hasModifier(SUSPEND_KEYWORD)) return false
         if (annotationEntries.any { it.shortName?.asString() == COMPOSABLE_ANNOTATION_NAME }) return false
@@ -75,12 +59,6 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
         return calleeName.takeIf { declaration.isReachableFrom(this) }
     }
 
-    /**
-     * A same-file function is referenceable from the lambda when it is top level, or a member of the class
-     * the lambda itself sits in — a member of a *different* class in the file needs its own receiver.
-     *
-     * @return whether [lambda] can reference this function without a receiver.
-     */
     private fun KtNamedFunction.isReachableFrom(lambda: KtLambdaExpression): Boolean {
         val declaringClass = containingClassOrObject ?: return true
         return lambda.findEnclosingClasses().any { it == declaringClass }
@@ -103,12 +81,6 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
         return false
     }
 
-    /**
-     * The name the lambda takes as its single parameter, whether written out or left implicit as `it`. A
-     * lambda that takes several parameters, or destructures them, has no single name to forward.
-     *
-     * @return that name, or null when the lambda has no single parameter.
-     */
     private fun KtLambdaExpression.findForwardedParameterName(): String? {
         val parameters = functionLiteral.valueParameters
         if (parameters.size > 1) return null
@@ -117,12 +89,7 @@ class PreferMethodReferenceRule : BiblePlannerRule("prefer-method-reference") {
         return parameter.name
     }
 
-    /**
-     * The call this lambda exists only to make: its whole body, taking [parameterName] as its one and only
-     * argument. Type arguments and trailing lambdas are left alone — a reference cannot carry either.
-     *
-     * @return that call, or null when the body is anything else.
-     */
+    // Why: a method reference cannot carry type arguments or a trailing lambda.
     private fun KtLambdaExpression.findSingleForwardingCall(parameterName: String): KtCallExpression? {
         val call = functionLiteral.bodyExpression?.statements?.singleOrNull() as? KtCallExpression ?: return null
         if (call.typeArgumentList != null) return null

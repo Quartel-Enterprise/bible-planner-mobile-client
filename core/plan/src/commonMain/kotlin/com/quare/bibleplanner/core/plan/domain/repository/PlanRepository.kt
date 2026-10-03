@@ -16,9 +16,7 @@ interface PlanRepository {
 
     suspend fun setSelectedReadingPlan(readingPlanType: ReadingPlanType)
 
-    /**
-     * Seeds a provisional start date (today) only if none exists, as a non-pending local default so it
-     * never overwrites a real remote value the sync engine may pull for this account.
-     */
+    // Why: seeded only when absent and as non-pending, so it never overwrites a real remote start
+    // date the sync engine may pull for this account.
     suspend fun seedDefaultStartDate(timestamp: Long)
 }

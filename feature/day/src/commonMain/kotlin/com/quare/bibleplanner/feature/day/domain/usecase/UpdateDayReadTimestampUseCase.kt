@@ -10,7 +10,8 @@ class UpdateDayReadTimestampUseCase(
         weekNumber: Int,
         dayNumber: Int,
         readingPlanType: ReadingPlanType,
-        readTimestamp: Long, // Epoch milliseconds
+        // Why: epoch milliseconds, the unit DayEntity.readTimestamp stores.
+        readTimestamp: Long,
     ) {
         dayRepository.updateDayReadStatus(
             weekNumber = weekNumber,

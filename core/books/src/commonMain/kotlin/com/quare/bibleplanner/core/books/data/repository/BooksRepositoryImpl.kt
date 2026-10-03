@@ -50,7 +50,6 @@ class BooksRepositoryImpl(
 
     override suspend fun initializeDatabase() {
         initMutex.withLock {
-            // Double-check inside lock to prevent duplicate initialization
             if (bookDao.getAllBooksWithChapters().isNotEmpty()) return
 
             val books = booksLocalDataSource.getBooks()

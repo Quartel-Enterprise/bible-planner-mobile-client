@@ -34,7 +34,6 @@ sealed interface ShareVerseUiEvent : UiEvent {
         )
     }
 
-    /** Carries the rendered card, since the bytes only exist after the UI has drawn it. */
     data class OnShareImageReady(
         val imageBytes: ByteArray,
     ) : ShareVerseUiEvent {

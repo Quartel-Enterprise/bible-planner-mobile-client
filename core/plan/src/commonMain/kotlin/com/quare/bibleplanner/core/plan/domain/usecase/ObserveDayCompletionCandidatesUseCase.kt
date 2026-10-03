@@ -15,14 +15,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 
-/**
- * Answers, ahead of the tap, which of the chapters on screen would complete a plan day the moment
- * they are marked read. A screen that keeps this warm opens the celebration the instant the reader
- * taps, instead of scoring the plan afterwards.
- *
- * Only the books those days schedule are observed — a handful — because the whole-Bible read state
- * is far too heavy to re-read on every change just to answer this.
- */
+// Why: precomputed so the celebration opens instantly on tap; only the scheduled books are
+// observed because re-reading whole-Bible read state on every change is far too heavy.
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObserveDayCompletionCandidatesUseCase(
     private val planRepository: PlanRepository,

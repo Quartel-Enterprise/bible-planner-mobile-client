@@ -1,21 +1,21 @@
 ---
 name: feedback_no_comments
-description: "Don't add comments to production Kotlin source (inline //, block /* */, or KDoc). Comments ARE allowed in gradle scripts, the version catalog, and tests (Given/When/Then)."
+description: "Production Kotlin comments only say WHY, as `// Why:` (bug workarounds with issue ids, invariants, deliberate odd choices, external constraints); never narration, KDoc or /* */. Tests, gradle scripts, build-logic and the catalog may comment freely."
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 2ed50f6d-f9f7-42af-a4e2-df49db10c8a9
 ---
 
-Do not add comments to production Kotlin source code — not inline `//`, not block `/* */`, and not KDoc `/** */` on declarations. The user deleted KDoc comments added during a task and stated the rule as "nunca adicione comentários".
+Production Kotlin never says **what** it does in comments: no narration, no section labels, no KDoc `/** */`, no block `/* */`. The user first stated this as "nunca adicione comentários" after deleting KDoc added during a task.
 
-**Exceptions where comments ARE allowed** (the user clarified "comentários em gradle, catalog e test são permitidos"):
-- Gradle build scripts (`*.gradle.kts`) — e.g. section labels like `// Koin`.
-- The version catalog (`gradle/libs.versions.toml`) — e.g. section headers like `# Firebase`.
-- Test code — including `// Given` / `// When` / `// Then` markers.
+In Oct/2026 (#515/#517) the user refined it: a blanket ban is "too much" and dangerous, because some comments hold the **why** (a platform-bug workaround, a sync invariant like last-write-wins, an external constraint such as the Supabase redirect allowlist) and deleting them invites a "simplification" that brings the bug back. Those stay, written as `// Why: ...` (continuation lines are plain `//` directly below). When the why is a behaviour, a test named after the rule guarantees it better; the comment then stays to one line.
 
-**Why:** In production code the user considers added comments noise and wants the code to stand on its own; build config, the catalog, and tests use comments as helpful structure.
+**Exceptions where any comment is fine** (the user: "comentários em gradle, catalog e test são permitidos"):
+- Gradle build scripts (`*.kts`) and `build-logic` — e.g. section labels like `// Koin`.
+- The version catalog (`gradle/libs.versions.toml`) — e.g. `# Firebase`.
+- Test code and the `:testing` fake modules — including `// Given` / `// When` / `// Then`.
 
-**How to apply:** In production Kotlin, rely on clear names instead of comments and don't narrate code; leave pre-existing comments in untouched code alone.
+**How to apply:** rely on names for the what. Add a `// Why:` only when a reader could not recover the reason from the code and losing it could cause a bug; keep issue ids/links so the comment can go when the upstream fix ships. Related: [[feedback_kdoc_simple_name_links]].
 
-**Heavily documented neighbours are not an exception.** Parts of this repo (e.g. `feature/read`) are full of KDoc shipped after this rule was stated, so matching the surrounding comment density is the wrong instinct here — the user confirmed on 2026-08-30 (PR #384) that new code stays comment-free even when every sibling file has KDoc. Editing an existing KDoc that a signature change would otherwise make stale is fine; adding a new one is not. In gradle/catalog/test files, comments are fine — follow the file's existing convention. If documentation of production code seems genuinely necessary, ask first. Related: [[feedback_kdoc_simple_name_links]].
+**Enforced** by the ktlint rule `bible-planner-style:comments-say-why` (form only: `// Why:` and its continuation lines pass, everything else fails). Whether a `// Why:` really states a reason is for the review. `.editorconfig` disables the rule for test source sets, `:testing` modules, `*.kts` and `build-logic`.

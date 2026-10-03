@@ -18,14 +18,12 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appLanguageModule = module {
-    // Domain
     factoryOf(::SetAppLanguageUseCase).bind<SetAppLanguage>()
     factoryOf(::ObserveAppLocaleUseCase).bind<ObserveAppLocale>()
     factoryOf(::GetLanguageSyncEnabledFlowUseCase).bind<GetLanguageSyncEnabledFlow>()
     factoryOf(::SetLanguageSyncEnabledUseCase).bind<SetLanguageSyncEnabled>()
     factoryOf(::ObserveLanguageSyncUseCase).bind<ObserveLanguageSync>()
 
-    // Presentation
     factoryOf(::AppLanguageUiStateFactory)
     viewModelOf(::AppLanguageViewModel)
 }

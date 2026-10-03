@@ -8,18 +8,14 @@ interface AppLanguageRepository {
 
     suspend fun setLanguage(language: Language)
 
-    /** Account-global flag controlling whether the app language syncs across devices. */
     fun getLanguageSyncEnabledFlow(): Flow<Boolean>
 
-    /**
-     * Persists the sync flag (synced across devices). When [enabled] is true the current language is
-     * mirrored as the authoritative value so it propagates to the other devices.
-     */
+    // Why: enabling sync mirrors this device's language as the authoritative value so it
+    // propagates to the other devices.
     suspend fun setLanguageSyncEnabled(enabled: Boolean)
 
-    /** Synced language coming from another device, or null when no synced value exists yet. */
     fun observeSyncedLanguage(): Flow<Language?>
 
-    /** Writes a remote language into the device-local store without re-pushing it. */
+    // Why: writes locally without re-pushing, to avoid a sync echo loop.
     suspend fun applySyncedLanguage(language: Language)
 }

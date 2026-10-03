@@ -12,10 +12,6 @@ import androidx.compose.ui.unit.dp
 
 private const val ACCENT_CONTAINER_ALPHA = 0.12f
 
-/**
- * The small tag beside an AI study's title, such as "3 free" or "PRO". The accent style marks a
- * status worth noticing, like a study already generated; the plain one is a quiet count.
- */
 @Composable
 fun AiStudyBadge(
     text: String,

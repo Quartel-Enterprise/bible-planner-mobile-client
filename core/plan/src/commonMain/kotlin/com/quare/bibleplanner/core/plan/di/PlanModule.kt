@@ -39,19 +39,15 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val planModule = module {
-    // Data sources
     singleOf(::PlanLocalDataSource)
 
-    // Mappers
     factoryOf(::WeekPlanDtoToModelMapper)
     factoryOf(::ChaptersRangeMapper)
     factoryOf(::UserPreferenceMapper)
     singleOf(::ReadingPlanPreferenceMapperImpl).bind<ReadingPlanPreferenceMapper>()
 
-    // Repository
     singleOf(::PlanRepositoryImpl).bind<PlanRepository>()
 
-    // Sync
     factoryOf(::SyncedPreferenceLocalStore)
     factoryOf(::UserPreferencesRemoteStore)
     single<Synchronizer>(named("preferencesSync")) {
@@ -78,7 +74,6 @@ val planModule = module {
         )
     }
 
-    // Use cases
     factoryOf(::GetPlannedReadDateForDayUseCase)
     factoryOf(::GetPlansByWeekUseCase)
     factoryOf(::GetScheduledDayUseCase).bind<GetScheduledDay>()

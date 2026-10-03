@@ -27,7 +27,8 @@ data class VerseEntity(
     val number: Int,
     val chapterId: Long,
     val isRead: Boolean,
-    // Read-state sync metadata, only populated for verse-range reads (whole-chapter reads sync at chapter level).
+    // Why: read sync metadata is only populated for verse-range reads; whole-chapter reads sync at
+    // chapter level.
     @ColumnInfo(defaultValue = "NULL") val readUpdatedAt: Long?,
     @ColumnInfo(defaultValue = "0") val isReadPendingSync: Boolean,
 )

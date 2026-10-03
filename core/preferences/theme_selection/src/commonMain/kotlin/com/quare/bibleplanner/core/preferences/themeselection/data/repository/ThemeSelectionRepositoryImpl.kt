@@ -15,12 +15,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/**
- * Theme + contrast live in the device-local DataStore (the render source). When the account-global
- * sync flag is on, user writes are also mirrored into the synced key-value store
- * ([SyncedPreferenceDao]) so the sync engine pushes them; inbound remote values are written back
- * through the `applySynced*` methods, which skip the mirror to avoid an echo loop.
- */
+// Why: DataStore is the render source; with sync on, user writes are mirrored to
+// SyncedPreferenceDao for pushing, while applySynced* skip the mirror to avoid an
+// echo loop.
 internal class ThemeSelectionRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
     private val mapper: ThemePreferenceMapper,
