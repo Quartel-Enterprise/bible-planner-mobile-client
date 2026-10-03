@@ -83,7 +83,7 @@ internal class StudyPanelSceneStrategyTest {
         assertIs<StudyPanelScene>(scene)
         assertEquals(readerEntry.contentKey, scene.key)
         assertEquals(listOf(readerEntry, chapterStudyEntry), scene.entries)
-        assertEquals(listOf(homeEntry, readerEntry), scene.previousEntries)
+        assertEquals(listOf(homeEntry), scene.previousEntries)
     }
 
     @Test

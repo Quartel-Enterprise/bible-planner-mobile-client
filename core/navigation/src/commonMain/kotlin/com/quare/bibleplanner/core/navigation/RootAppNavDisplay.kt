@@ -99,7 +99,16 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
-        val onNavigateBack: () -> Unit = { backStackController.navigateBack(isWide) }
+        val displayedEntryCount = displayBackStack.size
+        /*
+         * NavDisplay calls back once for every entry the scene leaves, and navigateBack already
+         * leaves a study together with the entry it sits beside, so the calls after it pop nothing.
+         */
+        val onNavigateBack: () -> Unit = {
+            if (backStack.size >= displayedEntryCount) {
+                backStackController.navigateBack(isWide)
+            }
+        }
         val navigationTransitions = rememberNavigationTransitions()
         NavigationCommandCollector(
             backStackController = backStackController,
@@ -167,7 +176,12 @@ private fun NavigationCommandCollector(
     ActionCollector(navigator.commands) { command ->
         when (command) {
             is NavigationCommand.Navigate -> backStackController.navigate(command.route)
-            is NavigationCommand.NavigateReplacingTop -> backStackController.navigateReplacingTop(command.route)
+
+            is NavigationCommand.NavigateReplacingTop -> backStackController.navigateReplacingTop(
+                route = command.route,
+                isWide = currentIsWide,
+            )
+
             NavigationCommand.NavigateBack -> backStackController.navigateBack(currentIsWide)
         }
     }

@@ -85,6 +85,11 @@ internal fun ReadNarrowScreen(
         listState = listState,
         leadingItemCount = leadingItemCount,
     )
+    VisibleChapterEffect(
+        visibleChapter = visibleChapter,
+        header = state.header,
+        onEvent = onEvent,
+    )
     ReachedEndEffect(
         listState = listState,
         chapters = chapters,
@@ -112,6 +117,7 @@ internal fun ReadNarrowScreen(
                     visibleChapter = visibleChapter,
                     isTitleVisible = isTitleVisible,
                     isOpeningChapterStudy = state.isOpeningChapterStudy,
+                    isChapterStudyBeside = state.isChapterStudyBeside,
                     topAppBarScrollBehavior = topBarScrollBehavior,
                     onEvent = onEvent,
                 )
@@ -181,6 +187,7 @@ internal fun ReadNarrowScreen(
                                     chapter = chapter,
                                     header = state.header,
                                     settings = state.settings,
+                                    isChapterStudyBeside = state.isChapterStudyBeside,
                                     focusedVerseNumber = null,
                                     verseFlash = verseFlash,
                                     onEvent = onEvent,

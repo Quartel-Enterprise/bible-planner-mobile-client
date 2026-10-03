@@ -3,7 +3,7 @@
     "common": [
       "New: AI chapter study. While reading a chapter, tap \"Study\" at the top of the screen, or \"Study this chapter\" at the end of the text, to see a summary, the context, the chapter's outline, its people and places, the key verse, cross references and questions to reflect on. Some studies are free; with Pro, they are unlimited.",
       "In the chapter study, tap a part of the outline to go back to the text right at that passage, a cross reference to open it, \"Share\" to send the key verse, or \"Chat\" to ask the AI about the chapter.",
-      "On tablets and with your phone turned sideways, the chapter study opens beside the text: the chapter stays on the left and the study on the right, and tapping a part of the outline highlights that passage without closing the study."
+      "On tablets and with your phone turned sideways, the chapter study always sits beside the text: the chapter on the left and its study on the right, following the chapter you're reading. If the study hasn't been generated yet, just tap \"Generate\"; tapping a part of the outline highlights that passage without closing the study."
     ]
   },
   "2.9.2": {

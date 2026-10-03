@@ -83,7 +83,9 @@ internal class ReadUiTest {
 
     private val userEvents: List<ReadUiEvent>
         get() = events.filterNot { event ->
-            event == ReadUiEvent.OnReachedStart || event == ReadUiEvent.OnReachedEnd
+            event == ReadUiEvent.OnReachedStart ||
+                event == ReadUiEvent.OnReachedEnd ||
+                event is ReadUiEvent.OnVisibleChapterChanged
         }
 
     @Test
@@ -301,6 +303,42 @@ internal class ReadUiTest {
                 actual = userEvents,
             )
         }
+
+    @Test
+    fun `GIVEN the study beside the text WHEN rendered THEN offers no way to open it`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            uiState = loadedUiState.copy(isChapterStudyBeside = true),
+            isWideLayout = true,
+        )
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithText(getString(Res.string.chapter_study_pill)).assertDoesNotExist()
+        onNodeWithText(getString(Res.string.chapter_study_card_title)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `GIVEN a loaded chapter WHEN rendered THEN reports it as the chapter in view`() = runComposeUiTest {
+        // Given
+        prepareScenario(uiState = loadedUiState)
+
+        // When
+        waitForIdle()
+
+        // Then
+        assertEquals(
+            expected = listOf<ReadUiEvent>(
+                ReadUiEvent.OnVisibleChapterChanged(
+                    bookId = BookId.GEN,
+                    chapterNumber = CHAPTER,
+                ),
+            ),
+            actual = events.filterIsInstance<ReadUiEvent.OnVisibleChapterChanged>(),
+        )
+    }
 
     @Test
     fun `GIVEN a wide layout WHEN clicking the study pill THEN emits OnChapterStudyClick from the top bar`() =

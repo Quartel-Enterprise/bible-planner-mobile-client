@@ -166,5 +166,6 @@ internal fun readUiState(
         dayCompletionBanner = null,
         verseFocus = null,
         isOpeningChapterStudy = false,
+        isChapterStudyBeside = false,
     )
 }

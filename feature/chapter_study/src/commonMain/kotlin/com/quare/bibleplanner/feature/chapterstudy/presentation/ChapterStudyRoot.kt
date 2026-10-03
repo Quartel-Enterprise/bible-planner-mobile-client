@@ -28,6 +28,7 @@ fun EntryProviderScope<NavKey>.chapterStudy() {
 
         ChapterStudyScreen(
             uiState = uiState,
+            isBesideReader = isWide,
             onEvent = viewModel::onEvent,
             onNavigateBack = navigator::navigateBack,
         )

@@ -1,33 +1,20 @@
 package com.quare.bibleplanner.feature.daystudy.presentation.component
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_generate
@@ -42,13 +29,9 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardMo
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUiModel
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationError
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
-import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
-import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.component.study.AiStudyErrorContent
-import com.quare.bibleplanner.ui.component.study.AiStudyHeroIcon
+import com.quare.bibleplanner.ui.component.study.AiStudyHeroContent
 import org.jetbrains.compose.resources.stringResource
-
-private val descriptionMaxWidth = 300.dp
 
 @Composable
 internal fun DayStudyPane(
@@ -121,74 +104,17 @@ private fun DayStudyPaneHero(
     modifier: Modifier = Modifier,
 ) {
     val isLocked = card.mode == DayStudyCardMode.LOCKED
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .padding(
-                horizontal = 38.dp,
-                vertical = 40.dp,
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        AiStudyHeroIcon(icon = if (isLocked) Icons.Rounded.Lock else Icons.Rounded.AutoAwesome)
-        VerticalSpacer(20)
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(Res.string.ai_study_title),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-            )
-            CardBadge(card)
-        }
-        VerticalSpacer(10)
-        Text(
-            text = dayStudyCardSubtitle(card),
-            modifier = Modifier.widthIn(max = descriptionMaxWidth),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        VerticalSpacer(24)
-        HeroButton(
-            mode = card.mode,
-            isLoading = isOpening,
-            onClick = onClick,
-        )
-    }
-}
-
-@Composable
-private fun HeroButton(
-    mode: DayStudyCardMode?,
-    isLoading: Boolean,
-    onClick: () -> Unit,
-) {
-    Button(
+    AiStudyHeroContent(
+        icon = if (isLocked) Icons.Rounded.Lock else Icons.Rounded.AutoAwesome,
+        title = stringResource(Res.string.ai_study_title),
+        subtitle = dayStudyCardSubtitle(card),
+        buttonIcon = getHeroButtonIcon(card.mode),
+        buttonLabel = stringResource(heroButtonLabel(card.mode)),
+        isLoading = isOpening,
         onClick = onClick,
-        enabled = !isLoading,
-        modifier = Modifier.height(50.dp),
-        shape = RoundedCornerShape(16.dp),
-    ) {
-        if (isLoading) {
-            AdaptiveCircularProgressIndicator(
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-                color = MaterialTheme.colorScheme.onPrimary,
-                strokeWidth = 2.dp,
-            )
-        } else {
-            Icon(
-                imageVector = getHeroButtonIcon(mode),
-                contentDescription = null,
-                modifier = Modifier.size(ButtonDefaults.IconSize),
-            )
-            HorizontalSpacer(ButtonDefaults.IconSpacing)
-            Text(text = stringResource(heroButtonLabel(mode)))
-        }
-    }
+        modifier = modifier,
+        badge = { CardBadge(card) },
+    )
 }
 
 private fun getHeroButtonIcon(mode: DayStudyCardMode?): ImageVector = when (mode) {

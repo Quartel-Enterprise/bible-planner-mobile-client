@@ -16,15 +16,19 @@ import com.quare.bibleplanner.ui.utils.asStable
 @Composable
 internal fun ChapterStudyScreen(
     uiState: ChapterStudyUiState,
+    isBesideReader: Boolean,
     onEvent: (ChapterStudyUiEvent) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     Scaffold(
         topBar = {
-            ChapterStudyTopBar(
-                uiState = uiState,
-                onNavigateBack = onNavigateBack,
-            )
+            // Beside the reader the chapter is already in sight, and back leaves both panes.
+            if (!isBesideReader) {
+                ChapterStudyTopBar(
+                    uiState = uiState,
+                    onNavigateBack = onNavigateBack,
+                )
+            }
         },
         floatingActionButton = {
             if (uiState.content is ChapterStudyContentUiState.Loaded) {

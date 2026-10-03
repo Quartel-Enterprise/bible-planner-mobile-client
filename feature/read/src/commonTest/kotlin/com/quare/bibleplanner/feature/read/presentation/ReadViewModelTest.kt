@@ -771,6 +771,64 @@ internal class ReadViewModelTest {
     }
 
     @Test
+    fun `GIVEN a wide window WHEN a chapter comes into view THEN shows its study beside the text`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ReadUiEvent.OnWidthClassChanged(isWide = true))
+
+            // When
+            viewModel.onEvent(
+                ReadUiEvent.OnVisibleChapterChanged(
+                    bookId = BookId.EXO,
+                    chapterNumber = 7,
+                ),
+            )
+            viewModel.onEvent(
+                ReadUiEvent.OnVisibleChapterChanged(
+                    bookId = BookId.EXO,
+                    chapterNumber = 8,
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf(7, 8).map { chapterNumber ->
+                    NavigationCommand.Navigate(
+                        ChapterStudyNavRoute(
+                            bookId = "EXO",
+                            chapterNumber = chapterNumber,
+                            isCompanion = true,
+                        ),
+                    )
+                },
+                actual = commands,
+            )
+            assertTrue(viewModel.uiState.value.isChapterStudyBeside)
+        }
+
+    @Test
+    fun `GIVEN a narrow window WHEN a chapter comes into view THEN opens no study`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(ReadUiEvent.OnWidthClassChanged(isWide = false))
+
+        // When
+        viewModel.onEvent(
+            ReadUiEvent.OnVisibleChapterChanged(
+                bookId = BookId.EXO,
+                chapterNumber = 7,
+            ),
+        )
+        runCurrent()
+
+        // Then
+        assertTrue(commands.isEmpty())
+        assertFalse(viewModel.uiState.value.isChapterStudyBeside)
+    }
+
+    @Test
     fun `GIVEN an open chapter study WHEN clicking the study entry THEN opens the study of that chapter`() =
         runTest(testDispatcher) {
             // Given
