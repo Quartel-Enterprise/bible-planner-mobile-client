@@ -9,6 +9,7 @@ class PlatformReleaseNotesMapper(
         Platform.Android -> ANDROID_BUCKET
         Platform.Ios -> IOS_BUCKET
         is Platform.Desktop -> DESKTOP_BUCKET
+        Platform.Web -> WEB_BUCKET
     }
 
     fun mapToPlatformChanges(releaseNotes: Map<String, Map<String, List<String>>>): Map<String, List<String>> =
@@ -22,5 +23,6 @@ class PlatformReleaseNotesMapper(
         private const val ANDROID_BUCKET = "android"
         private const val IOS_BUCKET = "ios"
         private const val DESKTOP_BUCKET = "desktop"
+        private const val WEB_BUCKET = "web"
     }
 }

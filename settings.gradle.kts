@@ -36,6 +36,7 @@ plugins {
 include(":androidApp")
 include(":shared")
 include(":desktopApp")
+include(":webApp")
 include(":ui:theme")
 include(":ui:component")
 include(":ui:icons")

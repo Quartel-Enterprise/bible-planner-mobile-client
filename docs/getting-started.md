@@ -81,6 +81,24 @@ Use the run configuration in your IDE's run widget, or run it from the terminal:
   .\gradlew.bat :desktopApp:run
   ```
 
+## Build and run the web app
+
+The web app is the same Compose Multiplatform UI compiled to Kotlin/Wasm. Run it from the terminal:
+
+- on macOS/Linux
+  ```shell
+  ./gradlew :webApp:wasmJsBrowserDevelopmentRun
+  ```
+- on Windows
+  ```shell
+  .\gradlew.bat :webApp:wasmJsBrowserDevelopmentRun
+  ```
+
+Then open http://localhost:8080. Swap `Development` for `Production` (`wasmJsBrowserProductionRun`)
+to run the optimized build, which loads much faster. The local database lives in the browser's
+storage for that origin, and only one tab can hold it at a time: keep a single tab open, and clear
+it from DevTools → Application → Storage → Clear site data to start over.
+
 ## Build and run the iOS app
 
 Use the run configuration in your IDE's run widget, or open [/iosApp](../iosApp) in Xcode and run it

@@ -30,13 +30,24 @@ kotlin {
             implementation(libs.koin.android)
         }
 
-        jvmMain.dependencies {
-            implementation(projects.core.utils)
-            implementation(project.dependencies.platform(libs.supabase.bom))
-            implementation(libs.supabase.functions)
-            implementation(libs.ktor.client.core)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kermit)
+        val nonMobileMain = create("nonMobileMain") {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation(projects.core.utils)
+                implementation(project.dependencies.platform(libs.supabase.bom))
+                implementation(libs.supabase.functions)
+                implementation(libs.ktor.client.core)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kermit)
+            }
+        }
+
+        jvmMain {
+            dependsOn(nonMobileMain)
+        }
+
+        wasmJsMain {
+            dependsOn(nonMobileMain)
         }
 
         commonTest.dependencies {

@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             // Core
             implementation(projects.core.model)
+            implementation(projects.core.utils)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.core)
@@ -39,7 +40,12 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(libs.androidx.sqlite.bundled)
-            implementation(projects.core.utils)
+        }
+
+        wasmJsMain.dependencies {
+            implementation(libs.androidx.sqlite.web)
+            implementation(libs.kotlinx.browser)
+            implementation(npm("bibleplanner-sqlite-worker", layout.projectDirectory.dir("web-worker").asFile))
         }
 
         jvmTest.dependencies {
@@ -76,4 +82,5 @@ dependencies {
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
+    add("kspWasmJs", libs.androidx.room.compiler)
 }

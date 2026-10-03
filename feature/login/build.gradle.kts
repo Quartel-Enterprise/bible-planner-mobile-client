@@ -24,6 +24,9 @@ kotlin {
             implementation(projects.core.preferences.themeSelection)
             implementation(projects.ui.theme)
         }
+        wasmJsMain.dependencies {
+            implementation(libs.kotlinx.browser)
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)

@@ -6,8 +6,7 @@ import com.quare.bibleplanner.core.books.data.mapper.FileNameToBookIdMapper
 import com.quare.bibleplanner.core.model.book.BookChapterModel
 import com.quare.bibleplanner.core.model.book.BookDataModel
 import com.quare.bibleplanner.core.model.book.VerseModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import com.quare.bibleplanner.core.utils.ioDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -20,7 +19,7 @@ class BooksLocalDataSource(
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 
-    suspend fun getBooks(): List<BookDataModel> = withContext(Dispatchers.IO) {
+    suspend fun getBooks(): List<BookDataModel> = withContext(ioDispatcher) {
         BibleBooks.fileNames
             .map { fileName ->
                 async {

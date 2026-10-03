@@ -14,7 +14,7 @@ class GetAppStoreLinkUseCase(
         Platform.Android ->
             "https://play.google.com/store/apps/details?id=$ANDROID_PACKAGE_NAME&hl=${getAndroidLocale()}"
 
-        is Platform.Desktop -> DESKTOP_URL
+        is Platform.Desktop, Platform.Web -> WEBSITE_URL
     }
 
     private fun getIosLocale(): String = when (languageProvider.getAppLanguage()) {
@@ -32,6 +32,6 @@ class GetAppStoreLinkUseCase(
     companion object {
         private const val APP_STORE_ID = "id6756151777"
         private const val ANDROID_PACKAGE_NAME = "com.quare.bibleplanner"
-        private const val DESKTOP_URL = "https://bibleplanner.app"
+        private const val WEBSITE_URL = "https://bibleplanner.app"
     }
 }

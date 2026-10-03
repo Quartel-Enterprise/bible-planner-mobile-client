@@ -21,10 +21,11 @@ class RevenueCatHttpClientTest {
     fun setUp() {
         sentRequests = mutableListOf()
         httpClient = createRevenueCatHttpClient(
-            DesktopBillingConfig(
+            config = DesktopBillingConfig(
                 apiKey = "rc-web-key",
                 purchaseLink = "",
             ),
+            engine = createBillingHttpEngine(),
         )
         httpClient.sendPipeline.intercept(HttpSendPipeline.Engine) {
             sentRequests += context

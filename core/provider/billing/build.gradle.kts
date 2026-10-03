@@ -109,15 +109,32 @@ kotlin {
             dependsOn(iosMain.get())
         }
 
-        jvmMain.dependencies {
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.cio)
-            implementation(libs.ktor.client.contentNegotiation)
-            implementation(libs.ktor.serialization.kotlinxJson)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kermit)
-            implementation(projects.core.utils)
-            implementation(projects.core.provider.platform)
+        val nonMobileMain = create("nonMobileMain") {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.contentNegotiation)
+                implementation(libs.ktor.serialization.kotlinxJson)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kermit)
+                implementation(projects.core.utils)
+                implementation(projects.core.provider.platform)
+            }
+        }
+
+        jvmMain {
+            dependsOn(nonMobileMain)
+            dependencies {
+                implementation(libs.ktor.client.cio)
+            }
+        }
+
+        wasmJsMain {
+            dependsOn(nonMobileMain)
+            dependencies {
+                implementation(libs.ktor.client.js)
+                implementation(libs.kotlinx.browser)
+            }
         }
     }
 }

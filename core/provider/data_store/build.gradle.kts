@@ -30,5 +30,8 @@ kotlin {
         jvmMain.dependencies {
             implementation(projects.core.utils)
         }
+        wasmJsMain.dependencies {
+            implementation(libs.datastore.core.okio)
+        }
     }
 }

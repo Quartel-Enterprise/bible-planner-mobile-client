@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.core.date.di
 
+import com.quare.bibleplanner.core.date.ConvertTimestampToDatePickerInitialDateUseCase
+import com.quare.bibleplanner.core.date.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
 import com.quare.bibleplanner.core.date.HasCooldownElapsedUseCase
 import com.quare.bibleplanner.core.date.LocalDateTimeProvider
@@ -14,6 +16,8 @@ val dateModule = module {
     factoryOf(::LocalDateTimeProviderImpl).bind<LocalDateTimeProvider>()
     factoryOf(::GetFinalTimestampAfterEditionUseCase)
     factoryOf(::HasCooldownElapsedUseCase)
+    factoryOf(::ConvertUtcDateToLocalDateUseCase)
+    factoryOf(::ConvertTimestampToDatePickerInitialDateUseCase)
 }
 
 internal expect val trustedTimeModule: Module

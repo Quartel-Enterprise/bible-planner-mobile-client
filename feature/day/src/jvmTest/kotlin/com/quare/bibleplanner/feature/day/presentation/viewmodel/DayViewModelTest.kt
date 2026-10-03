@@ -8,6 +8,8 @@ import bibleplanner.feature.day.generated.resources.Res
 import bibleplanner.feature.day.generated.resources.failed_to_toggle_chapter_message
 import bibleplanner.feature.day.generated.resources.nothing_to_delete_message
 import com.quare.bibleplanner.core.books.domain.usecase.GetBooksFlowUseCase
+import com.quare.bibleplanner.core.date.ConvertTimestampToDatePickerInitialDateUseCase
+import com.quare.bibleplanner.core.date.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.core.date.GetFinalTimestampAfterEditionUseCase
 import com.quare.bibleplanner.core.daystudy.testing.FakeDayStudyGenerationCoordinator
 import com.quare.bibleplanner.core.model.NavigationCommand
@@ -52,8 +54,6 @@ import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.DayUseCases
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import com.quare.bibleplanner.feature.day.domain.usecase.CalculateAllChaptersReadStatusUseCase
-import com.quare.bibleplanner.feature.day.domain.usecase.ConvertTimestampToDatePickerInitialDateUseCase
-import com.quare.bibleplanner.feature.day.domain.usecase.ConvertUtcDateToLocalDateUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.GetDayDetailsUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.IsChapterReadStatusUseCase
 import com.quare.bibleplanner.feature.day.domain.usecase.ShouldBlockAddNotesUseCase

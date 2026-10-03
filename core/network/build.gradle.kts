@@ -10,6 +10,8 @@ kotlin {
     jvm()
     sourceSets {
         commonMain.dependencies {
+            api(projects.core.utils)
+
             // Koin
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

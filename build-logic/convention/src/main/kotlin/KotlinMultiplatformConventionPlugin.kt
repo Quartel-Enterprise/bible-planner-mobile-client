@@ -5,6 +5,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KotlinMultiplatformConventionPlugin : Plugin<Project> {
@@ -34,6 +35,11 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                 iosTarget.binaries.framework {
                     baseName = path.substring(1).replace(':', '-')
                 }
+            }
+
+            @OptIn(ExperimentalWasmDsl::class)
+            wasmJs {
+                browser()
             }
 
             // remove expect actual warning

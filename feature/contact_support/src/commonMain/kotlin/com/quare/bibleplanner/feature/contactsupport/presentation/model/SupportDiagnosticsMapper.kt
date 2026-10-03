@@ -6,6 +6,7 @@ import bibleplanner.feature.contact_support.generated.resources.diagnostics_subs
 import bibleplanner.feature.contact_support.generated.resources.platform_android
 import bibleplanner.feature.contact_support.generated.resources.platform_desktop
 import bibleplanner.feature.contact_support.generated.resources.platform_ios
+import bibleplanner.feature.contact_support.generated.resources.platform_web
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.platform.Platform
 import org.jetbrains.compose.resources.StringResource
@@ -14,6 +15,7 @@ internal fun Platform.toStringResource(): StringResource = when (this) {
     Platform.Android -> Res.string.platform_android
     Platform.Ios -> Res.string.platform_ios
     is Platform.Desktop -> Res.string.platform_desktop
+    Platform.Web -> Res.string.platform_web
 }
 
 internal fun SubscriptionStatus.toStringResource(): StringResource = when (this) {
