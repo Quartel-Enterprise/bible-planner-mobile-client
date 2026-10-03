@@ -4,7 +4,7 @@ import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
 
 fun interface ShowUpdatePrompt {
     suspend operator fun invoke(
-        availability: UpdateAvailability.Available,
+        availability: UpdateAvailability.Pending,
         source: String,
     )
 }
