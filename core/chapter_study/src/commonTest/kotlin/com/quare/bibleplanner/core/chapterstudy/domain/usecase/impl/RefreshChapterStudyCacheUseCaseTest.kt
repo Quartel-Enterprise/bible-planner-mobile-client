@@ -32,6 +32,7 @@ internal class RefreshChapterStudyCacheUseCaseTest {
                 usedCount = 1,
                 isUnlocked = true,
                 cacheToken = "token",
+                rewardedRemainingToday = 2,
             ),
         )
 

@@ -92,6 +92,7 @@ internal fun ResponsiveContentScope.profileScreenPortraitLayout(
     item { VerticalSpacer() }
     responsiveItem {
         LegalSection(
+            isPrivacyOptionsVisible = state.isPrivacyOptionsVisible,
             modifier = Modifier.fillMaxWidth(),
             onEvent = onEvent,
         )

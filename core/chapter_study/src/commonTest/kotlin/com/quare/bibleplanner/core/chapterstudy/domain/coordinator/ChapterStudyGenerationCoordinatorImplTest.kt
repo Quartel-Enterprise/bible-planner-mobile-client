@@ -24,6 +24,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
@@ -52,7 +53,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
         prepareScenario(neverCompletes = true)
 
         // When
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
 
         // Then
         assertEquals(
@@ -68,6 +69,49 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     }
 
     @Test
+    fun `GIVEN a rewarded unlock WHEN it completes THEN asks for a rewarded study and leaves no reward unserved`() =
+        runTest {
+            // Given
+            prepareScenario(events = listOf(ChapterStudyGenerationEventModel.Completed(study)))
+
+            // When
+            coordinator.start(target, isRewarded = true)
+            runCurrent()
+
+            // Then
+            assertEquals(listOf(true), repository.generationRewardFlags)
+            assertFalse(coordinator.hasUnservedReward(target))
+            assertEquals(true, trackedEvents.single().second["is_rewarded"])
+        }
+
+    @Test
+    fun `GIVEN a rewarded unlock WHEN the generation fails THEN the reward stays unserved for a free retry`() =
+        runTest {
+            // Given
+            prepareScenario(eventsError = IllegalStateException("boom"))
+
+            // When
+            coordinator.start(target, isRewarded = true)
+            runCurrent()
+
+            // Then
+            assertTrue(coordinator.hasUnservedReward(target))
+        }
+
+    @Test
+    fun `GIVEN a rewarded unlock WHEN the server refuses it THEN the reward is dropped`() = runTest {
+        // Given
+        prepareScenario(eventsError = LimitReachedException())
+
+        // When
+        coordinator.start(target, isRewarded = true)
+        runCurrent()
+
+        // Then
+        assertFalse(coordinator.hasUnservedReward(target))
+    }
+
+    @Test
     fun `GIVEN reported phases WHEN generating THEN the job shows the latest phase`() = runTest {
         // Given
         prepareScenario(
@@ -79,7 +123,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
         )
 
         // When
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // Then
@@ -107,7 +151,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
         )
 
         // When
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // Then
@@ -132,7 +176,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
         )
 
         // When
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // Then
@@ -142,7 +186,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
             actual = name,
         )
         assertEquals(
-            expected = setOf("book_id", "chapter_number", "is_pro", "duration_ms"),
+            expected = setOf("book_id", "chapter_number", "is_pro", "is_rewarded", "duration_ms"),
             actual = params.keys,
         )
         assertEquals(
@@ -166,7 +210,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
         prepareScenario(eventsError = IllegalStateException("boom"))
 
         // When
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // Then
@@ -209,7 +253,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
         prepareScenario(eventsError = LimitReachedException())
 
         // When
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // Then
@@ -240,7 +284,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
             events = listOf(ChapterStudyGenerationEventModel.PhaseChanged(ChapterStudyPhaseModel.READING)),
             neverCompletes = true,
         )
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // When
@@ -277,7 +321,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
         runTest {
             // Given
             prepareScenario(neverCompletes = true)
-            coordinator.start(target)
+            coordinator.start(target, isRewarded = false)
             runCurrent()
 
             // When
@@ -301,7 +345,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     fun `GIVEN a finished generation WHEN the device goes offline THEN the job stays done`() = runTest {
         // Given
         prepareScenario(events = listOf(ChapterStudyGenerationEventModel.Completed(study)))
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // When
@@ -325,11 +369,11 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     fun `GIVEN a generation in flight WHEN starting the same chapter again THEN only one generation runs`() = runTest {
         // Given
         prepareScenario(neverCompletes = true)
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // When
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // Then
@@ -347,13 +391,13 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     fun `GIVEN a failed generation WHEN starting the same chapter again THEN it generates again`() = runTest {
         // Given
         prepareScenario(eventsError = IllegalStateException("boom"))
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
         repository.eventsError = null
         repository.events = listOf(ChapterStudyGenerationEventModel.Completed(study))
 
         // When
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // Then
@@ -377,8 +421,8 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     fun `GIVEN two jobs WHEN acknowledging one THEN only that job is removed`() = runTest {
         // Given
         prepareScenario(neverCompletes = true)
-        coordinator.start(target)
-        coordinator.start(otherTarget)
+        coordinator.start(target, isRewarded = false)
+        coordinator.start(otherTarget, isRewarded = false)
 
         // When
         coordinator.acknowledge(target)
@@ -394,8 +438,8 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     fun `GIVEN two generating jobs WHEN counting THEN the excluded chapter is not counted`() = runTest {
         // Given
         prepareScenario(neverCompletes = true)
-        coordinator.start(target)
-        coordinator.start(otherTarget)
+        coordinator.start(target, isRewarded = false)
+        coordinator.start(otherTarget, isRewarded = false)
 
         // When
         val countWithoutTarget = coordinator.getGeneratingCount(excluding = target)
@@ -421,7 +465,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     fun `GIVEN a finished job WHEN counting THEN it is not counted as generating`() = runTest {
         // Given
         prepareScenario(events = listOf(ChapterStudyGenerationEventModel.Completed(study)))
-        coordinator.start(target)
+        coordinator.start(target, isRewarded = false)
         runCurrent()
 
         // When

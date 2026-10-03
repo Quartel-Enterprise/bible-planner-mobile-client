@@ -51,7 +51,10 @@ internal class GenerateChapterStudyUseCaseTest {
     @Test
     fun `WHEN generating THEN asks the repository for the selected version and the app language`() = runTest {
         // When
-        useCase(target).toList()
+        useCase(
+            target = target,
+            isRewarded = false,
+        ).toList()
 
         // Then
         assertEquals(
@@ -70,6 +73,21 @@ internal class GenerateChapterStudyUseCaseTest {
     }
 
     @Test
+    fun `GIVEN a rewarded unlock WHEN generating THEN asks the repository for a rewarded study`() = runTest {
+        // When
+        useCase(
+            target = target,
+            isRewarded = true,
+        ).toList()
+
+        // Then
+        assertEquals(
+            expected = listOf(true),
+            actual = repository.generationRewardFlags,
+        )
+    }
+
+    @Test
     fun `GIVEN repository events WHEN generating THEN emits them in order`() = runTest {
         // Given
         repository.events = listOf(
@@ -79,7 +97,10 @@ internal class GenerateChapterStudyUseCaseTest {
         )
 
         // When
-        val emitted = useCase(target).toList()
+        val emitted = useCase(
+            target = target,
+            isRewarded = false,
+        ).toList()
 
         // Then
         assertEquals(
@@ -94,6 +115,11 @@ internal class GenerateChapterStudyUseCaseTest {
         repository.eventsError = LimitReachedException()
 
         // When & Then
-        assertFailsWith<LimitReachedException> { useCase(target).toList() }
+        assertFailsWith<LimitReachedException> {
+            useCase(
+                target = target,
+                isRewarded = false,
+            ).toList()
+        }
     }
 }

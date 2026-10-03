@@ -33,14 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.day_study.generated.resources.Res
 import bibleplanner.feature.day_study.generated.resources.ai_study_exhausted_subtitle
-import bibleplanner.feature.day_study.generated.resources.ai_study_generate
 import bibleplanner.feature.day_study.generated.resources.ai_study_generate_hint
 import bibleplanner.feature.day_study.generated.resources.ai_study_generate_hint_pro
 import bibleplanner.feature.day_study.generated.resources.ai_study_generated
 import bibleplanner.feature.day_study.generated.resources.ai_study_generating_card_title
 import bibleplanner.feature.day_study.generated.resources.ai_study_pro_badge
 import bibleplanner.feature.day_study.generated.resources.ai_study_quota_free
-import bibleplanner.feature.day_study.generated.resources.ai_study_subscribe
 import bibleplanner.feature.day_study.generated.resources.ai_study_title
 import bibleplanner.feature.day_study.generated.resources.ai_study_view
 import bibleplanner.feature.day_study.generated.resources.ai_study_view_hint
@@ -147,7 +145,7 @@ private fun IdleCardContent(
             )
         }
         CardButton(
-            mode = card.mode,
+            card = card,
             isLoading = isOpening,
             onClick = onClick,
         )
@@ -314,7 +312,7 @@ internal fun CardBadge(card: DayStudyCardUiModel) {
 
 @Composable
 private fun CardButton(
-    mode: DayStudyCardMode?,
+    card: DayStudyCardUiModel,
     isLoading: Boolean,
     onClick: () -> Unit,
 ) {
@@ -333,19 +331,7 @@ private fun CardButton(
                 strokeWidth = 2.dp,
             )
         } else {
-            Text(
-                text = stringResource(
-                    when (mode) {
-                        null,
-                        DayStudyCardMode.GENERATE,
-                        -> Res.string.ai_study_generate
-
-                        DayStudyCardMode.VIEW -> Res.string.ai_study_view
-
-                        DayStudyCardMode.LOCKED -> Res.string.ai_study_subscribe
-                    },
-                ),
-            )
+            Text(text = stringResource(card.toButtonLabel()))
         }
     }
 }

@@ -29,6 +29,7 @@ kotlin {
             export(projects.core.remoteConfig)
             export(projects.core.provider.analytics)
             export(projects.core.provider.crashlytics)
+            export(projects.core.provider.ads)
         }
     }
 
@@ -96,6 +97,8 @@ kotlin {
             api(projects.core.provider.billing)
             api(projects.core.provider.analytics)
             api(projects.core.provider.crashlytics)
+            api(projects.core.provider.ads)
+            implementation(projects.core.studyUnlock)
             api(projects.core.utils)
             implementation(projects.core.devices)
 

@@ -20,6 +20,7 @@ The generation stream emits `DayStudyGenerationEventModel.Completed` and the coo
 | `week_number` | int | `12` | 1-based week within the plan |
 | `day_number` | int | `3` | 1-based day within the week |
 | `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
+| `is_rewarded` | boolean | `false` | Whether this generation was unlocked with a rewarded video (the app sent `reward: true`) |
 
 ## Notes
 

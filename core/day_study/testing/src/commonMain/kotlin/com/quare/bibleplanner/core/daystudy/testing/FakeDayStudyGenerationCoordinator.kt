@@ -15,6 +15,7 @@ class FakeDayStudyGenerationCoordinator(
     val pendingOpenKeyFlow = MutableStateFlow(pendingOpenKey)
     val dismissedKeysFlow = MutableStateFlow<Set<String>>(emptySet())
     val startedJobs = mutableListOf<Triple<List<PassageModel>, DayNavRoute, String>>()
+    val startedRewardFlags = mutableListOf<Boolean>()
     val activatedKeys = mutableListOf<String>()
     val clearedKeys = mutableListOf<String>()
     val requestedOpenKeys = mutableListOf<String>()
@@ -22,6 +23,7 @@ class FakeDayStudyGenerationCoordinator(
     val dismissedFromCardKeys = mutableListOf<String>()
     val acknowledgedKeys = mutableListOf<String>()
     var generatingCount = 0
+    val unservedRewardKeys = mutableSetOf<String>()
 
     override val jobs: StateFlow<List<DayStudyGenerationJob>> = jobsFlow
     override val activeKey: StateFlow<String?> = activeKeyFlow
@@ -38,8 +40,10 @@ class FakeDayStudyGenerationCoordinator(
         passages: List<PassageModel>,
         dayRoute: DayNavRoute,
         label: String,
+        isRewarded: Boolean,
     ): String {
         startedJobs += Triple(passages, dayRoute, label)
+        startedRewardFlags += isRewarded
         return keyOf(dayRoute)
     }
 
@@ -69,6 +73,8 @@ class FakeDayStudyGenerationCoordinator(
     }
 
     override fun getGeneratingCount(excludingKey: String?): Int = generatingCount
+
+    override fun hasUnservedReward(key: String): Boolean = key in unservedRewardKeys
 
     private companion object {
         const val KEY_SEPARATOR = "|"

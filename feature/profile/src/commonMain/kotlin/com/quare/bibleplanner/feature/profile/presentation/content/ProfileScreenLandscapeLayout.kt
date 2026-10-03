@@ -109,6 +109,7 @@ internal fun ResponsiveContentScope.profileScreenLandscapeLayout(
                         LogoutButton(onClick = { onEvent(ProfileUiEvent.OnLogoutClick) })
                     }
                     LegalSection(
+                        isPrivacyOptionsVisible = state.isPrivacyOptionsVisible,
                         onEvent = onEvent,
                     )
                     CurrentAppVersionText(appVersion = state.appVersion)

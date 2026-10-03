@@ -28,6 +28,7 @@ import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.Stud
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.profile.domain.model.AvatarSource
 import com.quare.bibleplanner.core.profile.domain.model.UserProfile
+import com.quare.bibleplanner.core.provider.ads.testing.FakeAdsConsentService
 import com.quare.bibleplanner.core.provider.billing.domain.model.SubscriptionStatus
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.room.entity.BibleVersionEntity
@@ -63,6 +64,10 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 internal class ProfileUiStateFactoryTest {
+    private val adsConsentService = FakeAdsConsentService(
+        isPrivacyOptionsRequired = false,
+        canRequestAds = true,
+    )
     private val selectedVersion = VersionModel(
         id = "NVI",
         name = "Nova Versão Internacional",
@@ -225,6 +230,26 @@ internal class ProfileUiStateFactoryTest {
             actual = states.last().annotationsSummary,
         )
     }
+
+    @Test
+    fun `GIVEN ads consent that requires privacy options WHEN observing THEN shows the privacy options entry`() =
+        runTest {
+            // Given
+            prepareScenario(
+                isInstagramVisible = false,
+                isWebAppEnabled = false,
+                subscriptionStatus = SubscriptionStatus.Free,
+            )
+            runCurrent()
+
+            // When
+            adsConsentService.isPrivacyOptionsRequiredFlow.value = true
+            runCurrent()
+
+            // Then
+            assertEquals(expected = false, actual = states.first().isPrivacyOptionsVisible)
+            assertEquals(expected = true, actual = states.last().isPrivacyOptionsVisible)
+        }
 
     @Test
     fun `GIVEN every source emitted WHEN observing THEN loads every section`() = runTest {
@@ -674,6 +699,7 @@ internal class ProfileUiStateFactoryTest {
                 flowOf(annotatedPassages.filter { it.chapter.bibleVersionId == versionId })
             },
             observeVersionAnnotationCounts = { flowOf(versionCounts) },
+            adsConsentService = adsConsentService,
             platform = platform,
         )
         states = mutableListOf<ProfileUiState>().also { collected ->

@@ -23,6 +23,7 @@ internal class DayStudyStatusMapperTest {
             freeLimit = 3,
             isPro = false,
             clientCacheToken = "token",
+            rewardedRemainingToday = 2,
         )
 
         // When
@@ -35,6 +36,7 @@ internal class DayStudyStatusMapperTest {
                 usedCount = 2,
                 isUnlocked = true,
                 cacheToken = "token",
+                rewardedRemainingToday = 2,
             ),
             status,
         )

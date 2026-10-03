@@ -20,11 +20,15 @@ import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
+import com.quare.bibleplanner.core.model.route.PaywallEntrySource
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ShareVerseNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
 import com.quare.bibleplanner.feature.chapterstudy.domain.usecase.ChapterStudyUseCases
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyContentUiState
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyHeroUiModel
@@ -50,6 +54,8 @@ import kotlin.test.assertNull
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChapterStudyViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
+    private val studyUnlockResultStore = StudyUnlockResultStore()
+    private var isRewardedUnlockOffered = false
     private val target = ChapterStudyTargetModel(
         bookId = BookId.GEN,
         chapterNumber = 3,
@@ -66,6 +72,7 @@ internal class ChapterStudyViewModelTest {
         freeLimit = 3,
         remainingFree = 2,
         isUnlocked = false,
+        rewardedRemainingToday = 0,
     )
     private val usedUpQuota = freeQuota.copy(remainingFree = 0)
     private val commands = mutableListOf<NavigationCommand>()
@@ -143,7 +150,9 @@ internal class ChapterStudyViewModelTest {
         assertEquals(expected = listOf(target), actual = coordinator.startedTargets)
         assertEquals(expected = emptyList(), actual = refreshedTargets)
         assertEquals(
-            expected = listOf("chapter_study_generation_started" to targetParams + ("is_pro" to false)),
+            expected = listOf(
+                "chapter_study_generation_started" to targetParams + ("is_pro" to false) + ("is_rewarded" to false),
+            ),
             actual = trackedEvents,
         )
     }
@@ -313,6 +322,7 @@ internal class ChapterStudyViewModelTest {
                     hero = ChapterStudyHeroUiModel(
                         isPro = false,
                         quota = freeQuota,
+                        isRewardedUnlockOffered = false,
                     ),
                     isStarting = false,
                 ),
@@ -407,6 +417,112 @@ internal class ChapterStudyViewModelTest {
         }
 
     @Test
+    fun `GIVEN a rewarded video on offer WHEN generating with the free studies used up THEN opens the unlock sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            isRewardedUnlockOffered = true
+            prepareScenario(
+                isCompanion = true,
+                quota = usedUpQuota.copy(rewardedRemainingToday = 2),
+            )
+            settle()
+
+            // When
+            viewModel.onEvent(ChapterStudyUiEvent.OnGenerateClick)
+            settle()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        StudyUnlockNavRoute(
+                            surface = StudyUnlockSurface.CHAPTER_STUDY,
+                            paywallSource = PaywallEntrySource.CHAPTER_STUDY,
+                            requestKey = REWARDED_REQUEST_KEY,
+                            rewardedRemainingToday = 2,
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
+    fun `GIVEN the unlock sheet WHEN the reward is earned THEN starts a rewarded generation`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                isCompanion = true,
+                quota = usedUpQuota,
+            )
+            settle()
+
+            // When
+            studyUnlockResultStore.publishEarned(REWARDED_REQUEST_KEY)
+            settle()
+
+            // Then
+            assertEquals(expected = listOf(target), actual = coordinator.startedTargets)
+            assertEquals(expected = listOf(true), actual = coordinator.startedRewardFlags)
+        }
+
+    @Test
+    fun `GIVEN an unserved reward WHEN generating the locked study THEN retries it without another video`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                isCompanion = true,
+                quota = usedUpQuota,
+            )
+            coordinator.unservedRewardTargets += target
+            settle()
+
+            // When
+            viewModel.onEvent(ChapterStudyUiEvent.OnGenerateClick)
+            settle()
+
+            // Then
+            assertEquals(expected = listOf(true), actual = coordinator.startedRewardFlags)
+            assertEquals(expected = emptyList(), actual = commands)
+        }
+
+    @Test
+    fun `GIVEN a rewarded video on offer WHEN a running generation hits the free limit THEN opens the unlock sheet`() =
+        runTest(testDispatcher) {
+            // Given
+            isRewardedUnlockOffered = true
+            prepareScenario(quota = usedUpQuota.copy(rewardedRemainingToday = 1))
+            settle()
+
+            // When
+            coordinator.jobsFlow.value = listOf(
+                job(
+                    phase = null,
+                    status = ChapterStudyGenerationStatus.Failed(
+                        isLimitReached = true,
+                        isOffline = false,
+                    ),
+                ),
+            )
+            settle()
+
+            // Then
+            assertEquals(
+                expected = listOf<NavigationCommand>(
+                    NavigationCommand.Navigate(
+                        StudyUnlockNavRoute(
+                            surface = StudyUnlockSurface.CHAPTER_STUDY,
+                            paywallSource = PaywallEntrySource.CHAPTER_STUDY,
+                            requestKey = REWARDED_REQUEST_KEY,
+                            rewardedRemainingToday = 1,
+                        ),
+                    ),
+                ),
+                actual = commands,
+            )
+        }
+
+    @Test
     fun `GIVEN access refused for the limit WHEN generating THEN opens the Pro teaser`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
@@ -463,6 +579,7 @@ internal class ChapterStudyViewModelTest {
                     hero = ChapterStudyHeroUiModel(
                         isPro = false,
                         quota = usedUpQuota,
+                        isRewardedUnlockOffered = false,
                     ),
                     isStarting = false,
                 ),
@@ -508,7 +625,7 @@ internal class ChapterStudyViewModelTest {
         assertEquals(
             expected = listOf(
                 "chapter_study_retry_clicked" to targetParams,
-                "chapter_study_generation_started" to targetParams + ("is_pro" to false),
+                "chapter_study_generation_started" to targetParams + ("is_pro" to false) + ("is_rewarded" to false),
             ),
             actual = trackedEvents,
         )
@@ -736,9 +853,11 @@ internal class ChapterStudyViewModelTest {
                     access
                 },
                 getQuota = { quota },
+                prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
             ),
             generationCoordinator = coordinator,
             pendingVerseFocusStore = pendingVerseFocusStore,
+            studyUnlockResultStore = studyUnlockResultStore,
             navigator = navigator,
             route = ChapterStudyNavRoute(
                 bookId = "GEN",
@@ -751,6 +870,7 @@ internal class ChapterStudyViewModelTest {
     }
 
     private companion object {
+        const val REWARDED_REQUEST_KEY = "chapter_study|GEN|3"
         const val KEY_VERSE_TEXT = "I will put hostility between you and the woman."
     }
 }

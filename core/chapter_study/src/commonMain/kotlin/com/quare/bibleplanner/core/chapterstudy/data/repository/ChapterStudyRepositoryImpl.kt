@@ -34,6 +34,7 @@ internal class ChapterStudyRepositoryImpl(
     override fun generateChapterStudy(
         chapter: ChapterRef,
         languageCode: String,
+        isRewarded: Boolean,
     ): Flow<ChapterStudyGenerationEventModel> = flow {
         val cacheKey = cacheKeyFactory.create(
             chapter = chapter,
@@ -42,6 +43,7 @@ internal class ChapterStudyRepositoryImpl(
         val request = requestMapper.map(
             chapter = chapter,
             languageCode = languageCode,
+            isRewarded = isRewarded,
         )
         remoteDataSource.streamChapterStudy(request).collect { event ->
             emitStreamEvent(
@@ -58,6 +60,7 @@ internal class ChapterStudyRepositoryImpl(
         val request = requestMapper.map(
             chapter = chapter,
             languageCode = languageCode,
+            isRewarded = false,
         )
         val status = remoteDataSource
             .fetchStatus(request)

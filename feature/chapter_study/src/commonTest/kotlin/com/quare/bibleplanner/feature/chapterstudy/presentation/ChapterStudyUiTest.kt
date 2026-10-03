@@ -288,6 +288,7 @@ internal class ChapterStudyUiTest {
                 hero = ChapterStudyHeroUiModel(
                     isPro = true,
                     quota = null,
+                    isRewardedUnlockOffered = false,
                 ),
                 isStarting = false,
             ),
@@ -339,7 +340,9 @@ internal class ChapterStudyUiTest {
                     freeLimit = 3,
                     remainingFree = remainingFree,
                     isUnlocked = false,
+                    rewardedRemainingToday = 0,
                 ),
+                isRewardedUnlockOffered = false,
             ),
             isStarting = false,
         )

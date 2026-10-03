@@ -10,6 +10,7 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyQuotaMo
 internal data class ChapterStudyHeroUiModel(
     val isPro: Boolean,
     val quota: ChapterStudyQuotaModel?,
+    val isRewardedUnlockOffered: Boolean,
 ) {
     /** The free studies are used up, so generating this one needs Pro. */
     val isLocked: Boolean

@@ -15,10 +15,12 @@ import bibleplanner.feature.chapter_study.generated.resources.chapter_study_hero
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_pro_badge
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_quota_free
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_subscribe
+import bibleplanner.ui.component.generated.resources.ai_study_unlock
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyHeroUiModel
 import com.quare.bibleplanner.ui.component.study.AiStudyBadge
 import com.quare.bibleplanner.ui.component.study.AiStudyHeroContent
 import org.jetbrains.compose.resources.stringResource
+import bibleplanner.ui.component.generated.resources.Res as ComponentRes
 
 @Composable
 internal fun ChapterStudyHeroContent(
@@ -42,7 +44,11 @@ internal fun ChapterStudyHeroContent(
         },
         buttonIcon = if (hero.isLocked) Icons.Rounded.LockOpen else Icons.Rounded.AutoAwesome,
         buttonLabel = stringResource(
-            if (hero.isLocked) Res.string.chapter_study_subscribe else Res.string.chapter_study_generate,
+            when {
+                !hero.isLocked -> Res.string.chapter_study_generate
+                hero.isRewardedUnlockOffered -> ComponentRes.string.ai_study_unlock
+                else -> Res.string.chapter_study_subscribe
+            },
         ),
         isLoading = isStarting,
         onClick = onClick,

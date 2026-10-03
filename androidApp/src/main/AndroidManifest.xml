@@ -27,6 +27,11 @@
             android:name="google_analytics_automatic_screen_reporting_enabled"
             android:value="false" />
 
+        <!-- AdMob App ID for the rewarded study unlock, set by androidApp/build.gradle.kts. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
         <!-- Compose owns the keyboard inset through Modifier.imePadding(); without adjustResize the
              system pans the whole window as well, stacking a second keyboard's worth of space. -->
         <activity

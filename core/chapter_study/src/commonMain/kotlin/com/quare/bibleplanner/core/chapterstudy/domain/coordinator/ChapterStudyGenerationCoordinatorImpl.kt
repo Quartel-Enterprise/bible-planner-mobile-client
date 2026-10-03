@@ -40,11 +40,16 @@ internal class ChapterStudyGenerationCoordinatorImpl(
     override val jobs: StateFlow<List<ChapterStudyGenerationJob>>
         field = MutableStateFlow<List<ChapterStudyGenerationJob>>(emptyList())
 
+    private val unservedRewardTargets = MutableStateFlow<Set<ChapterStudyTargetModel>>(emptySet())
     private val connectivityPollInterval: Duration = 3.seconds
     private val generationStartMarks: MutableMap<ChapterStudyTargetModel, TimeMark> = mutableMapOf()
 
-    override fun start(target: ChapterStudyTargetModel) {
+    override fun start(
+        target: ChapterStudyTargetModel,
+        isRewarded: Boolean,
+    ) {
         if (isGenerating(target)) return
+        if (isRewarded) unservedRewardTargets.update { it + target }
         generationStartMarks[target] = TimeSource.Monotonic.markNow()
         putJob(
             ChapterStudyGenerationJob(
@@ -54,7 +59,12 @@ internal class ChapterStudyGenerationCoordinatorImpl(
             ),
         )
         applicationScope.launch {
-            val streamJob = launch { runGeneration(target) }
+            val streamJob = launch {
+                runGeneration(
+                    target = target,
+                    isRewarded = isRewarded,
+                )
+            }
             val connectivityWatcher = launch {
                 observeConnectivity().firstOrNull { isOnline -> !isOnline } ?: return@launch
                 streamJob.cancel()
@@ -64,6 +74,7 @@ internal class ChapterStudyGenerationCoordinatorImpl(
             if (streamJob.isCancelled) {
                 failGeneration(
                     target = target,
+                    isRewarded = isRewarded,
                     isLimitReached = false,
                     isOffline = true,
                 )
@@ -79,6 +90,8 @@ internal class ChapterStudyGenerationCoordinatorImpl(
         job.target != excluding && job.status == ChapterStudyGenerationStatus.Generating
     }
 
+    override fun hasUnservedReward(target: ChapterStudyTargetModel): Boolean = target in unservedRewardTargets.value
+
     private fun observeConnectivity(): Flow<Boolean> = merge(
         networkConnectivityObserver.observe(),
         flow {
@@ -89,27 +102,43 @@ internal class ChapterStudyGenerationCoordinatorImpl(
         },
     )
 
-    private suspend fun runGeneration(target: ChapterStudyTargetModel) {
-        suspendRunCatching { collectGeneration(target) }
-            .onFailure { throwable ->
-                failGeneration(
-                    target = target,
-                    isLimitReached = throwable is LimitReachedException,
-                    isOffline = false,
-                )
-            }
+    private suspend fun runGeneration(
+        target: ChapterStudyTargetModel,
+        isRewarded: Boolean,
+    ) {
+        suspendRunCatching {
+            collectGeneration(
+                target = target,
+                isRewarded = isRewarded,
+            )
+        }.onFailure { throwable ->
+            failGeneration(
+                target = target,
+                isRewarded = isRewarded,
+                isLimitReached = throwable is LimitReachedException,
+                isOffline = false,
+            )
+        }
     }
 
-    private suspend fun collectGeneration(target: ChapterStudyTargetModel) {
-        generateChapterStudy(target).collect { event ->
+    private suspend fun collectGeneration(
+        target: ChapterStudyTargetModel,
+        isRewarded: Boolean,
+    ) {
+        generateChapterStudy(
+            target = target,
+            isRewarded = isRewarded,
+        ).collect { event ->
             when (event) {
                 is ChapterStudyGenerationEventModel.PhaseChanged -> updateJob(target) { it.copy(phase = event.phase) }
 
                 is ChapterStudyGenerationEventModel.Completed -> {
+                    unservedRewardTargets.update { it - target }
                     updateJob(target) { it.copy(status = ChapterStudyGenerationStatus.Done(event.study)) }
                     trackGenerationEnd(
                         name = AnalyticsEventNames.CHAPTER_STUDY_GENERATION_COMPLETED,
                         target = target,
+                        isRewarded = isRewarded,
                         reason = null,
                     )
                 }
@@ -119,9 +148,11 @@ internal class ChapterStudyGenerationCoordinatorImpl(
 
     private suspend fun failGeneration(
         target: ChapterStudyTargetModel,
+        isRewarded: Boolean,
         isLimitReached: Boolean,
         isOffline: Boolean,
     ) {
+        if (isLimitReached) unservedRewardTargets.update { it - target }
         updateJob(target) {
             it.copy(
                 status = ChapterStudyGenerationStatus.Failed(
@@ -133,6 +164,7 @@ internal class ChapterStudyGenerationCoordinatorImpl(
         trackGenerationEnd(
             name = AnalyticsEventNames.CHAPTER_STUDY_GENERATION_FAILED,
             target = target,
+            isRewarded = isRewarded,
             reason = when {
                 isLimitReached -> LIMIT_REACHED_REASON
                 isOffline -> OFFLINE_REASON
@@ -158,6 +190,7 @@ internal class ChapterStudyGenerationCoordinatorImpl(
     private suspend fun trackGenerationEnd(
         name: String,
         target: ChapterStudyTargetModel,
+        isRewarded: Boolean,
         reason: String?,
     ) {
         val durationMs = generationStartMarks.remove(target)?.elapsedNow()?.inWholeMilliseconds
@@ -167,6 +200,7 @@ internal class ChapterStudyGenerationCoordinatorImpl(
                 put(AnalyticsParams.BOOK_ID, target.bookId.name)
                 put(AnalyticsParams.CHAPTER_NUMBER, target.chapterNumber)
                 put(AnalyticsParams.IS_PRO, observeIsProUser().first())
+                put(AnalyticsParams.IS_REWARDED, isRewarded)
                 durationMs?.let { put(AnalyticsParams.DURATION_MS, it) }
                 reason?.let { put(AnalyticsParams.REASON, it) }
             },

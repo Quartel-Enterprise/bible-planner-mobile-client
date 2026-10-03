@@ -28,4 +28,5 @@ internal data class ProfileUiState(
     val appVersion: String,
     val isUpdateRowVisible: Boolean,
     val isCheckingForUpdate: Boolean,
+    val isPrivacyOptionsVisible: Boolean,
 )

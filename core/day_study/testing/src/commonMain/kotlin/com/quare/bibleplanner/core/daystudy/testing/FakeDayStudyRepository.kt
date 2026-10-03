@@ -19,18 +19,21 @@ class FakeDayStudyRepository(
     var neverCompletes = false
     var statusGate: CompletableDeferred<Unit>? = null
     val studyRequests = mutableListOf<DayStudyRequest>()
+    val studyRewardFlags = mutableListOf<Boolean>()
     val cacheLookups = mutableListOf<DayStudyRequest>()
 
     override fun getDayStudy(
         passages: List<PassageModel>,
         version: String,
         languageCode: String,
+        isRewarded: Boolean,
     ): Flow<DayStudyGenerationEventModel> = flow {
         studyRequests += DayStudyRequest(
             passages = passages,
             version = version,
             languageCode = languageCode,
         )
+        studyRewardFlags += isRewarded
         events.forEach { event -> emit(event) }
         eventsError?.let { error -> throw error }
         if (neverCompletes) awaitCancellation()

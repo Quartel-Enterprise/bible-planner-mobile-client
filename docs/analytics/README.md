@@ -75,6 +75,8 @@ Parameters shared across many events are defined once here; event files referenc
 | `reason` | string | event-specific enum | Why the event happened (errors, gates) |
 | `method` | string | `google` \| `apple` | Auth provider |
 | `is_pro` | boolean | `true` | Whether the user has the Pro entitlement |
+| `is_rewarded` | boolean | `false` | Whether an AI study generation was unlocked with a rewarded video |
+| `surface` | string | `chapter_study` \| `day_study` \| `day_reading_complete` | Which locked surface offered a rewarded unlock |
 
 ## Auto-collected events
 
@@ -171,6 +173,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `ReleaseNotesNavRoute` | `release_notes` | `screen` | — |
 | `RenameDeviceNavRoute` | `rename_device` | `dialog` | — |
 | `StudySuggestionNavRoute` | `study_suggestion` | `responsive` | — |
+| `StudyUnlockNavRoute` | `study_unlock` | `responsive` | `surface` (`chapter_study` \| `day_study` \| `day_reading_complete`) |
 | `SubscriptionDetailsNavRoute` | `subscription_details` | `dialog` | — |
 | `ThemeNavRoute` | `theme_selection` | `responsive` | — |
 | `UpdateDownloadedNavRoute` | `update_downloaded` | `dialog` | — |
@@ -397,6 +400,12 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [paywall_viewed](events/paywall_viewed.md) | P1 | Monetization |
 | [paywall_teaser_subscribe_clicked](events/paywall_teaser_subscribe_clicked.md) | P1 | Monetization |
 | [paywall_teaser_dismissed](events/paywall_teaser_dismissed.md) | P2 | Monetization |
+| [unlock_sheet_viewed](events/unlock_sheet_viewed.md) | P1 | Monetization |
+| [unlock_subscribe_clicked](events/unlock_subscribe_clicked.md) | P1 | Monetization |
+| [rewarded_ad_started](events/rewarded_ad_started.md) | P1 | Monetization |
+| [rewarded_ad_earned](events/rewarded_ad_earned.md) | P1 | Monetization |
+| [rewarded_ad_dismissed](events/rewarded_ad_dismissed.md) | P2 | Monetization |
+| [rewarded_ad_failed](events/rewarded_ad_failed.md) | P1 | Monetization |
 | [paywall_plan_selected](events/paywall_plan_selected.md) | P1 | Monetization |
 | [purchase_started](events/purchase_started.md) | P1 | Monetization |
 | [purchase_completed](events/purchase_completed.md) | P1 | Monetization |

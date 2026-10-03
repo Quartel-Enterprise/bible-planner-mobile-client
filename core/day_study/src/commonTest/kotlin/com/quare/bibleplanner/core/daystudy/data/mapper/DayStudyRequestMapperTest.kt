@@ -55,6 +55,7 @@ internal class DayStudyRequestMapperTest {
             passages = passages,
             version = "ACF",
             languageCode = "pt-BR",
+            isRewarded = false,
         )
 
         // Then
@@ -83,6 +84,7 @@ internal class DayStudyRequestMapperTest {
                 ),
                 version = "ACF",
                 language = "pt-BR",
+                reward = false,
             ),
             request,
         )

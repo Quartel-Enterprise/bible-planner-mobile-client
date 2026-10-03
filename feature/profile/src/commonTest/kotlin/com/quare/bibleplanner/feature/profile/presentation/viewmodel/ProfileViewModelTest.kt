@@ -45,6 +45,7 @@ import com.quare.bibleplanner.core.plan.domain.usecase.GetPlanStartDateFlowUseCa
 import com.quare.bibleplanner.core.plan.testing.FakePlanRepository
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionMode
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
+import com.quare.bibleplanner.core.provider.ads.testing.FakeAdsConsentService
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.provider.platform.domain.usecase.GetAppStoreLinkUseCase
 import com.quare.bibleplanner.core.provider.room.testing.FakeBibleVersionDao
@@ -79,6 +80,10 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 internal class ProfileViewModelTest {
+    private val adsConsentService = FakeAdsConsentService(
+        isPrivacyOptionsRequired = false,
+        canRequestAds = true,
+    )
     private val testDispatcher = UnconfinedTestDispatcher()
     private val webAppUrl = "https://web.bibleplanner.app"
     private lateinit var viewModel: ProfileViewModel
@@ -183,6 +188,20 @@ internal class ProfileViewModelTest {
             ),
             actual = actions,
         )
+    }
+
+    @Test
+    fun `GIVEN ads consent WHEN tapping privacy options THEN opens the consent form`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_OPTIONS))
+        runCurrent()
+
+        // Then
+        assertEquals(expected = 1, actual = adsConsentService.privacyOptionsShownCount)
+        assertEquals(expected = emptyList(), actual = actions)
     }
 
     @Test
@@ -517,6 +536,7 @@ internal class ProfileViewModelTest {
             isConnected = { isConnected },
             checkForUpdate = checkForUpdate,
             showUpdatePrompt = { availability, source -> collectedPrompts += availability to source },
+            adsConsentService = adsConsentService,
             navigator = navigator,
             uiStateFactory = ProfileUiStateFactory(
                 getSubscriptionStatusFlow = null,
@@ -553,6 +573,7 @@ internal class ProfileViewModelTest {
                 getSelectedVersionId = { flowOf("NVI") },
                 observeAnnotatedPassages = { flowOf(emptyList()) },
                 observeVersionAnnotationCounts = { flowOf(emptyList()) },
+                adsConsentService = adsConsentService,
                 platform = platform,
             ),
             trackEvent = { name, params -> collectedEvents += name to params },

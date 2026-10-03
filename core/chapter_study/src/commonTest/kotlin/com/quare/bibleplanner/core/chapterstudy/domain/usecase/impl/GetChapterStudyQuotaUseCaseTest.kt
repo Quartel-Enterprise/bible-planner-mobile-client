@@ -72,6 +72,7 @@ internal class GetChapterStudyQuotaUseCaseTest {
                 freeLimit = 3,
                 remainingFree = 1,
                 isUnlocked = false,
+                rewardedRemainingToday = 2,
             ),
             actual = quota,
         )
@@ -111,6 +112,7 @@ internal class GetChapterStudyQuotaUseCaseTest {
                 freeLimit = 3,
                 remainingFree = 0,
                 isUnlocked = true,
+                rewardedRemainingToday = 2,
             ),
             actual = quota,
         )
@@ -124,6 +126,7 @@ internal class GetChapterStudyQuotaUseCaseTest {
         usedCount = usedCount,
         isUnlocked = isUnlocked,
         cacheToken = "token",
+        rewardedRemainingToday = 2,
     )
 
     private fun prepareScenario(

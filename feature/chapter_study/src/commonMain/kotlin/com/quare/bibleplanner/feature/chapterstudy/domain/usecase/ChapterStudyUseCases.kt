@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyQu
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.RefreshChapterStudyCache
 import com.quare.bibleplanner.core.provider.billing.domain.usecase.ObserveIsProUser
 import com.quare.bibleplanner.core.provider.connectivity.domain.usecase.IsConnected
+import com.quare.bibleplanner.core.studyunlock.domain.usecase.PrepareRewardedUnlockOffer
 import com.quare.bibleplanner.core.user.domain.usecase.ObserveAuthenticatedUserId
 
 internal data class ChapterStudyUseCases(
@@ -20,4 +21,5 @@ internal data class ChapterStudyUseCases(
     val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     val getAccess: GetChapterStudyAccess,
     val getQuota: GetChapterStudyQuota,
+    val prepareRewardedUnlockOffer: PrepareRewardedUnlockOffer,
 )

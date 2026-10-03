@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import bibleplanner.feature.profile.generated.resources.Res
+import bibleplanner.feature.profile.generated.resources.privacy_options
 import bibleplanner.feature.profile.generated.resources.privacy_policy
 import bibleplanner.feature.profile.generated.resources.terms_of_service
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionItemType
@@ -18,6 +19,7 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LegalSection(
+    isPrivacyOptionsVisible: Boolean,
     modifier: Modifier = Modifier,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
@@ -32,6 +34,12 @@ internal fun LegalSection(
         Text("•")
         TextButton(onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.TERMS)) }) {
             Text(stringResource(Res.string.terms_of_service))
+        }
+        if (isPrivacyOptionsVisible) {
+            Text("•")
+            TextButton(onClick = { onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.PRIVACY_OPTIONS)) }) {
+                Text(stringResource(Res.string.privacy_options))
+            }
         }
     }
 }

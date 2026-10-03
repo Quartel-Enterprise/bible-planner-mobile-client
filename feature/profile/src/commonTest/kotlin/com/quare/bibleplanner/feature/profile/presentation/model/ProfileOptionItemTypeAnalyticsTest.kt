@@ -14,6 +14,7 @@ internal class ProfileOptionItemTypeAnalyticsTest {
             ProfileOptionItemType.STUDY_SUGGESTION to "study_suggestion",
             ProfileOptionItemType.INSTAGRAM to "instagram",
             ProfileOptionItemType.PRIVACY_POLICY to "privacy_policy",
+            ProfileOptionItemType.PRIVACY_OPTIONS to "privacy_options",
             ProfileOptionItemType.TERMS to "terms",
             ProfileOptionItemType.DONATE to "donate",
             ProfileOptionItemType.WEB_APP to "web_app",

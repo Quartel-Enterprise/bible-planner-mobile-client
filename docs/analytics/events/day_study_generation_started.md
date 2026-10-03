@@ -13,6 +13,10 @@ All pre-flight checks pass (no cached study, device online, free quota allows it
 - `feature/day_study/.../presentation/viewmodel/DayStudyViewModel.kt` — `DayStudyUiEvent.OnCardClick` → `startGeneration()` (portrait entry-card tap, GENERATE mode), at the `generationCoordinator.start(...)` call
 - `feature/day_study/.../presentation/viewmodel/DayStudyRouteViewModel.kt` — `DayStudyRouteUiEvent.OnCardClick` → `startGenerationOrCachedOpen()` (day-study route/panel hero button), at the `generationCoordinator.start(...)` call
 
+- `feature/day_reading_complete/.../presentation/viewmodel/DayReadingCompleteViewModel.kt` / `DayReadingCompleteBannerViewModel.kt` — not tracked there; the generation they start is visible through [day_study_generation_completed](day_study_generation_completed.md) / [day_study_generation_failed](day_study_generation_failed.md).
+
+A rewarded unlock ([rewarded_ad_earned](rewarded_ad_earned.md)) goes through the same calls with `is_rewarded=true` and skips the free-quota check.
+
 ## Parameters
 
 | Name | Type | Example | Description |
@@ -21,6 +25,7 @@ All pre-flight checks pass (no cached study, device online, free quota allows it
 | `week_number` | int | `12` | 1-based week within the plan |
 | `day_number` | int | `3` | 1-based day within the week |
 | `is_pro` | boolean | `false` | Whether the user has the Pro entitlement |
+| `is_rewarded` | boolean | `false` | Whether this generation was unlocked with a rewarded video (the app sent `reward: true`) |
 | `remaining_free` | int | `2` | `DayStudyQuotaModel.remainingFree` at start time (free generations left) |
 
 ## Notes

@@ -6,4 +6,5 @@ data class ChapterStudyQuotaModel(
     val remainingFree: Int,
     /** Whether this chapter's study was already paid for, so generating it spends nothing. */
     val isUnlocked: Boolean,
+    val rewardedRemainingToday: Int,
 )

@@ -5,4 +5,5 @@ data class DayStudyQuotaModel(
     val remainingFree: Int,
     val isUnlockedForDay: Boolean,
     val hasLocalStudy: Boolean,
+    val rewardedRemainingToday: Int,
 )
