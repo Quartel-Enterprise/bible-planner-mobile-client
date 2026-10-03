@@ -78,7 +78,10 @@ Claude reviews pull requests in two places:
 
 `claude-review` only comments: it fails only when the run itself does (an expired token, the
 30-minute timeout), never because of what it found. It is skipped on pull requests from forks, which
-get no secrets, and the label then has to be removed by hand.
+get no secrets, and the label then has to be removed by hand. The action also refuses to run when
+the pull request changes `claude-review.yml` itself: the file has to match the one on `main`, so a
+change to the workflow can only be tried out after it merges. The run then ends green with a
+"workflow validation" warning and posts nothing.
 
 Treat it as advisory, not as a gate. Every label added to a pull request starts the workflow, and a
 label other than `ai-review` leaves a skipped `review` check on the head commit. `merge-when-green`
