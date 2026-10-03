@@ -39,6 +39,7 @@ internal fun ReadTopBar(
     visibleChapter: ReadChapterUiModel?,
     isTitleVisible: Boolean,
     isOpeningChapterStudy: Boolean,
+    isChapterStudyBeside: Boolean,
     topAppBarScrollBehavior: TopAppBarScrollBehavior,
     onEvent: (ReadUiEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -70,19 +71,22 @@ internal fun ReadTopBar(
                 contentDescription = stringResource(Res.string.reader_appearance),
                 onClick = { onEvent(ReadUiEvent.OnAppearanceClick) },
             )
-            ChapterStudyPill(
-                isLoading = isOpeningChapterStudy,
-                onClick = {
-                    onEvent(
-                        ReadUiEvent.OnChapterStudyClick(
-                            bookId = visibleChapter?.chapter?.bookId ?: header.bookId,
-                            chapterNumber = chapterNumber,
-                            source = ChapterStudyEntrySource.TOP_BAR,
-                        ),
-                    )
-                },
-                modifier = Modifier.padding(end = 6.dp),
-            )
+            // On a wide window the study already sits beside the text.
+            if (!isChapterStudyBeside) {
+                ChapterStudyPill(
+                    isLoading = isOpeningChapterStudy,
+                    onClick = {
+                        onEvent(
+                            ReadUiEvent.OnChapterStudyClick(
+                                bookId = visibleChapter?.chapter?.bookId ?: header.bookId,
+                                chapterNumber = chapterNumber,
+                                source = ChapterStudyEntrySource.TOP_BAR,
+                            ),
+                        )
+                    },
+                    modifier = Modifier.padding(end = 6.dp),
+                )
+            }
             BibleVersionChip(
                 versionName = header.versionAbbreviation,
                 onClick = { onEvent(ReadUiEvent.ManageBibleVersions) },

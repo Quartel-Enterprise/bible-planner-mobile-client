@@ -111,4 +111,18 @@ sealed interface ReadUiEvent : UiEvent {
     data object OnVerseFocusShown : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
+
+    data class OnWidthClassChanged(
+        val isWide: Boolean,
+    ) : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
+
+    /** The chapter at the top of the text changed, so the study beside it follows. */
+    data class OnVisibleChapterChanged(
+        val bookId: BookId,
+        val chapterNumber: Int,
+    ) : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
+    }
 }

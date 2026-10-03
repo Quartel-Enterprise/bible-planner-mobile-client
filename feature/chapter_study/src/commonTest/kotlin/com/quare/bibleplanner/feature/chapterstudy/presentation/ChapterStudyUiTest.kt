@@ -10,10 +10,16 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import bibleplanner.feature.chapter_study.generated.resources.Res
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_chat
+import bibleplanner.feature.chapter_study.generated.resources.chapter_study_exhausted_subtitle
+import bibleplanner.feature.chapter_study.generated.resources.chapter_study_generate
+import bibleplanner.feature.chapter_study.generated.resources.chapter_study_generate_hint
+import bibleplanner.feature.chapter_study.generated.resources.chapter_study_generate_hint_pro
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_phase_context
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_phase_questions
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_phase_reading
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_phase_summary
+import bibleplanner.feature.chapter_study.generated.resources.chapter_study_pro_badge
+import bibleplanner.feature.chapter_study.generated.resources.chapter_study_quota_free
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_section_context
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_section_cross_references
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_section_key_verse
@@ -22,6 +28,7 @@ import bibleplanner.feature.chapter_study.generated.resources.chapter_study_sect
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_section_reflection
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_section_summary
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_share
+import bibleplanner.feature.chapter_study.generated.resources.chapter_study_subscribe
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_title
 import bibleplanner.ui.component.generated.resources.ai_disclaimer
 import bibleplanner.ui.component.generated.resources.ai_study_connection_error_message
@@ -31,10 +38,12 @@ import bibleplanner.ui.component.generated.resources.ai_study_retry
 import bibleplanner.ui.component.generated.resources.back
 import com.quare.bibleplanner.core.books.util.getVerseReferenceLabel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyQuotaModel
 import com.quare.bibleplanner.core.chapterstudy.testing.createChapterStudy
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyContentUiState
+import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyHeroUiModel
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiEvent
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiState
 import com.quare.bibleplanner.ui.testing.setUiTestContent
@@ -221,6 +230,79 @@ internal class ChapterStudyUiTest {
     }
 
     @Test
+    fun `GIVEN a study beside the reader WHEN rendered THEN has no top bar`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            content = loadedContent,
+            isBesideReader = true,
+        )
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithContentDescription(getString(ComponentRes.string.back)).assertDoesNotExist()
+        onNodeWithText(getString(Res.string.chapter_study_title)).assertDoesNotExist()
+    }
+
+    @Test
+    fun `GIVEN free studies left WHEN clicking generate THEN shows the count and emits OnGenerateClick`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                content = notGenerated(remainingFree = 2),
+                isBesideReader = true,
+            )
+
+            // When
+            onNodeWithText(getString(Res.string.chapter_study_generate)).performClick()
+
+            // Then
+            onNodeWithText(getString(Res.string.chapter_study_quota_free, 2)).assertIsDisplayed()
+            onNodeWithText(getString(Res.string.chapter_study_generate_hint)).assertIsDisplayed()
+            assertEquals(expected = listOf<ChapterStudyUiEvent>(ChapterStudyUiEvent.OnGenerateClick), actual = events)
+        }
+
+    @Test
+    fun `GIVEN the free studies used up WHEN rendered THEN offers to subscribe`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            content = notGenerated(remainingFree = 0),
+            isBesideReader = true,
+        )
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithText(getString(Res.string.chapter_study_subscribe)).assertIsDisplayed()
+        onNodeWithText(getString(Res.string.chapter_study_exhausted_subtitle, 3)).assertIsDisplayed()
+        onNodeWithText(getString(Res.string.chapter_study_pro_badge)).assertIsDisplayed()
+    }
+
+    @Test
+    fun `GIVEN a Pro user WHEN rendered THEN offers to generate without spending a free study`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            content = ChapterStudyContentUiState.NotGenerated(
+                hero = ChapterStudyHeroUiModel(
+                    isPro = true,
+                    quota = null,
+                ),
+                isStarting = false,
+            ),
+            isBesideReader = true,
+        )
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithText(getString(Res.string.chapter_study_generate_hint_pro)).assertIsDisplayed()
+        onNodeWithText(getString(Res.string.chapter_study_pro_badge)).assertIsDisplayed()
+    }
+
+    @Test
     fun `GIVEN the study still loading WHEN clicking back THEN calls the back callback`() = runComposeUiTest {
         // Given
         prepareScenario(content = ChapterStudyContentUiState.Loading)
@@ -249,7 +331,23 @@ internal class ChapterStudyUiTest {
         )
     }
 
-    private fun ComposeUiTest.prepareScenario(content: ChapterStudyContentUiState) {
+    private fun notGenerated(remainingFree: Int): ChapterStudyContentUiState.NotGenerated =
+        ChapterStudyContentUiState.NotGenerated(
+            hero = ChapterStudyHeroUiModel(
+                isPro = false,
+                quota = ChapterStudyQuotaModel(
+                    freeLimit = 3,
+                    remainingFree = remainingFree,
+                    isUnlocked = false,
+                ),
+            ),
+            isStarting = false,
+        )
+
+    private fun ComposeUiTest.prepareScenario(
+        content: ChapterStudyContentUiState,
+        isBesideReader: Boolean = false,
+    ) {
         events = mutableListOf()
         backClicks = mutableListOf()
         setUiTestContent {
@@ -260,6 +358,7 @@ internal class ChapterStudyUiTest {
                     platform = Platform.Android,
                     content = content,
                 ),
+                isBesideReader = isBesideReader,
                 onEvent = { events += it },
                 onNavigateBack = { backClicks += Unit },
             )

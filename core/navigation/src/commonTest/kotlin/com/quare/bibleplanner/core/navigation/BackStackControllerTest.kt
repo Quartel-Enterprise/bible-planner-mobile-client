@@ -4,8 +4,11 @@ import androidx.navigation3.runtime.NavKey
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import com.quare.bibleplanner.core.model.route.LogoutNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRoute
+import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReleaseNotesNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
+import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
+import com.quare.bibleplanner.core.model.route.toChapterStudyCompanion
 import com.quare.bibleplanner.core.model.route.toDayStudyNavRoute
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -23,6 +26,16 @@ internal class BackStackControllerTest {
         readingPlanType = READING_PLAN_TYPE,
     )
     private val dayStudyRoute: NavKey = dayRoute.toDayStudyNavRoute()
+    private val genesisReadRoute = ReadNavRoute(
+        bookId = "GEN",
+        chapterNumber = 1,
+        isChapterRead = false,
+        isFromBookDetails = false,
+        targetVerseNumbers = emptyList(),
+    )
+    private val exodusReadRoute = genesisReadRoute.copy(bookId = "EXO")
+    private val genesisCompanionRoute: NavKey = genesisReadRoute.toChapterStudyCompanion()
+    private val genesisTwoCompanionRoute: NavKey = genesisReadRoute.copy(chapterNumber = 2).toChapterStudyCompanion()
 
     private lateinit var backStackController: BackStackController
     private lateinit var backStack: MutableList<NavKey>
@@ -50,6 +63,75 @@ internal class BackStackControllerTest {
 
         // Then
         assertEquals(listOf(mainRoute, themeRoute, logoutRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN the reader on top WHEN navigating to its study companion THEN shows it beside the reader`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, genesisReadRoute))
+
+        // When
+        backStackController.navigate(genesisCompanionRoute)
+
+        // Then
+        assertEquals(listOf(mainRoute, genesisReadRoute, genesisCompanionRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN a study companion on top WHEN navigating to the companion of another chapter THEN takes its place`() {
+        // Given
+        prepareScenario(
+            backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute),
+            forwardStack = listOf(listOf(themeRoute)),
+        )
+
+        // When
+        backStackController.navigate(genesisTwoCompanionRoute)
+
+        // Then
+        assertEquals(listOf(mainRoute, genesisReadRoute, genesisTwoCompanionRoute), backStack)
+        assertEquals(listOf(listOf(themeRoute)), forwardStack)
+    }
+
+    @Test
+    fun `GIVEN the same study companion on top WHEN navigating to it THEN keeps the back stack untouched`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute))
+
+        // When
+        backStackController.navigate(genesisCompanionRoute)
+
+        // Then
+        assertEquals(listOf(mainRoute, genesisReadRoute, genesisCompanionRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN a panel over the study companion WHEN navigating to another companion THEN keeps it under the panel`() {
+        // Given
+        prepareScenario(
+            backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute, VerseSelectionNavRoute),
+        )
+
+        // When
+        backStackController.navigate(genesisTwoCompanionRoute)
+
+        // Then
+        assertEquals(
+            listOf(mainRoute, genesisReadRoute, genesisCompanionRoute, VerseSelectionNavRoute),
+            backStack,
+        )
+    }
+
+    @Test
+    fun `GIVEN no reader on top WHEN navigating to a study companion THEN keeps the back stack untouched`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, themeRoute))
+
+        // When
+        backStackController.navigate(genesisCompanionRoute)
+
+        // Then
+        assertEquals(listOf(mainRoute, themeRoute), backStack)
     }
 
     @Test
@@ -88,7 +170,10 @@ internal class BackStackControllerTest {
         )
 
         // When
-        backStackController.navigateReplacingTop(releaseNotesRoute)
+        backStackController.navigateReplacingTop(
+            route = releaseNotesRoute,
+            isWide = false,
+        )
 
         // Then
         assertEquals(listOf(mainRoute, releaseNotesRoute), backStack)
@@ -104,11 +189,57 @@ internal class BackStackControllerTest {
         )
 
         // When
-        backStackController.navigateReplacingTop(themeRoute)
+        backStackController.navigateReplacingTop(
+            route = themeRoute,
+            isWide = false,
+        )
 
         // Then
         assertEquals(listOf(mainRoute, themeRoute), backStack)
         assertEquals(listOf(listOf(logoutRoute)), forwardStack)
+    }
+
+    @Test
+    fun `GIVEN the reader with its study beside in a wide layout WHEN replacing the top THEN replaces both panes`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute))
+
+        // When
+        backStackController.navigateReplacingTop(
+            route = exodusReadRoute,
+            isWide = true,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, exodusReadRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN a study over the reader in a compact layout WHEN replacing the top THEN replaces only the study`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute))
+
+        // When
+        backStackController.navigateReplacingTop(
+            route = themeRoute,
+            isWide = false,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, genesisReadRoute, themeRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN the reader with its study beside in a wide layout WHEN navigating back THEN pops both panes at once`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute))
+
+        // When
+        backStackController.navigateBack(isWide = true)
+
+        // Then
+        assertEquals(listOf(mainRoute), backStack)
+        assertEquals(listOf(listOf(genesisCompanionRoute, genesisReadRoute)), forwardStack)
     }
 
     @Test

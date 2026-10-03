@@ -4,10 +4,12 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategyScope
+import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ThemeNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
+import com.quare.bibleplanner.core.model.route.getChapterStudyPane
 import com.quare.bibleplanner.core.model.route.getReaderPane
 import com.quare.bibleplanner.core.model.route.getVerseSelectionPane
 import com.quare.bibleplanner.core.navigation.scene.VerseSelectionScene
@@ -29,6 +31,13 @@ internal class VerseSelectionSceneStrategyTest {
         ),
         metadata = getReaderPane(),
     )
+    private val chapterStudyEntry = entry(
+        key = ChapterStudyNavRoute(
+            bookId = "JHN",
+            chapterNumber = 3,
+        ),
+        metadata = getChapterStudyPane(),
+    )
     private val selectionEntry = entry(
         key = VerseSelectionNavRoute,
         metadata = getVerseSelectionPane(),
@@ -49,6 +58,35 @@ internal class VerseSelectionSceneStrategyTest {
         assertEquals(readerEntry.contentKey, scene.key)
         assertEquals(listOf(readerEntry, selectionEntry), scene.entries)
         assertEquals(listOf(homeEntry, readerEntry), scene.previousEntries)
+    }
+
+    @Test
+    fun `GIVEN a selection over a chapter study beside the reader WHEN calculating THEN takes the study's place`() {
+        // Given
+        prepareScenario(isWide = true)
+
+        // When
+        val scene = calculate(listOf(homeEntry, readerEntry, chapterStudyEntry, selectionEntry))
+
+        // Then
+        assertIs<VerseSelectionScene>(scene)
+        assertEquals(readerEntry.contentKey, scene.key)
+        assertEquals(listOf(readerEntry, selectionEntry), scene.entries)
+        assertEquals(listOf(homeEntry, readerEntry, chapterStudyEntry), scene.previousEntries)
+    }
+
+    @Test
+    fun `GIVEN a selection panel over a chapter study with no reader under it WHEN calculating THEN has no panel`() {
+        // Given
+        prepareScenario(isWide = true)
+
+        // When
+        val withHome = calculate(listOf(homeEntry, chapterStudyEntry, selectionEntry))
+        val alone = calculate(listOf(chapterStudyEntry, selectionEntry))
+
+        // Then
+        assertNull(withHome)
+        assertNull(alone)
     }
 
     @Test

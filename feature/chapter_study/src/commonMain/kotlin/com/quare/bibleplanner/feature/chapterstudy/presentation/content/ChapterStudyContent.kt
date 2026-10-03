@@ -18,6 +18,7 @@ import bibleplanner.feature.chapter_study.generated.resources.chapter_study_phas
 import bibleplanner.feature.chapter_study.generated.resources.chapter_study_phase_summary
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.books.util.verseReferenceLabel
+import com.quare.bibleplanner.feature.chapterstudy.presentation.component.ChapterStudyHeroContent
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyContentUiState
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiEvent
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiState
@@ -39,6 +40,13 @@ internal fun ChapterStudyContent(
             ) {
                 AdaptiveCircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
+
+            is ChapterStudyContentUiState.NotGenerated -> ChapterStudyHeroContent(
+                hero = content.hero,
+                isStarting = content.isStarting,
+                onClick = { onEvent(ChapterStudyUiEvent.OnGenerateClick) },
+                modifier = Modifier.fillMaxSize(),
+            )
 
             is ChapterStudyContentUiState.Generating -> ChapterStudyGeneratingContent(
                 uiState = uiState,

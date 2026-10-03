@@ -17,12 +17,14 @@ import com.quare.bibleplanner.core.chapterstudy.domain.store.PendingVerseFocusSt
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.FindCachedChapterStudy
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GenerateChapterStudy
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyAccess
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyQuota
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.RefreshChapterStudyCache
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ChapterStudyScopeResolver
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ClearChapterStudyLocalDataUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.FindCachedChapterStudyUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.GenerateChapterStudyUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.GetChapterStudyAccessUseCase
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.GetChapterStudyQuotaUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.RefreshChapterStudyCacheUseCase
 import com.quare.bibleplanner.core.clear.domain.ClearChapterStudyLocalData
 import org.koin.core.module.dsl.factoryOf
@@ -48,6 +50,7 @@ val chapterStudyModule = module {
     factoryOf(::GenerateChapterStudyUseCase).bind<GenerateChapterStudy>()
     factoryOf(::FindCachedChapterStudyUseCase).bind<FindCachedChapterStudy>()
     factoryOf(::GetChapterStudyAccessUseCase).bind<GetChapterStudyAccess>()
+    factoryOf(::GetChapterStudyQuotaUseCase).bind<GetChapterStudyQuota>()
     factoryOf(::RefreshChapterStudyCacheUseCase).bind<RefreshChapterStudyCache>()
     factoryOf(::ClearChapterStudyLocalDataUseCase).bind<ClearChapterStudyLocalData>()
 }

@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.contains
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategy
 import androidx.navigation3.scene.SceneStrategyScope
+import com.quare.bibleplanner.core.model.route.ChapterStudyPaneKey
 import com.quare.bibleplanner.core.model.route.ReaderPaneKey
 import com.quare.bibleplanner.core.model.route.VerseSelectionPaneKey
 import com.quare.bibleplanner.core.navigation.scene.VerseSelectionScene
@@ -15,9 +16,8 @@ class VerseSelectionSceneStrategy(
 ) : SceneStrategy<NavKey> {
     override fun SceneStrategyScope<NavKey>.calculateScene(entries: List<NavEntry<NavKey>>): Scene<NavKey>? {
         val selectionEntry = entries.lastOrNull() ?: return null
-        val readerEntry = entries.getOrNull(entries.lastIndex - 1) ?: return null
         if (VerseSelectionPaneKey !in selectionEntry.metadata) return null
-        if (ReaderPaneKey !in readerEntry.metadata) return null
+        val readerEntry = entries.findReaderUnderSelection() ?: return null
         return VerseSelectionScene(
             key = readerEntry.contentKey,
             readerEntry = readerEntry,
@@ -29,5 +29,20 @@ class VerseSelectionSceneStrategy(
             previousEntries = entries.dropLast(1),
             isWide = isWide,
         )
+    }
+
+    /**
+     * The entry right under the selection, or the one under it when that is a chapter study open
+     * beside the reader: the verses are tapped on the reader, so the panel takes the study's place
+     * until the selection ends and the study comes back.
+     */
+    private fun List<NavEntry<NavKey>>.findReaderUnderSelection(): NavEntry<NavKey>? {
+        val underSelection = getOrNull(lastIndex - 1) ?: return null
+        val candidate = if (ChapterStudyPaneKey in underSelection.metadata) {
+            getOrNull(lastIndex - 2) ?: return null
+        } else {
+            underSelection
+        }
+        return candidate.takeIf { ReaderPaneKey in it.metadata }
     }
 }

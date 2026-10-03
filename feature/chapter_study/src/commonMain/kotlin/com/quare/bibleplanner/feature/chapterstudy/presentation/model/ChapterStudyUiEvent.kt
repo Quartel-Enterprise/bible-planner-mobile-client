@@ -18,6 +18,15 @@ internal sealed interface ChapterStudyUiEvent : UiEvent {
         )
     }
 
+    data object OnGenerateClick : ChapterStudyUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            setOf(
+                AnalyticsEventNames.CHAPTER_STUDY_GENERATION_STARTED,
+                AnalyticsEventNames.CHAPTER_STUDY_GENERATION_FAILED,
+            ),
+        )
+    }
+
     data class OnOutlineSectionClick(
         val section: OutlineSectionModel,
     ) : ChapterStudyUiEvent {
@@ -48,5 +57,11 @@ internal sealed interface ChapterStudyUiEvent : UiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.AI_CHAT_ENTRY_CLICKED,
         )
+    }
+
+    data class OnWidthClassChanged(
+        val isWide: Boolean,
+    ) : ChapterStudyUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.NotTracked
     }
 }

@@ -2,6 +2,7 @@ package com.quare.bibleplanner.feature.chapterstudy.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.quare.bibleplanner.core.chapterstudy.domain.coordinator.ChapterStudyGenerationCoordinator
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyAccessModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerationJob
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerationStatus
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyModel
@@ -14,9 +15,11 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.PendingVerseFocusMo
 import com.quare.bibleplanner.core.chapterstudy.domain.store.PendingVerseFocusStore
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
 import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
+import com.quare.bibleplanner.core.model.route.LoginWarningNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserNavRoute
 import com.quare.bibleplanner.core.model.route.PaywallTeaserReason
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
@@ -25,14 +28,17 @@ import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEven
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.bibleplanner.core.provider.platform.Platform
+import com.quare.bibleplanner.core.utils.suspendRunCatching
 import com.quare.bibleplanner.feature.chapterstudy.domain.usecase.ChapterStudyUseCases
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyContentUiState
+import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyHeroUiModel
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiEvent
 import com.quare.bibleplanner.feature.chapterstudy.presentation.model.ChapterStudyUiState
 import com.quare.bibleplanner.ui.utils.presentation.TrackedViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -56,11 +62,15 @@ internal class ChapterStudyViewModel(
         bookId = BookId.valueOf(route.bookId),
         chapterNumber = route.chapterNumber,
     )
+    private val isCompanion: Boolean = route.isCompanion
     private val completionPause: Duration = 700.milliseconds
     private val targetParams: Map<String, Any> = mapOf(
         AnalyticsParams.BOOK_ID to target.bookId.name,
         AnalyticsParams.CHAPTER_NUMBER to target.chapterNumber,
     )
+
+    /** On a wide window the study opens beside the reader, so the chapter's verses stay in sight. */
+    private var isBesideReader: Boolean = false
 
     val uiState: StateFlow<ChapterStudyUiState>
         field = MutableStateFlow<ChapterStudyUiState>(
@@ -79,10 +89,12 @@ internal class ChapterStudyViewModel(
     override fun handleEvent(event: ChapterStudyUiEvent) {
         when (event) {
             ChapterStudyUiEvent.OnRetryClick -> onRetryClick()
+            ChapterStudyUiEvent.OnGenerateClick -> onGenerateClick()
             is ChapterStudyUiEvent.OnOutlineSectionClick -> onOutlineSectionClick(event.section)
             ChapterStudyUiEvent.OnShareKeyVerseClick -> onShareKeyVerseClick()
             is ChapterStudyUiEvent.OnCrossReferenceClick -> onCrossReferenceClick(event.reference)
             ChapterStudyUiEvent.OnAskAiClick -> onAskAiClick()
+            is ChapterStudyUiEvent.OnWidthClassChanged -> isBesideReader = event.isWide
         }
     }
 
@@ -97,9 +109,62 @@ internal class ChapterStudyViewModel(
                 useCases.refreshCache(target)
                 return
             }
-            startGeneration()
+            if (isCompanion) observeHero() else startGeneration()
         }
         observeGenerationJob()
+    }
+
+    /** Logging in or subscribing changes what generating costs, so the offer follows the account. */
+    private fun observeHero() {
+        combine(
+            useCases.observeAuthenticatedUserId(),
+            useCases.observeIsProUser(),
+        ) { _, isPro -> isPro }
+            .distinctUntilChanged()
+            .onEach(::showHero)
+            .launchIn(viewModelScope)
+    }
+
+    private suspend fun showHero(isPro: Boolean) {
+        val content = uiState.value.content
+        if (content != ChapterStudyContentUiState.Loading && content !is ChapterStudyContentUiState.NotGenerated) return
+        val quota = suspendRunCatching { useCases.getQuota(target) }.getOrNull()
+        showContent(
+            ChapterStudyContentUiState.NotGenerated(
+                hero = ChapterStudyHeroUiModel(
+                    isPro = isPro,
+                    quota = quota,
+                ),
+                isStarting = false,
+            ),
+        )
+    }
+
+    private fun onGenerateClick() {
+        val notGenerated = uiState.value.content as? ChapterStudyContentUiState.NotGenerated ?: return
+        if (notGenerated.isStarting) return
+        if (notGenerated.hero.isLocked) {
+            navigator.navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT))
+            return
+        }
+        showContent(notGenerated.copy(isStarting = true))
+        viewModelScope.launch {
+            val access = suspendRunCatching { useCases.getAccess(target) }.getOrDefault(ChapterStudyAccessModel.OPEN)
+            when (access) {
+                ChapterStudyAccessModel.OPEN -> startGeneration()
+
+                ChapterStudyAccessModel.LOGIN_REQUIRED -> {
+                    showContent(notGenerated)
+                    navigator.navigate(LoginWarningNavRoute(LoginWarningReason.ChapterStudy.key))
+                }
+
+                ChapterStudyAccessModel.LIMIT_REACHED -> {
+                    showContent(notGenerated)
+                    showHero(notGenerated.hero.isPro)
+                    navigator.navigate(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT))
+                }
+            }
+        }
     }
 
     private fun hasGenerationJob(): Boolean = generationCoordinator.jobs.value.any { it.target == target }
@@ -140,7 +205,13 @@ internal class ChapterStudyViewModel(
 
     private fun onGenerationFailed(status: ChapterStudyGenerationStatus.Failed) {
         generationCoordinator.acknowledge(target)
-        if (status.isLimitReached) {
+        if (status.isLimitReached && isCompanion) {
+            // The reader stays beside it, so the study shows the free ones are used up instead of leaving.
+            viewModelScope.launch {
+                showContent(ChapterStudyContentUiState.Loading)
+                showHero(useCases.observeIsProUser().first())
+            }
+        } else if (status.isLimitReached) {
             navigator.navigateReplacingTop(PaywallTeaserNavRoute(PaywallTeaserReason.CHAPTER_STUDY_LIMIT))
         } else {
             showContent(ChapterStudyContentUiState.Failed(isOffline = status.isOffline))
@@ -215,7 +286,9 @@ internal class ChapterStudyViewModel(
                 verseNumbers = (section.startVerse..section.endVerse).toList(),
             ),
         )
-        navigator.navigateBack()
+        if (!isBesideReader) {
+            navigator.navigateBack()
+        }
     }
 
     private fun onShareKeyVerseClick() {

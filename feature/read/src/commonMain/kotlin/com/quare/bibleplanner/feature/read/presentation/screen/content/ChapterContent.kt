@@ -26,6 +26,7 @@ internal fun LazyListScope.chapterContent(
     chapter: ReadChapterUiModel,
     header: ReadHeaderUiModel,
     settings: ReaderSettingsModel,
+    isChapterStudyBeside: Boolean,
     focusedVerseNumber: Int?,
     verseFlash: VerseFlash,
     onEvent: (ReadUiEvent) -> Unit,
@@ -63,21 +64,25 @@ internal fun LazyListScope.chapterContent(
             },
         )
     }
-    item(key = "chapter-study-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
-        val bookName = stringResource(chapter.bookStringResource)
-        ChapterStudyEntryCard(
-            chapterLabel = "$bookName ${chapter.chapter.chapterNumber}".takeIf { settings.isVerticalReadingEnabled },
-            onClick = {
-                onEvent(
-                    ReadUiEvent.OnChapterStudyClick(
-                        bookId = chapter.chapter.bookId,
-                        chapterNumber = chapter.chapter.chapterNumber,
-                        source = ChapterStudyEntrySource.CHAPTER_END,
-                    ),
-                )
-            },
-            modifier = Modifier.padding(top = 28.dp),
-        )
+    if (!isChapterStudyBeside) {
+        item(key = "chapter-study-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
+            val bookName = stringResource(chapter.bookStringResource)
+            ChapterStudyEntryCard(
+                chapterLabel = "$bookName ${chapter.chapter.chapterNumber}".takeIf {
+                    settings.isVerticalReadingEnabled
+                },
+                onClick = {
+                    onEvent(
+                        ReadUiEvent.OnChapterStudyClick(
+                            bookId = chapter.chapter.bookId,
+                            chapterNumber = chapter.chapter.chapterNumber,
+                            source = ChapterStudyEntrySource.CHAPTER_END,
+                        ),
+                    )
+                },
+                modifier = Modifier.padding(top = 28.dp),
+            )
+        }
     }
     item(key = "chapter-end-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
         ChapterEndNavigationRow(

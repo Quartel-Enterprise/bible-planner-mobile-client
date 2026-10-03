@@ -22,7 +22,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -53,6 +52,7 @@ import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyCardUi
 import com.quare.bibleplanner.feature.daystudy.presentation.model.DayStudyGenerationUiModel
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.component.study.AiStudyBadge
 import org.jetbrains.compose.resources.stringResource
 
 private const val SOFT_PRIMARY_ALPHA = 0.12f
@@ -306,30 +306,10 @@ internal fun CardBadge(card: DayStudyCardUiModel) {
         remainingFree > 0 -> stringResource(Res.string.ai_study_quota_free, remainingFree)
         else -> return
     }
-    val useAccentStyle = isGenerated || isProBadge
-    Surface(
-        shape = RoundedCornerShape(6.dp),
-        color = if (useAccentStyle) {
-            MaterialTheme.colorScheme.primary.copy(alpha = SOFT_PRIMARY_ALPHA)
-        } else {
-            MaterialTheme.colorScheme.surface
-        },
-        contentColor = if (useAccentStyle) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        },
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(
-                horizontal = 6.dp,
-                vertical = 2.dp,
-            ),
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Bold,
-        )
-    }
+    AiStudyBadge(
+        text = text,
+        isAccent = isGenerated || isProBadge,
+    )
 }
 
 @Composable

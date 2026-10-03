@@ -37,7 +37,7 @@ private val handleWidth = 20.dp
 private val gripWidth = 4.dp
 private val gripHeight = 32.dp
 
-internal class DayStudyPanelScene(
+internal class StudyPanelScene(
     override val key: Any,
     private val mainEntry: NavEntry<NavKey>,
     private val detailEntry: NavEntry<NavKey>,
@@ -91,7 +91,7 @@ internal class DayStudyPanelScene(
         if (this === other) return true
         if (other == null || this::class != other::class) return false
 
-        other as DayStudyPanelScene
+        other as StudyPanelScene
 
         return key == other.key &&
             mainEntry == other.mainEntry &&
@@ -104,7 +104,7 @@ internal class DayStudyPanelScene(
         detailEntry.hashCode() * 31 +
         previousEntries.hashCode() * 31
 
-    override fun toString(): String = "DayStudyPanelScene(key=$key, mainEntry=$mainEntry, detailEntry=$detailEntry, " +
+    override fun toString(): String = "StudyPanelScene(key=$key, mainEntry=$mainEntry, detailEntry=$detailEntry, " +
         "previousEntries=$previousEntries)"
 }
 

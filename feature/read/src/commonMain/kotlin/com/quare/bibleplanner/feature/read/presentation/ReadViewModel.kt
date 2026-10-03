@@ -137,6 +137,8 @@ class ReadViewModel(
     private val dayCompletionBanner = MutableStateFlow<PlanDayLocationModel?>(null)
 
     private val isOpeningChapterStudy = MutableStateFlow(false)
+    private val isChapterStudyBeside = MutableStateFlow(false)
+    private val visibleChapter = MutableStateFlow<ChapterLocationModel?>(null)
 
     private val verseFocus = MutableStateFlow(
         route.targetVerseNumbers.takeIf { it.isNotEmpty() }?.let { verseNumbers ->
@@ -237,11 +239,13 @@ class ReadViewModel(
         dayCompletionBanner,
         verseFocus,
         isOpeningChapterStudy,
-    ) { state, banner, focus, isOpeningStudy ->
+        isChapterStudyBeside,
+    ) { state, banner, focus, isOpeningStudy, isStudyBeside ->
         state.copy(
             dayCompletionBanner = banner,
             verseFocus = focus,
             isOpeningChapterStudy = isOpeningStudy,
+            isChapterStudyBeside = isStudyBeside,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -252,6 +256,7 @@ class ReadViewModel(
     init {
         prefetchStudyQuotaForDaysAboutToFinish()
         observeVerticalReading()
+        showStudyOfVisibleChapter()
         /*
          * Pushing is driven by the store rather than by the tap so it survives any other way the
          * selection could start, and it is idempotent: the navigator ignores a route already on the
@@ -364,19 +369,64 @@ class ReadViewModel(
     override fun handleEvent(event: ReadUiEvent) {
         when (event) {
             ReadUiEvent.OnArrowBackClick -> navigator.navigateBack()
+
             ReadUiEvent.OnRetryClick -> retryCount.update { it + 1 }
+
             is ReadUiEvent.ToggleReadStatus -> toggleReadStatus(event)
+
             ReadUiEvent.OnDownloadSelectedVersionClick -> downloadSelectedVersion()
+
             ReadUiEvent.ManageBibleVersions -> navigator.navigate(BibleVersionSelectorRoute)
+
             is ReadUiEvent.OnNavigationSuggestionClick -> navigateToSuggestion(event.suggestion)
+
             is ReadUiEvent.OnVerseClick -> selectVerse(event)
+
             ReadUiEvent.OnAppearanceClick -> navigator.navigate(ReaderAppearanceNavRoute)
+
             is ReadUiEvent.OnChapterStudyClick -> openChapterStudy(event)
+
             ReadUiEvent.OnRulerDismissClick -> dismissRuler()
+
             ReadUiEvent.OnReachedEnd -> appendNextChapter()
+
             ReadUiEvent.OnReachedStart -> prependPreviousChapter()
+
             ReadUiEvent.OnDayCompletionBannerDismissed -> dayCompletionBanner.update { null }
+
             ReadUiEvent.OnVerseFocusShown -> verseFocus.update { null }
+
+            is ReadUiEvent.OnWidthClassChanged -> isChapterStudyBeside.update { event.isWide }
+
+            is ReadUiEvent.OnVisibleChapterChanged -> visibleChapter.update {
+                ChapterLocationModel(
+                    bookId = event.bookId,
+                    chapterNumber = event.chapterNumber,
+                )
+            }
+        }
+    }
+
+    /**
+     * Vertical reading scrolls from one chapter into the next without leaving the reader, so the
+     * study beside it is asked for again whenever the chapter at the top changes.
+     */
+    private fun showStudyOfVisibleChapter() {
+        observe(
+            combine(
+                isChapterStudyBeside,
+                visibleChapter.filterNotNull(),
+            ) { isBeside, chapter -> chapter.takeIf { isBeside } }
+                .filterNotNull()
+                .distinctUntilChanged(),
+        ) { chapter ->
+            navigator.navigate(
+                ChapterStudyNavRoute(
+                    bookId = chapter.bookId.name,
+                    chapterNumber = chapter.chapterNumber,
+                    isCompanion = true,
+                ),
+            )
         }
     }
 
@@ -612,6 +662,7 @@ class ReadViewModel(
         dayCompletionBanner = null,
         verseFocus = null,
         isOpeningChapterStudy = false,
+        isChapterStudyBeside = false,
     )
 
     private fun ReadHeaderUiModel.withReadOverride(overrides: Map<ChapterLocationModel, Boolean>): ReadHeaderUiModel {
@@ -694,6 +745,7 @@ class ReadViewModel(
         dayCompletionBanner = null,
         verseFocus = null,
         isOpeningChapterStudy = false,
+        isChapterStudyBeside = false,
     )
 
     private companion object {

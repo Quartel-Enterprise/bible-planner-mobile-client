@@ -81,6 +81,11 @@ internal fun ReadWideScreen(
         listState = listState,
         leadingItemCount = leadingItemCount,
     )
+    VisibleChapterEffect(
+        visibleChapter = visibleChapter,
+        header = state.header,
+        onEvent = onEvent,
+    )
     ReachedEndEffect(
         listState = listState,
         chapters = chapters,
@@ -103,6 +108,7 @@ internal fun ReadWideScreen(
                     header = state.header,
                     visibleChapter = visibleChapter,
                     isOpeningChapterStudy = state.isOpeningChapterStudy,
+                    isChapterStudyBeside = state.isChapterStudyBeside,
                     onEvent = onEvent,
                 )
                 Box(
@@ -144,6 +150,7 @@ internal fun ReadWideScreen(
                                         chapter = chapter,
                                         header = state.header,
                                         settings = state.settings,
+                                        isChapterStudyBeside = state.isChapterStudyBeside,
                                         focusedVerseNumber = null,
                                         verseFlash = verseFlash,
                                         onEvent = onEvent,
@@ -180,6 +187,7 @@ private fun ReadWideHeader(
     header: ReadHeaderUiModel,
     visibleChapter: ReadChapterUiModel?,
     isOpeningChapterStudy: Boolean,
+    isChapterStudyBeside: Boolean,
     onEvent: (ReadUiEvent) -> Unit,
 ) = BoxWithConstraints {
     val hasRoomForTitle = maxWidth >= titleMinColumnWidth
@@ -218,18 +226,20 @@ private fun ReadWideHeader(
                 )
             },
         )
-        ChapterStudyPill(
-            isLoading = isOpeningChapterStudy,
-            onClick = {
-                onEvent(
-                    ReadUiEvent.OnChapterStudyClick(
-                        bookId = bookId,
-                        chapterNumber = chapterNumber,
-                        source = ChapterStudyEntrySource.TOP_BAR,
-                    ),
-                )
-            },
-        )
+        if (!isChapterStudyBeside) {
+            ChapterStudyPill(
+                isLoading = isOpeningChapterStudy,
+                onClick = {
+                    onEvent(
+                        ReadUiEvent.OnChapterStudyClick(
+                            bookId = bookId,
+                            chapterNumber = chapterNumber,
+                            source = ChapterStudyEntrySource.TOP_BAR,
+                        ),
+                    )
+                },
+            )
+        }
         BibleVersionChip(
             versionName = header.versionAbbreviation,
             onClick = { onEvent(ReadUiEvent.ManageBibleVersions) },

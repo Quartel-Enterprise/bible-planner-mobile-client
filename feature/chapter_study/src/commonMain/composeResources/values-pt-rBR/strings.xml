@@ -16,4 +16,12 @@
     <string name="chapter_study_key_verse_caption">%1$s · %2$s</string>
     <string name="chapter_study_share">Compartilhar</string>
     <string name="chapter_study_chat">Conversar</string>
+    <string name="chapter_study_hero_title">Estudo do capítulo</string>
+    <string name="chapter_study_generate">Gerar</string>
+    <string name="chapter_study_subscribe">Assinar</string>
+    <string name="chapter_study_generate_hint">Gerar usa 1 análise grátis</string>
+    <string name="chapter_study_generate_hint_pro">Gere uma visão geral deste capítulo</string>
+    <string name="chapter_study_quota_free">%1$d grátis</string>
+    <string name="chapter_study_exhausted_subtitle">Suas %1$d análises grátis acabaram</string>
+    <string name="chapter_study_pro_badge">PRO</string>
 </resources>

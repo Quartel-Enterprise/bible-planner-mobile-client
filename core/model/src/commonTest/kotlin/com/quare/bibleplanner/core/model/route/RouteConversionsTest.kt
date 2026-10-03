@@ -30,6 +30,31 @@ internal class RouteConversionsTest {
     }
 
     @Test
+    fun `GIVEN a reader route WHEN pairing it with its study THEN is a companion of the same chapter`() {
+        // Given
+        val readRoute = ReadNavRoute(
+            bookId = "GEN",
+            chapterNumber = 3,
+            isChapterRead = true,
+            isFromBookDetails = false,
+            targetVerseNumbers = listOf(1),
+        )
+
+        // When
+        val studyRoute = readRoute.toChapterStudyCompanion()
+
+        // Then
+        assertEquals(
+            ChapterStudyNavRoute(
+                bookId = "GEN",
+                chapterNumber = 3,
+                isCompanion = true,
+            ),
+            studyRoute,
+        )
+    }
+
+    @Test
     fun `GIVEN a reading complete route WHEN going to its day THEN points to the same day`() {
         // Given
         val completeRoute = DayReadingCompleteNavRoute(
@@ -125,6 +150,7 @@ internal class RouteConversionsTest {
             DayStudyDetailPaneKey,
             ReaderPaneKey,
             VerseSelectionPaneKey,
+            ChapterStudyPaneKey,
         )
 
         // When
@@ -133,6 +159,7 @@ internal class RouteConversionsTest {
             getDayStudyDetailPane(),
             getReaderPane(),
             getVerseSelectionPane(),
+            getChapterStudyPane(),
         )
 
         // Then

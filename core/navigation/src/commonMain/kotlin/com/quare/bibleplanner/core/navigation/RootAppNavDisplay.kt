@@ -39,7 +39,7 @@ import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
-import com.quare.bibleplanner.core.navigation.strategy.DayStudyPanelSceneStrategy
+import com.quare.bibleplanner.core.navigation.strategy.StudyPanelSceneStrategy
 import com.quare.bibleplanner.core.navigation.strategy.VerseSelectionSceneStrategy
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackDestination
@@ -99,7 +99,16 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     ) {
         val isWide = maxWidth > dayStudyPanelMinWidth
         val displayBackStack = rememberDisplayBackStack(isWide = isWide, backStack = backStack)
-        val onNavigateBack: () -> Unit = { backStackController.navigateBack(isWide) }
+        val displayedEntryCount = displayBackStack.size
+        /*
+         * NavDisplay calls back once for every entry the scene leaves, and navigateBack already
+         * leaves a study together with the entry it sits beside, so the calls after it pop nothing.
+         */
+        val onNavigateBack: () -> Unit = {
+            if (backStack.size >= displayedEntryCount) {
+                backStackController.navigateBack(isWide)
+            }
+        }
         val navigationTransitions = rememberNavigationTransitions()
         NavigationCommandCollector(
             backStackController = backStackController,
@@ -116,7 +125,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                     sceneStrategies = listOf(
                         DialogSceneStrategy(),
                         remember(isWide, dayStudyReadingFraction) {
-                            DayStudyPanelSceneStrategy(
+                            StudyPanelSceneStrategy(
                                 isWide = isWide,
                                 readingFraction = dayStudyReadingFraction,
                                 onReadingFractionCommit = dayStudyPanelViewModel::onReadingFractionChanged,
@@ -167,7 +176,12 @@ private fun NavigationCommandCollector(
     ActionCollector(navigator.commands) { command ->
         when (command) {
             is NavigationCommand.Navigate -> backStackController.navigate(command.route)
-            is NavigationCommand.NavigateReplacingTop -> backStackController.navigateReplacingTop(command.route)
+
+            is NavigationCommand.NavigateReplacingTop -> backStackController.navigateReplacingTop(
+                route = command.route,
+                isWide = currentIsWide,
+            )
+
             NavigationCommand.NavigateBack -> backStackController.navigateBack(currentIsWide)
         }
     }
