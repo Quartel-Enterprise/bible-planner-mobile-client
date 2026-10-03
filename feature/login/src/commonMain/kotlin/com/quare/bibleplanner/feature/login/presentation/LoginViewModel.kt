@@ -85,10 +85,11 @@ internal class LoginViewModel(
             is LoginUiEvent.SocialAuthResult -> {
                 trackAuthResult(uiEvent)
                 state.update {
-                    when (val result = uiEvent.result) {
-                        is NativeSignInResult.Success -> it
-
-                        else -> it.copy(
+                    val result = uiEvent.result
+                    if (result is NativeSignInResult.Success) {
+                        it
+                    } else {
+                        it.copy(
                             loadingProvider = null,
                             error = findLoginErrorOrNull(result),
                             showGoogleSignInUnavailableDialog = result.hasNoGoogleCredential(),

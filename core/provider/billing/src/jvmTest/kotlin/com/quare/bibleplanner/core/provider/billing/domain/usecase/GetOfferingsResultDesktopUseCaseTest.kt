@@ -18,6 +18,7 @@ class GetOfferingsResultDesktopUseCaseTest {
         title = "Monthly",
         description = "Pro monthly",
         type = StorePackageType.MONTHLY,
+        originalObject = null,
     )
 
     @Test

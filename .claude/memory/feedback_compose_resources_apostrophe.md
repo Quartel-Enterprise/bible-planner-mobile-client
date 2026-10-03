@@ -12,3 +12,5 @@ In this project's `composeResources/.../strings.xml` files, apostrophes must be 
 **Why:** Compose Multiplatform Resources does not process the `\'` XML escape — it renders the backslash literally, so the user sees `doesn\'t` on screen. The rest of the project follows the literal-apostrophe convention (e.g. `feature/logout`, `feature/read`, `feature/more`).
 
 **How to apply:** When adding/editing any `strings.xml` under `composeResources`, type apostrophes directly. Quotes (`"`) inside text are fine as-is too (see `feature/read` examples). Applies to all locales (en/pt/es).
+
+**Enforced** by `scripts/check_compose_apostrophes.py`, run by the `translations` workflow.

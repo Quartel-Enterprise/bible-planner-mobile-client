@@ -18,6 +18,7 @@ internal class StorePackageMapper(
         title = product.title,
         description = product.description.orEmpty(),
         type = packageDto.identifier.toStorePackageType(),
+        originalObject = null,
     )
 
     private fun String.toStorePackageType(): StorePackageType = when (this) {

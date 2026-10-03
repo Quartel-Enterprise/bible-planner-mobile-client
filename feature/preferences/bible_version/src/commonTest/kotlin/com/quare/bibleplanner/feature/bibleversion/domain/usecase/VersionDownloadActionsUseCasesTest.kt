@@ -24,6 +24,8 @@ internal class VersionDownloadActionsUseCasesTest {
                 BibleVersionEntity(
                     id = VERSION_ID,
                     status = DownloadStatus.IN_PROGRESS,
+                    totalChapters = 1189,
+                    contentVersion = "",
                 ),
             ),
         )

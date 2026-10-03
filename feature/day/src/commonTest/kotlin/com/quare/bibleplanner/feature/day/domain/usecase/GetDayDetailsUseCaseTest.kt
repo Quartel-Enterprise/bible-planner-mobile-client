@@ -70,6 +70,7 @@ internal class GetDayDetailsUseCaseTest {
             ),
         ),
         isRead = false,
+        isFavorite = false,
     )
     private lateinit var useCase: GetDayDetailsUseCase
 

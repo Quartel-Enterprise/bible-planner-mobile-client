@@ -165,6 +165,7 @@ internal class ChapterStudyDaoTest {
                 startVerse = 1,
                 endVerse = 7,
                 title = "Outline $label",
+                id = 0,
             ),
             ChapterStudyOutlineSectionEntity(
                 cacheKey = cacheKey,
@@ -172,6 +173,7 @@ internal class ChapterStudyDaoTest {
                 startVerse = 8,
                 endVerse = 24,
                 title = "Second outline $label",
+                id = 0,
             ),
         ),
         names = listOf(
@@ -179,6 +181,7 @@ internal class ChapterStudyDaoTest {
                 cacheKey = cacheKey,
                 position = 0,
                 name = "Name $label",
+                id = 0,
             ),
         ),
         crossReferences = listOf(
@@ -189,6 +192,7 @@ internal class ChapterStudyDaoTest {
                 chapterNumber = 5,
                 startVerse = 12,
                 endVerse = 19,
+                id = 0,
             ),
         ),
         questions = listOf(
@@ -196,6 +200,7 @@ internal class ChapterStudyDaoTest {
                 cacheKey = cacheKey,
                 position = 0,
                 text = "Question $label",
+                id = 0,
             ),
         ),
     )

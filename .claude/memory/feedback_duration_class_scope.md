@@ -19,3 +19,6 @@ fields rather than companion constants.
 
 **How to apply:** when introducing a backoff/timeout/poll interval as a `Duration`, declare it as a
 class-level `private val`. Related: [[feedback_use_suspendruncatching]].
+
+**Enforced** by the ktlint rule `bible-planner-style:companion-object-duration` (public/internal
+members) together with `companion-object-constants` (private ones).

@@ -288,6 +288,8 @@ internal class ReadDataPresentationModelFactoryTest {
                 number = number,
                 chapterId = chapterId,
                 isRead = isRead,
+                readUpdatedAt = null,
+                isReadPendingSync = false,
             ),
             texts = listOfNotNull(
                 text?.let {
@@ -295,6 +297,8 @@ internal class ReadDataPresentationModelFactoryTest {
                         verseId = verseId,
                         bibleVersionId = versionId,
                         text = it,
+                        id = 0,
+                        heading = null,
                     )
                 },
             ),
@@ -341,6 +345,9 @@ internal class ReadDataPresentationModelFactoryTest {
                             id = id,
                             number = chapterNumber,
                             bookId = bookId,
+                            isRead = false,
+                            readUpdatedAt = null,
+                            isReadPendingSync = false,
                         )
                     }
                 },

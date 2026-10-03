@@ -15,13 +15,40 @@ internal class BooksWithChapterMapperTest {
     @Test
     fun `maps one verse model per verse`() = runTest {
         val book = BookWithChapters(
-            book = BookEntity(id = "GEN", isRead = false, favoriteUpdatedAt = null, isFavoritePendingSync = false),
+            book = BookEntity(
+                id = "GEN",
+                isRead = false,
+                favoriteUpdatedAt = null,
+                isFavoritePendingSync = false,
+                isFavorite = false,
+            ),
             chapters = listOf(
                 ChapterWithVerses(
-                    chapter = ChapterEntity(id = 1, number = 1, bookId = "GEN", isRead = false),
+                    chapter = ChapterEntity(
+                        id = 1,
+                        number = 1,
+                        bookId = "GEN",
+                        isRead = false,
+                        readUpdatedAt = null,
+                        isReadPendingSync = false,
+                    ),
                     verses = listOf(
-                        VerseEntity(id = 1, number = 1, chapterId = 1, isRead = true),
-                        VerseEntity(id = 2, number = 2, chapterId = 1, isRead = false),
+                        VerseEntity(
+                            id = 1,
+                            number = 1,
+                            chapterId = 1,
+                            isRead = true,
+                            readUpdatedAt = null,
+                            isReadPendingSync = false,
+                        ),
+                        VerseEntity(
+                            id = 2,
+                            number = 2,
+                            chapterId = 1,
+                            isRead = false,
+                            readUpdatedAt = null,
+                            isReadPendingSync = false,
+                        ),
                     ),
                 ),
             ),
@@ -39,12 +66,32 @@ internal class BooksWithChapterMapperTest {
     fun `chapter read date is the latest read moment across the chapter flag and its verses`() = runTest {
         // Given
         val book = BookWithChapters(
-            book = BookEntity(id = "GEN", isRead = false, favoriteUpdatedAt = null, isFavoritePendingSync = false),
+            book = BookEntity(
+                id = "GEN",
+                isRead = false,
+                favoriteUpdatedAt = null,
+                isFavoritePendingSync = false,
+                isFavorite = false,
+            ),
             chapters = listOf(
                 ChapterWithVerses(
-                    chapter = ChapterEntity(id = 1, number = 1, bookId = "GEN", isRead = true, readUpdatedAt = 100L),
+                    chapter = ChapterEntity(
+                        id = 1,
+                        number = 1,
+                        bookId = "GEN",
+                        isRead = true,
+                        readUpdatedAt = 100L,
+                        isReadPendingSync = false,
+                    ),
                     verses = listOf(
-                        VerseEntity(id = 1, number = 1, chapterId = 1, isRead = true, readUpdatedAt = 250L),
+                        VerseEntity(
+                            id = 1,
+                            number = 1,
+                            chapterId = 1,
+                            isRead = true,
+                            readUpdatedAt = 250L,
+                            isReadPendingSync = false,
+                        ),
                     ),
                 ),
             ),
@@ -61,12 +108,32 @@ internal class BooksWithChapterMapperTest {
     fun `chapter read date is null when neither the chapter nor its verses were read`() = runTest {
         // Given
         val book = BookWithChapters(
-            book = BookEntity(id = "GEN", isRead = false, favoriteUpdatedAt = null, isFavoritePendingSync = false),
+            book = BookEntity(
+                id = "GEN",
+                isRead = false,
+                favoriteUpdatedAt = null,
+                isFavoritePendingSync = false,
+                isFavorite = false,
+            ),
             chapters = listOf(
                 ChapterWithVerses(
-                    chapter = ChapterEntity(id = 1, number = 1, bookId = "GEN", isRead = false),
+                    chapter = ChapterEntity(
+                        id = 1,
+                        number = 1,
+                        bookId = "GEN",
+                        isRead = false,
+                        readUpdatedAt = null,
+                        isReadPendingSync = false,
+                    ),
                     verses = listOf(
-                        VerseEntity(id = 1, number = 1, chapterId = 1, isRead = false),
+                        VerseEntity(
+                            id = 1,
+                            number = 1,
+                            chapterId = 1,
+                            isRead = false,
+                            readUpdatedAt = null,
+                            isReadPendingSync = false,
+                        ),
                     ),
                 ),
             ),

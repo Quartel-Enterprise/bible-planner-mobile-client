@@ -17,6 +17,7 @@ internal class BookFavoriteMapperTest {
             isFavorite = true,
             favoriteUpdatedAt = epochMillis,
             isFavoritePendingSync = true,
+            isRead = false,
         )
 
         val dto = mapper.toDto(userId = "user-1", entity = entity)

@@ -56,6 +56,7 @@ class BooksLocalDataSource(
                 )
             },
             isRead = false,
+            isFavorite = false,
         )
     }
 

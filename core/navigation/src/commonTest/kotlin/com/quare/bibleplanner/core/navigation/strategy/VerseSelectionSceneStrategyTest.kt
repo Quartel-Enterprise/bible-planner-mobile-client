@@ -35,6 +35,7 @@ internal class VerseSelectionSceneStrategyTest {
         key = ChapterStudyNavRoute(
             bookId = "JHN",
             chapterNumber = 3,
+            isCompanion = false,
         ),
         metadata = getChapterStudyPane(),
     )

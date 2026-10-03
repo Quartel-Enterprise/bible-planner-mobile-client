@@ -59,11 +59,13 @@ internal class BooksViewModelTest {
         id = BookId.GEN,
         chapters = listOf(chapter(isRead = true), chapter(isRead = true)),
         isRead = true,
+        isFavorite = false,
     )
     private val exodus = BookDataModel(
         id = BookId.EXO,
         chapters = listOf(chapter(isRead = true), chapter(isRead = false)),
         isRead = false,
+        isFavorite = false,
     )
     private val matthew = BookDataModel(
         id = BookId.MAT,
@@ -75,6 +77,7 @@ internal class BooksViewModelTest {
         id = BookId.JHN,
         chapters = emptyList(),
         isRead = false,
+        isFavorite = false,
     )
 
     private val defaultLocale: Locale = Locale.getDefault()

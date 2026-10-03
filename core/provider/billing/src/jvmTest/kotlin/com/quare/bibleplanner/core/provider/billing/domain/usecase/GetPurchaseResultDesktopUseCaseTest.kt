@@ -76,6 +76,7 @@ internal class GetPurchaseResultDesktopUseCaseTest {
         title = "Bible Planner Pro (Monthly)",
         description = "",
         type = StorePackageType.MONTHLY,
+        originalObject = null,
     )
 
     private fun prepareScenario(

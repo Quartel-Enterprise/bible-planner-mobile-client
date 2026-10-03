@@ -43,6 +43,8 @@ internal class BibleContentDaosTest {
                 id = BOOK_ID,
                 favoriteUpdatedAt = null,
                 isFavoritePendingSync = false,
+                isRead = false,
+                isFavorite = false,
             ),
             actual = book?.book,
         )
@@ -86,6 +88,8 @@ internal class BibleContentDaosTest {
                 BibleVersionEntity(
                     id = VERSION_ID,
                     status = DownloadStatus.DONE,
+                    totalChapters = 1189,
+                    contentVersion = "",
                 ),
             )
             database.verseDao().upsertVerseTexts(
@@ -94,6 +98,8 @@ internal class BibleContentDaosTest {
                         verseId = verseIds.first(),
                         bibleVersionId = VERSION_ID,
                         text = "In the beginning",
+                        id = 0,
+                        heading = null,
                     ),
                 ),
             )
@@ -152,6 +158,8 @@ internal class BibleContentDaosTest {
                 id = BOOK_ID,
                 favoriteUpdatedAt = null,
                 isFavoritePendingSync = false,
+                isRead = false,
+                isFavorite = false,
             ),
         )
         database.chapterDao().insertChapter(
@@ -159,6 +167,9 @@ internal class BibleContentDaosTest {
                 id = CHAPTER_ID,
                 number = 1,
                 bookId = BOOK_ID,
+                isRead = false,
+                readUpdatedAt = null,
+                isReadPendingSync = false,
             ),
         )
         return database.verseDao().upsertVerses(
@@ -167,6 +178,9 @@ internal class BibleContentDaosTest {
                     id = 0,
                     number = number,
                     chapterId = CHAPTER_ID,
+                    isRead = false,
+                    readUpdatedAt = null,
+                    isReadPendingSync = false,
                 )
             },
         )

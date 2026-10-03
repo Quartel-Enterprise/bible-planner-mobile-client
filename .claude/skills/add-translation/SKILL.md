@@ -19,6 +19,10 @@ The same workflow also runs [`scripts/check_unused_strings.py`](../../../scripts
 which fails when an English string isn't referenced by any code. It only reads the English files,
 so a new language never needs a change there.
 
+It runs [`scripts/check_compose_apostrophes.py`](../../../scripts/check_compose_apostrophes.py) too,
+which fails when a Compose Resources `strings.xml` escapes an apostrophe as `\'`: Compose Resources
+shows the backslash on screen, so translations write `doesn't` (or `l'année`) unescaped.
+
 Strings are only half of it here: the app has its own language picker, reading content and store
 listings keyed by language, so the language also has to be wired into code (step 5).
 

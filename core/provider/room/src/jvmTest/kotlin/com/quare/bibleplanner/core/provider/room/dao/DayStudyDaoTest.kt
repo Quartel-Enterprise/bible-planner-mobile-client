@@ -143,6 +143,7 @@ internal class DayStudyDaoTest {
                 position = 0,
                 title = "Summary $label",
                 body = "Body",
+                id = 0,
             ),
         ),
         takeaways = listOf(
@@ -150,6 +151,7 @@ internal class DayStudyDaoTest {
                 cacheKey = cacheKey,
                 position = 0,
                 text = "Takeaway $label",
+                id = 0,
             ),
         ),
         facts = listOf(
@@ -158,6 +160,7 @@ internal class DayStudyDaoTest {
                 position = 0,
                 label = "Author",
                 value = "Moses $label",
+                id = 0,
             ),
         ),
         questions = listOf(
@@ -166,6 +169,7 @@ internal class DayStudyDaoTest {
                 position = 0,
                 question = "Who? $label",
                 answer = "God",
+                id = 0,
             ),
         ),
     )

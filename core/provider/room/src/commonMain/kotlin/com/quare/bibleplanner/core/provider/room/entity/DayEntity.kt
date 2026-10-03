@@ -11,14 +11,14 @@ import androidx.room3.PrimaryKey
 )
 data class DayEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Long,
     val weekNumber: Int,
     val dayNumber: Int,
     @ColumnInfo(defaultValue = "'BOOKS'") val readingPlanType: String, // CHRONOLOGICAL or BOOKS
-    @ColumnInfo(defaultValue = "0") val isRead: Boolean = false,
-    val readTimestamp: Long? = null, // Epoch milliseconds, null if not read
-    val notes: String? = null,
+    @ColumnInfo(defaultValue = "0") val isRead: Boolean,
+    val readTimestamp: Long?, // Epoch milliseconds, null if not read
+    val notes: String?,
     // Day-meta sync metadata (readTimestamp + notes; isRead itself derives from chapter/verse state).
-    @ColumnInfo(defaultValue = "NULL") val metaUpdatedAt: Long? = null,
-    @ColumnInfo(defaultValue = "0") val isMetaPendingSync: Boolean = false,
+    @ColumnInfo(defaultValue = "NULL") val metaUpdatedAt: Long?,
+    @ColumnInfo(defaultValue = "0") val isMetaPendingSync: Boolean,
 )

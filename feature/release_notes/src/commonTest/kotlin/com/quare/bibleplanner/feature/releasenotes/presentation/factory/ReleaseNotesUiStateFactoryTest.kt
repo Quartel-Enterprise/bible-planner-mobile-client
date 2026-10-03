@@ -16,6 +16,7 @@ internal class ReleaseNotesUiStateFactoryTest {
     private val upcomingNote = ReleaseNoteModel(
         version = "999.0.0",
         changes = listOf("Something new"),
+        dateRepresentation = null,
     )
     private val latestNote = ReleaseNoteModel(
         version = "0.0.3",
@@ -25,6 +26,7 @@ internal class ReleaseNotesUiStateFactoryTest {
     private val unpublishedNote = ReleaseNoteModel(
         version = "0.0.2",
         changes = listOf("Never published"),
+        dateRepresentation = null,
     )
     private val pastNote = ReleaseNoteModel(
         version = "0.0.1",

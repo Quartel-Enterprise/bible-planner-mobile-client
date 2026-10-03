@@ -89,6 +89,7 @@ internal class DayDaoTest {
         notes = notes,
         metaUpdatedAt = 100L,
         isMetaPendingSync = true,
+        id = 0,
     )
 
     private companion object {

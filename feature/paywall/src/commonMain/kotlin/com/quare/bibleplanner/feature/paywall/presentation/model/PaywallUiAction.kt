@@ -5,6 +5,6 @@ import org.jetbrains.compose.resources.StringResource
 sealed interface PaywallUiAction {
     data class ShowSnackbar(
         val message: StringResource,
-        val args: List<Any> = emptyList(),
+        val args: List<Any>,
     ) : PaywallUiAction
 }

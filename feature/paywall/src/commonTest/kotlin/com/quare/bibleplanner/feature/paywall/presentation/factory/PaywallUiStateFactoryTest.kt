@@ -33,6 +33,7 @@ internal class PaywallUiStateFactoryTest {
         title = "Monthly",
         description = "Monthly plan",
         type = StorePackageType.MONTHLY,
+        originalObject = null,
     )
 
     private val annualPackage = StorePackage(
@@ -42,6 +43,7 @@ internal class PaywallUiStateFactoryTest {
         title = "Annual",
         description = "Annual plan",
         type = StorePackageType.ANNUAL,
+        originalObject = null,
     )
 
     @Test
@@ -141,7 +143,10 @@ internal class PaywallUiStateFactoryTest {
         val result = factory.create(STORE_NAME)
 
         // Then
-        assertEquals(PaywallUiStateFactory.PaywallInitializationResult(PaywallUiState.Error), result)
+        assertEquals(
+            PaywallUiStateFactory.PaywallInitializationResult(PaywallUiState.Error, storePackages = emptyList()),
+            result,
+        )
     }
 
     @Test
@@ -153,7 +158,10 @@ internal class PaywallUiStateFactoryTest {
         val result = factory.create(STORE_NAME)
 
         // Then
-        assertEquals(PaywallUiStateFactory.PaywallInitializationResult(PaywallUiState.Error), result)
+        assertEquals(
+            PaywallUiStateFactory.PaywallInitializationResult(PaywallUiState.Error, storePackages = emptyList()),
+            result,
+        )
     }
 
     private fun prepareScenario(offerings: Result<List<StorePackage>>) {

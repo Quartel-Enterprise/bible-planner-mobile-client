@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 data class ChapterStudyNavRoute(
     val bookId: String,
     val chapterNumber: Int,
-    val isCompanion: Boolean = false,
+    val isCompanion: Boolean,
 ) : NavRoute
 
 fun ReadNavRoute.toChapterStudyCompanion(): ChapterStudyNavRoute = ChapterStudyNavRoute(

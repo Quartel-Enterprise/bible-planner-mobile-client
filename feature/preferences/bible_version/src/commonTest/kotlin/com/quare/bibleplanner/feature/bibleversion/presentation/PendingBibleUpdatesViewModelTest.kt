@@ -58,6 +58,8 @@ internal class PendingBibleUpdatesViewModelTest {
                 BibleVersionEntity(
                     id = id,
                     status = DownloadStatus.DONE,
+                    totalChapters = 1189,
+                    contentVersion = "",
                 )
             },
         )

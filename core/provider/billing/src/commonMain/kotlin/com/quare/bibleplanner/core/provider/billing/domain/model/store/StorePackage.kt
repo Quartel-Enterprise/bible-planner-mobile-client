@@ -7,5 +7,5 @@ data class StorePackage(
     val title: String,
     val description: String,
     val type: StorePackageType,
-    val originalObject: Any? = null,
+    val originalObject: Any?,
 )

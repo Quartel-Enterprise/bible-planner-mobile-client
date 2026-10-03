@@ -61,6 +61,7 @@ internal class BookDetailsViewModelTest {
         id = BookId.GEN,
         chapters = listOf(chapter(number = 1, isRead = true), chapter(number = 2, isRead = false)),
         isRead = false,
+        isFavorite = false,
     )
 
     @BeforeTest
@@ -346,6 +347,8 @@ internal class BookDetailsViewModelTest {
                 id = "GEN",
                 favoriteUpdatedAt = null,
                 isFavoritePendingSync = false,
+                isRead = false,
+                isFavorite = false,
             ),
         )
         database.chapterDao().insertChapters(
@@ -358,6 +361,9 @@ internal class BookDetailsViewModelTest {
                         number = chapter.number,
                         bookId = "GEN",
                         isRead = chapter.isRead,
+                        id = 0,
+                        readUpdatedAt = null,
+                        isReadPendingSync = false,
                     )
                 },
         )

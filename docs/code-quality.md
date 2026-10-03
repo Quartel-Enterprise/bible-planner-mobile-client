@@ -143,12 +143,13 @@ full Gradle configuration it needs.
 
 ## String resources
 
-Two scripts guard the `strings.xml` files, and the `translations` workflow runs both on every pull
-request — and on every push to `main`:
+Three scripts guard the `strings.xml` files, and the `translations` workflow runs all of them on every
+pull request — and on every push to `main`:
 
 ```bash
-python3 scripts/check_translations.py    # every string exists in values-pt-rBR and values-es
-python3 scripts/check_unused_strings.py  # every string is referenced by the code
+python3 scripts/check_translations.py        # every string exists in values-pt-rBR and values-es
+python3 scripts/check_unused_strings.py      # every string is referenced by the code
+python3 scripts/check_compose_apostrophes.py # no Compose Resources string escapes an apostrophe as \'
 ```
 
 `check_unused_strings.py` reports a string no code references anymore, so a leftover of a removed
@@ -159,3 +160,7 @@ Android Lint's `UnusedResources` can't do this: it doesn't see Compose Resources
 
 When it fails, delete the reported strings from `values/strings.xml` and from every translation next
 to it.
+
+`check_compose_apostrophes.py` exists because Compose Resources does not process the Android-style
+`\'` escape: the backslash reaches the screen and the user reads `doesn\'t`. Under `composeResources`,
+write the apostrophe as it is (`doesn't`), in every locale.

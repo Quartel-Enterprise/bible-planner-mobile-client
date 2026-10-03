@@ -47,6 +47,8 @@ internal class InMemoryBibleDatabase(
                 id = bookId.name,
                 favoriteUpdatedAt = null,
                 isFavoritePendingSync = false,
+                isRead = false,
+                isFavorite = false,
             ),
         )
         versesPerChapter.forEachIndexed { index, verseCount ->
@@ -54,6 +56,10 @@ internal class InMemoryBibleDatabase(
                 ChapterEntity(
                     number = index + 1,
                     bookId = bookId.name,
+                    id = 0,
+                    isRead = false,
+                    readUpdatedAt = null,
+                    isReadPendingSync = false,
                 ),
             )
             database.verseDao().upsertVerses(
@@ -62,6 +68,9 @@ internal class InMemoryBibleDatabase(
                         id = 0,
                         number = verseNumber,
                         chapterId = chapterId,
+                        isRead = false,
+                        readUpdatedAt = null,
+                        isReadPendingSync = false,
                     )
                 },
             )

@@ -40,16 +40,22 @@ internal class GetChapterVerseTextsUseCaseTest {
                 verseId = first.id,
                 bibleVersionId = "web",
                 text = " In the beginning ",
+                id = 0,
+                heading = null,
             )
             database.verseTexts += VerseTextEntity(
                 verseId = second.id,
                 bibleVersionId = "web",
                 text = "The earth was formless",
+                id = 0,
+                heading = null,
             )
             database.verseTexts += VerseTextEntity(
                 verseId = first.id,
                 bibleVersionId = "arc",
                 text = "No princípio",
+                id = 0,
+                heading = null,
             )
 
             // When

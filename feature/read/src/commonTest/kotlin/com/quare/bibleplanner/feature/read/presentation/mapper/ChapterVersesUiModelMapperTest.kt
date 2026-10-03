@@ -83,9 +83,22 @@ internal class ChapterVersesUiModelMapperTest {
         number: Int,
         versions: List<String>,
     ): VerseWithTexts = VerseWithTexts(
-        verse = VerseEntity(id = number.toLong(), number = number, chapterId = CHAPTER_ID),
+        verse = VerseEntity(
+            id = number.toLong(),
+            number = number,
+            chapterId = CHAPTER_ID,
+            isRead = false,
+            readUpdatedAt = null,
+            isReadPendingSync = false,
+        ),
         texts = versions.map { version ->
-            VerseTextEntity(verseId = number.toLong(), bibleVersionId = version, text = "$version $number")
+            VerseTextEntity(
+                verseId = number.toLong(),
+                bibleVersionId = version,
+                text = "$version $number",
+                id = 0,
+                heading = null,
+            )
         },
     )
 

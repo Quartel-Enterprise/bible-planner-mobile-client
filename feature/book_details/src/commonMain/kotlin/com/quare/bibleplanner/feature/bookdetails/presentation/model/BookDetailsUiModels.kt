@@ -24,7 +24,7 @@ sealed interface BookDetailsUiState {
         val isFavorite: Boolean,
         val bookGroup: BookGroup,
         val bookCategoryName: String,
-        val isSynopsisExpanded: Boolean = false,
+        val isSynopsisExpanded: Boolean,
     ) : BookDetailsUiState
 }
 
