@@ -126,6 +126,15 @@ So:
 - Keep test names to letters, digits, spaces, `-` and `_`. D8 rejects an apostrophe or a comma at any
   API level.
 
+The test APK also needs an AdMob App ID. A module that depends on `core:study_unlock` pulls the ads
+SDK into its test APK. On a Google Play system image, the SDK's `MobileAdsInitProvider` then throws
+`Missing application ID` when the APK starts, before any test runs. The API 35 `default` image CI
+uses doesn't trip it. The app's own ID is only in `androidApp`'s manifest, so `:ui:testing`, which
+every test APK includes, declares Google's sample App ID in its `androidMain` manifest. That covers
+every device test, including one that starts depending on the ads SDK later. `build-logic` can't add
+it instead: the KMP Android plugin ignores generated manifests (`sources.manifests`) for its device
+tests.
+
 ## What is covered
 
 | Screen | Test |

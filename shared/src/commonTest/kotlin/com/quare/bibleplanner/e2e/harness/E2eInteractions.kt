@@ -10,13 +10,17 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasScrollToNodeAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.waitUntilDoesNotExist
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.TimeSource
@@ -77,12 +81,62 @@ internal fun ComposeUiTest.clickDescription(description: String) {
 @OptIn(ExperimentalTestApi::class)
 internal fun ComposeUiTest.click(matcher: SemanticsMatcher) {
     val node = awaitNode(matcher)
-    val isInScrollableContainer = generateSequence(node.fetchSemanticsNode().parent) { ancestor -> ancestor.parent }
-        .any { ancestor -> SemanticsActions.ScrollBy in ancestor.config }
+    val isInScrollableContainer = node.fetchSemanticsNode().ancestors().any { ancestor -> ancestor.isScrollable }
     if (isInScrollableContainer) {
         node.performScrollTo()
+    } else {
+        revealHiddenBar(
+            node = node,
+            matcher = matcher,
+        )
     }
     node.performClick()
+}
+
+// A bar that hides while the content scrolls down, like the read screen's top bar, keeps its nodes
+// with no size, and a click on them lands nowhere. Scrolling to a node can hide one: the click on a
+// verse below the fold hides the Back button of a phone in landscape. The user scrolls back up to
+// bring the bar back, so the lists of the node's own screen (the nearest ancestor that has any) are
+// swiped down until it shows, leaving the other panes alone. Not inside a sheet or a dialog, which a
+// swipe down can dismiss. A node that still doesn't show fails here rather than taking the click.
+@OptIn(ExperimentalTestApi::class)
+private fun ComposeUiTest.revealHiddenBar(
+    node: SemanticsNodeInteraction,
+    matcher: SemanticsMatcher,
+) {
+    if (node.isDisplayed()) return
+    val ancestors = node.fetchSemanticsNode().ancestors()
+    if (ancestors.none { ancestor -> ancestor.isDialogOrPopup }) {
+        val screenListIds = ancestors
+            .map { ancestor -> ancestor.scrollableDescendantIds() }
+            .firstOrNull { listIds -> listIds.isNotEmpty() }
+            .orEmpty()
+        val lists = onAllNodes(hasScrollAction())
+        lists
+            .fetchSemanticsNodes()
+            .withIndex()
+            .filter { (_, list) -> list.id in screenListIds }
+            .forEach { (index, _) ->
+                if (node.isDisplayed()) return
+                lists[index].performTouchInput { swipeDown() }
+            }
+    }
+    if (!node.isDisplayed()) {
+        throw AssertionError("The node (${matcher.description}) has no size to click\nOn screen:\n${screenText()}")
+    }
+}
+
+private fun SemanticsNode.ancestors(): Sequence<SemanticsNode> =
+    generateSequence(parent) { ancestor -> ancestor.parent }
+
+private val SemanticsNode.isScrollable: Boolean
+    get() = SemanticsActions.ScrollBy in config
+
+private val SemanticsNode.isDialogOrPopup: Boolean
+    get() = SemanticsProperties.IsDialog in config || SemanticsProperties.IsPopup in config
+
+private fun SemanticsNode.scrollableDescendantIds(): List<Int> = children.flatMap { child ->
+    listOfNotNull(child.id.takeIf { child.isScrollable }) + child.scrollableDescendantIds()
 }
 
 // Only the lists of the topmost root are scrolled: with a dialog open, the screen behind it isn't

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <!-- A device test APK gets the ads SDK from any module that depends on core:study_unlock, and
+             the SDK's MobileAdsInitProvider throws "Missing application ID" on a Google Play image
+             when the APK starts without one, before any test runs. The app's ID is only in
+             androidApp's manifest, so this module, which every device test APK includes, declares
+             Google's sample App ID instead. tools:replace wins over a library that declares an ID
+             of its own, which would otherwise fail the test APK's manifest merge. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"
+            tools:replace="android:value" />
+    </application>
+</manifest>
