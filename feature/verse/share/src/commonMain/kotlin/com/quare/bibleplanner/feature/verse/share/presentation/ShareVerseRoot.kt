@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.verse.share.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
@@ -24,7 +23,6 @@ import org.koin.core.parameter.parametersOf
 
 private val wideShareImageDialogWidth = 760.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.shareVerse() {
     entry<ShareVerseNavRoute>(
         metadata = DialogSceneStrategy.dialog(

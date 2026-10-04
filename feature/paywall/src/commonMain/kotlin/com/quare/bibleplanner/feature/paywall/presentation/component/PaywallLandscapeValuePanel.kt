@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.paywall.presentation.component
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,6 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val BACK_ICON_BOTTOM_SPACING = 18
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun PaywallLandscapeValuePanel(
     platform: Platform,

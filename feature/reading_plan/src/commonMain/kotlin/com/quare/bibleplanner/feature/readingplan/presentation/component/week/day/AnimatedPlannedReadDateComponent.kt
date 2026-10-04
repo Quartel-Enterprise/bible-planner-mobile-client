@@ -2,13 +2,11 @@ package com.quare.bibleplanner.feature.readingplan.presentation.component.week.d
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.quare.bibleplanner.feature.readingplan.presentation.model.DayPlanPresentationModel
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun SharedTransitionScope.AnimatedPlannedReadDateComponent(
     modifier: Modifier = Modifier,

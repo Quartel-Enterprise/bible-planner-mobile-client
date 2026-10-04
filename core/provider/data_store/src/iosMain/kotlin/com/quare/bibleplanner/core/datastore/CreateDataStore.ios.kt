@@ -7,7 +7,6 @@ import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
-@OptIn(ExperimentalForeignApi::class)
 actual fun createDataStore(): DataStore<Preferences> = createCommonDataStore(
     producePath = { dataStoreFileName ->
         getDocumentDirectory() + "/$dataStoreFileName"

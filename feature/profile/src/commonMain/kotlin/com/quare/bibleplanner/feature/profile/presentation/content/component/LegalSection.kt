@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.profile.presentation.content.component
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
@@ -16,7 +15,6 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionIt
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LegalSection(
     isPrivacyOptionsVisible: Boolean,

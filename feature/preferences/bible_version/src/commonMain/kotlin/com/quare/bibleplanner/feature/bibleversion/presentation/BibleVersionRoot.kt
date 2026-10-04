@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.bibleversion.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
@@ -27,7 +26,6 @@ import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot() {
     entry<BibleVersionSelectorRoute>(
         metadata = DialogSceneStrategy.dialog(

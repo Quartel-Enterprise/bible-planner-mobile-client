@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.ui.component.icon
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -16,7 +15,6 @@ import bibleplanner.ui.component.generated.resources.Res
 import bibleplanner.ui.component.generated.resources.favorite
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FavoriteIcon(
     isFavorite: Boolean,
@@ -46,7 +44,6 @@ fun FavoriteIcon(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FavoriteIconButton(
     isFavorite: Boolean,

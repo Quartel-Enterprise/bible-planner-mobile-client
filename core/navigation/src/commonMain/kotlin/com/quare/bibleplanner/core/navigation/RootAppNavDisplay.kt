@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.core.navigation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,7 +58,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private val dayStudyPanelMinWidth = 700.dp
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun RootAppNavDisplay(modifier: Modifier = Modifier) {
     val backStack = rememberNavBackStack(navigationSavedStateConfiguration, MainNavRoute)

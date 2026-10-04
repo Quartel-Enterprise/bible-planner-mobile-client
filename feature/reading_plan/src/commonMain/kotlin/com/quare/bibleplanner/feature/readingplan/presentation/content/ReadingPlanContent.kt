@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.content
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -50,7 +49,6 @@ import org.jetbrains.compose.resources.stringResource
 private val splitBreakpoint = 600.dp
 private const val WEEK_SHIMMER_COUNT = 4
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun ReadingPlanScreen(
     sharedTransitionScope: SharedTransitionScope,
@@ -155,7 +153,6 @@ private fun ResponsiveContentScope.sidePanelItems(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 private fun ResponsiveContentScope.weekItems(
     loadedUiState: ReadingPlanUiState.Loaded?,
     sharedTransitionScope: SharedTransitionScope,

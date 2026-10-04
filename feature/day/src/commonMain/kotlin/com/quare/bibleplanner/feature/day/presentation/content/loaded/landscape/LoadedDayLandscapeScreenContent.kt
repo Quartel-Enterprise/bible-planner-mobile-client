@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
 private val readingContentMaxWidth = 560.dp
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LoadedDayLandscapeContent(
     day: DayModel,

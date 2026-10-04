@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.core.navigation.slot
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -11,7 +10,6 @@ import java.lang.reflect.Proxy
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 internal class RootMainTabEntriesTest {
     @Test
     fun `GIVEN the main tab entries WHEN registering them THEN every tab destination resolves to an entry`() {

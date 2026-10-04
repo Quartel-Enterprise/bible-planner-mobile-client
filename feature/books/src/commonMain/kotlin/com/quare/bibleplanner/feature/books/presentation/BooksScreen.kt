@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +19,6 @@ import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BooksScreen(
     state: BooksUiState,

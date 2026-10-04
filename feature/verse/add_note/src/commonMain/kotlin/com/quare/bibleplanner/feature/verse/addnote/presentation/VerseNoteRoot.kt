@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.verse.addnote.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
@@ -19,7 +18,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.verseNote() {
     entry<VerseNoteNavRoute>(
         metadata = DialogSceneStrategy.dialog(

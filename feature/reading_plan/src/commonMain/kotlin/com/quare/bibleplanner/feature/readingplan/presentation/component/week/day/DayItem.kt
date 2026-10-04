@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.component.week.day
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
@@ -39,7 +38,6 @@ import org.jetbrains.compose.resources.stringResource
 private const val FLASH_START_ALPHA = 0.28f
 private const val FLASH_DURATION_MILLIS = 1400
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun SharedTransitionScope.DayItem(
     animatedContentScope: AnimatedContentScope,

@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.profile.presentation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +25,6 @@ import com.quare.bibleplanner.ui.utils.MainTabScaffold
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.profile(
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
@@ -43,7 +41,6 @@ fun EntryProviderScope<NavKey>.profile(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ProfileTabContent(
     navigationBar: @Composable (Modifier) -> Unit,

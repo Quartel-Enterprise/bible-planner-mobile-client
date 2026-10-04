@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.bibleversion.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.DialogProperties
@@ -19,7 +18,6 @@ import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.pendingBibleUpdates() {
     entry<PendingBibleUpdatesNavRoute>(
         metadata = DialogSceneStrategy.dialog(

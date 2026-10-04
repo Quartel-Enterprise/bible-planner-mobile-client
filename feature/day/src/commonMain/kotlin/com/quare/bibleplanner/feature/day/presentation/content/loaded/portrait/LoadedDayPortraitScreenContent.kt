@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.content.loaded.portrait
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,7 +19,6 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 internal fun ResponsiveContentScope.loadedDayPortraitScreenContent(
     day: DayModel,
     onEvent: (DayUiEvent) -> Unit,

@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.profile.presentation.content.component
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.HorizontalDivider
@@ -15,7 +14,6 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileOptionIt
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun AccountDataSection(
     isLoggedIn: Boolean,

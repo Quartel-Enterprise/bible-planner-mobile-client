@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.bookdetails.presentation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,7 +11,6 @@ import com.quare.bibleplanner.feature.bookdetails.presentation.viewmodel.BookDet
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.bookDetails(sharedTransitionScope: SharedTransitionScope) {
     entry<BookDetailsNavRoute> { route ->
         val viewModel = koinViewModel<BookDetailsViewModel> { parametersOf(route) }

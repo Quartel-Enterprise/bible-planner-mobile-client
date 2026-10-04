@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.content.loaded
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -19,7 +18,6 @@ import com.quare.bibleplanner.ui.utils.toStringResource
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun SharedTransitionScope.PlannedReadDateComponent(
     modifier: Modifier = Modifier,
