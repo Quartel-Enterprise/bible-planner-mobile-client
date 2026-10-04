@@ -6,10 +6,10 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
 
 @Composable
-actual fun DialogWindowDimEffect() {
+actual fun ClearDialogWindowDimEffect() {
     val view = LocalView.current
     SideEffect {
         val dialogWindowProvider = view.parent as? DialogWindowProvider
-        dialogWindowProvider?.window?.setDimAmount(0.18f)
+        dialogWindowProvider?.window?.setDimAmount(0f)
     }
 }

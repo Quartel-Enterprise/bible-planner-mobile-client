@@ -3,16 +3,14 @@ package com.quare.bibleplanner.feature.dayreadingcomplete.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.DayReadingCompleteNavRoute
+import com.quare.bibleplanner.core.model.route.getSheetPane
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiAction
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.model.DayReadingCompleteUiEvent
 import com.quare.bibleplanner.feature.dayreadingcomplete.presentation.viewmodel.DayReadingCompleteViewModel
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
-import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
@@ -22,11 +20,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun EntryProviderScope<NavKey>.dayReadingComplete() {
-    entry<DayReadingCompleteNavRoute>(
-        metadata = DialogSceneStrategy.dialog(
-            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
-        ),
-    ) { route ->
+    entry<DayReadingCompleteNavRoute>(metadata = getSheetPane()) { route ->
         val viewModel = koinViewModel<DayReadingCompleteViewModel> { parametersOf(route) }
         val uiState by viewModel.uiState.collectAsState()
 

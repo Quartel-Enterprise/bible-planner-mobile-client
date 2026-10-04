@@ -10,28 +10,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.scene.DialogSceneStrategy
 import bibleplanner.feature.preferences.bible_version.generated.resources.Res
 import bibleplanner.feature.preferences.bible_version.generated.resources.bible_versions
 import bibleplanner.feature.preferences.bible_version.generated.resources.manage_bible_versions_description
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
+import com.quare.bibleplanner.core.model.route.getSheetPane
 import com.quare.bibleplanner.feature.bibleversion.presentation.component.BibleVersionsContent
 import com.quare.bibleplanner.feature.bibleversion.presentation.model.BibleVersionUiEvent
 import com.quare.bibleplanner.feature.bibleversion.presentation.utils.BibleVersionsActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
-import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot() {
-    entry<BibleVersionSelectorRoute>(
-        metadata = DialogSceneStrategy.dialog(
-            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
-        ),
-    ) {
+    entry<BibleVersionSelectorRoute>(metadata = getSheetPane()) {
         val viewModel: BibleVersionViewModel = koinViewModel()
         val onEvent = viewModel::onEvent
         val uiState by viewModel.uiState.collectAsState()

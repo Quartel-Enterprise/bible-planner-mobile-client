@@ -27,21 +27,30 @@ import bibleplanner.feature.congrats.generated.resources.congrats_message
 import bibleplanner.feature.congrats.generated.resources.congrats_title
 import com.quare.bibleplanner.feature.congrats.presentation.model.CongratsUiEvent
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.utils.sheet.SheetExitAnimationEffect
+import com.quare.bibleplanner.ui.utils.sheet.blockPointerInput
+import com.quare.bibleplanner.ui.utils.sheet.rememberSheetCloseGuard
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CongratsBottomSheet(onEvent: (CongratsUiEvent) -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetCloseGuard = rememberSheetCloseGuard()
+    val onDismiss = { sheetCloseGuard.close { onEvent(CongratsUiEvent.OnDismiss) } }
+    SheetExitAnimationEffect(
+        animateOut = sheetState::hide,
+        animateBackIn = sheetState::show,
+    )
     ModalBottomSheet(
-        onDismissRequest = {
-            onEvent(CongratsUiEvent.OnDismiss)
-        },
+        onDismissRequest = onDismiss,
         sheetState = sheetState,
+        sheetGesturesEnabled = !sheetCloseGuard.isClosing,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .blockPointerInput(isBlocked = sheetCloseGuard.isClosing)
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 32.dp, top = 16.dp)
                 .verticalScroll(rememberScrollState()),
@@ -74,7 +83,7 @@ internal fun CongratsBottomSheet(onEvent: (CongratsUiEvent) -> Unit) {
             VerticalSpacer(32.dp)
 
             Button(
-                onClick = { onEvent(CongratsUiEvent.OnDismiss) },
+                onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(text = stringResource(Res.string.congrats_button))
