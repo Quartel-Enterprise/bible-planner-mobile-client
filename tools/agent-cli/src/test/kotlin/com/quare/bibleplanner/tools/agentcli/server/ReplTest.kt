@@ -23,36 +23,37 @@ internal class ReplTest {
     }
 
     @Test
-    fun `answers each line with one JSON line and stops at quit`() = runTest {
-        // Given
-        val fixture = createAgentCliFixture(
-            mainDispatcher = UnconfinedTestDispatcher(testScheduler),
-            isWide = false,
-        )
-        val output = ByteArrayOutputStream()
+    fun `GIVEN lines on stdin WHEN running the REPL THEN answers each with one JSON line and stops at quit`() =
+        runTest {
+            // Given
+            val fixture = createAgentCliFixture(
+                mainDispatcher = UnconfinedTestDispatcher(testScheduler),
+                isWide = false,
+            )
+            val output = ByteArrayOutputStream()
 
-        // When
-        Repl(
-            cli = fixture.cli,
-            output = Json,
-            input = "# comment\nstack\n\nquit\nstack\n".reader().buffered(),
-            responses = PrintStream(output, true, Charsets.UTF_8),
-        ).run()
+            // When
+            Repl(
+                cli = fixture.cli,
+                output = Json,
+                input = "# comment\nstack\n\nquit\nstack\n".reader().buffered(),
+                responses = PrintStream(output, true, Charsets.UTF_8),
+            ).run()
 
-        // Then
-        assertEquals(
-            expected = listOf("true", "true"),
-            actual = output
-                .toString(Charsets.UTF_8)
-                .lines()
-                .filter(String::isNotBlank)
-                .map { line ->
-                    Json
-                        .parseToJsonElement(line)
-                        .jsonObject
-                        .getValue("ok")
-                        .jsonPrimitive.content
-                },
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf("true", "true"),
+                actual = output
+                    .toString(Charsets.UTF_8)
+                    .lines()
+                    .filter(String::isNotBlank)
+                    .map { line ->
+                        Json
+                            .parseToJsonElement(line)
+                            .jsonObject
+                            .getValue("ok")
+                            .jsonPrimitive.content
+                    },
+            )
+        }
 }

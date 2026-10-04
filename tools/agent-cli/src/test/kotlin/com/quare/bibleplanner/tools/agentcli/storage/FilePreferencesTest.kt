@@ -23,7 +23,7 @@ internal class FilePreferencesTest {
     }
 
     @Test
-    fun `values survive a new root on the same directory`() {
+    fun `GIVEN a saved value WHEN opening a new root on the same directory THEN the value is still there`() {
         // Given
         createRoot().node("com/quare/billing").put("id", "abc")
 
@@ -38,7 +38,7 @@ internal class FilePreferencesTest {
     }
 
     @Test
-    fun `lists keys and children and removes them`() {
+    fun `GIVEN keys and children WHEN listing and removing them THEN reflects each change`() {
         // Given
         val root = createRoot()
         root.put("session", "token")
@@ -65,7 +65,7 @@ internal class FilePreferencesTest {
     }
 
     @Test
-    fun `the factory serves one root for users and the system`() {
+    fun `GIVEN the factory WHEN asking for the user and system roots THEN serves the same root`() {
         // Given
         System.setProperty(FilePreferencesFactory.ROOT_PROPERTY, directory.absolutePath)
         val factory = FilePreferencesFactory()

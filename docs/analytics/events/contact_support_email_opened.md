@@ -16,8 +16,8 @@ User taps "send email" in the contact-support sheet; the ViewModel builds the ma
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_logged_in` | boolean | `true` | Whether the user is authenticated, derived from `ContactSupportUiState.accountStatusModel` (`AccountStatusModel.LoggedIn` vs `LoggedOut`) |
-| `is_pro` | boolean | `false` | Standard param, derived from `ContactSupportUiState.subscriptionStatus` (`Loadable<SubscriptionStatus?>`) |
+| `is_logged_in` | string | `"true"` | Whether the user is authenticated, derived from `ContactSupportUiState.accountStatusModel` (`AccountStatusModel.LoggedIn` vs `LoggedOut`) |
+| `is_pro` | string | `"false"` | Standard param, derived from `ContactSupportUiState.subscriptionStatus` (`Loadable<SubscriptionStatus?>`) |
 
 ## Notes
 

@@ -38,7 +38,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `starts on the initial route with its ViewModels`() = runTest {
+    fun `GIVEN a new session WHEN reading the stack THEN shows only the initial route`() = runTest {
         // Given
         prepareScenario()
 
@@ -57,7 +57,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `an event that navigates opens the next screen and logs the navigation`() = runTest {
+    fun `GIVEN the main screen WHEN an event navigates THEN opens the next screen and logs the navigation`() = runTest {
         // Given
         prepareScenario()
 
@@ -86,7 +86,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `open shows a route directly and back closes it`() = runTest {
+    fun `GIVEN an opened route WHEN going back THEN closes its screen and clears its ViewModels`() = runTest {
         // Given
         prepareScenario()
         send("open DayNavRoute {\"dayNumber\": 2, \"weekNumber\": 1, \"readingPlanType\": \"BOOKS\"}")
@@ -108,7 +108,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `a screen that fails to open leaves the stack and its screens as they were`() = runTest {
+    fun `GIVEN a ViewModel that fails to build WHEN replacing the top screen THEN nothing changes`() = runTest {
         // Given
         prepareScenario()
         send("open DayNavRoute {\"dayNumber\": 2, \"weekNumber\": 1, \"readingPlanType\": \"BOOKS\"}")
@@ -133,7 +133,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `a wide window opens the study beside the day and both share the screen`() = runTest {
+    fun `GIVEN a wide window WHEN opening a day THEN the study opens beside it and both share the screen`() = runTest {
         // Given
         prepareScenario(isWide = true)
 
@@ -155,7 +155,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `a narrow window tells the screen it is narrow`() = runTest {
+    fun `GIVEN a narrow window WHEN opening a day THEN tells the screen it is narrow`() = runTest {
         // Given
         prepareScenario()
 
@@ -170,23 +170,24 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `a command waits for the change it caused even after a quiet screen`() = runTest {
-        // Given
-        prepareScenario()
-        send("settle 500")
+    fun `GIVEN a quiet screen WHEN an event changes the state after a delay THEN the command waits for the change`() =
+        runTest {
+            // Given
+            prepareScenario()
+            send("settle 500")
 
-        // When
-        send("event OnSlowSaveClick")
+            // When
+            send("event OnSlowSaveClick")
 
-        // Then
-        assertEquals(
-            expected = JsonPrimitive("saved"),
-            actual = send("state HomeViewModel.uiState").result,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = JsonPrimitive("saved"),
+                actual = send("state HomeViewModel.uiState").result,
+            )
+        }
 
     @Test
-    fun `replace swaps the top screen`() = runTest {
+    fun `GIVEN an opened route WHEN replacing it THEN swaps the top screen`() = runTest {
         // Given
         prepareScenario()
         send("open DayNavRoute {\"dayNumber\": 2, \"weekNumber\": 1, \"readingPlanType\": \"BOOKS\"}")
@@ -204,7 +205,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `an event sent to a ViewModel updates its state`() = runTest {
+    fun `GIVEN an opened route WHEN sending an event to its ViewModel THEN its state updates`() = runTest {
         // Given
         prepareScenario()
         send("open DayNavRoute {\"dayNumber\": 2, \"weekNumber\": 1, \"readingPlanType\": \"BOOKS\"}")
@@ -220,7 +221,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `the ViewModel calling back navigates back`() = runTest {
+    fun `GIVEN an opened route WHEN its ViewModel navigates back THEN the screen closes and it is logged`() = runTest {
         // Given
         prepareScenario()
         send("open DayNavRoute {\"dayNumber\": 2, \"weekNumber\": 1, \"readingPlanType\": \"BOOKS\"}")
@@ -240,7 +241,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `reset goes back to the initial route`() = runTest {
+    fun `GIVEN an opened route WHEN resetting THEN goes back to the initial route`() = runTest {
         // Given
         prepareScenario()
         send("open ThemeNavRoute")
@@ -258,7 +259,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `snackbars land in the log with their text`() = runTest {
+    fun `GIVEN the main screen WHEN an event shows a snackbar THEN the log holds it with its text`() = runTest {
         // Given
         prepareScenario()
 
@@ -275,24 +276,25 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `the app-level ViewModels have their own state and take events by name`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN the app-level ViewModels WHEN reading their state and sending them an event THEN both work by name`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        val state = send("state --app").result
-        val event = send("event AppLevelViewModel.OnReset")
+            // When
+            val state = send("state --app").result
+            val event = send("event AppLevelViewModel.OnReset")
 
-        // Then
-        assertEquals(
-            expected = Json.parseToJsonElement("""{"AppLevelViewModel": {"theme": "SYSTEM"}}"""),
-            actual = state,
-        )
-        assertTrue(event.isOk)
-    }
+            // Then
+            assertEquals(
+                expected = Json.parseToJsonElement("""{"AppLevelViewModel": {"theme": "SYSTEM"}}"""),
+                actual = state,
+            )
+            assertTrue(event.isOk)
+        }
 
     @Test
-    fun `an event two ViewModels of the screen accept must be aimed at one`() = runTest {
+    fun `GIVEN two ViewModels accepting the same event WHEN sending it unqualified THEN asks to name one`() = runTest {
         // Given
         prepareScenario()
         send("open ThemeNavRoute")
@@ -308,36 +310,37 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `lists events, functions and routes`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN the main screen WHEN listing events functions and routes THEN describes each with its arguments`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        val events = send("events HomeViewModel").result
-        val functions = send("functions HomeViewModel").result
-        val routes = send("routes DayNavRoute").result
+            // When
+            val events = send("events HomeViewModel").result
+            val functions = send("functions HomeViewModel").result
+            val routes = send("routes DayNavRoute").result
 
-        // Then
-        assertEquals(
-            expected = Json.parseToJsonElement(
-                """{"HomeViewModel": ["OnDayClick(dayNumber: Int)", "OnSlowSaveClick", "OnSnackbarClick"]}""",
-            ),
-            actual = events,
-        )
-        assertEquals(
-            expected = Json.parseToJsonElement("""{"HomeViewModel": ["onEvent(event: HomeUiEvent)"]}"""),
-            actual = functions,
-        )
-        assertEquals(
-            expected = Json.parseToJsonElement(
-                """["DayNavRoute(dayNumber: Int, weekNumber: Int, readingPlanType: String) -> DayScreenViewModel"]""",
-            ),
-            actual = routes,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = Json.parseToJsonElement(
+                    """{"HomeViewModel": ["OnDayClick(dayNumber: Int)", "OnSlowSaveClick", "OnSnackbarClick"]}""",
+                ),
+                actual = events,
+            )
+            assertEquals(
+                expected = Json.parseToJsonElement("""{"HomeViewModel": ["onEvent(event: HomeUiEvent)"]}"""),
+                actual = functions,
+            )
+            assertEquals(
+                expected = Json.parseToJsonElement(
+                    """["DayNavRoute(dayNumber: Int, weekNumber: Int, readingPlanType: String) -> DayScreenViewModel"]""",
+                ),
+                actual = routes,
+            )
+        }
 
     @Test
-    fun `a route without a known ViewModel says so`() = runTest {
+    fun `GIVEN a route without a known ViewModel WHEN listing it THEN says so`() = runTest {
         // Given
         prepareScenario()
 
@@ -352,7 +355,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `calls a ViewModel function`() = runTest {
+    fun `GIVEN a public ViewModel function WHEN calling it THEN answers its result`() = runTest {
         // Given
         prepareScenario()
 
@@ -367,7 +370,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `a call must name its ViewModel`() = runTest {
+    fun `GIVEN a call without a ViewModel WHEN running it THEN explains the usage`() = runTest {
         // Given
         prepareScenario()
 
@@ -382,7 +385,7 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `wait returns once the state reaches the value`() = runTest {
+    fun `GIVEN a state already at the value WHEN waiting for it THEN returns the value`() = runTest {
         // Given
         prepareScenario()
         send("event SampleViewModel.OnCount {\"amount\": 1}")
@@ -398,46 +401,48 @@ internal class AgentCliTest {
     }
 
     @Test
-    fun `wait fails with the last value after its timeout`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN a state that never reaches the value WHEN waiting THEN fails with the last value after the timeout`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        val response = send("wait SampleViewModel.uiState = Loaded --timeout 200")
+            // When
+            val response = send("wait SampleViewModel.uiState = Loaded --timeout 200")
 
-        // Then
-        assertEquals(
-            expected = "timed out after 200ms waiting for SampleViewModel.uiState; last value: \"Loading\"",
-            actual = response.error,
-        )
-    }
-
-    @Test
-    fun `settle, log, help and quit answer without changing the screen`() = runTest {
-        // Given
-        prepareScenario()
-
-        // When
-        val settle = send("settle 50")
-        val log = send("log")
-        val help = send("help")
-        val quit = cli.run("quit")
-
-        // Then
-        assertEquals(
-            expected = JsonPrimitive(true),
-            actual = settle.result,
-        )
-        assertEquals(
-            expected = JsonArray(emptyList()),
-            actual = log.result,
-        )
-        assertTrue(help.result.jsonArray.isNotEmpty())
-        assertTrue(quit.isQuit)
-    }
+            // Then
+            assertEquals(
+                expected = "timed out after 200ms waiting for SampleViewModel.uiState; last value: \"Loading\"",
+                actual = response.error,
+            )
+        }
 
     @Test
-    fun `a bad command answers with an error instead of failing`() = runTest {
+    fun `GIVEN the main screen WHEN running settle log help and quit THEN each answers without changing the screen`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            val settle = send("settle 50")
+            val log = send("log")
+            val help = send("help")
+            val quit = cli.run("quit")
+
+            // Then
+            assertEquals(
+                expected = JsonPrimitive(true),
+                actual = settle.result,
+            )
+            assertEquals(
+                expected = JsonArray(emptyList()),
+                actual = log.result,
+            )
+            assertTrue(help.result.jsonArray.isNotEmpty())
+            assertTrue(quit.isQuit)
+        }
+
+    @Test
+    fun `GIVEN bad commands WHEN running them THEN each answers with an error`() = runTest {
         // Given
         prepareScenario()
 

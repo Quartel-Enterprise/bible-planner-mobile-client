@@ -31,6 +31,7 @@ internal class HeadlessViewModelTest {
     private val decoder = ArgumentDecoder(Json)
     private lateinit var log: SessionLog
     private lateinit var viewModel: SampleViewModel
+    private lateinit var headless: HeadlessViewModel
 
     @AfterTest
     fun tearDown() {
@@ -38,9 +39,9 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `shows every flow the ViewModel exposes as state`() = runTest {
+    fun `GIVEN a ViewModel WHEN reading its state THEN shows every flow it exposes`() = runTest {
         // Given
-        val headless = prepareScenario()
+        prepareScenario()
 
         // When
         val state = headless.readState(
@@ -62,9 +63,9 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `an event reaches the ViewModel and its new state shows`() = runTest {
+    fun `GIVEN a ViewModel WHEN sending it an event THEN its new state shows`() = runTest {
         // Given
-        val headless = prepareScenario()
+        prepareScenario()
 
         // When
         headless.send(SampleUiEvent.OnCount(amount = 2))
@@ -80,9 +81,9 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `one-shot actions land in the log`() = runTest {
+    fun `GIVEN a ViewModel WHEN it emits an action THEN the action lands in the log`() = runTest {
         // Given
-        val headless = prepareScenario()
+        prepareScenario()
         log.takeEntries()
 
         // When
@@ -102,7 +103,7 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `a cold flow named after messages is read as actions`() = runTest {
+    fun `GIVEN a cold flow named after messages WHEN collecting it THEN reads it as actions`() = runTest {
         // When
         prepareScenario()
 
@@ -118,9 +119,9 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `lists the events of the ViewModel`() = runTest {
+    fun `GIVEN a ViewModel WHEN listing its events THEN lists every subtype`() = runTest {
         // Given
-        val headless = prepareScenario()
+        prepareScenario()
 
         // When
         val eventNames = headless.eventTypes.map { it.simpleName }
@@ -133,11 +134,11 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `resolves the event type a generic base class declares`() = runTest {
+    fun `GIVEN a generic base class WHEN sending an event THEN resolves the event type it declares`() = runTest {
         // Given
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         val genericViewModel = GenericEventViewModel()
-        val headless = HeadlessViewModel(
+        val genericHeadless = HeadlessViewModel(
             viewModel = genericViewModel,
             scope = backgroundScope,
             log = SessionLog(testTimeSource),
@@ -145,12 +146,12 @@ internal class HeadlessViewModelTest {
         )
 
         // When
-        headless.send(SampleUiEvent.OnReset)
+        genericHeadless.send(SampleUiEvent.OnReset)
 
         // Then
         assertEquals(
             expected = 8,
-            actual = headless.eventTypes.size,
+            actual = genericHeadless.eventTypes.size,
         )
         assertEquals(
             expected = listOf<SampleUiEvent>(SampleUiEvent.OnReset),
@@ -159,9 +160,9 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `calls public functions with named arguments`() = runTest {
+    fun `GIVEN public functions WHEN calling them with named arguments THEN answers their results`() = runTest {
         // Given
-        val headless = prepareScenario()
+        prepareScenario()
 
         // When
         val results = listOf(
@@ -193,9 +194,9 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `an unknown or overloaded function fails`() = runTest {
+    fun `GIVEN an unknown and an overloaded function WHEN calling them THEN both fail with their reason`() = runTest {
         // Given
-        val headless = prepareScenario()
+        prepareScenario()
 
         // When
         val errors = listOf("missing", "findOverloaded").map { functionName ->
@@ -220,9 +221,9 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `lists the public functions with their parameters`() = runTest {
+    fun `GIVEN a ViewModel WHEN listing its functions THEN lists each with its parameters`() = runTest {
         // Given
-        val headless = prepareScenario()
+        prepareScenario()
 
         // When
         val functions = headless.getFunctions(decoder)
@@ -241,11 +242,11 @@ internal class HeadlessViewModelTest {
         )
     }
 
-    private fun TestScope.prepareScenario(): HeadlessViewModel {
+    private fun TestScope.prepareScenario() {
         Dispatchers.setMain(UnconfinedTestDispatcher(testScheduler))
         log = SessionLog(testTimeSource)
         viewModel = SampleViewModel()
-        return HeadlessViewModel(
+        headless = HeadlessViewModel(
             viewModel = viewModel,
             scope = CoroutineScope(backgroundScope.coroutineContext + UnconfinedTestDispatcher(testScheduler)),
             log = log,

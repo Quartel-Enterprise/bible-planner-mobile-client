@@ -18,7 +18,7 @@ User taps the favorite (heart) toggle on a book card in the books list or on the
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `book_id` | string | `psalms` | Book being (un)favorited |
-| `is_favorite` | boolean | `true` | New favorite status after the toggle |
+| `is_favorite` | string | `"true"` | New favorite status after the toggle |
 | `source` | string | `books_list` \| `book_details` | Which surface triggered the toggle |
 
 ## Notes

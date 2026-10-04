@@ -13,7 +13,7 @@ internal class LoggingBibleVersionDownloadNotifierTest {
     private val notifier = LoggingBibleVersionDownloadNotifier(log)
 
     @Test
-    fun `logs each step of a download but not every progress tick`() = runTest {
+    fun `GIVEN a download WHEN it progresses and finishes THEN logs each step but not every tick`() = runTest {
         // When
         notifier.showProgress("WEB", "World English Bible", 0f)
         notifier.showProgress("WEB", "World English Bible", 0.5f)

@@ -60,7 +60,7 @@ internal class AppScreensTest {
     }
 
     @Test
-    fun `every route shows the ViewModels of its entry`() {
+    fun `GIVEN the JVM Koin graph WHEN matching every route THEN each one shows at least one ViewModel`() {
         // When
         val viewModelsByRoute = routeCatalog.routes.associate { route ->
             route.name to screenCatalog.viewModelsFor(route.kClass).map { it.simpleName }
@@ -74,7 +74,7 @@ internal class AppScreensTest {
     }
 
     @Test
-    fun `the share image sheet hands its ViewModel the verses as a share route`() {
+    fun `GIVEN the share image route WHEN building its parameter THEN hands its ViewModel a share route`() {
         // Given
         val route = ShareVerseImageNavRoute(
             bookId = "PSA",
@@ -97,7 +97,7 @@ internal class AppScreensTest {
     }
 
     @Test
-    fun `the app-level ViewModels are in the graph`() {
+    fun `GIVEN the JVM Koin graph WHEN finding the app-level ViewModels THEN finds every one`() {
         // When
         val names = screenCatalog.appViewModels.map { it.simpleName }
 

@@ -13,7 +13,7 @@ internal class SessionLogWriterTest {
     private val writer = SessionLogWriter(log)
 
     @Test
-    fun `an agent only sees warnings and errors`() {
+    fun `GIVEN the session log writer WHEN checking severities THEN only warnings and errors are logged`() {
         // When
         val isInfoLoggable = writer.isLoggable(
             tag = "Sync",
@@ -30,7 +30,7 @@ internal class SessionLogWriterTest {
     }
 
     @Test
-    fun `logs the message with its error`() {
+    fun `GIVEN an error WHEN logging it THEN records the message with its error`() {
         // When
         writer.log(
             severity = Severity.Error,

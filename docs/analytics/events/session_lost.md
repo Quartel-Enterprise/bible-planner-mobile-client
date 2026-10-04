@@ -17,7 +17,7 @@ Captures a session that ended locally without the app asking for it: the Supabas
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `source` | string | `sign_in` \| `refresh` \| `storage` \| `external` \| `sign_up` \| `anonymous_sign_in` \| `user_changed` \| `user_identities_changed` \| `unknown` | Where the lost session had come from (`SessionSource` of the last `Authenticated` status) |
-| `is_access_token_expired` | boolean | `true` | Whether the access token was already expired when the session was lost — expired points at the refresh path, non-expired at a mid-life clear (e.g. a failed `signOut`) |
+| `is_access_token_expired` | string | `"true"` | Whether the access token was already expired when the session was lost — expired points at the refresh path, non-expired at a mid-life clear (e.g. a failed `signOut`) |
 
 ## Notes
 

@@ -87,7 +87,7 @@ internal class InProcessBibleVersionDownloaderFacadeTest {
     }
 
     @Test
-    fun `never shows the background download tip`() {
+    fun `GIVEN an in-process downloader WHEN asking for the download tip THEN never shows it`() {
         // When
         val shouldShowDownloadTip = facade.shouldShowDownloadTip
 
@@ -96,7 +96,7 @@ internal class InProcessBibleVersionDownloaderFacadeTest {
     }
 
     @Test
-    fun `starts the download in process`() {
+    fun `GIVEN a version WHEN downloading it THEN the download runs in process`() {
         // When
         facade.downloadVersion(VERSION_ID)
 
@@ -106,7 +106,7 @@ internal class InProcessBibleVersionDownloaderFacadeTest {
     }
 
     @Test
-    fun `pausing cancels the running download and marks the version paused`() = runTest {
+    fun `GIVEN a running download WHEN pausing it THEN cancels it and marks the version paused`() = runTest {
         // Given
         facade.downloadVersion(VERSION_ID)
 
@@ -123,7 +123,7 @@ internal class InProcessBibleVersionDownloaderFacadeTest {
     }
 
     @Test
-    fun `deleting cancels the running download and resets the version`() = runTest {
+    fun `GIVEN a running download WHEN deleting it THEN cancels it and resets the version`() = runTest {
         // Given
         facade.downloadVersion(VERSION_ID)
 

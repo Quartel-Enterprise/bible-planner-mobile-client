@@ -14,7 +14,7 @@ internal class JsonPathTest {
     )
 
     @Test
-    fun `selects keys and list positions`() {
+    fun `GIVEN a path with keys and positions WHEN selecting THEN returns the value`() {
         // Given
         val path = JsonPath("DayViewModel.uiState.days[1].number")
 
@@ -29,7 +29,7 @@ internal class JsonPathTest {
     }
 
     @Test
-    fun `an empty path selects the whole document`() {
+    fun `GIVEN an empty path WHEN selecting THEN returns the whole document`() {
         // Given
         val path = JsonPath("")
 
@@ -44,7 +44,7 @@ internal class JsonPathTest {
     }
 
     @Test
-    fun `a missing key names the keys that exist there`() {
+    fun `GIVEN a missing key WHEN selecting THEN names the keys that exist there`() {
         // Given
         val path = JsonPath("DayViewModel.uiState.weeks")
 
@@ -56,7 +56,7 @@ internal class JsonPathTest {
     }
 
     @Test
-    fun `a position past the end of a list fails`() {
+    fun `GIVEN a position past the end of a list WHEN selecting THEN fails`() {
         // Given
         val path = JsonPath("DayViewModel.uiState.days[5]")
 

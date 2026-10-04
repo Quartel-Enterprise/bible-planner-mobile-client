@@ -16,7 +16,7 @@ The user taps the Font row in the appearance sheet.
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_expanded` | boolean | true | Whether the font list was opened or closed |
+| `is_expanded` | string | `"true"` | Whether the font list was opened or closed |
 
 ## Notes
 

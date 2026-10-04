@@ -18,7 +18,7 @@ internal class RouteCatalogTest {
     )
 
     @Test
-    fun `finds a route by name or by its nested name`() {
+    fun `GIVEN the route catalog WHEN finding routes by full or nested name THEN finds them ignoring case`() {
         // When
         val names = listOf("readnavroute", "MainNavRouteDestination.Books", "Books").map { name ->
             catalog.find(name).name
@@ -32,7 +32,7 @@ internal class RouteCatalogTest {
     }
 
     @Test
-    fun `describes the arguments of a route`() {
+    fun `GIVEN routes with and without arguments WHEN describing them THEN lists each argument with its type`() {
         // When
         val signatures = listOf("ReadNavRoute", "ChatNavRoute", "MainNavRoute").map { name ->
             catalog.getSignature(catalog.find(name))
@@ -52,7 +52,7 @@ internal class RouteCatalogTest {
     }
 
     @Test
-    fun `creates a route from its JSON arguments`() {
+    fun `GIVEN JSON arguments WHEN creating routes THEN builds the routes they describe`() {
         // When
         val routes = listOf(
             catalog.create(
@@ -87,7 +87,7 @@ internal class RouteCatalogTest {
     }
 
     @Test
-    fun `names a route as the catalog lists it`() {
+    fun `GIVEN a route instance WHEN naming it THEN uses the name the catalog lists`() {
         // When
         val name = catalog.nameOf(
             ReadNavRoute(
@@ -107,7 +107,7 @@ internal class RouteCatalogTest {
     }
 
     @Test
-    fun `an unknown route points to the routes command`() {
+    fun `GIVEN an unknown route WHEN finding it THEN points to the routes command`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> { catalog.find("Nowhere") }
 

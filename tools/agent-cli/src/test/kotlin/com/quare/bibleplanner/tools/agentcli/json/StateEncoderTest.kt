@@ -21,7 +21,7 @@ internal class StateEncoderTest {
     private val encoder = StateEncoder { resource -> "text of ${resource.key}" }
 
     @Test
-    fun `encodes a screen state as JSON`() {
+    fun `GIVEN a screen state WHEN encoding THEN writes it as JSON`() {
         // Given
         val state = SampleState(
             title = "Day 1",
@@ -64,7 +64,7 @@ internal class StateEncoderTest {
     }
 
     @Test
-    fun `an object is encoded as its name`() {
+    fun `GIVEN an object WHEN encoding THEN writes its name`() {
         // When
         val json = encoder.encode(
             value = SampleContent.Loading,
@@ -79,7 +79,7 @@ internal class StateEncoderTest {
     }
 
     @Test
-    fun `long lists and maps say how many items were left out`() {
+    fun `GIVEN long lists and maps WHEN encoding with a limit THEN says how many items were left out`() {
         // Given
         val state = mapOf(
             "items" to listOf(1, 2, 3),
@@ -102,7 +102,7 @@ internal class StateEncoderTest {
     }
 
     @Test
-    fun `encodes primitives, arrays and errors`() {
+    fun `GIVEN primitives arrays and errors WHEN encoding THEN writes each one`() {
         // Given
         val values = listOf(
             null,
@@ -137,7 +137,7 @@ internal class StateEncoderTest {
     }
 
     @Test
-    fun `a class from outside the app is encoded with its toString`() {
+    fun `GIVEN a class from outside the app WHEN encoding THEN writes its toString`() {
         // When
         val json = encoder.encode(
             value = StringBuilder("built"),
@@ -153,7 +153,7 @@ internal class StateEncoderTest {
 
     @OptIn(InternalResourceApi::class)
     @Test
-    fun `resources are encoded by key and strings with their text`() {
+    fun `GIVEN resources WHEN encoding THEN writes their keys and the text of strings`() {
         // Given
         val resources = listOf(
             StringResource(
@@ -191,7 +191,7 @@ internal class StateEncoderTest {
     }
 
     @Test
-    fun `null encodes as JSON null`() {
+    fun `GIVEN null WHEN encoding THEN writes JSON null`() {
         // When
         val json = encoder.encode(
             value = null,

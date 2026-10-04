@@ -17,7 +17,7 @@ User taps a week header on the reading-plan screen.
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `week_number` | int | `12` | Standard param; the toggled week |
-| `is_expanded` | boolean | `true` | Week state after the toggle. The UiEvent carries only `weekNumber`; the new state is read from the updated UiState |
+| `is_expanded` | string | `"true"` | Week state after the toggle. The UiEvent carries only `weekNumber`; the new state is read from the updated UiState |
 
 ## Notes
 

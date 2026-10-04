@@ -28,7 +28,7 @@ internal class IsolatedStorageTest {
     }
 
     @Test
-    fun `points every place the app keeps data at the data directory`() {
+    fun `GIVEN a data directory WHEN isolating storage THEN every place the app keeps data points inside it`() {
         // When
         isolateStorage(
             dataDirectory = directory,
@@ -50,7 +50,7 @@ internal class IsolatedStorageTest {
     }
 
     @Test
-    fun `fresh empties a data directory the agent CLI created`() {
+    fun `GIVEN a data directory the agent CLI created WHEN starting fresh THEN empties it`() {
         // Given
         isolateStorage(
             dataDirectory = directory,
@@ -72,7 +72,7 @@ internal class IsolatedStorageTest {
     }
 
     @Test
-    fun `fresh refuses to delete a directory the agent CLI did not create`() {
+    fun `GIVEN a directory holding other files WHEN starting fresh THEN refuses to delete it`() {
         // Given
         val document = File(directory, "notes.txt").apply { writeText("keep me") }
 
@@ -87,14 +87,32 @@ internal class IsolatedStorageTest {
 
         // Then
         assertEquals(
-            expected = "refusing to delete ${directory.absoluteFile}: the agent CLI did not create it",
+            expected = "refusing to use ${directory.absoluteFile}: it holds files the agent CLI did not create",
             actual = error.message,
         )
         assertTrue(document.exists())
     }
 
     @Test
-    fun `a data root outside the data directory stops the start`() {
+    fun `GIVEN a directory holding other files WHEN starting without fresh THEN refuses it and never marks it`() {
+        // Given
+        File(directory, "notes.txt").writeText("keep me")
+
+        // When
+        assertFailsWith<IllegalArgumentException> {
+            isolateStorage(
+                dataDirectory = directory,
+                isFresh = false,
+                environment = emptyMap(),
+            )
+        }
+
+        // Then
+        assertFalse(File(directory, ".agent-cli").exists())
+    }
+
+    @Test
+    fun `GIVEN a data root outside the data directory WHEN isolating storage THEN refuses to start`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> {
             isolateStorage(

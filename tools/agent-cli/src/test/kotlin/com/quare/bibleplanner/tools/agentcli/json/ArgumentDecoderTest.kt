@@ -14,7 +14,7 @@ internal class ArgumentDecoderTest {
     private val decoder = ArgumentDecoder(Json)
 
     @Test
-    fun `an optional argument left out takes its default`() {
+    fun `GIVEN an optional argument left out WHEN building the event THEN takes its default`() {
         // When
         val event = build(SampleUiEvent.OnStep::class, "{}")
 
@@ -26,7 +26,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `builds events from their JSON arguments`() {
+    fun `GIVEN JSON arguments WHEN building events THEN builds each one`() {
         // When
         val events = listOf(
             build(SampleUiEvent.OnCount::class, """{"amount": 2}"""),
@@ -50,7 +50,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `builds a sealed argument from its type name`() {
+    fun `GIVEN a sealed argument with its type name WHEN building the event THEN builds the subtype`() {
         // When
         val events = listOf(
             build(
@@ -76,7 +76,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `builds a plain class argument through its constructor`() {
+    fun `GIVEN a plain class argument WHEN building the event THEN builds it through its constructor`() {
         // When
         val event = build(SampleUiEvent.OnHolder::class, """{"holder": {"visible": "shown"}}""")
 
@@ -88,7 +88,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `a missing argument names the signature`() {
+    fun `GIVEN a missing argument WHEN building the event THEN names the signature`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> { build(SampleUiEvent.OnCount::class, "{}") }
 
@@ -100,7 +100,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `an unknown argument names the signature`() {
+    fun `GIVEN an unknown argument WHEN building the event THEN names the signature`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> {
             build(SampleUiEvent.OnCount::class, """{"amount": 1, "times": 2}""")
@@ -114,7 +114,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `an object takes no arguments`() {
+    fun `GIVEN an object event with arguments WHEN building it THEN fails`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> {
             build(SampleUiEvent.OnReset::class, """{"now": true}""")
@@ -128,7 +128,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `an unknown sealed subtype lists the known ones`() {
+    fun `GIVEN an unknown sealed subtype WHEN building the event THEN lists the known ones`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> {
             build(SampleUiEvent.OnContent::class, """{"content": "Gone"}""")
@@ -142,7 +142,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `a sealed argument without its type asks for it`() {
+    fun `GIVEN a sealed argument without its type WHEN building the event THEN asks for it`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> {
             build(SampleUiEvent.OnContent::class, """{"content": {"items": []}}""")
@@ -157,7 +157,7 @@ internal class ArgumentDecoderTest {
     }
 
     @Test
-    fun `lists the concrete subclasses of a sealed hierarchy`() {
+    fun `GIVEN a sealed hierarchy WHEN finding its concrete subclasses THEN lists every one`() {
         // When
         val subclasses = SampleUiEvent::class.findConcreteSubclasses().map { it.simpleName }
 

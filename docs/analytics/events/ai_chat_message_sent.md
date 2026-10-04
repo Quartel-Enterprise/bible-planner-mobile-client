@@ -16,8 +16,8 @@ The user taps send with non-empty text, or taps a suggestion chip. Fires when th
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `has_context` | boolean | `true` | Whether the conversation carries a reading context |
-| `is_new_conversation` | boolean | `false` | Whether this question creates the conversation |
+| `has_context` | string | `"true"` | Whether the conversation carries a reading context |
+| `is_new_conversation` | string | `"false"` | Whether this question creates the conversation |
 
 ## Notes
 

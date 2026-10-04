@@ -16,7 +16,7 @@ The user taps "Excluir conta" in the delete-account dialog after typing the conf
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_pro` | boolean | `false` | `true` when the user had an active Pro entitlement at confirmation time — the case where the dialog also warned that the store subscription is not cancelled automatically |
+| `is_pro` | string | `"false"` | `true` when the user had an active Pro entitlement at confirmation time — the case where the dialog also warned that the store subscription is not cancelled automatically |
 
 ## Notes
 

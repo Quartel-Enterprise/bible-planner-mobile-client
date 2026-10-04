@@ -19,7 +19,7 @@ Two trigger points:
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_enabled` | boolean | `true` | New state of the dynamic-colors switch |
+| `is_enabled` | string | `"true"` | New state of the dynamic-colors switch |
 | `source` | string | `theme_selection` | Which surface hosted the toggle: `theme_selection` \| `material_you` |
 
 ## Notes

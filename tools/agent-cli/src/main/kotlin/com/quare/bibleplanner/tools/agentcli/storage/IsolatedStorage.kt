@@ -19,12 +19,11 @@ fun isolateStorage(
     environment: Map<String, String>,
 ) {
     val root = dataDirectory.absoluteFile
-    if (isFresh && root.exists()) {
-        require(File(root, MARKER_FILE).exists() || root.list().isNullOrEmpty()) {
-            "refusing to delete $root: the agent CLI did not create it"
-        }
-        root.deleteRecursively()
+    // Why: the marker is only ever written into a directory the CLI owns, so --fresh can trust it.
+    require(File(root, MARKER_FILE).exists() || root.list().isNullOrEmpty()) {
+        "refusing to use $root: it holds files the agent CLI did not create"
     }
+    if (isFresh) root.deleteRecursively()
     dataRootVariables.forEach { variable ->
         val value = environment[variable] ?: return@forEach
         require(File(value).absoluteFile.startsWith(root)) {

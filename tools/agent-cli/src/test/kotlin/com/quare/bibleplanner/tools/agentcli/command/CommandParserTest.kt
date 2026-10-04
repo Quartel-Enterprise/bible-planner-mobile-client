@@ -12,7 +12,7 @@ internal class CommandParserTest {
     private val parser = CommandParser(Json)
 
     @Test
-    fun `parses a route with its JSON arguments`() {
+    fun `GIVEN open with JSON arguments WHEN parsing THEN reads the route and its arguments`() {
         // When
         val command = parser.parse("open DayNavRoute {\"dayNumber\":1,\"weekNumber\":2}")
 
@@ -28,7 +28,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `replace opens the route over the top screen`() {
+    fun `GIVEN replace WHEN parsing THEN opens the route replacing the top screen`() {
         // When
         val command = parser.parse("replace ThemeNavRoute")
 
@@ -44,7 +44,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `parses a state path with its options`() {
+    fun `GIVEN state with a path and options WHEN parsing THEN reads all of them`() {
         // When
         val command = parser.parse("state AppViewModel.themeState --limit 5 --app")
 
@@ -60,7 +60,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `state without options shows fifty items of the top screen`() {
+    fun `GIVEN state without options WHEN parsing THEN shows fifty items of the top screen`() {
         // When
         val command = parser.parse("STATE")
 
@@ -76,7 +76,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `parses an event aimed at one ViewModel`() {
+    fun `GIVEN an event aimed at one ViewModel WHEN parsing THEN keeps the target and its arguments`() {
         // When
         val command = parser.parse("event DayViewModel.OnNotesChanged {\"notes\":\"a {brace}\"}")
 
@@ -91,7 +91,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `parses a wait for a JSON value`() {
+    fun `GIVEN a wait for a JSON value WHEN parsing THEN reads the value and its options`() {
         // When
         val command = parser.parse("wait Vm.uiState.status = \"Done\" --timeout 2000 --app")
 
@@ -108,7 +108,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `a wait value that is not JSON is read as text`() {
+    fun `GIVEN a wait value that is not JSON WHEN parsing THEN reads it as text`() {
         // When
         val command = parser.parse("wait Vm.uiState.@type = Loaded")
 
@@ -125,7 +125,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `a wait value may hold a double dash`() {
+    fun `GIVEN a wait value holding a double dash WHEN parsing THEN keeps the value whole`() {
         // When
         val command = parser.parse("wait Vm.uiState.title = \"Day 1 -- Genesis\" --app")
 
@@ -142,7 +142,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `a wait without a value waits for the path to exist`() {
+    fun `GIVEN a wait without a value WHEN parsing THEN waits for the path to exist`() {
         // When
         val command = parser.parse("wait Vm.uiState.content")
 
@@ -159,7 +159,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `parses the commands without arguments`() {
+    fun `GIVEN the commands without arguments WHEN parsing THEN reads each one`() {
         // When
         val commands = listOf(
             "help",
@@ -195,7 +195,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `parses the commands that name a ViewModel or a filter`() {
+    fun `GIVEN commands naming a ViewModel or a filter WHEN parsing THEN keeps the name`() {
         // When
         val commands = listOf(
             "routes Day",
@@ -223,7 +223,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `a command missing its target explains its usage`() {
+    fun `GIVEN a command missing its target WHEN parsing THEN explains its usage`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> { parser.parse("open") }
 
@@ -235,7 +235,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `arguments that are not a JSON object fail`() {
+    fun `GIVEN arguments that are not a JSON object WHEN parsing THEN fails`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> { parser.parse("event OnX {\"a\":1} trailing") }
 
@@ -247,7 +247,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `an unknown command points to help`() {
+    fun `GIVEN an unknown command WHEN parsing THEN points to help`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> { parser.parse("tap 10 20") }
 
@@ -259,7 +259,7 @@ internal class CommandParserTest {
     }
 
     @Test
-    fun `a limit that is not a number fails`() {
+    fun `GIVEN a limit that is not a number WHEN parsing THEN fails`() {
         // When
         val error = assertFailsWith<IllegalArgumentException> { parser.parse("state --limit many") }
 

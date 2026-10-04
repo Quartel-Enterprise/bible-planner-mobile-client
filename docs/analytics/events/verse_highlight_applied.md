@@ -17,7 +17,7 @@ The user taps a palette colour that at least one of the selected verses does not
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `color` | string | `yellow` | The colour key: a preset name, or `c:<hue>:<lightness>` for a custom mix |
-| `is_custom` | boolean | false | Whether the colour was one the user mixed rather than a preset |
+| `is_custom` | string | `"false"` | Whether the colour was one the user mixed rather than a preset |
 | `verse_count` | integer | 3 | How many verses the selection covered |
 
 ## Notes

@@ -23,6 +23,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class AgentCliServerTest {
     private val quit = CountDownLatch(1)
+    private var port = 0
 
     @AfterTest
     fun tearDown() {
@@ -30,13 +31,12 @@ internal class AgentCliServerTest {
     }
 
     @Test
-    fun `answers a health check`() = runTest {
+    fun `GIVEN a running server WHEN getting THEN answers a health check`() = runTest {
         // Given
-        val port = prepareScenario()
+        prepareScenario()
 
         // When
         val response = request(
-            port = port,
             body = null,
         )
 
@@ -48,13 +48,12 @@ internal class AgentCliServerTest {
     }
 
     @Test
-    fun `runs one command per line and skips comments`() = runTest {
+    fun `GIVEN a running server WHEN posting lines THEN runs one command per line and skips comments`() = runTest {
         // Given
-        val port = prepareScenario()
+        prepareScenario()
 
         // When
         val response = request(
-            port = port,
             body = "# where am I\nstack\n\nhelp\n",
         )
 
@@ -71,13 +70,12 @@ internal class AgentCliServerTest {
     }
 
     @Test
-    fun `quit stops the server`() = runTest {
+    fun `GIVEN a running server WHEN posting quit THEN answers and stops`() = runTest {
         // Given
-        val port = prepareScenario()
+        prepareScenario()
 
         // When
         val response = request(
-            port = port,
             body = "quit",
         )
 
@@ -86,10 +84,7 @@ internal class AgentCliServerTest {
         assertTrue(quit.await(5, TimeUnit.SECONDS))
     }
 
-    private fun request(
-        port: Int,
-        body: String?,
-    ): String {
+    private fun request(body: String?): String {
         val connection = URI("http://127.0.0.1:$port/").toURL().openConnection() as HttpURLConnection
         if (body != null) {
             connection.requestMethod = "POST"
@@ -99,12 +94,12 @@ internal class AgentCliServerTest {
         return connection.inputStream.use { stream -> stream.readBytes().decodeToString() }
     }
 
-    private suspend fun TestScope.prepareScenario(): Int {
+    private suspend fun TestScope.prepareScenario() {
         val fixture = createAgentCliFixture(
             mainDispatcher = UnconfinedTestDispatcher(testScheduler),
             isWide = false,
         )
-        return AgentCliServer(
+        port = AgentCliServer(
             cli = fixture.cli,
             output = Json,
             onQuit = quit::countDown,

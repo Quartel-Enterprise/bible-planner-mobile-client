@@ -17,7 +17,7 @@ User taps a filter option in the Books filter menu, toggling it on or off.
 | Name | Type | Example | Description |
 |---|---|---|---|
 | `filter_type` | string | `favorites` | Toggled `BookFilterType` value: `only_read` \| `only_unread` \| `favorites` |
-| `is_active` | boolean | `true` | Filter state after the toggle. The UiEvent carries only the type; the new state is read from the updated UiState |
+| `is_active` | string | `"true"` | Filter state after the toggle. The UiEvent carries only the type; the new state is read from the updated UiState |
 
 ## Notes
 

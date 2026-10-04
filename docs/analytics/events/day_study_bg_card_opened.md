@@ -19,7 +19,7 @@ The user taps a job row (or its "Open" button) on the background generation card
 | `plan_type` | string | `chronological` | Active reading plan of the opened day |
 | `week_number` | int | `12` | 1-based week of the opened day |
 | `day_number` | int | `3` | 1-based day within the week |
-| `is_ready` | boolean | `true` | `true` when the study had finished generating (Done); `false` when it was still generating |
+| `is_ready` | string | `"true"` | `true` when the study had finished generating (Done); `false` when it was still generating |
 
 ## Notes
 

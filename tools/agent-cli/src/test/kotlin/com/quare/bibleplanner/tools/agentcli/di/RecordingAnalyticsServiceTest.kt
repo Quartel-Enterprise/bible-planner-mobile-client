@@ -14,37 +14,40 @@ internal class RecordingAnalyticsServiceTest {
     private val service = RecordingAnalyticsService(log)
 
     @Test
-    fun `records events and user properties in the session log`() = runTest {
-        // When
-        service.logEvent(
-            name = "day_read_toggled",
-            params = mapOf("day_number" to 1, "is_read" to true, "source" to "day_screen"),
-        )
-        service.setUserProperty(
-            name = "is_tester",
-            value = "false",
-        )
-        val appInstanceId = service.getAppInstanceId()
+    fun `GIVEN the recording service WHEN tracking events and user properties THEN records them in the session log`() =
+        runTest {
+            // When
+            service.logEvent(
+                name = "day_read_toggled",
+                params = mapOf("day_number" to 1, "is_read" to true, "source" to "day_screen"),
+            )
+            service.setUserProperty(
+                name = "is_tester",
+                value = "false",
+            )
+            val appInstanceId = service.getAppInstanceId()
 
-        // Then
-        assertEquals(
-            expected = listOf(
-                LogEntry(
-                    kind = LogKind.ANALYTICS,
-                    source = "day_read_toggled",
-                    payload = Json.parseToJsonElement("""{"day_number": 1, "is_read": true, "source": "day_screen"}"""),
+            // Then
+            assertEquals(
+                expected = listOf(
+                    LogEntry(
+                        kind = LogKind.ANALYTICS,
+                        source = "day_read_toggled",
+                        payload = Json.parseToJsonElement(
+                            """{"day_number": 1, "is_read": true, "source": "day_screen"}""",
+                        ),
+                    ),
+                    LogEntry(
+                        kind = LogKind.ANALYTICS,
+                        source = "user_property",
+                        payload = Json.parseToJsonElement("""{"is_tester": "false"}"""),
+                    ),
                 ),
-                LogEntry(
-                    kind = LogKind.ANALYTICS,
-                    source = "user_property",
-                    payload = Json.parseToJsonElement("""{"is_tester": "false"}"""),
-                ),
-            ),
-            actual = log.takeEntries(),
-        )
-        assertEquals(
-            expected = "agent-cli",
-            actual = appInstanceId,
-        )
-    }
+                actual = log.takeEntries(),
+            )
+            assertEquals(
+                expected = "agent-cli",
+                actual = appInstanceId,
+            )
+        }
 }

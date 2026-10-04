@@ -16,7 +16,7 @@ User taps the "don't show again" checkbox on the login-sync nudge dialog.
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_enabled` | boolean | `true` | Whether the checkbox is now checked |
+| `is_enabled` | string | `"true"` | Whether the checkbox is now checked |
 
 ## Notes
 

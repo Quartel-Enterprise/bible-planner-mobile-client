@@ -9,7 +9,7 @@ import kotlin.test.assertNull
 
 internal class ViewModelCatalogTest {
     @Test
-    fun `finds a ViewModel by its simple name`() {
+    fun `GIVEN distinct ViewModels WHEN finding them by simple name THEN finds each one`() {
         // Given
         val catalog = ViewModelCatalog(listOf(SampleViewModel::class, AppLevelViewModel::class))
 
@@ -25,7 +25,7 @@ internal class ViewModelCatalogTest {
     }
 
     @Test
-    fun `a missing or repeated name fails`() {
+    fun `GIVEN a missing and a repeated name WHEN finding them THEN both fail with their reason`() {
         // Given
         val catalog = ViewModelCatalog(listOf(SampleViewModel::class, SampleViewModel::class))
 

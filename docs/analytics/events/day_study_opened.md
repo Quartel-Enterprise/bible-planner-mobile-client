@@ -19,7 +19,7 @@ The day-study route shows a study: a cached study is opened on entering the rout
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `is_cached` | boolean | `true` | `true` when the study came from cache / was already loaded; `false` when a generation just produced it |
+| `is_cached` | string | `"true"` | `true` when the study came from cache / was already loaded; `false` when a generation just produced it |
 
 ## Notes
 
