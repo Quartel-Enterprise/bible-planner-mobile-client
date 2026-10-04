@@ -33,7 +33,7 @@ internal fun rememberDisplayBackStack(
     return if (isCollapsingCompanion) backStack.dropLast(1) else backStack
 }
 
-private fun MutableList<NavKey>.syncStudyPanelCompanion(
+fun MutableList<NavKey>.syncStudyPanelCompanion(
     isWide: Boolean,
     isCollapsingCompanion: Boolean,
 ) {
@@ -48,7 +48,7 @@ private fun MutableList<NavKey>.syncStudyPanelCompanion(
     }
 }
 
-internal fun List<NavKey>.hasStudyCompanionOnTop(): Boolean {
+fun List<NavKey>.hasStudyCompanionOnTop(): Boolean {
     val top = lastOrNull()
     val mainPane = getOrNull(lastIndex - 1)
     val isDayStudyCompanion = top is DayStudyNavRoute &&
