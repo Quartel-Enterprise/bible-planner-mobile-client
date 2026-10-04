@@ -1,5 +1,9 @@
 package com.quare.bibleplanner.feature.read.presentation
 
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.mark_as_read
 import com.quare.bibleplanner.core.books.domain.BibleVersionDownloaderFacade
@@ -41,6 +45,7 @@ import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.Stud
 import com.quare.bibleplanner.core.preferences.studysuggestion.domain.model.StudySuggestionSettingsModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.core.studyunlock.domain.store.StudyUnlockResultStore
+import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
@@ -81,6 +86,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -112,7 +118,9 @@ internal class ReadViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: ReadViewModel
     private val navigator = Navigator()
+    private lateinit var viewModelStore: ViewModelStore
     private lateinit var commands: List<NavigationCommand>
+    private lateinit var selectionsAtCommands: List<VerseSelection?>
     private lateinit var selectionStore: FakeVerseSelectionStore
     private lateinit var trackedEvents: MutableList<String>
     private lateinit var prefetchedDays: MutableList<PlanDayLocationModel>
@@ -723,6 +731,79 @@ internal class ReadViewModelTest {
     }
 
     @Test
+    fun `drops the selection before opening a suggested chapter`() = runTest(testDispatcher) {
+        // Given
+        val next = ReadNavigationSuggestionModel(
+            bookId = BookId.GEN,
+            chapterNumber = 4,
+        )
+        prepareScenario(
+            navigationSuggestions = ReadNavigationSuggestionsModel(
+                previous = null,
+                next = next,
+            ),
+            isWholeChapterRead = { _, _ -> false },
+        )
+        viewModel.onEvent(verseClick(2))
+
+        // When
+        viewModel.onEvent(ReadUiEvent.OnNavigationSuggestionClick(next))
+        runCurrent()
+
+        // Then
+        assertIs<NavigationCommand.NavigateReplacingTop>(commands.last())
+        assertNull(selectionsAtCommands.last())
+    }
+
+    @Test
+    fun `does not open the panel for a selection made in another chapter`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        selectionStore.toggle(
+            chapter = testChapter.copy(chapterNumber = 4),
+            verseNumber = 1,
+        )
+        runCurrent()
+
+        // Then
+        assertTrue(commands.isEmpty())
+    }
+
+    @Test
+    fun `keeps a selection made in another chapter when the reader is cleared`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        selectionStore.toggle(
+            chapter = testChapter.copy(chapterNumber = 4),
+            verseNumber = 1,
+        )
+
+        // When
+        viewModelStore.clear()
+
+        // Then
+        assertEquals(
+            expected = listOf(1),
+            actual = selectionStore.selection.value?.verseNumbers,
+        )
+    }
+
+    @Test
+    fun `drops its own selection when the reader is cleared`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(verseClick(2))
+
+        // When
+        viewModelStore.clear()
+
+        // Then
+        assertNull(selectionStore.selection.value)
+    }
+
+    @Test
     fun `tracks a tap on the previous chapter suggestion as going back`() = runTest(testDispatcher) {
         // Given
         val previous = ReadNavigationSuggestionModel(
@@ -1236,57 +1317,76 @@ internal class ReadViewModelTest {
                 isNoteIconEnabled = true,
             ),
         )
-        viewModel = ReadViewModel(
-            route = ReadNavRoute(
-                bookId = BookId.GEN.name,
-                chapterNumber = 3,
-                isChapterRead = false,
-                isFromBookDetails = false,
-                targetVerseNumbers = targetVerseNumbers,
-            ),
-            observeReadData = FakeObserveReadData(data),
-            toggleWholeChapterReadStatus = toggleWholeChapterReadStatus,
-            isWholeChapterRead = isWholeChapterRead,
-            getCompletedDayForChapter = getCompletedDayForChapter,
-            observeDayCompletionCandidates = ObserveDayCompletionCandidates { flowOf(dayCompletionCandidates) },
-            studyUseCases = ReadStudyUseCases(
-                prefetchDayStudyQuota = { day -> prefetchedDays += day },
-                getChapterStudyAccess = { target ->
-                    chapterStudyAccessTargets += target
-                    getChapterStudyAccess(target)
-                },
-                pendingVerseFocusStore = pendingVerseFocusStore,
-                getChapterStudyQuota = { chapterStudyQuota },
-                chapterStudyGenerationCoordinator = chapterStudyCoordinator,
-                prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
-                studyUnlockResultStore = studyUnlockResultStore,
-            ),
-            observeStudySuggestionSettings = { flowOf(studySuggestionSettings) },
-            requestLoginNudgeIfNeeded = { },
-            downloaderFacade = downloaderFacade,
-            getSelectedVersionIdFlow = getSelectedVersionIdFlow,
-            requestDownloadNotificationPermission = { notificationPermissionRequests++ },
-            observeReaderSettings = { settings },
-            setReaderFocusAid = { focusAid -> focusAidWrites += focusAid },
-            getNextChapter = getNextChapter,
-            getPreviousChapter = getPreviousChapter,
-            observeVerseSelection = { selectionStore.selection },
-            toggleVerseSelection = { chapter, verseNumber ->
-                selectionStore.toggle(
-                    chapter = chapter,
-                    verseNumber = verseNumber,
-                )
+        viewModelStore = ViewModelStore()
+        viewModel = ViewModelProvider.create(
+            store = viewModelStore,
+            factory = viewModelFactory {
+                initializer {
+                    ReadViewModel(
+                        route = ReadNavRoute(
+                            bookId = BookId.GEN.name,
+                            chapterNumber = 3,
+                            isChapterRead = false,
+                            isFromBookDetails = false,
+                            targetVerseNumbers = targetVerseNumbers,
+                        ),
+                        observeReadData = FakeObserveReadData(data),
+                        toggleWholeChapterReadStatus = toggleWholeChapterReadStatus,
+                        isWholeChapterRead = isWholeChapterRead,
+                        getCompletedDayForChapter = getCompletedDayForChapter,
+                        observeDayCompletionCandidates = ObserveDayCompletionCandidates {
+                            flowOf(
+                                dayCompletionCandidates,
+                            )
+                        },
+                        studyUseCases = ReadStudyUseCases(
+                            prefetchDayStudyQuota = { day -> prefetchedDays += day },
+                            getChapterStudyAccess = { target ->
+                                chapterStudyAccessTargets += target
+                                getChapterStudyAccess(target)
+                            },
+                            pendingVerseFocusStore = pendingVerseFocusStore,
+                            getChapterStudyQuota = { chapterStudyQuota },
+                            chapterStudyGenerationCoordinator = chapterStudyCoordinator,
+                            prepareRewardedUnlockOffer = { isRewardedUnlockOffered },
+                            studyUnlockResultStore = studyUnlockResultStore,
+                        ),
+                        observeStudySuggestionSettings = { flowOf(studySuggestionSettings) },
+                        requestLoginNudgeIfNeeded = { },
+                        downloaderFacade = downloaderFacade,
+                        getSelectedVersionIdFlow = getSelectedVersionIdFlow,
+                        requestDownloadNotificationPermission = { notificationPermissionRequests++ },
+                        observeReaderSettings = { settings },
+                        setReaderFocusAid = { focusAid -> focusAidWrites += focusAid },
+                        getNextChapter = getNextChapter,
+                        getPreviousChapter = getPreviousChapter,
+                        observeVerseSelection = { selectionStore.selection },
+                        toggleVerseSelection = { chapter, verseNumber ->
+                            selectionStore.toggle(
+                                chapter = chapter,
+                                verseNumber = verseNumber,
+                            )
+                        },
+                        clearVerseSelection = { selectionStore.clear() },
+                        navigator = navigator,
+                        trackEvent = { name, params ->
+                            trackedEvents += name
+                            trackedEventParams += name to params
+                        },
+                        platform = Platform.Android,
+                    )
+                }
             },
-            clearVerseSelection = { selectionStore.clear() },
-            navigator = navigator,
-            trackEvent = { name, params ->
-                trackedEvents += name
-                trackedEventParams += name to params
-            },
-            platform = Platform.Android,
-        )
+        )[ReadViewModel::class]
+        val collectedSelections = mutableListOf<VerseSelection?>()
+        selectionsAtCommands = collectedSelections
         commands = mutableListOf<NavigationCommand>().also { collected ->
-            backgroundScope.launch { navigator.commands.collect { collected += it } }
+            backgroundScope.launch {
+                navigator.commands.collect { command ->
+                    collected += command
+                    collectedSelections += selectionStore.selection.value
+                }
+            }
         }
     }
 

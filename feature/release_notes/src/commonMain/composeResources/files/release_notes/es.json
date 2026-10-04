@@ -9,6 +9,7 @@
       "Al leer, los versículos que tienen una nota ahora muestran un icono al lado, y una línea une todos los versículos de la misma nota. Toca el icono para abrir la nota. Si prefieres leer sin él, desactívalo en la apariencia de la lectura.",
       "Al seleccionar versículos que ya tienen una nota, el botón cambia a \"Ver nota\" y abre la nota completa, y ahora puedes eliminar una nota directamente desde el editor.",
       "Los menús que se abren desde la parte inferior de la pantalla, como los de tema, idioma y apariencia de la lectura, ahora se deslizan hacia abajo suavemente cuando los cierras con la X o eliges una opción, en lugar de desaparecer de golpe. Tocar la X dos veces rápido tampoco cierra ya la pantalla que está detrás.",
+      "Corregimos un problema que podía cerrar la app al pasar al capítulo siguiente o al anterior con versículos seleccionados. Ahora la selección se deshace y el nuevo capítulo se abre en lugar del anterior.",
       "La pantalla de suscripción a Pro ahora deja claro que quienes se suscriben usan la app sin anuncios."
     ],
     "android": [

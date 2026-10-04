@@ -230,6 +230,38 @@ internal class BackStackControllerTest {
     }
 
     @Test
+    fun `GIVEN the selection panel over the reader WHEN replacing the top THEN replaces the reader with it`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, genesisReadRoute, VerseSelectionNavRoute))
+
+        // When
+        backStackController.navigateReplacingTop(
+            route = exodusReadRoute,
+            isWide = false,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, exodusReadRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN the panel over the reader and its study in a wide layout WHEN replacing the top THEN replaces all`() {
+        // Given
+        prepareScenario(
+            backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute, VerseSelectionNavRoute),
+        )
+
+        // When
+        backStackController.navigateReplacingTop(
+            route = exodusReadRoute,
+            isWide = true,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, exodusReadRoute), backStack)
+    }
+
+    @Test
     fun `GIVEN the reader with its study beside in a wide layout WHEN navigating back THEN pops both panes at once`() {
         // Given
         prepareScenario(backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute))

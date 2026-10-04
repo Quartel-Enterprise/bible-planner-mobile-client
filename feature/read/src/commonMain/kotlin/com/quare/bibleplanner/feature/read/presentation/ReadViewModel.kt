@@ -13,6 +13,7 @@ import com.quare.bibleplanner.core.loginnudge.domain.usecase.RequestLoginNudgeIf
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.model.loadable.Loadable
 import com.quare.bibleplanner.core.model.loginwarning.LoginWarningReason
@@ -122,6 +123,8 @@ class ReadViewModel(
 
     private val prependedChapters = MutableStateFlow<List<ReadNavigationSuggestionModel>>(emptyList())
 
+    private val verseSelection: StateFlow<VerseSelection?> = observeVerseSelection()
+
     // Why: optimistic flips shown before the Room write re-emits; an entry is dropped once
     // dataFlow reports the same value, so a write that differs or never lands can't stick.
     private val pendingReadOverrides = MutableStateFlow<Map<ChapterLocationModel, Boolean>>(emptyMap())
@@ -159,10 +162,8 @@ class ReadViewModel(
         combine(
             prependedChapters,
             appendedChapters,
-        ) { prepended, appended ->
-            listOf(ChapterLocationModel(bookId = bookId, chapterNumber = route.chapterNumber)) +
-                (prepended + appended).map { ChapterLocationModel(it.bookId, it.chapterNumber) }
-        }.distinctUntilChanged()
+            transform = ::getShownChapters,
+        ).distinctUntilChanged()
             .flatMapLatest(observeDayCompletionCandidates::invoke)
             .stateIn(
                 scope = viewModelScope,
@@ -208,7 +209,7 @@ class ReadViewModel(
         combine(
             dataFlow,
             observeReaderSettings(),
-            observeVerseSelection(),
+            verseSelection,
             pendingReadOverrides,
             requestedChapterCounts,
         ) { (settledCounts, data), settings, selection, overrides, requestedCounts ->
@@ -248,10 +249,10 @@ class ReadViewModel(
         // Why: pushing is driven by the store, not the tap, so any way a selection starts opens
         // the panel; the navigator ignores a route already on the stack. Closing is never reactive.
         observe(
-            observeVerseSelection()
-                .map { it != null }
+            verseSelection
+                .map { selection -> selection != null && isShowingChapter(selection.chapter) }
                 .distinctUntilChanged()
-                .filter { hasSelection -> hasSelection },
+                .filter { hasOwnSelection -> hasOwnSelection },
         ) {
             navigator.navigate(VerseSelectionNavRoute)
         }
@@ -390,11 +391,28 @@ class ReadViewModel(
         }
     }
 
-    // Why: a selection only means something over the chapter it was made in.
+    // Why: a selection only means something over the chapter it was made in, and this reader is
+    // cleared after the next one opens, by when the selection may already belong to that one.
     override fun onCleared() {
-        clearVerseSelection()
+        if (verseSelection.value?.let { isShowingChapter(it.chapter) } == true) {
+            clearVerseSelection()
+        }
         super.onCleared()
     }
+
+    private fun getShownChapters(
+        prepended: List<ReadNavigationSuggestionModel>,
+        appended: List<ReadNavigationSuggestionModel>,
+    ): List<ChapterLocationModel> = listOf(ChapterLocationModel(bookId = bookId, chapterNumber = route.chapterNumber)) +
+        (prepended + appended).map { ChapterLocationModel(it.bookId, it.chapterNumber) }
+
+    private fun isShowingChapter(chapter: ChapterRef): Boolean = ChapterLocationModel(
+        bookId = chapter.bookId,
+        chapterNumber = chapter.chapterNumber,
+    ) in getShownChapters(
+        prepended = prependedChapters.value,
+        appended = appendedChapters.value,
+    )
 
     override fun handleEvent(event: ReadUiEvent) {
         when (event) {
@@ -573,6 +591,9 @@ class ReadViewModel(
                 AnalyticsParams.CHAPTER_NUMBER to suggestion.chapterNumber,
             ),
         )
+        // Why: the selection ends with the chapter it was made in, and this reader is only cleared
+        // after the next one has opened.
+        clearVerseSelection()
         viewModelScope.launch {
             navigator.navigateReplacingTop(
                 ReadNavRoute(

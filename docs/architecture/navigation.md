@@ -36,8 +36,9 @@ from the root. Inject `Navigator` (`core/model`) into the ViewModel and call it:
 
 - `navigate(route: NavKey)` — push a route
 - `navigateBack()` — pop the top entry
-- `navigateReplacingTop(route: NavKey)` — pop the current entry and push a route (the old
-  `popUpTo(current) { inclusive = true }` pattern)
+- `navigateReplacingTop(route: NavKey)` — pop the current screen and push a route (the old
+  `popUpTo(current) { inclusive = true }` pattern). What belongs to the screen leaves with it: the
+  verse selection panel open over it and, on wide layouts, the study beside it
 
 ```kotlin
 internal class SomeFeatureViewModel(
