@@ -1,4 +1,9 @@
 {
+  "2.11.1": {
+    "common": [
+      "Corregimos el título \"Hazte Pro\" en la parte superior de la pantalla de suscripción Pro, que podía no aparecer la primera vez que la abrías, o siempre que las animaciones estaban desactivadas."
+    ]
+  },
   "2.11.0": {
     "common": [
       "Después de iniciar sesión o volver a estar en línea, tu progreso de lectura, tus marcas y tu foto de perfil aparecen mucho más rápido.",

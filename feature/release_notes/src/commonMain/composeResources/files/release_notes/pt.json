@@ -1,4 +1,9 @@
 {
+  "2.11.1": {
+    "common": [
+      "Corrigimos o título \"Seja Pro\" no topo da tela de assinatura Pro, que podia não aparecer na primeira vez que você abria a tela, ou sempre que as animações estavam desativadas."
+    ]
+  },
   "2.11.0": {
     "common": [
       "Depois de entrar na sua conta ou voltar a ficar online, seu progresso de leitura, suas marcações e sua foto de perfil aparecem bem mais rápido.",

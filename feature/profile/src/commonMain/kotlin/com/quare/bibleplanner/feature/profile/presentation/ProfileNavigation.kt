@@ -22,6 +22,7 @@ import com.quare.bibleplanner.feature.profile.presentation.viewmodel.ProfileView
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.MainTabScaffold
+import com.quare.bibleplanner.ui.utils.transition.relayoutAfterSharedTransition
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -68,20 +69,24 @@ private fun ProfileTabContent(
                 Row {
                     with(sharedTransitionScope) {
                         Text(
-                            modifier = Modifier.sharedElement(
-                                rememberSharedContentState(key = "become_pro_part_1"),
-                                animatedVisibilityScope = animatedContentScope,
-                            ),
+                            modifier = Modifier
+                                .relayoutAfterSharedTransition(sharedTransitionScope)
+                                .sharedElement(
+                                    rememberSharedContentState(key = "become_pro_part_1"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                ),
                             text = stringResource(Res.string.become_pro_part_1),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
                         HorizontalSpacer(4.dp)
                         Text(
-                            modifier = Modifier.sharedElement(
-                                rememberSharedContentState(key = "become_pro_part_2"),
-                                animatedVisibilityScope = animatedContentScope,
-                            ),
+                            modifier = Modifier
+                                .relayoutAfterSharedTransition(sharedTransitionScope)
+                                .sharedElement(
+                                    rememberSharedContentState(key = "become_pro_part_2"),
+                                    animatedVisibilityScope = animatedContentScope,
+                                ),
                             text = stringResource(Res.string.become_pro_part_2),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
