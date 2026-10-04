@@ -1,5 +1,5 @@
 {
-  "2.11.1": {
+  "2.12.0": {
     "common": [
       "Corrigimos o título no topo da tela de assinatura Pro, da tela de Notas de Atualização e dos detalhes de um livro, que podia não aparecer ao abrir essas telas, principalmente com as animações desativadas.",
       "Na leitura, tocar em \"Estudo\" ou em \"Estudar este capítulo\" agora abre o estudo do capítulo na hora, sem ficar carregando antes."
