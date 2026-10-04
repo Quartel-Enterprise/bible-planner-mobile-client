@@ -8,11 +8,14 @@
     "android": [
       "Used up your free AI studies? Besides subscribing to Pro, you can now watch a short video to unlock one more chapter or day study. Tap \"Unlock\" to choose. The number of videos per day is limited.",
       "In Profile, the new \"Privacy options\" entry lets you review your ad choices, in places where the law asks for that consent.",
-      "If you tapped \"Later\" after an update was downloaded, the app now reminds you that a restart is all it takes to install it when you come back to it or tap \"Check for updates\" in Profile, instead of asking you to download it again."
+      "If you tapped \"Later\" after an update was downloaded, the app now reminds you that a restart is all it takes to install it when you come back to it or tap \"Check for updates\" in Profile, instead of asking you to download it again.",
+      "If checking for updates doesn't work, for example without an internet connection, Profile now tells you so instead of saying you already have the latest version."
     ],
     "ios": [
       "Used up your free AI studies? Besides subscribing to Pro, you can now watch a short video to unlock one more chapter or day study. Tap \"Unlock\" to choose. The number of videos per day is limited.",
-      "In Profile, the new \"Privacy options\" entry lets you review your ad choices, in places where the law asks for that consent."
+      "In Profile, the new \"Privacy options\" entry lets you review your ad choices, in places where the law asks for that consent.",
+      "Fixed \"Check for updates\" in Profile, which right after a new version reached the App Store could say you already had the latest one.",
+      "If checking for updates doesn't work, for example without an internet connection, Profile now tells you so instead of saying you already have the latest version."
     ]
   },
   "2.10.0": {

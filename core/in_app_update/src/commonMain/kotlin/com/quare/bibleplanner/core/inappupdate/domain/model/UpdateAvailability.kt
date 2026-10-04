@@ -10,4 +10,6 @@ sealed interface UpdateAvailability {
     data object Downloaded : Pending
 
     data object NotAvailable : UpdateAvailability
+
+    data object CheckFailed : UpdateAvailability
 }
