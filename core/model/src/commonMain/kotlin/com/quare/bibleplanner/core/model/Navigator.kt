@@ -17,6 +17,22 @@ class Navigator {
         send(NavigationCommand.NavigateReplacingTop(route))
     }
 
+    /*
+     * Why: swaps one entry in place, so a screen that is not on top (a reader under its player sheet)
+     * can be replaced without taking down what is shown over it.
+     */
+    fun navigateReplacing(
+        current: NavKey,
+        route: NavKey,
+    ) {
+        send(
+            NavigationCommand.NavigateReplacing(
+                current = current,
+                route = route,
+            ),
+        )
+    }
+
     fun navigateBack() {
         send(NavigationCommand.NavigateBack)
     }

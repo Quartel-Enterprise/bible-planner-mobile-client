@@ -16,10 +16,12 @@ The unlock sheet opens. A locked surface opens it from its `Unlock` call to acti
 
 | Name | Type | Example | Description |
 |---|---|---|---|
-| `surface` | string | `chapter_study` | Which locked surface offered the unlock: `StudyUnlockSurface` in `core/model/.../route/`, lowercased (`chapter_study` \| `day_study` \| `day_reading_complete`) |
+| `surface` | string | `chapter_study` | Which locked surface offered the unlock: `StudyUnlockSurface` in `core/model/.../route/`, lowercased (`chapter_study` \| `day_study` \| `day_reading_complete` \| `chapter_listening`) |
 | `rewarded_remaining_today` | int | `2` | Rewarded unlocks the server still allows in the rolling 24 h window, shared by the day and the chapter study (`rewarded_remaining_today` from the status endpoints) |
 
 ## Notes
+
+- `surface=chapter_listening` unlocks one chapter for listening, counted on the device (one a day by default, Remote Config `listening_rewarded_daily_limit`), not by the server like the AI studies.
 
 - The matching impression is [screen_view](screen_view.md) with `screen_name=study_unlock`.
 - `rewarded_ads_enabled` is on for everyone (no A/B experiment), so watch this event's exits against the paywall conversion from the locked surfaces before and after the release, not just the ad revenue.

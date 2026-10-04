@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.core.provider.koin
 
 import com.quare.bibleplanner.core.books.di.booksModule
+import com.quare.bibleplanner.core.chapterlistening.di.chapterListeningModule
 import com.quare.bibleplanner.core.chapterstudy.di.chapterStudyModule
 import com.quare.bibleplanner.core.clear.di.clearModule
 import com.quare.bibleplanner.core.datastore.di.dataStoreProviderModule
@@ -102,6 +103,7 @@ object CommonKoinUtils {
         featureDayStudyModule,
         chapterStudyModule,
         studyUnlockModule,
+        chapterListeningModule,
         featureChapterStudyModule,
         dayReadingCompleteModule,
         chatModule,

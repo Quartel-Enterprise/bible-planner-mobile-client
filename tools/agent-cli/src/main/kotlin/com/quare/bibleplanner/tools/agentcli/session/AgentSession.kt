@@ -137,6 +137,11 @@ class AgentSession(
                     isWide = isWide,
                 )
 
+                is NavigationCommand.NavigateReplacing -> backStackController.navigateReplacing(
+                    current = command.current,
+                    route = command.route,
+                )
+
                 NavigationCommand.NavigateBack -> backStackController.navigateBack(isWide)
             }
         }

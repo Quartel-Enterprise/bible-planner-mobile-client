@@ -348,6 +348,64 @@ internal class ReadViewModelTest {
         }
 
     @Test
+    fun `GIVEN a chapter heard to the end WHEN marking it read from the offer THEN tracks the listening source`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                toggleWholeChapterReadStatus = { _, _ -> true },
+                getCompletedDayForChapter = { _, _ -> null },
+                isWholeChapterRead = { _, _ -> false },
+            )
+
+            // When
+            viewModel.onEvent(
+                ReadUiEvent.OnListeningMarkReadClick(
+                    bookId = BookId.GEN,
+                    chapterNumber = 3,
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertTrue(viewModel.uiState.value.header.isChapterRead)
+            assertTrue(
+                trackedEventParams.contains(
+                    "chapter_read_toggled" to mapOf<String, Any>(
+                        "book_id" to "gen",
+                        "chapter_number" to 3,
+                        "is_read" to true,
+                        "source" to "listening_offer",
+                    ),
+                ),
+            )
+        }
+
+    @Test
+    fun `GIVEN a chapter already read WHEN marking it from the offer THEN keeps it read`() = runTest(testDispatcher) {
+        // Given
+        var toggleCount = 0
+        prepareScenario(
+            toggleWholeChapterReadStatus = { _, _ ->
+                toggleCount++
+                false
+            },
+            isWholeChapterRead = { _, _ -> true },
+        )
+
+        // When
+        viewModel.onEvent(
+            ReadUiEvent.OnListeningMarkReadClick(
+                bookId = BookId.GEN,
+                chapterNumber = 3,
+            ),
+        )
+        runCurrent()
+
+        // Then
+        assertEquals(0, toggleCount)
+    }
+
+    @Test
     fun `GIVEN the suggestion in banner mode WHEN finishing the day THEN shows the banner instead of the sheet`() =
         runTest(testDispatcher) {
             // Given

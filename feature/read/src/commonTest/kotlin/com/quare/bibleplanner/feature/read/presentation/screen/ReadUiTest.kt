@@ -3,10 +3,14 @@ package com.quare.bibleplanner.feature.read.presentation.screen
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasScrollToNodeAction
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -22,6 +26,9 @@ import bibleplanner.feature.read.generated.resources.chapter_study_card_subtitle
 import bibleplanner.feature.read.generated.resources.chapter_study_card_title
 import bibleplanner.feature.read.generated.resources.chapter_study_pill
 import bibleplanner.feature.read.generated.resources.download_version
+import bibleplanner.feature.read.generated.resources.listening_listen
+import bibleplanner.feature.read.generated.resources.listening_pause
+import bibleplanner.feature.read.generated.resources.listening_unlock
 import bibleplanner.feature.read.generated.resources.manage_bible_versions
 import bibleplanner.feature.read.generated.resources.mark_as_read
 import bibleplanner.feature.read.generated.resources.next_chapter
@@ -31,19 +38,30 @@ import bibleplanner.feature.read.generated.resources.reader_appearance
 import bibleplanner.feature.read.generated.resources.retry
 import bibleplanner.feature.read.generated.resources.unknown_error_occurred
 import com.quare.bibleplanner.core.books.util.toBookNameResource
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionModel
 import com.quare.bibleplanner.feature.read.domain.model.ReadNavigationSuggestionsModel
 import com.quare.bibleplanner.feature.read.fixture.NoDayCompletionBanner
+import com.quare.bibleplanner.feature.read.fixture.availableListeningUiState
+import com.quare.bibleplanner.feature.read.fixture.hiddenListeningUiState
+import com.quare.bibleplanner.feature.read.fixture.listeningPlayer
 import com.quare.bibleplanner.feature.read.fixture.readUiState
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningEntrySource
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningFinishOfferUiModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkPosition
 import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkUiModel
+import com.quare.bibleplanner.feature.read.presentation.screen.component.LISTENING_FINISH_OFFER_TAG
+import com.quare.bibleplanner.feature.read.presentation.screen.component.LISTEN_SHORTCUT_TAG
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import org.jetbrains.compose.resources.getString
@@ -55,6 +73,7 @@ import bibleplanner.ui.component.generated.resources.back as backString
 @OptIn(ExperimentalTestApi::class)
 internal class ReadUiTest {
     private lateinit var events: MutableList<ReadUiEvent>
+    private lateinit var listeningEvents: MutableList<ReadListeningUiEvent>
 
     private val genesisName = BookId.GEN.toBookNameResource()
     private val loadedUiState = readUiState(LOCALE)
@@ -486,17 +505,170 @@ internal class ReadUiTest {
             onNodeWithText(subtitle).assertIsDisplayed()
         }
 
+    @Test
+    fun `GIVEN listening is hidden WHEN rendered THEN shows no listening entry`() = runComposeUiTest {
+        // Given
+        prepareScenario(uiState = loadedUiState)
+
+        // When
+        val shortcuts = onAllNodesWithTag(LISTEN_SHORTCUT_TAG)
+
+        // Then
+        shortcuts.assertCountEquals(0)
+    }
+
+    @Test
+    fun `GIVEN listening is available WHEN clicking the chapter shortcut THEN asks to listen from the shortcut`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState,
+                listening = availableListeningUiState(),
+            )
+
+            // When
+            onNodeWithTag(LISTEN_SHORTCUT_TAG).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadListeningUiEvent>(
+                    ReadListeningUiEvent.OnListenClick(
+                        chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER),
+                        source = ListeningEntrySource.SHORTCUT,
+                    ),
+                ),
+                actual = listeningEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN listening is available WHEN clicking the bottom bar button THEN asks to listen from the bottom bar`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState,
+                listening = availableListeningUiState(),
+            )
+            val listen = getString(Res.string.listening_listen)
+
+            // When
+            onNodeWithContentDescription(listen).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadListeningUiEvent>(
+                    ReadListeningUiEvent.OnListenClick(
+                        chapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER),
+                        source = ListeningEntrySource.BOTTOM_BAR,
+                    ),
+                ),
+                actual = listeningEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a chapter being read aloud WHEN clicking pause in the mini player THEN toggles the playback`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState,
+                listening = availableListeningUiState(player = listeningPlayer()),
+            )
+            val pause = getString(Res.string.listening_pause)
+
+            // When
+            onNodeWithContentDescription(pause).performClick()
+
+            // Then
+            assertEquals(listOf<ReadListeningUiEvent>(ReadListeningUiEvent.OnPlayPauseClick), listeningEvents)
+        }
+
+    @Test
+    fun `GIVEN a chapter being read aloud WHEN clicking the mini player title THEN opens the player`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(
+                uiState = loadedUiState,
+                listening = availableListeningUiState(player = listeningPlayer()),
+            )
+            val reference = "${getString(genesisName)} $CHAPTER:2"
+
+            // When
+            onNodeWithText(reference).performClick()
+
+            // Then
+            assertEquals(listOf<ReadListeningUiEvent>(ReadListeningUiEvent.OnMiniPlayerClick), listeningEvents)
+        }
+
+    @Test
+    fun `GIVEN the next chapter is locked WHEN clicking unlock THEN asks to unlock it`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            uiState = loadedUiState,
+            listening = availableListeningUiState(
+                player = listeningPlayer(
+                    status = ListeningStatusModel.NEXT_LOCKED,
+                    lockedChapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER + 1),
+                ),
+            ),
+        )
+        val unlock = getString(Res.string.listening_unlock)
+
+        // When
+        onNodeWithText(unlock).performClick()
+
+        // Then
+        assertEquals(listOf<ReadListeningUiEvent>(ReadListeningUiEvent.OnUnlockNextClick), listeningEvents)
+    }
+
+    @Test
+    fun `GIVEN a finished chapter offer WHEN marking it as read THEN marks the finished chapter`() = runComposeUiTest {
+        // Given
+        val finishedChapter = ChapterLocationModel(bookId = BookId.GEN, chapterNumber = CHAPTER)
+        prepareScenario(
+            uiState = loadedUiState,
+            listening = availableListeningUiState(
+                player = listeningPlayer(status = ListeningStatusModel.FINISHED),
+                finishOffer = ListeningFinishOfferUiModel(
+                    chapter = finishedChapter,
+                    playingChapter = null,
+                ),
+            ),
+        )
+
+        val markAsRead =
+            hasText(getString(Res.string.mark_as_read)) and hasAnyAncestor(hasTestTag(LISTENING_FINISH_OFFER_TAG))
+
+        // When
+        onNode(markAsRead).performClick()
+
+        // Then
+        assertEquals(
+            expected = listOf<ReadUiEvent>(
+                ReadUiEvent.OnListeningMarkReadClick(
+                    bookId = BookId.GEN,
+                    chapterNumber = CHAPTER,
+                ),
+            ),
+            actual = userEvents,
+        )
+    }
+
     private fun ComposeUiTest.prepareScenario(
         uiState: ReadUiState,
         isWideLayout: Boolean = false,
+        listening: ReadListeningUiState = hiddenListeningUiState(),
     ) {
         events = mutableListOf()
+        listeningEvents = mutableListOf()
         setUiTestContent {
             CompositionLocalProvider(LocalIsWideLayout provides isWideLayout) {
                 ReadScreen(
                     platform = Platform.Android,
                     state = uiState,
+                    listening = listening,
                     onEvent = { event -> events += event },
+                    onListeningEvent = { event -> listeningEvents += event },
                     dayCompletionBanner = NoDayCompletionBanner,
                 )
             }

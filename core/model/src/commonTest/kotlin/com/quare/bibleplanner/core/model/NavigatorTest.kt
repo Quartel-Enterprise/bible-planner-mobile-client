@@ -40,6 +40,30 @@ internal class NavigatorTest {
     }
 
     @Test
+    fun `GIVEN a collector WHEN navigating replacing a route THEN emits a replacing command for that route`() =
+        runTest {
+            // Given
+            prepareScenario()
+
+            // When
+            navigator.navigateReplacing(
+                current = ThemeNavRoute,
+                route = LogoutNavRoute,
+            )
+
+            // Then
+            assertEquals(
+                listOf<NavigationCommand>(
+                    NavigationCommand.NavigateReplacing(
+                        current = ThemeNavRoute,
+                        route = LogoutNavRoute,
+                    ),
+                ),
+                commands,
+            )
+        }
+
+    @Test
     fun `GIVEN a collector WHEN navigating back THEN emits a back command`() = runTest {
         // Given
         prepareScenario()

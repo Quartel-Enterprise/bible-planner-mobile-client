@@ -35,6 +35,10 @@ Navigation is a single injectable dependency, not a `NavController` and not lamb
 from the root. Inject `Navigator` (`core/model`) into the ViewModel and call it:
 
 - `navigate(route: NavKey)` — push a route
+- `navigateReplacing(current, route)` — swap `current` for `route` where it sits, keeping what is
+  shown over it (the reader the player moves on from, under the player sheet). The verse selection
+  over it is dropped and the study beside it follows the new chapter; a `route` already in the back
+  stack leaves it untouched
 - `navigateBack()` — pop the top entry
 - `navigateReplacingTop(route: NavKey)` — pop the current screen and push a route (the old
   `popUpTo(current) { inclusive = true }` pattern). What belongs to the screen leaves with it: the

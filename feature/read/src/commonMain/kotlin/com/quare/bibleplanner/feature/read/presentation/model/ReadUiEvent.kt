@@ -36,6 +36,15 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
+    data class OnListeningMarkReadClick(
+        val bookId: BookId,
+        val chapterNumber: Int,
+    ) : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
+            AnalyticsEventNames.CHAPTER_READ_TOGGLED,
+        )
+    }
+
     data object OnDownloadSelectedVersionClick : ReadUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.BIBLE_VERSION_DOWNLOAD_STARTED,

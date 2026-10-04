@@ -6,6 +6,7 @@ import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ChapterListeningPlayerNavRoute
 import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
 import com.quare.bibleplanner.core.model.route.CongratsNavRoute
@@ -214,6 +215,8 @@ internal class NavRouteToDestinationMapperImpl : NavRouteToDestinationMapper {
         )
 
         is ReaderAppearanceNavRoute -> createResponsiveDestination("reader_appearance")
+
+        is ChapterListeningPlayerNavRoute -> createResponsiveDestination("chapter_listening_player")
 
         is DeleteHighlightColorNavRoute -> createDialogDestination("delete_highlight_color")
 

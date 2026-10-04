@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.screen
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -33,10 +34,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
+import com.quare.bibleplanner.feature.read.presentation.component.rememberListeningFollow
 import com.quare.bibleplanner.feature.read.presentation.component.rememberVerseFlash
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ListeningMiniPlayerBar
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ListeningOverlay
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadBottomBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadTopBar
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadingRulerOverlay
@@ -63,13 +69,16 @@ private val bannerBottomSpacing = 12.dp
 internal fun ReadNarrowScreen(
     platform: Platform,
     state: ReadUiState,
+    listening: ReadListeningUiState,
     onEvent: (ReadUiEvent) -> Unit,
+    onListeningEvent: (ReadListeningUiEvent) -> Unit,
     dayCompletionBanner: DayCompletionBannerSlot,
 ) {
     val listState = rememberLazyListState()
     val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
     val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var bottomOverlayHeightPx by remember { mutableFloatStateOf(0f) }
+    var miniPlayerHeightPx by remember { mutableFloatStateOf(0f) }
     val isTitleVisible by remember(listState) {
         derivedStateOf { listState.firstVisibleItemIndex >= TITLE_VISIBLE_ITEM_INDEX }
     }
@@ -104,8 +113,16 @@ internal fun ReadNarrowScreen(
         chapters = chapters,
         onReachedStart = { onEvent(ReadUiEvent.OnReachedStart) },
     )
+    val listeningFollow = rememberListeningFollow(
+        player = listening.player,
+        chapters = chapters,
+        listState = listState,
+        leadingItemCount = leadingItemCount,
+        isChapterStudyBeside = state.isChapterStudyBeside,
+    )
     ReserveBottomOverlayHeightEffect {
-        (bottomOverlayHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
+        val bottomBarHeight = (bottomOverlayHeightPx + bottomBarScrollBehavior.state.heightOffset).coerceAtLeast(0f)
+        bottomBarHeight + if (listening.player == null) 0f else miniPlayerHeightPx
     }
     var contentTopOffset by remember { mutableStateOf(0.dp) }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -127,17 +144,40 @@ internal fun ReadNarrowScreen(
                 )
             },
             bottomBar = {
-                /*
-                 * Why: vertical reading has no single chapter to act on and each chapter ends with its
-                 * own read pill, so the bar would name only the route's start chapter.
-                 */
-                if (!state.settings.isVerticalReadingEnabled) {
-                    ReadBottomBar(
-                        modifier = Modifier.onSizeChanged { size -> bottomOverlayHeightPx = size.height.toFloat() },
-                        header = state.header,
-                        scrollBehavior = bottomBarScrollBehavior,
-                        onEvent = onEvent,
-                    )
+                Column {
+                    listening.player?.let { player ->
+                        val navigationBarPadding = WindowInsets.navigationBars
+                            .asStable()
+                            .asPaddingValues()
+                            .calculateBottomPadding()
+                        val hiddenBarFraction = if (state.settings.isVerticalReadingEnabled) {
+                            1f
+                        } else {
+                            bottomBarScrollBehavior.state.collapsedFraction
+                        }
+                        // Why: the mini player stays when the bar hides, so it takes over the bar's inset as it goes.
+                        ListeningMiniPlayerBar(
+                            modifier = Modifier
+                                .onSizeChanged { size -> miniPlayerHeightPx = size.height.toFloat() }
+                                .padding(bottom = navigationBarPadding * hiddenBarFraction),
+                            player = player,
+                            onEvent = onListeningEvent,
+                        )
+                    }
+                    /*
+                     * Why: vertical reading has no single chapter to act on and each chapter ends with its
+                     * own read pill, so the bar would name only the route's start chapter.
+                     */
+                    if (!state.settings.isVerticalReadingEnabled) {
+                        ReadBottomBar(
+                            modifier = Modifier.onSizeChanged { size -> bottomOverlayHeightPx = size.height.toFloat() },
+                            header = state.header,
+                            scrollBehavior = bottomBarScrollBehavior,
+                            listening = listening,
+                            onEvent = onEvent,
+                            onListeningEvent = onListeningEvent,
+                        )
+                    }
                 }
             },
             contentWindowInsets = ScaffoldDefaults.contentWindowInsets.asStable(),
@@ -191,7 +231,9 @@ internal fun ReadNarrowScreen(
                                     isChapterStudyBeside = state.isChapterStudyBeside,
                                     focusedVerseNumber = null,
                                     verseFlash = verseFlash,
+                                    listening = listening,
                                     onEvent = onEvent,
+                                    onListeningEvent = onListeningEvent,
                                 )
                             }
                             if (state.isLoadingNextChapter) {
@@ -200,6 +242,13 @@ internal fun ReadNarrowScreen(
                         }
                     }
                 }
+                ListeningOverlay(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    listening = listening,
+                    follow = listeningFollow,
+                    onEvent = onEvent,
+                    onListeningEvent = onListeningEvent,
+                )
             }
         }
         /*
@@ -215,7 +264,9 @@ internal fun ReadNarrowScreen(
             )
         }
         state.dayCompletionBanner?.let { day ->
-            val bottomBarHeight = with(LocalDensity.current) { bottomOverlayHeightPx.toDp() }
+            val bottomBarHeight = with(LocalDensity.current) {
+                (bottomOverlayHeightPx + if (listening.player == null) 0f else miniPlayerHeightPx).toDp()
+            }
             val navigationBarPadding = WindowInsets.navigationBars
                 .asPaddingValues()
                 .calculateBottomPadding()

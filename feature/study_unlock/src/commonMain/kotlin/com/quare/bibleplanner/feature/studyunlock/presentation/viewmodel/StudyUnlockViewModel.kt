@@ -31,6 +31,7 @@ internal class StudyUnlockViewModel(
     val uiState: StateFlow<StudyUnlockUiState>
         field = MutableStateFlow(
             StudyUnlockUiState(
+                surface = route.surface,
                 rewardedRemainingToday = route.rewardedRemainingToday,
                 videoState = StudyUnlockVideoState.LOADING,
             ),

@@ -1,5 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,6 +62,8 @@ private const val VERSE_NUMBER_WIDTH_RATIO = 1.2f
 private const val SELECTION_UNDERLINE_OFFSET_RATIO = 0.14f
 private val verseVerticalPadding = 6.dp
 private const val FLASH_MAX_ALPHA = 0.22f
+private const val LISTENING_ALPHA = 0.12f
+private const val LISTENING_FADE_MILLIS = 450
 private val flashCornerRadius = 8.dp
 private val selectionUnderlineDotWidth = 1.6.dp
 private val selectionUnderlineDotGap = 3.dp
@@ -72,6 +76,7 @@ internal fun VerseRow(
     onNoteIconClick: (VerseNoteMarkUiModel) -> Unit,
     modifier: Modifier = Modifier,
     isDimmed: Boolean = false,
+    isListening: Boolean = false,
     flashAlpha: (() -> Float)? = null,
 ) {
     val fontSize = settings.fontSizeSp.sp
@@ -90,10 +95,20 @@ internal fun VerseRow(
         color = MaterialTheme.colorScheme.onSurface,
     )
     val primaryColor = MaterialTheme.colorScheme.primary
+    val listeningAlpha by animateFloatAsState(
+        targetValue = if (isListening) LISTENING_ALPHA else 0f,
+        animationSpec = tween(LISTENING_FADE_MILLIS),
+    )
     Column(
         modifier = modifier
             .alpha(if (isDimmed) DIMMED_ALPHA else 1f)
             .drawBehind {
+                if (listeningAlpha > 0f) {
+                    drawRoundRect(
+                        color = primaryColor.copy(alpha = listeningAlpha),
+                        cornerRadius = CornerRadius(flashCornerRadius.toPx()),
+                    )
+                }
                 flashAlpha?.let { alpha ->
                     drawRoundRect(
                         color = primaryColor.copy(alpha = alpha() * FLASH_MAX_ALPHA),

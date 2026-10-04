@@ -68,6 +68,7 @@ kotlin {
             implementation(projects.feature.chapterStudy)
             implementation(projects.core.chapterStudy)
             implementation(projects.core.studyUnlock)
+            implementation(projects.core.chapterListening)
             implementation(projects.feature.dayReadingComplete)
             implementation(projects.feature.chat)
             implementation(projects.feature.preferences.editPlanStartDate)
