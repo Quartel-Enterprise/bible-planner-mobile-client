@@ -13,8 +13,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN open with JSON arguments WHEN parsing THEN reads the route and its arguments`() {
+        // Given
+        val line = "open DayNavRoute {\"dayNumber\":1,\"weekNumber\":2}"
+
         // When
-        val command = parser.parse("open DayNavRoute {\"dayNumber\":1,\"weekNumber\":2}")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -29,8 +32,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN replace WHEN parsing THEN opens the route replacing the top screen`() {
+        // Given
+        val line = "replace ThemeNavRoute"
+
         // When
-        val command = parser.parse("replace ThemeNavRoute")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -45,8 +51,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN state with a path and options WHEN parsing THEN reads all of them`() {
+        // Given
+        val line = "state AppViewModel.themeState --limit 5 --app"
+
         // When
-        val command = parser.parse("state AppViewModel.themeState --limit 5 --app")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -61,8 +70,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN state without options WHEN parsing THEN shows fifty items of the top screen`() {
+        // Given
+        val line = "STATE"
+
         // When
-        val command = parser.parse("STATE")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -77,8 +89,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN an event aimed at one ViewModel WHEN parsing THEN keeps the target and its arguments`() {
+        // Given
+        val line = "event DayViewModel.OnNotesChanged {\"notes\":\"a {brace}\"}"
+
         // When
-        val command = parser.parse("event DayViewModel.OnNotesChanged {\"notes\":\"a {brace}\"}")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -92,8 +107,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN a wait for a JSON value WHEN parsing THEN reads the value and its options`() {
+        // Given
+        val line = "wait Vm.uiState.status = \"Done\" --timeout 2000 --app"
+
         // When
-        val command = parser.parse("wait Vm.uiState.status = \"Done\" --timeout 2000 --app")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -109,8 +127,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN a wait value that is not JSON WHEN parsing THEN reads it as text`() {
+        // Given
+        val line = "wait Vm.uiState.@type = Loaded"
+
         // When
-        val command = parser.parse("wait Vm.uiState.@type = Loaded")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -126,8 +147,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN a wait value holding a double dash WHEN parsing THEN keeps the value whole`() {
+        // Given
+        val line = "wait Vm.uiState.title = \"Day 1 -- Genesis\" --app"
+
         // When
-        val command = parser.parse("wait Vm.uiState.title = \"Day 1 -- Genesis\" --app")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -143,8 +167,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN a wait without a value WHEN parsing THEN waits for the path to exist`() {
+        // Given
+        val line = "wait Vm.uiState.content"
+
         // When
-        val command = parser.parse("wait Vm.uiState.content")
+        val command = parser.parse(line)
 
         // Then
         assertEquals(
@@ -160,8 +187,8 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN the commands without arguments WHEN parsing THEN reads each one`() {
-        // When
-        val commands = listOf(
+        // Given
+        val lines = listOf(
             "help",
             "?",
             "back",
@@ -173,7 +200,10 @@ internal class CommandParserTest {
             "routes",
             "events",
             "functions",
-        ).map(parser::parse)
+        )
+
+        // When
+        val commands = lines.map(parser::parse)
 
         // Then
         assertEquals(
@@ -196,14 +226,17 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN commands naming a ViewModel or a filter WHEN parsing THEN keeps the name`() {
-        // When
-        val commands = listOf(
+        // Given
+        val lines = listOf(
             "routes Day",
             "events DayViewModel",
             "functions DayViewModel",
             "call Vm.reload {}",
             "settle 50",
-        ).map(parser::parse)
+        )
+
+        // When
+        val commands = lines.map(parser::parse)
 
         // Then
         assertEquals(
@@ -224,8 +257,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN a command missing its target WHEN parsing THEN explains its usage`() {
+        // Given
+        val line = "open"
+
         // When
-        val error = assertFailsWith<IllegalArgumentException> { parser.parse("open") }
+        val error = assertFailsWith<IllegalArgumentException> { parser.parse(line) }
 
         // Then
         assertEquals(
@@ -236,8 +272,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN arguments that are not a JSON object WHEN parsing THEN fails`() {
+        // Given
+        val line = "event OnX {\"a\":1} trailing"
+
         // When
-        val error = assertFailsWith<IllegalArgumentException> { parser.parse("event OnX {\"a\":1} trailing") }
+        val error = assertFailsWith<IllegalArgumentException> { parser.parse(line) }
 
         // Then
         assertEquals(
@@ -248,8 +287,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN an unknown command WHEN parsing THEN points to help`() {
+        // Given
+        val line = "tap 10 20"
+
         // When
-        val error = assertFailsWith<IllegalArgumentException> { parser.parse("tap 10 20") }
+        val error = assertFailsWith<IllegalArgumentException> { parser.parse(line) }
 
         // Then
         assertEquals(
@@ -260,8 +302,11 @@ internal class CommandParserTest {
 
     @Test
     fun `GIVEN a limit that is not a number WHEN parsing THEN fails`() {
+        // Given
+        val line = "state --limit many"
+
         // When
-        val error = assertFailsWith<IllegalArgumentException> { parser.parse("state --limit many") }
+        val error = assertFailsWith<IllegalArgumentException> { parser.parse(line) }
 
         // Then
         assertEquals(

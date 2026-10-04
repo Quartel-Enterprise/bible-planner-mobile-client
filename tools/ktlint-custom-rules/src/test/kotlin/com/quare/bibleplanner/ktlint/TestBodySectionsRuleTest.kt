@@ -218,6 +218,37 @@ class TestBodySectionsRuleTest {
     }
 
     @Test
+    fun `GIVEN a superclass in the file that sets up WHEN linting a test without Given THEN reports nothing`() {
+        // Given
+        val code =
+            """
+            abstract class BaseViewModelTest {
+                @BeforeTest
+                fun setUp() {
+                    viewModel = ViewModel()
+                }
+            }
+
+            class ViewModelTest : BaseViewModelTest() {
+                @Test
+                fun `GIVEN a plan WHEN opening THEN loads it`() = runTest {
+                    // When
+                    viewModel.onEvent(Open)
+
+                    // Then
+                    assertEquals(1, loads)
+                }
+            }
+            """.trimIndent()
+
+        // When
+        val linted = testBodySectionsRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
+    }
+
+    @Test
     fun `GIVEN a class that sets up before each test WHEN linting a test without Then THEN reports the test`() {
         // Given
         val code =

@@ -21,11 +21,12 @@ class PrepareScenarioInGivenRule : BiblePlannerRule("prepare-scenario-in-given")
             .collectDescendantsOfType<KtCallExpression> { call -> call.calleeExpression?.text == PREPARE_SCENARIO }
             .forEach { call ->
                 val section = sections.lastOrNull { (_, offset) -> offset < call.textOffset }?.first
-                if (section == null || section == TestSection.GIVEN) return@forEach
+                if (section == TestSection.GIVEN) return@forEach
+                val placement = section?.let { "under '${it.comment}'" } ?: "before any section"
                 emit(
                     call.textOffset,
                     "'$PREPARE_SCENARIO' builds the scenario, so it is called under '${TestSection.GIVEN.comment}', " +
-                        "not under '${section.comment}'",
+                        "not $placement",
                     false,
                 )
             }

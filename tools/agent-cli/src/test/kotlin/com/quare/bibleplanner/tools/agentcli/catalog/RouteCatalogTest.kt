@@ -19,8 +19,11 @@ internal class RouteCatalogTest {
 
     @Test
     fun `GIVEN the route catalog WHEN finding routes by full or nested name THEN finds them ignoring case`() {
+        // Given
+        val queries = listOf("readnavroute", "MainNavRouteDestination.Books", "Books")
+
         // When
-        val names = listOf("readnavroute", "MainNavRouteDestination.Books", "Books").map { name ->
+        val names = queries.map { name ->
             catalog.find(name).name
         }
 
@@ -33,8 +36,11 @@ internal class RouteCatalogTest {
 
     @Test
     fun `GIVEN routes with and without arguments WHEN describing them THEN lists each argument with its type`() {
+        // Given
+        val routeNames = listOf("ReadNavRoute", "ChatNavRoute", "MainNavRoute")
+
         // When
-        val signatures = listOf("ReadNavRoute", "ChatNavRoute", "MainNavRoute").map { name ->
+        val signatures = routeNames.map { name ->
             catalog.getSignature(catalog.find(name))
         }
 
@@ -53,19 +59,23 @@ internal class RouteCatalogTest {
 
     @Test
     fun `GIVEN JSON arguments WHEN creating routes THEN builds the routes they describe`() {
+        // Given
+        val chatArguments = Json
+            .parseToJsonElement(
+                """{"source": "CHAPTER_STUDY", "dayNumber": null, "weekNumber": null, "readingPlanType": null,
+                "bookId": "GEN", "chapterNumber": 3}""",
+            ).jsonObject
+        val plansArguments = Json.parseToJsonElement("{}").jsonObject
+
         // When
         val routes = listOf(
             catalog.create(
                 route = catalog.find("ChatNavRoute"),
-                arguments = Json
-                    .parseToJsonElement(
-                        """{"source": "CHAPTER_STUDY", "dayNumber": null, "weekNumber": null, "readingPlanType": null,
-                        "bookId": "GEN", "chapterNumber": 3}""",
-                    ).jsonObject,
+                arguments = chatArguments,
             ),
             catalog.create(
                 route = catalog.find("Plans"),
-                arguments = Json.parseToJsonElement("{}").jsonObject,
+                arguments = plansArguments,
             ),
         )
 
@@ -88,16 +98,17 @@ internal class RouteCatalogTest {
 
     @Test
     fun `GIVEN a route instance WHEN naming it THEN uses the name the catalog lists`() {
-        // When
-        val name = catalog.nameOf(
-            ReadNavRoute(
-                bookId = "JHN",
-                chapterNumber = 3,
-                isChapterRead = false,
-                isFromBookDetails = false,
-                targetVerseNumbers = emptyList(),
-            ),
+        // Given
+        val route = ReadNavRoute(
+            bookId = "JHN",
+            chapterNumber = 3,
+            isChapterRead = false,
+            isFromBookDetails = false,
+            targetVerseNumbers = emptyList(),
         )
+
+        // When
+        val name = catalog.nameOf(route)
 
         // Then
         assertEquals(
@@ -108,8 +119,11 @@ internal class RouteCatalogTest {
 
     @Test
     fun `GIVEN an unknown route WHEN finding it THEN points to the routes command`() {
+        // Given
+        val routeName = "Nowhere"
+
         // When
-        val error = assertFailsWith<IllegalArgumentException> { catalog.find("Nowhere") }
+        val error = assertFailsWith<IllegalArgumentException> { catalog.find(routeName) }
 
         // Then
         assertEquals(

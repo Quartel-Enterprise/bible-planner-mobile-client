@@ -13,7 +13,8 @@ private const val TEST_ANNOTATION = "Test"
 internal fun KtAnnotated.hasAnnotation(names: Set<String>): Boolean =
     annotationEntries.any { entry -> entry.shortName?.asString() in names }
 
-internal fun KtNamedFunction.isTest(): Boolean = hasAnnotation(setOf(TEST_ANNOTATION))
+internal fun KtNamedFunction.isTest(): Boolean =
+    annotationEntries.any { entry -> entry.shortName?.asString() == TEST_ANNOTATION }
 
 internal fun KtDeclaration.isPrepareScenario(): Boolean = this is KtNamedFunction && name == PREPARE_SCENARIO
 

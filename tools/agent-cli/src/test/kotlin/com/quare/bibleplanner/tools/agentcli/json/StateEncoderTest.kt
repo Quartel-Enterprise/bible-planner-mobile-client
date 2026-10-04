@@ -65,9 +65,12 @@ internal class StateEncoderTest {
 
     @Test
     fun `GIVEN an object WHEN encoding THEN writes its name`() {
+        // Given
+        val value = SampleContent.Loading
+
         // When
         val json = encoder.encode(
-            value = SampleContent.Loading,
+            value = value,
             maxItems = 0,
         )
 
@@ -138,9 +141,12 @@ internal class StateEncoderTest {
 
     @Test
     fun `GIVEN a class from outside the app WHEN encoding THEN writes its toString`() {
+        // Given
+        val value = StringBuilder("built")
+
         // When
         val json = encoder.encode(
-            value = StringBuilder("built"),
+            value = value,
             maxItems = 0,
         )
 
@@ -192,9 +198,12 @@ internal class StateEncoderTest {
 
     @Test
     fun `GIVEN null WHEN encoding THEN writes JSON null`() {
+        // Given
+        val value: Any? = null
+
         // When
         val json = encoder.encode(
-            value = null,
+            value = value,
             maxItems = 0,
         )
 

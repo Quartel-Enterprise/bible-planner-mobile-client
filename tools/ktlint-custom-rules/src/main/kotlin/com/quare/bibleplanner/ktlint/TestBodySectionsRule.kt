@@ -3,6 +3,7 @@ package com.quare.bibleplanner.ktlint
 import com.pinterest.ktlint.rule.engine.core.api.AutocorrectDecision
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.FUN
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
@@ -37,7 +38,20 @@ class TestBodySectionsRule : BiblePlannerRule("test-body-sections") {
     }
 
     private fun KtNamedFunction.hasSetUpBeforeEachTest(): Boolean =
-        containingClassOrObject?.declarations.orEmpty().any { declaration ->
+        containingClassOrObject?.hasSetUpBeforeEachTest() == true
+
+    // Why: ktlint sees one file at a time, so only a superclass declared in the same file can be inspected.
+    private fun KtClassOrObject.hasSetUpBeforeEachTest(): Boolean {
+        val hasOwnSetUp = declarations.any { declaration ->
             declaration is KtNamedFunction && declaration.hasAnnotation(setUpAnnotations)
         }
+        return hasOwnSetUp || findSuperclassesInFile().any { superclass -> superclass.hasSetUpBeforeEachTest() }
+    }
+
+    private fun KtClassOrObject.findSuperclassesInFile(): List<KtClassOrObject> {
+        val superTypeNames = superTypeListEntries.mapNotNull { entry -> entry.typeAsUserType?.referencedName }
+        return containingKtFile.declarations
+            .filterIsInstance<KtClassOrObject>()
+            .filter { declaration -> declaration != this && declaration.name in superTypeNames }
+    }
 }

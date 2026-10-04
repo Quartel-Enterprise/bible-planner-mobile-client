@@ -14,13 +14,16 @@ internal class SessionLogWriterTest {
 
     @Test
     fun `GIVEN the session log writer WHEN checking severities THEN only warnings and errors are logged`() {
+        // Given
+        val tag = "Sync"
+
         // When
         val isInfoLoggable = writer.isLoggable(
-            tag = "Sync",
+            tag = tag,
             severity = Severity.Info,
         )
         val isWarnLoggable = writer.isLoggable(
-            tag = "Sync",
+            tag = tag,
             severity = Severity.Warn,
         )
 
@@ -31,12 +34,15 @@ internal class SessionLogWriterTest {
 
     @Test
     fun `GIVEN an error WHEN logging it THEN records the message with its error`() {
+        // Given
+        val error = IllegalStateException("offline")
+
         // When
         writer.log(
             severity = Severity.Error,
             message = "sync failed",
             tag = "Sync",
-            throwable = IllegalStateException("offline"),
+            throwable = error,
         )
 
         // Then

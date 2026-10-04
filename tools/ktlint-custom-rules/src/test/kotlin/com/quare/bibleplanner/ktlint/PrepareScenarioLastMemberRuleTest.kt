@@ -55,6 +55,29 @@ class PrepareScenarioLastMemberRuleTest {
     }
 
     @Test
+    fun `GIVEN an init block after prepareScenario WHEN linting THEN reports the init block`() {
+        // Given
+        val code =
+            """
+            class RepositoryTest {
+                private fun prepareScenario() {
+                    repository = Repository()
+                }
+
+                init {
+                    seedDatabase()
+                }
+            }
+            """.trimIndent()
+
+        // When
+        val linted = prepareScenarioLastMemberRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(6, 5, buildViolationMessage("init block"))
+    }
+
+    @Test
     fun `GIVEN prepareScenario overloads and a companion object at the end WHEN linting THEN reports nothing`() {
         // Given
         val code =

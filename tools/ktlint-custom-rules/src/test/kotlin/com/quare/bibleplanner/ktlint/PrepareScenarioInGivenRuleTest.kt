@@ -60,6 +60,41 @@ class PrepareScenarioInGivenRuleTest {
     }
 
     @Test
+    fun `GIVEN prepareScenario called before any section WHEN linting THEN reports the call`() {
+        // Given
+        val code =
+            """
+            class RepositoryTest {
+                @BeforeTest
+                fun setUp() {
+                    seedDatabase()
+                }
+
+                @Test
+                fun `GIVEN a theme WHEN saving THEN stores it`() = runTest {
+                    prepareScenario(theme = Theme.DARK)
+
+                    // When
+                    repository.save()
+
+                    // Then
+                    assertEquals(Theme.DARK, repository.theme)
+                }
+            }
+            """.trimIndent()
+
+        // When
+        val linted = prepareScenarioInGivenRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(
+            9,
+            9,
+            "'prepareScenario' builds the scenario, so it is called under '// Given', not before any section",
+        )
+    }
+
+    @Test
     fun `GIVEN prepareScenario called under Given WHEN linting THEN reports nothing`() {
         // Given
         val code =

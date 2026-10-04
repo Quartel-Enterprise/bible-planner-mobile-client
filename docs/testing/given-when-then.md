@@ -68,9 +68,10 @@ Two custom ktlint rules (in `tools/ktlint-custom-rules`) check every test source
 - `bible-planner-style:test-name-given-when-then` — an `@Test` name matches `GIVEN … WHEN … THEN …` and holds
   only the characters above.
 - `bible-planner-style:test-body-sections` — the body has `// Given`, `// When` and `// Then`, once each and in
-  that order (`// Given` optional in a class with a `@BeforeTest`).
+  that order (`// Given` optional in a class with a `@BeforeTest`, its own or one of a superclass declared in the
+  same file).
 
-[Screenshot tests](screenshot-tests.md) and the store screenshot generators (every file under a `screenshots`
-package of a test source set) are exempt: a test there is one render, named after its image. The exemptions are
+[Screenshot tests](screenshot-tests.md) and the store screenshot generators (the `*ScreenshotTest`,
+`*Screenshots` and `*ScreenshotCaptures` files of a `screenshots` package in a test source set) are exempt: a test there is one render, named after its image. The exemptions are
 sections of `.editorconfig`. Whether a name really describes its body, or a test checks a single behaviour, is
 for the review.
