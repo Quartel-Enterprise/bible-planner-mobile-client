@@ -11,6 +11,8 @@
     <string name="feature_ai_day_study_subtext">Visão geral, contexto histórico e perguntas guiadas para cada leitura.</string>
     <string name="feature_ai_chat">Chat com IA ilimitado</string>
     <string name="feature_ai_chat_subtext">Pergunte o que quiser sobre a Bíblia e siga a conversa.</string>
+    <string name="feature_ad_free">Sem anúncios</string>
+    <string name="feature_ad_free_subtext">Leia e estude sem interrupções.</string>
     <string name="feature_unlimited_notes">Criar Notas Ilimitadas</string>
     <string name="feature_unlimited_notes_subtext">Plano gratuito limitado a %1$d notas.</string>
     <string name="feature_highlight_colors">Paleta de destaques completa</string>

@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import bibleplanner.feature.paywall.generated.resources.Res
+import bibleplanner.feature.paywall.generated.resources.feature_ad_free
+import bibleplanner.feature.paywall.generated.resources.feature_ad_free_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_ai_chat
 import bibleplanner.feature.paywall.generated.resources.feature_ai_chat_subtext
 import bibleplanner.feature.paywall.generated.resources.feature_ai_day_study
@@ -41,6 +43,13 @@ internal fun PremiumFeaturesList(
         PremiumFeatureItem(
             text = stringResource(Res.string.feature_ai_chat),
             subtext = stringResource(Res.string.feature_ai_chat_subtext),
+            titleColor = titleColor,
+            subtitleColor = subtitleColor,
+            iconSize = iconSize,
+        )
+        PremiumFeatureItem(
+            text = stringResource(Res.string.feature_ad_free),
+            subtext = stringResource(Res.string.feature_ad_free_subtext),
             titleColor = titleColor,
             subtitleColor = subtitleColor,
             iconSize = iconSize,
