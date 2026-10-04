@@ -21,8 +21,9 @@ The Android host (`testAndroidHostTest`) has no `Instrumentation` to launch the 
 
 ## Writing one
 
-- One class per screen, in `src/commonTest`, in the package of the composable it renders. Its name
-  **must end in `UiTest`**: that suffix is what keeps it off the Android host.
+- One class per screen (plus the shared-transition tests below), in `src/commonTest`, in the package
+  of the composable it renders. Its name **must end in `UiTest`**: that suffix is what keeps it off
+  the Android host.
 - Render the stateless content composable — the one that takes `uiState` and `onEvent`, never the
   `*Root` wired to a ViewModel — with a fixed `UiState`. Then assert on text, content descriptions
   and test tags, and on the `UiEvent`s it sends to `onEvent`.
@@ -135,6 +136,22 @@ every device test, including one that starts depending on the ads SDK later. `bu
 it instead: the KMP Android plugin ignores generated manifests (`sources.manifests`) for its device
 tests.
 
+## Shared transitions with animations off
+
+Compose 1.12.1 leaves a shared element in a `TopAppBar` title at the source's position when the
+transition ends within about 2 frames ([CMP-10888](https://youtrack.jetbrains.com/issue/CMP-10888)).
+That happens every time with the device's "Remove animations" setting, and the title is clipped out
+of view. Every top-bar title target uses `Modifier.sharedElementWithRelayout` from `:ui:utils`.
+Each of them also has a regression test of its own, an extra `*TopBarUiTest` class next to the
+screen's main one:
+
+- Run it with `runComposeUiTest(effectContext = AnimationsDisabled)`.
+- Set the content with `SharedTransitionTestContent`, both from `:ui:testing`. It shows a source with
+  the same shared keys at the bottom of the screen, then the top bar once the test flips
+  `isTargetShown`.
+- Assert that the title is displayed and sits in the top bar row, not just that it exists.
+- Check that the test fails with a plain `sharedElement`. `PaywallTopBarUiTest` is the reference.
+
 ## What is covered
 
 | Screen | Test |
@@ -147,6 +164,8 @@ tests.
 | Read | `feature/read/.../presentation/screen/ReadUiTest.kt` |
 | Profile (preferences and account) | `feature/profile/.../presentation/ProfileUiTest.kt` |
 | Annotations | `feature/verse/annotations/.../presentation/content/AnnotationsUiTest.kt` |
+| Release notes (top bar title) | `feature/release_notes/.../presentation/ReleaseNotesUiTest.kt` |
+| Top bar titles in a shared transition | `PaywallTopBarUiTest`, `BookDetailsTopBarUiTest`, `DayScreenTopBarUiTest` |
 
 The whole app, driven from launch across several screens, is covered by the
 [end-to-end flows](end-to-end-tests.md) in `:shared`.

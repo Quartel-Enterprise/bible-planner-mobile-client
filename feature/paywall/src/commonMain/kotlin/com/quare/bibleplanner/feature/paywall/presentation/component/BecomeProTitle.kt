@@ -13,7 +13,7 @@ import bibleplanner.feature.paywall.generated.resources.Res
 import bibleplanner.feature.paywall.generated.resources.paywall_title_part_1
 import bibleplanner.feature.paywall.generated.resources.paywall_title_part_2
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
-import com.quare.bibleplanner.ui.utils.transition.relayoutAfterSharedTransition
+import com.quare.bibleplanner.ui.utils.transition.sharedElementWithRelayout
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -25,33 +25,29 @@ internal fun BecomeProTitle(
     proColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    with(sharedTransitionScope) {
-        Row(modifier = modifier) {
-            Text(
-                modifier = Modifier
-                    .relayoutAfterSharedTransition(sharedTransitionScope)
-                    .sharedElement(
-                        rememberSharedContentState(key = "become_pro_part_1"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ),
-                text = stringResource(Res.string.paywall_title_part_1),
-                fontSize = fontSize,
-                fontWeight = FontWeight.Bold,
-                color = titleColor,
-            )
-            HorizontalSpacer(6)
-            Text(
-                modifier = Modifier
-                    .relayoutAfterSharedTransition(sharedTransitionScope)
-                    .sharedElement(
-                        rememberSharedContentState(key = "become_pro_part_2"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    ),
-                text = stringResource(Res.string.paywall_title_part_2),
-                fontSize = fontSize,
-                fontWeight = FontWeight.Bold,
-                color = proColor,
-            )
-        }
+    Row(modifier = modifier) {
+        Text(
+            modifier = Modifier.sharedElementWithRelayout(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+                key = "become_pro_part_1",
+            ),
+            text = stringResource(Res.string.paywall_title_part_1),
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold,
+            color = titleColor,
+        )
+        HorizontalSpacer(6)
+        Text(
+            modifier = Modifier.sharedElementWithRelayout(
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+                key = "become_pro_part_2",
+            ),
+            text = stringResource(Res.string.paywall_title_part_2),
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold,
+            color = proColor,
+        )
     }
 }

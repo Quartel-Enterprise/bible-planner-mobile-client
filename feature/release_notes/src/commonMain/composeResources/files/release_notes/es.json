@@ -1,7 +1,7 @@
 {
   "2.11.1": {
     "common": [
-      "Corregimos el título \"Hazte Pro\" en la parte superior de la pantalla de suscripción Pro, que podía no aparecer la primera vez que la abrías, o siempre que las animaciones estaban desactivadas."
+      "Corregimos el título en la parte superior de la pantalla de suscripción Pro, de la pantalla de Notas de la Versión y de los detalles de un libro, que podía no aparecer al abrir esas pantallas, sobre todo con las animaciones desactivadas."
     ]
   },
   "2.11.0": {

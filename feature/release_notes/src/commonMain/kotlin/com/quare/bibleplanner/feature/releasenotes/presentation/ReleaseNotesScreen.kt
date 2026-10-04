@@ -39,6 +39,7 @@ import com.quare.bibleplanner.feature.releasenotes.presentation.model.ReleaseVer
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
+import com.quare.bibleplanner.ui.utils.transition.sharedElementWithRelayout
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import bibleplanner.ui.component.generated.resources.Res as ComponentRes
@@ -52,154 +53,153 @@ fun ReleaseNotesScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
 ) {
-    with(sharedTransitionScope) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(Res.string.release_notes_screen_title),
-                            modifier = Modifier.sharedElement(
-                                rememberSharedContentState(key = "release_notes_card"),
-                                animatedVisibilityScope = animatedContentScope,
-                            ),
-                        )
-                    },
-                    navigationIcon = {
-                        BackIcon(platform = platform, onBackClick = { onEvent(ReleaseNotesUiEvent.OnBackClicked) })
-                    },
-                    actions = {
-                        CommonIconButton(
-                            painter = painterResource(ComponentRes.drawable.ic_github),
-                            contentDescription = stringResource(Res.string.release_notes_view_all_github),
-                            onClick = { onEvent(ReleaseNotesUiEvent.OnGithubAllReleasesClicked) },
-                        )
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    ),
-                )
-            },
-            containerColor = MaterialTheme.colorScheme.background,
-        ) { paddingValues ->
-            ResponsiveColumn(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(bottom = 16.dp),
-                portraitContent = {
-                    when (uiState) {
-                        ReleaseNotesUiState.Loading -> {
-                            responsiveItem {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    AdaptiveCircularProgressIndicator()
-                                }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(Res.string.release_notes_screen_title),
+                        modifier = Modifier.sharedElementWithRelayout(
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedContentScope,
+                            key = "release_notes_card",
+                        ),
+                    )
+                },
+                navigationIcon = {
+                    BackIcon(platform = platform, onBackClick = { onEvent(ReleaseNotesUiEvent.OnBackClicked) })
+                },
+                actions = {
+                    CommonIconButton(
+                        painter = painterResource(ComponentRes.drawable.ic_github),
+                        contentDescription = stringResource(Res.string.release_notes_view_all_github),
+                        onClick = { onEvent(ReleaseNotesUiEvent.OnGithubAllReleasesClicked) },
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground,
+                ),
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background,
+    ) { paddingValues ->
+        ResponsiveColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 16.dp),
+            portraitContent = {
+                when (uiState) {
+                    ReleaseNotesUiState.Loading -> {
+                        responsiveItem {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                AdaptiveCircularProgressIndicator()
                             }
                         }
+                    }
 
-                        ReleaseNotesUiState.Error -> {
-                            responsiveItem {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    Text(
-                                        text = stringResource(Res.string.release_notes_error_loading),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.error,
+                    ReleaseNotesUiState.Error -> {
+                        responsiveItem {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.release_notes_error_loading),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            }
+                        }
+                    }
+
+                    is ReleaseNotesUiState.Success -> {
+                        responsiveItem {
+                            val availableTabs = uiState.availableTabs
+                            val selectedTabIndex = availableTabs.indexOf(uiState.currentTab).coerceAtLeast(0)
+
+                            SecondaryTabRow(
+                                selectedTabIndex = selectedTabIndex,
+                                containerColor = MaterialTheme.colorScheme.background,
+                                contentColor = MaterialTheme.colorScheme.primary,
+                                indicator = {
+                                    TabRowDefaults.SecondaryIndicator(
+                                        Modifier.tabIndicatorOffset(selectedTabIndex),
+                                        color = MaterialTheme.colorScheme.primary,
+                                    )
+                                },
+                            ) {
+                                availableTabs.forEach { tab ->
+                                    val (textRes, tabEvent) = when (tab) {
+                                        ReleaseNotesTab.LATEST -> {
+                                            Res.string.release_notes_tab_latest to
+                                                ReleaseNotesTab.LATEST
+                                        }
+
+                                        ReleaseNotesTab.UPCOMING -> {
+                                            Res.string.release_notes_tab_upcoming to
+                                                ReleaseNotesTab.UPCOMING
+                                        }
+
+                                        ReleaseNotesTab.PAST_VERSIONS -> {
+                                            Res.string.release_notes_tab_past to
+                                                ReleaseNotesTab.PAST_VERSIONS
+                                        }
+                                    }
+                                    Tab(
+                                        selected = uiState.currentTab == tab,
+                                        onClick = { onEvent(ReleaseNotesUiEvent.OnTabSelected(tabEvent)) },
+                                        text = { Text(stringResource(textRes)) },
                                     )
                                 }
                             }
                         }
 
-                        is ReleaseNotesUiState.Success -> {
-                            responsiveItem {
-                                val availableTabs = uiState.availableTabs
-                                val selectedTabIndex = availableTabs.indexOf(uiState.currentTab).coerceAtLeast(0)
-
-                                SecondaryTabRow(
-                                    selectedTabIndex = selectedTabIndex,
-                                    containerColor = MaterialTheme.colorScheme.background,
-                                    contentColor = MaterialTheme.colorScheme.primary,
-                                    indicator = {
-                                        TabRowDefaults.SecondaryIndicator(
-                                            Modifier.tabIndicatorOffset(selectedTabIndex),
-                                            color = MaterialTheme.colorScheme.primary,
-                                        )
-                                    },
-                                ) {
-                                    availableTabs.forEach { tab ->
-                                        val (textRes, tabEvent) = when (tab) {
-                                            ReleaseNotesTab.LATEST -> {
-                                                Res.string.release_notes_tab_latest to
-                                                    ReleaseNotesTab.LATEST
-                                            }
-
-                                            ReleaseNotesTab.UPCOMING -> {
-                                                Res.string.release_notes_tab_upcoming to
-                                                    ReleaseNotesTab.UPCOMING
-                                            }
-
-                                            ReleaseNotesTab.PAST_VERSIONS -> {
-                                                Res.string.release_notes_tab_past to
-                                                    ReleaseNotesTab.PAST_VERSIONS
-                                            }
-                                        }
-                                        Tab(
-                                            selected = uiState.currentTab == tab,
-                                            onClick = { onEvent(ReleaseNotesUiEvent.OnTabSelected(tabEvent)) },
-                                            text = { Text(stringResource(textRes)) },
+                        when (uiState.currentTab) {
+                            ReleaseNotesTab.LATEST -> {
+                                uiState.latestRelease?.let { note ->
+                                    responsiveItem {
+                                        ReleaseNoteCard(
+                                            note = note,
+                                            type = ReleaseVersionType.LATEST,
+                                            onGithubClick = {
+                                                onEvent(
+                                                    ReleaseNotesUiEvent.OnGithubVersionClicked(it),
+                                                )
+                                            },
                                         )
                                     }
                                 }
                             }
 
-                            when (uiState.currentTab) {
-                                ReleaseNotesTab.LATEST -> {
-                                    uiState.latestRelease?.let { note ->
-                                        responsiveItem {
-                                            ReleaseNoteCard(
-                                                note = note,
-                                                type = ReleaseVersionType.LATEST,
-                                                onGithubClick = {
-                                                    onEvent(
-                                                        ReleaseNotesUiEvent.OnGithubVersionClicked(it),
-                                                    )
-                                                },
-                                            )
-                                        }
-                                    }
+                            ReleaseNotesTab.UPCOMING -> {
+                                responsiveItems(uiState.upcomingReleases) { note ->
+                                    ReleaseNoteCard(
+                                        note = note,
+                                        type = ReleaseVersionType.UPCOMING,
+                                        onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
+                                    )
                                 }
+                            }
 
-                                ReleaseNotesTab.UPCOMING -> {
-                                    responsiveItems(uiState.upcomingReleases) { note ->
-                                        ReleaseNoteCard(
-                                            note = note,
-                                            type = ReleaseVersionType.UPCOMING,
-                                            onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
-                                        )
-                                    }
-                                }
-
-                                ReleaseNotesTab.PAST_VERSIONS -> {
-                                    responsiveItems(uiState.pastReleases) { note ->
-                                        ReleaseNoteCard(
-                                            note = note,
-                                            type = ReleaseVersionType.PAST,
-                                            onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
-                                        )
-                                    }
+                            ReleaseNotesTab.PAST_VERSIONS -> {
+                                responsiveItems(uiState.pastReleases) { note ->
+                                    ReleaseNoteCard(
+                                        note = note,
+                                        type = ReleaseVersionType.PAST,
+                                        onGithubClick = { onEvent(ReleaseNotesUiEvent.OnGithubVersionClicked(it)) },
+                                    )
                                 }
                             }
                         }
                     }
-                },
-            )
-        }
+                }
+            },
+        )
     }
 }

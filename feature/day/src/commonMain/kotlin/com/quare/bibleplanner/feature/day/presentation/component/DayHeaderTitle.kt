@@ -15,6 +15,7 @@ import com.quare.bibleplanner.core.plan.domain.getGlobalDayIndex
 import com.quare.bibleplanner.core.utils.SharedTransitionAnimationUtils
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.utils.transition.sharedElementWithRelayout
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -32,49 +33,44 @@ internal fun DayHeaderTitle(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            with(sharedTransitionScope) {
-                Text(
-                    text = stringResource(
-                        Res.string.week_title_part,
-                        state.weekNumber,
+            Text(
+                text = stringResource(
+                    Res.string.week_title_part,
+                    state.weekNumber,
+                ),
+                modifier = Modifier.sharedElementWithRelayout(
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedContentScope,
+                    key = SharedTransitionAnimationUtils.buildWeekNumberId(
+                        weekNumber = state.weekNumber,
                     ),
-                    modifier = Modifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(
-                            key = SharedTransitionAnimationUtils.buildWeekNumberId(
-                                weekNumber = state.weekNumber,
-                            ),
-                        ),
-                        animatedVisibilityScope = animatedContentScope,
+                ),
+            )
+            Text(
+                modifier = Modifier.sharedElementWithRelayout(
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedContentScope,
+                    key = SharedTransitionAnimationUtils.buildWeekSeparatorId(state.weekNumber),
+                ),
+                text = " — ",
+            )
+            Text(
+                text = stringResource(
+                    Res.string.day_title_part,
+                    getGlobalDayIndex(
+                        weekNumber = state.weekNumber,
+                        dayNumber = state.day.number,
                     ),
-                )
-                Text(
-                    modifier = Modifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(
-                            key = SharedTransitionAnimationUtils.buildWeekSeparatorId(state.weekNumber),
-                        ),
-                        animatedVisibilityScope = animatedContentScope,
+                ),
+                modifier = Modifier.sharedElementWithRelayout(
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedContentScope,
+                    key = SharedTransitionAnimationUtils.buildDayNumberId(
+                        weekNumber = state.weekNumber,
+                        dayNumebr = state.day.number,
                     ),
-                    text = " — ",
-                )
-                Text(
-                    text = stringResource(
-                        Res.string.day_title_part,
-                        getGlobalDayIndex(
-                            weekNumber = state.weekNumber,
-                            dayNumber = state.day.number,
-                        ),
-                    ),
-                    modifier = Modifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(
-                            key = SharedTransitionAnimationUtils.buildDayNumberId(
-                                weekNumber = state.weekNumber,
-                                dayNumebr = state.day.number,
-                            ),
-                        ),
-                        animatedVisibilityScope = animatedContentScope,
-                    ),
-                )
-            }
+                ),
+            )
         }
         VerticalSpacer(4)
         DayProgressIndicator(
