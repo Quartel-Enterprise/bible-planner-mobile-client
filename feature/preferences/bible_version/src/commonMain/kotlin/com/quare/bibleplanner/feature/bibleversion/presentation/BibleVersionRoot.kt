@@ -24,6 +24,8 @@ import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val SHEET_MAX_HEIGHT_FRACTION = 0.8f
+
 fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot() {
     entry<BibleVersionSelectorRoute>(metadata = getSheetPane()) {
         val viewModel: BibleVersionViewModel = koinViewModel()
@@ -38,6 +40,7 @@ fun EntryProviderScope<NavKey>.bibleVersionSelectionRoot() {
             onCloseClick = { onEvent(BibleVersionUiEvent.OnDismiss) },
             title = stringResource(Res.string.bible_versions),
             subtitle = stringResource(Res.string.manage_bible_versions_description),
+            sheetMaxHeightFraction = SHEET_MAX_HEIGHT_FRACTION,
         ) {
             Box {
                 BibleVersionsContent(
