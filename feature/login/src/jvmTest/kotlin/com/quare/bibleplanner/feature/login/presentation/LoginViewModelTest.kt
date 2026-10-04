@@ -24,8 +24,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -36,12 +34,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class LoginViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val beforeSheetAnimationEnds = 249.milliseconds
     private val supabaseClient = createTestSupabaseClient()
     private val nativeSignInState = NativeSignInState(supabaseClient.defaultSerializer)
     private val credentialUnavailableException = IllegalStateException("no credential")
@@ -83,20 +79,16 @@ internal class LoginViewModelTest {
     }
 
     @Test
-    fun `GIVEN the user signs in WHEN the session becomes authenticated THEN closes the sheet then navigates back`() =
+    fun `GIVEN the user signs in WHEN the session becomes authenticated THEN navigates back`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
 
             // When
             authenticatedUserId.value = "user-1"
-            advanceTimeBy(beforeSheetAnimationEnds)
-            val commandsBeforeAnimationEnds = commands.toList()
-            advanceUntilIdle()
 
             // Then
-            assertEquals(listOf<LoginUiAction>(LoginUiAction.CloseBottomSheet), actions)
-            assertTrue(commandsBeforeAnimationEnds.isEmpty())
+            assertTrue(actions.isEmpty())
             assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
         }
 
@@ -119,23 +111,21 @@ internal class LoginViewModelTest {
         }
 
     @Test
-    fun `GIVEN the sheet is open WHEN choosing not now THEN closes the sheet before navigating back`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario()
+    fun `GIVEN the sheet is open WHEN choosing not now THEN navigates back`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
 
-            // When
-            viewModel.onEvent(LoginUiEvent.NotNowClick)
-            advanceUntilIdle()
+        // When
+        viewModel.onEvent(LoginUiEvent.NotNowClick)
 
-            // Then
-            assertEquals(listOf<LoginUiAction>(LoginUiAction.CloseBottomSheet), actions)
-            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
-            assertEquals(
-                AnalyticsEventNames.LOGIN_SHEET_DISMISSED to mapOf<String, Any>(AnalyticsParams.METHOD to "not_now"),
-                trackedEvents.single(),
-            )
-        }
+        // Then
+        assertTrue(actions.isEmpty())
+        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+        assertEquals(
+            AnalyticsEventNames.LOGIN_SHEET_DISMISSED to mapOf<String, Any>(AnalyticsParams.METHOD to "not_now"),
+            trackedEvents.single(),
+        )
+    }
 
     @Test
     fun `GIVEN the sign in flow starts WHEN clicking a provider THEN shows it loading and tracks the start`() =

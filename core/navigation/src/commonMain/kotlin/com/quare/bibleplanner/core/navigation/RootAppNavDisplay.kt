@@ -38,6 +38,7 @@ import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
 import com.quare.bibleplanner.core.model.route.MainNavRoute
 import com.quare.bibleplanner.core.model.route.navigationSavedStateConfiguration
+import com.quare.bibleplanner.core.navigation.strategy.SheetSceneStrategy
 import com.quare.bibleplanner.core.navigation.strategy.StudyPanelSceneStrategy
 import com.quare.bibleplanner.core.navigation.strategy.VerseSelectionSceneStrategy
 import com.quare.bibleplanner.core.navigation.utils.rememberDisplayBackStack
@@ -119,6 +120,7 @@ fun RootAppNavDisplay(modifier: Modifier = Modifier) {
                     backStack = displayBackStack,
                     onBack = onNavigateBack,
                     sceneStrategies = listOf(
+                        SheetSceneStrategy(),
                         DialogSceneStrategy(),
                         remember(isWide, dayStudyReadingFraction) {
                             StudyPanelSceneStrategy(

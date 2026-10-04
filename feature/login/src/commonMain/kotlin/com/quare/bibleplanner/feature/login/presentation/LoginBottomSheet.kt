@@ -36,6 +36,7 @@ import com.quare.bibleplanner.feature.login.presentation.component.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.model.LoginError
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import com.quare.bibleplanner.ui.utils.sheet.blockPointerInput
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -43,6 +44,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun LoginBottomSheet(
     sheetState: SheetState,
+    isClosing: Boolean,
     enableProviders: List<LoginProvider>,
     onEvent: (LoginUiEvent) -> Unit,
     onProviderClick: (LoginProvider) -> Unit,
@@ -52,9 +54,11 @@ fun LoginBottomSheet(
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = { onEvent(LoginUiEvent.DismissClick) },
+        sheetGesturesEnabled = !isClosing,
     ) {
         Column(
             modifier = Modifier
+                .blockPointerInput(isBlocked = isClosing)
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -1,8 +1,6 @@
 package com.quare.bibleplanner.feature.donation.presentation
 
 sealed interface DonationUiAction {
-    data object Close : DonationUiAction
-
     data class Copy(
         val text: String,
     ) : DonationUiAction

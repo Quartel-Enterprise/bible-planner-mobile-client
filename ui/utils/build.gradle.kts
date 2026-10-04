@@ -6,6 +6,7 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.ui.utils"
+        withHostTest {}
     }
 
     jvm()
@@ -34,6 +35,10 @@ kotlin {
 
             // Navigation 3
             implementation(libs.navigation3.ui)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
