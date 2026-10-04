@@ -7,10 +7,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -19,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -27,10 +30,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
@@ -68,6 +75,7 @@ fun ResponsiveDialogSheet(
     isTitleCentred: Boolean = false,
     cardMaxWidth: Dp = defaultCardMaxWidth,
     sheetBottomBreathingRoom: Dp = 0.dp,
+    sheetMaxHeightFraction: Float? = null,
     content: @Composable () -> Unit,
 ) {
     val sheetCloseGuard = rememberSheetCloseGuard()
@@ -75,7 +83,8 @@ fun ResponsiveDialogSheet(
     val onClose = onCloseClick?.let { close -> { sheetCloseGuard.close(close) } }
     val density = LocalDensity.current
     val windowInfo = LocalWindowInfo.current
-    val contentMaxHeight = with(density) { windowInfo.containerSize.height.toDp() } - cardVerticalMargin * 2
+    val windowHeight = with(density) { windowInfo.containerSize.height.toDp() }
+    val contentMaxHeight = windowHeight - cardVerticalMargin * 2
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         if (maxWidth >= wideLayoutMinWidth) {
             ResponsiveDialogSheetCard(
@@ -95,6 +104,7 @@ fun ResponsiveDialogSheet(
             }
         } else {
             val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            var dragHandleHeight by remember { mutableStateOf(0.dp) }
             SheetExitAnimationEffect(
                 animateOut = sheetState::hide,
                 animateBackIn = sheetState::show,
@@ -104,7 +114,22 @@ fun ResponsiveDialogSheet(
                 sheetState = sheetState,
                 sheetGesturesEnabled = !isClosing,
                 scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = SHEET_SCRIM_ALPHA),
+                dragHandle = {
+                    BottomSheetDefaults.DragHandle(
+                        modifier = if (sheetMaxHeightFraction == null) {
+                            Modifier
+                        } else {
+                            Modifier.onSizeChanged { size ->
+                                dragHandleHeight = with(density) { size.height.toDp() }
+                            }
+                        },
+                    )
+                },
             ) {
+                val sheetMaxHeight = sheetMaxHeightFraction?.let { fraction ->
+                    val sheetBottomInset = with(density) { WindowInsets.safeDrawing.getBottom(density).toDp() }
+                    windowHeight * fraction - dragHandleHeight - sheetBottomInset
+                }
                 CloseableContent(
                     onCloseClick = onClose,
                     title = title,
@@ -113,6 +138,7 @@ fun ResponsiveDialogSheet(
                     content = content,
                     contentMaxHeight = contentMaxHeight,
                     modifier = Modifier
+                        .sheetMaxHeight(sheetMaxHeight)
                         .windowInsetsPadding(LocalNavigationBarInsets.current)
                         .padding(bottom = sheetBottomBreathingRoom)
                         .blockPointerInput(isBlocked = isClosing),
@@ -120,6 +146,15 @@ fun ResponsiveDialogSheet(
             }
         }
     }
+}
+
+// Why: capping the ModalBottomSheet modifier itself also shrinks the height M3 computes its
+// anchors from, which pins the sheet to the top of the screen. The cap goes on the content instead,
+// minus the drag handle and the bottom inset M3 pads the sheet with outside of it.
+private fun Modifier.sheetMaxHeight(maxHeight: Dp?): Modifier = if (maxHeight == null) {
+    this
+} else {
+    heightIn(max = maxHeight)
 }
 
 @Composable
