@@ -25,8 +25,10 @@ class SheetCloseGuard(
         onClose()
     }
 
-    // Why: a close the screen answers without popping its route would otherwise leave the sheet
-    // refusing every later close; once the pop lands, isExiting takes over from the pending close.
+    /*
+     * Why: a close the screen answers without popping its route would otherwise leave the sheet
+     * refusing every later close; once the pop lands, isExiting takes over from the pending close.
+     */
     suspend fun expirePendingClose() {
         delay(pendingCloseTimeout)
         hasPendingClose = false

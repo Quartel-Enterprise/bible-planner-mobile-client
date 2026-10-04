@@ -313,8 +313,10 @@ internal class ChatRepositoryImpl(
         touchConversation(conversationId)
     }
 
-    // Why: the Room write lands asynchronously, so dropping the streamed answer as soon as it is
-    // saved leaves the thread empty for a frame or two; waiting for the cache hides the handover.
+    /*
+     * Why: the Room write lands asynchronously, so dropping the streamed answer as soon as it is
+     * saved leaves the thread empty for a frame or two; waiting for the cache hides the handover.
+     */
     private suspend fun awaitCachedMessage(
         conversationId: String,
         messageId: String,

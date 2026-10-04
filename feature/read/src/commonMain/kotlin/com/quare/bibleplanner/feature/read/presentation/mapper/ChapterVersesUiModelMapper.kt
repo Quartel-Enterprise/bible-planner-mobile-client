@@ -7,8 +7,10 @@ import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkUiMod
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 
 internal class ChapterVersesUiModelMapper {
-    // Why: the index has a row for every verse any version uses (ESV and NIV lack Matthew 17:21), so
-    // a missing text is skipped; an empty result means the chapter still has to be downloaded.
+    /*
+     * Why: the index has a row for every verse any version uses (ESV and NIV lack Matthew 17:21), so
+     * a missing text is skipped; an empty result means the chapter still has to be downloaded.
+     */
     fun map(
         versesWithTexts: List<VerseWithTexts>,
         versionId: String,
@@ -36,8 +38,10 @@ internal class ChapterVersesUiModelMapper {
             }
     }
 
-    // Why: a note can span verses that are not adjacent (1-3, 5), so the position follows the note's
-    // own verses and the mark simply breaks over the verse left out.
+    /*
+     * Why: a note can span verses that are not adjacent (1-3, 5), so the position follows the note's
+     * own verses and the mark simply breaks over the verse left out.
+     */
     private fun toNoteMark(
         noteId: String,
         verseNumber: Int,

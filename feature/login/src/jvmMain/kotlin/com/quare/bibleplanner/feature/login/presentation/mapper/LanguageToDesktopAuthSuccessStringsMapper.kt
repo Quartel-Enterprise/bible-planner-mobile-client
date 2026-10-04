@@ -3,8 +3,10 @@ package com.quare.bibleplanner.feature.login.presentation.mapper
 import com.quare.bibleplanner.core.utils.locale.Language
 import com.quare.bibleplanner.feature.login.presentation.model.DesktopAuthSuccessStrings
 
-// Why: hardcoded instead of Res.string because rendering is outside composition and
-// getString resolves the platform locale, not an arbitrary in-app Language.
+/*
+ * Why: hardcoded instead of Res.string because rendering is outside composition and
+ * getString resolves the platform locale, not an arbitrary in-app Language.
+ */
 internal class LanguageToDesktopAuthSuccessStringsMapper {
     fun map(language: Language): DesktopAuthSuccessStrings = when (language) {
         Language.PORTUGUESE_BRAZIL -> DesktopAuthSuccessStrings(

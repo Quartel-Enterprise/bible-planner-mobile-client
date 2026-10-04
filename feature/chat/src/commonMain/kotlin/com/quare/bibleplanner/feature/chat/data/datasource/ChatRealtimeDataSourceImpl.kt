@@ -52,8 +52,10 @@ internal class ChatRealtimeDataSourceImpl(
             this.table = table
             filter(USER_ID_COLUMN, FilterOperator.EQ, userId)
         }
-        // Why: unfiltered on purpose: Realtime strips an RLS table's deleted record to its primary key
-        // (Postgres cannot check a policy on a gone row), so a user_id filter would match nothing.
+        /*
+         * Why: unfiltered on purpose: Realtime strips an RLS table's deleted record to its primary key
+         * (Postgres cannot check a policy on a gone row), so a user_id filter would match nothing.
+         */
         val deletions = channel.postgresChangeFlow<PostgresAction.Delete>(schema = SCHEMA) {
             this.table = table
         }

@@ -60,8 +60,10 @@ interface VerseHighlightDao {
         syncedUpdatedAt: Long,
     )
 
-    // Why: Last-Write-Wins; insert only unseen verses and update only non-pending rows
-    // with a strictly newer remote change, so the echo of our own push is a no-op.
+    /*
+     * Why: Last-Write-Wins; insert only unseen verses and update only non-pending rows
+     * with a strictly newer remote change, so the echo of our own push is a no-op.
+     */
     @Transaction
     suspend fun applyRemoteHighlight(highlight: VerseHighlightEntity) {
         insertHighlightIfAbsent(highlight)

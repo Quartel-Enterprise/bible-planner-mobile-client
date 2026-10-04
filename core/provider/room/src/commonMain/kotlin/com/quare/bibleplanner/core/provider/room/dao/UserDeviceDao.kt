@@ -31,8 +31,10 @@ interface UserDeviceDao {
     @Query("SELECT * FROM user_devices WHERE isNamePendingSync = 1")
     suspend fun getPending(): List<UserDeviceEntity>
 
-    // Why: LWW guard; pending is cleared only if the row was not renamed again after the
-    // push started.
+    /*
+     * Why: LWW guard; pending is cleared only if the row was not renamed again after the
+     * push started.
+     */
     @Query("UPDATE user_devices SET isNamePendingSync = 0 WHERE id = :id AND updatedAt = :syncedUpdatedAt")
     suspend fun markNameSynced(
         id: String,

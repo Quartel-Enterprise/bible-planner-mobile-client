@@ -12,8 +12,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
-// Why: the default bounds-based overlay clip cuts off ElevatedCard shadows during
-// shared transitions.
+/*
+ * Why: the default bounds-based overlay clip cuts off ElevatedCard shadows during
+ * shared transitions.
+ */
 val NoClip = object : SharedTransitionScope.OverlayClip {
     override fun getClipPath(
         sharedContentState: SharedTransitionScope.SharedContentState,

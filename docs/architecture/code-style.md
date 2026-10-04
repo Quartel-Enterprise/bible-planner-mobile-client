@@ -653,8 +653,8 @@ a new suffix in `ALLOWED_SUFFIXES` in the rule and a row in the table above — 
 ## Comments Say Why, Never What
 
 Production Kotlin explains **what** it does through names, never through comments: no narration, no section
-labels, no KDoc (`/** */`) and no block comments (`/* */`). A name that needs a comment to be understood is the wrong
-name.
+labels, no KDoc (`/** */`) and no block comments (`/* */`) other than a multi-line `Why:`. A name that needs a comment
+to be understood is the wrong name.
 
 What a name cannot carry is **why** the code is the way it is, and losing that is how a "simplification"
 reintroduces a bug. That knowledge stays, as a `// Why:` comment right above the code it explains:
@@ -675,9 +675,26 @@ private val maxRetriesBeforeGivingUp = 3
 private val retries = 3 // after this many attempts the sync gives up
 ```
 
-A `// Why:` runs on over plain `//` lines directly below it. When the reason is a behaviour, a test that guarantees
-it is better still: name the test after the rule, and keep the comment to the one line a reader of the production
-code needs.
+A reason that fits on one line is a `// Why:`. One that runs over several lines is a block comment instead: `/*` on
+its own line, ` * ` before each line, and ` */` on its own line. A `// Why:` never continues on plain `//` lines below
+it, and a one-line reason is never a block.
+
+```kotlin
+// Correct
+/*
+ * Why: CMP-10888, in Compose 1.12.1 a shared element whose transition ends within about 2 frames is
+ * re-measured but never re-placed, so it stays at the source's position.
+ */
+fun Modifier.relayoutAfterSharedTransition(sharedTransitionScope: SharedTransitionScope): Modifier = ...
+
+// Wrong — a multi-line reason written as line comments
+// Why: CMP-10888, in Compose 1.12.1 a shared element whose transition ends within about 2 frames is
+// re-measured but never re-placed, so it stays at the source's position.
+fun Modifier.relayoutAfterSharedTransition(sharedTransitionScope: SharedTransitionScope): Modifier = ...
+```
+
+When the reason is a behaviour, a test that guarantees it is better still: name the test after the rule, and keep
+the comment to the one line a reader of the production code needs.
 
 Comments stay welcome everywhere they are structure rather than narration:
 
@@ -686,10 +703,16 @@ Comments stay welcome everywhere they are structure rather than narration:
   `// Then` markers.
 - **The build** — Gradle scripts (`*.kts`), `build-logic` and the version catalog.
 
-Enforced by the custom ktlint rule `bible-planner-style:comments-say-why`, which accepts only `// Why:` comments and
-their continuation lines; the exemptions above are sections of `.editorconfig` that disable it. The rule checks the
-form, not the content: whether a `// Why:` really explains a reason is for the review. It is not autocorrected:
-deciding whether a comment should become a name, a test or a `// Why:` is a human call.
+Enforced by the custom ktlint rule `bible-planner-style:comments-say-why`, which accepts only a one-line `// Why:` and a
+multi-line `Why:` block in the shape above; the exemptions above are sections of `.editorconfig` that disable it. The
+rule checks the form, not the content: whether a `Why:` really explains a reason is for the review.
+
+Any other comment is not autocorrected, since deciding whether it should become a name, a test or a `Why:` is a human
+call. The shape of a `Why:` is autocorrected: `./scripts/ktlint.sh --format` turns a `// Why:` continued on `//`
+lines into the block, a one-line block into a `// Why:`, and adds the missing ` * ` to a block written without them. It
+still reports, but leaves for a human, a `Why:` that shares its line with code (turning it into a block or a `//`
+comment would move or swallow that code) and a `// Why:` whose text holds `/*` or `*/`, since Kotlin block comments
+nest.
 
 ## Two Branches Are an `if`
 

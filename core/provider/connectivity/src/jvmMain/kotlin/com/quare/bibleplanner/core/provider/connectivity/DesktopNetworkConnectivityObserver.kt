@@ -7,8 +7,10 @@ import java.net.NetworkInterface
 import java.util.Collections
 import kotlin.time.Duration
 
-// Why: desktop has no OS push for connectivity changes, so this polls for an up, non-loopback
-// interface; realtime reconnects on its own, this only gives the push loop a back-online signal.
+/*
+ * Why: desktop has no OS push for connectivity changes, so this polls for an up, non-loopback
+ * interface; realtime reconnects on its own, this only gives the push loop a back-online signal.
+ */
 internal class DesktopNetworkConnectivityObserver(
     private val pollInterval: Duration,
 ) : NetworkConnectivityObserver {

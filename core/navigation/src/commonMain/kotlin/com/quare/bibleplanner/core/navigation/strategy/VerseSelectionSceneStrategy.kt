@@ -22,15 +22,19 @@ class VerseSelectionSceneStrategy(
             key = readerEntry.contentKey,
             readerEntry = readerEntry,
             selectionEntry = selectionEntry,
-            // Why: only the panel is dropped; it sits over the reader, so back must land on the
-            // chapter, not on whatever opened it.
+            /*
+             * Why: only the panel is dropped; it sits over the reader, so back must land on the
+             * chapter, not on whatever opened it.
+             */
             previousEntries = entries.dropLast(1),
             isWide = isWide,
         )
     }
 
-    // Why: a chapter study open beside the reader sits between it and the selection; the
-    // panel takes the study's place until the selection ends.
+    /*
+     * Why: a chapter study open beside the reader sits between it and the selection; the
+     * panel takes the study's place until the selection ends.
+     */
     private fun List<NavEntry<NavKey>>.findReaderUnderSelection(): NavEntry<NavKey>? {
         val underSelection = getOrNull(lastIndex - 1) ?: return null
         val candidate = if (ChapterStudyPaneKey in underSelection.metadata) {

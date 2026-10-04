@@ -5,8 +5,10 @@ import com.quare.bibleplanner.core.provider.room.relation.PendingVerseRead
 import kotlin.time.Instant
 
 internal class VerseReadMapper {
-    // Why: readUpdatedAt is never null here: only pending rows are pushed, and those are always
-    // stamped, so the 0L fallback is unreachable.
+    /*
+     * Why: readUpdatedAt is never null here: only pending rows are pushed, and those are always
+     * stamped, so the 0L fallback is unreachable.
+     */
     fun toDto(
         userId: String,
         entity: PendingVerseRead,

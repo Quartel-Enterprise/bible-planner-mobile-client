@@ -8,8 +8,10 @@ import com.quare.bibleplanner.core.provider.room.relation.BookWithChapters
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-// Why: Room re-emits all 66 books on any read change; memoizing by book.id reuses the
-// unchanged ones and cut ~98% of allocations, the dominant GC pressure on Kotlin/Native.
+/*
+ * Why: Room re-emits all 66 books on any read change; memoizing by book.id reuses the
+ * unchanged ones and cut ~98% of allocations, the dominant GC pressure on Kotlin/Native.
+ */
 class BooksWithChapterMapper {
     private val cacheMutex = Mutex()
     private val cache = mutableMapOf<String, CacheEntry>()

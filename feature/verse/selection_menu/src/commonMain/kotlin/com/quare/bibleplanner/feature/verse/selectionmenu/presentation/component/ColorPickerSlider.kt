@@ -34,8 +34,10 @@ internal fun ColorPickerSlider(
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Why: forced to the thumb height because the stock slider reserves a 48dp touch row,
-    // which pushed the two sliders far apart.
+    /*
+     * Why: forced to the thumb height because the stock slider reserves a 48dp touch row,
+     * which pushed the two sliders far apart.
+     */
     Slider(
         modifier = modifier.requiredHeight(thumbSize),
         value = value,

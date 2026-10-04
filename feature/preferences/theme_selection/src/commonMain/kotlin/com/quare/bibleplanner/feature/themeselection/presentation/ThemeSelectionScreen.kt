@@ -78,8 +78,10 @@ fun ThemeSelectionContent(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
-        // Why: contrast, divider and sync row share one column so the collapsed contrast adds no extra
-        // arrangement gap.
+        /*
+         * Why: contrast, divider and sync row share one column so the collapsed contrast adds no extra
+         * arrangement gap.
+         */
         Column(modifier = Modifier.fillMaxWidth()) {
             AnimatedVisibility(
                 visible = uiState.isMaterialYouToggleOn != true,

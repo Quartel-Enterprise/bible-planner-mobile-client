@@ -11,8 +11,10 @@ class BaselineProfileGenerator {
     @get:Rule
     val rule = BaselineProfileRule()
 
-    // Why: only the cold start goes into the startup profile. R8 puts what it lists in the primary
-    // dex file, and code a later screen needs would push out code the first frame needs.
+    /*
+     * Why: only the cold start goes into the startup profile. R8 puts what it lists in the primary
+     * dex file, and code a later screen needs would push out code the first frame needs.
+     */
     @Test
     fun startup() {
         rule.collect(

@@ -79,8 +79,10 @@ internal fun VerseRow(
         fontFamily = settings.font.toFontFamily(),
         fontSize = fontSize,
         lineHeight = fontSize * LINE_HEIGHT_RATIO,
-        // Why: Compose trims leading above the first and below the last line by default, so
-        // verses sat closer than their own lines; Trim.None keeps one even rhythm.
+        /*
+         * Why: Compose trims leading above the first and below the last line by default, so
+         * verses sat closer than their own lines; Trim.None keeps one even rhythm.
+         */
         lineHeightStyle = LineHeightStyle(
             alignment = LineHeightStyle.Alignment.Proportional,
             trim = LineHeightStyle.Trim.None,
@@ -103,8 +105,10 @@ internal fun VerseRow(
         val noteMark = verse.noteMark?.takeIf { settings.isNoteIconEnabled }
         val isNoteLinkedThroughHeading = noteMark?.position?.isLinkedAbove == true
         verse.heading?.let { heading ->
-            // Why: the heading titles the section, so it stays out of the tap target (it would pick
-            // an arbitrary verse) and is selectable so the title can be copied.
+            /*
+             * Why: the heading titles the section, so it stays out of the tap target (it would pick
+             * an arbitrary verse) and is selectable so the title can be copied.
+             */
             SelectionContainer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -142,8 +146,10 @@ internal fun VerseRow(
                 textStyle = textStyle,
             )
             noteMark?.let { safeNoteMark ->
-                // Why: matchParentSize lets the mark span the whole row, padding included, so the
-                // bar of a note over several verses joins the next row without a gap.
+                /*
+                 * Why: matchParentSize lets the mark span the whole row, padding included, so the
+                 * bar of a note over several verses joins the next row without a gap.
+                 */
                 Box(
                     modifier = Modifier.matchParentSize(),
                     contentAlignment = Alignment.TopEnd,
@@ -168,8 +174,10 @@ private fun VerseLine(
     modifier: Modifier = Modifier,
 ) {
     val fontSize = textStyle.fontSize
-    // Why: align by baseline, not top: the 1.75 line height puts the first baseline well
-    // below the box top, and a fixed offset would drift with text size.
+    /*
+     * Why: align by baseline, not top: the 1.75 line height puts the first baseline well
+     * below the box top, and a fixed offset would drift with text size.
+     */
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(9.dp),
@@ -226,8 +234,10 @@ private fun DrawScope.drawSelectionUnderline(
     }
 }
 
-// Why: a span background hugs the words on every line like a marker, unlike a
-// background on the whole Text.
+/*
+ * Why: a span background hugs the words on every line like a marker, unlike a
+ * background on the whole Text.
+ */
 @Composable
 private fun String.withHighlight(highlightColor: HighlightColor?): AnnotatedString = buildAnnotatedString {
     val background = highlightColor?.toBackgroundColor()

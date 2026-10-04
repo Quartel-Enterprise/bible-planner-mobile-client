@@ -81,8 +81,10 @@ class DownloadChaptersUseCase(
         return downloadSemaphore.withPermit { bucketApi.downloadPublic(fileName) }
     }
 
-    // Why: one write per chunk, because every write wakes every screen observing the Bible tables
-    // and saving chapter by chapter made the app stutter during downloads.
+    /*
+     * Why: one write per chunk, because every write wakes every screen observing the Bible tables
+     * and saving chapter by chapter made the app stutter during downloads.
+     */
     private suspend fun saveChaptersToDatabase(
         versionId: String,
         chapters: Map<Long, SyncChapterDto>,
@@ -111,8 +113,10 @@ class DownloadChaptersUseCase(
     companion object {
         private const val DOWNLOAD_CHAPTERS_CHUNK_SIZE = 10
 
-        // Why: kept below the HTTP client's per-host limit so other Supabase calls never queue behind a
-        // download burst; the CDN edge served far more than this without throttling.
+        /*
+         * Why: kept below the HTTP client's per-host limit so other Supabase calls never queue behind a
+         * download burst; the CDN edge served far more than this without throttling.
+         */
         private const val MAX_CONCURRENT_DOWNLOADS = 24
         private const val MAX_DOWNLOAD_ATTEMPTS = 3
     }

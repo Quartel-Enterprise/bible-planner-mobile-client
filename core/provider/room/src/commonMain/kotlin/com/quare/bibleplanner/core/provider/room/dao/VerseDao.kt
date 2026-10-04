@@ -49,8 +49,10 @@ interface VerseDao {
     @Upsert
     suspend fun upsertVerses(verses: List<VerseEntity>): List<Long>
 
-    // Why: returns nothing on purpose; Room row ids cost a last_insert_rowid() round trip per
-    // row, and a Bible download writes tens of thousands of rows nobody reads ids for.
+    /*
+     * Why: returns nothing on purpose; Room row ids cost a last_insert_rowid() round trip per
+     * row, and a Bible download writes tens of thousands of rows nobody reads ids for.
+     */
     @Upsert
     suspend fun upsertVerseTexts(verseTexts: List<VerseTextEntity>)
 
@@ -77,8 +79,10 @@ interface VerseDao {
         isRead: Boolean,
     )
 
-    // Why: isRead <> :isRead keeps verses already in that state out of the write; otherwise they
-    // would go pending and cost a push and a realtime broadcast for an unchanged value.
+    /*
+     * Why: isRead <> :isRead keeps verses already in that state out of the write; otherwise they
+     * would go pending and cost a push and a realtime broadcast for an unchanged value.
+     */
     @Query(
         "UPDATE verses SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
             "WHERE chapterId = :chapterId AND number BETWEEN :startVerse AND :endVerse " +
@@ -132,8 +136,10 @@ interface VerseDao {
         remoteUpdatedAt: Long,
     )
 
-    // Why: the chapter screen derives its checkmark from verses.all { isRead }, so a remote
-    // whole-chapter read cascades to verses; verses with a pending local range edit are skipped.
+    /*
+     * Why: the chapter screen derives its checkmark from verses.all { isRead }, so a remote
+     * whole-chapter read cascades to verses; verses with a pending local range edit are skipped.
+     */
     @Query(
         "UPDATE verses SET isRead = :isRead " +
             "WHERE chapterId = (SELECT id FROM chapters WHERE bookId = :bookId AND number = :chapterNumber) " +
@@ -145,8 +151,10 @@ interface VerseDao {
         isRead: Boolean,
     )
 
-    // Why: only verses inside a chapter not itself fully read are marked, so whole-chapter
-    // legacy reads stay at chapter granularity.
+    /*
+     * Why: only verses inside a chapter not itself fully read are marked, so whole-chapter
+     * legacy reads stay at chapter granularity.
+     */
     @Query(
         "UPDATE verses SET isReadPendingSync = 1, readUpdatedAt = :now " +
             "WHERE isRead = 1 AND readUpdatedAt IS NULL " +
@@ -158,8 +166,10 @@ interface VerseDao {
     @Query("UPDATE verses SET isRead = 0, readUpdatedAt = NULL, isReadPendingSync = 0")
     suspend fun clearAllVerseReadSync()
 
-    // Why: delete-progress wipe; only verses that already had a remote row (readUpdatedAt not
-    // null) are flagged pending, so the deletion propagates to other devices.
+    /*
+     * Why: delete-progress wipe; only verses that already had a remote row (readUpdatedAt not
+     * null) are flagged pending, so the deletion propagates to other devices.
+     */
     @Query(
         "UPDATE verses SET isRead = 0, " +
             "isReadPendingSync = CASE WHEN readUpdatedAt IS NOT NULL THEN 1 ELSE isReadPendingSync END, " +

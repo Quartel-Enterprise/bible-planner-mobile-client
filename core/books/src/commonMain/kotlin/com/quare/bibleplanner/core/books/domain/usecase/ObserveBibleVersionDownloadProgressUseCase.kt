@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
-// Why: reuses the shared Bible stream instead of counting chapters again; that count is
-// expensive and a download would otherwise pay for it twice on every write.
+/*
+ * Why: reuses the shared Bible stream instead of counting chapters again; that count is
+ * expensive and a download would otherwise pay for it twice on every write.
+ */
 class ObserveBibleVersionDownloadProgressUseCase(
     private val bibleRepository: BibleRepository,
 ) : ObserveBibleVersionDownloadProgress {

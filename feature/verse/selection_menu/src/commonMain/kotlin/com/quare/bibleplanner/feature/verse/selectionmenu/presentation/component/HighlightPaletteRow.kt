@@ -67,8 +67,10 @@ private val lockedCustomSwatchBrush = Brush.sweepGradient(
     ),
 )
 
-// Why: tapping the active colour removes the highlight, so it is marked with a check
-// instead of a separate remove button.
+/*
+ * Why: tapping the active colour removes the highlight, so it is marked with a check
+ * instead of a separate remove button.
+ */
 @Composable
 internal fun HighlightPaletteRow(
     customColors: List<HighlightColor.Custom>,

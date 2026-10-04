@@ -11,7 +11,9 @@ internal fun ConnectivityManager.isCurrentlyConnected(): Boolean {
     return capabilities.hasInternet()
 }
 
-// Why: VALIDATED is required so a connected-but-no-internet link such as a captive
-// portal does not count.
+/*
+ * Why: VALIDATED is required so a connected-but-no-internet link such as a captive
+ * portal does not count.
+ */
 internal fun NetworkCapabilities.hasInternet(): Boolean = hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
     hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)

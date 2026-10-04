@@ -27,8 +27,10 @@ internal class ItunesCheckForUpdate(
     private suspend fun findStoreVersion(): Result<String?> {
         val regionCode = deviceRegionProvider.getRegionCode() ?: return fetchStoreVersion(country = null)
         val regionalVersion = fetchStoreVersion(country = regionCode)
-        // Why: the device region can differ from the App Store account's storefront, so an app the
-        // regional store doesn't list is looked up again in the default storefront.
+        /*
+         * Why: the device region can differ from the App Store account's storefront, so an app the
+         * regional store doesn't list is looked up again in the default storefront.
+         */
         val isMissingFromRegionalStore = regionalVersion.isSuccess && regionalVersion.getOrNull() == null
         return if (isMissingFromRegionalStore) fetchStoreVersion(country = null) else regionalVersion
     }
@@ -40,9 +42,11 @@ internal class ItunesCheckForUpdate(
                     key = COUNTRY_PARAMETER,
                     value = country,
                 )
-                // Why: Apple's CDN keeps serving the previous version of a repeated lookup for hours
-                // after a release, and its max-age keeps it in the device URL cache for a day; a
-                // unique query skips both.
+                /*
+                 * Why: Apple's CDN keeps serving the previous version of a repeated lookup for hours
+                 * after a release, and its max-age keeps it in the device URL cache for a day; a
+                 * unique query skips both.
+                 */
                 parameter(
                     key = CACHE_BUSTER_PARAMETER,
                     value = Random.nextLong(),

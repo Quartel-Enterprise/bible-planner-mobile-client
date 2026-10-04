@@ -17,8 +17,10 @@ import bibleplanner.ui.theme.generated.resources.open_dyslexic
 import bibleplanner.ui.theme.generated.resources.playfair_display
 import org.jetbrains.compose.resources.Font
 
-// Why: each family ships a single Regular file; bold and italic are synthesised, which is
-// all the reader and the share card need.
+/*
+ * Why: each family ships a single Regular file; bold and italic are synthesised, which is
+ * all the reader and the share card need.
+ */
 @Composable
 fun ReaderFont.toFontFamily(): FontFamily = when (this) {
     ReaderFont.LORA -> FontFamily(Font(Res.font.lora))

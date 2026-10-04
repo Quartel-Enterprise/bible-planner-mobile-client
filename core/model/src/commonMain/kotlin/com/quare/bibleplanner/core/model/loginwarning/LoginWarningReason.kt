@@ -1,7 +1,9 @@
 package com.quare.bibleplanner.core.model.loginwarning
 
-// Why: key is the stable id that carries the reason through type-safe navigation,
-// so its values must not change.
+/*
+ * Why: key is the stable id that carries the reason through type-safe navigation,
+ * so its values must not change.
+ */
 sealed interface LoginWarningReason {
     val key: String
 

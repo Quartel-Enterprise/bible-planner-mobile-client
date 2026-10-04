@@ -8,8 +8,10 @@ data class VerseCountCorrection(
     val verses: Int,
 )
 
-// Why: each count is the highest verse number any of the nine versions in Storage uses, and
-// mirrors the corrected books_by_chapter seed files so migrated devices match fresh installs.
+/*
+ * Why: each count is the highest verse number any of the nine versions in Storage uses, and
+ * mirrors the corrected books_by_chapter seed files so migrated devices match fresh installs.
+ */
 internal val VERSE_COUNT_CORRECTIONS: List<VerseCountCorrection> = listOf(
     VerseCountCorrection(bookId = BookId.GEN, chapter = 34, verses = 31),
     VerseCountCorrection(bookId = BookId.GEN, chapter = 35, verses = 29),

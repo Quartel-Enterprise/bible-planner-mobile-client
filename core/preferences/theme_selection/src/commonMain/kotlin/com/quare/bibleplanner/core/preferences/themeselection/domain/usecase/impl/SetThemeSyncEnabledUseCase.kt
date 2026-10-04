@@ -9,8 +9,10 @@ import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.flow.first
 
-// Why: the repository only snapshots theme/contrast, so dynamic colors are mirrored here (when
-// supported) to make the whole appearance authoritative once sync is enabled.
+/*
+ * Why: the repository only snapshots theme/contrast, so dynamic colors are mirrored here (when
+ * supported) to make the whole appearance authoritative once sync is enabled.
+ */
 internal class SetThemeSyncEnabledUseCase(
     private val repository: ThemeSelectionRepository,
     private val getIsDynamicColorsEnabledFlow: GetIsDynamicColorsEnabledFlow,

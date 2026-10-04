@@ -23,8 +23,10 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
-    // Why: carries the chapter because vertical reading keeps two chapters and two read pills
-    // on the same screen.
+    /*
+     * Why: carries the chapter because vertical reading keeps two chapters and two read pills
+     * on the same screen.
+     */
     data class ToggleReadStatus(
         val bookId: BookId,
         val chapterNumber: Int,

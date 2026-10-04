@@ -37,8 +37,10 @@ interface ChapterDao {
     @Update
     suspend fun updateChapter(chapter: ChapterEntity)
 
-    // Why: `isRead <> :isRead` keeps re-setting the same value from marking the row pending,
-    // which would cost a backend row version and a realtime broadcast to every device.
+    /*
+     * Why: `isRead <> :isRead` keeps re-setting the same value from marking the row pending,
+     * which would cost a backend row version and a realtime broadcast to every device.
+     */
     @Query(
         "UPDATE chapters SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
             "WHERE id = :chapterId AND isRead <> :isRead",
@@ -49,8 +51,10 @@ interface ChapterDao {
         updatedAt: Long,
     )
 
-    // Why: without `isRead <> :isRead` every chapter of the book (150 for Psalms) is marked
-    // pending, upserted and broadcast even when none changed.
+    /*
+     * Why: without `isRead <> :isRead` every chapter of the book (150 for Psalms) is marked
+     * pending, upserted and broadcast even when none changed.
+     */
     @Query(
         "UPDATE chapters SET isRead = :isRead, readUpdatedAt = :updatedAt, isReadPendingSync = 1 " +
             "WHERE bookId = :bookId AND isRead <> :isRead",
@@ -77,8 +81,10 @@ interface ChapterDao {
         syncedUpdatedAt: Long,
     )
 
-    // Why: Last-Write-Wins; the returned row count tells the caller whether to cascade
-    // the state down to the chapter's verses.
+    /*
+     * Why: Last-Write-Wins; the returned row count tells the caller whether to cascade
+     * the state down to the chapter's verses.
+     */
     @Query(
         "UPDATE chapters SET isRead = :isRead, readUpdatedAt = :remoteUpdatedAt " +
             "WHERE bookId = :bookId AND number = :chapterNumber AND isReadPendingSync = 0 " +
@@ -101,8 +107,10 @@ interface ChapterDao {
     @Query("UPDATE chapters SET isRead = 0, readUpdatedAt = NULL, isReadPendingSync = 0")
     suspend fun clearAllChapterReadSync()
 
-    // Why: delete-progress wipe; only chapters that already had a remote row are marked
-    // pending so the deletion propagates to other devices.
+    /*
+     * Why: delete-progress wipe; only chapters that already had a remote row are marked
+     * pending so the deletion propagates to other devices.
+     */
     @Query(
         "UPDATE chapters SET isRead = 0, " +
             "isReadPendingSync = CASE WHEN readUpdatedAt IS NOT NULL THEN 1 ELSE isReadPendingSync END, " +

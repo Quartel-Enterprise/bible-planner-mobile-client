@@ -125,8 +125,10 @@ class ReadViewModel(
 
     private val verseSelection: StateFlow<VerseSelection?> = observeVerseSelection()
 
-    // Why: optimistic flips shown before the Room write re-emits; an entry is dropped once
-    // dataFlow reports the same value, so a write that differs or never lands can't stick.
+    /*
+     * Why: optimistic flips shown before the Room write re-emits; an entry is dropped once
+     * dataFlow reports the same value, so a write that differs or never lands can't stick.
+     */
     private val pendingReadOverrides = MutableStateFlow<Map<ChapterLocationModel, Boolean>>(emptyMap())
 
     private val dayCompletionBanner = MutableStateFlow<PlanDayLocationModel?>(null)
@@ -146,8 +148,10 @@ class ReadViewModel(
         },
     )
 
-    // Why: SharingStarted.Eagerly keeps the setting warm so the tap that ends a day never
-    // waits on the preference.
+    /*
+     * Why: SharingStarted.Eagerly keeps the setting warm so the tap that ends a day never
+     * waits on the preference.
+     */
     private val studySuggestionSettings: StateFlow<StudySuggestionSettingsModel?> =
         observeStudySuggestionSettings()
             .stateIn(
@@ -156,8 +160,10 @@ class ReadViewModel(
                 initialValue = null,
             )
 
-    // Why: scoring the plan walks the whole read state, so it is paid while the user reads
-    // rather than on the tap that ends the day.
+    /*
+     * Why: scoring the plan walks the whole read state, so it is paid while the user reads
+     * rather than on the tap that ends the day.
+     */
     private val dayCompletionCandidates: StateFlow<Map<ChapterLocationModel, PlanDayLocationModel>> =
         combine(
             prependedChapters,
@@ -246,8 +252,10 @@ class ReadViewModel(
         prefetchStudyQuotaForDaysAboutToFinish()
         observeVerticalReading()
         showStudyOfVisibleChapter()
-        // Why: pushing is driven by the store, not the tap, so any way a selection starts opens
-        // the panel; the navigator ignores a route already on the stack. Closing is never reactive.
+        /*
+         * Why: pushing is driven by the store, not the tap, so any way a selection starts opens
+         * the panel; the navigator ignores a route already on the stack. Closing is never reactive.
+         */
         observe(
             verseSelection
                 .map { selection -> selection != null && isShowingChapter(selection.chapter) }
@@ -391,8 +399,10 @@ class ReadViewModel(
         }
     }
 
-    // Why: a selection only means something over the chapter it was made in, and this reader is
-    // cleared after the next one opens, by when the selection may already belong to that one.
+    /*
+     * Why: a selection only means something over the chapter it was made in, and this reader is
+     * cleared after the next one opens, by when the selection may already belong to that one.
+     */
     override fun onCleared() {
         if (verseSelection.value?.let { isShowingChapter(it.chapter) } == true) {
             clearVerseSelection()
@@ -549,9 +559,11 @@ class ReadViewModel(
             ?: false
     }
 
-    // Why: safety net for a tap that beat dayCompletionCandidates (cold screen, off-screen
-    // chapter). The reader never knows which plan day opened it, so the day is looked up
-    // from the chapter.
+    /*
+     * Why: safety net for a tap that beat dayCompletionCandidates (cold screen, off-screen
+     * chapter). The reader never knows which plan day opened it, so the day is looked up
+     * from the chapter.
+     */
     private suspend fun checkDayCompletion(
         bookId: BookId,
         chapterNumber: Int,
@@ -563,8 +575,10 @@ class ReadViewModel(
         presentCompletedDay(day)
     }
 
-    // Why: settings not yet loaded fall back to the sheet rather than swallowing a
-    // celebration the reader just earned.
+    /*
+     * Why: settings not yet loaded fall back to the sheet rather than swallowing a
+     * celebration the reader just earned.
+     */
     private fun presentCompletedDay(day: PlanDayLocationModel) {
         val settings = studySuggestionSettings.value
         when {
@@ -591,8 +605,10 @@ class ReadViewModel(
                 AnalyticsParams.CHAPTER_NUMBER to suggestion.chapterNumber,
             ),
         )
-        // Why: the selection ends with the chapter it was made in, and this reader is only cleared
-        // after the next one has opened.
+        /*
+         * Why: the selection ends with the chapter it was made in, and this reader is only cleared
+         * after the next one has opened.
+         */
         clearVerseSelection()
         viewModelScope.launch {
             navigator.navigateReplacingTop(
@@ -610,8 +626,10 @@ class ReadViewModel(
         }
     }
 
-    // Why: the request stands until the reading order resolves, so an end reached before the
-    // lookup settles is served then instead of stalling until the next scroll.
+    /*
+     * Why: the request stands until the reading order resolves, so an end reached before the
+     * lookup settles is served then instead of stalling until the next scroll.
+     */
     private fun appendNextChapter() {
         if (!uiState.value.settings.isVerticalReadingEnabled) return
         isAppendRequested.update { true }

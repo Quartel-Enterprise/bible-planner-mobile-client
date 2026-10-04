@@ -5,8 +5,10 @@ import com.quare.bibleplanner.core.model.plan.ScheduledDayModel
 import com.quare.bibleplanner.core.plan.domain.repository.PlanRepository
 import kotlinx.coroutines.flow.first
 
-// Why: callers that only name a day read the cached plan instead of scoring the whole
-// Bible's read state for fields they never use.
+/*
+ * Why: callers that only name a day read the cached plan instead of scoring the whole
+ * Bible's read state for fields they never use.
+ */
 class GetScheduledDayUseCase(
     private val planRepository: PlanRepository,
     private val getPlannedReadDateForDayUseCase: GetPlannedReadDateForDayUseCase,

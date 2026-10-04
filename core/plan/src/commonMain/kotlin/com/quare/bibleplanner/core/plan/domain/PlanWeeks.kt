@@ -10,8 +10,10 @@ import com.quare.bibleplanner.core.model.plan.ReadingPlanType
 import com.quare.bibleplanner.core.model.plan.WeekPlanModel
 import com.quare.bibleplanner.core.plan.domain.model.ScheduledPlanDayModel
 
-// Why: a chapter can be scheduled more than once; plan order decides and the earlier
-// day is the one the reader is catching up on.
+/*
+ * Why: a chapter can be scheduled more than once; plan order decides and the earlier
+ * day is the one the reader is catching up on.
+ */
 internal fun List<WeekPlanModel>.findCompletedDayFor(
     bookId: BookId,
     chapterNumber: Int,

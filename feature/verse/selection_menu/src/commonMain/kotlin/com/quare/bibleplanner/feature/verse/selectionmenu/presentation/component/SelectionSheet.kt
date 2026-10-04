@@ -49,8 +49,10 @@ private val handleHeight = 4.dp
 private val sheetElevation = 8.dp
 private const val NARROW_SHEET_MAX_HEIGHT_FRACTION = 0.9f
 
-// Why: not modal (no scrim) so the chapter stays tappable while extending the selection; that
-// rules out ModalBottomSheet, so its drag-to-dismiss is rebuilt here.
+/*
+ * Why: not modal (no scrim) so the chapter stays tappable while extending the selection; that
+ * rules out ModalBottomSheet, so its drag-to-dismiss is rebuilt here.
+ */
 @Composable
 internal fun SelectionSheet(
     selection: VerseSelectionUiState,
@@ -76,8 +78,10 @@ internal fun SelectionSheet(
     val dragOffset = remember { Animatable(OFF_SCREEN_OFFSET_PX) }
     var sheetHeightPx by remember { mutableFloatStateOf(0f) }
     var isEntered by remember { mutableStateOf(false) }
-    // Why: the scene swap is instant, so this slide is the only motion; it waits for its own height
-    // before entering, and closing waits for the slide-out before the entry is popped.
+    /*
+     * Why: the scene swap is instant, so this slide is the only motion; it waits for its own height
+     * before entering, and closing waits for the slide-out before the entry is popped.
+     */
     LaunchedEffect(sheetHeightPx) {
         if (isEntered || sheetHeightPx == 0f) return@LaunchedEffect
         dragOffset.snapTo(sheetHeightPx)

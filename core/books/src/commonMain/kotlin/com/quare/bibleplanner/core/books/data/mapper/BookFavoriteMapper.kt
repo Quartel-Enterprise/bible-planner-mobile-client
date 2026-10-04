@@ -5,8 +5,10 @@ import com.quare.bibleplanner.core.provider.room.entity.BookEntity
 import kotlin.time.Instant
 
 internal class BookFavoriteMapper {
-    // Why: only pending rows are pushed and they always carry favoriteUpdatedAt,
-    // so the 0L fallback is never actually used.
+    /*
+     * Why: only pending rows are pushed and they always carry favoriteUpdatedAt,
+     * so the 0L fallback is never actually used.
+     */
     fun toDto(
         userId: String,
         entity: BookEntity,

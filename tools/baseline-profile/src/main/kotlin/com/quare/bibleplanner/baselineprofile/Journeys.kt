@@ -12,8 +12,10 @@ import androidx.test.uiautomator.Until
 internal const val TARGET_PACKAGE = "com.quare.bibleplanner"
 internal const val ITERATIONS = 10
 
-// Why: the journeys find screens only by these test tags, which MainActivity exposes as resource
-// ids, so they run on a device in any language. They mirror the tags declared in the features.
+/*
+ * Why: the journeys find screens only by these test tags, which MainActivity exposes as resource
+ * ids, so they run on a device in any language. They mirror the tags declared in the features.
+ */
 private const val PLANS_LIST_TAG = "plans_list"
 private const val PLAN_DAY_TAG = "plan_day"
 private const val PLANS_TAB_TAG = "plans_tab"
@@ -59,8 +61,10 @@ internal fun MacrobenchmarkScope.scrollDay() {
 
 internal fun MacrobenchmarkScope.openFirstChapter() {
     val passages = device.findWhenShown(By.res(DAY_PASSAGES_TAG))
-    // Why: each chapter row is a clickable holding its own read checkbox, also clickable. The
-    // widest clickable is the row, and tapping its center opens the chapter without marking it read.
+    /*
+     * Why: each chapter row is a clickable holding its own read checkbox, also clickable. The
+     * widest clickable is the row, and tapping its center opens the chapter without marking it read.
+     */
     passages
         .findObjects(By.clickable(true))
         .maxBy { clickable -> clickable.visibleBounds.width() }
@@ -90,9 +94,11 @@ internal fun MacrobenchmarkScope.scrollBooks() {
     device.findWhenShown(By.res(BOOKS_CONTENT_TAG)).flingDownAndUp(device)
 }
 
-// Why: the journeys go through the bottom bar and the one-pane day screen, which only the narrow
-// layout draws. A tablet, an unfolded foldable or a phone on its side gets a navigation rail and a
-// two-pane day, where no day row would ever sit above the bar.
+/*
+ * Why: the journeys go through the bottom bar and the one-pane day screen, which only the narrow
+ * layout draws. A tablet, an unfolded foldable or a phone on its side gets a navigation rail and a
+ * two-pane day, where no day row would ever sit above the bar.
+ */
 private fun MacrobenchmarkScope.checkNarrowLayout() {
     val plansTab = findTabRevealingBottomBar(PLANS_TAB_TAG)
     check(plansTab.visibleBounds.top > device.displayHeight * BOTTOM_BAR_MIN_TOP_RATIO) {
@@ -110,10 +116,12 @@ private fun MacrobenchmarkScope.findWholeDayScrollingToIt(): UiObject2 {
     return findWholeDayOnScreen(list) ?: error("No day row of the plan was drawn whole above the bottom bar")
 }
 
-// Why: the list runs edge to edge under the bottom bar, so a row the list draws whole can still
-// sit behind the bar, and a tap on it would land on a tab. A row clipped at the top of the list
-// would take the tap somewhere else too. Once the list scrolled down the bar has exited, and the
-// list's own bottom is the limit.
+/*
+ * Why: the list runs edge to edge under the bottom bar, so a row the list draws whole can still
+ * sit behind the bar, and a tap on it would land on a tab. A row clipped at the top of the list
+ * would take the tap somewhere else too. Once the list scrolled down the bar has exited, and the
+ * list's own bottom is the limit.
+ */
 private fun MacrobenchmarkScope.findWholeDayOnScreen(list: UiObject2): UiObject2? {
     val listBounds = list.visibleBounds
     val bottom = device.findObject(By.res(PLANS_TAB_TAG))?.visibleBounds?.top ?: listBounds.bottom
@@ -127,8 +135,10 @@ private fun MacrobenchmarkScope.findWholeDayOnScreen(list: UiObject2): UiObject2
         }
 }
 
-// Why: the bottom bar exits when the plans list scrolls down and only comes back when it scrolls
-// up, so after a journey scrolled the list it may still be off screen.
+/*
+ * Why: the bottom bar exits when the plans list scrolls down and only comes back when it scrolls
+ * up, so after a journey scrolled the list it may still be off screen.
+ */
 private fun MacrobenchmarkScope.findTabRevealingBottomBar(tabTag: String): UiObject2 {
     repeat(MAX_SCROLLS_TO_REVEAL_THE_BAR) {
         device.wait(Until.findObject(By.res(tabTag)), BAR_SETTLE_MILLIS)?.let { tab -> return tab }

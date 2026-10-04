@@ -5,8 +5,10 @@ import com.quare.bibleplanner.core.provider.room.entity.ChapterEntity
 import kotlin.time.Instant
 
 internal class ChapterReadMapper {
-    // Why: only pending rows are pushed and they always carry readUpdatedAt, so the 0L fallback
-    // never reaches the backend.
+    /*
+     * Why: only pending rows are pushed and they always carry readUpdatedAt, so the 0L fallback
+     * never reaches the backend.
+     */
     fun toDto(
         userId: String,
         entity: ChapterEntity,

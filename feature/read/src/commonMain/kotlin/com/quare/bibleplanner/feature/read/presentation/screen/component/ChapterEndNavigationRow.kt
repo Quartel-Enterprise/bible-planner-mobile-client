@@ -21,8 +21,10 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 
 private val pillMaxWidth = 280.dp
 
-// Why: repeats the bottom bar's controls at the end of the text, where the next step is the
-// decision; without suggestions the read pill keeps its bounded width instead of stretching.
+/*
+ * Why: repeats the bottom bar's controls at the end of the text, where the next step is the
+ * decision; without suggestions the read pill keeps its bounded width instead of stretching.
+ */
 @Composable
 internal fun ChapterEndNavigationRow(
     suggestions: ReadNavigationSuggestionsModel?,

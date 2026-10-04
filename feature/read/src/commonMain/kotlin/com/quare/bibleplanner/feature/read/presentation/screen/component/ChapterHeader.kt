@@ -17,8 +17,10 @@ private val bookNameFontSize = 15.sp
 private val bookNameLetterSpacing = 3.sp
 private val chapterNumberFontSize = 60.sp
 
-// Why: deliberately not a shared element with the chapter label it opens from; that label
-// is a list row and matching bounds squeezes this header to the row's width.
+/*
+ * Why: deliberately not a shared element with the chapter label it opens from; that label
+ * is a list row and matching bounds squeezes this header to the row's width.
+ */
 @Composable
 internal fun ChapterHeader(
     bookName: String,

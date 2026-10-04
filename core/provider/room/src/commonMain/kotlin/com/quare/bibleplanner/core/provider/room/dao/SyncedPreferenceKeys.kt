@@ -1,7 +1,9 @@
 package com.quare.bibleplanner.core.provider.room.dao
 
-// Why: value keys are mirrored here only while their *_SYNC_ENABLED flag is on;
-// DataStore stays the render source, so turning a flag off keeps each device's value.
+/*
+ * Why: value keys are mirrored here only while their *_SYNC_ENABLED flag is on;
+ * DataStore stays the render source, so turning a flag off keeps each device's value.
+ */
 object SyncedPreferenceKeys {
     const val THEME_SYNC_ENABLED = "theme_sync_enabled"
     const val APP_THEME = "app_theme"
