@@ -28,6 +28,7 @@ import com.quare.bibleplanner.core.model.book.BookId
 import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.model.plan.PlanDayLocationModel
 import com.quare.bibleplanner.core.model.plan.ReadingPlanType
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -367,6 +368,70 @@ internal class ChapterListeningControllerImplTest {
         // Then
         assertEquals(ListeningStatusModel.PAUSED, session?.status)
     }
+
+    @Test
+    fun `GIVEN a chapter still loading WHEN pausing THEN stays paused once it loads`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val voicesLoaded = CompletableDeferred<Unit>()
+        speechEngine.voicesGate = voicesLoaded
+        controller.startChapter(
+            chapter = genesisOne,
+            shouldForceCanonOrder = false,
+        )
+
+        // When
+        controller.togglePlayPause()
+        voicesLoaded.complete(Unit)
+
+        // Then
+        assertEquals(ListeningStatusModel.PAUSED, session?.status)
+        assertEquals(3, session?.verses?.size)
+        assertTrue(speechEngine.speakCalls.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a chapter still loading WHEN a call interrupts it THEN stays interrupted once it loads`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val voicesLoaded = CompletableDeferred<Unit>()
+            speechEngine.voicesGate = voicesLoaded
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+
+            // When
+            mediaSession.interruptions.emit(AudioInterruptionModel.BEGAN)
+            voicesLoaded.complete(Unit)
+
+            // Then
+            assertEquals(ListeningStatusModel.INTERRUPTED, session?.status)
+            assertTrue(speechEngine.speakCalls.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a chapter paused while loading WHEN resuming before it loads THEN reads it once loaded`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val voicesLoaded = CompletableDeferred<Unit>()
+            speechEngine.voicesGate = voicesLoaded
+            controller.startChapter(
+                chapter = genesisOne,
+                shouldForceCanonOrder = false,
+            )
+            controller.togglePlayPause()
+
+            // When
+            controller.togglePlayPause()
+            voicesLoaded.complete(Unit)
+
+            // Then
+            assertEquals(ListeningStatusModel.PLAYING, session?.status)
+            assertEquals(3, speechEngine.lastUtterances.size)
+        }
 
     @Test
     fun `GIVEN a chapter being read WHEN the reader opens a locked chapter THEN keeps reading the current one`() =
@@ -1051,7 +1116,12 @@ private class FakeSpeechEngine(
         eventFlow.tryEmit(event)
     }
 
-    override suspend fun loadVoices(languageTag: String): SpeechVoicesModel = voices
+    var voicesGate: CompletableDeferred<Unit>? = null
+
+    override suspend fun loadVoices(languageTag: String): SpeechVoicesModel {
+        voicesGate?.await()
+        return voices
+    }
 
     override fun speak(
         utterances: List<SpeechUtteranceModel>,

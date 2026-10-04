@@ -35,7 +35,9 @@ internal class AndroidSpeechEngine(
 
     private val initializationTimeout: Duration = 10.seconds
     private val initialization = CompletableDeferred<Boolean>()
-    private var installedVoices: List<Voice> = emptyList()
+
+    // Why: the controller caches voices per language and skips reloading them, so keep every language's voices.
+    private var installedVoices: Map<String, Voice> = emptyMap()
 
     private val textToSpeech: TextToSpeech by lazy {
         TextToSpeech(context) { status -> initialization.complete(status == TextToSpeech.SUCCESS) }.apply {
@@ -62,7 +64,7 @@ internal class AndroidSpeechEngine(
                     .thenByDescending(Voice::getQuality)
                     .thenBy(Voice::getName),
             )
-        installedVoices = voices
+        installedVoices = installedVoices + voices.associateBy(Voice::getName)
         if (voices.isEmpty()) return SpeechVoicesModel.Unavailable
         return SpeechVoicesModel.Available(
             voices = voices.map { voice ->
@@ -89,7 +91,7 @@ internal class AndroidSpeechEngine(
     ) {
         val engine = textToSpeech
         engine.setSpeechRate(speed)
-        val voice = installedVoices.find { it.name == voiceId }
+        val voice = voiceId?.let(installedVoices::get)
         if (voice == null) {
             engine.language = Locale.forLanguageTag(languageTag)
         } else {

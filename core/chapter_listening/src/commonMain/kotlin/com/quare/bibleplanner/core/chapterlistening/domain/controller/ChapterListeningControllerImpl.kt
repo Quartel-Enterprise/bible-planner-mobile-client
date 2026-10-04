@@ -404,10 +404,18 @@ internal class ChapterListeningControllerImpl(
             segment = session.segment,
         )
         val voices = loadVoices(session.languageTag)
+        val statusWhileLoading = this.session?.status
         val status = when {
             voices !is SpeechVoicesModel.Available -> ListeningStatusModel.VOICE_UNAVAILABLE
+
             verses.isEmpty() -> ListeningStatusModel.FINISHED
+
+            // Why: a pause or an audio interruption that arrived while loading must win over the start request.
+            statusWhileLoading == ListeningStatusModel.PAUSED ||
+                statusWhileLoading == ListeningStatusModel.INTERRUPTED -> statusWhileLoading
+
             shouldPlay -> ListeningStatusModel.PREPARING
+
             else -> ListeningStatusModel.PAUSED
         }
         updateSession {
@@ -586,7 +594,7 @@ internal class ChapterListeningControllerImpl(
         when (current.status) {
             ListeningStatusModel.PAUSED,
             ListeningStatusModel.INTERRUPTED,
-            -> resumeFromSpokenWord(current)
+            -> resumePausedSession(current)
 
             ListeningStatusModel.FINISHED -> speakFrom(
                 verseIndex = 0,
@@ -606,6 +614,15 @@ internal class ChapterListeningControllerImpl(
             ListeningStatusModel.PREPARING,
             ListeningStatusModel.NEXT_LOCKED,
             -> Unit
+        }
+    }
+
+    private fun resumePausedSession(current: ListeningSessionModel) {
+        // Why: verses are only empty while the segment loads, and the load starts speaking once it sees PREPARING.
+        if (current.verses.isEmpty()) {
+            updateSession { it.copy(status = ListeningStatusModel.PREPARING) }
+        } else {
+            resumeFromSpokenWord(current)
         }
     }
 
