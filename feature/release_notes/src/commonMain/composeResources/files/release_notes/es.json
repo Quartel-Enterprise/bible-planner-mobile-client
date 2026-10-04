@@ -1,7 +1,8 @@
 {
   "2.11.1": {
     "common": [
-      "Corregimos el título en la parte superior de la pantalla de suscripción Pro, de la pantalla de Notas de la Versión y de los detalles de un libro, que podía no aparecer al abrir esas pantallas, sobre todo con las animaciones desactivadas."
+      "Corregimos el título en la parte superior de la pantalla de suscripción Pro, de la pantalla de Notas de la Versión y de los detalles de un libro, que podía no aparecer al abrir esas pantallas, sobre todo con las animaciones desactivadas.",
+      "Durante la lectura, tocar \"Estudio\" o \"Estudiar este capítulo\" ahora abre el estudio del capítulo al instante, sin quedarse cargando antes."
     ]
   },
   "2.11.0": {

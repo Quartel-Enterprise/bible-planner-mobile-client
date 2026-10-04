@@ -1,7 +1,8 @@
 {
   "2.11.1": {
     "common": [
-      "Fixed the title at the top of the Pro subscription screen, the Release Notes screen and a book's details, which could be missing when you opened them, especially with animations turned off."
+      "Fixed the title at the top of the Pro subscription screen, the Release Notes screen and a book's details, which could be missing when you opened them, especially with animations turned off.",
+      "While reading, tapping \"Study\" or \"Study this chapter\" now opens the chapter study right away, without loading first."
     ]
   },
   "2.11.0": {

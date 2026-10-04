@@ -5,14 +5,19 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerat
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerationJob
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerationStatus
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyPhaseModel
+import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyStatusModel
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetModel
+import com.quare.bibleplanner.core.chapterstudy.domain.store.ChapterStudyStatusPrefetchStore
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ChapterStudyScope
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ChapterStudyScopeResolver
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ChapterStudyStatusKey
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.GenerateChapterStudyUseCase
 import com.quare.bibleplanner.core.chapterstudy.testing.FakeChapterStudyRepository
 import com.quare.bibleplanner.core.chapterstudy.testing.createChapterStudy
 import com.quare.bibleplanner.core.daystudy.domain.exception.LimitReachedException
 import com.quare.bibleplanner.core.daystudy.domain.mapper.LanguageCodeMapper
 import com.quare.bibleplanner.core.model.book.BookId
+import com.quare.bibleplanner.core.model.book.ChapterRef
 import com.quare.bibleplanner.core.utils.coroutines.ApplicationScope
 import com.quare.bibleplanner.core.utils.locale.Language
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +31,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
@@ -44,6 +50,18 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
     private val observedConnectivity = MutableStateFlow(true)
     private val polledConnectivity = MutableStateFlow(true)
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val statusKey = ChapterStudyStatusKey(
+        userId = "user-1",
+        scope = ChapterStudyScope(
+            chapter = ChapterRef(
+                bibleVersionId = "ACF",
+                bookId = BookId.ROM,
+                chapterNumber = 5,
+            ),
+            languageCode = "pt-BR",
+        ),
+    )
+    private val statusPrefetchStore = ChapterStudyStatusPrefetchStore()
     private lateinit var coordinator: ChapterStudyGenerationCoordinatorImpl
     private lateinit var repository: FakeChapterStudyRepository
 
@@ -478,6 +496,65 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
         )
     }
 
+    @Test
+    fun `GIVEN a prefetched status WHEN a generation completes THEN the prefetched status is forgotten`() = runTest {
+        // Given
+        prepareScenario(events = listOf(ChapterStudyGenerationEventModel.Completed(study)))
+        storePrefetchedStatus()
+
+        // When
+        coordinator.start(target, isRewarded = false)
+        runCurrent()
+
+        // Then
+        assertNull(statusPrefetchStore.find(statusKey))
+    }
+
+    @Test
+    fun `GIVEN a prefetched status WHEN the server refuses the generation THEN the prefetched status is forgotten`() =
+        runTest {
+            // Given
+            prepareScenario(eventsError = LimitReachedException())
+            storePrefetchedStatus()
+
+            // When
+            coordinator.start(target, isRewarded = false)
+            runCurrent()
+
+            // Then
+            assertNull(statusPrefetchStore.find(statusKey))
+        }
+
+    @Test
+    fun `GIVEN a prefetched status WHEN the generation fails for another reason THEN the prefetched status is kept`() =
+        runTest {
+            // Given
+            prepareScenario(eventsError = IllegalStateException("boom"))
+            val status = storePrefetchedStatus()
+
+            // When
+            coordinator.start(target, isRewarded = false)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = status,
+                actual = statusPrefetchStore.find(statusKey),
+            )
+        }
+
+    private suspend fun storePrefetchedStatus(): ChapterStudyStatusModel {
+        val status = ChapterStudyStatusModel(
+            freeLimit = 3,
+            usedCount = 1,
+            isUnlocked = false,
+            cacheToken = "token",
+            rewardedRemainingToday = 2,
+        )
+        statusPrefetchStore.fetchAndKeep(statusKey) { status }
+        return status
+    }
+
     private fun TestScope.prepareScenario(
         events: List<ChapterStudyGenerationEventModel> = emptyList(),
         eventsError: Throwable? = null,
@@ -509,6 +586,7 @@ internal class ChapterStudyGenerationCoordinatorImplTest {
             networkConnectivityObserver = { observedConnectivity },
             isConnected = { polledConnectivity.value },
             trackEvent = { name, params -> trackedEvents += name to params },
+            statusPrefetchStore = statusPrefetchStore,
         )
     }
 }

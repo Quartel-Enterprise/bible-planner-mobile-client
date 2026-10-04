@@ -13,18 +13,23 @@ import com.quare.bibleplanner.core.chapterstudy.data.repository.ChapterStudyRepo
 import com.quare.bibleplanner.core.chapterstudy.domain.coordinator.ChapterStudyGenerationCoordinator
 import com.quare.bibleplanner.core.chapterstudy.domain.coordinator.ChapterStudyGenerationCoordinatorImpl
 import com.quare.bibleplanner.core.chapterstudy.domain.repository.ChapterStudyRepository
+import com.quare.bibleplanner.core.chapterstudy.domain.store.ChapterStudyStatusPrefetchStore
 import com.quare.bibleplanner.core.chapterstudy.domain.store.PendingVerseFocusStore
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.FindCachedChapterStudy
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GenerateChapterStudy
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyAccess
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyQuota
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.PrefetchChapterStudyStatus
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.RefreshChapterStudyCache
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ChapterStudyLocalAccessChecker
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ChapterStudyQuotaChecker
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ChapterStudyScopeResolver
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.ClearChapterStudyLocalDataUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.FindCachedChapterStudyUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.GenerateChapterStudyUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.GetChapterStudyAccessUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.GetChapterStudyQuotaUseCase
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.PrefetchChapterStudyStatusUseCase
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.impl.RefreshChapterStudyCacheUseCase
 import com.quare.bibleplanner.core.clear.domain.ClearChapterStudyLocalData
 import org.koin.core.module.dsl.factoryOf
@@ -40,17 +45,21 @@ val chapterStudyModule = module {
     factoryOf(::ChapterStudyStatusMapper)
     factoryOf(::ChapterStudyPhaseMapper)
     factoryOf(::ChapterStudyScopeResolver)
+    factoryOf(::ChapterStudyLocalAccessChecker)
+    factoryOf(::ChapterStudyQuotaChecker)
 
     singleOf(::ChapterStudyRemoteDataSourceImpl).bind<ChapterStudyRemoteDataSource>()
     singleOf(::ChapterStudyLocalDataSource)
     singleOf(::ChapterStudyRepositoryImpl).bind<ChapterStudyRepository>()
     singleOf(::ChapterStudyGenerationCoordinatorImpl).bind<ChapterStudyGenerationCoordinator>()
     singleOf(::PendingVerseFocusStore)
+    singleOf(::ChapterStudyStatusPrefetchStore)
 
     factoryOf(::GenerateChapterStudyUseCase).bind<GenerateChapterStudy>()
     factoryOf(::FindCachedChapterStudyUseCase).bind<FindCachedChapterStudy>()
     factoryOf(::GetChapterStudyAccessUseCase).bind<GetChapterStudyAccess>()
     factoryOf(::GetChapterStudyQuotaUseCase).bind<GetChapterStudyQuota>()
+    factoryOf(::PrefetchChapterStudyStatusUseCase).bind<PrefetchChapterStudyStatus>()
     factoryOf(::RefreshChapterStudyCacheUseCase).bind<RefreshChapterStudyCache>()
     factoryOf(::ClearChapterStudyLocalDataUseCase).bind<ClearChapterStudyLocalData>()
 }

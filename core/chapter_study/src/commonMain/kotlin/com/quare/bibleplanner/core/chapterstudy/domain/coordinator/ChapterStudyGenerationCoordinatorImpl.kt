@@ -4,6 +4,7 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerat
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerationJob
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyGenerationStatus
 import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetModel
+import com.quare.bibleplanner.core.chapterstudy.domain.store.ChapterStudyStatusPrefetchStore
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GenerateChapterStudy
 import com.quare.bibleplanner.core.daystudy.domain.exception.LimitReachedException
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
@@ -36,6 +37,7 @@ internal class ChapterStudyGenerationCoordinatorImpl(
     private val networkConnectivityObserver: NetworkConnectivityObserver,
     private val isConnected: IsConnected,
     private val trackEvent: TrackEvent,
+    private val statusPrefetchStore: ChapterStudyStatusPrefetchStore,
 ) : ChapterStudyGenerationCoordinator {
     override val jobs: StateFlow<List<ChapterStudyGenerationJob>>
         field = MutableStateFlow<List<ChapterStudyGenerationJob>>(emptyList())
@@ -134,6 +136,8 @@ internal class ChapterStudyGenerationCoordinatorImpl(
 
                 is ChapterStudyGenerationEventModel.Completed -> {
                     unservedRewardTargets.update { it - target }
+                    // Why: the server just counted this study, so every prefetched status undercounts.
+                    statusPrefetchStore.clear()
                     updateJob(target) { it.copy(status = ChapterStudyGenerationStatus.Done(event.study)) }
                     trackGenerationEnd(
                         name = AnalyticsEventNames.CHAPTER_STUDY_GENERATION_COMPLETED,
@@ -152,7 +156,10 @@ internal class ChapterStudyGenerationCoordinatorImpl(
         isLimitReached: Boolean,
         isOffline: Boolean,
     ) {
-        if (isLimitReached) unservedRewardTargets.update { it - target }
+        if (isLimitReached) {
+            unservedRewardTargets.update { it - target }
+            statusPrefetchStore.clear()
+        }
         updateJob(target) {
             it.copy(
                 status = ChapterStudyGenerationStatus.Failed(

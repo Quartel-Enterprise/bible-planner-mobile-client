@@ -16,6 +16,7 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyTargetM
 import com.quare.bibleplanner.core.chapterstudy.domain.model.PendingVerseFocusModel
 import com.quare.bibleplanner.core.chapterstudy.domain.store.PendingVerseFocusStore
 import com.quare.bibleplanner.core.chapterstudy.domain.usecase.GetChapterStudyAccess
+import com.quare.bibleplanner.core.chapterstudy.domain.usecase.PrefetchChapterStudyStatus
 import com.quare.bibleplanner.core.chapterstudy.testing.FakeChapterStudyGenerationCoordinator
 import com.quare.bibleplanner.core.model.NavigationCommand
 import com.quare.bibleplanner.core.model.Navigator
@@ -70,8 +71,10 @@ import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkPosit
 import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -128,6 +131,7 @@ internal class ReadViewModelTest {
     private lateinit var trackedEventParams: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var pendingVerseFocusStore: PendingVerseFocusStore
     private lateinit var chapterStudyAccessTargets: MutableList<ChapterStudyTargetModel>
+    private lateinit var prefetchedChapterStudyTargets: MutableList<ChapterStudyTargetModel>
 
     private val chapterStudyClick = ReadUiEvent.OnChapterStudyClick(
         bookId = BookId.GEN,
@@ -960,6 +964,104 @@ internal class ReadViewModelTest {
     }
 
     @Test
+    fun `GIVEN a narrow window WHEN chapters come into view THEN prefetches the study status of each`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ReadUiEvent.OnWidthClassChanged(isWide = false))
+
+            // When
+            viewModel.onEvent(
+                ReadUiEvent.OnVisibleChapterChanged(
+                    bookId = BookId.EXO,
+                    chapterNumber = 7,
+                ),
+            )
+            viewModel.onEvent(
+                ReadUiEvent.OnVisibleChapterChanged(
+                    bookId = BookId.EXO,
+                    chapterNumber = 8,
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf(7, 8).map { chapterNumber ->
+                    ChapterStudyTargetModel(
+                        bookId = BookId.EXO,
+                        chapterNumber = chapterNumber,
+                    )
+                },
+                actual = prefetchedChapterStudyTargets,
+            )
+        }
+
+    @Test
+    fun `GIVEN a pending prefetch WHEN the next chapter comes into view THEN cancels the pending prefetch`() =
+        runTest(testDispatcher) {
+            // Given
+            val cancelledTargets = mutableListOf<ChapterStudyTargetModel>()
+            prepareScenario(
+                prefetchChapterStudyStatus = { target ->
+                    try {
+                        awaitCancellation()
+                    } catch (exception: CancellationException) {
+                        cancelledTargets += target
+                        throw exception
+                    }
+                },
+            )
+            viewModel.onEvent(ReadUiEvent.OnWidthClassChanged(isWide = false))
+            viewModel.onEvent(
+                ReadUiEvent.OnVisibleChapterChanged(
+                    bookId = BookId.EXO,
+                    chapterNumber = 7,
+                ),
+            )
+
+            // When
+            viewModel.onEvent(
+                ReadUiEvent.OnVisibleChapterChanged(
+                    bookId = BookId.EXO,
+                    chapterNumber = 8,
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf(
+                    ChapterStudyTargetModel(
+                        bookId = BookId.EXO,
+                        chapterNumber = 7,
+                    ),
+                ),
+                actual = cancelledTargets,
+            )
+        }
+
+    @Test
+    fun `GIVEN a wide window WHEN a chapter comes into view THEN prefetches no study status`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ReadUiEvent.OnWidthClassChanged(isWide = true))
+
+            // When
+            viewModel.onEvent(
+                ReadUiEvent.OnVisibleChapterChanged(
+                    bookId = BookId.EXO,
+                    chapterNumber = 7,
+                ),
+            )
+            runCurrent()
+
+            // Then
+            assertTrue(prefetchedChapterStudyTargets.isEmpty())
+        }
+
+    @Test
     fun `GIVEN an open chapter study WHEN clicking the study entry THEN opens the study of that chapter`() =
         runTest(testDispatcher) {
             // Given
@@ -1267,9 +1369,11 @@ internal class ReadViewModelTest {
         downloaderFacade: BibleVersionDownloaderFacade = ThrowingBibleVersionDownloaderFacade,
         getSelectedVersionIdFlow: GetSelectedVersionIdFlow = GetSelectedVersionIdFlow { error("unused") },
         getChapterStudyAccess: GetChapterStudyAccess = GetChapterStudyAccess { error("unused") },
+        prefetchChapterStudyStatus: PrefetchChapterStudyStatus = PrefetchChapterStudyStatus { },
     ) {
         pendingVerseFocusStore = PendingVerseFocusStore()
         chapterStudyAccessTargets = mutableListOf()
+        prefetchedChapterStudyTargets = mutableListOf()
         prefetchedDays = mutableListOf()
         focusAidWrites = mutableListOf()
         trackedEventParams = mutableListOf()
@@ -1341,6 +1445,10 @@ internal class ReadViewModelTest {
                         },
                         studyUseCases = ReadStudyUseCases(
                             prefetchDayStudyQuota = { day -> prefetchedDays += day },
+                            prefetchChapterStudyStatus = { target ->
+                                prefetchedChapterStudyTargets += target
+                                prefetchChapterStudyStatus(target)
+                            },
                             getChapterStudyAccess = { target ->
                                 chapterStudyAccessTargets += target
                                 getChapterStudyAccess(target)
