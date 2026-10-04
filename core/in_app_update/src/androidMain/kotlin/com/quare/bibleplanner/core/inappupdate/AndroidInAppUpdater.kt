@@ -42,7 +42,7 @@ internal class AndroidInAppUpdater(
         }
     }.getOrElse { throwable ->
         Logger.w(tag = TAG, throwable = throwable, messageString = "Failed to check for in-app update")
-        UpdateAvailability.NotAvailable
+        UpdateAvailability.CheckFailed
     }
 
     suspend fun start() {

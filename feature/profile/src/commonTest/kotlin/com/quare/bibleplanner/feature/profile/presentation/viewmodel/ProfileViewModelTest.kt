@@ -5,6 +5,7 @@ import bibleplanner.feature.profile.generated.resources.delete_account_requires_
 import bibleplanner.feature.profile.generated.resources.login_requires_internet
 import bibleplanner.feature.profile.generated.resources.logout_requires_internet
 import bibleplanner.feature.profile.generated.resources.up_to_date_message
+import bibleplanner.feature.profile.generated.resources.update_check_failed_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.books.domain.usecase.GetSelectedBibleFlowUseCase
 import com.quare.bibleplanner.core.books.testing.FakeBibleRepository
@@ -422,6 +423,26 @@ internal class ProfileViewModelTest {
         )
         assertTrue(shownPrompts.isEmpty())
     }
+
+    @Test
+    fun `GIVEN the update check fails WHEN checking for updates THEN says the check failed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(checkForUpdate = { UpdateAvailability.CheckFailed })
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnItemClick(ProfileOptionItemType.CHECK_FOR_UPDATE))
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = listOf<ProfileUiAction>(
+                    ProfileUiAction.ShowSnackbar(Res.string.update_check_failed_message),
+                ),
+                actual = actions,
+            )
+            assertTrue(shownPrompts.isEmpty())
+        }
 
     @Test
     fun `GIVEN an update check in flight WHEN observing the state THEN shows the check as running`() =

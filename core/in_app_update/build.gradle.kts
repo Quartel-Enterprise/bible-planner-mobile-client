@@ -45,6 +45,9 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.ktor.client.mock)
+            implementation(libs.ktor.client.contentNegotiation)
+            implementation(libs.ktor.serialization.kotlinxJson)
 
             // Shared fakes
             implementation(projects.core.provider.dataStore.testing)

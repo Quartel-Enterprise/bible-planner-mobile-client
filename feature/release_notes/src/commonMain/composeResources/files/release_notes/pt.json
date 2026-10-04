@@ -8,11 +8,14 @@
     "android": [
       "Usou seus estudos com IA grátis? Agora, além de assinar o Pro, você pode assistir a um vídeo curto para liberar mais um estudo do capítulo ou do dia. Toque em \"Desbloquear\" para escolher. O número de vídeos por dia é limitado.",
       "No Perfil, a nova opção \"Opções de privacidade\" permite rever suas escolhas sobre anúncios, nos lugares onde a lei pede esse consentimento.",
-      "Se você tocou em \"Mais tarde\" depois de baixar uma atualização, o app volta a lembrar que é só reiniciar para instalá-la quando você retorna a ele ou toca em \"Buscar atualizações\" no Perfil, em vez de pedir para baixar de novo."
+      "Se você tocou em \"Mais tarde\" depois de baixar uma atualização, o app volta a lembrar que é só reiniciar para instalá-la quando você retorna a ele ou toca em \"Buscar atualizações\" no Perfil, em vez de pedir para baixar de novo.",
+      "Se não for possível buscar atualizações, por exemplo sem internet, o Perfil agora avisa isso em vez de dizer que você já tem a versão mais recente."
     ],
     "ios": [
       "Usou seus estudos com IA grátis? Agora, além de assinar o Pro, você pode assistir a um vídeo curto para liberar mais um estudo do capítulo ou do dia. Toque em \"Desbloquear\" para escolher. O número de vídeos por dia é limitado.",
-      "No Perfil, a nova opção \"Opções de privacidade\" permite rever suas escolhas sobre anúncios, nos lugares onde a lei pede esse consentimento."
+      "No Perfil, a nova opção \"Opções de privacidade\" permite rever suas escolhas sobre anúncios, nos lugares onde a lei pede esse consentimento.",
+      "Corrigimos o botão \"Buscar atualizações\" no Perfil, que logo depois do lançamento de uma nova versão na App Store podia dizer que você já tinha a versão mais recente.",
+      "Se não for possível buscar atualizações, por exemplo sem internet, o Perfil agora avisa isso em vez de dizer que você já tem a versão mais recente."
     ]
   },
   "2.10.0": {

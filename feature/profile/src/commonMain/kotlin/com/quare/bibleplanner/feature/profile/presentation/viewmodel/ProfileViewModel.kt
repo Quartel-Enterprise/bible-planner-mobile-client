@@ -7,6 +7,7 @@ import bibleplanner.feature.profile.generated.resources.delete_account_requires_
 import bibleplanner.feature.profile.generated.resources.login_requires_internet
 import bibleplanner.feature.profile.generated.resources.logout_requires_internet
 import bibleplanner.feature.profile.generated.resources.up_to_date_message
+import bibleplanner.feature.profile.generated.resources.update_check_failed_message
 import com.quare.bibleplanner.core.books.domain.usecase.CalculateBibleProgressUseCase
 import com.quare.bibleplanner.core.inappupdate.domain.UpdatePromptSource
 import com.quare.bibleplanner.core.inappupdate.domain.model.UpdateAvailability
@@ -189,6 +190,9 @@ internal class ProfileViewModel(
 
                 UpdateAvailability.NotAvailable ->
                     uiAction.emit(ProfileUiAction.ShowSnackbar(Res.string.up_to_date_message))
+
+                UpdateAvailability.CheckFailed ->
+                    uiAction.emit(ProfileUiAction.ShowSnackbar(Res.string.update_check_failed_message))
             }
         }
     }

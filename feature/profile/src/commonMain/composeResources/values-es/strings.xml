@@ -29,6 +29,7 @@
     <string name="check_for_updates_checking">Buscando…</string>
     <string name="check_for_updates_subtitle">Versión %1$s</string>
     <string name="up_to_date_message">Ya tienes la versión más reciente</string>
+    <string name="update_check_failed_message">No se pudo buscar actualizaciones. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="web_section">Web</string>
     <string name="web_app">Web App</string>
     <string name="web_app_subtitle">Abre la versión web en tu navegador</string>
