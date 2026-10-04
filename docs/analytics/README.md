@@ -261,6 +261,10 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [verse_notes_limit_reached](events/verse_notes_limit_reached.md) | P1 | Verse annotations |
 | [verse_note_saved](events/verse_note_saved.md) | P1 | Verse annotations |
 | [verse_note_dismissed](events/verse_note_dismissed.md) | P2 | Verse annotations |
+| [verse_note_delete_opened](events/verse_note_delete_opened.md) | P2 | Verse annotations |
+| [verse_note_deleted](events/verse_note_deleted.md) | P1 | Verse annotations |
+| [verse_note_delete_cancelled](events/verse_note_delete_cancelled.md) | P2 | Verse annotations |
+| [verse_note_icon_clicked](events/verse_note_icon_clicked.md) | P1 | Verse annotations |
 | [verses_copied](events/verses_copied.md) | P1 | Verse annotations |
 | [verse_share_opened](events/verse_share_opened.md) | P1 | Verse annotations |
 | [verse_shared](events/verse_shared.md) | P1 | Verse annotations |
@@ -303,6 +307,7 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [reader_focus_aid_changed](events/reader_focus_aid_changed.md) | P2 | Reader |
 | [reader_ruler_height_changed](events/reader_ruler_height_changed.md) | P2 | Reader |
 | [reader_vertical_reading_toggled](events/reader_vertical_reading_toggled.md) | P2 | Reader |
+| [reader_note_icon_toggled](events/reader_note_icon_toggled.md) | P2 | Reader |
 
 ### Notes
 

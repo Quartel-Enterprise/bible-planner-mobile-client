@@ -64,6 +64,16 @@ sealed interface ReadUiEvent : UiEvent {
         )
     }
 
+    data class OnNoteIconClick(
+        val chapter: ChapterRef,
+        val noteMark: VerseNoteMarkUiModel,
+    ) : ReadUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.VERSE_NOTE_ICON_CLICKED,
+            params = mapOf(AnalyticsParams.VERSE_COUNT to noteMark.noteVerseNumbers.size),
+        )
+    }
+
     data class OnChapterStudyClick(
         val bookId: BookId,
         val chapterNumber: Int,

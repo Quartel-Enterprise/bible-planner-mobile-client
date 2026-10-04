@@ -9,4 +9,6 @@ data class VerseNoteUiState(
     val quote: String,
     val text: String,
     val isSaveEnabled: Boolean,
+    val isExisting: Boolean,
+    val isDeleteConfirmationVisible: Boolean,
 )

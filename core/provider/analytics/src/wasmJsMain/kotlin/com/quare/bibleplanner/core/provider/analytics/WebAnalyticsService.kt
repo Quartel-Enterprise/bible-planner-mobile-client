@@ -6,12 +6,12 @@ internal class WebAnalyticsService : AnalyticsService {
     override fun setUserProperty(
         name: String,
         value: String?,
-    ) = Unit
+    ) {}
 
     override fun logEvent(
         name: String,
         params: Map<String, Any>,
-    ) = Unit
+    ) {}
 
     override suspend fun getAppInstanceId(): String? = null
 }

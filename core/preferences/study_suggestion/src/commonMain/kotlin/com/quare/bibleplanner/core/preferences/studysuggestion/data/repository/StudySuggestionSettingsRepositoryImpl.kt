@@ -82,19 +82,27 @@ internal class StudySuggestionSettingsRepositoryImpl(
         .observeValue(SyncedPreferenceKeys.STUDY_SUGGESTION_MODE)
         .map { value -> value?.toMode() }
 
-    override suspend fun applySyncedEnabled(isEnabled: Boolean) = writeEnabled(isEnabled)
+    override suspend fun applySyncedEnabled(isEnabled: Boolean) {
+        writeEnabled(isEnabled)
+    }
 
-    override suspend fun applySyncedMode(mode: StudySuggestionMode) = writeMode(mode)
+    override suspend fun applySyncedMode(mode: StudySuggestionMode) {
+        writeMode(mode)
+    }
 
-    private suspend fun writeEnabled(isEnabled: Boolean) = dataStore.write(
-        key = enabledKey,
-        value = isEnabled,
-    )
+    private suspend fun writeEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = enabledKey,
+            value = isEnabled,
+        )
+    }
 
-    private suspend fun writeMode(mode: StudySuggestionMode) = dataStore.write(
-        key = modeKey,
-        value = mode.name,
-    )
+    private suspend fun writeMode(mode: StudySuggestionMode) {
+        dataStore.write(
+            key = modeKey,
+            value = mode.name,
+        )
+    }
 
     private suspend fun mirrorIfSyncEnabled(
         key: String,

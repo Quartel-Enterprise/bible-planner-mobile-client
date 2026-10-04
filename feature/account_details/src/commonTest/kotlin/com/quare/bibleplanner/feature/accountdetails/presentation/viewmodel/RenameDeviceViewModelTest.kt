@@ -84,7 +84,7 @@ internal class RenameDeviceViewModelTest {
         assertTrue(trackedEvents.contains(AnalyticsEventNames.DEVICE_RENAME_CANCELLED))
     }
 
-    private fun viewModel(currentName: String) = RenameDeviceViewModel(
+    private fun viewModel(currentName: String): RenameDeviceViewModel = RenameDeviceViewModel(
         route = RenameDeviceNavRoute(deviceRowId = "row-1", currentName = currentName),
         renameDevice = RenameDevice { deviceRowId, name ->
             renamedCalls += deviceRowId to name

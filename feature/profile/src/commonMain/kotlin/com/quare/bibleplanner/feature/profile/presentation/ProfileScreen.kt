@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.profile.presentation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -15,7 +14,6 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import com.quare.bibleplanner.ui.component.ResponsiveColumn
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun ProfileScreen(
     state: ProfileUiState,

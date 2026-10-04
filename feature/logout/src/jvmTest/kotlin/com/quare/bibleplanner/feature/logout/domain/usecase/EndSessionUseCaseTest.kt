@@ -35,8 +35,10 @@ internal class EndSessionUseCaseTest {
     private var clearLocalDataCalls = 0
 
     @AfterTest
-    fun tearDown() = runTest {
-        supabaseClient.close()
+    fun tearDown() {
+        runTest {
+            supabaseClient.close()
+        }
     }
 
     @Test

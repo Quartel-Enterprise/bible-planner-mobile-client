@@ -40,7 +40,7 @@ private object IosE2ePlatform : E2ePlatform {
         },
     )
 
-    override fun configure(koinApplication: KoinApplication) = Unit
+    override fun configure(koinApplication: KoinApplication) {}
 
     @OptIn(ExperimentalForeignApi::class)
     override fun createDirectory(): String {

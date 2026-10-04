@@ -9,5 +9,5 @@ data class VerseUiModel(
     val isSelected: Boolean,
     val highlightColor: HighlightColor?,
     val isSaved: Boolean,
-    val noteId: String?,
+    val noteMark: VerseNoteMarkUiModel?,
 )

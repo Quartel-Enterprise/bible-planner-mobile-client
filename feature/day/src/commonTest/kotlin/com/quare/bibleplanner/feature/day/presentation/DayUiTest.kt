@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
@@ -218,7 +217,6 @@ internal class DayUiTest {
             onNodeWithText(getString(Res.string.day_ask_ai)).assertDoesNotExist()
         }
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     private fun ComposeUiTest.prepareScenario(uiState: DayUiState) {
         events = mutableListOf()
         setUiTestContent {

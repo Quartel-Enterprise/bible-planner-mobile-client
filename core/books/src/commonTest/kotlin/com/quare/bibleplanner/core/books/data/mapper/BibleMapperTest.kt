@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.core.books.data.mapper
 
+import com.quare.bibleplanner.core.books.domain.model.BibleModel
 import com.quare.bibleplanner.core.books.domain.model.VersionModel
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatus
 import com.quare.bibleplanner.core.model.downloadstatus.DownloadStatusMapper
@@ -141,7 +142,7 @@ internal class BibleMapperTest {
         entity: BibleVersionEntity,
         downloadedChapters: Int,
         remoteContentVersion: String = "1.2.0",
-    ) = mapper
+    ): BibleModel = mapper
         .map(
             dataBaseVersions = listOf(entity),
             supportedVersions = listOf(

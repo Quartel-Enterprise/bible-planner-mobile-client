@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.presentation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -30,7 +29,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val HERO_ITEM_KEY = "hero"
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.readingPlan(
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
@@ -47,7 +45,6 @@ fun EntryProviderScope<NavKey>.readingPlan(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ReadingPlanTabContent(
     navigationBar: @Composable (Modifier) -> Unit,

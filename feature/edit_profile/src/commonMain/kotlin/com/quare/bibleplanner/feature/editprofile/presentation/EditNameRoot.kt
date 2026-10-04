@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.editprofile.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.DialogProperties
@@ -20,7 +19,6 @@ import org.jetbrains.compose.resources.getString
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.editName() {
     entry<EditNameNavRoute>(metadata = DialogSceneStrategy.dialog(DialogProperties().toNativeAlertDialogProperties())) {
         val viewModel = koinViewModel<EditNameViewModel>()

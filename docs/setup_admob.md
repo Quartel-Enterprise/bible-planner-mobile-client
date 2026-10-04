@@ -41,6 +41,10 @@ secret — they ship inside every build — so they live in the code, not in `lo
 **Debug builds always request Google's test ad units**, so the AdMob account is never flagged for
 invalid traffic.
 
+The device tests run without `androidApp`, so its App ID never reaches them. `:ui:testing` declares
+Google's sample App ID for them instead (see
+[Compose UI tests](testing/compose-ui-tests.md#on-an-android-device)).
+
 ## 3. Remote Config
 
 | Parameter | Read by | Default | Purpose |

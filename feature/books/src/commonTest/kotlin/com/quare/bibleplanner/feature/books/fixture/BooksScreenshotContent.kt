@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.books.fixture
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -89,7 +88,6 @@ private val historicalBooks = listOf(
  * [statusBarHeight] is the room the frame's status bar takes at the top. The Play frames reserve
  * it themselves, so they pass zero; an iOS capture fills the whole screen and passes its slot's.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun BooksScreenshotContent(statusBarHeight: Dp) {
     CompositionLocalProvider(LocalTheme provides Theme.DARK) {

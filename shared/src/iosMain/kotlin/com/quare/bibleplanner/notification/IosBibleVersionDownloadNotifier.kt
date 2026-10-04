@@ -25,13 +25,13 @@ internal class IosBibleVersionDownloadNotifier(
         versionId: String,
         versionName: String,
         progress: Float,
-    ) = Unit
+    ) {}
 
     override suspend fun showPaused(
         versionId: String,
         versionName: String,
         progress: Float,
-    ) = Unit
+    ) {}
 
     override suspend fun showComplete(
         versionId: String,

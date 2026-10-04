@@ -45,9 +45,11 @@ internal class SomeFeatureViewModel(
     private val navigator: Navigator,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<SomeFeatureUiEvent>(trackEvent) {
-    override fun handleEvent(event: SomeFeatureUiEvent) = when (event) {
-        SomeFeatureUiEvent.OnBackClick -> navigator.navigateBack()
-        SomeFeatureUiEvent.OnDetailsClick -> navigator.navigate(SomeDetailsNavRoute)
+    override fun handleEvent(event: SomeFeatureUiEvent) {
+        when (event) {
+            SomeFeatureUiEvent.OnBackClick -> navigator.navigateBack()
+            SomeFeatureUiEvent.OnDetailsClick -> navigator.navigate(SomeDetailsNavRoute)
+        }
     }
 }
 ```

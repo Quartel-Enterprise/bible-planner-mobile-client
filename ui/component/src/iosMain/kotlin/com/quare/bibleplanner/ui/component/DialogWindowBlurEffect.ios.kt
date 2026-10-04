@@ -5,4 +5,6 @@ import androidx.compose.ui.unit.Dp
 import com.quare.bibleplanner.ui.utils.WindowContentBlurEffect
 
 @Composable
-actual fun DialogWindowBlurEffect(radius: Dp) = WindowContentBlurEffect(radius)
+actual fun DialogWindowBlurEffect(radius: Dp) {
+    WindowContentBlurEffect(radius)
+}

@@ -4,6 +4,8 @@ import com.quare.bibleplanner.core.provider.room.entity.VerseEntity
 import com.quare.bibleplanner.core.provider.room.entity.VerseTextEntity
 import com.quare.bibleplanner.core.provider.room.relation.VerseWithTexts
 import com.quare.bibleplanner.core.verseannotations.domain.model.ChapterAnnotations
+import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkPosition
+import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkUiModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -13,6 +15,7 @@ internal class ChapterVersesUiModelMapperTest {
         highlightColorByVerse = emptyMap(),
         savedVerseNumbers = emptySet(),
         noteIdByVerse = emptyMap(),
+        noteVerseNumbersById = emptyMap(),
     )
     private lateinit var mapper: ChapterVersesUiModelMapper
 
@@ -69,6 +72,7 @@ internal class ChapterVersesUiModelMapperTest {
             highlightColorByVerse = emptyMap(),
             savedVerseNumbers = setOf(2),
             noteIdByVerse = mapOf(2 to "note-id"),
+            noteVerseNumbersById = mapOf("note-id" to listOf(2)),
         )
 
         // When
@@ -76,7 +80,83 @@ internal class ChapterVersesUiModelMapperTest {
 
         // Then
         assertEquals(listOf(false, true), result.map { it.isSaved })
-        assertEquals(listOf(null, "note-id"), result.map { it.noteId })
+        assertEquals(
+            expected = listOf(
+                null,
+                VerseNoteMarkUiModel(
+                    noteId = "note-id",
+                    noteVerseNumbers = listOf(2),
+                    position = VerseNoteMarkPosition.SINGLE,
+                ),
+            ),
+            actual = result.map { it.noteMark },
+        )
+    }
+
+    @Test
+    fun `GIVEN a note over several verses WHEN mapping THEN places each verse along the note`() {
+        // Given
+        prepareScenario()
+        val verses = (1..6).map { number -> verse(number = number, versions = listOf(ESV)) }
+        val annotations = noAnnotations.copy(
+            noteIdByVerse = mapOf(
+                2 to "long-note",
+                3 to "long-note",
+                4 to "long-note",
+                6 to "long-note",
+            ),
+            noteVerseNumbersById = mapOf("long-note" to listOf(2, 3, 4, 6)),
+        )
+
+        // When
+        val result = mapper.map(versesWithTexts = verses, versionId = ESV, annotations = annotations)
+
+        // Then
+        assertEquals(
+            expected = listOf(
+                null,
+                VerseNoteMarkPosition.FIRST,
+                VerseNoteMarkPosition.MIDDLE,
+                VerseNoteMarkPosition.MIDDLE,
+                null,
+                VerseNoteMarkPosition.LAST,
+            ),
+            actual = result.map { it.noteMark?.position },
+        )
+        assertEquals(
+            expected = listOf(2, 3, 4, 6),
+            actual = result[1].noteMark?.noteVerseNumbers,
+        )
+    }
+
+    @Test
+    fun `GIVEN two notes sharing a verse WHEN mapping THEN each mark keeps the whole passage of its note`() {
+        // Given
+        prepareScenario()
+        val verses = (1..2).map { number -> verse(number = number, versions = listOf(ESV)) }
+        val annotations = noAnnotations.copy(
+            noteIdByVerse = mapOf(
+                1 to "short-note",
+                2 to "long-note",
+            ),
+            noteVerseNumbersById = mapOf(
+                "long-note" to listOf(1, 2),
+                "short-note" to listOf(1),
+            ),
+        )
+
+        // When
+        val result = mapper.map(versesWithTexts = verses, versionId = ESV, annotations = annotations)
+
+        // Then
+        assertEquals(
+            expected = VerseNoteMarkUiModel(
+                noteId = "long-note",
+                noteVerseNumbers = listOf(1, 2),
+                position = VerseNoteMarkPosition.LAST,
+            ),
+            actual = result[1].noteMark,
+        )
     }
 
     private fun verse(

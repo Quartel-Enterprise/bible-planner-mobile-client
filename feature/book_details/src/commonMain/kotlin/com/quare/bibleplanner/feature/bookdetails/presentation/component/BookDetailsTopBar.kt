@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.bookdetails.presentation.component
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,7 +19,7 @@ import com.quare.bibleplanner.ui.component.icon.FavoriteIconButton
 import com.quare.bibleplanner.ui.utils.SharedTransitionModifierFactory
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookDetailsTopBar(
     platform: Platform,

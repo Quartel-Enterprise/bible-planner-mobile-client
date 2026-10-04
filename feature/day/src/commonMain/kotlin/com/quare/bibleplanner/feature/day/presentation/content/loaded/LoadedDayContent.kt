@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.content.loaded
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -19,7 +18,6 @@ import com.quare.bibleplanner.ui.component.ResponsiveColumn
 
 private const val DAY_CONTENT_TAG = "day_content"
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LoadedDayContent(
     uiState: DayUiState.Loaded,

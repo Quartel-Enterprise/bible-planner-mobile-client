@@ -1,0 +1,59 @@
+name: screenshot-tests
+
+# The reference images are rendered on Linux, so they are verified here and never on a developer's
+# machine: the same screen comes out a few pixels different on macOS. record-screenshots records
+# them. See docs/testing/screenshot-tests.md.
+on:
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.claude/**'
+      - 'store_listings/**'
+      - 'fastlane/**'
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - '.claude/**'
+      - 'store_listings/**'
+      - 'fastlane/**'
+
+permissions:
+  contents: read
+
+# A new push to a pull request cancels the run of the previous one. On main every commit has a group
+# of its own and always finishes: a cancelled run saves no Gradle cache.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Every push is verified, a pull request labeled record-screenshots included: a red run that the
+  # record commit replaces costs nothing, while a skipped one would pass for green.
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Verify the screenshots
+        run: ./gradlew screenshotTests -PscreenshotTests=verify --continue
+
+      # Each difference writes <name>_compare.png: the reference, the new render and the pixels
+      # that changed, side by side.
+      - name: Upload the differences
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshot-differences
+          path: '**/build/outputs/roborazzi/**'

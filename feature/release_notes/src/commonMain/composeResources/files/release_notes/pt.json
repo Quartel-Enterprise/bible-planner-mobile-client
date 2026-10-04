@@ -3,7 +3,11 @@
     "common": [
       "Depois de entrar na sua conta ou voltar a ficar online, seu progresso de leitura, suas marcações e sua foto de perfil aparecem bem mais rápido.",
       "Com a leitura vertical em tablets, em computadores e com o celular deitado, o estudo ao lado do texto e o nome do capítulo no topo agora passam para o próximo capítulo assim que ele chega ao topo da tela, em vez de ficarem para trás, e ir até um versículo leva direto a ele.",
-      "Corrigimos o calendário para alterar a data em que você leu um dia, que em lugares como o Japão ou a Austrália podia abrir no dia anterior e não deixar escolher o dia de hoje."
+      "Corrigimos o calendário para alterar a data em que você leu um dia, que em lugares como o Japão ou a Austrália podia abrir no dia anterior e não deixar escolher o dia de hoje.",
+      "Na tela de Livros, a escolha entre Antigo e Novo Testamento e os botões de lista e grade ficaram maiores e mais fáceis de tocar, e com a fonte do celular aumentada o nome do Testamento passa para uma segunda linha em vez de ficar cortado.",
+      "Quem usa leitor de tela agora ouve o que fazem os botões de ordenar e filtrar na tela de Livros e o círculo de marcar um dia como lido no plano de leitura.",
+      "Na leitura, os versículos que têm anotação agora mostram um ícone ao lado, e uma linha liga todos os versículos de uma mesma anotação. Toque no ícone para abrir a anotação. Se preferir ler sem ele, desligue em Aparência da leitura.",
+      "Ao selecionar versículos que já têm anotação, o botão vira \"Ver anotação\" e abre a anotação inteira, e agora dá para excluir uma anotação direto pelo editor."
     ],
     "android": [
       "Usou seus estudos com IA grátis? Agora, além de assinar o Pro, você pode assistir a um vídeo curto para liberar mais um estudo do capítulo ou do dia. Toque em \"Desbloquear\" para escolher. O número de vídeos por dia é limitado.",

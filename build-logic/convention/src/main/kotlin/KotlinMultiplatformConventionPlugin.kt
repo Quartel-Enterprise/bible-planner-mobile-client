@@ -9,48 +9,50 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KotlinMultiplatformConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) = with(target) {
-        with(pluginManager) {
-            apply("org.jetbrains.kotlin.multiplatform")
-            apply("com.android.kotlin.multiplatform.library")
-        }
-
-        val sdkVersions = getAndroidSdkVersions()
-
-        // Configure Kotlin Multiplatform extension
-        extensions.configure<KotlinMultiplatformExtension> {
-            (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension>(
-                "androidLibrary",
-            ) {
-                compileSdk = sdkVersions.compileSdk
-                minSdk = sdkVersions.minSdk
-                experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
+    override fun apply(target: Project) {
+        with(target) {
+            with(pluginManager) {
+                apply("org.jetbrains.kotlin.multiplatform")
+                apply("com.android.kotlin.multiplatform.library")
             }
 
-            // Configure iOS targets
-            listOf(
-                iosArm64(), // for ios devices
-                iosSimulatorArm64(), // for ios simulators in Apple silicon Mac computer
-            ).forEach { iosTarget ->
-                iosTarget.binaries.framework {
-                    baseName = path.substring(1).replace(':', '-')
+            val sdkVersions = getAndroidSdkVersions()
+
+            // Configure Kotlin Multiplatform extension
+            extensions.configure<KotlinMultiplatformExtension> {
+                (this as ExtensionAware).extensions.configure<KotlinMultiplatformAndroidLibraryExtension>(
+                    "androidLibrary",
+                ) {
+                    compileSdk = sdkVersions.compileSdk
+                    minSdk = sdkVersions.minSdk
+                    experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
                 }
+
+                // Configure iOS targets
+                listOf(
+                    iosArm64(), // for ios devices
+                    iosSimulatorArm64(), // for ios simulators in Apple silicon Mac computer
+                ).forEach { iosTarget ->
+                    iosTarget.binaries.framework {
+                        baseName = path.substring(1).replace(':', '-')
+                    }
+                }
+
+                @OptIn(ExperimentalWasmDsl::class)
+                wasmJs {
+                    browser()
+                }
+
+                // remove expect actual warning
+                compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
             }
 
-            @OptIn(ExperimentalWasmDsl::class)
-            wasmJs {
-                browser()
-            }
+            configureCoverage()
 
-            // remove expect actual warning
-            compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
-        }
-
-        configureCoverage()
-
-        pluginManager.withPlugin("com.codingfeline.buildkonfig") {
-            tasks.matching { it.name.contains("ArtProfile") }.configureEach {
-                dependsOn("generateBuildKonfig")
+            pluginManager.withPlugin("com.codingfeline.buildkonfig") {
+                tasks.matching { it.name.contains("ArtProfile") }.configureEach {
+                    dependsOn("generateBuildKonfig")
+                }
             }
         }
     }

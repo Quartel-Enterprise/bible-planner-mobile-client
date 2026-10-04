@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -83,7 +84,7 @@ internal fun ChatMessageBubble(
 }
 
 @Composable
-private fun ChatMessageUiModel.annotatedText() = buildAnnotatedString {
+private fun ChatMessageUiModel.annotatedText(): AnnotatedString = buildAnnotatedString {
     append(text)
     if (isStreaming) {
         withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary.copy(alpha = caretAlpha()))) {

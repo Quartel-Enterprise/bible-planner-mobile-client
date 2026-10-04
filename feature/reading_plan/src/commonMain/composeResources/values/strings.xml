@@ -104,4 +104,5 @@
         <item quantity="one">What an achievement. %1$d day in the Word.</item>
         <item quantity="other">What an achievement. %1$d days in the Word.</item>
     </plurals>
+    <string name="day_read">Day %1$d read</string>
 </resources>

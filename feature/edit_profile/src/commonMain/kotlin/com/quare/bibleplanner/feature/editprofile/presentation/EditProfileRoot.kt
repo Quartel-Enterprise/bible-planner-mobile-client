@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.editprofile.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
@@ -18,7 +17,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.editProfile() {
     entry<EditProfileNavRoute>(
         metadata = DialogSceneStrategy.dialog(

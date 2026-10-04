@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.paywall.presentation
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -65,7 +64,6 @@ private val portraitPlansSpacing = 12.dp
 private val portraitActionButtonHeight = 56.dp
 private const val VALUE_PANEL_WIDTH_FRACTION = 0.44f
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PaywallScreen(
     platform: Platform,
@@ -103,7 +101,6 @@ fun PaywallScreen(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PaywallPortraitContent(
     platform: Platform,
@@ -186,7 +183,6 @@ private fun PaywallPortraitContent(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PaywallLandscapeContent(
     platform: Platform,

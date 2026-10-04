@@ -16,6 +16,7 @@ internal class FakeReaderSettingsRepository(
         rulerLines = ReaderRulerLines.DEFAULT,
         isFocusedVerseEnabled = false,
         isVerticalReadingEnabled = false,
+        isNoteIconEnabled = true,
     ),
 ) : ReaderSettingsRepository {
     val settings = MutableStateFlow(initialSettings)
@@ -44,5 +45,9 @@ internal class FakeReaderSettingsRepository(
 
     override suspend fun setVerticalReadingEnabled(isEnabled: Boolean) {
         settings.value = settings.value.copy(isVerticalReadingEnabled = isEnabled)
+    }
+
+    override suspend fun setNoteIconEnabled(isEnabled: Boolean) {
+        settings.value = settings.value.copy(isNoteIconEnabled = isEnabled)
     }
 }

@@ -198,9 +198,9 @@ tasks.register("verifyNewFilesCoverage") {
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    val module = this
+    val modulePath = path
     pluginManager.withPlugin("org.jetbrains.kotlinx.kover") {
-        rootProject.dependencies.add("kover", module)
+        rootProject.dependencies.add("kover", rootProject.dependencies.project(modulePath))
     }
 
     if (path != ":tools:ktlint-custom-rules") {
@@ -292,7 +292,7 @@ private fun registerCollectStoreScreenshots(
     storeDescription: String,
     platform: String,
     devices: Map<String, String>,
-) = tasks.register(name) {
+): TaskProvider<Task> = tasks.register(name) {
     group = "store-screenshots"
     description = "Regenerates the $storeDescription screenshots and collects them into store_listings/$platform/."
     dependsOn(storeScreenshotModules.map { modulePath -> "$modulePath:testAndroidHostTest" })

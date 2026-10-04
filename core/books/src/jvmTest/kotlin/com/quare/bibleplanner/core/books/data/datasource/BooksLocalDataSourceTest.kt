@@ -14,8 +14,10 @@ internal class BooksLocalDataSourceTest {
     private lateinit var books: List<BookDataModel>
 
     @BeforeTest
-    fun setUp() = runTest {
-        books = BooksLocalDataSource(FileNameToBookIdMapper(BookMapsProvider())).getBooks()
+    fun setUp() {
+        runTest {
+            books = BooksLocalDataSource(FileNameToBookIdMapper(BookMapsProvider())).getBooks()
+        }
     }
 
     @Test

@@ -36,14 +36,14 @@ internal class ToggleBookFavoriteUseCaseTest {
 
         override suspend fun getBooks(): List<BookDataModel> = emptyList()
 
-        override suspend fun initializeDatabase() = Unit
+        override suspend fun initializeDatabase() {}
 
         override fun getBookLayoutFormatFlow(): Flow<String?> = emptyFlow()
 
-        override suspend fun setBookLayoutFormat(layoutFormat: String) = Unit
+        override suspend fun setBookLayoutFormat(layoutFormat: String) {}
 
         override fun getSelectedTestamentFlow(): Flow<String?> = emptyFlow()
 
-        override suspend fun setSelectedTestament(testament: String) = Unit
+        override suspend fun setSelectedTestament(testament: String) {}
     }
 }

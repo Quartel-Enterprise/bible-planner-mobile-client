@@ -14,4 +14,6 @@
     <string name="content_description_info">Información</string>
     <string name="grid">Cuadrícula</string>
     <string name="list">Lista</string>
+    <string name="content_description_sort">Ordenar</string>
+    <string name="content_description_filter">Filtrar</string>
 </resources>

@@ -104,4 +104,5 @@
         <item quantity="one">Qué logro. %1$d día en la Palabra.</item>
         <item quantity="other">Qué logro. %1$d días en la Palabra.</item>
     </plurals>
+    <string name="day_read">Día %1$d leído</string>
 </resources>

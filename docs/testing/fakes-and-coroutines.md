@@ -68,8 +68,8 @@ A fake used by a single module stays a `private class` in that module's tests.
   @OptIn(ExperimentalCoroutinesApi::class)
   internal class XViewModelTest {
       private val testDispatcher = UnconfinedTestDispatcher()
-      @BeforeTest fun setUp() = Dispatchers.setMain(testDispatcher)
-      @AfterTest fun tearDown() = Dispatchers.resetMain()
+      @BeforeTest fun setUp() { Dispatchers.setMain(testDispatcher) }
+      @AfterTest fun tearDown() { Dispatchers.resetMain() }
       @Test fun x() = runTest(testDispatcher) { ... }
   }
   ```

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -18,12 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
+import bibleplanner.feature.books.generated.resources.Res
+import bibleplanner.feature.books.generated.resources.content_description_filter
+import bibleplanner.feature.books.generated.resources.content_description_sort
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.component.ActionCircleButton
 import com.quare.bibleplanner.ui.icons.AppIcon
+import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BooksTopBar(
     modifier: Modifier = Modifier,
@@ -64,6 +66,7 @@ internal fun BooksTopBar(
                     Box {
                         ActionCircleButton(
                             icon = AppIcon.SortByAlpha,
+                            contentDescription = stringResource(Res.string.content_description_sort),
                             onClick = { onEvent(BooksUiEvent.OnToggleSortMenu) },
                             isSelected = successState?.sortOrder != null,
                         )
@@ -79,6 +82,7 @@ internal fun BooksTopBar(
                     Box {
                         ActionCircleButton(
                             icon = AppIcon.FilterList,
+                            contentDescription = stringResource(Res.string.content_description_filter),
                             onClick = { onEvent(BooksUiEvent.OnToggleFilterMenu) },
                             isSelected = successState?.filterOptions?.any { it.isSelected } == true,
                         )

@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.main.presentation
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Transition
@@ -47,7 +46,6 @@ fun EntryProviderScope<NavKey>.mainScreen(tabEntries: MainTabEntries) {
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun MainRootContent(
     tabEntries: MainTabEntries,
@@ -121,7 +119,6 @@ private fun MainRootContent(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun SharedTransitionScope.keepStillAcrossTabs(
     modifier: Modifier,

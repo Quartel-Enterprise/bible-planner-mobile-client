@@ -24,6 +24,7 @@ import bibleplanner.feature.read.generated.resources.download_version
 import bibleplanner.feature.read.generated.resources.manage_bible_versions
 import bibleplanner.feature.read.generated.resources.mark_as_read
 import bibleplanner.feature.read.generated.resources.next_chapter
+import bibleplanner.feature.read.generated.resources.open_verse_note
 import bibleplanner.feature.read.generated.resources.previous_chapter
 import bibleplanner.feature.read.generated.resources.reader_appearance
 import bibleplanner.feature.read.generated.resources.retry
@@ -40,6 +41,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntryS
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
+import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkPosition
+import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkUiModel
 import com.quare.bibleplanner.ui.testing.setUiTestContent
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import org.jetbrains.compose.resources.getString
@@ -81,6 +84,27 @@ internal class ReadUiTest {
         ),
     )
 
+    private val firstNoteMark = VerseNoteMarkUiModel(
+        noteId = "note-1",
+        noteVerseNumbers = listOf(1, 2),
+        position = VerseNoteMarkPosition.FIRST,
+    )
+    private val notedUiState = loadedUiState.copy(
+        content = ReadContentUiState.Success(
+            chapters = listOf(
+                loadedChapter.copy(
+                    verses = loadedChapter.verses.mapIndexed { index, verse ->
+                        when (index) {
+                            0 -> verse.copy(noteMark = firstNoteMark)
+                            1 -> verse.copy(noteMark = firstNoteMark.copy(position = VerseNoteMarkPosition.LAST))
+                            else -> verse
+                        }
+                    },
+                ),
+            ),
+        ),
+    )
+
     private val userEvents: List<ReadUiEvent>
         get() = events.filterNot { event ->
             event == ReadUiEvent.OnReachedStart ||
@@ -119,6 +143,44 @@ internal class ReadUiTest {
             ),
             actual = userEvents,
         )
+    }
+
+    @Test
+    fun `GIVEN a note over two verses WHEN clicking its icon THEN opens the note without selecting the verse`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = notedUiState)
+
+            // When
+            onNodeWithContentDescription(getString(Res.string.open_verse_note)).performClick()
+
+            // Then
+            assertEquals(
+                expected = listOf<ReadUiEvent>(
+                    ReadUiEvent.OnNoteIconClick(
+                        chapter = loadedChapter.chapter,
+                        noteMark = firstNoteMark,
+                    ),
+                ),
+                actual = userEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the note icon turned off WHEN rendered THEN annotated verses show no icon`() = runComposeUiTest {
+        // Given
+        prepareScenario(
+            uiState = notedUiState.copy(
+                settings = notedUiState.settings.copy(isNoteIconEnabled = false),
+            ),
+        )
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithContentDescription(getString(Res.string.open_verse_note)).assertDoesNotExist()
+        onNodeWithText(firstVerse.text).assertIsDisplayed()
     }
 
     @Test

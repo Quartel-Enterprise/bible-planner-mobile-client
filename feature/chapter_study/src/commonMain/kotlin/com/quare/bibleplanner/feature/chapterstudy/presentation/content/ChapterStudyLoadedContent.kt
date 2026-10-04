@@ -2,7 +2,6 @@ package com.quare.bibleplanner.feature.chapterstudy.presentation.content
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,7 +50,6 @@ private val contentPadding = PaddingValues(
 private val chipSpacing = 6.dp
 private val rowSpacing = 6.dp
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ChapterStudyLoadedContent(
     uiState: ChapterStudyUiState,

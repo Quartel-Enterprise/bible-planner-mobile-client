@@ -177,7 +177,7 @@ internal class AppLanguageRepositoryImplTest {
     private fun pendingWrite(
         key: String,
         value: String,
-    ) = SyncedPreferenceEntity(
+    ): SyncedPreferenceEntity = SyncedPreferenceEntity(
         key = key,
         value = value,
         updatedAt = NOW,

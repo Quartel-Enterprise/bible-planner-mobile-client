@@ -31,6 +31,7 @@ internal class ReaderAppearanceViewModelTest {
         rulerLines = 3,
         isFocusedVerseEnabled = false,
         isVerticalReadingEnabled = true,
+        isNoteIconEnabled = false,
     )
     private lateinit var viewModel: ReaderAppearanceViewModel
     private lateinit var settings: MutableSharedFlow<ReaderSettingsModel>
@@ -65,6 +66,7 @@ internal class ReaderAppearanceViewModelTest {
                 rulerLines = ReaderRulerLines.DEFAULT,
                 isFocusedVerseEnabled = false,
                 isVerticalReadingEnabled = false,
+                isNoteIconEnabled = true,
             ),
             actual = state.settings,
         )
@@ -220,6 +222,25 @@ internal class ReaderAppearanceViewModelTest {
     }
 
     @Test
+    fun `GIVEN the note icon on WHEN turning it off THEN saves and tracks it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ReaderAppearanceUiEvent.OnNoteIconChange(isEnabled = false))
+
+        // Then
+        assertEquals(
+            expected = listOf<Any>(NOTE_ICON_WRITE to false),
+            actual = writes,
+        )
+        assertEquals(
+            expected = listOf("reader_note_icon_toggled" to mapOf<String, Any>("is_enabled" to false)),
+            actual = trackedEvents,
+        )
+    }
+
+    @Test
     fun `GIVEN the open sheet WHEN dismissing it THEN goes back and tracks the dismissal`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -251,6 +272,7 @@ internal class ReaderAppearanceViewModelTest {
             setReaderFocusAid = { focusAid -> collectedWrites += focusAid },
             setReaderRulerLines = { lines -> collectedWrites += lines },
             setReaderVerticalReading = { isEnabled -> collectedWrites += isEnabled },
+            setReaderNoteIcon = { isEnabled -> collectedWrites += NOTE_ICON_WRITE to isEnabled },
             navigator = navigator,
             observeReaderSettings = { settings },
             trackEvent = { name, params -> collectedEvents += name to params },
@@ -258,5 +280,9 @@ internal class ReaderAppearanceViewModelTest {
         commands = mutableListOf<NavigationCommand>().also { collected ->
             backgroundScope.launch { navigator.commands.collect { collected += it } }
         }
+    }
+
+    companion object {
+        private const val NOTE_ICON_WRITE = "note_icon"
     }
 }

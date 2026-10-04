@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -24,7 +23,6 @@ import com.quare.bibleplanner.ui.utils.LocalSnackbarHostState
 import com.quare.bibleplanner.ui.utils.MainTabScaffold
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.booksScreen(
     navigationBar: @Composable (Modifier) -> Unit,
     navigationRail: @Composable () -> Unit,
@@ -41,7 +39,6 @@ fun EntryProviderScope<NavKey>.booksScreen(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun BooksTabContent(
     navigationBar: @Composable (Modifier) -> Unit,

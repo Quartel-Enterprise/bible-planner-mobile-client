@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.verse.annotations.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -26,7 +25,6 @@ import com.quare.bibleplanner.feature.verse.annotations.presentation.utils.perio
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun WideFilterPanel(
     content: AnnotationsContentUiModel,

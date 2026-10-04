@@ -97,7 +97,7 @@ private class SilentBookDao : ThrowingBookDao() {
     override suspend fun updateBookReadStatus(
         bookId: String,
         isRead: Boolean,
-    ) = Unit
+    ) {}
 }
 
 private class SilentChapterDao(
@@ -109,12 +109,12 @@ private class SilentChapterDao(
         bookId: String,
         isRead: Boolean,
         updatedAt: Long,
-    ) = Unit
+    ) {}
 }
 
 private class SilentVerseDao : ThrowingVerseDao() {
     override suspend fun updateVersesReadStatusByBook(
         bookId: String,
         isRead: Boolean,
-    ) = Unit
+    ) {}
 }

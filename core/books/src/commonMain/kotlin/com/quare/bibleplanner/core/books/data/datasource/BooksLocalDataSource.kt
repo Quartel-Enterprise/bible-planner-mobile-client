@@ -11,9 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-@OptIn(ExperimentalResourceApi::class)
 class BooksLocalDataSource(
     private val fileNameToBookIdMapper: FileNameToBookIdMapper,
 ) {

@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.profile.presentation.content
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +27,6 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 internal fun ResponsiveContentScope.profileScreenPortraitLayout(
     state: ProfileUiState,
     onEvent: (ProfileUiEvent) -> Unit,

@@ -201,7 +201,7 @@ class ObserveSessionLossUseCaseTest {
         )
     }
 
-    private fun authenticated(expiresAtMillis: Long) = SessionStatus.Authenticated(
+    private fun authenticated(expiresAtMillis: Long): SessionStatus.Authenticated = SessionStatus.Authenticated(
         session = UserSession(
             accessToken = "access-token",
             refreshToken = "refresh-token",

@@ -25,7 +25,7 @@ internal fun readChapter(
             isSelected = false,
             highlightColor = null,
             isSaved = false,
-            noteId = null,
+            noteMark = null,
         )
     },
 )

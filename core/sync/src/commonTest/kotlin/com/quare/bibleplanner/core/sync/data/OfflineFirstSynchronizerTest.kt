@@ -222,7 +222,7 @@ private class FakeLocalStore : SyncLocalStore<String, String> {
         entity: String,
     ): String = "$userId:$entity"
 
-    override suspend fun clearLocal() = Unit
+    override suspend fun clearLocal() {}
 }
 
 private class FakeRemoteStore : SyncRemoteStore<String> {

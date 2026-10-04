@@ -11,4 +11,5 @@ data class ReaderSettingsModel(
     val rulerLines: Int,
     val isFocusedVerseEnabled: Boolean,
     val isVerticalReadingEnabled: Boolean,
+    val isNoteIconEnabled: Boolean,
 )

@@ -9,6 +9,7 @@ import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.usecase.TrackEvent
+import com.quare.bibleplanner.core.verseannotations.domain.usecase.DeleteVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.GetVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.SaveVerseNote
 import com.quare.bibleplanner.feature.verse.addnote.presentation.model.VerseNoteUiEvent
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 internal class VerseNoteViewModel(
     private val getVerseNote: GetVerseNote,
     private val saveVerseNote: SaveVerseNote,
+    private val deleteVerseNote: DeleteVerseNote,
     private val getVersesShareContent: GetVersesShareContent,
     private val navigator: Navigator,
     route: VerseNoteNavRoute,
@@ -44,6 +46,8 @@ internal class VerseNoteViewModel(
                 quote = "",
                 text = "",
                 isSaveEnabled = false,
+                isExisting = noteId != null,
+                isDeleteConfirmationVisible = false,
             ),
         )
 
@@ -64,6 +68,12 @@ internal class VerseNoteViewModel(
             }
 
             VerseNoteUiEvent.OnSaveClick -> saveNote()
+
+            VerseNoteUiEvent.OnDeleteClick -> uiState.update { it.copy(isDeleteConfirmationVisible = true) }
+
+            VerseNoteUiEvent.OnDeleteConfirm -> deleteNote()
+
+            VerseNoteUiEvent.OnDeleteCancel -> uiState.update { it.copy(isDeleteConfirmationVisible = false) }
 
             VerseNoteUiEvent.OnDismiss ->
                 navigator.navigateBack()
@@ -111,6 +121,19 @@ internal class VerseNoteViewModel(
                 verseNumbers = verseNumbers,
                 text = text,
             )
+            navigator.navigateBack()
+        }
+    }
+
+    private fun deleteNote() {
+        val existingNoteId = noteId ?: return
+        uiState.update { it.copy(isDeleteConfirmationVisible = false) }
+        trackEvent(
+            name = AnalyticsEventNames.VERSE_NOTE_DELETED,
+            params = mapOf(AnalyticsParams.VERSE_COUNT to verseNumbers.size),
+        )
+        viewModelScope.launch {
+            deleteVerseNote(existingNoteId)
             navigator.navigateBack()
         }
     }

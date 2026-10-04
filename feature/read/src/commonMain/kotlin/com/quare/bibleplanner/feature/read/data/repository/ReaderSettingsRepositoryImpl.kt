@@ -24,6 +24,7 @@ internal class ReaderSettingsRepositoryImpl(
     private val rulerLinesKey = intPreferencesKey("reader_ruler_lines")
     private val focusedVerseEnabledKey = booleanPreferencesKey("reader_focused_verse_enabled")
     private val verticalReadingEnabledKey = booleanPreferencesKey("reader_vertical_reading_enabled")
+    private val noteIconEnabledKey = booleanPreferencesKey("reader_note_icon_enabled")
 
     override fun observe(): Flow<ReaderSettingsModel> = dataStore.data.map { preferences ->
         ReaderSettingsModel(
@@ -33,38 +34,58 @@ internal class ReaderSettingsRepositoryImpl(
             rulerLines = preferences[rulerLinesKey] ?: ReaderRulerLines.DEFAULT,
             isFocusedVerseEnabled = preferences[focusedVerseEnabledKey] == true,
             isVerticalReadingEnabled = preferences[verticalReadingEnabledKey] == true,
+            isNoteIconEnabled = preferences[noteIconEnabledKey] != false,
         )
     }
 
-    override suspend fun setFontSize(fontSizeSp: Float) = dataStore.write(
-        key = fontSizeKey,
-        value = fontSizeSp,
-    )
+    override suspend fun setFontSize(fontSizeSp: Float) {
+        dataStore.write(
+            key = fontSizeKey,
+            value = fontSizeSp,
+        )
+    }
 
-    override suspend fun setFont(fontName: String) = dataStore.write(
-        key = fontKey,
-        value = fontName,
-    )
+    override suspend fun setFont(fontName: String) {
+        dataStore.write(
+            key = fontKey,
+            value = fontName,
+        )
+    }
 
-    override suspend fun setRulerEnabled(isEnabled: Boolean) = dataStore.write(
-        key = rulerEnabledKey,
-        value = isEnabled,
-    )
+    override suspend fun setRulerEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = rulerEnabledKey,
+            value = isEnabled,
+        )
+    }
 
-    override suspend fun setRulerLines(lines: Int) = dataStore.write(
-        key = rulerLinesKey,
-        value = lines,
-    )
+    override suspend fun setRulerLines(lines: Int) {
+        dataStore.write(
+            key = rulerLinesKey,
+            value = lines,
+        )
+    }
 
-    override suspend fun setFocusedVerseEnabled(isEnabled: Boolean) = dataStore.write(
-        key = focusedVerseEnabledKey,
-        value = isEnabled,
-    )
+    override suspend fun setFocusedVerseEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = focusedVerseEnabledKey,
+            value = isEnabled,
+        )
+    }
 
-    override suspend fun setVerticalReadingEnabled(isEnabled: Boolean) = dataStore.write(
-        key = verticalReadingEnabledKey,
-        value = isEnabled,
-    )
+    override suspend fun setVerticalReadingEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = verticalReadingEnabledKey,
+            value = isEnabled,
+        )
+    }
+
+    override suspend fun setNoteIconEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = noteIconEnabledKey,
+            value = isEnabled,
+        )
+    }
 
     private fun String.toReaderFont(): ReaderFont? = ReaderFont.entries.find { it.name == this }
 }

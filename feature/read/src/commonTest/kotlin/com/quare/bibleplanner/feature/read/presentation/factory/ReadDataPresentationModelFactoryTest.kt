@@ -109,7 +109,7 @@ internal class ReadDataPresentationModelFactoryTest {
                         isSelected = false,
                         highlightColor = null,
                         isSaved = true,
-                        noteId = null,
+                        noteMark = null,
                     ),
                     VerseUiModel(
                         number = 2,
@@ -118,7 +118,7 @@ internal class ReadDataPresentationModelFactoryTest {
                         isSelected = false,
                         highlightColor = null,
                         isSaved = false,
-                        noteId = null,
+                        noteMark = null,
                     ),
                 ),
                 actual = chapter.verses,
@@ -384,6 +384,7 @@ internal class ReadDataPresentationModelFactoryTest {
                         highlightColorByVerse = emptyMap(),
                         savedVerseNumbers = setOf(1),
                         noteIdByVerse = emptyMap(),
+                        noteVerseNumbersById = emptyMap(),
                     ),
                 )
             },

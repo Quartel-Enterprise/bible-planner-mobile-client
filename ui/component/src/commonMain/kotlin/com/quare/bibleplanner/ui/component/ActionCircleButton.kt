@@ -16,6 +16,7 @@ import com.quare.bibleplanner.ui.icons.Icon
 @Composable
 fun ActionCircleButton(
     icon: AppIcon,
+    contentDescription: String,
     isSelected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -47,7 +48,7 @@ fun ActionCircleButton(
         Box(contentAlignment = Alignment.Center) {
             Icon(
                 icon = icon,
-                contentDescription = null,
+                contentDescription = contentDescription,
                 tint = iconTint,
                 modifier = Modifier.size(20.dp),
             )

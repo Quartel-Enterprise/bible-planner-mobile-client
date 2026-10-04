@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.inappupdate.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
@@ -12,7 +11,6 @@ import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.updateDownloaded() {
     entry<UpdateDownloadedNavRoute>(
         metadata = DialogSceneStrategy.dialog(

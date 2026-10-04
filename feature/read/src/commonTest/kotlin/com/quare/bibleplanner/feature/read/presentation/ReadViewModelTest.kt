@@ -33,6 +33,7 @@ import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
+import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
 import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
@@ -60,6 +61,8 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadDataUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.VerseFocusUiModel
+import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkPosition
+import com.quare.bibleplanner.feature.read.presentation.model.VerseNoteMarkUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.VerseUiModel
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
 import kotlinx.coroutines.CompletableDeferred
@@ -273,6 +276,42 @@ internal class ReadViewModelTest {
             expected = listOf<NavigationCommand>(NavigationCommand.Navigate(ReaderAppearanceNavRoute)),
             actual = commands,
         )
+    }
+
+    @Test
+    fun `opens the note editor over every verse of the note when its icon is tapped`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(
+            ReadUiEvent.OnNoteIconClick(
+                chapter = testChapter,
+                noteMark = VerseNoteMarkUiModel(
+                    noteId = "note-1",
+                    noteVerseNumbers = listOf(2, 3, 5),
+                    position = VerseNoteMarkPosition.MIDDLE,
+                ),
+            ),
+        )
+        runCurrent()
+
+        // Then
+        assertEquals(
+            expected = listOf<NavigationCommand>(
+                NavigationCommand.Navigate(
+                    VerseNoteNavRoute(
+                        bibleVersionId = testChapter.bibleVersionId,
+                        bookId = testChapter.bookId.name,
+                        chapterNumber = testChapter.chapterNumber,
+                        verseNumbers = listOf(2, 3, 5),
+                        noteId = "note-1",
+                    ),
+                ),
+            ),
+            actual = commands,
+        )
+        assertTrue(trackedEventParams.contains("verse_note_icon_clicked" to mapOf<String, Any>("verse_count" to 3)))
     }
 
     @Test
@@ -1169,7 +1208,7 @@ internal class ReadViewModelTest {
                     isSelected = false,
                     highlightColor = null,
                     isSaved = false,
-                    noteId = null,
+                    noteMark = null,
                 )
             },
         )
@@ -1194,6 +1233,7 @@ internal class ReadViewModelTest {
                 rulerLines = ReaderRulerLines.DEFAULT,
                 isFocusedVerseEnabled = false,
                 isVerticalReadingEnabled = isVerticalReadingEnabled,
+                isNoteIconEnabled = true,
             ),
         )
         viewModel = ReadViewModel(

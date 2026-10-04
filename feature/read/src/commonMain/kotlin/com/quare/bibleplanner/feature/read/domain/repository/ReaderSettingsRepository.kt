@@ -17,4 +17,6 @@ interface ReaderSettingsRepository {
     suspend fun setFocusedVerseEnabled(isEnabled: Boolean)
 
     suspend fun setVerticalReadingEnabled(isEnabled: Boolean)
+
+    suspend fun setNoteIconEnabled(isEnabled: Boolean)
 }

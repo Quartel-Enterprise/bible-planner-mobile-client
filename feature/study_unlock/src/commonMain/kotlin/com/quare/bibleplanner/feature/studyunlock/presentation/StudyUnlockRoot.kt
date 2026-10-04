@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.studyunlock.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,7 +15,6 @@ import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.studyUnlock() {
     entry<StudyUnlockNavRoute>(
         metadata = DialogSceneStrategy.dialog(

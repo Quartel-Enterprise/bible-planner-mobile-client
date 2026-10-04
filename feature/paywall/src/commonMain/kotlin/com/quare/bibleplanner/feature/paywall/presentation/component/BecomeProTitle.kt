@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.paywall.presentation.component
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
@@ -16,7 +15,6 @@ import bibleplanner.feature.paywall.generated.resources.paywall_title_part_2
 import com.quare.bibleplanner.ui.component.spacer.HorizontalSpacer
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun BecomeProTitle(
     sharedTransitionScope: SharedTransitionScope,

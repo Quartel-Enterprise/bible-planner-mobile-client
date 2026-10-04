@@ -7,5 +7,7 @@ import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.Se
 internal class SetStudySuggestionModeUseCase(
     private val repository: StudySuggestionSettingsRepository,
 ) : SetStudySuggestionMode {
-    override suspend fun invoke(mode: StudySuggestionMode) = repository.setMode(mode)
+    override suspend fun invoke(mode: StudySuggestionMode) {
+        repository.setMode(mode)
+    }
 }

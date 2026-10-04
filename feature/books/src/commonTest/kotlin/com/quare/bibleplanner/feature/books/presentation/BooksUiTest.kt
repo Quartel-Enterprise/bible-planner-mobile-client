@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -215,7 +214,6 @@ internal class BooksUiTest {
         shouldShowTestamentToggle = false,
     )
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     private fun ComposeUiTest.prepareScenario(uiState: BooksUiState) {
         events = mutableListOf()
         setUiTestContent {

@@ -5,12 +5,15 @@ import com.pinterest.ktlint.rule.engine.core.api.ElementType.FUN
 import com.pinterest.ktlint.rule.engine.core.api.ElementType.IDENTIFIER
 import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtExpression
-import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
+import org.jetbrains.kotlin.psi.KtThrowExpression
 
 class UnitFunctionBlockBodyRule : BiblePlannerRule("unit-function-block-body") {
+    private val nothingFunctions = setOf("error", "TODO")
+    private val testRunners = setOf("runTest")
+
     override fun beforeVisitChildNodes(
         node: ASTNode,
         emit: (offset: Int, errorMessage: String, canBeAutoCorrected: Boolean) -> AutocorrectDecision,
@@ -20,46 +23,49 @@ class UnitFunctionBlockBodyRule : BiblePlannerRule("unit-function-block-body") {
         val function = node.psi as? KtNamedFunction ?: return
         val name = function.name ?: return
         val body = function.findExpressionBody() ?: return
-        if (!function.hasUnitReturnType() && !body.isDelegatingToUnitFunction(function)) return
+        if (function.isTest() || body.isTestRun() || body.isNothing()) return
 
+        val message = when (function.typeReference?.text?.removePrefix("$KOTLIN_PACKAGE.")) {
+            null -> {
+                "Function '$name' uses an expression body without a return type; declare the return " +
+                    "type, or open a block body ({ … }) if it returns 'Unit'"
+            }
+
+            UNIT -> {
+                "Function '$name' returns 'Unit' but uses an expression body; open a block body " +
+                    "({ … }) instead of assigning with '='"
+            }
+
+            else -> return
+        }
         val identifier = node.findChildByType(IDENTIFIER) ?: return
         emit(
             identifier.startOffset,
-            "Function '$name' returns 'Unit' but uses an expression body; open a block body " +
-                "({ … }) instead of assigning with '='",
+            message,
             false,
         )
     }
 
     private fun KtNamedFunction.findExpressionBody(): KtExpression? = bodyExpression?.takeIf { !hasBlockBody() }
 
-    private fun KtNamedFunction.hasUnitReturnType(): Boolean = typeReference?.text == UNIT
+    private fun KtNamedFunction.isTest(): Boolean = annotationEntries.any { it.shortName?.asString() == TEST }
 
-    private fun KtExpression.isDelegatingToUnitFunction(caller: KtNamedFunction): Boolean {
-        if (caller.typeReference != null) return false
-        val calleeName = findCalleeName() ?: return false
-        val candidates = caller.getFunctionsInScope().filter { it.name == calleeName }
-        return candidates.isNotEmpty() && candidates.all { it.isKnownUnit() }
-    }
+    private fun KtExpression.isTestRun(): Boolean = findCalleeName() in testRunners
 
-    private fun KtExpression.findCalleeName(): String? = (this as? KtCallExpression)
-        ?.calleeExpression
-        ?.let { it as? KtNameReferenceExpression }
-        ?.getReferencedName()
+    private fun KtExpression.isNothing(): Boolean = this is KtThrowExpression || findCalleeName() in nothingFunctions
 
-    private fun KtNamedFunction.getFunctionsInScope(): List<KtNamedFunction> {
-        val declarations = containingClassOrObject?.declarations ?: containingKtFile.declarations
-        return (declarations + containingKtFile.declarations)
-            .filterIsInstance<KtNamedFunction>()
-            .distinct()
-    }
-
-    private fun KtNamedFunction.isKnownUnit(): Boolean {
-        val declaredReturnType = typeReference?.text ?: return hasBlockBody()
-        return declaredReturnType == UNIT
+    private fun KtExpression.findCalleeName(): String? {
+        val call = if (this is KtDotQualifiedExpression && receiverExpression.text == KOTLIN_PACKAGE) {
+            selectorExpression
+        } else {
+            this
+        }
+        return (call as? KtCallExpression)?.calleeExpression?.text
     }
 
     private companion object {
         const val UNIT = "Unit"
+        const val TEST = "Test"
+        const val KOTLIN_PACKAGE = "kotlin"
     }
 }

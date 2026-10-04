@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.content
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.test.ComposeUiTest
@@ -147,7 +146,6 @@ internal class ReadingPlanUiTest {
         onNodeWithText(getString(Res.string.hero_primary_read_now)).assertDoesNotExist()
     }
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     private fun ComposeUiTest.prepareScenario(uiState: ReadingPlanUiState) {
         events = mutableListOf()
         setUiTestContent {

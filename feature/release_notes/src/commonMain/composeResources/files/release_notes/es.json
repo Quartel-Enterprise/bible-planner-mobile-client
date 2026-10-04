@@ -3,7 +3,11 @@
     "common": [
       "Después de iniciar sesión o volver a estar en línea, tu progreso de lectura, tus marcas y tu foto de perfil aparecen mucho más rápido.",
       "Con la lectura vertical en tabletas, en computadoras y con el teléfono de lado, el estudio junto al texto y el nombre del capítulo en la parte superior ahora pasan al siguiente capítulo en cuanto llega a la parte superior de la pantalla, en lugar de quedarse atrás, e ir a un versículo te lleva directo a él.",
-      "Corregimos el calendario para cambiar la fecha en que leíste un día, que en lugares como Japón o Australia podía abrirse en el día anterior y no dejar elegir el día de hoy."
+      "Corregimos el calendario para cambiar la fecha en que leíste un día, que en lugares como Japón o Australia podía abrirse en el día anterior y no dejar elegir el día de hoy.",
+      "En la pantalla de Libros, la elección entre Antiguo y Nuevo Testamento y los botones de lista y cuadrícula son más grandes y fáciles de tocar, y con la letra del teléfono más grande el nombre del Testamento pasa a una segunda línea en lugar de quedar cortado.",
+      "Si usas un lector de pantalla, ahora te dice qué hacen los botones de ordenar y filtrar en la pantalla de Libros y el círculo que marca un día como leído en el plan de lectura.",
+      "Al leer, los versículos que tienen una nota ahora muestran un icono al lado, y una línea une todos los versículos de la misma nota. Toca el icono para abrir la nota. Si prefieres leer sin él, desactívalo en la apariencia de la lectura.",
+      "Al seleccionar versículos que ya tienen una nota, el botón cambia a \"Ver nota\" y abre la nota completa, y ahora puedes eliminar una nota directamente desde el editor."
     ],
     "android": [
       "¿Usaste tus estudios con IA gratis? Ahora, además de suscribirte a Pro, puedes ver un video corto para desbloquear un estudio más del capítulo o del día. Toca \"Desbloquear\" para elegir. La cantidad de videos por día es limitada.",
