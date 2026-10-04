@@ -14,6 +14,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -70,6 +71,20 @@ internal class DayUiTest {
         onAllNodesWithText(getString(BookId.GEN.toBookNameResource())).assertCountEquals(CHAPTER_COUNT)
         onNodeWithText(getString(Res.string.mark_as_read)).assertIsDisplayed()
     }
+
+    @Test
+    fun `GIVEN a loaded day WHEN rendered THEN the day and its chapters carry the tags the benchmarks find`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = loadedUiState)
+
+            // When
+            waitForIdle()
+
+            // Then
+            onNodeWithTag("day_content").assertExists()
+            onNodeWithTag("day_passages").assertIsDisplayed()
+        }
 
     @Test
     fun `GIVEN a loaded day WHEN clicking a chapter THEN emits OnChapterClick for that chapter`() = runComposeUiTest {

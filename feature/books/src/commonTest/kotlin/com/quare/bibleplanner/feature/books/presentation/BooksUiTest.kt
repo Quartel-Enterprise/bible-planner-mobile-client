@@ -16,6 +16,7 @@ import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -60,6 +61,18 @@ internal class BooksUiTest {
             onNodeWithText(genesis.name).assertIsDisplayed()
             onNodeWithText(joshua.name).assertIsDisplayed()
         }
+
+    @Test
+    fun `GIVEN loaded books WHEN rendered THEN the content carries the tag the benchmarks find`() = runComposeUiTest {
+        // Given
+        prepareScenario(uiState = booksUiState())
+
+        // When
+        waitForIdle()
+
+        // Then
+        onNodeWithTag("books_content").assertIsDisplayed()
+    }
 
     @Test
     fun `GIVEN loaded books WHEN clicking a book THEN emits OnBookClick for it`() = runComposeUiTest {

@@ -16,35 +16,47 @@ class ScrollBenchmark {
     val rule = MacrobenchmarkRule()
 
     @Test
-    fun plansWithoutProfile() = plans(CompilationMode.None())
+    fun plansWithoutProfile() {
+        plans(CompilationMode.None())
+    }
 
     @Test
-    fun plansWithProfile() = plans(CompilationMode.Partial(BaselineProfileMode.Require))
+    fun plansWithProfile() {
+        plans(CompilationMode.Partial(BaselineProfileMode.Require))
+    }
 
     @Test
-    fun booksWithoutProfile() = books(CompilationMode.None())
+    fun booksWithoutProfile() {
+        books(CompilationMode.None())
+    }
 
     @Test
-    fun booksWithProfile() = books(CompilationMode.Partial(BaselineProfileMode.Require))
+    fun booksWithProfile() {
+        books(CompilationMode.Partial(BaselineProfileMode.Require))
+    }
 
-    private fun plans(compilationMode: CompilationMode) = rule.measureFrames(
-        compilationMode = compilationMode,
-        setup = {
-            killProcess()
-            startAndWaitForPlans()
-        },
-        measure = { scrollPlans() },
-    )
+    private fun plans(compilationMode: CompilationMode) {
+        rule.measureFrames(
+            compilationMode = compilationMode,
+            setup = {
+                killProcess()
+                startAndWaitForPlans()
+            },
+            measure = { scrollPlans() },
+        )
+    }
 
-    private fun books(compilationMode: CompilationMode) = rule.measureFrames(
-        compilationMode = compilationMode,
-        setup = {
-            killProcess()
-            startAndWaitForPlans()
-        },
-        measure = {
-            openBooks()
-            scrollBooks()
-        },
-    )
+    private fun books(compilationMode: CompilationMode) {
+        rule.measureFrames(
+            compilationMode = compilationMode,
+            setup = {
+                killProcess()
+                startAndWaitForPlans()
+            },
+            measure = {
+                openBooks()
+                scrollBooks()
+            },
+        )
+    }
 }

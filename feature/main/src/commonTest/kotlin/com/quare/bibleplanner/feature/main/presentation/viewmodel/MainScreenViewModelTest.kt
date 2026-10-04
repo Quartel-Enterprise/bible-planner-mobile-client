@@ -120,6 +120,19 @@ internal class MainScreenViewModelTest {
         }
 
     @Test
+    fun `GIVEN the navigation items WHEN reading their test tags THEN they match the benchmark journeys`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = null)
+
+            // When
+            val testTags = navigationItems.last().map { item -> item.presentationModel.testTag }
+
+            // Then
+            assertEquals(listOf("plans_tab", "books_tab", "profile_tab"), testTags)
+        }
+
+    @Test
     fun `GIVEN a signed in user WHEN the profile arrives THEN the profile tab shows the avatar and name`() =
         runTest(testDispatcher) {
             // Given

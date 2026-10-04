@@ -14,39 +14,53 @@ class ReadingBenchmark {
     val rule = MacrobenchmarkRule()
 
     @Test
-    fun dayWithoutProfile() = day(CompilationMode.None())
+    fun dayWithoutProfile() {
+        day(CompilationMode.None())
+    }
 
     @Test
-    fun dayWithProfile() = day(CompilationMode.Partial(BaselineProfileMode.Require))
+    fun dayWithProfile() {
+        day(CompilationMode.Partial(BaselineProfileMode.Require))
+    }
 
     @Test
-    fun chapterWithoutProfile() = chapter(CompilationMode.None())
+    fun chapterWithoutProfile() {
+        chapter(CompilationMode.None())
+    }
 
     @Test
-    fun chapterWithProfile() = chapter(CompilationMode.Partial(BaselineProfileMode.Require))
+    fun chapterWithProfile() {
+        chapter(CompilationMode.Partial(BaselineProfileMode.Require))
+    }
 
-    private fun day(compilationMode: CompilationMode) = rule.measureFrames(
-        compilationMode = compilationMode,
-        setup = {
-            killProcess()
-            startAndWaitForPlans()
-        },
-        measure = {
-            openFirstDay()
-            scrollDay()
-        },
-    )
+    // Why: finding a day row may scroll Plans first, and those frames would count as the day's.
+    private fun day(compilationMode: CompilationMode) {
+        rule.measureFrames(
+            compilationMode = compilationMode,
+            setup = {
+                killProcess()
+                startAndWaitForPlans()
+                bringAWholeDayIntoView()
+            },
+            measure = {
+                openFirstDay()
+                scrollDay()
+            },
+        )
+    }
 
-    private fun chapter(compilationMode: CompilationMode) = rule.measureFrames(
-        compilationMode = compilationMode,
-        setup = {
-            killProcess()
-            startAndWaitForPlans()
-            openFirstDay()
-        },
-        measure = {
-            openFirstChapter()
-            scrollChapter()
-        },
-    )
+    private fun chapter(compilationMode: CompilationMode) {
+        rule.measureFrames(
+            compilationMode = compilationMode,
+            setup = {
+                killProcess()
+                startAndWaitForPlans()
+                openFirstDay()
+            },
+            measure = {
+                openFirstChapter()
+                scrollChapter()
+            },
+        )
+    }
 }

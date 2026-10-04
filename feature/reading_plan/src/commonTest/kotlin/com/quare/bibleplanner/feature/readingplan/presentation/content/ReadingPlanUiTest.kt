@@ -6,7 +6,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -53,6 +56,20 @@ internal class ReadingPlanUiTest {
         onNodeWithText(getString(Res.string.hero_kicker_today)).assertIsDisplayed()
         onNodeWithText(getString(Res.string.hero_day_of_total, TODAY_GLOBAL_INDEX, TOTAL_DAYS)).assertIsDisplayed()
     }
+
+    @Test
+    fun `GIVEN a loaded plan WHEN rendered THEN the list and its days carry the tags the benchmarks find`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = readingPlanUiState())
+
+            // When
+            waitForIdle()
+
+            // Then
+            onNodeWithTag("plans_list").assertExists()
+            onAllNodesWithTag("plan_day").onFirst().assertIsDisplayed()
+        }
 
     @Test
     fun `GIVEN a loaded plan WHEN clicking read now THEN emits OnDayClick for the next day`() = runComposeUiTest {

@@ -117,9 +117,9 @@ class MainScreenViewModel(
         },
     )
 
-    companion object {
-        private const val PLANS_TAB_TAG = "plans_tab"
-        private const val BOOKS_TAB_TAG = "books_tab"
-        private const val PROFILE_TAB_TAG = "profile_tab"
+    private companion object {
+        const val PLANS_TAB_TAG = "plans_tab"
+        const val BOOKS_TAB_TAG = "books_tab"
+        const val PROFILE_TAB_TAG = "profile_tab"
     }
 }

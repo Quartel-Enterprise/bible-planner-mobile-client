@@ -49,7 +49,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterSh
 import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeightEffect
 import com.quare.bibleplanner.ui.utils.asStable
 
-private const val READ_CHAPTERS_TAG = "read_chapters"
+internal const val READ_CHAPTERS_TAG = "read_chapters"
 private const val TITLE_VISIBLE_ITEM_INDEX = 1
 private const val LINE_HEIGHT_RATIO = 1.75f
 private val contentPadding = 20.dp

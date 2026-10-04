@@ -9,11 +9,13 @@ internal fun MacrobenchmarkRule.measureFrames(
     compilationMode: CompilationMode,
     setup: MacrobenchmarkScope.() -> Unit,
     measure: MacrobenchmarkScope.() -> Unit,
-) = measureRepeated(
-    packageName = TARGET_PACKAGE,
-    metrics = listOf(FrameTimingMetric()),
-    compilationMode = compilationMode,
-    iterations = ITERATIONS,
-    setupBlock = setup,
-    measureBlock = measure,
-)
+) {
+    measureRepeated(
+        packageName = TARGET_PACKAGE,
+        metrics = listOf(FrameTimingMetric()),
+        compilationMode = compilationMode,
+        iterations = ITERATIONS,
+        setupBlock = setup,
+        measureBlock = measure,
+    )
+}

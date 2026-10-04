@@ -87,6 +87,18 @@ android {
                 debugSymbolLevel = "FULL"
             }
         }
+        /*
+         * The Baseline Profile plugin derives nonMinifiedRelease and benchmarkRelease from release,
+         * but not its Crashlytics setting: without this, every benchmark run would upload its
+         * mapping file to the production project. Neither build type is ever shipped.
+         */
+        configureEach {
+            if (name != "release") {
+                configure<CrashlyticsExtension> {
+                    mappingFileUploadEnabled = false
+                }
+            }
+        }
     }
 }
 

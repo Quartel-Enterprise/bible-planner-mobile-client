@@ -16,18 +16,24 @@ class StartupBenchmark {
     val rule = MacrobenchmarkRule()
 
     @Test
-    fun startupWithoutProfile() = startup(CompilationMode.None())
+    fun startupWithoutProfile() {
+        startup(CompilationMode.None())
+    }
 
     @Test
-    fun startupWithProfile() = startup(CompilationMode.Partial(BaselineProfileMode.Require))
+    fun startupWithProfile() {
+        startup(CompilationMode.Partial(BaselineProfileMode.Require))
+    }
 
-    private fun startup(compilationMode: CompilationMode) = rule.measureRepeated(
-        packageName = TARGET_PACKAGE,
-        metrics = listOf(StartupTimingMetric()),
-        compilationMode = compilationMode,
-        startupMode = StartupMode.COLD,
-        iterations = ITERATIONS,
-    ) {
-        startAndWaitForPlans()
+    private fun startup(compilationMode: CompilationMode) {
+        rule.measureRepeated(
+            packageName = TARGET_PACKAGE,
+            metrics = listOf(StartupTimingMetric()),
+            compilationMode = compilationMode,
+            startupMode = StartupMode.COLD,
+            iterations = ITERATIONS,
+        ) {
+            startAndWaitForPlans()
+        }
     }
 }

@@ -52,7 +52,6 @@ import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.utils.asStable
 import org.jetbrains.compose.resources.stringResource
 
-private const val READ_CHAPTERS_TAG = "read_chapters"
 private val readingColumnMaxWidth = 640.dp
 private val titleMinColumnWidth = 520.dp
 private val bannerMaxWidth = 560.dp

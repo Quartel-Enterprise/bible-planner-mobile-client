@@ -44,7 +44,9 @@ every build type, so UiAutomator sees the tags as resource ids. The tags are:
 | `read_chapters` | The reader's list of chapters, narrow and wide (`feature/read`) |
 | `books_content` | The Books tab's content (`feature/books`) |
 
-Renaming one of them breaks a journey: the benchmark module keeps its own copy of each.
+The benchmark module keeps its own copy of each, so the features' UI tests and
+`MainScreenViewModelTest` assert the same strings: renaming a tag fails those tests on CI instead of
+a journey on a device.
 
 ## Measured
 
@@ -126,9 +128,11 @@ covered. A slower device has more to gain there.
 
 ## Reproducing
 
-Both need a **physical** device on API 28 or newer, with network access, signed in to an account
-whose plan has started and with a Bible version downloaded, so a day and a chapter have something to
-show. An emulator's frame times are noise: the same build swung between 14% and 29% janky frames
+Both need a **physical phone in portrait** on API 28 or newer, with network access, signed in to an
+account whose plan has started and with a Bible version downloaded, so a day and a chapter have
+something to show. Portrait, because the journeys go through the bottom bar and the one-pane day: a
+tablet, an unfolded foldable or a phone on its side gets the wide layout, and the journeys stop
+right after the cold start with a message saying so. An emulator's frame times are noise: the same build swung between 14% and 29% janky frames
 from one run to the next. Neither runs on CI (see [CI](ci.md#ui-tests)).
 
 The run installs the benchmark build over the app already on the device, signed with the same debug
@@ -137,7 +141,9 @@ with them that data; `leaveApksInstalledAfterRun` keeps them. `ANDROID_SERIAL` k
 every other device and emulator adb sees.
 
 The journeys only open screens and scroll: they never tick a chapter or a day as read. The builds
-are release builds, though, so they report analytics and crashes to production like any other.
+are release builds, though, so they report analytics and crashes to production like any other. Only
+`release` uploads its R8 mapping file to Crashlytics: `nonMinifiedRelease` and `benchmarkRelease`,
+which the Baseline Profile plugin derives from it, never do.
 
 **Regenerate the profile** after a change to a journey or to the code it runs, and commit what it
 writes. The two files run to tens of thousands of lines; `.gitattributes` marks them generated, so
@@ -164,5 +170,7 @@ What each benchmark does to reach its screen:
 - `ScrollBenchmark` and `ReadingBenchmark` kill the app themselves at the start of each setup, so
   every iteration draws its screen for the first time. `StartupMode.COLD` would kill it after the
   setup, and the measured block would find nothing on screen.
+- `ReadingBenchmark` brings a whole day row on screen in the setup, so the Plans scrolling that may
+  take is not counted as the day's frames.
 - The bottom bar exits when Plans scrolls down, so the journeys scroll the list back up until the
   tab they need is on screen.
