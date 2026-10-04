@@ -151,6 +151,7 @@ internal class RouteConversionsTest {
             ReaderPaneKey,
             VerseSelectionPaneKey,
             ChapterStudyPaneKey,
+            SheetPaneKey,
         )
 
         // When
@@ -160,6 +161,7 @@ internal class RouteConversionsTest {
             getReaderPane(),
             getVerseSelectionPane(),
             getChapterStudyPane(),
+            getSheetPane(),
         )
 
         // Then

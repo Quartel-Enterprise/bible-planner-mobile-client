@@ -98,6 +98,28 @@ entry<SomeDialogNavRoute>(
 ) { ... }
 ```
 
+For bottom sheets, mark the entry with `getSheetPane()` metadata instead. `SheetSceneStrategy` keeps the
+entry composed after it is popped until the sheet has animated away, so a sheet closed from its close
+button, a ViewModel's `navigateBack()` or a selection slides down instead of vanishing:
+
+```kotlin
+entry<SomeSheetNavRoute>(metadata = getSheetPane()) {
+    ResponsiveDialogSheet(onCloseClick = { onEvent(SomeSheetUiEvent.OnDismiss) }) { ... }
+}
+```
+
+`ResponsiveDialogSheet` registers its own exit animation and guards its close. A screen that draws its
+own `ModalBottomSheet` does both itself:
+
+- `SheetExitAnimationEffect(animateOut = sheetState::hide, animateBackIn = sheetState::show)`, or the
+  sheet leaves without animating.
+- `rememberSheetCloseGuard()`: send every closing event through `sheetCloseGuard.close { ... }`, and pass
+  `isClosing` to `sheetGesturesEnabled = !isClosing` and `Modifier.blockPointerInput(isBlocked = isClosing)`.
+  The sheet stays on screen until the pop lands and while it slides away, and a second close in that
+  time would pop the screen underneath too.
+
+Close a sheet by navigating back only, never by hiding it first and waiting.
+
 For shared-element transitions, the entry's animation scope is `LocalNavAnimatedContentScope.current`.
 
 ### 4. Register in `RootEntryProvider`

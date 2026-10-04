@@ -4,17 +4,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.scene.DialogSceneStrategy
 import com.quare.bibleplanner.core.model.route.LoginNavRoute
+import com.quare.bibleplanner.core.model.route.getSheetPane
 import com.quare.bibleplanner.feature.login.domain.model.LoginProvider
 import com.quare.bibleplanner.feature.login.presentation.model.LoginUiEvent
 import com.quare.bibleplanner.feature.login.presentation.utils.LoginUiActionCollector
-import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
+import com.quare.bibleplanner.ui.utils.sheet.SheetExitAnimationEffect
+import com.quare.bibleplanner.ui.utils.sheet.rememberSheetCloseGuard
 import io.github.jan.supabase.compose.auth.composable.GoogleDialogType
 import io.github.jan.supabase.compose.auth.composable.rememberSignInWithApple
 import io.github.jan.supabase.compose.auth.composable.rememberSignInWithGoogle
@@ -23,11 +23,18 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.loginRoot() {
-    entry<LoginNavRoute>(metadata = DialogSceneStrategy.dialog(DialogProperties().toSheetDialogProperties())) { route ->
+    entry<LoginNavRoute>(metadata = getSheetPane()) { route ->
         val notifyResultViaSnackbar = route.notifyResultViaSnackbar
         val appSnackbarController = koinInject<AppSnackbarController>()
         val viewModel = koinViewModel<LoginViewModel>()
-        val onEvent = viewModel::onEvent
+        val sheetCloseGuard = rememberSheetCloseGuard()
+        val onEvent: (LoginUiEvent) -> Unit = { event ->
+            if (event == LoginUiEvent.DismissClick || event == LoginUiEvent.NotNowClick) {
+                sheetCloseGuard.close { viewModel.onEvent(event) }
+            } else {
+                viewModel.onEvent(event)
+            }
+        }
         val composeAuth = viewModel.composeAuth
         val nativeSignInStates = mapOf(
             LoginProvider.GOOGLE to composeAuth.rememberSignInWithGoogle(
@@ -40,9 +47,12 @@ fun EntryProviderScope<NavKey>.loginRoot() {
         )
         val sheetState = rememberModalBottomSheetState()
         val state by viewModel.state.collectAsState()
+        SheetExitAnimationEffect(
+            animateOut = sheetState::hide,
+            animateBackIn = sheetState::show,
+        )
         LoginUiActionCollector(
             uiActionFlow = viewModel.uiAction,
-            sheetState = sheetState,
             onLoginResult = { message ->
                 if (notifyResultViaSnackbar) {
                     appSnackbarController.show(
@@ -56,6 +66,7 @@ fun EntryProviderScope<NavKey>.loginRoot() {
         )
         LoginBottomSheet(
             sheetState = sheetState,
+            isClosing = sheetCloseGuard.isClosing,
             onEvent = onEvent,
             onProviderClick = { provider ->
                 nativeSignInStates[provider]?.let { nativeSignInState ->

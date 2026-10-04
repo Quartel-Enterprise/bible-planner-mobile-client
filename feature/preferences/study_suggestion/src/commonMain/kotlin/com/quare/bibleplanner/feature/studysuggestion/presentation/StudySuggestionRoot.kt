@@ -3,18 +3,16 @@ package com.quare.bibleplanner.feature.studysuggestion.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.scene.DialogSceneStrategy
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.Res
 import bibleplanner.feature.preferences.study_suggestion.generated.resources.study_suggestion_title
 import com.quare.bibleplanner.core.model.route.StudySuggestionNavRoute
+import com.quare.bibleplanner.core.model.route.getSheetPane
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiAction
 import com.quare.bibleplanner.feature.studysuggestion.presentation.model.StudySuggestionUiEvent
 import com.quare.bibleplanner.feature.studysuggestion.presentation.viewmodel.StudySuggestionViewModel
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
-import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import com.quare.bibleplanner.ui.utils.AppSnackbarController
 import com.quare.bibleplanner.ui.utils.model.AppSnackbarMessage
@@ -24,11 +22,7 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 fun EntryProviderScope<NavKey>.studySuggestionSettings() {
-    entry<StudySuggestionNavRoute>(
-        metadata = DialogSceneStrategy.dialog(
-            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
-        ),
-    ) {
+    entry<StudySuggestionNavRoute>(metadata = getSheetPane()) {
         val viewModel = koinViewModel<StudySuggestionViewModel>()
         val uiState by viewModel.uiState.collectAsState()
 

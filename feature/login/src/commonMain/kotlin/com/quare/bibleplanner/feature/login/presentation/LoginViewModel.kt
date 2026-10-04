@@ -23,14 +23,12 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.compose.auth.ComposeAuth
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
 import io.github.jan.supabase.compose.auth.composeAuth
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 internal class LoginViewModel(
     private val signInStarter: SignInStarter,
@@ -54,7 +52,7 @@ internal class LoginViewModel(
     init {
         observe(observeAuthenticatedUserId()) { userId ->
             if (userId != null) {
-                close()
+                navigateBack()
             }
         }
     }
@@ -99,11 +97,7 @@ internal class LoginViewModel(
                 notifyLoginResult(uiEvent.result)
             }
 
-            LoginUiEvent.NotNowClick -> {
-                viewModelScope.launch {
-                    close()
-                }
-            }
+            LoginUiEvent.NotNowClick -> navigateBack()
 
             LoginUiEvent.AddGoogleAccountConfirmClick -> {
                 addGoogleAccountLauncher()
@@ -189,12 +183,6 @@ internal class LoginViewModel(
         viewModelScope.launch {
             uiAction.emit(LoginUiAction.NotifyLoginResult(message))
         }
-    }
-
-    private suspend fun close() {
-        uiAction.emit(LoginUiAction.CloseBottomSheet)
-        delay(250.milliseconds)
-        navigateBack()
     }
 
     private fun navigateBack() {

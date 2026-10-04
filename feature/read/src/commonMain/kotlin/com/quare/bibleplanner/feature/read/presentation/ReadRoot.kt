@@ -14,6 +14,7 @@ import com.quare.bibleplanner.core.model.route.DeleteHighlightColorNavRoute
 import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.getReaderPane
+import com.quare.bibleplanner.core.model.route.getSheetPane
 import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppearanceContent
 import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppearanceUiEvent
 import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppearanceViewModel
@@ -25,7 +26,6 @@ import com.quare.bibleplanner.feature.read.presentation.screen.component.ReaderW
 import com.quare.bibleplanner.feature.read.presentation.utils.DeleteHighlightColorUiActionCollector
 import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import com.quare.bibleplanner.ui.component.dialog.toNativeAlertDialogProperties
-import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -49,11 +49,7 @@ fun EntryProviderScope<NavKey>.read(dayCompletionBanner: DayCompletionBannerSlot
         }
     }
 
-    entry<ReaderAppearanceNavRoute>(
-        metadata = DialogSceneStrategy.dialog(
-            DialogProperties(usePlatformDefaultWidth = false).toSheetDialogProperties(),
-        ),
-    ) {
+    entry<ReaderAppearanceNavRoute>(metadata = getSheetPane()) {
         val viewModel = koinViewModel<ReaderAppearanceViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         val onEvent = viewModel::onEvent

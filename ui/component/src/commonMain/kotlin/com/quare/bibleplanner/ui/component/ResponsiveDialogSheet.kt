@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.ui.component
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -24,26 +26,37 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
+import androidx.compose.ui.window.Dialog
 import bibleplanner.ui.component.generated.resources.Res
 import bibleplanner.ui.component.generated.resources.close
+import com.quare.bibleplanner.ui.component.dialog.createCardDialogProperties
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import com.quare.bibleplanner.ui.utils.LocalNavigationBarInsets
+import com.quare.bibleplanner.ui.utils.sheet.SheetExitAnimationEffect
+import com.quare.bibleplanner.ui.utils.sheet.blockPointerInput
+import com.quare.bibleplanner.ui.utils.sheet.rememberSheetCloseGuard
 import org.jetbrains.compose.resources.stringResource
 
 private val wideLayoutMinWidth = 600.dp
 private val centredTitleHorizontalPadding = 56.dp
 private val defaultCardMaxWidth = 460.dp
 private val cardVerticalMargin = 24.dp
+private const val SHEET_SCRIM_ALPHA = 0.44f
+private const val CARD_SCRIM_ALPHA = 0.52f
+private const val CARD_HIDDEN_SCALE = 0.9f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,34 +70,43 @@ fun ResponsiveDialogSheet(
     sheetBottomBreathingRoom: Dp = 0.dp,
     content: @Composable () -> Unit,
 ) {
-    DialogWindowDimEffect()
+    val sheetCloseGuard = rememberSheetCloseGuard()
+    val isClosing = sheetCloseGuard.isClosing
+    val onClose = onCloseClick?.let { close -> { sheetCloseGuard.close(close) } }
     val density = LocalDensity.current
     val windowInfo = LocalWindowInfo.current
     val contentMaxHeight = with(density) { windowInfo.containerSize.height.toDp() } - cardVerticalMargin * 2
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
         if (maxWidth >= wideLayoutMinWidth) {
             ResponsiveDialogSheetCard(
-                onCloseClick = onCloseClick,
+                onCloseClick = onClose,
                 cardMaxWidth = cardMaxWidth,
                 cardMaxHeight = contentMaxHeight,
             ) {
                 CloseableContent(
-                    onCloseClick = onCloseClick,
+                    onCloseClick = onClose,
                     title = title,
                     subtitle = subtitle,
                     isTitleCentred = isTitleCentred,
                     content = content,
                     contentMaxHeight = contentMaxHeight,
+                    modifier = Modifier.blockPointerInput(isBlocked = isClosing),
                 )
             }
         } else {
             val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            SheetExitAnimationEffect(
+                animateOut = sheetState::hide,
+                animateBackIn = sheetState::show,
+            )
             ModalBottomSheet(
-                onDismissRequest = { onCloseClick?.invoke() },
+                onDismissRequest = { onClose?.invoke() },
                 sheetState = sheetState,
+                sheetGesturesEnabled = !isClosing,
+                scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = SHEET_SCRIM_ALPHA),
             ) {
                 CloseableContent(
-                    onCloseClick = onCloseClick,
+                    onCloseClick = onClose,
                     title = title,
                     subtitle = subtitle,
                     isTitleCentred = isTitleCentred,
@@ -92,7 +114,8 @@ fun ResponsiveDialogSheet(
                     contentMaxHeight = contentMaxHeight,
                     modifier = Modifier
                         .windowInsetsPadding(LocalNavigationBarInsets.current)
-                        .padding(bottom = sheetBottomBreathingRoom),
+                        .padding(bottom = sheetBottomBreathingRoom)
+                        .blockPointerInput(isBlocked = isClosing),
                 )
             }
         }
@@ -181,33 +204,60 @@ private fun ResponsiveDialogSheetCard(
     cardMaxHeight: Dp,
     content: @Composable () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.42f))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { onCloseClick?.invoke() },
-            ),
-        contentAlignment = Alignment.Center,
+    Dialog(
+        onDismissRequest = { onCloseClick?.invoke() },
+        properties = createCardDialogProperties(),
     ) {
-        Surface(
+        ClearDialogWindowDimEffect()
+        val visibility = remember { Animatable(0f) }
+        LaunchedEffect(visibility) { visibility.animateTo(1f) }
+        SheetExitAnimationEffect(
+            animateOut = { visibility.animateTo(0f) },
+            animateBackIn = { visibility.animateTo(1f) },
+        )
+        Box(
             modifier = Modifier
-                .padding(24.dp)
-                .widthIn(max = cardMaxWidth)
-                .fillMaxWidth()
-                .heightIn(max = cardMaxHeight)
+                .fillMaxSize()
+                .graphicsLayer { alpha = visibility.value }
+                .background(MaterialTheme.colorScheme.scrim.copy(alpha = CARD_SCRIM_ALPHA))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = {},
+                    onClick = { onCloseClick?.invoke() },
                 ),
-            shape = RoundedCornerShape(22.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 3.dp,
         ) {
-            content()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .safeDrawingPadding(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .widthIn(max = cardMaxWidth)
+                        .fillMaxWidth()
+                        .heightIn(max = cardMaxHeight)
+                        .graphicsLayer {
+                            val scale = lerp(
+                                start = CARD_HIDDEN_SCALE,
+                                stop = 1f,
+                                fraction = visibility.value,
+                            )
+                            scaleX = scale
+                            scaleY = scale
+                        }.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = {},
+                        ),
+                    shape = RoundedCornerShape(22.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 3.dp,
+                ) {
+                    content()
+                }
+            }
         }
     }
 }
