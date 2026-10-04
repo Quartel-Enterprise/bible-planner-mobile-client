@@ -20,7 +20,8 @@ runs:
     # first result Claude reports, which then comes before any agent has finished: the run ended
     # green without posting anything (anthropics/claude-code-action#1646). Background tasks are
     # turned off so the agents run in the foreground, and the tools for waiting on them are blocked.
-    - uses: anthropics/claude-code-action@v1
+    - id: claude
+      uses: anthropics/claude-code-action@v1
       env:
         CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: "1"
       with:
@@ -35,3 +36,30 @@ runs:
           --model sonnet
           --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh pr list:*),Bash(gh issue view:*),Bash(gh issue list:*),Bash(gh search:*)"
           --disallowedTools "ScheduleWakeup,Monitor,SendMessage"
+
+    # The action hides Claude's output, since this repository's logs are public, so a tool the review
+    # was denied doesn't show anywhere. Only the tool's name is printed, and for Bash the program and
+    # its subcommand, enough to allow it above: a word that doesn't look like one (a path, an
+    # argument, an assignment) is left out. Reading the file never fails the review.
+    - name: List the tools the review was denied
+      if: always() && steps.claude.outputs.execution_file != ''
+      shell: bash
+      env:
+        EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+      run: |
+        if ! denied=$(jq -r '.[] | select(.type == "result") | .permission_denials[]?
+          | if .tool_name == "Bash"
+            then [.tool_input.command // "" | splits("\\s+") | select(. != "")]
+              | map(select(test("^[A-Za-z_][A-Za-z0-9_]*=") | not))
+              | "Bash("
+                + ([(.[0] // "" | select(test("^[A-Za-z][A-Za-z0-9._-]*$")) // "?"),
+                    (.[1] // "" | select(test("^[a-z][a-z0-9-]*$")))] | join(" "))
+                + ")"
+            else .tool_name end' "$EXECUTION_FILE"); then
+          echo "::warning::Couldn't read the tools the review was denied."
+          exit 0
+        fi
+        [ -n "$denied" ] || exit 0
+        sort <<< "$denied" | uniq -c | while read -r count tool; do
+          echo "::warning::The review was denied $tool ($count time(s))."
+        done

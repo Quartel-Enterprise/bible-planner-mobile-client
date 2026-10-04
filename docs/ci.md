@@ -95,6 +95,10 @@ on the head commit the pull request opened with, `merge-when-green` waits for it
 and a run that failed (an expired token) holds the merge until it is rerun. A later push brings a
 head commit with no review check, so the merge no longer waits for it.
 
+The action hides Claude's output, since the logs of this repository are public. A tool the review
+was denied still shows as a warning on the run, with only its name, and for a Bash command its
+program and subcommand: allow it in `.github/actions/claude-review` when the review needs it.
+
 The review on request is a workflow of its own because every label added to a pull request starts
 it, and the job of a label other than `ai-review` is skipped. Its job is named `review-on-request`,
 so those skipped checks never hide the `review` check of the opening review. They do hide a review
