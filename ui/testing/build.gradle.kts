@@ -4,9 +4,11 @@ plugins {
 }
 
 // Shared by the Compose UI tests of every module, as a test-only dependency: it sets a screen's
-// content with the composition locals each platform's test host leaves out. It also carries the
-// App Store screenshots' two halves: the iOS simulator capture and the image the Robolectric
-// generators frame (see docs/store-listing-screenshots.md).
+// content with the composition locals each platform's test host leaves out, and its Android manifest
+// gives every device test APK the AdMob App ID that only the app's manifest has otherwise (see
+// docs/testing/compose-ui-tests.md). It also carries the App Store screenshots' two halves: the iOS
+// simulator capture and the image the Robolectric generators frame (see
+// docs/store-listing-screenshots.md).
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.ui.testing"
