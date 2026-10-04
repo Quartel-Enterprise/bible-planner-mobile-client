@@ -140,11 +140,13 @@ internal class RouteConversionsTest {
                 "chat",
                 "highlight_custom_color",
                 "chapter_study",
+                "chapter_listening",
                 "day_fab",
                 "day_study_questions",
                 "chapter_study",
                 "highlight_custom_color",
                 "chapter_study_limit",
+                "chapter_listening_limit",
             ),
             keys,
         )

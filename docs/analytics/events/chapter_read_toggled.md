@@ -11,6 +11,7 @@ User taps the read toggle in the chapter reader, or taps a chapter checkbox on t
 ## Trigger source
 
 - `feature/read/src/commonMain/kotlin/com/quare/bibleplanner/feature/read/presentation/ReadViewModel.kt` — `ReadUiEvent.ToggleReadStatus` (`source=reader`)
+- `feature/read/src/commonMain/kotlin/com/quare/bibleplanner/feature/read/presentation/ReadViewModel.kt` — `ReadUiEvent.OnListeningMarkReadClick` (`source=listening_offer`), from the offer shown after a chapter was heard to the end
 - `feature/day/src/commonMain/kotlin/com/quare/bibleplanner/feature/day/presentation/viewmodel/DayViewModel.kt` — `DayUiEvent.OnChapterCheckboxClick` (`source=day_screen`)
 
 ## Parameters
@@ -20,7 +21,7 @@ User taps the read toggle in the chapter reader, or taps a chapter checkbox on t
 | `book_id` | string | `genesis` | Book the chapter belongs to |
 | `chapter_number` | int | `5` | 1-based chapter within the book |
 | `is_read` | string | `"true"` | New read status after the toggle |
-| `source` | string | `reader` \| `day_screen` | Which surface triggered the toggle |
+| `source` | string | `reader` \| `listening_offer` \| `day_screen` | Which surface triggered the toggle |
 | `plan_type` | string | `chronological` | Only when `source=day_screen` |
 | `week_number` | int | `12` | Only when `source=day_screen` |
 | `day_number` | int | `3` | Only when `source=day_screen` |

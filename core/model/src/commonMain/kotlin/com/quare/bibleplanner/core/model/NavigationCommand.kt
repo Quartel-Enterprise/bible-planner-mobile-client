@@ -11,5 +11,10 @@ sealed interface NavigationCommand {
         val route: NavKey,
     ) : NavigationCommand
 
+    data class NavigateReplacing(
+        val current: NavKey,
+        val route: NavKey,
+    ) : NavigationCommand
+
     data object NavigateBack : NavigationCommand
 }

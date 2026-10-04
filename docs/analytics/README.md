@@ -77,7 +77,7 @@ Parameters shared across many events are defined once here; event files referenc
 | `method` | string | `google` \| `apple` | Auth provider |
 | `is_pro` | string | `"true"` | Whether the user has the Pro entitlement |
 | `is_rewarded` | string | `"false"` | Whether an AI study generation was unlocked with a rewarded video |
-| `surface` | string | `chapter_study` \| `day_study` \| `day_reading_complete` | Which locked surface offered a rewarded unlock |
+| `surface` | string | `chapter_study` \| `day_study` \| `day_reading_complete` \| `chapter_listening` | Which locked surface offered a rewarded unlock |
 
 ## Auto-collected events
 
@@ -166,6 +166,7 @@ Every route (`core/model/.../route/*.kt`) implements the sealed `NavRoute : NavK
 | `PixQrNavRoute` | `pix_qr` | `dialog` | — |
 | `ReadNavRoute` | `read` | `screen` | `book_id`, `chapter_number` |
 | `ReaderAppearanceNavRoute` | `reader_appearance` | `responsive` | — |
+| `ChapterListeningPlayerNavRoute` | `chapter_listening_player` | `responsive` | — |
 | `DeleteHighlightColorNavRoute` | `delete_highlight_color` | `dialog` | — |
 | `VerseNoteNavRoute` | `verse_note` | `responsive` | — |
 | `VerseSelectionNavRoute` | `verse_selection` | `responsive` | — |
@@ -309,6 +310,31 @@ Setting `user_id` to the Supabase user id would allow cross-referencing with Rev
 | [reader_ruler_height_changed](events/reader_ruler_height_changed.md) | P2 | Reader |
 | [reader_vertical_reading_toggled](events/reader_vertical_reading_toggled.md) | P2 | Reader |
 | [reader_note_icon_toggled](events/reader_note_icon_toggled.md) | P2 | Reader |
+
+### Listening
+
+| Event | Tier | Domain |
+|---|---|---|
+| [chapter_listening_started](events/chapter_listening_started.md) | P1 | Listening |
+| [chapter_listening_completed](events/chapter_listening_completed.md) | P1 | Listening |
+| [chapter_listening_voice_unavailable](events/chapter_listening_voice_unavailable.md) | P2 | Listening |
+| [chapter_listening_interrupted](events/chapter_listening_interrupted.md) | P2 | Listening |
+| [chapter_listening_sleep_timer_ended](events/chapter_listening_sleep_timer_ended.md) | P2 | Listening |
+| [chapter_listening_locked](events/chapter_listening_locked.md) | P1 | Listening |
+| [chapter_listening_entry_clicked](events/chapter_listening_entry_clicked.md) | P1 | Listening |
+| [chapter_listening_player_opened](events/chapter_listening_player_opened.md) | P2 | Listening |
+| [chapter_listening_player_closed](events/chapter_listening_player_closed.md) | P2 | Listening |
+| [chapter_listening_control_clicked](events/chapter_listening_control_clicked.md) | P2 | Listening |
+| [chapter_listening_stopped](events/chapter_listening_stopped.md) | P2 | Listening |
+| [chapter_listening_speed_changed](events/chapter_listening_speed_changed.md) | P2 | Listening |
+| [chapter_listening_voice_changed](events/chapter_listening_voice_changed.md) | P2 | Listening |
+| [chapter_listening_voice_previewed](events/chapter_listening_voice_previewed.md) | P2 | Listening |
+| [chapter_listening_voice_settings_opened](events/chapter_listening_voice_settings_opened.md) | P2 | Listening |
+| [chapter_listening_sleep_timer_set](events/chapter_listening_sleep_timer_set.md) | P2 | Listening |
+| [chapter_listening_auto_next_toggled](events/chapter_listening_auto_next_toggled.md) | P2 | Listening |
+| [chapter_listening_unlock_clicked](events/chapter_listening_unlock_clicked.md) | P1 | Listening |
+| [chapter_listening_finish_offer_dismissed](events/chapter_listening_finish_offer_dismissed.md) | P2 | Listening |
+| [chapter_listening_back_to_verse_clicked](events/chapter_listening_back_to_verse_clicked.md) | P2 | Listening |
 
 ### Notes
 

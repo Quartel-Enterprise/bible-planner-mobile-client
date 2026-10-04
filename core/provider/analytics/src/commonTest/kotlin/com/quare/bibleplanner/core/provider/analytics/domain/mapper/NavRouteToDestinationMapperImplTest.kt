@@ -8,6 +8,7 @@ import com.quare.bibleplanner.core.model.route.AnnotationsNavRoute
 import com.quare.bibleplanner.core.model.route.AppLanguageNavRoute
 import com.quare.bibleplanner.core.model.route.BibleVersionSelectorRoute
 import com.quare.bibleplanner.core.model.route.BookDetailsNavRoute
+import com.quare.bibleplanner.core.model.route.ChapterListeningPlayerNavRoute
 import com.quare.bibleplanner.core.model.route.ChapterStudyNavRoute
 import com.quare.bibleplanner.core.model.route.ChatEntrySource
 import com.quare.bibleplanner.core.model.route.ChatNavRoute
@@ -410,6 +411,7 @@ class NavRouteToDestinationMapperImplTest {
             ExpandedPhotoNavRoute,
             DeleteAccountNavRoute,
             ReaderAppearanceNavRoute,
+            ChapterListeningPlayerNavRoute,
             DeleteHighlightColorNavRoute(colorKey = "c:10:40"),
             VerseNoteNavRoute(
                 bibleVersionId = "ACF",
@@ -449,6 +451,7 @@ class NavRouteToDestinationMapperImplTest {
                 "profile_photo_expanded" to DestinationType.DIALOG,
                 "delete_account" to DestinationType.DIALOG,
                 "reader_appearance" to DestinationType.RESPONSIVE,
+                "chapter_listening_player" to DestinationType.RESPONSIVE,
                 "delete_highlight_color" to DestinationType.DIALOG,
                 "verse_note" to DestinationType.RESPONSIVE,
                 "verse_selection" to DestinationType.RESPONSIVE,

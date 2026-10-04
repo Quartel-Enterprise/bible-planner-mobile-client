@@ -2,6 +2,8 @@
 <resources>
     <string name="study_unlock_title">Unlock this study</string>
     <string name="study_unlock_body">You have used your free studies. Subscribe to Pro for unlimited AI studies, or watch a short video to unlock this one.</string>
+    <string name="study_unlock_listening_title">Listen to this chapter</string>
+    <string name="study_unlock_listening_body">Subscribe to Pro to listen to as many chapters as you want, or watch a short video to unlock this one today.</string>
     <string name="study_unlock_subscribe">Subscribe to Pro</string>
     <string name="study_unlock_watch_video">Watch a short video</string>
     <plurals name="study_unlock_remaining_today">

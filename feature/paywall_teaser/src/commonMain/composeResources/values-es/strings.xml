@@ -7,4 +7,7 @@
     <string name="paywall_teaser_chapter_study_limit_title">Tus estudios gratis se acabaron</string>
     <string name="paywall_teaser_chapter_study_limit_body">Ya usaste tus estudios de capítulo gratis. Con Pro puedes estudiar cualquier capítulo con IA, cuantas veces quieras — además del estudio del día y el chat sin límites.</string>
     <string name="paywall_teaser_chapter_study_limit_dismiss">Ahora no</string>
+    <string name="paywall_teaser_chapter_listening_limit_title">Ya usaste el capítulo gratis de hoy</string>
+    <string name="paywall_teaser_chapter_listening_limit_body">Cada día puedes desbloquear un capítulo para escuchar con un video corto. Con Pro escuchas cualquier capítulo, todos los que quieras — y sigue al siguiente solo.</string>
+    <string name="paywall_teaser_chapter_listening_limit_dismiss">Ahora no</string>
 </resources>

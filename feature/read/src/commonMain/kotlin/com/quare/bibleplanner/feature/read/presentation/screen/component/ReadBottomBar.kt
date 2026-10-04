@@ -13,6 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.model.book.ChapterLocationModel
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningEntrySource
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.ui.utils.asStable
@@ -22,7 +27,9 @@ import com.quare.bibleplanner.ui.utils.asStable
 internal fun ReadBottomBar(
     header: ReadHeaderUiModel,
     scrollBehavior: BottomAppBarScrollBehavior,
+    listening: ReadListeningUiState,
     onEvent: (ReadUiEvent) -> Unit,
+    onListeningEvent: (ReadListeningUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BottomAppBar(
@@ -40,6 +47,24 @@ internal fun ReadBottomBar(
                 isNext = false,
                 onClick = onEvent,
             )
+            if (listening.isAvailable) {
+                val player = listening.player
+                ListenToggleButton(
+                    isActive = player != null,
+                    isPlaying = player?.status == ListeningStatusModel.PLAYING,
+                    onClick = {
+                        onListeningEvent(
+                            ReadListeningUiEvent.OnListenClick(
+                                chapter = player?.chapter ?: ChapterLocationModel(
+                                    bookId = header.bookId,
+                                    chapterNumber = header.chapterNumber,
+                                ),
+                                source = ListeningEntrySource.BOTTOM_BAR,
+                            ),
+                        )
+                    },
+                )
+            }
             ReadStatusPill(
                 modifier = Modifier.weight(1f),
                 isRead = header.isChapterRead,

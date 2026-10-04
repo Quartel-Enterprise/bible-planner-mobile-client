@@ -32,6 +32,7 @@ kotlin {
             implementation(projects.core.dayStudy)
             implementation(projects.core.chapterStudy)
             implementation(projects.core.studyUnlock)
+            implementation(projects.core.chapterListening)
             implementation(projects.core.preferences.studySuggestion)
 
             // UI

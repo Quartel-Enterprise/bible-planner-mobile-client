@@ -182,6 +182,11 @@ private fun NavigationCommandCollector(
                 isWide = currentIsWide,
             )
 
+            is NavigationCommand.NavigateReplacing -> backStackController.navigateReplacing(
+                current = command.current,
+                route = command.route,
+            )
+
             NavigationCommand.NavigateBack -> backStackController.navigateBack(currentIsWide)
         }
     }

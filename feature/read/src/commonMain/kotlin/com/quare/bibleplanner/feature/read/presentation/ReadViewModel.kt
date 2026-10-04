@@ -135,6 +135,7 @@ class ReadViewModel(
     private val dayCompletionBanner = MutableStateFlow<PlanDayLocationModel?>(null)
 
     private val isOpeningChapterStudy = MutableStateFlow(false)
+    private val chaptersBeingMarked = mutableSetOf<ChapterLocationModel>()
     private var observeRewardedChapterStudyJob: Job? = null
     private val isChapterStudyBeside = MutableStateFlow(false)
     private val visibleChapter = MutableStateFlow<ChapterLocationModel?>(null)
@@ -432,7 +433,13 @@ class ReadViewModel(
 
             ReadUiEvent.OnRetryClick -> retryCount.update { it + 1 }
 
-            is ReadUiEvent.ToggleReadStatus -> toggleReadStatus(event)
+            is ReadUiEvent.ToggleReadStatus -> toggleReadStatus(
+                bookId = event.bookId,
+                chapterNumber = event.chapterNumber,
+                source = SOURCE_READER,
+            )
+
+            is ReadUiEvent.OnListeningMarkReadClick -> markListenedChapterRead(event)
 
             ReadUiEvent.OnDownloadSelectedVersionClick -> downloadSelectedVersion()
 
@@ -532,32 +539,62 @@ class ReadViewModel(
         )
     }
 
-    private fun toggleReadStatus(event: ReadUiEvent.ToggleReadStatus) {
+    /*
+     * Why: the offer only ever marks; reading the stored state first and ignoring repeated taps keeps a
+     * double tap, or an offer whose chapter was just read elsewhere, from toggling it back to unread.
+     */
+    private fun markListenedChapterRead(event: ReadUiEvent.OnListeningMarkReadClick) {
         val key = ChapterLocationModel(bookId = event.bookId, chapterNumber = event.chapterNumber)
+        if (!chaptersBeingMarked.add(key)) return
+        viewModelScope.launch {
+            try {
+                val isRead = isWholeChapterRead(
+                    chapterNumber = event.chapterNumber,
+                    bookId = event.bookId,
+                )
+                if (!isRead) {
+                    toggleReadStatus(
+                        bookId = event.bookId,
+                        chapterNumber = event.chapterNumber,
+                        source = SOURCE_LISTENING_OFFER,
+                    ).join()
+                }
+            } finally {
+                chaptersBeingMarked.remove(key)
+            }
+        }
+    }
+
+    private fun toggleReadStatus(
+        bookId: BookId,
+        chapterNumber: Int,
+        source: String,
+    ): Job {
+        val key = ChapterLocationModel(bookId = bookId, chapterNumber = chapterNumber)
         val willBeRead = !isCurrentlyRead(key)
         pendingReadOverrides.update { it + (key to willBeRead) }
         val completedDay = dayCompletionCandidates.value[key]?.takeIf { willBeRead }
         if (completedDay != null) presentCompletedDay(completedDay)
-        viewModelScope.launch {
+        return viewModelScope.launch {
             val isRead = toggleWholeChapterReadStatus(
-                bookId = event.bookId,
-                chapterNumber = event.chapterNumber,
+                bookId = bookId,
+                chapterNumber = chapterNumber,
             )
             pendingReadOverrides.update { it + (key to isRead) }
             trackEvent(
                 name = AnalyticsEventNames.CHAPTER_READ_TOGGLED,
                 params = mapOf(
-                    AnalyticsParams.BOOK_ID to event.bookId.name.lowercase(),
-                    AnalyticsParams.CHAPTER_NUMBER to event.chapterNumber,
+                    AnalyticsParams.BOOK_ID to bookId.name.lowercase(),
+                    AnalyticsParams.CHAPTER_NUMBER to chapterNumber,
                     AnalyticsParams.IS_READ to isRead,
-                    AnalyticsParams.SOURCE to SOURCE_READER,
+                    AnalyticsParams.SOURCE to source,
                 ),
             )
             requestLoginNudgeIfNeeded()
             if (isRead && completedDay == null) {
                 checkDayCompletion(
-                    bookId = event.bookId,
-                    chapterNumber = event.chapterNumber,
+                    bookId = bookId,
+                    chapterNumber = chapterNumber,
                 )
             }
         }
@@ -838,6 +875,7 @@ class ReadViewModel(
     private companion object {
         const val SOURCE_READER = "reader"
         const val SOURCE_RULER = "ruler"
+        const val SOURCE_LISTENING_OFFER = "listening_offer"
         const val DIRECTION_PREVIOUS = "previous"
         const val DIRECTION_NEXT = "next"
         const val REWARDED_UNLOCK_REQUEST_PREFIX = "reader_chapter_study"

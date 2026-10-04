@@ -31,6 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.study_unlock.generated.resources.Res
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_body
+import bibleplanner.feature.study_unlock.generated.resources.study_unlock_listening_body
+import bibleplanner.feature.study_unlock.generated.resources.study_unlock_listening_title
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_not_now
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_remaining_today
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_subscribe
@@ -38,10 +40,12 @@ import bibleplanner.feature.study_unlock.generated.resources.study_unlock_title
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_video_loading
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_video_unavailable
 import bibleplanner.feature.study_unlock.generated.resources.study_unlock_watch_video
+import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
 import com.quare.bibleplanner.feature.studyunlock.presentation.model.StudyUnlockUiEvent
 import com.quare.bibleplanner.feature.studyunlock.presentation.model.StudyUnlockUiState
 import com.quare.bibleplanner.feature.studyunlock.presentation.model.StudyUnlockVideoState
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -79,7 +83,7 @@ internal fun StudyUnlockSheet(
         }
         VerticalSpacer(12)
         Text(
-            text = stringResource(Res.string.study_unlock_title),
+            text = stringResource(uiState.surface.toTitle()),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -87,7 +91,7 @@ internal fun StudyUnlockSheet(
         VerticalSpacer(6)
         Text(
             modifier = Modifier.widthIn(max = bodyMaxWidth),
-            text = stringResource(Res.string.study_unlock_body),
+            text = stringResource(uiState.surface.toBody()),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -165,4 +169,16 @@ private fun videoCaption(uiState: StudyUnlockUiState): String = when (uiState.vi
         uiState.rewardedRemainingToday,
         uiState.rewardedRemainingToday,
     )
+}
+
+private fun StudyUnlockSurface.toTitle(): StringResource = if (this == StudyUnlockSurface.CHAPTER_LISTENING) {
+    Res.string.study_unlock_listening_title
+} else {
+    Res.string.study_unlock_title
+}
+
+private fun StudyUnlockSurface.toBody(): StringResource = if (this == StudyUnlockSurface.CHAPTER_LISTENING) {
+    Res.string.study_unlock_listening_body
+} else {
+    Res.string.study_unlock_body
 }

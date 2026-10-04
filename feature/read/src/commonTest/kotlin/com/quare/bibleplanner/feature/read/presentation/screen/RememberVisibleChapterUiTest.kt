@@ -11,6 +11,7 @@ import androidx.compose.ui.test.hasScrollToKeyAction
 import androidx.compose.ui.test.performScrollToKey
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.feature.read.fixture.hiddenListeningUiState
 import com.quare.bibleplanner.feature.read.fixture.readChapter
 import com.quare.bibleplanner.feature.read.fixture.readUiState
 import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
@@ -104,7 +105,9 @@ internal class RememberVisibleChapterUiTest {
                             focus = null,
                             alpha = { 0f },
                         ),
+                        listening = hiddenListeningUiState(),
                         onEvent = {},
+                        onListeningEvent = {},
                     )
                 }
             }

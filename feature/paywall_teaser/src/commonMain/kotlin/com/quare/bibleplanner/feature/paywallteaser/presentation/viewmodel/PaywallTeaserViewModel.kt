@@ -39,4 +39,5 @@ internal class PaywallTeaserViewModel(
 private fun PaywallTeaserReason.toPaywallEntrySource(): PaywallEntrySource = when (this) {
     PaywallTeaserReason.HIGHLIGHT_CUSTOM_COLOR -> PaywallEntrySource.HIGHLIGHT_CUSTOM_COLOR
     PaywallTeaserReason.CHAPTER_STUDY_LIMIT -> PaywallEntrySource.CHAPTER_STUDY
+    PaywallTeaserReason.CHAPTER_LISTENING_LIMIT -> PaywallEntrySource.CHAPTER_LISTENING
 }

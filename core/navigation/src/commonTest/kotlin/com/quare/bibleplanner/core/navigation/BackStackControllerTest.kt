@@ -414,6 +414,86 @@ internal class BackStackControllerTest {
         assertTrue(canNavigateForward)
     }
 
+    @Test
+    fun `GIVEN a route under another WHEN navigating replacing it THEN swaps it in place and keeps what is on top`() {
+        // Given
+        prepareScenario(
+            backStack = listOf(mainRoute, genesisReadRoute, themeRoute),
+            forwardStack = listOf(listOf(logoutRoute)),
+        )
+
+        // When
+        backStackController.navigateReplacing(
+            current = genesisReadRoute,
+            route = exodusReadRoute,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, exodusReadRoute, themeRoute), backStack)
+        assertTrue(forwardStack.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a reader with its study beside WHEN replacing the reader THEN the study follows the new chapter`() {
+        // Given
+        val genesisTwoReadRoute = genesisReadRoute.copy(chapterNumber = 2)
+        prepareScenario(backStack = listOf(mainRoute, genesisReadRoute, genesisCompanionRoute, themeRoute))
+
+        // When
+        backStackController.navigateReplacing(
+            current = genesisReadRoute,
+            route = genesisTwoReadRoute,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, genesisTwoReadRoute, genesisTwoCompanionRoute, themeRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN a verse selection over the reader WHEN replacing the reader THEN drops the selection`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, genesisReadRoute, VerseSelectionNavRoute, themeRoute))
+
+        // When
+        backStackController.navigateReplacing(
+            current = genesisReadRoute,
+            route = exodusReadRoute,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, exodusReadRoute, themeRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN a route absent from the back stack WHEN navigating replacing it THEN keeps the back stack untouched`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, themeRoute))
+
+        // When
+        backStackController.navigateReplacing(
+            current = genesisReadRoute,
+            route = exodusReadRoute,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, themeRoute), backStack)
+    }
+
+    @Test
+    fun `GIVEN the replacement already stacked WHEN navigating replacing THEN keeps the back stack untouched`() {
+        // Given
+        prepareScenario(backStack = listOf(mainRoute, exodusReadRoute, genesisReadRoute))
+
+        // When
+        backStackController.navigateReplacing(
+            current = genesisReadRoute,
+            route = exodusReadRoute,
+        )
+
+        // Then
+        assertEquals(listOf(mainRoute, exodusReadRoute, genesisReadRoute), backStack)
+    }
+
     private fun prepareScenario(
         backStack: List<NavKey> = listOf(mainRoute),
         forwardStack: List<List<NavKey>> = emptyList(),

@@ -29,9 +29,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.read.generated.resources.Res
 import bibleplanner.feature.read.generated.resources.reader_appearance
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
+import com.quare.bibleplanner.core.model.book.ChapterLocationModel
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
+import com.quare.bibleplanner.feature.read.presentation.component.rememberListeningFollow
 import com.quare.bibleplanner.feature.read.presentation.component.rememberVerseFlash
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ListeningEntrySource
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadContentUiState
@@ -40,6 +46,9 @@ import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiState
 import com.quare.bibleplanner.feature.read.presentation.screen.component.BibleVersionChip
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterStudyPill
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ListenToggleButton
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ListeningMiniPlayerBar
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ListeningOverlay
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ReadStatusPill
 import com.quare.bibleplanner.feature.read.presentation.screen.content.CHAPTER_SHIMMER_ITEM_COUNT
 import com.quare.bibleplanner.feature.read.presentation.screen.content.ChapterShimmerPosition
@@ -60,7 +69,9 @@ private val bannerMaxWidth = 560.dp
 internal fun ReadWideScreen(
     platform: Platform,
     state: ReadUiState,
+    listening: ReadListeningUiState,
     onEvent: (ReadUiEvent) -> Unit,
+    onListeningEvent: (ReadListeningUiEvent) -> Unit,
     dayCompletionBanner: DayCompletionBannerSlot,
 ) {
     val listState = rememberLazyListState()
@@ -95,6 +106,13 @@ internal fun ReadWideScreen(
         chapters = chapters,
         onReachedStart = { onEvent(ReadUiEvent.OnReachedStart) },
     )
+    val listeningFollow = rememberListeningFollow(
+        player = listening.player,
+        chapters = chapters,
+        listState = listState,
+        leadingItemCount = leadingItemCount,
+        isChapterStudyBeside = state.isChapterStudyBeside,
+    )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -108,10 +126,12 @@ internal fun ReadWideScreen(
                     visibleChapter = visibleChapter,
                     isOpeningChapterStudy = state.isOpeningChapterStudy,
                     isChapterStudyBeside = state.isChapterStudyBeside,
+                    listening = listening,
                     onEvent = onEvent,
+                    onListeningEvent = onListeningEvent,
                 )
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxWidth().weight(1f),
                     contentAlignment = Alignment.TopCenter,
                 ) {
                     when (val content = state.content) {
@@ -153,7 +173,9 @@ internal fun ReadWideScreen(
                                         isChapterStudyBeside = state.isChapterStudyBeside,
                                         focusedVerseNumber = null,
                                         verseFlash = verseFlash,
+                                        listening = listening,
                                         onEvent = onEvent,
+                                        onListeningEvent = onListeningEvent,
                                     )
                                 }
                                 if (state.isLoadingNextChapter) {
@@ -162,6 +184,21 @@ internal fun ReadWideScreen(
                             }
                         }
                     }
+                    ListeningOverlay(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .widthIn(max = readingColumnMaxWidth),
+                        listening = listening,
+                        follow = listeningFollow,
+                        onEvent = onEvent,
+                        onListeningEvent = onListeningEvent,
+                    )
+                }
+                listening.player?.let { player ->
+                    ListeningMiniPlayerBar(
+                        player = player,
+                        onEvent = onListeningEvent,
+                    )
                 }
             }
         }
@@ -188,7 +225,9 @@ private fun ReadWideHeader(
     visibleChapter: ReadChapterUiModel?,
     isOpeningChapterStudy: Boolean,
     isChapterStudyBeside: Boolean,
+    listening: ReadListeningUiState,
     onEvent: (ReadUiEvent) -> Unit,
+    onListeningEvent: (ReadListeningUiEvent) -> Unit,
 ) {
     BoxWithConstraints {
         val hasRoomForTitle = maxWidth >= titleMinColumnWidth
@@ -214,6 +253,25 @@ private fun ReadWideHeader(
                 )
             } else {
                 Spacer(modifier = Modifier.weight(1f))
+            }
+            if (listening.isAvailable) {
+                val player = listening.player
+                ListenToggleButton(
+                    isActive = player != null,
+                    isPlaying = player?.status == ListeningStatusModel.PLAYING,
+                    size = 40.dp,
+                    onClick = {
+                        onListeningEvent(
+                            ReadListeningUiEvent.OnListenClick(
+                                chapter = player?.chapter ?: ChapterLocationModel(
+                                    bookId = bookId,
+                                    chapterNumber = chapterNumber,
+                                ),
+                                source = ListeningEntrySource.HEADER,
+                            ),
+                        )
+                    },
+                )
             }
             ReadStatusPill(
                 isRead = visibleChapter?.isRead ?: header.isChapterRead,

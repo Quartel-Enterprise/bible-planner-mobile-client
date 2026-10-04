@@ -2,6 +2,8 @@
 <resources>
     <string name="study_unlock_title">Desbloquear este estudio</string>
     <string name="study_unlock_body">Ya usaste tus estudios gratis. Suscríbete a Pro para tener estudios con IA sin límites, o mira un video corto para desbloquear este.</string>
+    <string name="study_unlock_listening_title">Escuchar este capítulo</string>
+    <string name="study_unlock_listening_body">Suscríbete a Pro para escuchar todos los capítulos que quieras, o mira un video corto para desbloquear este hoy.</string>
     <string name="study_unlock_subscribe">Suscribirse a Pro</string>
     <string name="study_unlock_watch_video">Ver un video corto</string>
     <plurals name="study_unlock_remaining_today">

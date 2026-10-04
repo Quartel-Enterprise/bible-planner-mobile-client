@@ -1,17 +1,22 @@
 package com.quare.bibleplanner.feature.read.presentation.screen.content
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.quare.bibleplanner.core.chapterlistening.domain.model.ListeningStatusModel
 import com.quare.bibleplanner.feature.read.domain.model.ReaderSettingsModel
 import com.quare.bibleplanner.feature.read.presentation.component.VerseFlash
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiEvent
+import com.quare.bibleplanner.feature.read.presentation.listening.model.ReadListeningUiState
 import com.quare.bibleplanner.feature.read.presentation.model.ChapterStudyEntrySource
 import com.quare.bibleplanner.feature.read.presentation.model.ReadChapterUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadHeaderUiModel
 import com.quare.bibleplanner.feature.read.presentation.model.ReadUiEvent
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterEndNavigationRow
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterHeader
+import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterListenShortcutPill
 import com.quare.bibleplanner.feature.read.presentation.screen.component.ChapterStudyEntryCard
 import com.quare.bibleplanner.feature.read.presentation.screen.component.VerseRow
 import org.jetbrains.compose.resources.stringResource
@@ -29,13 +34,30 @@ internal fun LazyListScope.chapterContent(
     isChapterStudyBeside: Boolean,
     focusedVerseNumber: Int?,
     verseFlash: VerseFlash,
+    listening: ReadListeningUiState,
     onEvent: (ReadUiEvent) -> Unit,
+    onListeningEvent: (ReadListeningUiEvent) -> Unit,
 ) {
+    val listeningVerseNumber = listening.player
+        ?.takeIf { player ->
+            player.chapter.bookId == chapter.chapter.bookId &&
+                player.chapter.chapterNumber == chapter.chapter.chapterNumber &&
+                player.status != ListeningStatusModel.FINISHED
+        }?.verseNumber
     item(key = "chapter-header-${chapter.chapter.bookId}-${chapter.chapter.chapterNumber}") {
-        ChapterHeader(
-            bookName = stringResource(chapter.bookStringResource),
-            chapterNumber = chapter.chapter.chapterNumber,
-        )
+        Column {
+            ChapterHeader(
+                bookName = stringResource(chapter.bookStringResource),
+                chapterNumber = chapter.chapter.chapterNumber,
+            )
+            if (listening.isAvailable) {
+                ChapterListenShortcutPill(
+                    chapter = chapter,
+                    listening = listening,
+                    onListeningEvent = onListeningEvent,
+                )
+            }
+        }
     }
     items(
         count = chapter.verses.size,
@@ -54,6 +76,7 @@ internal fun LazyListScope.chapterContent(
             settings = settings,
             flashAlpha = verseFlash.alpha.takeIf { isFlashing },
             isDimmed = focusedVerseNumber != null && focusedVerseNumber != verse.number,
+            isListening = verse.number == listeningVerseNumber,
             onClick = {
                 onEvent(
                     ReadUiEvent.OnVerseClick(

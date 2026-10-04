@@ -1,8 +1,14 @@
 {
-  "2.11.1": {
+  "2.12.0": {
     "common": [
       "Corrigimos o título no topo da tela de assinatura Pro, da tela de Notas de Atualização e dos detalhes de um livro, que podia não aparecer ao abrir essas telas, principalmente com as animações desativadas.",
       "Na leitura, tocar em \"Estudo\" ou em \"Estudar este capítulo\" agora abre o estudo do capítulo na hora, sem ficar carregando antes."
+    ],
+    "android": [
+      "Agora você pode ouvir o capítulo: toque no ícone de fones na leitura e a Bíblia é lida em voz alta com a voz do celular, destacando cada versículo enquanto o texto acompanha. Dá para mudar a velocidade e a voz, usar o timer para dormir, seguir para o próximo capítulo sozinho, ouvir em sequência a leitura de hoje do plano e continuar ouvindo com a tela bloqueada. No plano grátis, você libera um capítulo por dia assistindo a um vídeo curto; com o Pro, ouve quantos quiser."
+    ],
+    "ios": [
+      "Agora você pode ouvir o capítulo: toque no ícone de fones na leitura e a Bíblia é lida em voz alta com a voz do celular, destacando cada versículo enquanto o texto acompanha. Dá para mudar a velocidade e a voz, usar o timer para dormir, seguir para o próximo capítulo sozinho, ouvir em sequência a leitura de hoje do plano e continuar ouvindo com a tela bloqueada. No plano grátis, você libera um capítulo por dia assistindo a um vídeo curto; com o Pro, ouve quantos quiser."
     ]
   },
   "2.11.0": {

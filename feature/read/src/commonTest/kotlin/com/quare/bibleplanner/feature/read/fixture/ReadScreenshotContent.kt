@@ -51,7 +51,9 @@ internal fun ReadScreenshotContent(
                             locale = locale,
                             areVersesHighlighted = areVersesHighlighted,
                         ),
+                        listening = hiddenListeningUiState(),
                         onEvent = {},
+                        onListeningEvent = {},
                         dayCompletionBanner = NoDayCompletionBanner,
                     )
                 }

@@ -75,6 +75,7 @@ internal class StudyUnlockViewModelTest {
             assertEquals(1, rewardedAdService.preloadCount)
             assertEquals(
                 expected = StudyUnlockUiState(
+                    surface = StudyUnlockSurface.CHAPTER_STUDY,
                     rewardedRemainingToday = 2,
                     videoState = StudyUnlockVideoState.LOADING,
                 ),

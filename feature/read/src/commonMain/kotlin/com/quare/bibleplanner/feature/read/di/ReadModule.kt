@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.read.di
 
+import com.quare.bibleplanner.core.chapterlistening.domain.usecase.GetAdjacentListeningChapter
 import com.quare.bibleplanner.feature.read.data.repository.ReaderSettingsRepositoryImpl
 import com.quare.bibleplanner.feature.read.domain.repository.ReaderSettingsRepository
 import com.quare.bibleplanner.feature.read.domain.usecase.GetNextChapter
@@ -13,6 +14,7 @@ import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFontSize
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderNoteIcon
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderVerticalReading
+import com.quare.bibleplanner.feature.read.domain.usecase.impl.GetAdjacentListeningChapterUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.GetNextChapterUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.GetPreviousChapterUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.ObserveReaderSettingsUseCase
@@ -27,6 +29,12 @@ import com.quare.bibleplanner.feature.read.presentation.appearance.ReaderAppeara
 import com.quare.bibleplanner.feature.read.presentation.deletecolor.DeleteHighlightColorViewModel
 import com.quare.bibleplanner.feature.read.presentation.factory.ObserveReadData
 import com.quare.bibleplanner.feature.read.presentation.factory.ReadDataPresentationModelFactory
+import com.quare.bibleplanner.feature.read.presentation.listening.ChapterListeningGate
+import com.quare.bibleplanner.feature.read.presentation.listening.ListeningFollowRequests
+import com.quare.bibleplanner.feature.read.presentation.listening.ListeningPlaybackActions
+import com.quare.bibleplanner.feature.read.presentation.listening.ReadListeningViewModel
+import com.quare.bibleplanner.feature.read.presentation.listening.mapper.ListeningPlayerUiModelMapper
+import com.quare.bibleplanner.feature.read.presentation.listening.player.ChapterListeningPlayerViewModel
 import com.quare.bibleplanner.feature.read.presentation.mapper.ChapterVersesUiModelMapper
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -51,7 +59,14 @@ val featureReadModule = module {
     factoryOf(::ReadStudyUseCases)
     factoryOf(::ChapterVersesUiModelMapper)
     factoryOf(::ReadDataPresentationModelFactory).bind<ObserveReadData>()
+    factoryOf(::GetAdjacentListeningChapterUseCase).bind<GetAdjacentListeningChapter>()
+    singleOf(::ListeningFollowRequests)
+    factoryOf(::ChapterListeningGate)
+    factoryOf(::ListeningPlaybackActions)
+    factoryOf(::ListeningPlayerUiModelMapper)
     viewModelOf(::ReadViewModel)
+    viewModelOf(::ReadListeningViewModel)
+    viewModelOf(::ChapterListeningPlayerViewModel)
     viewModelOf(::ReaderAppearanceViewModel)
     viewModelOf(::DeleteHighlightColorViewModel)
 }
