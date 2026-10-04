@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -124,6 +125,19 @@ internal class ReadUiTest {
         onNodeWithText(getString(genesisName).uppercase()).assertIsDisplayed()
         onNodeWithText(firstVerse.text).assertIsDisplayed()
     }
+
+    @Test
+    fun `GIVEN a loaded chapter WHEN rendered THEN the chapters carry the tag the benchmarks find`() =
+        runComposeUiTest {
+            // Given
+            prepareScenario(uiState = loadedUiState)
+
+            // When
+            waitForIdle()
+
+            // Then
+            onNodeWithTag("read_chapters").assertIsDisplayed()
+        }
 
     @Test
     fun `GIVEN a loaded chapter WHEN clicking a verse THEN emits OnVerseClick for it`() = runComposeUiTest {

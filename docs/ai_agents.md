@@ -16,6 +16,7 @@ This document describes the architecture conventions of this project. Follow the
 - [@docs/architecture/coroutine-error-handling.md](architecture/coroutine-error-handling.md)
 - [@docs/analytics/README.md](analytics/README.md)
 - [@docs/testing/README.md](testing/README.md)
+- [@docs/performance.md](performance.md)
 - [@docs/store-listing-screenshots.md](store-listing-screenshots.md)
 - [@docs/store-listing-metadata.md](store-listing-metadata.md)
 - [@docs/getting-started.md](getting-started.md)

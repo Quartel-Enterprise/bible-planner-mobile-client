@@ -14,6 +14,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +47,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
+private const val PLANS_LIST_TAG = "plans_list"
 private val splitBreakpoint = 600.dp
 private const val WEEK_SHIMMER_COUNT = 4
 
@@ -70,6 +72,7 @@ internal fun ReadingPlanScreen(
             onEvent = onEvent,
         )
         ResponsiveSplitColumn(
+            modifier = Modifier.testTag(PLANS_LIST_TAG),
             maxContentWidth = 1000.dp,
             lazyListState = lazyListState,
             contentPadding = mainPadding,

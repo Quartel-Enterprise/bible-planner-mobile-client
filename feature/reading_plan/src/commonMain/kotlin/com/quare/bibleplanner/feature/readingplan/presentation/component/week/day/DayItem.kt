@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.reading_plan.generated.resources.Res
 import bibleplanner.feature.reading_plan.generated.resources.day_read
@@ -35,6 +36,7 @@ import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
+private const val PLAN_DAY_TAG = "plan_day"
 private const val FLASH_START_ALPHA = 0.28f
 private const val FLASH_DURATION_MILLIS = 1400
 
@@ -92,6 +94,7 @@ internal fun SharedTransitionScope.DayItem(
 
     Row(
         modifier = modifier
+            .testTag(PLAN_DAY_TAG)
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .background(rowBackground)

@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.util.getBookName
 import com.quare.bibleplanner.core.model.plan.PassageModel
@@ -19,6 +20,8 @@ import com.quare.bibleplanner.feature.day.domain.model.ChapterClickStrategy
 import com.quare.bibleplanner.feature.day.domain.model.UpdateReadStatusOfPassageStrategy
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.ui.component.ResponsiveContentScope
+
+private const val DAY_PASSAGES_TAG = "day_passages"
 
 internal fun ResponsiveContentScope.portraitPassageList(
     sharedTransitionScope: SharedTransitionScope,
@@ -37,6 +40,7 @@ internal fun ResponsiveContentScope.portraitPassageList(
     responsiveItem(key = "passage_list_card") {
         ElevatedCard(
             modifier = Modifier
+                .testTag(DAY_PASSAGES_TAG)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(16.dp),

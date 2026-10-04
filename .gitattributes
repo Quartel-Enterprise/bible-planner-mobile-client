@@ -1,0 +1,4 @@
+# Written by :tools:baseline-profile and committed so a build needs no device (docs/performance.md).
+# Marked generated so GitHub collapses them in a pull request's diff and leaves them out of the
+# language stats.
+androidApp/src/main/generated/baselineProfiles/** linguist-generated=true

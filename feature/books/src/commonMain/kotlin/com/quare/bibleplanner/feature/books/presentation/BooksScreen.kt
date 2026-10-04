@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.mohamedrejeb.calf.ui.progress.AdaptiveCircularProgressIndicator
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
 import com.quare.bibleplanner.feature.books.presentation.component.BooksItemsComponent
@@ -18,6 +19,8 @@ import com.quare.bibleplanner.feature.books.presentation.model.BookLayoutFormat
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiEvent
 import com.quare.bibleplanner.feature.books.presentation.model.BooksUiState
 import com.quare.bibleplanner.ui.utils.LocalMainPadding
+
+private const val BOOKS_CONTENT_TAG = "books_content"
 
 @Composable
 fun BooksScreen(
@@ -45,7 +48,12 @@ fun BooksScreen(
             )
         },
     ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .testTag(BOOKS_CONTENT_TAG)
+                .padding(padding)
+                .fillMaxSize(),
+        ) {
             when (state) {
                 is BooksUiState.Loading -> AdaptiveCircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),

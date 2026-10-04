@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.feature.read.presentation.DayCompletionBannerSlot
@@ -48,6 +49,7 @@ import com.quare.bibleplanner.feature.read.presentation.screen.content.chapterSh
 import com.quare.bibleplanner.ui.utils.ReserveBottomOverlayHeightEffect
 import com.quare.bibleplanner.ui.utils.asStable
 
+internal const val READ_CHAPTERS_TAG = "read_chapters"
 private const val TITLE_VISIBLE_ITEM_INDEX = 1
 private const val LINE_HEIGHT_RATIO = 1.75f
 private val contentPadding = 20.dp
@@ -167,7 +169,10 @@ internal fun ReadNarrowScreen(
                             contentPadding
                         }
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
+                            modifier = Modifier
+                                .testTag(READ_CHAPTERS_TAG)
+                                .fillMaxSize()
+                                .padding(horizontal = horizontalPadding),
                             state = listState,
                             contentPadding = PaddingValues(bottom = 16.dp),
                         ) {
