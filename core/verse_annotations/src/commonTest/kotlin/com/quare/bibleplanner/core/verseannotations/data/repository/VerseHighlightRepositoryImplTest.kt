@@ -26,82 +26,84 @@ internal class VerseHighlightRepositoryImplTest {
     private lateinit var dao: FakeVerseHighlightDao
 
     @Test
-    fun `observes the colour of each highlighted verse of the chapter`() = runTest {
-        // Given
-        prepareScenario(
-            initialRows = listOf(
-                entity(
-                    verseNumber = 1,
-                    color = yellow.key,
+    fun `GIVEN stored highlight rows WHEN observing a chapter THEN emits the color of each highlighted verse`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialRows = listOf(
+                    entity(
+                        verseNumber = 1,
+                        color = yellow.key,
+                    ),
+                    entity(
+                        verseNumber = 2,
+                        color = "c:120:50",
+                    ),
+                    entity(
+                        verseNumber = 3,
+                        color = null,
+                    ),
+                    entity(
+                        verseNumber = 4,
+                        color = "not-a-colour",
+                    ),
+                    entity(
+                        verseNumber = 5,
+                        color = yellow.key,
+                        chapterNumber = 4,
+                    ),
                 ),
-                entity(
-                    verseNumber = 2,
-                    color = "c:120:50",
-                ),
-                entity(
-                    verseNumber = 3,
-                    color = null,
-                ),
-                entity(
-                    verseNumber = 4,
-                    color = "not-a-colour",
-                ),
-                entity(
-                    verseNumber = 5,
-                    color = yellow.key,
-                    chapterNumber = 4,
-                ),
-            ),
-        )
+            )
 
-        // When
-        val highlights = repository.observeChapterHighlights(testChapter).first()
+            // When
+            val highlights = repository.observeChapterHighlights(testChapter).first()
 
-        // Then
-        assertEquals(
-            expected = mapOf(
-                1 to yellow,
-                2 to HighlightColor.Custom(
-                    hue = 120,
-                    lightness = 50,
+            // Then
+            assertEquals(
+                expected = mapOf(
+                    1 to yellow,
+                    2 to HighlightColor.Custom(
+                        hue = 120,
+                        lightness = 50,
+                    ),
                 ),
-            ),
-            actual = highlights,
-        )
-    }
-
-    @Test
-    fun `reads the stored colour of each requested verse and null for the rest`() = runTest {
-        // Given
-        prepareScenario(
-            initialRows = listOf(
-                entity(
-                    verseNumber = 1,
-                    color = yellow.key,
-                ),
-                entity(
-                    verseNumber = 2,
-                    color = null,
-                ),
-            ),
-        )
-
-        // When
-        val colors = repository.getColors(listOf(verseRef(1), verseRef(2), verseRef(3)))
-
-        // Then
-        assertEquals(
-            expected = mapOf(
-                verseRef(1) to yellow,
-                verseRef(2) to null,
-                verseRef(3) to null,
-            ),
-            actual = colors,
-        )
-    }
+                actual = highlights,
+            )
+        }
 
     @Test
-    fun `writes the new colour as a pending change stamped with the current time`() = runTest {
+    fun `GIVEN stored highlight rows WHEN getting the colors THEN returns the stored ones and null for the rest`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialRows = listOf(
+                    entity(
+                        verseNumber = 1,
+                        color = yellow.key,
+                    ),
+                    entity(
+                        verseNumber = 2,
+                        color = null,
+                    ),
+                ),
+            )
+
+            // When
+            val colors = repository.getColors(listOf(verseRef(1), verseRef(2), verseRef(3)))
+
+            // Then
+            assertEquals(
+                expected = mapOf(
+                    verseRef(1) to yellow,
+                    verseRef(2) to null,
+                    verseRef(3) to null,
+                ),
+                actual = colors,
+            )
+        }
+
+    @Test
+    fun `GIVEN no highlights WHEN setting a color THEN writes it as a pending change stamped with now`() = runTest {
         // Given
         prepareScenario()
 
@@ -132,47 +134,48 @@ internal class VerseHighlightRepositoryImplTest {
     }
 
     @Test
-    fun `only rewrites the verses whose colour actually changes`() = runTest {
-        // Given
-        prepareScenario(
-            initialRows = listOf(
-                entity(
-                    verseNumber = 1,
-                    color = green.key,
+    fun `GIVEN verses with different colors WHEN setting a color THEN rewrites only the verses that change`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialRows = listOf(
+                    entity(
+                        verseNumber = 1,
+                        color = green.key,
+                    ),
+                    entity(
+                        verseNumber = 2,
+                        color = yellow.key,
+                    ),
                 ),
-                entity(
-                    verseNumber = 2,
-                    color = yellow.key,
-                ),
-            ),
-        )
+            )
 
-        // When
-        repository.setColor(
-            refs = listOf(verseRef(1), verseRef(2)),
-            color = green,
-        )
+            // When
+            repository.setColor(
+                refs = listOf(verseRef(1), verseRef(2)),
+                color = green,
+            )
 
-        // Then
-        assertEquals(
-            expected = setOf(
-                entity(
-                    verseNumber = 1,
-                    color = green.key,
+            // Then
+            assertEquals(
+                expected = setOf(
+                    entity(
+                        verseNumber = 1,
+                        color = green.key,
+                    ),
+                    entity(
+                        verseNumber = 2,
+                        color = green.key,
+                        updatedAt = NOW,
+                        isPendingSync = true,
+                    ),
                 ),
-                entity(
-                    verseNumber = 2,
-                    color = green.key,
-                    updatedAt = NOW,
-                    isPendingSync = true,
-                ),
-            ),
-            actual = dao.rows.value.toSet(),
-        )
-    }
+                actual = dao.rows.value.toSet(),
+            )
+        }
 
     @Test
-    fun `writes nothing when every verse already has the colour`() = runTest {
+    fun `GIVEN every verse already has the color WHEN setting it THEN writes nothing`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -197,39 +200,40 @@ internal class VerseHighlightRepositoryImplTest {
     }
 
     @Test
-    fun `removing a highlight leaves a pending tombstone without a colour`() = runTest {
-        // Given
-        prepareScenario(
-            initialRows = listOf(
-                entity(
-                    verseNumber = 1,
-                    color = green.key,
+    fun `GIVEN a highlighted verse WHEN removing its color THEN leaves a pending tombstone without a color`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialRows = listOf(
+                    entity(
+                        verseNumber = 1,
+                        color = green.key,
+                    ),
                 ),
-            ),
-        )
+            )
 
-        // When
-        repository.setColor(
-            refs = listOf(verseRef(1)),
-            color = null,
-        )
+            // When
+            repository.setColor(
+                refs = listOf(verseRef(1)),
+                color = null,
+            )
 
-        // Then
-        assertEquals(
-            expected = listOf(
-                entity(
-                    verseNumber = 1,
-                    color = null,
-                    updatedAt = NOW,
-                    isPendingSync = true,
+            // Then
+            assertEquals(
+                expected = listOf(
+                    entity(
+                        verseNumber = 1,
+                        color = null,
+                        updatedAt = NOW,
+                        isPendingSync = true,
+                    ),
                 ),
-            ),
-            actual = dao.rows.value,
-        )
-    }
+                actual = dao.rows.value,
+            )
+        }
 
     @Test
-    fun `clears a colour from every version that used it`() = runTest {
+    fun `GIVEN a color used in two versions WHEN removing all with it THEN clears it from every version`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -278,7 +282,7 @@ internal class VerseHighlightRepositoryImplTest {
     }
 
     @Test
-    fun `clearing a colour nobody used writes nothing`() = runTest {
+    fun `GIVEN a color nobody uses WHEN removing all with it THEN writes nothing`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -306,62 +310,63 @@ internal class VerseHighlightRepositoryImplTest {
     )
 
     @Test
-    fun `observes every coloured verse of the version with its timestamp`() = runTest {
-        // Given
-        prepareScenario(
-            initialRows = listOf(
-                entity(
-                    verseNumber = 1,
-                    color = yellow.key,
-                ),
-                entity(
-                    verseNumber = 2,
-                    color = green.key,
-                    chapterNumber = 9,
-                    updatedAt = NOW,
-                ),
-                entity(
-                    verseNumber = 3,
-                    color = null,
-                ),
-                entity(
-                    verseNumber = 4,
-                    color = "not-a-colour",
-                ),
-                entity(
-                    verseNumber = 5,
-                    color = yellow.key,
-                    bibleVersionId = "WEB",
-                ),
-            ),
-        )
-
-        // When
-        val highlights = repository.observeVersionHighlights(testChapter.bibleVersionId).first()
-
-        // Then
-        assertEquals(
-            expected = setOf(
-                VerseHighlight(
-                    ref = VerseRef(
-                        chapter = testChapter,
+    fun `GIVEN stored highlight rows WHEN observing a version THEN emits each colored verse with its timestamp`() =
+        runTest {
+            // Given
+            prepareScenario(
+                initialRows = listOf(
+                    entity(
                         verseNumber = 1,
+                        color = yellow.key,
                     ),
-                    color = yellow,
-                    updatedAtEpochMillis = OLD_TIMESTAMP,
-                ),
-                VerseHighlight(
-                    ref = VerseRef(
-                        chapter = testChapter.copy(chapterNumber = 9),
+                    entity(
                         verseNumber = 2,
+                        color = green.key,
+                        chapterNumber = 9,
+                        updatedAt = NOW,
                     ),
-                    color = green,
-                    updatedAtEpochMillis = NOW,
+                    entity(
+                        verseNumber = 3,
+                        color = null,
+                    ),
+                    entity(
+                        verseNumber = 4,
+                        color = "not-a-colour",
+                    ),
+                    entity(
+                        verseNumber = 5,
+                        color = yellow.key,
+                        bibleVersionId = "WEB",
+                    ),
                 ),
-            ),
-            actual = highlights.toSet(),
-        )
-    }
+            )
+
+            // When
+            val highlights = repository.observeVersionHighlights(testChapter.bibleVersionId).first()
+
+            // Then
+            assertEquals(
+                expected = setOf(
+                    VerseHighlight(
+                        ref = VerseRef(
+                            chapter = testChapter,
+                            verseNumber = 1,
+                        ),
+                        color = yellow,
+                        updatedAtEpochMillis = OLD_TIMESTAMP,
+                    ),
+                    VerseHighlight(
+                        ref = VerseRef(
+                            chapter = testChapter.copy(chapterNumber = 9),
+                            verseNumber = 2,
+                        ),
+                        color = green,
+                        updatedAtEpochMillis = NOW,
+                    ),
+                ),
+                actual = highlights.toSet(),
+            )
+        }
 
     private fun entity(
         verseNumber: Int,

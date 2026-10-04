@@ -69,7 +69,7 @@ internal class InAppUpdateDownloadViewModelTest {
         }
 
     @Test
-    fun `GIVEN a running download WHEN it fails THEN clears the progress, tracks it and warns the user`() =
+    fun `GIVEN a running download WHEN it fails THEN clears the progress tracks the failure and warns the user`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()

@@ -7,7 +7,7 @@ import kotlin.test.assertTrue
 
 class PhotoOrientationTest {
     @Test
-    fun `returns to the original photo after four quarter turns`() {
+    fun `GIVEN the original photo WHEN turning it four quarter turns THEN returns to the original photo`() {
         // Given
         val original = original()
 
@@ -24,9 +24,12 @@ class PhotoOrientationTest {
     }
 
     @Test
-    fun `reports being turned sideways only on quarter turns`() {
+    fun `GIVEN the original photo WHEN turning it twice THEN reports sideways only after the first quarter turn`() {
+        // Given
+        val original = original()
+
         // When
-        val quarter = original().rotateQuarterTurn()
+        val quarter = original.rotateQuarterTurn()
         val half = quarter.rotateQuarterTurn()
 
         // Then
@@ -35,31 +38,39 @@ class PhotoOrientationTest {
     }
 
     @Test
-    fun `undoes a mirroring when the same flip is applied twice`() {
+    fun `GIVEN a mirrored photo WHEN applying the same flip again THEN undoes the mirroring`() {
+        // Given
+        val flipped = original().flipHorizontally()
+
         // When
-        val flipped = original().flipHorizontally().flipHorizontally()
+        val unflipped = flipped.flipHorizontally()
 
         // Then
-        assertTrue(flipped.isOriginal)
+        assertTrue(unflipped.isOriginal)
     }
 
     @Test
-    fun `mirrors along the screen axis when the photo is turned sideways`() {
-        // Given — turned sideways, the photo axes are swapped on screen
+    fun `GIVEN a photo turned sideways WHEN flipping it horizontally THEN mirrors it along the screen axis`() {
+        // Given
+        // Turned sideways, the photo axes are swapped on screen
         val sideways = original().rotateQuarterTurn()
 
         // When
         val flipped = sideways.flipHorizontally()
 
-        // Then — flipping the photo vertically is what mirrors it horizontally on screen
+        // Then
+        // Flipping the photo vertically is what mirrors it horizontally on screen
         assertTrue(flipped.isFlippedVertically)
         assertFalse(flipped.isFlippedHorizontally)
     }
 
     @Test
-    fun `scales negatively on the mirrored axis only`() {
+    fun `GIVEN the original photo WHEN flipping it vertically THEN scales negatively on the mirrored axis only`() {
+        // Given
+        val original = original()
+
         // When
-        val flipped = original().flipVertically()
+        val flipped = original.flipVertically()
 
         // Then
         assertEquals(1f, flipped.horizontalScale)

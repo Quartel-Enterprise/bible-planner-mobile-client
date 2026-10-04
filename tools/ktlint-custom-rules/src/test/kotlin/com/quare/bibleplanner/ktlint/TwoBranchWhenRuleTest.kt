@@ -7,7 +7,8 @@ class TwoBranchWhenRuleTest {
     private val twoBranchWhenRuleAssertThat = assertThatRule { TwoBranchWhenRule() }
 
     @Test
-    fun `flags a subjectless when with one condition and an else`() {
+    fun `GIVEN a subjectless when with one condition and an else WHEN linting THEN reports the when`() {
+        // Given
         val code =
             """
             fun toHeaderRes(shouldShowDonate: Boolean): Int = when {
@@ -16,11 +17,16 @@ class TwoBranchWhenRuleTest {
             }
             """.trimIndent()
 
-        twoBranchWhenRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(1, 51, VIOLATION_MESSAGE)
+        // When
+        val linted = twoBranchWhenRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 51, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags a when with a subject, one branch and an else`() {
+    fun `GIVEN a when with a subject and one branch besides else WHEN linting THEN reports the when`() {
+        // Given
         val code =
             """
             fun toEvent(group: WeekGroup): Int = when (group) {
@@ -29,11 +35,16 @@ class TwoBranchWhenRuleTest {
             }
             """.trimIndent()
 
-        twoBranchWhenRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(1, 38, VIOLATION_MESSAGE)
+        // When
+        val linted = twoBranchWhenRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 38, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags a branch with several conditions next to an else`() {
+    fun `GIVEN a branch with several conditions next to an else WHEN linting THEN reports the when`() {
+        // Given
         val code =
             """
             fun toReason(code: Int): Int = when (code) {
@@ -42,11 +53,16 @@ class TwoBranchWhenRuleTest {
             }
             """.trimIndent()
 
-        twoBranchWhenRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(1, 32, VIOLATION_MESSAGE)
+        // When
+        val linted = twoBranchWhenRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 32, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `allows three or more branches`() {
+    fun `GIVEN a when with three or more branches WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun toLabel(code: Int): String = when (code) {
@@ -56,11 +72,16 @@ class TwoBranchWhenRuleTest {
             }
             """.trimIndent()
 
-        twoBranchWhenRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = twoBranchWhenRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an exhaustive two-case dispatch without else`() {
+    fun `GIVEN an exhaustive two-case dispatch without else WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun toLabel(state: ToggleState): String = when (state) {
@@ -69,7 +90,11 @@ class TwoBranchWhenRuleTest {
             }
             """.trimIndent()
 
-        twoBranchWhenRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = twoBranchWhenRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     private companion object {

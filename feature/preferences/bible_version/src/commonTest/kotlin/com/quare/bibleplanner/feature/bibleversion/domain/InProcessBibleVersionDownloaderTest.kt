@@ -41,7 +41,7 @@ internal class InProcessBibleVersionDownloaderTest {
     private lateinit var finished: CompletableDeferred<String>
 
     @Test
-    fun `marks the version in progress and notifies its completion by name`() = runTest {
+    fun `GIVEN a version WHEN downloading THEN marks it in progress and notifies its completion by name`() = runTest {
         // Given
         prepareScenario()
 
@@ -65,7 +65,7 @@ internal class InProcessBibleVersionDownloaderTest {
     }
 
     @Test
-    fun `notifies an error and pauses the version when the download fails`() = runTest {
+    fun `GIVEN an unknown version WHEN downloading it THEN notifies an error and pauses the version`() = runTest {
         // Given
         prepareScenario()
 
@@ -88,7 +88,7 @@ internal class InProcessBibleVersionDownloaderTest {
     }
 
     @Test
-    fun `tracks a running download until it is cancelled`() = runTest {
+    fun `GIVEN a running download WHEN cancelling it THEN no longer tracks it as active`() = runTest {
         // Given
         prepareScenario(bibleRepository = NeverLoadingBibleRepository())
         downloader.startDownload(VERSION_ID)
@@ -105,7 +105,7 @@ internal class InProcessBibleVersionDownloaderTest {
     }
 
     @Test
-    fun `cancels every running download at once`() = runTest {
+    fun `GIVEN two running downloads WHEN cancelling all THEN no download stays active`() = runTest {
         // Given
         prepareScenario(bibleRepository = NeverLoadingBibleRepository())
         downloader.startDownload(VERSION_ID)
@@ -119,7 +119,7 @@ internal class InProcessBibleVersionDownloaderTest {
     }
 
     @Test
-    fun `resuming with nothing pending completes right away`() = runTest {
+    fun `GIVEN nothing pending WHEN resuming THEN completes right away`() = runTest {
         // Given
         prepareScenario(versionStatus = DownloadStatus.DONE)
         val resumed = CompletableDeferred<Boolean>()
@@ -133,7 +133,7 @@ internal class InProcessBibleVersionDownloaderTest {
     }
 
     @Test
-    fun `resuming restarts the downloads left in progress and completes once they finish`() = runTest {
+    fun `GIVEN a download left in progress WHEN resuming THEN restarts it and completes once it finishes`() = runTest {
         // Given
         prepareScenario(versionStatus = DownloadStatus.IN_PROGRESS)
         val resumed = CompletableDeferred<Boolean>()

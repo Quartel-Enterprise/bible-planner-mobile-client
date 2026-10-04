@@ -37,7 +37,7 @@ internal class VerseNoteUseCasesTest {
     }
 
     @Test
-    fun `gets a stored note by its id`() = runTest {
+    fun `GIVEN a stored note WHEN getting it by its id THEN returns it`() = runTest {
         // When
         val found = getVerseNote("note-1")
 
@@ -49,7 +49,7 @@ internal class VerseNoteUseCasesTest {
     }
 
     @Test
-    fun `a deleted note can no longer be found`() = runTest {
+    fun `GIVEN a stored note WHEN deleting it THEN it can no longer be found`() = runTest {
         // When
         deleteVerseNote("note-1")
 

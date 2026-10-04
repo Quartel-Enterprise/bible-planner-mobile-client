@@ -13,8 +13,13 @@ internal class ChatMessageMapperTest {
 
     @Test
     fun `GIVEN an assistant row WHEN mapping THEN role and time survive`() {
-        val model = mapper.map(dto(role = "assistant"))
+        // Given
+        val row = dto(role = "assistant")
 
+        // When
+        val model = mapper.map(row)
+
+        // Then
         assertEquals(ChatRoleModel.ASSISTANT, model.role)
         assertEquals(Instant.parse("2026-08-14T12:00:00Z"), model.createdAt)
         assertFalse(model.isStreaming)
@@ -22,21 +27,30 @@ internal class ChatMessageMapperTest {
     }
 
     @Test
-    fun `GIVEN a user row WHEN mapping THEN the role is the reader's`() {
-        assertEquals(ChatRoleModel.USER, mapper.map(dto(role = "user")).role)
+    fun `GIVEN a user row WHEN mapping THEN the role is the one of the reader`() {
+        // Given
+        val row = dto(role = "user")
+
+        // When
+        val model = mapper.map(row)
+
+        // Then
+        assertEquals(ChatRoleModel.USER, model.role)
     }
 
     @Test
     fun `GIVEN a failed answer WHEN mapping THEN the failure is kept`() {
-        assertTrue(
-            mapper
-                .map(
-                    dto(
-                        role = "assistant",
-                        status = "failed",
-                    ),
-                ).isFailed,
+        // Given
+        val row = dto(
+            role = "assistant",
+            status = "failed",
         )
+
+        // When
+        val model = mapper.map(row)
+
+        // Then
+        assertTrue(model.isFailed)
     }
 
     private fun dto(

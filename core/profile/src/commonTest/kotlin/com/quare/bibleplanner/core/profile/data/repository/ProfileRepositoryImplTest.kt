@@ -27,7 +27,7 @@ class ProfileRepositoryImplTest {
     private lateinit var dao: FakeProfileDao
 
     @Test
-    fun `returns no profile while nobody is signed in`() = runTest {
+    fun `GIVEN nobody signed in WHEN observing the profile THEN returns no profile`() = runTest {
         // Given
         prepareScenario(currentUser = null)
 
@@ -39,7 +39,7 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
-    fun `combines the signed in user with the local profile row`() = runTest {
+    fun `GIVEN a signed in user with a local profile row WHEN observing the profile THEN combines them`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(
@@ -65,7 +65,7 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
-    fun `stores a new display name as a pending change`() = runTest {
+    fun `GIVEN no local profile WHEN setting the display name THEN stores it as a pending change`() = runTest {
         // Given
         prepareScenario()
 
@@ -86,7 +86,7 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
-    fun `renames an existing profile without touching its photo`() = runTest {
+    fun `GIVEN an existing profile with a photo WHEN setting the display name THEN keeps its photo`() = runTest {
         // Given
         prepareScenario(initialRows = listOf(entity(avatarUrl = CUSTOM_PHOTO)))
 
@@ -108,7 +108,7 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
-    fun `keeps a picked photo as pending bytes until it is uploaded`() = runTest {
+    fun `GIVEN a picked photo WHEN setting it THEN keeps it as pending bytes until it is uploaded`() = runTest {
         // Given
         prepareScenario()
         val bytes = byteArrayOf(1, 2, 3)
@@ -130,7 +130,7 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
-    fun `marks a removed photo with the removed avatar url`() = runTest {
+    fun `GIVEN a custom photo WHEN removing it THEN marks it with the removed avatar url`() = runTest {
         // Given
         prepareScenario(initialRows = listOf(entity(avatarUrl = CUSTOM_PHOTO)))
 
@@ -151,7 +151,7 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
-    fun `going back to the provider photo clears the custom avatar`() = runTest {
+    fun `GIVEN a custom photo WHEN using the provider photo THEN clears the custom avatar`() = runTest {
         // Given
         prepareScenario(initialRows = listOf(entity(avatarUrl = CUSTOM_PHOTO)))
 
@@ -172,7 +172,7 @@ class ProfileRepositoryImplTest {
     }
 
     @Test
-    fun `ignores profile edits while nobody is signed in`() = runTest {
+    fun `GIVEN nobody signed in WHEN editing the profile THEN ignores the edits`() = runTest {
         // Given
         prepareScenario(currentUser = null)
 

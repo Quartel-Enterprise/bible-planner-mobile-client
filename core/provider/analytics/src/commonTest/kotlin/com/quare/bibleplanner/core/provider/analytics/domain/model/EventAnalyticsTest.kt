@@ -6,8 +6,11 @@ import kotlin.test.assertEquals
 class EventAnalyticsTest {
     @Test
     fun `GIVEN a single event name WHEN declaring a manual decision THEN it covers exactly that event`() {
+        // Given
+        val eventName = AnalyticsEventNames.SYNC_COMPLETED
+
         // When
-        val decision = EventAnalytics.Track.Manual(AnalyticsEventNames.SYNC_COMPLETED)
+        val decision = EventAnalytics.Track.Manual(eventName)
 
         // Then
         assertEquals(
@@ -18,10 +21,14 @@ class EventAnalyticsTest {
 
     @Test
     fun `GIVEN an automatic decision WHEN reading it THEN keeps its name and params`() {
+        // Given
+        val eventName = AnalyticsEventNames.SYNC_FAILED
+        val params = mapOf(AnalyticsParams.SOURCE to "startup")
+
         // When
         val decision = EventAnalytics.Track.Automatic(
-            name = AnalyticsEventNames.SYNC_FAILED,
-            params = mapOf(AnalyticsParams.SOURCE to "startup"),
+            name = eventName,
+            params = params,
         )
 
         // Then

@@ -69,24 +69,25 @@ internal class BibleVersionViewModelTest {
     }
 
     @Test
-    fun `shows the versions grouped by language`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN two versions of the same language WHEN reading the state THEN shows the versions grouped by language`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        val state = states.last()
+            // When
+            val state = states.last()
 
-        // Then
-        assertEquals(
-            expected = BibleVersionsUiState.Success(
-                mapOf(Language.PORTUGUESE_BRAZIL to listOf(selectedVersion, otherVersion)),
-            ),
-            actual = state,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = BibleVersionsUiState.Success(
+                    mapOf(Language.PORTUGUESE_BRAZIL to listOf(selectedVersion, otherVersion)),
+                ),
+                actual = state,
+            )
+        }
 
     @Test
-    fun `downloading starts the download tracks it and asks for the notification permission`() =
+    fun `GIVEN a version WHEN downloading THEN starts the download tracks it and asks for notification permission`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -114,22 +115,23 @@ internal class BibleVersionViewModelTest {
         }
 
     @Test
-    fun `downloading shows the keep the app open tip when the downloader asks for it`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(shouldShowDownloadTip = true)
+    fun `GIVEN a downloader asking for the tip WHEN downloading THEN shows the keep the app open tip`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(shouldShowDownloadTip = true)
 
-        // When
-        viewModel.onEvent(BibleVersionUiEvent.OnDownload(OTHER_ID))
+            // When
+            viewModel.onEvent(BibleVersionUiEvent.OnDownload(OTHER_ID))
 
-        // Then
-        assertEquals(
-            expected = listOf<BibleVersionUiAction>(BibleVersionUiAction.ShowDownloadTip),
-            actual = actions,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf<BibleVersionUiAction>(BibleVersionUiAction.ShowDownloadTip),
+                actual = actions,
+            )
+        }
 
     @Test
-    fun `pausing pauses the download`() = runTest(testDispatcher) {
+    fun `GIVEN the version list WHEN pausing THEN pauses the download`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -144,53 +146,55 @@ internal class BibleVersionViewModelTest {
     }
 
     @Test
-    fun `resuming downloads again as a resume and asks for the notification permission`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN a version WHEN resuming THEN downloads again as a resume and asks for the notification permission`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(BibleVersionUiEvent.OnResume(OTHER_ID))
+            // When
+            viewModel.onEvent(BibleVersionUiEvent.OnResume(OTHER_ID))
 
-        // Then
-        assertEquals(
-            expected = listOf("download $OTHER_ID"),
-            actual = downloaderFacade.calls,
-        )
-        assertEquals(
-            expected = true,
-            actual = trackedEvents.first().second[AnalyticsParams.IS_RESUME],
-        )
-        assertEquals(
-            expected = 1,
-            actual = permissionRequester.requestCount,
-        )
-    }
-
-    @Test
-    fun `updating resets the version and downloads it again`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-
-        // When
-        viewModel.onEvent(BibleVersionUiEvent.OnUpdate(OTHER_ID))
-
-        // Then
-        assertEquals(
-            expected = DownloadStatus.NOT_STARTED,
-            actual = bibleVersionDao.versions[OTHER_ID]?.status,
-        )
-        assertEquals(
-            expected = listOf("download $OTHER_ID"),
-            actual = downloaderFacade.calls,
-        )
-        assertEquals(
-            expected = 1,
-            actual = permissionRequester.requestCount,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf("download $OTHER_ID"),
+                actual = downloaderFacade.calls,
+            )
+            assertEquals(
+                expected = true,
+                actual = trackedEvents.first().second[AnalyticsParams.IS_RESUME],
+            )
+            assertEquals(
+                expected = 1,
+                actual = permissionRequester.requestCount,
+            )
+        }
 
     @Test
-    fun `deleting opens the delete version confirmation`() = runTest(testDispatcher) {
+    fun `GIVEN a downloaded version WHEN updating THEN resets the version and downloads it again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BibleVersionUiEvent.OnUpdate(OTHER_ID))
+
+            // Then
+            assertEquals(
+                expected = DownloadStatus.NOT_STARTED,
+                actual = bibleVersionDao.versions[OTHER_ID]?.status,
+            )
+            assertEquals(
+                expected = listOf("download $OTHER_ID"),
+                actual = downloaderFacade.calls,
+            )
+            assertEquals(
+                expected = 1,
+                actual = permissionRequester.requestCount,
+            )
+        }
+
+    @Test
+    fun `GIVEN the version list WHEN deleting THEN opens the delete version confirmation`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -205,30 +209,31 @@ internal class BibleVersionViewModelTest {
     }
 
     @Test
-    fun `selecting another version selects it and tracks the selection`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
+    fun `GIVEN another version not selected WHEN selecting it THEN selects it and tracks the selection`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
 
-        // When
-        viewModel.onEvent(BibleVersionUiEvent.OnSelect(OTHER_ID))
+            // When
+            viewModel.onEvent(BibleVersionUiEvent.OnSelect(OTHER_ID))
 
-        // Then
-        assertEquals(
-            expected = listOf(OTHER_ID),
-            actual = bibleRepository.selectedVersionIds,
-        )
-        assertEquals(
-            expected = listOf(
-                AnalyticsEventNames.BIBLE_VERSION_SELECTED to mapOf<String, Any>(
-                    AnalyticsParams.VERSION_ID to OTHER_ID,
+            // Then
+            assertEquals(
+                expected = listOf(OTHER_ID),
+                actual = bibleRepository.selectedVersionIds,
+            )
+            assertEquals(
+                expected = listOf(
+                    AnalyticsEventNames.BIBLE_VERSION_SELECTED to mapOf<String, Any>(
+                        AnalyticsParams.VERSION_ID to OTHER_ID,
+                    ),
                 ),
-            ),
-            actual = trackedEvents,
-        )
-    }
+                actual = trackedEvents,
+            )
+        }
 
     @Test
-    fun `selecting the version already selected does not track it again`() = runTest(testDispatcher) {
+    fun `GIVEN a selected version WHEN selecting it again THEN does not track it again`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -244,7 +249,7 @@ internal class BibleVersionViewModelTest {
     }
 
     @Test
-    fun `dismissing goes back`() = runTest(testDispatcher) {
+    fun `GIVEN the version list WHEN dismissing THEN goes back`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -259,7 +264,7 @@ internal class BibleVersionViewModelTest {
     }
 
     @Test
-    fun `retrying loads the bible versions again`() = runTest(testDispatcher) {
+    fun `GIVEN the version list WHEN retrying THEN loads the bible versions again`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 

@@ -23,15 +23,20 @@ internal class VerseSelectionRepositoryImplTest {
     }
 
     @Test
-    fun `starts with nothing selected`() {
+    fun `GIVEN a new repository WHEN reading the selection THEN nothing is selected`() {
+        // When
+        val selection = repository.selection.value
+
         // Then
-        assertNull(repository.selection.value)
+        assertNull(selection)
     }
 
     @Test
-    fun `keeps the selection sorted whatever order the verses are tapped in`() {
-        // When
+    fun `GIVEN a later verse selected WHEN tapping an earlier verse THEN keeps the selection sorted`() {
+        // Given
         toggle(3)
+
+        // When
         toggle(1)
 
         // Then
@@ -42,7 +47,7 @@ internal class VerseSelectionRepositoryImplTest {
     }
 
     @Test
-    fun `drops a verse that is tapped again`() {
+    fun `GIVEN two selected verses WHEN tapping one again THEN drops it`() {
         // Given
         toggle(1)
         toggle(2)
@@ -58,7 +63,7 @@ internal class VerseSelectionRepositoryImplTest {
     }
 
     @Test
-    fun `clears itself once the last verse is deselected`() {
+    fun `GIVEN a single selected verse WHEN deselecting it THEN clears the selection`() {
         // Given
         toggle(1)
 
@@ -71,7 +76,7 @@ internal class VerseSelectionRepositoryImplTest {
     }
 
     @Test
-    fun `starts over when a verse of another chapter is tapped`() {
+    fun `GIVEN selected verses WHEN tapping a verse of another chapter THEN starts over`() {
         // Given
         toggle(1)
         toggle(2)
@@ -96,7 +101,7 @@ internal class VerseSelectionRepositoryImplTest {
     }
 
     @Test
-    fun `starts over when the same verse is tapped in another version`() {
+    fun `GIVEN selected verses WHEN tapping the same verse in another version THEN starts over`() {
         // Given
         toggle(1)
         toggle(2)
@@ -121,7 +126,7 @@ internal class VerseSelectionRepositoryImplTest {
     }
 
     @Test
-    fun `clear empties the selection`() {
+    fun `GIVEN a selected verse WHEN clearing THEN empties the selection`() {
         // Given
         toggle(1)
 

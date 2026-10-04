@@ -23,8 +23,11 @@ internal class BookSynopsisResourceMapperTest {
 
     @Test
     fun `GIVEN genesis WHEN mapping to a synopsis THEN returns the genesis synopsis`() {
+        // Given
+        val book = BookId.GEN
+
         // When
-        val synopsis = BookId.GEN.toSynopsisResource()
+        val synopsis = book.toSynopsisResource()
 
         // Then
         assertEquals(Res.string.bible_book_genesis_synopsis, synopsis)
@@ -32,8 +35,11 @@ internal class BookSynopsisResourceMapperTest {
 
     @Test
     fun `GIVEN a numbered book WHEN mapping to a synopsis THEN returns the synopsis of that numbered book`() {
+        // Given
+        val book = BookId.FIRST_CH
+
         // When
-        val synopsis = BookId.FIRST_CH.toSynopsisResource()
+        val synopsis = book.toSynopsisResource()
 
         // Then
         assertEquals(Res.string.bible_book_1_chronicles_synopsis, synopsis)
@@ -41,8 +47,11 @@ internal class BookSynopsisResourceMapperTest {
 
     @Test
     fun `GIVEN revelation WHEN mapping to a synopsis THEN returns the revelation synopsis`() {
+        // Given
+        val book = BookId.REV
+
         // When
-        val synopsis = BookId.REV.toSynopsisResource()
+        val synopsis = book.toSynopsisResource()
 
         // Then
         assertEquals(Res.string.bible_book_revelation_synopsis, synopsis)

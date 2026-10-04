@@ -14,8 +14,11 @@ internal class RouteConversionsTest {
 
     @Test
     fun `GIVEN a day route WHEN opening its study THEN keeps the same day and back`() {
+        // Given
+        val route = dayRoute
+
         // When
-        val studyRoute = dayRoute.toDayStudyNavRoute()
+        val studyRoute = route.toDayStudyNavRoute()
 
         // Then
         assertEquals(
@@ -116,10 +119,15 @@ internal class RouteConversionsTest {
 
     @Test
     fun `GIVEN the entry sources and reasons WHEN reading their analytics keys THEN uses the lowercase names`() {
+        // Given
+        val paywallEntrySources = PaywallEntrySource.entries
+        val chatEntrySources = ChatEntrySource.entries
+        val paywallTeaserReasons = PaywallTeaserReason.entries
+
         // When
-        val keys = PaywallEntrySource.entries.map { it.key } +
-            ChatEntrySource.entries.map { it.key } +
-            PaywallTeaserReason.entries.map { it.key }
+        val keys = paywallEntrySources.map { it.key } +
+            chatEntrySources.map { it.key } +
+            paywallTeaserReasons.map { it.key }
 
         // Then
         assertEquals(

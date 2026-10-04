@@ -1,5 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.domain.usecase.impl
 
+import com.quare.bibleplanner.core.model.plan.DayModel
 import com.quare.bibleplanner.feature.readingplan.domain.model.PlanMotivationMessage.DaySituation
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -13,31 +14,50 @@ internal class ResolveDaySituationMotivationUseCaseTest {
     private val today = LocalDate(2026, 5, 24)
 
     @Test
-    fun `today fully read returns Completed`() {
+    fun `GIVEN today fully read WHEN resolving THEN returns Completed`() {
+        // Given
         val days = listOf(
             day(isToday = true, isRead = true, readVerses = 10, totalVerses = 10),
         )
-        assertEquals(DaySituation.Completed, useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertEquals(DaySituation.Completed, situation)
     }
 
     @Test
-    fun `today partially read returns Started`() {
+    fun `GIVEN today partially read WHEN resolving THEN returns Started`() {
+        // Given
         val days = listOf(
             day(isToday = true, isRead = false, readVerses = 3, totalVerses = 10),
         )
-        assertEquals(DaySituation.Started, useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertEquals(DaySituation.Started, situation)
     }
 
     @Test
-    fun `today not started with no overdue returns NotStarted`() {
+    fun `GIVEN today not started and no overdue day WHEN resolving THEN returns NotStarted`() {
+        // Given
         val days = listOf(
             day(isToday = true, isRead = false, readVerses = 0, totalVerses = 10),
         )
-        assertEquals(DaySituation.NotStarted, useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertEquals(DaySituation.NotStarted, situation)
     }
 
     @Test
-    fun `one overdue returns OneOverdue`() {
+    fun `GIVEN one overdue day WHEN resolving THEN returns OneOverdue`() {
+        // Given
         val days = listOf(
             day(
                 number = 1,
@@ -47,55 +67,97 @@ internal class ResolveDaySituationMotivationUseCaseTest {
                 plannedReadDate = today.minus(1, DateTimeUnit.DAY),
             ),
         )
-        assertEquals(DaySituation.OneOverdue, useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertEquals(DaySituation.OneOverdue, situation)
     }
 
     @Test
-    fun `multiple overdue returns MultipleOverdue`() {
+    fun `GIVEN multiple overdue days WHEN resolving THEN returns MultipleOverdue`() {
+        // Given
         val days = listOf(
             day(number = 1, isRead = false, plannedReadDate = today.minus(2, DateTimeUnit.DAY)),
             day(number = 2, isRead = false, plannedReadDate = today.minus(1, DateTimeUnit.DAY)),
         )
-        assertEquals(DaySituation.MultipleOverdue, useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertEquals(DaySituation.MultipleOverdue, situation)
     }
 
     @Test
-    fun `today completed beats overdue`() {
+    fun `GIVEN today completed and an overdue day WHEN resolving THEN returns Completed`() {
+        // Given
         val days = listOf(
             day(number = 1, isRead = false, plannedReadDate = today.minus(1, DateTimeUnit.DAY)),
             day(number = 2, isToday = true, isRead = true, readVerses = 10, totalVerses = 10),
         )
-        assertEquals(DaySituation.Completed, useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertEquals(DaySituation.Completed, situation)
     }
 
     @Test
-    fun `today started beats overdue`() {
+    fun `GIVEN today started and an overdue day WHEN resolving THEN returns Started`() {
+        // Given
         val days = listOf(
             day(number = 1, isRead = false, plannedReadDate = today.minus(1, DateTimeUnit.DAY)),
             day(number = 2, isToday = true, isRead = false, readVerses = 4, totalVerses = 10),
         )
-        assertEquals(DaySituation.Started, useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertEquals(DaySituation.Started, situation)
     }
 
     @Test
-    fun `overdue beats not-started`() {
+    fun `GIVEN an overdue day and today not started WHEN resolving THEN returns OneOverdue`() {
+        // Given
         val days = listOf(
             day(number = 1, isRead = false, plannedReadDate = today.minus(1, DateTimeUnit.DAY)),
             day(number = 2, isToday = true, isRead = false, readVerses = 0, totalVerses = 10),
         )
-        assertEquals(DaySituation.OneOverdue, useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertEquals(DaySituation.OneOverdue, situation)
     }
 
     @Test
-    fun `empty rest day today returns null`() {
+    fun `GIVEN an empty rest day today WHEN resolving THEN returns null`() {
+        // Given
         val days = listOf(
             day(isToday = true, isRead = false, readVerses = 0, totalVerses = 0),
         )
-        assertNull(useCase(days, today))
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertNull(situation)
     }
 
     @Test
-    fun `no today and no overdue returns null`() {
-        assertNull(useCase(emptyList(), today))
+    fun `GIVEN no today and no overdue day WHEN resolving THEN returns null`() {
+        // Given
+        val days = emptyList<DayModel>()
+
+        // When
+        val situation = useCase(days, today)
+
+        // Then
+        assertNull(situation)
     }
 }

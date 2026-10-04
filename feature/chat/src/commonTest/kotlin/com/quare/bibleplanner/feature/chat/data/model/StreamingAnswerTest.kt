@@ -12,6 +12,7 @@ internal class StreamingAnswerTest {
 
     @Test
     fun `GIVEN the answer is already cached WHEN merging THEN its id appears once`() {
+        // Given
         val cached = listOf(
             message(id = "question-1"),
             message(
@@ -20,17 +21,20 @@ internal class StreamingAnswerTest {
             ),
         )
 
+        // When
         val merged = cached.withStreamingAnswer(
             streaming = streamingAnswer(content = "Caim matou"),
             conversationId = CONVERSATION_ID,
         )
 
+        // Then
         assertEquals(listOf("question-1", ANSWER_ID), merged.map { it.id })
         assertEquals(1, merged.count { it.id == ANSWER_ID })
     }
 
     @Test
     fun `GIVEN the answer is already cached WHEN merging THEN the live text wins`() {
+        // Given
         val cached = listOf(
             message(
                 id = ANSWER_ID,
@@ -38,49 +42,59 @@ internal class StreamingAnswerTest {
             ),
         )
 
+        // When
         val merged = cached.withStreamingAnswer(
             streaming = streamingAnswer(content = "Caim matou"),
             conversationId = CONVERSATION_ID,
         )
 
+        // Then
         assertEquals("Caim matou", merged.single().content)
         assertTrue(merged.single().isStreaming)
     }
 
     @Test
     fun `GIVEN nothing is streaming WHEN merging THEN the thread is untouched`() {
+        // Given
         val cached = listOf(message(id = "question-1"))
 
-        assertEquals(
-            cached,
-            cached.withStreamingAnswer(
-                streaming = null,
-                conversationId = CONVERSATION_ID,
-            ),
+        // When
+        val merged = cached.withStreamingAnswer(
+            streaming = null,
+            conversationId = CONVERSATION_ID,
         )
+
+        // Then
+        assertEquals(cached, merged)
     }
 
     @Test
     fun `GIVEN the answer belongs to another conversation WHEN merging THEN it is left out`() {
+        // Given
         val cached = listOf(message(id = "question-1"))
 
+        // When
         val merged = cached.withStreamingAnswer(
             streaming = streamingAnswer(content = "Caim matou"),
             conversationId = "another-conversation",
         )
 
+        // Then
         assertEquals(cached, merged)
     }
 
     @Test
     fun `GIVEN the answer is not cached yet WHEN merging THEN it closes the thread`() {
+        // Given
         val cached = listOf(message(id = "question-1"))
 
+        // When
         val merged = cached.withStreamingAnswer(
             streaming = streamingAnswer(content = "Caim"),
             conversationId = CONVERSATION_ID,
         )
 
+        // Then
         assertEquals(listOf("question-1", ANSWER_ID), merged.map { it.id })
     }
 

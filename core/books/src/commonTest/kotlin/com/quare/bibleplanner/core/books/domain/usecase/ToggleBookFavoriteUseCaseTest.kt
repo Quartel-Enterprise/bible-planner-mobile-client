@@ -11,14 +11,18 @@ import kotlin.test.assertEquals
 
 internal class ToggleBookFavoriteUseCaseTest {
     @Test
-    fun `invoke forwards book id and favorite flag to repository`() = runTest {
-        val repository = RecordingBooksRepository()
-        val useCase = ToggleBookFavoriteUseCase(repository)
+    fun `GIVEN a book WHEN toggling its favorite flag THEN forwards the book id and the flag to the repository`() =
+        runTest {
+            // Given
+            val repository = RecordingBooksRepository()
+            val useCase = ToggleBookFavoriteUseCase(repository)
 
-        useCase(BookId.GEN, isFavorite = true)
+            // When
+            useCase(BookId.GEN, isFavorite = true)
 
-        assertEquals(BookId.GEN to true, repository.lastFavoriteUpdate)
-    }
+            // Then
+            assertEquals(BookId.GEN to true, repository.lastFavoriteUpdate)
+        }
 
     private class RecordingBooksRepository : BooksRepository {
         var lastFavoriteUpdate: Pair<BookId, Boolean>? = null

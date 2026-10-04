@@ -36,7 +36,7 @@ internal class VerseNoteRemoteStoreTest {
     private lateinit var realtime: FakeRealtime
 
     @Test
-    fun `upserts the rows on the verse notes table keyed by the note id`() = runTest {
+    fun `GIVEN a row WHEN upserting it THEN posts to the verse notes table keyed by the note id`() = runTest {
         // Given
         prepareScenario()
 
@@ -64,7 +64,7 @@ internal class VerseNoteRemoteStoreTest {
     }
 
     @Test
-    fun `fetches the rows of the user`() = runTest {
+    fun `GIVEN remote rows of the user WHEN fetching them THEN returns the rows of the user`() = runTest {
         // Given
         prepareScenario(responseBody = Json.encodeToString(listOf(dto)))
 
@@ -83,45 +83,47 @@ internal class VerseNoteRemoteStoreTest {
     }
 
     @Test
-    fun `emits inserted and updated rows and ignores deletions`() = runTest {
-        // Given
-        val updated = dto.copy(isDeleted = true)
-        prepareScenario(
-            actions = listOf(
-                insert(record = Json.encodeToJsonElement(dto).jsonObject),
-                delete(),
-                update(record = Json.encodeToJsonElement(updated).jsonObject),
-            ),
-        )
+    fun `GIVEN inserts deletes and updates WHEN observing the remote THEN emits inserted and updated rows only`() =
+        runTest {
+            // Given
+            val updated = dto.copy(isDeleted = true)
+            prepareScenario(
+                actions = listOf(
+                    insert(record = Json.encodeToJsonElement(dto).jsonObject),
+                    delete(),
+                    update(record = Json.encodeToJsonElement(updated).jsonObject),
+                ),
+            )
 
-        // When
-        val emitted = remoteStore.observeRemote(USER_ID).toList()
+            // When
+            val emitted = remoteStore.observeRemote(USER_ID).toList()
 
-        // Then
-        assertEquals(
-            expected = listOf(dto, updated),
-            actual = emitted,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf(dto, updated),
+                actual = emitted,
+            )
+        }
 
     @Test
-    fun `subscribes to a channel of the user and removes it once the stream ends`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN a finite stream WHEN observing the remote THEN subscribes to a user channel then removes it`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        remoteStore.observeRemote(USER_ID).toList()
+            // When
+            remoteStore.observeRemote(USER_ID).toList()
 
-        // Then
-        assertEquals(
-            expected = listOf("verse_notes_$USER_ID"),
-            actual = realtime.subscribedChannelIds,
-        )
-        assertEquals(
-            expected = listOf("verse_notes_$USER_ID"),
-            actual = realtime.removedChannelIds,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf("verse_notes_$USER_ID"),
+                actual = realtime.subscribedChannelIds,
+            )
+            assertEquals(
+                expected = listOf("verse_notes_$USER_ID"),
+                actual = realtime.removedChannelIds,
+            )
+        }
 
     private fun insert(record: JsonObject): PostgresAction = PostgresAction.Insert(
         record = record,

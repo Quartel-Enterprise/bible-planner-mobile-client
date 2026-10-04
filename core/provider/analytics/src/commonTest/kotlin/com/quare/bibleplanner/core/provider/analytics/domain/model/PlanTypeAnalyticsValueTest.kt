@@ -7,8 +7,11 @@ import kotlin.test.assertEquals
 class PlanTypeAnalyticsValueTest {
     @Test
     fun `GIVEN every plan type WHEN converting to an analytics value THEN uses its lowercase name`() {
+        // Given
+        val planTypes = ReadingPlanType.entries
+
         // When
-        val values = ReadingPlanType.entries.map { it.toAnalyticsValue() }
+        val values = planTypes.map { it.toAnalyticsValue() }
 
         // Then
         assertEquals(

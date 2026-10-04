@@ -7,7 +7,8 @@ class SuspendRunCatchingRuleTest {
     private val suspendRunCatchingRuleAssertThat = assertThatRule { SuspendRunCatchingRule() }
 
     @Test
-    fun `flags rethrowing cancellation before catching Exception`() {
+    fun `GIVEN a cancellation rethrown before catching Exception WHEN linting THEN reports the try`() {
+        // Given
         val code =
             """
             suspend fun load() {
@@ -21,11 +22,16 @@ class SuspendRunCatchingRuleTest {
             }
             """.trimIndent()
 
-        suspendRunCatchingRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(2, 5, VIOLATION_MESSAGE)
+        // When
+        val linted = suspendRunCatchingRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags rethrowing a qualified cancellation before catching Throwable`() {
+    fun `GIVEN a qualified cancellation rethrown before catching Throwable WHEN linting THEN reports the try`() {
+        // Given
         val code =
             """
             suspend fun load() {
@@ -39,11 +45,16 @@ class SuspendRunCatchingRuleTest {
             }
             """.trimIndent()
 
-        suspendRunCatchingRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(2, 5, VIOLATION_MESSAGE)
+        // When
+        val linted = suspendRunCatchingRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `allows handling cancellation on its own`() {
+    fun `GIVEN cancellation handled on its own WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             suspend fun download() {
@@ -57,11 +68,16 @@ class SuspendRunCatchingRuleTest {
             }
             """.trimIndent()
 
-        suspendRunCatchingRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = suspendRunCatchingRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows catching a specific exception`() {
+    fun `GIVEN a specific exception caught after the rethrow WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             suspend fun load() {
@@ -75,11 +91,16 @@ class SuspendRunCatchingRuleTest {
             }
             """.trimIndent()
 
-        suspendRunCatchingRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = suspendRunCatchingRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a try without a cancellation clause`() {
+    fun `GIVEN a try without a cancellation clause WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun parse(text: String): Int? = try {
@@ -89,7 +110,11 @@ class SuspendRunCatchingRuleTest {
             }
             """.trimIndent()
 
-        suspendRunCatchingRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = suspendRunCatchingRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     private companion object {

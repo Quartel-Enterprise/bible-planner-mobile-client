@@ -25,36 +25,37 @@ internal class ObserveChapterAnnotationsUseCaseTest {
     private lateinit var useCase: ObserveChapterAnnotationsUseCase
 
     @Test
-    fun `merges highlights saved verses and notes of the chapter`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN a chapter with annotations WHEN observing it THEN merges its highlights saved verses and notes`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        val annotations = useCase(
-            chapter = testChapter,
-        ).first()
+            // When
+            val annotations = useCase(
+                chapter = testChapter,
+            ).first()
 
-        // Then
-        assertEquals(
-            expected = mapOf(1 to yellow),
-            actual = annotations.highlightColorByVerse,
-        )
-        assertEquals(
-            expected = setOf(2),
-            actual = annotations.savedVerseNumbers,
-        )
-        assertEquals(
-            expected = mapOf(4 to "note-1", 5 to "note-1"),
-            actual = annotations.noteIdByVerse,
-        )
-        assertEquals(
-            expected = mapOf("note-1" to listOf(4, 5)),
-            actual = annotations.noteVerseNumbersById,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = mapOf(1 to yellow),
+                actual = annotations.highlightColorByVerse,
+            )
+            assertEquals(
+                expected = setOf(2),
+                actual = annotations.savedVerseNumbers,
+            )
+            assertEquals(
+                expected = mapOf(4 to "note-1", 5 to "note-1"),
+                actual = annotations.noteIdByVerse,
+            )
+            assertEquals(
+                expected = mapOf("note-1" to listOf(4, 5)),
+                actual = annotations.noteVerseNumbersById,
+            )
+        }
 
     @Test
-    fun `ignores annotations that belong to another chapter`() = runTest {
+    fun `GIVEN annotations in a chapter WHEN observing another chapter THEN ignores them`() = runTest {
         // Given
         prepareScenario()
 
@@ -77,27 +78,28 @@ internal class ObserveChapterAnnotationsUseCaseTest {
     }
 
     @Test
-    fun `leaves out what was marked in another version of the same chapter`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN annotations in a version WHEN observing the chapter in another version THEN leaves them out`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        val annotations = useCase(testChapter.copy(bibleVersionId = "WEB")).first()
+            // When
+            val annotations = useCase(testChapter.copy(bibleVersionId = "WEB")).first()
 
-        // Then
-        assertEquals(
-            expected = emptyMap(),
-            actual = annotations.highlightColorByVerse,
-        )
-        assertEquals(
-            expected = emptySet(),
-            actual = annotations.savedVerseNumbers,
-        )
-        assertEquals(
-            expected = emptyMap(),
-            actual = annotations.noteIdByVerse,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = emptyMap(),
+                actual = annotations.highlightColorByVerse,
+            )
+            assertEquals(
+                expected = emptySet(),
+                actual = annotations.savedVerseNumbers,
+            )
+            assertEquals(
+                expected = emptyMap(),
+                actual = annotations.noteIdByVerse,
+            )
+        }
 
     private fun verseRef(verseNumber: Int): VerseRef = VerseRef(
         chapter = testChapter,

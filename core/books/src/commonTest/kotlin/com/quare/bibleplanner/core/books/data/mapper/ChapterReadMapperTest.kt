@@ -10,7 +10,8 @@ internal class ChapterReadMapperTest {
     private val mapper = ChapterReadMapper()
 
     @Test
-    fun `toDto maps entity fields and serializes timestamp as ISO-8601 round-trippable to epoch`() {
+    fun `GIVEN a read chapter entity WHEN mapping it to a dto THEN keeps its fields and an epoch round-trip`() {
+        // Given
         val epochMillis = 1_749_715_200_123L
         val entity = ChapterEntity(
             id = 10,
@@ -21,8 +22,10 @@ internal class ChapterReadMapperTest {
             isReadPendingSync = true,
         )
 
+        // When
         val dto = mapper.toDto(userId = "user-1", entity = entity)
 
+        // Then
         assertEquals("user-1", dto.userId)
         assertEquals("GEN", dto.bookId)
         assertEquals(3, dto.chapterNumber)
@@ -31,9 +34,14 @@ internal class ChapterReadMapperTest {
     }
 
     @Test
-    fun `toEpochMillis parses PostgREST timestamptz with microseconds and zero offset`() {
-        val parsed = mapper.toEpochMillis("2026-06-12T08:00:00.123456+00:00")
+    fun `GIVEN a PostgREST timestamptz with microseconds WHEN parsing it THEN returns its epoch millis`() {
+        // Given
+        val timestamp = "2026-06-12T08:00:00.123456+00:00"
 
+        // When
+        val parsed = mapper.toEpochMillis(timestamp)
+
+        // Then
         val expected = Instant.parse("2026-06-12T08:00:00.123Z").toEpochMilliseconds()
         assertEquals(expected, parsed)
     }

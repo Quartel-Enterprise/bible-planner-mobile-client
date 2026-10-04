@@ -44,7 +44,7 @@ internal class DeleteNotesViewModelTest {
     }
 
     @Test
-    fun `GIVEN a day with notes WHEN confirming the deletion THEN clears that day's notes and closes`() =
+    fun `GIVEN a day with notes WHEN confirming the deletion THEN clears the notes of that day and closes`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()

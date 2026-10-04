@@ -52,38 +52,44 @@ internal class EditPlanStartDateViewModelTest {
     }
 
     @Test
-    fun `GIVEN a stored start date WHEN the dialog opens THEN preselects the stored date`() = runTest(testDispatcher) {
-        // Given
-        val startDate = LocalDate(
-            year = 2024,
-            month = 1,
-            day = 10,
-        )
+    fun `GIVEN a stored start date WHEN reading the opened dialog state THEN preselects the stored date`() =
+        runTest(testDispatcher) {
+            // Given
+            val startDate = LocalDate(
+                year = 2024,
+                month = 1,
+                day = 10,
+            )
+            prepareScenario(startDate = startDate)
 
-        // When
-        prepareScenario(startDate = startDate)
+            // When
+            val uiState = viewModel.uiState.value
 
-        // Then
-        assertEquals(
-            EditPlanStartDateUiState.Loaded(initialTimestamp = startDate.toTimestampUTC()),
-            viewModel.uiState.value,
-        )
-    }
-
-    @Test
-    fun `GIVEN no stored start date WHEN the dialog opens THEN preselects today`() = runTest(testDispatcher) {
-        // When
-        prepareScenario(startDate = null)
-
-        // Then
-        assertEquals(
-            EditPlanStartDateUiState.Loaded(initialTimestamp = today.toTimestampUTC()),
-            viewModel.uiState.value,
-        )
-    }
+            // Then
+            assertEquals(
+                EditPlanStartDateUiState.Loaded(initialTimestamp = startDate.toTimestampUTC()),
+                uiState,
+            )
+        }
 
     @Test
-    fun `GIVEN the dialog WHEN picking a date THEN saves its local midnight, closes and nudges login`() =
+    fun `GIVEN no stored start date WHEN reading the opened dialog state THEN preselects today`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(startDate = null)
+
+            // When
+            val uiState = viewModel.uiState.value
+
+            // Then
+            assertEquals(
+                EditPlanStartDateUiState.Loaded(initialTimestamp = today.toTimestampUTC()),
+                uiState,
+            )
+        }
+
+    @Test
+    fun `GIVEN the dialog WHEN picking a date THEN saves its local midnight before closing and nudging login`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(startDate = null)

@@ -89,7 +89,12 @@ internal class CommonKoinGraphTest {
             )
         }
 
-        // When / Then
-        desktopGraph.verify(extraTypes = hostProvidedTypes + navigationParameterTypes + inlineArgumentTypes)
+        // When
+        val verification = runCatching {
+            desktopGraph.verify(extraTypes = hostProvidedTypes + navigationParameterTypes + inlineArgumentTypes)
+        }
+
+        // Then
+        verification.getOrThrow()
     }
 }

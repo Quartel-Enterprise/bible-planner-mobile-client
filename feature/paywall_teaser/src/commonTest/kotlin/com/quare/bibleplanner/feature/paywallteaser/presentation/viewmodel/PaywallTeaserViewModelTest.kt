@@ -38,7 +38,7 @@ internal class PaywallTeaserViewModelTest {
     }
 
     @Test
-    fun `subscribing sends the reason to the real paywall`() = runTest(testDispatcher) {
+    fun `GIVEN a teaser WHEN subscribing THEN sends the reason to the real paywall`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -87,7 +87,7 @@ internal class PaywallTeaserViewModelTest {
         }
 
     @Test
-    fun `dismissing pops the sheet without touching the paywall`() = runTest(testDispatcher) {
+    fun `GIVEN a teaser WHEN dismissing THEN pops the sheet without touching the paywall`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 

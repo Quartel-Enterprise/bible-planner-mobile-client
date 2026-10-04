@@ -18,7 +18,7 @@ internal class BibleUpdatePromptPreferencesImplTest {
     }
 
     @Test
-    fun `has no dismissal before the prompt is ever dismissed`() = runTest {
+    fun `GIVEN a prompt never dismissed WHEN reading the last dismissal THEN returns null`() = runTest {
         // When
         val lastDismissedAt = preferences.getLastDismissedAt()
 
@@ -27,7 +27,7 @@ internal class BibleUpdatePromptPreferencesImplTest {
     }
 
     @Test
-    fun `remembers when the prompt was dismissed`() = runTest {
+    fun `GIVEN the dismiss use case WHEN dismissing the prompt THEN remembers when it was dismissed`() = runTest {
         // Given
         val dismissPrompt = DismissBibleUpdatePromptUseCase(
             bibleUpdatePromptPreferences = preferences,

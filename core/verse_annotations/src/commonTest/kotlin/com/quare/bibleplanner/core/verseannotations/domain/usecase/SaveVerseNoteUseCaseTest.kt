@@ -22,7 +22,7 @@ internal class SaveVerseNoteUseCaseTest {
     private lateinit var repository: FakeVerseNoteRepository
 
     @Test
-    fun `creates a note with the selected verses when there is none yet`() = runTest {
+    fun `GIVEN no note yet WHEN saving a text THEN creates a note with the selected verses`() = runTest {
         // Given
         prepareScenario()
 
@@ -52,7 +52,7 @@ internal class SaveVerseNoteUseCaseTest {
     }
 
     @Test
-    fun `keeps the original creation time when editing an existing note`() = runTest {
+    fun `GIVEN an existing note WHEN saving an edit THEN keeps the original creation time`() = runTest {
         // Given
         prepareScenario(existingNote = existingNote())
 
@@ -85,7 +85,7 @@ internal class SaveVerseNoteUseCaseTest {
     }
 
     @Test
-    fun `deletes the note when the text is cleared`() = runTest {
+    fun `GIVEN an existing note WHEN saving a blank text THEN deletes the note`() = runTest {
         // Given
         prepareScenario(existingNote = existingNote())
 
@@ -106,7 +106,7 @@ internal class SaveVerseNoteUseCaseTest {
     }
 
     @Test
-    fun `does nothing when an empty note is saved without an existing one`() = runTest {
+    fun `GIVEN no note yet WHEN saving an empty text THEN does nothing`() = runTest {
         // Given
         prepareScenario()
 

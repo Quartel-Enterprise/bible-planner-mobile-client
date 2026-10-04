@@ -8,7 +8,8 @@ class CommentsSayWhyRuleTest {
     private val commentsSayWhyRuleAssertThat = assertThatRule { CommentsSayWhyRule() }
 
     @Test
-    fun `flags an end-of-line comment that narrates the code`() {
+    fun `GIVEN an end-of-line comment that narrates the code WHEN linting THEN reports the comment`() {
+        // Given
         val code =
             """
             fun load() {
@@ -17,21 +18,31 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(2, 5, VIOLATION_MESSAGE)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags a trailing comment`() {
+    fun `GIVEN a trailing comment WHEN linting THEN reports the comment`() {
+        // Given
         val code =
             """
             val readTimestamp: Long? = null // epoch milliseconds
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(1, 33, VIOLATION_MESSAGE)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 33, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags a block comment that does not start with Why`() {
+    fun `GIVEN a block comment that does not start with Why WHEN linting THEN reports the comment`() {
+        // Given
         val code =
             """
             fun load() {
@@ -43,11 +54,16 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(2, 5, VIOLATION_MESSAGE)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags a KDoc once, not each of its tags`() {
+    fun `GIVEN a KDoc with tags WHEN linting THEN reports the KDoc once and not each of its tags`() {
+        // Given
         val code =
             """
             /**
@@ -58,11 +74,16 @@ class CommentsSayWhyRuleTest {
             fun loadBooks(): List<Book> = emptyList()
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(1, 1, VIOLATION_MESSAGE)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(1, 1, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `allows a Why comment`() {
+    fun `GIVEN a Why comment WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun insets(): WindowInsets {
@@ -71,11 +92,16 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a multi-line Why block comment`() {
+    fun `GIVEN a multi-line Why block comment WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             data class ChapterEntity(
@@ -88,11 +114,16 @@ class CommentsSayWhyRuleTest {
             )
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `turns a Why comment continued on line comments into a block comment`() {
+    fun `GIVEN a Why comment continued on line comments WHEN formatting THEN turns it into a block comment`() {
+        // Given
         val code =
             """
             data class ChapterEntity(
@@ -114,13 +145,18 @@ class CommentsSayWhyRuleTest {
             )
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted
             .hasLintViolation(2, 5, MULTI_LINE_MESSAGE)
             .isFormattedAs(formattedCode)
     }
 
     @Test
-    fun `turns a multi-line Why comment at the top of a file into a block comment`() {
+    fun `GIVEN a multi-line Why comment at the top of a file WHEN formatting THEN turns it into a block comment`() {
+        // Given
         val code =
             """
             // Why: CMP-10888 drops the relayout requested in the frame
@@ -136,13 +172,18 @@ class CommentsSayWhyRuleTest {
             fun relayout() = Unit
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted
             .hasLintViolation(1, 1, MULTI_LINE_MESSAGE)
             .isFormattedAs(formattedCode)
     }
 
     @Test
-    fun `keeps consecutive one-line Why comments apart`() {
+    fun `GIVEN consecutive one-line Why comments WHEN linting THEN keeps them apart and reports nothing`() {
+        // Given
         val code =
             """
             fun load() {
@@ -152,11 +193,16 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `flags a multi-line trailing Why comment without autocorrecting it`() {
+    fun `GIVEN a multi-line trailing Why comment WHEN linting THEN reports it without autocorrecting it`() {
+        // Given
         val code =
             """
             fun load() {
@@ -165,11 +211,16 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(2, 18, MULTI_LINE_MESSAGE)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 18, MULTI_LINE_MESSAGE)
     }
 
     @Test
-    fun `flags a multi-line Why comment holding comment delimiters without autocorrecting it`() {
+    fun `GIVEN a multi-line Why comment holding comment delimiters WHEN linting THEN reports it without autocorrect`() {
+        // Given
         val code =
             """
             fun load() {
@@ -179,11 +230,16 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(2, 5, MULTI_LINE_MESSAGE)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, MULTI_LINE_MESSAGE)
     }
 
     @Test
-    fun `turns a one-line Why block comment into a line comment`() {
+    fun `GIVEN a one-line Why block comment WHEN formatting THEN turns it into a line comment`() {
+        // Given
         val code =
             """
             fun load() {
@@ -199,13 +255,18 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted
             .hasLintViolation(2, 5, SINGLE_LINE_MESSAGE)
             .isFormattedAs(formattedCode)
     }
 
     @Test
-    fun `flags a one-line Why block comment followed by code without autocorrecting it`() {
+    fun `GIVEN a one-line Why block comment followed by code WHEN linting THEN reports it without autocorrecting it`() {
+        // Given
         val code =
             """
             fun load() {
@@ -213,11 +274,16 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(2, 16, SINGLE_LINE_MESSAGE)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 16, SINGLE_LINE_MESSAGE)
     }
 
     @Test
-    fun `keeps the inner indentation of a Why block comment written without stars`() {
+    fun `GIVEN an indented Why block comment written without stars WHEN formatting THEN keeps the inner indentation`() {
+        // Given
         val code =
             """
             fun load() {
@@ -241,13 +307,18 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted
             .hasLintViolation(2, 5, MULTI_LINE_MESSAGE)
             .isFormattedAs(formattedCode)
     }
 
     @Test
-    fun `adds the stars to a Why block comment written without them`() {
+    fun `GIVEN a Why block comment written without stars WHEN formatting THEN adds the stars`() {
+        // Given
         val code =
             """
             fun load() {
@@ -267,13 +338,18 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted
             .hasLintViolation(2, 5, MULTI_LINE_MESSAGE)
             .isFormattedAs(formattedCode)
     }
 
     @Test
-    fun `flags a comment separated from a Why comment by a blank line`() {
+    fun `GIVEN a comment separated from a Why comment by a blank line WHEN linting THEN reports the comment`() {
+        // Given
         val code =
             """
             fun load() {
@@ -284,11 +360,16 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasLintViolationWithoutAutoCorrect(4, 5, VIOLATION_MESSAGE)
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(4, 5, VIOLATION_MESSAGE)
     }
 
     @Test
-    fun `flags every disallowed comment in a file`() {
+    fun `GIVEN several disallowed comments in a file WHEN linting THEN reports every one of them`() {
+        // Given
         val code =
             """
             // header
@@ -298,22 +379,30 @@ class CommentsSayWhyRuleTest {
             }
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code)
-            .hasLintViolationsWithoutAutoCorrect(
-                LintViolation(1, 1, VIOLATION_MESSAGE),
-                LintViolation(3, 5, VIOLATION_MESSAGE),
-                LintViolation(4, 19, VIOLATION_MESSAGE),
-            )
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
+            LintViolation(1, 1, VIOLATION_MESSAGE),
+            LintViolation(3, 5, VIOLATION_MESSAGE),
+            LintViolation(4, 19, VIOLATION_MESSAGE),
+        )
     }
 
     @Test
-    fun `allows comment-like text inside strings`() {
+    fun `GIVEN comment-like text inside a string WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             val url = "https://example.com/*path*/"
             """.trimIndent()
 
-        commentsSayWhyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = commentsSayWhyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     private companion object {

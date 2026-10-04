@@ -73,7 +73,7 @@ internal class Migration16To18SpecTest {
     }
 
     @Test
-    fun `GIVEN a chapter missing rows WHEN migrating THEN adds them with the chapter's read state`() = runTest {
+    fun `GIVEN a chapter missing rows WHEN migrating THEN adds them with the read state of the chapter`() = runTest {
         // Given
         prepareScenario()
 

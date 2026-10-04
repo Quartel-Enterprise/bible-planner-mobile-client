@@ -27,18 +27,21 @@ internal class AnnotatedPassageFactoryTest {
     private val factory = AnnotatedPassageFactory()
 
     @Test
-    fun `joins consecutive verses marked the same way into one passage`() {
+    fun `GIVEN consecutive verses marked the same way WHEN creating the passages THEN joins them into one passage`() {
+        // Given
+        val highlights = listOf(
+            highlight(verseNumber = 1),
+            highlight(verseNumber = 2),
+            highlight(
+                verseNumber = 3,
+                color = green,
+            ),
+            highlight(verseNumber = 5),
+        )
+
         // When
         val passages = factory.create(
-            highlights = listOf(
-                highlight(verseNumber = 1),
-                highlight(verseNumber = 2),
-                highlight(
-                    verseNumber = 3,
-                    color = green,
-                ),
-                highlight(verseNumber = 5),
-            ),
+            highlights = highlights,
             savedVerses = emptyList(),
             notes = emptyList(),
         )
@@ -55,21 +58,25 @@ internal class AnnotatedPassageFactoryTest {
     }
 
     @Test
-    fun `keeps a highlight and a bookmark on the same verse in one passage`() {
+    fun `GIVEN a highlight and a bookmark on one verse WHEN creating the passages THEN keeps them in one passage`() {
+        // Given
+        val highlights = listOf(
+            highlight(
+                verseNumber = 1,
+                updatedAt = 10L,
+            ),
+        )
+        val savedVerses = listOf(
+            savedVerse(
+                verseNumber = 1,
+                updatedAt = 20L,
+            ),
+        )
+
         // When
         val passages = factory.create(
-            highlights = listOf(
-                highlight(
-                    verseNumber = 1,
-                    updatedAt = 10L,
-                ),
-            ),
-            savedVerses = listOf(
-                savedVerse(
-                    verseNumber = 1,
-                    updatedAt = 20L,
-                ),
-            ),
+            highlights = highlights,
+            savedVerses = savedVerses,
             notes = emptyList(),
         )
 
@@ -90,14 +97,18 @@ internal class AnnotatedPassageFactoryTest {
     }
 
     @Test
-    fun `splits a run where the bookmark changes`() {
+    fun `GIVEN a highlighted run where the bookmark changes WHEN creating the passages THEN splits the run there`() {
+        // Given
+        val highlights = listOf(
+            highlight(verseNumber = 1),
+            highlight(verseNumber = 2),
+        )
+        val savedVerses = listOf(savedVerse(verseNumber = 2))
+
         // When
         val passages = factory.create(
-            highlights = listOf(
-                highlight(verseNumber = 1),
-                highlight(verseNumber = 2),
-            ),
-            savedVerses = listOf(savedVerse(verseNumber = 2)),
+            highlights = highlights,
+            savedVerses = savedVerses,
             notes = emptyList(),
         )
 
@@ -112,7 +123,7 @@ internal class AnnotatedPassageFactoryTest {
     }
 
     @Test
-    fun `folds uniform marks on the verses of a note into the note`() {
+    fun `GIVEN uniform marks on the verses of a note WHEN creating the passages THEN folds them into the note`() {
         // Given
         val note = note(
             verseNumbers = listOf(6, 5),
@@ -149,7 +160,7 @@ internal class AnnotatedPassageFactoryTest {
     }
 
     @Test
-    fun `keeps a note apart from marks that differ across its verses`() {
+    fun `GIVEN marks that differ across the verses of a note WHEN creating the passages THEN keeps the note apart`() {
         // Given
         val note = note(
             verseNumbers = listOf(5, 6),
@@ -193,7 +204,7 @@ internal class AnnotatedPassageFactoryTest {
     }
 
     @Test
-    fun `does not let a second note claim verses another note already holds`() {
+    fun `GIVEN two notes on the same verse WHEN creating the passages THEN only the first note claims its marks`() {
         // Given
         val first = note(
             id = "first",
@@ -224,24 +235,27 @@ internal class AnnotatedPassageFactoryTest {
     }
 
     @Test
-    fun `orders passages from the most recent and then by canonical position`() {
+    fun `GIVEN highlights at different times WHEN creating passages THEN orders by recency then canonical position`() {
+        // Given
+        val highlights = listOf(
+            highlight(
+                verseNumber = 1,
+                chapter = psalms,
+                updatedAt = 10L,
+            ),
+            highlight(
+                verseNumber = 3,
+                updatedAt = 10L,
+            ),
+            highlight(
+                verseNumber = 9,
+                updatedAt = 50L,
+            ),
+        )
+
         // When
         val passages = factory.create(
-            highlights = listOf(
-                highlight(
-                    verseNumber = 1,
-                    chapter = psalms,
-                    updatedAt = 10L,
-                ),
-                highlight(
-                    verseNumber = 3,
-                    updatedAt = 10L,
-                ),
-                highlight(
-                    verseNumber = 9,
-                    updatedAt = 50L,
-                ),
-            ),
+            highlights = highlights,
             savedVerses = emptyList(),
             notes = emptyList(),
         )

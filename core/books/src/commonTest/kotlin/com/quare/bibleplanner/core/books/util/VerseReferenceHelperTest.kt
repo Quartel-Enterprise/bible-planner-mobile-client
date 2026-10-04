@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 
 internal class VerseReferenceHelperTest {
     @Test
-    fun `renders a single verse as its own number`() {
+    fun `GIVEN a single verse WHEN building the label THEN renders its own number`() {
         // Given
         val verseNumbers = listOf(3)
 
@@ -20,7 +20,7 @@ internal class VerseReferenceHelperTest {
     }
 
     @Test
-    fun `collapses consecutive verses into a range`() {
+    fun `GIVEN consecutive verses WHEN building the label THEN collapses them into a range`() {
         // Given
         val verseNumbers = listOf(1, 2, 3)
 
@@ -35,7 +35,7 @@ internal class VerseReferenceHelperTest {
     }
 
     @Test
-    fun `separates the ranges of a selection with gaps`() {
+    fun `GIVEN a selection with gaps WHEN building the label THEN separates its ranges`() {
         // Given
         val verseNumbers = listOf(7, 1, 2, 3, 9, 10)
 
@@ -50,7 +50,7 @@ internal class VerseReferenceHelperTest {
     }
 
     @Test
-    fun `ignores repeated verse numbers`() {
+    fun `GIVEN repeated verse numbers WHEN building the label THEN ignores the repetitions`() {
         // Given
         val verseNumbers = listOf(2, 2, 3)
 

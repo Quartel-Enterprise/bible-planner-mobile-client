@@ -7,7 +7,8 @@ class ComposableNamingSuffixRuleTest {
     private val composableNamingSuffixRuleAssertThat = assertThatRule { ComposableNamingSuffixRule() }
 
     @Test
-    fun `flags a composable whose name ends in a word outside the list`() {
+    fun `GIVEN a composable whose name ends in a word outside the list WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             @Composable
@@ -16,12 +17,16 @@ class ComposableNamingSuffixRuleTest {
             }
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 5, buildViolationMessage("BookEntry"))
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, buildViolationMessage("BookEntry"))
     }
 
     @Test
-    fun `flags a private composable`() {
+    fun `GIVEN a private composable with a disallowed suffix WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             @Composable
@@ -30,12 +35,16 @@ class ComposableNamingSuffixRuleTest {
             }
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("PlayerControls"))
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("PlayerControls"))
     }
 
     @Test
-    fun `flags a composable that carries an allowed word anywhere but the end`() {
+    fun `GIVEN a composable with an allowed word anywhere but the end WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             @Composable
@@ -44,12 +53,16 @@ class ComposableNamingSuffixRuleTest {
             }
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 5, buildViolationMessage("ScreenWrapper"))
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, buildViolationMessage("ScreenWrapper"))
     }
 
     @Test
-    fun `flags a composable whose suffix is not capitalized`() {
+    fun `GIVEN a composable whose suffix is not capitalized WHEN linting THEN reports it`() {
+        // Given
         val code =
             """
             @Composable
@@ -58,12 +71,16 @@ class ComposableNamingSuffixRuleTest {
             }
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 5, buildViolationMessage("Bookscreen"))
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, buildViolationMessage("Bookscreen"))
     }
 
     @Test
-    fun `allows a composable that ends in an allowed suffix`() {
+    fun `GIVEN composables that end in an allowed suffix WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Composable
@@ -77,11 +94,16 @@ class ComposableNamingSuffixRuleTest {
             }
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows the component fallback suffix`() {
+    fun `GIVEN a composable with the component fallback suffix WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Composable
@@ -90,11 +112,16 @@ class ComposableNamingSuffixRuleTest {
             }
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a lowercase composable that returns a value`() {
+    fun `GIVEN lowercase composables that return a value WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Composable
@@ -104,11 +131,16 @@ class ComposableNamingSuffixRuleTest {
             fun chapterCountText(count: Int): String = count.toString()
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a preview named after what it previews`() {
+    fun `GIVEN a preview named after what it previews WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Preview
@@ -118,11 +150,16 @@ class ComposableNamingSuffixRuleTest {
             }
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a multi preview annotation`() {
+    fun `GIVEN a preview with a multi preview annotation WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @PreviewLightDark
@@ -132,17 +169,26 @@ class ComposableNamingSuffixRuleTest {
             }
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows an uppercase function that is not a composable`() {
+    fun `GIVEN an uppercase function that is not a composable WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             fun BookItem(title: String): Book = Book(title = title)
             """.trimIndent()
 
-        composableNamingSuffixRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = composableNamingSuffixRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

@@ -31,7 +31,7 @@ internal class ToggleVerseSelectionUseCaseTest {
     }
 
     @Test
-    fun `returns the selection after the toggle`() {
+    fun `GIVEN no selection WHEN toggling a verse THEN returns the selection after the toggle`() {
         // When
         val selection = toggleVerseSelection(
             chapter = testChapter,
@@ -49,7 +49,7 @@ internal class ToggleVerseSelectionUseCaseTest {
     }
 
     @Test
-    fun `exposes the toggled selection to its observers`() {
+    fun `GIVEN no selection WHEN toggling a verse THEN exposes the toggled selection to its observers`() {
         // When
         toggleVerseSelection(
             chapter = testChapter,
@@ -64,7 +64,7 @@ internal class ToggleVerseSelectionUseCaseTest {
     }
 
     @Test
-    fun `clearing drops the selection its observers see`() {
+    fun `GIVEN a selected verse WHEN clearing the selection THEN its observers see no selection`() {
         // Given
         toggleVerseSelection(
             chapter = testChapter,

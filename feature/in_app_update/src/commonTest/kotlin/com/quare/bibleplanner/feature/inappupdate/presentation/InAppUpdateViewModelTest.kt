@@ -26,6 +26,7 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class InAppUpdateViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
+    private lateinit var navigator: Navigator
     private lateinit var viewModel: InAppUpdateViewModel
     private lateinit var trackedEvents: MutableList<Pair<String, Map<String, Any>>>
     private lateinit var commands: MutableList<NavigationCommand>
@@ -44,8 +45,11 @@ internal class InAppUpdateViewModelTest {
     @Test
     fun `GIVEN a known version WHEN the prompt opens THEN shows it and tracks the prompt with the version`() =
         runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
             // When
-            prepareScenario(versionName = VERSION_NAME)
+            openPrompt(versionName = VERSION_NAME)
 
             // Then
             assertEquals(InAppUpdateUiState(versionName = VERSION_NAME), viewModel.uiState.value)
@@ -63,8 +67,11 @@ internal class InAppUpdateViewModelTest {
     @Test
     fun `GIVEN an unknown version WHEN the prompt opens THEN tracks the prompt without a version`() =
         runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
             // When
-            prepareScenario(versionName = null)
+            openPrompt(versionName = null)
 
             // Then
             assertEquals(
@@ -77,10 +84,11 @@ internal class InAppUpdateViewModelTest {
         }
 
     @Test
-    fun `GIVEN the prompt WHEN tapping update THEN starts the update, closes the prompt and tracks it`() =
+    fun `GIVEN the prompt WHEN tapping update THEN starts the update closes the prompt and tracks the acceptance`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(versionName = VERSION_NAME)
+            prepareScenario()
+            openPrompt(versionName = VERSION_NAME)
 
             // When
             viewModel.onEvent(InAppUpdateUiEvent.OnUpdateClick)
@@ -99,7 +107,8 @@ internal class InAppUpdateViewModelTest {
     fun `GIVEN the prompt WHEN dismissing it THEN closes the prompt without updating and tracks it`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(versionName = VERSION_NAME)
+            prepareScenario()
+            openPrompt(versionName = VERSION_NAME)
 
             // When
             viewModel.onEvent(InAppUpdateUiEvent.OnDismiss)
@@ -117,7 +126,8 @@ internal class InAppUpdateViewModelTest {
     @Test
     fun `GIVEN the prompt WHEN tapping update THEN tracks the acceptance only once`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(versionName = VERSION_NAME)
+        prepareScenario()
+        openPrompt(versionName = VERSION_NAME)
 
         // When
         viewModel.onEvent(InAppUpdateUiEvent.OnUpdateClick)
@@ -128,12 +138,7 @@ internal class InAppUpdateViewModelTest {
         assertTrue(trackedEvents.first().first == AnalyticsEventNames.UPDATE_PROMPT_SHOWN)
     }
 
-    private fun TestScope.prepareScenario(versionName: String?) {
-        val navigator = Navigator()
-        trackedEvents = mutableListOf()
-        commands = mutableListOf()
-        startUpdateCalls = 0
-        backgroundScope.launch { navigator.commands.collect(commands::add) }
+    private fun openPrompt(versionName: String?) {
         viewModel = InAppUpdateViewModel(
             startUpdate = { startUpdateCalls++ },
             navigator = navigator,
@@ -143,6 +148,14 @@ internal class InAppUpdateViewModelTest {
             ),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
+    }
+
+    private fun TestScope.prepareScenario() {
+        navigator = Navigator()
+        trackedEvents = mutableListOf()
+        commands = mutableListOf()
+        startUpdateCalls = 0
+        backgroundScope.launch { navigator.commands.collect(commands::add) }
     }
 
     private companion object {

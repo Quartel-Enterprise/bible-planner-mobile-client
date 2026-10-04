@@ -4,7 +4,7 @@ import kotlinx.serialization.json.Json
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 
 internal class CachedVersionsJsonMapperTest {
@@ -16,7 +16,7 @@ internal class CachedVersionsJsonMapperTest {
     }
 
     @Test
-    fun `maps a cache entry written before the content version existed`() {
+    fun `GIVEN a cache entry older than the content version WHEN mapping THEN maps it with a blank version`() {
         // Given
         val cachedJson =
             """[{"id":"ACF","name":"Almeida Corrigida Fiel","language":"pt","country":"br","chapters":1189}]"""
@@ -35,7 +35,7 @@ internal class CachedVersionsJsonMapperTest {
     }
 
     @Test
-    fun `maps a cache entry that carries the content version`() {
+    fun `GIVEN a cache entry carrying the content version WHEN mapping THEN keeps the content version`() {
         // Given
         val cachedJson =
             """[{"id":"WEB","name":"World English Bible","version":"1.1.0","language":"en","country":"us","chapters":1189}]"""
@@ -48,7 +48,7 @@ internal class CachedVersionsJsonMapperTest {
     }
 
     @Test
-    fun `maps a cache entry with an explicit null size`() {
+    fun `GIVEN a cache entry with an explicit null size WHEN mapping THEN maps a null size`() {
         // Given
         val cachedJson =
             """[{"id":"ACF","name":"Almeida Corrigida Fiel","language":"pt","country":"br","chapters":1189,"size":null}]"""
@@ -61,13 +61,14 @@ internal class CachedVersionsJsonMapperTest {
     }
 
     @Test
-    fun `fails on a malformed cache entry`() {
+    fun `GIVEN a malformed cache entry WHEN mapping THEN fails`() {
         // Given
         val cachedJson = """[{"name":"missing id"}]"""
 
-        // When / Then
-        assertFailsWith<NoSuchElementException> {
-            mapper.map(cachedJson)
-        }
+        // When
+        val result = runCatching { mapper.map(cachedJson) }
+
+        // Then
+        assertIs<NoSuchElementException>(result.exceptionOrNull())
     }
 }

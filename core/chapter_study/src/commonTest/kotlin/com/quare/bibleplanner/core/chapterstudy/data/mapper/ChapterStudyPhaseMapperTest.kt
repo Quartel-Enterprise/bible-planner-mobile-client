@@ -4,7 +4,6 @@ import com.quare.bibleplanner.core.chapterstudy.domain.model.ChapterStudyPhaseMo
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 internal class ChapterStudyPhaseMapperTest {
     private lateinit var mapper: ChapterStudyPhaseMapper
@@ -64,9 +63,13 @@ internal class ChapterStudyPhaseMapperTest {
 
     @Test
     fun `GIVEN an unknown wire phase WHEN mapping THEN returns null`() {
-        // When & Then
-        assertNull(mapper.mapOrNull("polishing"))
-        assertNull(mapper.mapOrNull("READING"))
-        assertNull(mapper.mapOrNull(""))
+        // Given
+        val wirePhases = listOf("polishing", "READING", "")
+
+        // When
+        val phases = wirePhases.map(mapper::mapOrNull)
+
+        // Then
+        assertEquals(listOf(null, null, null), phases)
     }
 }

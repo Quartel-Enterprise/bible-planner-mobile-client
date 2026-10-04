@@ -23,8 +23,11 @@ internal class SupabasePlatformTest {
 
     @Test
     fun `GIVEN the desktop app WHEN creating the http engine THEN uses the CIO engine`() {
+        // Given
+        val createEngine = ::createPlatformHttpEngine
+
         // When
-        val engine = createPlatformHttpEngine()
+        val engine = createEngine()
 
         // Then
         assertIs<CIOEngineConfig>(engine.config)
@@ -33,8 +36,11 @@ internal class SupabasePlatformTest {
 
     @Test
     fun `GIVEN the desktop app WHEN creating the session storage THEN keeps sessions in the platform settings`() {
+        // Given
+        val createSessionManager = ::createPlatformSessionManager
+
         // When
-        val sessionManager = createPlatformSessionManager()
+        val sessionManager = createSessionManager()
 
         // Then
         assertIs<SettingsSessionManager>(sessionManager)

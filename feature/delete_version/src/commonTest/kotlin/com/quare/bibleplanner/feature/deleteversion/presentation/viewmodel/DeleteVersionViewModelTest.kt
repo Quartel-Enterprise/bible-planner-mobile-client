@@ -57,7 +57,7 @@ internal class DeleteVersionViewModelTest {
         }
 
     @Test
-    fun `GIVEN a downloaded version WHEN the deletion finishes THEN deletes it, tracks it and closes`() =
+    fun `GIVEN a downloaded version WHEN the deletion finishes THEN deletes it tracks it and closes`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()

@@ -29,8 +29,11 @@ internal class SheetSceneStrategyTest {
 
     @Test
     fun `GIVEN a sheet on top WHEN calculating THEN overlays it on the entries below`() {
+        // Given
+        val entries = listOf(homeEntry, themeSheetEntry)
+
         // When
-        val scene = calculate(listOf(homeEntry, themeSheetEntry))
+        val scene = calculate(entries)
 
         // Then
         assertIs<SheetScene>(scene)
@@ -42,8 +45,11 @@ internal class SheetSceneStrategyTest {
 
     @Test
     fun `GIVEN a top entry that is not a sheet WHEN calculating THEN has no sheet`() {
+        // Given
+        val entries = listOf(themeSheetEntry, homeEntry)
+
         // When
-        val scene = calculate(listOf(themeSheetEntry, homeEntry))
+        val scene = calculate(entries)
 
         // Then
         assertNull(scene)
@@ -51,8 +57,11 @@ internal class SheetSceneStrategyTest {
 
     @Test
     fun `GIVEN no entries WHEN calculating THEN has no sheet`() {
+        // Given
+        val entries = emptyList<NavEntry<NavKey>>()
+
         // When
-        val scene = calculate(emptyList())
+        val scene = calculate(entries)
 
         // Then
         assertNull(scene)

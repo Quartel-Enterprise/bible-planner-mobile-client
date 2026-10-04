@@ -28,7 +28,7 @@ class AvatarRemoteStoreTest {
     }
 
     @Test
-    fun `uploads the avatar over the previous one and returns its public url`() = runTest {
+    fun `GIVEN avatar bytes WHEN uploading THEN replaces the previous avatar and returns its public url`() = runTest {
         // When
         val url = avatarRemoteStore.upload(
             userId = USER_ID,
@@ -56,7 +56,7 @@ class AvatarRemoteStoreTest {
     }
 
     @Test
-    fun `deletes the avatar of the user`() = runTest {
+    fun `GIVEN a user WHEN deleting the avatar THEN deletes the avatar of the user`() = runTest {
         // When
         avatarRemoteStore.delete(USER_ID)
 

@@ -6,7 +6,7 @@ import kotlin.test.assertNull
 
 internal class HighlightColorTest {
     @Test
-    fun `builds the custom key from the hue and the lightness`() {
+    fun `GIVEN a custom color WHEN reading its key THEN builds it from the hue and the lightness`() {
         // Given
         val color = HighlightColor.Custom(
             hue = 265,
@@ -24,9 +24,12 @@ internal class HighlightColorTest {
     }
 
     @Test
-    fun `parses a preset key back into its color`() {
+    fun `GIVEN a preset key WHEN parsing it THEN returns its preset color`() {
+        // Given
+        val key = "yellow"
+
         // When
-        val color = HighlightColor.fromKey("yellow")
+        val color = HighlightColor.fromKey(key)
 
         // Then
         assertEquals(
@@ -36,9 +39,12 @@ internal class HighlightColorTest {
     }
 
     @Test
-    fun `parses a custom key back into its components`() {
+    fun `GIVEN a custom key WHEN parsing it THEN returns a custom color with its components`() {
+        // Given
+        val key = "c:120:45"
+
         // When
-        val color = HighlightColor.fromKey("c:120:45")
+        val color = HighlightColor.fromKey(key)
 
         // Then
         assertEquals(
@@ -48,9 +54,12 @@ internal class HighlightColorTest {
     }
 
     @Test
-    fun `returns null for a key it does not recognize`() {
+    fun `GIVEN an unrecognized key WHEN parsing it THEN returns null`() {
+        // Given
+        val key = "c:not-a-hue:45"
+
         // When
-        val color = HighlightColor.fromKey("c:not-a-hue:45")
+        val color = HighlightColor.fromKey(key)
 
         // Then
         assertNull(color)

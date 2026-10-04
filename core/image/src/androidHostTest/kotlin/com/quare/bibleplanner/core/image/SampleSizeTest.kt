@@ -5,11 +5,15 @@ import kotlin.test.assertEquals
 
 class SampleSizeTest {
     @Test
-    fun `does not subsample an image already near the target size`() {
+    fun `GIVEN an image already near the target size WHEN calculating the sample size THEN does not subsample it`() {
+        // Given
+        val width = 600
+        val height = 800
+
         // When
         val sampleSize = calculateSampleSize(
-            width = 600,
-            height = 800,
+            width = width,
+            height = height,
             targetPx = 512,
         )
 
@@ -18,11 +22,15 @@ class SampleSizeTest {
     }
 
     @Test
-    fun `halves a large image until the shorter side is still above the target`() {
+    fun `GIVEN a large image WHEN calculating the sample size THEN halves it while staying above the target`() {
+        // Given
+        val width = 4032
+        val height = 3024
+
         // When
         val sampleSize = calculateSampleSize(
-            width = 4032,
-            height = 3024,
+            width = width,
+            height = height,
             targetPx = 512,
         )
 
@@ -31,11 +39,15 @@ class SampleSizeTest {
     }
 
     @Test
-    fun `does not subsample an image smaller than the target`() {
+    fun `GIVEN an image smaller than the target WHEN calculating the sample size THEN does not subsample it`() {
+        // Given
+        val width = 100
+        val height = 100
+
         // When
         val sampleSize = calculateSampleSize(
-            width = 100,
-            height = 100,
+            width = width,
+            height = height,
             targetPx = 512,
         )
 
@@ -44,11 +56,15 @@ class SampleSizeTest {
     }
 
     @Test
-    fun `falls back to no subsampling for invalid bounds`() {
+    fun `GIVEN invalid bounds WHEN calculating the sample size THEN falls back to no subsampling`() {
+        // Given
+        val width = 0
+        val height = 0
+
         // When
         val sampleSize = calculateSampleSize(
-            width = 0,
-            height = 0,
+            width = width,
+            height = height,
             targetPx = 512,
         )
 

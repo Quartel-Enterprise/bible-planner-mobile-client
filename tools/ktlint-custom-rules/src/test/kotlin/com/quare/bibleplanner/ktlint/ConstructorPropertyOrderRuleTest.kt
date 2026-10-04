@@ -8,7 +8,8 @@ class ConstructorPropertyOrderRuleTest {
     private val constructorPropertyOrderRuleAssertThat = assertThatRule { ConstructorPropertyOrderRule() }
 
     @Test
-    fun `flags a plain parameter declared between properties`() {
+    fun `GIVEN a plain parameter declared between properties WHEN linting THEN reports the parameter`() {
+        // Given
         val code =
             """
             class AlbumViewModel(
@@ -18,12 +19,16 @@ class ConstructorPropertyOrderRuleTest {
             ) : ViewModel()
             """.trimIndent()
 
-        constructorPropertyOrderRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 5, buildViolationMessage("observablePlayback"))
+        // When
+        val linted = constructorPropertyOrderRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 5, buildViolationMessage("observablePlayback"))
     }
 
     @Test
-    fun `flags every plain parameter declared before the last property`() {
+    fun `GIVEN plain parameters declared before the last property WHEN linting THEN reports every one`() {
+        // Given
         val code =
             """
             class HomeTabsState(
@@ -33,14 +38,19 @@ class ConstructorPropertyOrderRuleTest {
             )
             """.trimIndent()
 
-        constructorPropertyOrderRuleAssertThat(code).hasLintViolationsWithoutAutoCorrect(
+        // When
+        val linted = constructorPropertyOrderRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
             LintViolation(2, 5, buildViolationMessage("selectedIndexState")),
             LintViolation(3, 5, buildViolationMessage("startTab")),
         )
     }
 
     @Test
-    fun `flags a plain parameter before a public property`() {
+    fun `GIVEN a plain parameter before a public property WHEN linting THEN reports the parameter`() {
+        // Given
         val code =
             """
             class Queue(
@@ -49,12 +59,16 @@ class ConstructorPropertyOrderRuleTest {
             )
             """.trimIndent()
 
-        constructorPropertyOrderRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 5, buildViolationMessage("player"))
+        // When
+        val linted = constructorPropertyOrderRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 5, buildViolationMessage("player"))
     }
 
     @Test
-    fun `allows plain parameters declared after every property`() {
+    fun `GIVEN plain parameters declared after every property WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class AlbumViewModel(
@@ -65,11 +79,16 @@ class ConstructorPropertyOrderRuleTest {
             ) : ViewModel()
             """.trimIndent()
 
-        constructorPropertyOrderRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = constructorPropertyOrderRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a constructor with only plain parameters`() {
+    fun `GIVEN a constructor with only plain parameters WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class SplashViewModel(
@@ -78,11 +97,16 @@ class ConstructorPropertyOrderRuleTest {
             ) : ViewModel()
             """.trimIndent()
 
-        constructorPropertyOrderRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = constructorPropertyOrderRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a constructor with only properties`() {
+    fun `GIVEN a constructor with only properties WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             data class QueueTimeline(
@@ -91,11 +115,16 @@ class ConstructorPropertyOrderRuleTest {
             )
             """.trimIndent()
 
-        constructorPropertyOrderRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = constructorPropertyOrderRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a class without a primary constructor`() {
+    fun `GIVEN a class without a primary constructor WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class LibraryItemUiModelMapper {
@@ -103,7 +132,11 @@ class ConstructorPropertyOrderRuleTest {
             }
             """.trimIndent()
 
-        constructorPropertyOrderRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = constructorPropertyOrderRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

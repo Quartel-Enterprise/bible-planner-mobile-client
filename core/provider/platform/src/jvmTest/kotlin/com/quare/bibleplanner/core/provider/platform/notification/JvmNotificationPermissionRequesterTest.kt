@@ -6,10 +6,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 internal class JvmNotificationPermissionRequesterTest {
-    private val requester = JvmNotificationPermissionRequester()
-
     @Test
     fun `GIVEN the desktop app WHEN asking whether it can prompt THEN never prompts`() = runTest {
+        // Given
+        val requester = JvmNotificationPermissionRequester()
+
         // When
         val canPrompt = requester.canPrompt()
 
@@ -19,6 +20,9 @@ internal class JvmNotificationPermissionRequesterTest {
 
     @Test
     fun `GIVEN the desktop app WHEN requesting the permission THEN reports it denied`() = runTest {
+        // Given
+        val requester = JvmNotificationPermissionRequester()
+
         // When
         val result = requester.request()
 

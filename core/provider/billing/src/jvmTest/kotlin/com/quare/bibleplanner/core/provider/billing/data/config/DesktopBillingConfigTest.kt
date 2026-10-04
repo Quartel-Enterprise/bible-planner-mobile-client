@@ -6,11 +6,15 @@ import kotlin.test.assertTrue
 
 internal class DesktopBillingConfigTest {
     @Test
-    fun `should enable billing when both credentials are present`() {
+    fun `GIVEN both credentials WHEN creating the config THEN enables billing`() {
         // Given
+        val apiKey = API_KEY
+        val purchaseLink = PURCHASE_LINK
+
+        // When
         val config = DesktopBillingConfig(
-            apiKey = API_KEY,
-            purchaseLink = PURCHASE_LINK,
+            apiKey = apiKey,
+            purchaseLink = purchaseLink,
         )
 
         // Then
@@ -19,11 +23,15 @@ internal class DesktopBillingConfigTest {
     }
 
     @Test
-    fun `should disable everything when the api key is missing`() {
+    fun `GIVEN a missing api key WHEN creating the config THEN disables everything`() {
         // Given
+        val apiKey = ""
+        val purchaseLink = PURCHASE_LINK
+
+        // When
         val config = DesktopBillingConfig(
-            apiKey = "",
-            purchaseLink = PURCHASE_LINK,
+            apiKey = apiKey,
+            purchaseLink = purchaseLink,
         )
 
         // Then
@@ -32,11 +40,15 @@ internal class DesktopBillingConfigTest {
     }
 
     @Test
-    fun `should still read entitlements when only the purchase link is missing`() {
+    fun `GIVEN only a missing purchase link WHEN creating the config THEN still reads entitlements`() {
         // Given
+        val apiKey = API_KEY
+        val purchaseLink = ""
+
+        // When
         val config = DesktopBillingConfig(
-            apiKey = API_KEY,
-            purchaseLink = "",
+            apiKey = apiKey,
+            purchaseLink = purchaseLink,
         )
 
         // Then

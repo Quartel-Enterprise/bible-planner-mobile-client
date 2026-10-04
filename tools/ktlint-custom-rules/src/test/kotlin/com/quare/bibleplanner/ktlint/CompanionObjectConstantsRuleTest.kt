@@ -7,7 +7,8 @@ class CompanionObjectConstantsRuleTest {
     private val companionObjectConstantsRuleAssertThat = assertThatRule { CompanionObjectConstantsRule() }
 
     @Test
-    fun `flags a val inside a private companion object`() {
+    fun `GIVEN a val inside a private companion object WHEN linting THEN reports the val`() {
+        // Given
         val code =
             """
             class SplashViewModel {
@@ -17,12 +18,16 @@ class CompanionObjectConstantsRuleTest {
             }
             """.trimIndent()
 
-        companionObjectConstantsRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 13, buildViolationMessage("defaultHoldDuration"))
+        // When
+        val linted = companionObjectConstantsRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 13, buildViolationMessage("defaultHoldDuration"))
     }
 
     @Test
-    fun `flags a private val inside a public companion object`() {
+    fun `GIVEN a private val inside a public companion object WHEN linting THEN reports the val`() {
+        // Given
         val code =
             """
             class Cache {
@@ -32,12 +37,16 @@ class CompanionObjectConstantsRuleTest {
             }
             """.trimIndent()
 
-        companionObjectConstantsRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 21, buildViolationMessage("entries"))
+        // When
+        val linted = companionObjectConstantsRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 21, buildViolationMessage("entries"))
     }
 
     @Test
-    fun `allows a const val in a private companion object`() {
+    fun `GIVEN a const val in a private companion object WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class KtorITunesRemoteDataSource {
@@ -47,11 +56,16 @@ class CompanionObjectConstantsRuleTest {
             }
             """.trimIndent()
 
-        companionObjectConstantsRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = companionObjectConstantsRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a public val that is part of the type's API`() {
+    fun `GIVEN a public val that is part of the API of the type WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             data class PlaybackState(val position: Int) {
@@ -61,11 +75,16 @@ class CompanionObjectConstantsRuleTest {
             }
             """.trimIndent()
 
-        companionObjectConstantsRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = companionObjectConstantsRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val in the class body`() {
+    fun `GIVEN a private val in the class body WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class QueueViewModel {
@@ -73,11 +92,16 @@ class CompanionObjectConstantsRuleTest {
             }
             """.trimIndent()
 
-        companionObjectConstantsRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = companionObjectConstantsRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val in a plain nested object`() {
+    fun `GIVEN a private val in a plain nested object WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Holder {
@@ -87,7 +111,11 @@ class CompanionObjectConstantsRuleTest {
             }
             """.trimIndent()
 
-        companionObjectConstantsRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = companionObjectConstantsRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

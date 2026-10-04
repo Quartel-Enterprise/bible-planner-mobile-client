@@ -37,7 +37,7 @@ class ProfileSynchronizerTest {
     private lateinit var userId: MutableStateFlow<String?>
 
     @Test
-    fun `uploads a pending avatar before pushing the rest once`() = runTest {
+    fun `GIVEN a pending avatar WHEN pushing once THEN uploads it before pushing the rest`() = runTest {
         // Given
         prepareScenario(initialRows = listOf(pendingAvatar()))
 
@@ -58,7 +58,7 @@ class ProfileSynchronizerTest {
     }
 
     @Test
-    fun `still pushes the rest once when the avatar upload fails`() = runTest {
+    fun `GIVEN a failing avatar upload WHEN pushing once THEN still pushes the rest`() = runTest {
         // Given
         prepareScenario(initialRows = listOf(pendingAvatar()))
         supabase.responseStatus = HttpStatusCode.InternalServerError
@@ -79,7 +79,7 @@ class ProfileSynchronizerTest {
     }
 
     @Test
-    fun `uploads a pending avatar while online in the push loop`() = runTest {
+    fun `GIVEN a pending avatar while online WHEN running the push loop THEN uploads it`() = runTest {
         // Given
         prepareScenario(initialRows = listOf(pendingAvatar()))
 
@@ -100,7 +100,7 @@ class ProfileSynchronizerTest {
     }
 
     @Test
-    fun `waits for the network before uploading the avatar`() = runTest {
+    fun `GIVEN a pending avatar while offline WHEN running the push loop THEN waits for the network`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(pendingAvatar()),
@@ -115,7 +115,7 @@ class ProfileSynchronizerTest {
     }
 
     @Test
-    fun `retries a failed avatar upload after the backoff`() = runTest {
+    fun `GIVEN a failed avatar upload WHEN the backoff passes THEN retries the upload`() = runTest {
         // Given
         prepareScenario(initialRows = listOf(pendingAvatar()))
         supabase.responseStatus = HttpStatusCode.InternalServerError
@@ -139,25 +139,26 @@ class ProfileSynchronizerTest {
     }
 
     @Test
-    fun `gives up on the avatar after five failed uploads`() = runTest {
-        // Given
-        prepareScenario(initialRows = listOf(pendingAvatar()))
-        supabase.responseStatus = HttpStatusCode.InternalServerError
+    fun `GIVEN an avatar upload that always fails WHEN running the push loop THEN gives up after five uploads`() =
+        runTest {
+            // Given
+            prepareScenario(initialRows = listOf(pendingAvatar()))
+            supabase.responseStatus = HttpStatusCode.InternalServerError
 
-        // When
-        runPushLoop()
-        advanceTimeBy(longerThanEveryRetry)
-        runCurrent()
+            // When
+            runPushLoop()
+            advanceTimeBy(longerThanEveryRetry)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = 5,
-            actual = supabase.requests.size,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = 5,
+                actual = supabase.requests.size,
+            )
+        }
 
     @Test
-    fun `does not upload the avatar of another account`() = runTest {
+    fun `GIVEN the avatar of another account WHEN pushing once THEN does not upload it`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(pendingAvatar()),
@@ -172,7 +173,7 @@ class ProfileSynchronizerTest {
     }
 
     @Test
-    fun `does not upload the avatar while nobody is signed in`() = runTest {
+    fun `GIVEN nobody signed in WHEN pushing once THEN does not upload the avatar`() = runTest {
         // Given
         prepareScenario(
             initialRows = listOf(pendingAvatar()),
@@ -187,7 +188,7 @@ class ProfileSynchronizerTest {
     }
 
     @Test
-    fun `delegates the rest of the sync to the generic synchronizer`() = runTest {
+    fun `GIVEN a profile synchronizer WHEN running the rest of the sync THEN delegates to the generic one`() = runTest {
         // Given
         prepareScenario()
 

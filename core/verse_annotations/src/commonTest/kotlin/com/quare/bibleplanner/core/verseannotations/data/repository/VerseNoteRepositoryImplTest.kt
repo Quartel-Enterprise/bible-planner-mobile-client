@@ -23,7 +23,7 @@ internal class VerseNoteRepositoryImplTest {
     private lateinit var dao: FakeVerseNoteDao
 
     @Test
-    fun `observes the live notes of the chapter with their verses in order`() = runTest {
+    fun `GIVEN stored notes WHEN observing a chapter THEN emits its live notes with their verses in order`() = runTest {
         // Given
         prepareScenario(
             initialNotes = listOf(
@@ -67,7 +67,7 @@ internal class VerseNoteRepositoryImplTest {
     }
 
     @Test
-    fun `gets a note by its id`() = runTest {
+    fun `GIVEN a stored note WHEN getting it by its id THEN returns it`() = runTest {
         // Given
         prepareScenario(
             initialNotes = listOf(noteEntity(id = "note-1")),
@@ -94,7 +94,7 @@ internal class VerseNoteRepositoryImplTest {
     }
 
     @Test
-    fun `does not return a deleted note`() = runTest {
+    fun `GIVEN a deleted note WHEN getting it by its id THEN returns null`() = runTest {
         // Given
         prepareScenario(
             initialNotes = listOf(
@@ -113,7 +113,7 @@ internal class VerseNoteRepositoryImplTest {
     }
 
     @Test
-    fun `does not return a note that does not exist`() = runTest {
+    fun `GIVEN no notes WHEN getting a missing note THEN returns null`() = runTest {
         // Given
         prepareScenario()
 
@@ -125,48 +125,49 @@ internal class VerseNoteRepositoryImplTest {
     }
 
     @Test
-    fun `stores a note stamped with the current time as pending with its verses in order`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN no notes WHEN upserting a note THEN stores it as pending stamped with now and its verses in order`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // When
-        repository.upsert(
-            note(
-                id = "note-1",
-                verseNumbers = listOf(3, 5),
-            ),
-        )
-
-        // Then
-        assertEquals(
-            expected = listOf(
-                noteEntity(
+            // When
+            repository.upsert(
+                note(
                     id = "note-1",
-                    updatedAt = NOW,
-                    isPendingSync = true,
+                    verseNumbers = listOf(3, 5),
                 ),
-            ),
-            actual = dao.notes.value,
-        )
-        assertEquals(
-            expected = listOf(
-                VerseNoteVerseEntity(
-                    noteId = "note-1",
-                    verseNumber = 3,
-                    position = 0,
+            )
+
+            // Then
+            assertEquals(
+                expected = listOf(
+                    noteEntity(
+                        id = "note-1",
+                        updatedAt = NOW,
+                        isPendingSync = true,
+                    ),
                 ),
-                VerseNoteVerseEntity(
-                    noteId = "note-1",
-                    verseNumber = 5,
-                    position = 1,
+                actual = dao.notes.value,
+            )
+            assertEquals(
+                expected = listOf(
+                    VerseNoteVerseEntity(
+                        noteId = "note-1",
+                        verseNumber = 3,
+                        position = 0,
+                    ),
+                    VerseNoteVerseEntity(
+                        noteId = "note-1",
+                        verseNumber = 5,
+                        position = 1,
+                    ),
                 ),
-            ),
-            actual = dao.verses.value,
-        )
-    }
+                actual = dao.verses.value,
+            )
+        }
 
     @Test
-    fun `editing a note replaces the verses it covers`() = runTest {
+    fun `GIVEN a stored note WHEN upserting an edit THEN replaces the verses it covers`() = runTest {
         // Given
         prepareScenario(
             initialNotes = listOf(noteEntity(id = "note-1")),
@@ -201,7 +202,7 @@ internal class VerseNoteRepositoryImplTest {
     }
 
     @Test
-    fun `deleting a note soft deletes it as a pending change`() = runTest {
+    fun `GIVEN a stored note WHEN deleting it THEN soft deletes it as a pending change`() = runTest {
         // Given
         prepareScenario(initialNotes = listOf(noteEntity(id = "note-1")))
 
@@ -223,7 +224,7 @@ internal class VerseNoteRepositoryImplTest {
     }
 
     @Test
-    fun `observes every live note of the version`() = runTest {
+    fun `GIVEN stored notes WHEN observing a version THEN emits every live note of it`() = runTest {
         // Given
         prepareScenario(
             initialNotes = listOf(

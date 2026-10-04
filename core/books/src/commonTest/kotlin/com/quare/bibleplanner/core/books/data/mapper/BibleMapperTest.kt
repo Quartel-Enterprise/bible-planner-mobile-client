@@ -20,7 +20,7 @@ internal class BibleMapperTest {
     }
 
     @Test
-    fun `flags a pending update when the downloaded content version is outdated`() {
+    fun `GIVEN a downloaded outdated content version WHEN mapping THEN flags a pending update`() {
         // Given
         val entity = entity(
             status = DownloadStatus.DONE,
@@ -38,7 +38,7 @@ internal class BibleMapperTest {
     }
 
     @Test
-    fun `flags a pending update when a done version misses chapters`() {
+    fun `GIVEN a done version missing chapters WHEN mapping THEN flags a pending update`() {
         // Given
         val entity = entity(
             status = DownloadStatus.DONE,
@@ -56,7 +56,7 @@ internal class BibleMapperTest {
     }
 
     @Test
-    fun `does not flag a complete up-to-date version`() {
+    fun `GIVEN a complete up-to-date version WHEN mapping THEN does not flag a pending update`() {
         // Given
         val entity = entity(
             status = DownloadStatus.DONE,
@@ -74,7 +74,7 @@ internal class BibleMapperTest {
     }
 
     @Test
-    fun `does not flag a version that was never downloaded`() {
+    fun `GIVEN a version never downloaded WHEN mapping THEN does not flag a pending update`() {
         // Given
         val entity = entity(
             status = DownloadStatus.NOT_STARTED,
@@ -92,7 +92,7 @@ internal class BibleMapperTest {
     }
 
     @Test
-    fun `does not flag an outdated version while it is downloading`() {
+    fun `GIVEN an outdated version being downloaded WHEN mapping THEN does not flag a pending update`() {
         // Given
         val entity = entity(
             status = DownloadStatus.IN_PROGRESS,
@@ -110,7 +110,7 @@ internal class BibleMapperTest {
     }
 
     @Test
-    fun `does not flag an outdated version when the remote content version is blank`() {
+    fun `GIVEN a blank remote content version WHEN mapping an outdated version THEN does not flag an update`() {
         // Given
         val entity = entity(
             status = DownloadStatus.DONE,

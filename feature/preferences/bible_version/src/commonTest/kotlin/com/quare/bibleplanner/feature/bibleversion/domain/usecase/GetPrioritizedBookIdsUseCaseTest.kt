@@ -17,7 +17,7 @@ internal class GetPrioritizedBookIdsUseCaseTest {
     }
 
     @Test
-    fun `puts the pentateuch first then the new testament then the rest of the old testament`() {
+    fun `GIVEN every book WHEN prioritizing THEN puts the pentateuch then the new testament then the old testament`() {
         // When
         val bookIds = useCase()
 
@@ -33,7 +33,7 @@ internal class GetPrioritizedBookIdsUseCaseTest {
     }
 
     @Test
-    fun `lists every book exactly once`() {
+    fun `GIVEN every book WHEN prioritizing THEN lists each book exactly once`() {
         // When
         val bookIds = useCase()
 

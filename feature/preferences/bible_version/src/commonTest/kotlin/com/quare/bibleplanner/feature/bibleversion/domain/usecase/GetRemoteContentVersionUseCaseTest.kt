@@ -18,7 +18,7 @@ internal class GetRemoteContentVersionUseCaseTest {
     )
 
     @Test
-    fun `reads the remote content version matching the id whatever its case`() = runTest {
+    fun `GIVEN an uppercase remote id WHEN reading it in lowercase THEN returns its content version`() = runTest {
         // Given
         val useCase = GetRemoteContentVersionUseCase(FakeBibleVersionRepository(Result.success(listOf(remoteVersion))))
 
@@ -33,7 +33,7 @@ internal class GetRemoteContentVersionUseCaseTest {
     }
 
     @Test
-    fun `returns an empty version when the version is not listed remotely`() = runTest {
+    fun `GIVEN a version not listed remotely WHEN reading it THEN returns an empty version`() = runTest {
         // Given
         val useCase = GetRemoteContentVersionUseCase(FakeBibleVersionRepository(Result.success(listOf(remoteVersion))))
 
@@ -48,7 +48,7 @@ internal class GetRemoteContentVersionUseCaseTest {
     }
 
     @Test
-    fun `returns an empty version when the remote list cannot be loaded`() = runTest {
+    fun `GIVEN a remote list that cannot be loaded WHEN reading a version THEN returns an empty version`() = runTest {
         // Given
         val useCase = GetRemoteContentVersionUseCase(
             FakeBibleVersionRepository(Result.failure(IllegalStateException("offline"))),

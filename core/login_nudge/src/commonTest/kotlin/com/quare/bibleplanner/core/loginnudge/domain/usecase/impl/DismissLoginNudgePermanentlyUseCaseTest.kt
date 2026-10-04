@@ -7,16 +7,20 @@ import kotlin.test.assertTrue
 
 internal class DismissLoginNudgePermanentlyUseCaseTest {
     @Test
-    fun `marks the nudge as permanently dismissed`() = runTest {
-        val preferences = FakeLoginNudgePreferences(
-            snoozedAt = null,
-            dontShowAgain = false,
-            firstActionAt = null,
-        )
-        val useCase = DismissLoginNudgePermanentlyUseCase(preferences)
+    fun `GIVEN a nudge not dismissed WHEN dismissing it permanently THEN marks it as permanently dismissed`() =
+        runTest {
+            // Given
+            val preferences = FakeLoginNudgePreferences(
+                snoozedAt = null,
+                dontShowAgain = false,
+                firstActionAt = null,
+            )
+            val useCase = DismissLoginNudgePermanentlyUseCase(preferences)
 
-        useCase()
+            // When
+            useCase()
 
-        assertTrue(preferences.isDontShowAgain())
-    }
+            // Then
+            assertTrue(preferences.isDontShowAgain())
+        }
 }

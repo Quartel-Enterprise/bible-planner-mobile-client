@@ -124,26 +124,27 @@ internal class DayStudyBackgroundGenerationViewModelTest {
         }
 
     @Test
-    fun `WHEN open is clicked THEN requests open and navigates to the day route`() = runTest(testDispatcher) {
-        // Given
-        val job = generatingJob(dayRoute)
-        val commands = mutableListOf<NavigationCommand>()
-        backgroundScope.launch { navigator.commands.collect { commands += it } }
+    fun `GIVEN a generating job WHEN open is clicked THEN requests open and navigates to the day route`() =
+        runTest(testDispatcher) {
+            // Given
+            val job = generatingJob(dayRoute)
+            val commands = mutableListOf<NavigationCommand>()
+            backgroundScope.launch { navigator.commands.collect { commands += it } }
 
-        // When
-        viewModel.onEvent(DayStudyBackgroundGenerationUiEvent.OnOpenClick(job))
-        advanceUntilIdle()
+            // When
+            viewModel.onEvent(DayStudyBackgroundGenerationUiEvent.OnOpenClick(job))
+            advanceUntilIdle()
 
-        // Then
-        assertEquals(listOf(job.key), coordinator.requestedOpenKeys)
-        assertEquals(
-            listOf<NavigationCommand>(NavigationCommand.Navigate(job.dayRoute)),
-            commands,
-        )
-    }
+            // Then
+            assertEquals(listOf(job.key), coordinator.requestedOpenKeys)
+            assertEquals(
+                listOf<NavigationCommand>(NavigationCommand.Navigate(job.dayRoute)),
+                commands,
+            )
+        }
 
     @Test
-    fun `WHEN dismiss is clicked THEN dismisses each key from the card`() = runTest(testDispatcher) {
+    fun `GIVEN the card WHEN dismiss is clicked THEN dismisses each key from the card`() = runTest(testDispatcher) {
         // When
         viewModel.onEvent(DayStudyBackgroundGenerationUiEvent.OnDismissClick(listOf("key-a", "key-b")))
 

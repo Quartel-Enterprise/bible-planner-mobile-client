@@ -8,7 +8,8 @@ class DataClassDefaultValueRuleTest {
     private val dataClassDefaultValueRuleAssertThat = assertThatRule { DataClassDefaultValueRule() }
 
     @Test
-    fun `flags a data class property with a default value`() {
+    fun `GIVEN a data class property with a default value WHEN linting THEN reports the property`() {
+        // Given
         val code =
             """
             data class ProfileUiState(
@@ -17,12 +18,16 @@ class DataClassDefaultValueRuleTest {
             )
             """.trimIndent()
 
-        dataClassDefaultValueRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 9, buildViolationMessage("isLoading"))
+        // When
+        val linted = dataClassDefaultValueRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 9, buildViolationMessage("isLoading"))
     }
 
     @Test
-    fun `flags every defaulted property, including those with annotations`() {
+    fun `GIVEN defaulted properties with annotations WHEN linting THEN reports every one of them`() {
+        // Given
         val code =
             """
             data class ChapterEntity(
@@ -31,15 +36,19 @@ class DataClassDefaultValueRuleTest {
             )
             """.trimIndent()
 
-        dataClassDefaultValueRuleAssertThat(code)
-            .hasLintViolationsWithoutAutoCorrect(
-                LintViolation(2, 42, buildViolationMessage("id")),
-                LintViolation(3, 44, buildViolationMessage("readUpdatedAt")),
-            )
+        // When
+        val linted = dataClassDefaultValueRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
+            LintViolation(2, 42, buildViolationMessage("id")),
+            LintViolation(3, 44, buildViolationMessage("readUpdatedAt")),
+        )
     }
 
     @Test
-    fun `flags a data class nested in a sealed interface`() {
+    fun `GIVEN a defaulted data class nested in a sealed interface WHEN linting THEN reports the property`() {
+        // Given
         val code =
             """
             sealed interface PaywallUiAction {
@@ -49,12 +58,16 @@ class DataClassDefaultValueRuleTest {
             }
             """.trimIndent()
 
-        dataClassDefaultValueRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 13, buildViolationMessage("args"))
+        // When
+        val linted = dataClassDefaultValueRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 13, buildViolationMessage("args"))
     }
 
     @Test
-    fun `allows a data class whose properties are all passed explicitly`() {
+    fun `GIVEN a data class whose properties are all passed explicitly WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             data class ProfileUiState(
@@ -63,11 +76,16 @@ class DataClassDefaultValueRuleTest {
             )
             """.trimIndent()
 
-        dataClassDefaultValueRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dataClassDefaultValueRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows default values in a regular class`() {
+    fun `GIVEN default values in a regular class WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class DesktopNetworkConnectivityObserver(
@@ -75,11 +93,16 @@ class DataClassDefaultValueRuleTest {
             )
             """.trimIndent()
 
-        dataClassDefaultValueRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dataClassDefaultValueRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `leaves serializable DTOs to the dto-serial-name rule`() {
+    fun `GIVEN a serializable DTO with a default value WHEN linting THEN leaves it to the dto-serial-name rule`() {
+        // Given
         val code =
             """
             @Serializable
@@ -88,7 +111,11 @@ class DataClassDefaultValueRuleTest {
             )
             """.trimIndent()
 
-        dataClassDefaultValueRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dataClassDefaultValueRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

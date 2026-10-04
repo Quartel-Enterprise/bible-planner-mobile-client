@@ -50,7 +50,7 @@ internal class VerseNoteViewModelTest {
     }
 
     @Test
-    fun `opens empty for a passage without a note`() = runTest(testDispatcher) {
+    fun `GIVEN a passage without a note WHEN opening the editor THEN starts empty`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -67,7 +67,7 @@ internal class VerseNoteViewModelTest {
     }
 
     @Test
-    fun `loads the text of an existing note`() = runTest(testDispatcher) {
+    fun `GIVEN an existing note WHEN opening the editor THEN loads its text`() = runTest(testDispatcher) {
         // Given
         prepareScenario(existingNote = existingNote())
 
@@ -83,7 +83,7 @@ internal class VerseNoteViewModelTest {
     }
 
     @Test
-    fun `shows the passage text as the quote`() = runTest(testDispatcher) {
+    fun `GIVEN a passage WHEN opening the editor THEN shows the passage text as the quote`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -98,7 +98,7 @@ internal class VerseNoteViewModelTest {
     }
 
     @Test
-    fun `saving writes the note and leaves`() = runTest(testDispatcher) {
+    fun `GIVEN a typed text WHEN saving THEN writes the note and leaves`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(VerseNoteUiEvent.OnTextChange("Minha reflexao"))
@@ -122,7 +122,7 @@ internal class VerseNoteViewModelTest {
     }
 
     @Test
-    fun `dismissing leaves without writing anything`() = runTest(testDispatcher) {
+    fun `GIVEN the editor WHEN dismissing it THEN leaves without writing anything`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
 
@@ -139,7 +139,7 @@ internal class VerseNoteViewModelTest {
     }
 
     @Test
-    fun `asks before deleting an existing note`() = runTest(testDispatcher) {
+    fun `GIVEN an existing note WHEN tapping delete THEN asks before deleting it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(existingNote = existingNote())
 
@@ -154,55 +154,58 @@ internal class VerseNoteViewModelTest {
     }
 
     @Test
-    fun `confirming the deletion removes the note, tracks it and leaves`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(existingNote = existingNote())
-        viewModel.onEvent(VerseNoteUiEvent.OnDeleteClick)
+    fun `GIVEN the delete confirmation WHEN confirming THEN removes the note tracks it and leaves`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(existingNote = existingNote())
+            viewModel.onEvent(VerseNoteUiEvent.OnDeleteClick)
 
-        // When
-        viewModel.onEvent(VerseNoteUiEvent.OnDeleteConfirm)
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseNoteUiEvent.OnDeleteConfirm)
+            runCurrent()
 
-        // Then
-        assertEquals(
-            expected = listOf("note-1"),
-            actual = deletedNoteIds,
-        )
-        assertTrue(savedNotes.isEmpty())
-        assertTrue(trackedEvents.contains("verse_note_deleted"))
-        assertEquals(
-            expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
-            actual = commands,
-        )
-    }
-
-    @Test
-    fun `cancelling the deletion keeps the note and the editor open`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(existingNote = existingNote())
-        viewModel.onEvent(VerseNoteUiEvent.OnDeleteClick)
-
-        // When
-        viewModel.onEvent(VerseNoteUiEvent.OnDeleteCancel)
-        runCurrent()
-
-        // Then
-        assertFalse(viewModel.uiState.value.isDeleteConfirmationVisible)
-        assertTrue(deletedNoteIds.isEmpty())
-        assertTrue(commands.isEmpty())
-    }
+            // Then
+            assertEquals(
+                expected = listOf("note-1"),
+                actual = deletedNoteIds,
+            )
+            assertTrue(savedNotes.isEmpty())
+            assertTrue(trackedEvents.contains("verse_note_deleted"))
+            assertEquals(
+                expected = listOf<NavigationCommand>(NavigationCommand.NavigateBack),
+                actual = commands,
+            )
+        }
 
     @Test
-    fun `only offers editing and deleting for a note that already exists`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(existingNote = existingNote())
+    fun `GIVEN the delete confirmation WHEN cancelling THEN keeps the note and the editor open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(existingNote = existingNote())
+            viewModel.onEvent(VerseNoteUiEvent.OnDeleteClick)
 
-        // When
-        runCurrent()
+            // When
+            viewModel.onEvent(VerseNoteUiEvent.OnDeleteCancel)
+            runCurrent()
 
-        // Then
-        assertTrue(viewModel.uiState.value.isExisting)
-    }
+            // Then
+            assertFalse(viewModel.uiState.value.isDeleteConfirmationVisible)
+            assertTrue(deletedNoteIds.isEmpty())
+            assertTrue(commands.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN an existing note WHEN opening the editor THEN offers editing and deleting it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(existingNote = existingNote())
+
+            // When
+            runCurrent()
+
+            // Then
+            assertTrue(viewModel.uiState.value.isExisting)
+        }
 
     private fun existingNote(): VerseNote = VerseNote(
         id = "note-1",

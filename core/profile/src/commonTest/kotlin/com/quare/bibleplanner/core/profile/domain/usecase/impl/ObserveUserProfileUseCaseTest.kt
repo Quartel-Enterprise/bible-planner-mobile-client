@@ -23,7 +23,7 @@ class ObserveUserProfileUseCaseTest {
     )
 
     @Test
-    fun `emits the profile of the repository`() = runTest {
+    fun `GIVEN a repository profile WHEN observing THEN emits the profile of the repository`() = runTest {
         // Given
         val useCase = ObserveUserProfileUseCase(FixedProfileRepository(profile))
 

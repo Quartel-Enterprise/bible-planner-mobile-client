@@ -35,7 +35,7 @@ internal class VersionDownloadActionsUseCasesTest {
     }
 
     @Test
-    fun `pausing dismisses the notification and marks the version paused`() = runTest {
+    fun `GIVEN a version in progress WHEN pausing it THEN dismisses the notification and marks it paused`() = runTest {
         // Given
         val useCase = PauseBibleVersionDownloadUseCase(
             bibleVersionDao = bibleVersionDao,
@@ -57,34 +57,35 @@ internal class VersionDownloadActionsUseCasesTest {
     }
 
     @Test
-    fun `updating wipes the downloaded texts before downloading the version again`() = runTest {
-        // Given
-        val useCase = UpdateBibleVersionUseCase(
-            deleteBibleVersionDownload = DeleteBibleVersionDownloadUseCase(
-                bibleVersionDao = bibleVersionDao,
-                verseDao = RecordingDeleteVerseDao(deletedVerseTexts),
-                notifier = notifier,
-            ),
-            downloaderFacade = downloaderFacade,
-        )
+    fun `GIVEN a version in progress WHEN updating it THEN wipes the downloaded texts before downloading it again`() =
+        runTest {
+            // Given
+            val useCase = UpdateBibleVersionUseCase(
+                deleteBibleVersionDownload = DeleteBibleVersionDownloadUseCase(
+                    bibleVersionDao = bibleVersionDao,
+                    verseDao = RecordingDeleteVerseDao(deletedVerseTexts),
+                    notifier = notifier,
+                ),
+                downloaderFacade = downloaderFacade,
+            )
 
-        // When
-        useCase(VERSION_ID)
+            // When
+            useCase(VERSION_ID)
 
-        // Then
-        assertEquals(
-            expected = listOf(VERSION_ID),
-            actual = deletedVerseTexts,
-        )
-        assertEquals(
-            expected = DownloadStatus.NOT_STARTED,
-            actual = bibleVersionDao.versions[VERSION_ID]?.status,
-        )
-        assertEquals(
-            expected = listOf("download $VERSION_ID"),
-            actual = downloaderFacade.calls,
-        )
-    }
+            // Then
+            assertEquals(
+                expected = listOf(VERSION_ID),
+                actual = deletedVerseTexts,
+            )
+            assertEquals(
+                expected = DownloadStatus.NOT_STARTED,
+                actual = bibleVersionDao.versions[VERSION_ID]?.status,
+            )
+            assertEquals(
+                expected = listOf("download $VERSION_ID"),
+                actual = downloaderFacade.calls,
+            )
+        }
 
     private companion object {
         const val VERSION_ID = "acf"

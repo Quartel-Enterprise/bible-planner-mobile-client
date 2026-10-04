@@ -28,7 +28,7 @@ import kotlin.test.assertTrue
 
 internal class DayStudyGenerationCoordinatorImplTest {
     @Test
-    fun `GIVEN a stream WHEN start THEN a generating job appears then completes as done`() = runTest {
+    fun `GIVEN a stream WHEN start THEN a generating job appears before the stream is driven`() = runTest {
         // Given
         val repository = dayStudyRepository(
             events = listOf(
@@ -42,12 +42,29 @@ internal class DayStudyGenerationCoordinatorImplTest {
         // When
         coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
 
-        // Then — synchronously generating before the stream is driven
+        // Then
         val generating = coordinator.jobs.value.single()
         assertEquals(coordinator.keyOf(dayRoute), generating.key)
         assertEquals(DayStudyGenerationStatus.Generating, generating.status)
+    }
 
+    @Test
+    fun `GIVEN a started stream WHEN the stream is driven THEN the job completes as done`() = runTest {
+        // Given
+        val repository = dayStudyRepository(
+            events = listOf(
+                DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.READING),
+                DayStudyGenerationEventModel.PhaseChanged(DayStudyPhaseModel.CHAPTERS),
+                DayStudyGenerationEventModel.Completed(study),
+            ),
+        )
+        val coordinator = coordinator(repository)
+        coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
+
+        // When
         advanceUntilIdle()
+
+        // Then
         val done = coordinator.jobs.value.single()
         assertEquals(DayStudyGenerationStatus.Done(study), done.status)
         assertEquals(DayStudyPhaseModel.CHAPTERS, done.phase)
@@ -80,18 +97,19 @@ internal class DayStudyGenerationCoordinatorImplTest {
     }
 
     @Test
-    fun `WHEN dismissing from card THEN the job keeps running but is marked dismissed`() = runTest {
-        // Given
-        val coordinator = coordinator(dayStudyRepository(events = listOf()))
-        val key = coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
+    fun `GIVEN a running job WHEN dismissing it from the card THEN it keeps running but is marked dismissed`() =
+        runTest {
+            // Given
+            val coordinator = coordinator(dayStudyRepository(events = listOf()))
+            val key = coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
 
-        // When
-        coordinator.dismissFromCard(key)
+            // When
+            coordinator.dismissFromCard(key)
 
-        // Then
-        assertTrue(key in coordinator.dismissedKeys.value)
-        assertEquals(1, coordinator.jobs.value.size)
-    }
+            // Then
+            assertTrue(key in coordinator.dismissedKeys.value)
+            assertEquals(1, coordinator.jobs.value.size)
+        }
 
     @Test
     fun `GIVEN a failing stream WHEN start THEN the job ends as failed`() = runTest {
@@ -166,7 +184,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     }
 
     @Test
-    fun `WHEN acknowledging a job THEN it is removed`() = runTest {
+    fun `GIVEN a running job WHEN acknowledging it THEN it is removed`() = runTest {
         // Given
         val coordinator = coordinator(dayStudyRepository(events = listOf()))
         val key = coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
@@ -185,9 +203,13 @@ internal class DayStudyGenerationCoordinatorImplTest {
         coordinator.start(passages, dayRoute, LABEL, isRewarded = false)
         coordinator.start(passages, otherDayRoute, "Gênesis 2", isRewarded = false)
 
-        // When / Then
-        assertEquals(2, coordinator.getGeneratingCount(excludingKey = null))
-        assertEquals(1, coordinator.getGeneratingCount(excludingKey = coordinator.keyOf(dayRoute)))
+        // When
+        val generatingCount = coordinator.getGeneratingCount(excludingKey = null)
+        val generatingCountExcludingDay = coordinator.getGeneratingCount(excludingKey = coordinator.keyOf(dayRoute))
+
+        // Then
+        assertEquals(2, generatingCount)
+        assertEquals(1, generatingCountExcludingDay)
     }
 
     @Test
@@ -271,7 +293,7 @@ internal class DayStudyGenerationCoordinatorImplTest {
     }
 
     @Test
-    fun `GIVEN a connection drop mid generation THEN the job fails as offline`() = runTest {
+    fun `GIVEN a generation in progress WHEN the connection drops THEN the job fails as offline`() = runTest {
         // Given
         val coordinator = coordinator(
             dayStudyRepository(

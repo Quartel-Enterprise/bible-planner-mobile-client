@@ -22,16 +22,17 @@ internal class GetMaxFreeNotesAmountUseCaseTest {
     }
 
     @Test
-    fun `WHEN reading the free notes amount THEN asks for its key with a fallback of three`() = runTest {
-        // Given
-        prepareScenario(remoteValue = 10)
+    fun `GIVEN a remote limit WHEN reading the free notes amount THEN asks for its key with a fallback of three`() =
+        runTest {
+            // Given
+            prepareScenario(remoteValue = 10)
 
-        // When
-        useCase()
+            // When
+            useCase()
 
-        // Then
-        assertEquals(listOf("max_free_notes" to 3), remoteConfig.requests)
-    }
+            // Then
+            assertEquals(listOf("max_free_notes" to 3), remoteConfig.requests)
+        }
 
     private fun prepareScenario(remoteValue: Int) {
         remoteConfig = RecordingIntRemoteConfig(remoteValue)

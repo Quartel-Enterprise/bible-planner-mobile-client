@@ -765,3 +765,16 @@ different intent and stays a `try`.
 
 Enforced by the custom ktlint rule `bible-planner-style:suspend-run-catching`: it flags a `try` with a catch
 clause that only rethrows its `CancellationException` and another that catches `Exception` or `Throwable`.
+
+## Tests
+
+Tests follow the conventions of [docs/testing](../testing/README.md), and the mechanical ones are custom ktlint
+rules that only run on test source sets (they are disabled for production code in `.editorconfig`):
+
+| Rule | Enforces |
+| --- | --- |
+| `bible-planner-style:test-name-given-when-then` | [`GIVEN … WHEN … THEN …` names](../testing/given-when-then.md#naming), with only the characters D8 accepts |
+| `bible-planner-style:test-body-sections` | [`// Given`, `// When`, `// Then`](../testing/given-when-then.md), once each and in order |
+| `bible-planner-style:prepare-scenario-returns-unit` | [`prepareScenario`](../testing/prepare-scenario.md) returns nothing |
+| `bible-planner-style:prepare-scenario-last-member` | `prepareScenario` is the last member, before only the companion object |
+| `bible-planner-style:prepare-scenario-in-given` | tests call `prepareScenario` under `// Given` |

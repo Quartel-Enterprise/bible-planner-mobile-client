@@ -22,7 +22,7 @@ internal class ClearChapterStudyLocalDataUseCaseTest {
     }
 
     @Test
-    fun `WHEN clearing the local data THEN clears the study cache once`() = runTest {
+    fun `GIVEN local study data WHEN clearing the local data THEN clears the study cache once`() = runTest {
         // When
         useCase()
 

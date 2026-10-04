@@ -10,65 +10,113 @@ import kotlin.test.assertTrue
 
 internal class ShouldRequestReviewUseCaseTest {
     @Test
-    fun `returns false within the first eligible grace period`() = runTest {
-        assertFalse(useCase(firstEligibleAt = NOW - GRACE_MILLIS + 1)())
+    fun `GIVEN a first eligible timestamp within the grace period WHEN evaluating THEN returns false`() = runTest {
+        // Given
+        val shouldRequestReview = useCase(firstEligibleAt = NOW - GRACE_MILLIS + 1)
+
+        // When
+        val result = shouldRequestReview()
+
+        // Then
+        assertFalse(result)
     }
 
     @Test
-    fun `returns true once the grace period elapsed and never prompted`() = runTest {
-        assertTrue(useCase(firstEligibleAt = NOW - GRACE_MILLIS)())
+    fun `GIVEN the grace period elapsed and no prompt yet WHEN evaluating THEN returns true`() = runTest {
+        // Given
+        val shouldRequestReview = useCase(firstEligibleAt = NOW - GRACE_MILLIS)
+
+        // When
+        val result = shouldRequestReview()
+
+        // Then
+        assertTrue(result)
     }
 
     @Test
-    fun `returns true when the first eligible timestamp is in the future`() = runTest {
-        assertTrue(useCase(firstEligibleAt = NOW + GRACE_MILLIS)())
+    fun `GIVEN a first eligible timestamp in the future WHEN evaluating THEN returns true`() = runTest {
+        // Given
+        val shouldRequestReview = useCase(firstEligibleAt = NOW + GRACE_MILLIS)
+
+        // When
+        val result = shouldRequestReview()
+
+        // Then
+        assertTrue(result)
     }
 
     @Test
-    fun `returns true when the last prompt timestamp is in the future`() = runTest {
-        assertTrue(
-            useCase(
-                lastPromptedVersion = "0.9.0",
-                lastPromptedAt = NOW + COOLDOWN_MILLIS,
-            )(),
+    fun `GIVEN a last prompt timestamp in the future WHEN evaluating THEN returns true`() = runTest {
+        // Given
+        val shouldRequestReview = useCase(
+            lastPromptedVersion = "0.9.0",
+            lastPromptedAt = NOW + COOLDOWN_MILLIS,
         )
+
+        // When
+        val result = shouldRequestReview()
+
+        // Then
+        assertTrue(result)
     }
 
     @Test
-    fun `returns false when already prompted on the current version`() = runTest {
-        assertFalse(useCase(lastPromptedVersion = APP_VERSION)())
+    fun `GIVEN a prompt already shown on the current version WHEN evaluating THEN returns false`() = runTest {
+        // Given
+        val shouldRequestReview = useCase(lastPromptedVersion = APP_VERSION)
+
+        // When
+        val result = shouldRequestReview()
+
+        // Then
+        assertFalse(result)
     }
 
     @Test
-    fun `returns false within the cooldown after a prompt on a previous version`() = runTest {
-        assertFalse(
-            useCase(
-                lastPromptedVersion = "0.9.0",
-                lastPromptedAt = NOW - COOLDOWN_MILLIS + 1,
-            )(),
+    fun `GIVEN a prompt on a previous version within the cooldown WHEN evaluating THEN returns false`() = runTest {
+        // Given
+        val shouldRequestReview = useCase(
+            lastPromptedVersion = "0.9.0",
+            lastPromptedAt = NOW - COOLDOWN_MILLIS + 1,
         )
+
+        // When
+        val result = shouldRequestReview()
+
+        // Then
+        assertFalse(result)
     }
 
     @Test
-    fun `returns true once the cooldown elapsed on a previous version`() = runTest {
-        assertTrue(
-            useCase(
+    fun `GIVEN the cooldown elapsed after a prompt on a previous version WHEN evaluating THEN returns true`() =
+        runTest {
+            // Given
+            val shouldRequestReview = useCase(
                 lastPromptedVersion = "0.9.0",
                 lastPromptedAt = NOW - COOLDOWN_MILLIS,
-            )(),
-        )
-    }
+            )
+
+            // When
+            val result = shouldRequestReview()
+
+            // Then
+            assertTrue(result)
+        }
 
     @Test
-    fun `stamps the first eligible timestamp and suppresses on the very first evaluation`() = runTest {
+    fun `GIVEN no first eligible timestamp WHEN evaluating THEN stamps it and suppresses the first prompt`() = runTest {
+        // Given
         val preferences = FakeReviewPreferences(
             firstEligibleAt = null,
             lastPromptedAt = null,
             lastPromptedVersion = null,
         )
+        val shouldRequestReview = useCase(preferences)
 
-        val result = useCase(preferences)()
+        // When
+        val result = shouldRequestReview()
 
+        // Then
         assertFalse(result)
         assertEquals(NOW, preferences.getFirstEligibleAt())
     }

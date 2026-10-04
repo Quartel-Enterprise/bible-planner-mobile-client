@@ -100,7 +100,7 @@ class MonitoredSessionManagerTest {
     }
 
     @Test
-    fun `WHEN deleting THEN records the delete before delegating`() = runTest {
+    fun `GIVEN the monitored manager WHEN deleting THEN records the delete before delegating`() = runTest {
         // When
         manager.deleteSession()
 

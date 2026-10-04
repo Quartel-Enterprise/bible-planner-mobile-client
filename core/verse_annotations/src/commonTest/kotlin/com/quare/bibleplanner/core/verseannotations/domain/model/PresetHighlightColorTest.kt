@@ -5,9 +5,12 @@ import kotlin.test.assertEquals
 
 internal class PresetHighlightColorTest {
     @Test
-    fun `only the first three presets are free`() {
+    fun `GIVEN every preset color WHEN keeping the ones that require Pro THEN only the first three are left out`() {
+        // Given
+        val presets = PresetHighlightColor.entries
+
         // When
-        val proPresets = PresetHighlightColor.entries.filter { it.requiresPro }
+        val proPresets = presets.filter(PresetHighlightColor::requiresPro)
 
         // Then
         assertEquals(

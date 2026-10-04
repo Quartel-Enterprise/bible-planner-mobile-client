@@ -17,7 +17,7 @@ internal class DownloadBooksInParallelUseCaseTest {
     private lateinit var verseDao: InMemoryVerseDao
 
     @Test
-    fun `downloads every book of the version`() = runTest {
+    fun `GIVEN every book available WHEN downloading the version THEN downloads every book`() = runTest {
         // Given
         prepareScenario(files = mapOf(GENESIS_PATH to CHAPTER_JSON, MATTHEW_PATH to CHAPTER_JSON))
 
@@ -36,7 +36,7 @@ internal class DownloadBooksInParallelUseCaseTest {
     }
 
     @Test
-    fun `fails when a book fails to download`() = runTest {
+    fun `GIVEN a book that fails to download WHEN downloading the version THEN fails`() = runTest {
         // Given
         prepareScenario(files = mapOf(GENESIS_PATH to CHAPTER_JSON))
 

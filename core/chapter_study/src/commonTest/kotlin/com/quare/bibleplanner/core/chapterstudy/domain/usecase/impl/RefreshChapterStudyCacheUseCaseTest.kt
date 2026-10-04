@@ -24,7 +24,7 @@ internal class RefreshChapterStudyCacheUseCaseTest {
     private lateinit var useCase: RefreshChapterStudyCacheUseCase
 
     @Test
-    fun `WHEN refreshing THEN asks the status for the selected version and the app language`() = runTest {
+    fun `GIVEN the selected version and the app language WHEN refreshing THEN asks the status for both`() = runTest {
         // Given
         prepareScenario(
             status = ChapterStudyStatusModel(

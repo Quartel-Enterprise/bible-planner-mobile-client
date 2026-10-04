@@ -78,7 +78,7 @@ internal class SupabaseModuleTest {
     }
 
     @Test
-    fun `GIVEN the supabase module WHEN resolving the client plugins THEN exposes the client's own plugins`() {
+    fun `GIVEN the supabase module WHEN resolving the client plugins THEN exposes the own plugins of the client`() {
         // When
         val auth = koin.get<Auth>()
         val realtime = koin.get<Realtime>()

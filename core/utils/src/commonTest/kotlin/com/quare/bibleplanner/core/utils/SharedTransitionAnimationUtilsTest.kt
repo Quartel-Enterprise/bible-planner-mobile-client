@@ -6,9 +6,12 @@ import kotlin.test.assertEquals
 internal class SharedTransitionAnimationUtilsTest {
     @Test
     fun `GIVEN a week WHEN building its shared element ids THEN derives the separator from the week id`() {
+        // Given
+        val weekNumber = 3
+
         // When
-        val weekId = SharedTransitionAnimationUtils.buildWeekNumberId(3)
-        val separatorId = SharedTransitionAnimationUtils.buildWeekSeparatorId(3)
+        val weekId = SharedTransitionAnimationUtils.buildWeekNumberId(weekNumber)
+        val separatorId = SharedTransitionAnimationUtils.buildWeekSeparatorId(weekNumber)
 
         // Then
         assertEquals("week_number_3", weekId)
@@ -17,24 +20,28 @@ internal class SharedTransitionAnimationUtilsTest {
 
     @Test
     fun `GIVEN a day WHEN building its shared element ids THEN each element gets its own id`() {
+        // Given
+        val weekNumber = 3
+        val dayNumber = 5
+
         // When
         val ids = with(SharedTransitionAnimationUtils) {
             listOf(
                 buildDayNumberId(
-                    weekNumber = 3,
-                    dayNumebr = 5,
+                    weekNumber = weekNumber,
+                    dayNumebr = dayNumber,
                 ),
                 buildPlannedDay(
-                    weekNumber = 3,
-                    dayNumber = 5,
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
                 ),
                 buildPlannedMonth(
-                    weekNumber = 3,
-                    dayNumber = 5,
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
                 ),
                 buildPlannedYear(
-                    weekNumber = 3,
-                    dayNumber = 5,
+                    weekNumber = weekNumber,
+                    dayNumber = dayNumber,
                 ),
             )
         }

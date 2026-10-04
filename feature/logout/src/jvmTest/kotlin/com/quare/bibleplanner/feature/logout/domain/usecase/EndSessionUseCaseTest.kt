@@ -42,7 +42,7 @@ internal class EndSessionUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a signed-in device WHEN ending the session THEN unregisters it, signs out and clears local data`() =
+    fun `GIVEN a signed-in device WHEN ending the session THEN unregisters it signs out and clears local data`() =
         runTest {
             // Given
             prepareScenario(clearLocalData = {})

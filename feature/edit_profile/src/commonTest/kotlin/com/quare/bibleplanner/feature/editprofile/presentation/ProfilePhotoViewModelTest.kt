@@ -40,7 +40,7 @@ class ProfilePhotoViewModelTest {
     }
 
     @Test
-    fun `removes the photo and closes the sheet`() = runTest {
+    fun `GIVEN the photo sheet WHEN removing the photo THEN removes it and closes the sheet`() = runTest {
         // When
         val actions = actionsAfter(ProfilePhotoUiEvent.OnRemovePhotoClick)
 
@@ -50,7 +50,7 @@ class ProfilePhotoViewModelTest {
     }
 
     @Test
-    fun `falls back to the provider photo and closes the sheet`() = runTest {
+    fun `GIVEN the photo sheet WHEN using the provider photo THEN falls back to it and closes the sheet`() = runTest {
         // When
         val actions = actionsAfter(ProfilePhotoUiEvent.OnUseProviderPhotoClick)
 
@@ -60,7 +60,7 @@ class ProfilePhotoViewModelTest {
     }
 
     @Test
-    fun `asks the ui to open the gallery picker`() = runTest {
+    fun `GIVEN the photo sheet WHEN picking from the gallery THEN asks the ui to open the gallery picker`() = runTest {
         // When
         val actions = actionsAfter(ProfilePhotoUiEvent.OnPickFromGalleryClick)
 
@@ -69,7 +69,7 @@ class ProfilePhotoViewModelTest {
     }
 
     @Test
-    fun `asks the ui to open the camera picker`() = runTest {
+    fun `GIVEN the photo sheet WHEN taking a photo THEN asks the ui to open the camera picker`() = runTest {
         // When
         val actions = actionsAfter(ProfilePhotoUiEvent.OnTakePhotoClick)
 
@@ -78,7 +78,7 @@ class ProfilePhotoViewModelTest {
     }
 
     @Test
-    fun `ignores a cancelled picker`() = runTest {
+    fun `GIVEN the photo sheet WHEN the picker is cancelled THEN ignores it`() = runTest {
         // When
         val actions = actionsAfter(ProfilePhotoUiEvent.OnImagePicked(null))
 
@@ -87,7 +87,7 @@ class ProfilePhotoViewModelTest {
     }
 
     @Test
-    fun `hides the camera option on desktop`() = runTest {
+    fun `GIVEN a desktop platform WHEN opening the photo sheet THEN hides the camera option`() = runTest {
         // When
         val viewModel = viewModel(platform = Platform.Desktop.MacOs)
 

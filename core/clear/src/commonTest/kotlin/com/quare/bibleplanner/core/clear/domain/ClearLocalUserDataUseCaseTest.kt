@@ -37,7 +37,7 @@ internal class ClearLocalUserDataUseCaseTest {
     }
 
     @Test
-    fun `WHEN clearing the local user data THEN wipes every local dataset once`() = runTest {
+    fun `GIVEN local user data WHEN clearing it THEN wipes every local dataset once`() = runTest {
         // When
         useCase()
 
@@ -57,13 +57,14 @@ internal class ClearLocalUserDataUseCaseTest {
     }
 
     @Test
-    fun `WHEN clearing the local user data THEN re-seeds the start date only after wiping the synced data`() = runTest {
-        // When
-        useCase()
+    fun `GIVEN local user data WHEN clearing it THEN re-seeds the start date only after wiping the synced data`() =
+        runTest {
+            // When
+            useCase()
 
-        // Then
-        assertTrue(calls.indexOf("clearAllSyncedLocalData") < calls.indexOf("seedDefaultStartDate($now)"))
-    }
+            // Then
+            assertTrue(calls.indexOf("clearAllSyncedLocalData") < calls.indexOf("seedDefaultStartDate($now)"))
+        }
 }
 
 private class RecordingBookDao(

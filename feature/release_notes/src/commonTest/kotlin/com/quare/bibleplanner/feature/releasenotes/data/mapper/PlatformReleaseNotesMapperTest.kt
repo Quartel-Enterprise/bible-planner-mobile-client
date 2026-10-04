@@ -47,27 +47,48 @@ internal class PlatformReleaseNotesMapperTest {
     }
 
     @Test
-    fun `GIVEN any desktop OS WHEN mapping THEN keeps the common changes followed by the desktop ones`() {
+    fun `GIVEN macOS WHEN mapping THEN keeps the common changes followed by the desktop ones`() {
         // Given
-        val desktops = listOf(
-            Platform.Desktop.MacOs,
-            Platform.Desktop.Linux,
-            Platform.Desktop.Windows,
-        )
+        prepareScenario(platform = Platform.Desktop.MacOs)
 
         // When
-        val changesPerDesktop = desktops.map { desktop ->
-            prepareScenario(platform = desktop)
-            mapper.mapToPlatformChanges(releaseNotes)
-        }
+        val changes = mapper.mapToPlatformChanges(releaseNotes)
 
         // Then
-        changesPerDesktop.forEach { changes ->
-            assertEquals(
-                expected = mapOf("2.9.0" to listOf("common change", "desktop change")),
-                actual = changes,
-            )
-        }
+        assertEquals(
+            expected = mapOf("2.9.0" to listOf("common change", "desktop change")),
+            actual = changes,
+        )
+    }
+
+    @Test
+    fun `GIVEN Linux WHEN mapping THEN keeps the common changes followed by the desktop ones`() {
+        // Given
+        prepareScenario(platform = Platform.Desktop.Linux)
+
+        // When
+        val changes = mapper.mapToPlatformChanges(releaseNotes)
+
+        // Then
+        assertEquals(
+            expected = mapOf("2.9.0" to listOf("common change", "desktop change")),
+            actual = changes,
+        )
+    }
+
+    @Test
+    fun `GIVEN Windows WHEN mapping THEN keeps the common changes followed by the desktop ones`() {
+        // Given
+        prepareScenario(platform = Platform.Desktop.Windows)
+
+        // When
+        val changes = mapper.mapToPlatformChanges(releaseNotes)
+
+        // Then
+        assertEquals(
+            expected = mapOf("2.9.0" to listOf("common change", "desktop change")),
+            actual = changes,
+        )
     }
 
     @Test

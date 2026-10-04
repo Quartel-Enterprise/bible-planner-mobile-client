@@ -53,7 +53,7 @@ internal class PlanStartDateUseCasesTest {
     }
 
     @Test
-    fun `WHEN ensuring a default start date THEN seeds the current time as provisional`() = runTest {
+    fun `GIVEN the current time WHEN ensuring a default start date THEN seeds it as provisional`() = runTest {
         // When
         EnsureDefaultPlanStartDateUseCase(
             planRepository = planRepository,

@@ -6,9 +6,12 @@ import kotlin.test.assertEquals
 internal class CollectionAndBooleanUtilsTest {
     @Test
     fun `GIVEN nullable flags WHEN defaulting them THEN only null takes the default`() {
+        // Given
+        val flags = listOf(true, false, null)
+
         // When
-        val orFalse = listOf(true, false, null).map(Boolean?::orFalse)
-        val orTrue = listOf(true, false, null).map(Boolean?::orTrue)
+        val orFalse = flags.map(Boolean?::orFalse)
+        val orTrue = flags.map(Boolean?::orTrue)
 
         // Then
         assertEquals(listOf(true, false, false), orFalse)

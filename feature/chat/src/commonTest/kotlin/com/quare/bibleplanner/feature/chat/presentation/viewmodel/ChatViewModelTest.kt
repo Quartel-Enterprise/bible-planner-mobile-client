@@ -88,11 +88,14 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN typed text WHEN sending THEN the request reaches the coordinator and the input clears`() =
         runTest(testDispatcher) {
+            // Given
             val viewModel = createViewModel()
-
             viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+
+            // When
             viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+            // Then
             assertEquals("Por que Caim matou Abel?", coordinator.startedRequests.single().message)
             assertNull(coordinator.startedRequests.single().conversationId)
             assertEquals("", viewModel.uiState.value.input)
@@ -101,14 +104,17 @@ internal class ChatViewModelTest {
 
     @Test
     fun `GIVEN a signed-out reader WHEN sending THEN login is asked`() = runTest(testDispatcher) {
+        // Given
         authenticatedUserId.value = null
         val viewModel = createViewModel()
         val commands = mutableListOf<NavigationCommand>()
         val collection = launch { navigator.commands.collect(commands::add) }
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+        // Then
         assertTrue(coordinator.startedRequests.isEmpty())
         assertEquals(
             listOf<NavigationCommand>(
@@ -122,86 +128,110 @@ internal class ChatViewModelTest {
 
     @Test
     fun `GIVEN a signed-out reader WHEN they sign in THEN the history and quota load`() = runTest(testDispatcher) {
+        // Given
         authenticatedUserId.value = null
         createViewModel()
         assertTrue(repository.refreshedConversations == 0)
 
+        // When
         authenticatedUserId.value = "user-1"
 
+        // Then
         assertTrue(repository.refreshedConversations > 0)
         assertTrue(repository.refreshedQuota > 0)
     }
 
     @Test
-    fun `GIVEN the study has no questions THEN the starters stand in`() = runTest(testDispatcher) {
-        entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
-        chatContext = readingContext()
-        chatSuggestions = emptyList()
-        defaultSuggestions = listOf(STARTER)
+    fun `GIVEN the study has no questions WHEN opening the chat THEN the starters stand in`() =
+        runTest(testDispatcher) {
+            // Given
+            entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+            chatContext = readingContext()
+            chatSuggestions = emptyList()
+            defaultSuggestions = listOf(STARTER)
 
-        val viewModel = createViewModel()
+            // When
+            val viewModel = createViewModel()
 
-        assertEquals(listOf(STARTER), viewModel.uiState.value.suggestions)
-    }
-
-    @Test
-    fun `GIVEN the chat opened from the study THEN its questions lead the starters`() = runTest(testDispatcher) {
-        entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
-        chatContext = readingContext()
-        chatSuggestions = listOf(SUGGESTION)
-        defaultSuggestions = listOf(STARTER)
-
-        val viewModel = createViewModel()
-
-        assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
-    }
+            // Then
+            assertEquals(listOf(STARTER), viewModel.uiState.value.suggestions)
+        }
 
     @Test
-    fun `GIVEN a study question repeats a starter THEN it is offered once`() = runTest(testDispatcher) {
-        entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
-        chatContext = readingContext()
-        chatSuggestions = listOf(SUGGESTION)
-        defaultSuggestions = listOf(SUGGESTION, STARTER)
+    fun `GIVEN study questions WHEN opening the chat from the study THEN its questions lead the starters`() =
+        runTest(testDispatcher) {
+            // Given
+            entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+            chatContext = readingContext()
+            chatSuggestions = listOf(SUGGESTION)
+            defaultSuggestions = listOf(STARTER)
 
-        val viewModel = createViewModel()
+            // When
+            val viewModel = createViewModel()
 
-        assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
-    }
+            // Then
+            assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
+        }
+
+    @Test
+    fun `GIVEN a study question repeats a starter WHEN opening the chat THEN it is offered once`() =
+        runTest(testDispatcher) {
+            // Given
+            entrySource = ChatEntrySource.DAY_STUDY_QUESTIONS
+            chatContext = readingContext()
+            chatSuggestions = listOf(SUGGESTION)
+            defaultSuggestions = listOf(SUGGESTION, STARTER)
+
+            // When
+            val viewModel = createViewModel()
+
+            // Then
+            assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
+        }
 
     @Test
     fun `GIVEN the study is generated WHEN opening from the day THEN its questions lead the starters`() =
         runTest(testDispatcher) {
+            // Given
             entrySource = ChatEntrySource.DAY_FAB
             chatContext = readingContext()
             chatSuggestions = listOf(SUGGESTION)
             defaultSuggestions = listOf(STARTER)
 
+            // When
             val viewModel = createViewModel()
 
+            // Then
             assertEquals(listOf(SUGGESTION, STARTER), viewModel.uiState.value.suggestions)
         }
 
     @Test
     fun `GIVEN no study is generated WHEN opening from the day THEN the starters stand alone`() =
         runTest(testDispatcher) {
+            // Given
             entrySource = ChatEntrySource.DAY_FAB
             chatContext = readingContext()
             chatSuggestions = emptyList()
             defaultSuggestions = listOf(STARTER)
 
+            // When
             val viewModel = createViewModel()
 
+            // Then
             assertEquals(listOf(STARTER), viewModel.uiState.value.suggestions)
         }
 
     @Test
     fun `GIVEN the day already has a conversation WHEN opening the chat THEN it is resumed`() =
         runTest(testDispatcher) {
+            // Given
             chatContext = readingContext()
             repository.conversations.value = listOf(conversation(planDay = readingPlanDay))
 
+            // When
             val viewModel = createViewModel()
 
+            // Then
             assertEquals(listOf("day-conversation"), repository.loadedConversationIds)
             assertEquals("Gênesis 4-7", viewModel.uiState.value.contextLabel)
         }
@@ -209,23 +239,29 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN a conversation of another day WHEN opening the chat THEN a new one is started`() =
         runTest(testDispatcher) {
+            // Given
             chatContext = readingContext()
             repository.conversations.value = listOf(conversation(planDay = readingPlanDay.copy(dayNumber = 5)))
 
+            // When
             createViewModel()
 
+            // Then
             assertTrue(repository.loadedConversationIds.isEmpty())
         }
 
     @Test
     fun `GIVEN the day has a conversation WHEN starting a new one THEN it is left behind`() = runTest(testDispatcher) {
+        // Given
         chatContext = readingContext()
         defaultSuggestions = listOf(STARTER)
         repository.conversations.value = listOf(conversation(planDay = readingPlanDay))
         val viewModel = createViewModel()
 
+        // When
         viewModel.onEvent(ChatUiEvent.OnNewConversationClick)
 
+        // Then
         assertNull(viewModel.uiState.value.contextLabel)
         assertEquals(listOf(STARTER), viewModel.uiState.value.suggestions)
     }
@@ -233,12 +269,15 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN a new conversation was started WHEN the day thread syncs THEN it does not take over`() =
         runTest(testDispatcher) {
+            // Given
             chatContext = readingContext()
             val viewModel = createViewModel()
             viewModel.onEvent(ChatUiEvent.OnNewConversationClick)
 
+            // When
             repository.conversations.value = listOf(conversation(planDay = readingPlanDay))
 
+            // Then
             assertTrue(repository.loadedConversationIds.isEmpty())
             assertNull(viewModel.uiState.value.contextLabel)
         }
@@ -246,6 +285,7 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN a question with no answer yet WHEN watching from another device THEN it thinks`() =
         runTest(testDispatcher) {
+            // Given
             repository.conversations.value = listOf(conversation(planDay = null))
             repository.messages.value = mapOf(
                 "day-conversation" to listOf(
@@ -261,14 +301,17 @@ internal class ChatViewModelTest {
             )
             val viewModel = createViewModel()
 
+            // When
             viewModel.onEvent(ChatUiEvent.OnConversationClick("day-conversation"))
 
+            // Then
             assertTrue(viewModel.uiState.value.isThinking)
         }
 
     @Test
     fun `GIVEN an answered question WHEN watching from another device THEN it does not think`() =
         runTest(testDispatcher) {
+            // Given
             repository.conversations.value = listOf(conversation(planDay = null))
             repository.messages.value = mapOf(
                 "day-conversation" to listOf(
@@ -292,31 +335,39 @@ internal class ChatViewModelTest {
             )
             val viewModel = createViewModel()
 
+            // When
             viewModel.onEvent(ChatUiEvent.OnConversationClick("day-conversation"))
 
+            // Then
             assertTrue(!viewModel.uiState.value.isThinking)
         }
 
     @Test
     fun `GIVEN a saved draft WHEN opening the chat THEN the composer is filled`() = runTest(testDispatcher) {
+        // Given
         chatContext = readingContext()
         repository.drafts.value = mapOf(DAY_DRAFT_KEY to "Por que")
 
+        // When
         val viewModel = createViewModel()
 
+        // Then
         assertEquals("Por que", viewModel.uiState.value.input)
     }
 
     @Test
     fun `GIVEN typing in the day thread WHEN switching threads before the save THEN it lands in the day slot`() =
         runTest(testDispatcher) {
+            // Given
             chatContext = readingContext()
             val viewModel = createViewModel()
-
             viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim"))
+
+            // When
             viewModel.onEvent(ChatUiEvent.OnNewConversationClick)
             advanceUntilIdle()
 
+            // Then
             assertEquals("Por que Caim", repository.drafts.value[DAY_DRAFT_KEY])
             assertNull(repository.drafts.value["new"])
         }
@@ -324,70 +375,88 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN a hydrated composer WHEN the draft is cleared elsewhere THEN the composer clears`() =
         runTest(testDispatcher) {
+            // Given
             chatContext = readingContext()
             repository.drafts.value = mapOf(DAY_DRAFT_KEY to "teste")
             val viewModel = createViewModel()
             assertEquals("teste", viewModel.uiState.value.input)
 
+            // When
             repository.drafts.value = mapOf(DAY_DRAFT_KEY to "")
 
+            // Then
             assertEquals("", viewModel.uiState.value.input)
         }
 
     @Test
     fun `GIVEN local typing WHEN the draft is cleared elsewhere THEN the typing is kept`() = runTest(testDispatcher) {
+        // Given
         chatContext = readingContext()
         repository.drafts.value = mapOf(DAY_DRAFT_KEY to "teste")
         val viewModel = createViewModel()
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("minha pergunta"))
+
+        // When
         repository.drafts.value = mapOf(DAY_DRAFT_KEY to "")
 
+        // Then
         assertEquals("minha pergunta", viewModel.uiState.value.input)
     }
 
     @Test
     fun `GIVEN typed text WHEN the debounce elapses THEN the draft is saved`() = runTest(testDispatcher) {
+        // Given
         chatContext = readingContext()
         val viewModel = createViewModel()
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim"))
+
+        // When
         advanceUntilIdle()
 
+        // Then
         assertEquals("Por que Caim", repository.drafts.value[DAY_DRAFT_KEY])
     }
 
     @Test
     fun `GIVEN a draft WHEN the question is sent THEN the draft is cleared`() = runTest(testDispatcher) {
+        // Given
         chatContext = readingContext()
         val viewModel = createViewModel()
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnSendClick)
         advanceUntilIdle()
 
+        // Then
         assertEquals("", repository.drafts.value[DAY_DRAFT_KEY])
     }
 
     @Test
     fun `GIVEN the suggestion bar is open WHEN sending THEN it closes`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
         viewModel.onEvent(ChatUiEvent.OnSuggestionBarToggle)
         assertTrue(viewModel.uiState.value.isSuggestionBarExpanded)
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+        // Then
         assertTrue(!viewModel.uiState.value.isSuggestionBarExpanded)
     }
 
     @Test
     fun `GIVEN the suggestion bar is open WHEN tapping a chip THEN it closes`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModelWithSuggestion()
         viewModel.onEvent(ChatUiEvent.OnSuggestionBarToggle)
 
+        // When
         viewModel.onEvent(ChatUiEvent.OnSuggestionClick(SUGGESTION))
 
+        // Then
         assertTrue(!viewModel.uiState.value.isSuggestionBarExpanded)
         assertEquals(SUGGESTION, coordinator.startedRequests.single().message)
     }
@@ -395,27 +464,33 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN a new conversation WHEN sending THEN the suggestions leave before the answer`() =
         runTest(testDispatcher) {
+            // Given
             val viewModel = createViewModelWithSuggestion()
             advanceUntilIdle()
             assertTrue(viewModel.uiState.value.showInitialSuggestions)
-
             viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Abel foi morto?"))
+
+            // When
             viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+            // Then
             val state = viewModel.uiState.value
             assertTrue(state.messages.isEmpty())
             assertTrue(!state.showInitialSuggestions)
         }
 
     @Test
-    fun `GIVEN a question is sent THEN the thread is scrolled to the bottom`() = runTest(testDispatcher) {
+    fun `GIVEN a typed question WHEN sending it THEN the thread is scrolled to the bottom`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
         val actions = mutableListOf<ChatUiAction>()
         val collection = launch { viewModel.uiAction.collect(actions::add) }
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+        // Then
         assertTrue(actions.contains(ChatUiAction.ScrollToBottom))
         collection.cancel()
     }
@@ -489,21 +564,27 @@ internal class ChatViewModelTest {
 
     @Test
     fun `GIVEN a signed-out reader WHEN tapping a suggestion THEN the chip is kept`() = runTest(testDispatcher) {
+        // Given
         authenticatedUserId.value = null
         val viewModel = createViewModelWithSuggestion()
 
+        // When
         viewModel.onEvent(ChatUiEvent.OnSuggestionClick(SUGGESTION))
 
+        // Then
         assertTrue(coordinator.startedRequests.isEmpty())
         assertEquals(listOf(SUGGESTION), viewModel.uiState.value.suggestions)
     }
 
     @Test
     fun `GIVEN a signed-in reader WHEN tapping a suggestion THEN it is sent and spent`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModelWithSuggestion()
 
+        // When
         viewModel.onEvent(ChatUiEvent.OnSuggestionClick(SUGGESTION))
 
+        // Then
         assertEquals(SUGGESTION, coordinator.startedRequests.single().message)
         assertTrue(
             viewModel.uiState.value.suggestions
@@ -513,17 +594,21 @@ internal class ChatViewModelTest {
 
     @Test
     fun `GIVEN blank text WHEN sending THEN nothing is sent`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("   "))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+        // Then
         assertTrue(coordinator.startedRequests.isEmpty())
     }
 
     @Test
     fun `GIVEN a conversation accepted by the server WHEN it streams THEN its messages are shown`() =
         runTest(testDispatcher) {
+            // Given
             val viewModel = createViewModel()
             repository.messages.value = mapOf(
                 "conversation-1" to listOf(
@@ -537,11 +622,13 @@ internal class ChatViewModelTest {
                     ),
                 ),
             )
-
             viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que?"))
             viewModel.onEvent(ChatUiEvent.OnSendClick)
+
+            // When
             coordinator.accept("conversation-1")
 
+            // Then
             assertEquals(
                 listOf("message-1"),
                 viewModel.uiState.value.messages
@@ -552,8 +639,10 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN an exhausted quota WHEN it arrives THEN the input locks and sending is refused`() =
         runTest(testDispatcher) {
+            // Given
             val viewModel = createViewModel()
 
+            // When
             repository.quota.value = ChatQuotaModel(
                 usedCount = 10,
                 freeLimit = 10,
@@ -562,6 +651,7 @@ internal class ChatViewModelTest {
             viewModel.onEvent(ChatUiEvent.OnInputChanged("Mais uma pergunta"))
             viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+            // Then
             assertEquals(ChatInputMode.LOCKED, viewModel.uiState.value.inputMode)
             assertTrue(coordinator.startedRequests.isEmpty())
         }
@@ -569,14 +659,17 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN a free user with questions left WHEN quota arrives THEN the remaining count is shown`() =
         runTest(testDispatcher) {
+            // Given
             val viewModel = createViewModel()
 
+            // When
             repository.quota.value = ChatQuotaModel(
                 usedCount = 7,
                 freeLimit = 10,
                 isPro = false,
             )
 
+            // Then
             assertEquals(
                 3,
                 viewModel.uiState.value.quota
@@ -587,38 +680,47 @@ internal class ChatViewModelTest {
 
     @Test
     fun `GIVEN a pro user WHEN quota arrives THEN no quota footer is shown`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
 
+        // When
         repository.quota.value = ChatQuotaModel(
             usedCount = 42,
             freeLimit = 10,
             isPro = true,
         )
 
+        // Then
         assertNull(viewModel.uiState.value.quota)
         assertEquals(ChatInputMode.ENABLED, viewModel.uiState.value.inputMode)
     }
 
     @Test
     fun `GIVEN an answer streaming WHEN sending again THEN the text is kept`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Primeira"))
         viewModel.onEvent(ChatUiEvent.OnSendClick)
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Segunda"))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+        // Then
         assertEquals(1, coordinator.startedRequests.size)
         assertEquals("Segunda", viewModel.uiState.value.input)
     }
 
     @Test
     fun `GIVEN a question just sent WHEN not echoed back yet THEN it shows locally`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
-
         viewModel.onEvent(ChatUiEvent.OnInputChanged("Por que Caim matou Abel?"))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnSendClick)
 
+        // Then
         assertEquals("Por que Caim matou Abel?", viewModel.uiState.value.visiblePendingQuestion)
         assertTrue(viewModel.uiState.value.isThinking)
     }
@@ -626,56 +728,71 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN a rate-limited answer WHEN it fails THEN the input enters the cooldown state`() =
         runTest(testDispatcher) {
+            // Given
             val viewModel = createViewModel()
-
             viewModel.onEvent(ChatUiEvent.OnInputChanged("Pergunta"))
             viewModel.onEvent(ChatUiEvent.OnSendClick)
+
+            // When
             coordinator.fail(ChatSendFailureModel.RateLimited(retryAfterSeconds = 12))
 
+            // Then
             assertEquals(ChatInputMode.COOLDOWN, viewModel.uiState.value.inputMode)
             assertEquals(12, viewModel.uiState.value.cooldownSeconds)
         }
 
     @Test
     fun `GIVEN the subscribe action WHEN clicked THEN the paywall click is tracked`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
 
+        // When
         viewModel.onEvent(ChatUiEvent.OnSubscribeClick)
 
+        // Then
         assertTrue(trackedEvents.any { it.first == AnalyticsEventNames.AI_CHAT_SUBSCRIBE_CLICKED })
     }
 
     @Test
     fun `GIVEN a conversation being renamed WHEN confirmed THEN the new title is persisted`() =
         runTest(testDispatcher) {
+            // Given
             val viewModel = createViewModel()
-
             viewModel.onEvent(ChatUiEvent.OnRenameConversationClick("conversation-1"))
             viewModel.onEvent(ChatUiEvent.OnRenameDraftChanged("  Caim e Abel  "))
+
+            // When
             viewModel.onEvent(ChatUiEvent.OnRenameConfirm)
 
+            // Then
             assertEquals(listOf("conversation-1" to "Caim e Abel"), repository.renamed)
             assertNull(viewModel.uiState.value.history.renamingId)
         }
 
     @Test
     fun `GIVEN a blank rename WHEN confirmed THEN the old title is kept`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
-
         viewModel.onEvent(ChatUiEvent.OnRenameConversationClick("conversation-1"))
         viewModel.onEvent(ChatUiEvent.OnRenameDraftChanged("   "))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnRenameConfirm)
 
+        // Then
         assertTrue(repository.renamed.isEmpty())
     }
 
     @Test
     fun `GIVEN a conversation marked for deletion WHEN confirmed THEN it is deleted`() = runTest(testDispatcher) {
+        // Given
         val viewModel = createViewModel()
-
         viewModel.onEvent(ChatUiEvent.OnDeleteConversationClick("conversation-1"))
+
+        // When
         viewModel.onEvent(ChatUiEvent.OnDeleteConfirm)
 
+        // Then
         assertEquals(listOf("conversation-1"), repository.deleted)
         assertNull(viewModel.uiState.value.history.deletingId)
     }
@@ -683,11 +800,14 @@ internal class ChatViewModelTest {
     @Test
     fun `GIVEN a conversation picked from the history WHEN clicked THEN its messages load and the drawer closes`() =
         runTest(testDispatcher) {
+            // Given
             val viewModel = createViewModel()
-
             viewModel.onEvent(ChatUiEvent.OnHistoryClick)
+
+            // When
             viewModel.onEvent(ChatUiEvent.OnConversationClick("conversation-1"))
 
+            // Then
             assertEquals(listOf("conversation-1"), repository.loadedConversationIds)
             assertEquals(false, viewModel.uiState.value.history.isOpen)
         }

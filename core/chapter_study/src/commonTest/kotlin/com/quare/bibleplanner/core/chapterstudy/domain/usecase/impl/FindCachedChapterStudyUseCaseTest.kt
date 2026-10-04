@@ -52,28 +52,29 @@ internal class FindCachedChapterStudyUseCaseTest {
     }
 
     @Test
-    fun `WHEN finding a study THEN looks it up for the selected version and the app language`() = runTest {
-        // Given
-        prepareScenario(cachedStudy = null)
+    fun `GIVEN no cached study WHEN finding a study THEN looks it up for the selected version and the app language`() =
+        runTest {
+            // Given
+            prepareScenario(cachedStudy = null)
 
-        // When
-        useCase(target)
+            // When
+            useCase(target)
 
-        // Then
-        assertEquals(
-            expected = listOf(
-                ChapterStudyRequest(
-                    chapter = ChapterRef(
-                        bibleVersionId = "KJV",
-                        bookId = BookId.JHN,
-                        chapterNumber = 3,
+            // Then
+            assertEquals(
+                expected = listOf(
+                    ChapterStudyRequest(
+                        chapter = ChapterRef(
+                            bibleVersionId = "KJV",
+                            bookId = BookId.JHN,
+                            chapterNumber = 3,
+                        ),
+                        languageCode = "en",
                     ),
-                    languageCode = "en",
                 ),
-            ),
-            actual = repository.cacheLookups,
-        )
-    }
+                actual = repository.cacheLookups,
+            )
+        }
 
     private fun prepareScenario(cachedStudy: ChapterStudyModel?) {
         repository = FakeChapterStudyRepository(

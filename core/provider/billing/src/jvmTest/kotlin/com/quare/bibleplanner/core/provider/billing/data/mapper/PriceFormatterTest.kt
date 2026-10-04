@@ -13,7 +13,7 @@ internal class PriceFormatterTest {
     private lateinit var formatter: PriceFormatter
 
     @Test
-    fun `should format the amount with the product currency`() {
+    fun `GIVEN a price in BRL WHEN formatting THEN formats the amount with the product currency`() {
         // When
         val price = formatter.format(
             PriceDto(
@@ -30,7 +30,7 @@ internal class PriceFormatterTest {
     }
 
     @Test
-    fun `should format an amount without decimals`() {
+    fun `GIVEN an amount without decimals WHEN formatting THEN formats it with two decimals`() {
         // When
         val price = formatter.format(
             PriceDto(
@@ -47,7 +47,7 @@ internal class PriceFormatterTest {
     }
 
     @Test
-    fun `should fall back to the raw currency code when it is unknown`() {
+    fun `GIVEN an unknown currency WHEN formatting THEN falls back to the raw currency code`() {
         // When
         val price = formatter.format(
             PriceDto(

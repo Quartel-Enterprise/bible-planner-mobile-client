@@ -42,17 +42,18 @@ class EditNameViewModelTest {
     }
 
     @Test
-    fun `saves the trimmed name and closes the dialog`() = runTest {
-        // When
-        val actions = actionsAfter(EditNameUiEvent.OnSaveClick("  Outro Nome  "))
+    fun `GIVEN a name with surrounding spaces WHEN saving THEN saves the trimmed name and closes the dialog`() =
+        runTest {
+            // When
+            val actions = actionsAfter(EditNameUiEvent.OnSaveClick("  Outro Nome  "))
 
-        // Then
-        assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
-        assertEquals(listOf("Outro Nome"), updatedNames)
-    }
+            // Then
+            assertEquals(listOf<NavigationCommand>(NavigationCommand.NavigateBack), commands)
+            assertEquals(listOf("Outro Nome"), updatedNames)
+        }
 
     @Test
-    fun `dismisses without saving when the name did not change`() = runTest {
+    fun `GIVEN an unchanged name WHEN saving THEN dismisses without saving`() = runTest {
         // When
         val actions = actionsAfter(EditNameUiEvent.OnSaveClick(CURRENT_NAME))
 
@@ -63,7 +64,7 @@ class EditNameViewModelTest {
     }
 
     @Test
-    fun `dismisses without saving when the name only differs by surrounding spaces`() = runTest {
+    fun `GIVEN a name differing only by surrounding spaces WHEN saving THEN dismisses without saving`() = runTest {
         // When
         val actions = actionsAfter(EditNameUiEvent.OnSaveClick("  $CURRENT_NAME  "))
 
@@ -74,7 +75,7 @@ class EditNameViewModelTest {
     }
 
     @Test
-    fun `does not save a blank name`() = runTest {
+    fun `GIVEN a blank name WHEN saving THEN does not save it`() = runTest {
         // When
         val actions = actionsAfter(EditNameUiEvent.OnSaveClick("   "))
 

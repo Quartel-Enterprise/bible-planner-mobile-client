@@ -16,7 +16,7 @@ internal class SyncBibleVersionsUseCaseTest {
     private lateinit var bibleVersionDao: RecordingBibleVersionDao
 
     @Test
-    fun `inserts an unknown version with its remote content version`() = runTest {
+    fun `GIVEN an unknown version WHEN syncing THEN inserts it with its remote content version`() = runTest {
         // Given
         prepareScenario()
 
@@ -32,7 +32,7 @@ internal class SyncBibleVersionsUseCaseTest {
     }
 
     @Test
-    fun `inserts only the versions that are missing locally`() = runTest {
+    fun `GIVEN some versions stored locally WHEN syncing THEN inserts only the missing ones`() = runTest {
         // Given
         prepareScenario(
             existingVersions = listOf(versionEntity(contentVersion = "1.2.0")),
@@ -54,7 +54,7 @@ internal class SyncBibleVersionsUseCaseTest {
     }
 
     @Test
-    fun `keeps an up-to-date version untouched`() = runTest {
+    fun `GIVEN an up-to-date version WHEN syncing THEN keeps it untouched`() = runTest {
         // Given
         prepareScenario(
             existingVersions = listOf(versionEntity(contentVersion = "1.2.0")),
@@ -70,7 +70,7 @@ internal class SyncBibleVersionsUseCaseTest {
     }
 
     @Test
-    fun `adopts the remote content version when nothing was downloaded`() = runTest {
+    fun `GIVEN a version with nothing downloaded WHEN syncing THEN adopts the remote content version`() = runTest {
         // Given
         prepareScenario(
             existingVersions = listOf(versionEntity(contentVersion = "1.1.0")),
@@ -85,7 +85,7 @@ internal class SyncBibleVersionsUseCaseTest {
     }
 
     @Test
-    fun `keeps the stored content version when outdated content is downloaded`() = runTest {
+    fun `GIVEN downloaded outdated content WHEN syncing THEN keeps the stored content version`() = runTest {
         // Given
         prepareScenario(
             existingVersions = listOf(versionEntity(contentVersion = "1.1.0")),
@@ -100,7 +100,7 @@ internal class SyncBibleVersionsUseCaseTest {
     }
 
     @Test
-    fun `keeps the stored content version when the remote content version is blank`() = runTest {
+    fun `GIVEN a blank remote content version WHEN syncing THEN keeps the stored content version`() = runTest {
         // Given
         prepareScenario(
             existingVersions = listOf(versionEntity(contentVersion = "1.1.0")),

@@ -22,9 +22,12 @@ import kotlin.test.assertEquals
 
 internal class AnnotationLabelsTest {
     @Test
-    fun `labels and draws each annotation type`() {
+    fun `GIVEN every annotation type WHEN reading its label and icon THEN labels and draws each type`() {
+        // Given
+        val types = AnnotationTypeFilter.entries
+
         // When
-        val labels = AnnotationTypeFilter.entries.associateWith { it.labelResource to it.icon }
+        val labels = types.associateWith { it.labelResource to it.icon }
 
         // Then
         assertEquals(
@@ -39,9 +42,12 @@ internal class AnnotationLabelsTest {
     }
 
     @Test
-    fun `labels each period`() {
+    fun `GIVEN every period WHEN reading its label THEN labels each period`() {
+        // Given
+        val periods = AnnotationPeriod.entries
+
         // When
-        val labels = AnnotationPeriod.entries.associateWith { it.labelResource }
+        val labels = periods.associateWith { it.labelResource }
 
         // Then
         assertEquals(

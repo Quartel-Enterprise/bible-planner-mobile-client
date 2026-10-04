@@ -16,23 +16,24 @@ internal class GetPurchaseResultDesktopUseCaseTest {
     private lateinit var openedUrls: MutableList<String>
 
     @Test
-    fun `should open the browser checkout and succeed once the entitlement becomes active`() = runTest {
-        // Given
-        prepareScenario(refreshesBeforePro = 2)
+    fun `GIVEN an entitlement that becomes active WHEN purchasing THEN opens the browser checkout and succeeds`() =
+        runTest {
+            // Given
+            prepareScenario(refreshesBeforePro = 2)
 
-        // When
-        val result = useCase(storePackage())
+            // When
+            val result = useCase(storePackage())
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(
-            expected = listOf($$"$$PURCHASE_LINK/$$APP_USER_ID?package_id=$rc_monthly"),
-            actual = openedUrls,
-        )
-    }
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(
+                expected = listOf($$"$$PURCHASE_LINK/$$APP_USER_ID?package_id=$rc_monthly"),
+                actual = openedUrls,
+            )
+        }
 
     @Test
-    fun `should fail as not confirmed when the entitlement never becomes active`() = runTest {
+    fun `GIVEN an entitlement that never becomes active WHEN purchasing THEN fails as not confirmed`() = runTest {
         // Given
         prepareScenario(refreshesBeforePro = Int.MAX_VALUE)
 
@@ -44,7 +45,7 @@ internal class GetPurchaseResultDesktopUseCaseTest {
     }
 
     @Test
-    fun `should fail without opening the browser when the purchase link is missing`() = runTest {
+    fun `GIVEN a missing purchase link WHEN purchasing THEN fails without opening the browser`() = runTest {
         // Given
         prepareScenario(checkoutUrl = null)
 
@@ -57,7 +58,7 @@ internal class GetPurchaseResultDesktopUseCaseTest {
     }
 
     @Test
-    fun `should fail without opening the browser when there is no authenticated user`() = runTest {
+    fun `GIVEN no authenticated user WHEN purchasing THEN fails without opening the browser`() = runTest {
         // Given
         prepareScenario(authenticatedUserId = null)
 

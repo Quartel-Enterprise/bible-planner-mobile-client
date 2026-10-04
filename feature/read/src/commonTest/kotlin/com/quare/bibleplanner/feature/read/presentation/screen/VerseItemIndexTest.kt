@@ -21,16 +21,19 @@ internal class VerseItemIndexTest {
 
     @Test
     fun `GIVEN the study card below WHEN finding a verse THEN skips earlier chapters with their study cards`() {
+        // Given
+        val focus = VerseFocusUiModel(
+            bookId = BookId.GEN,
+            chapterNumber = 2,
+            verseNumbers = listOf(4, 3),
+        )
+
         // When
         val index = findVerseItemIndex(
             chapters = chapters,
             leadingItemCount = 2,
             isChapterStudyBeside = false,
-            focus = VerseFocusUiModel(
-                bookId = BookId.GEN,
-                chapterNumber = 2,
-                verseNumbers = listOf(4, 3),
-            ),
+            focus = focus,
         )
 
         // Then
@@ -42,16 +45,19 @@ internal class VerseItemIndexTest {
 
     @Test
     fun `GIVEN the study card beside WHEN finding a verse THEN skips only earlier headers and end rows`() {
+        // Given
+        val focus = VerseFocusUiModel(
+            bookId = BookId.GEN,
+            chapterNumber = 2,
+            verseNumbers = listOf(4, 3),
+        )
+
         // When
         val index = findVerseItemIndex(
             chapters = chapters,
             leadingItemCount = 2,
             isChapterStudyBeside = true,
-            focus = VerseFocusUiModel(
-                bookId = BookId.GEN,
-                chapterNumber = 2,
-                verseNumbers = listOf(4, 3),
-            ),
+            focus = focus,
         )
 
         // Then
@@ -62,37 +68,42 @@ internal class VerseItemIndexTest {
     }
 
     @Test
-    fun `finds nothing for a chapter or verse that is not laid out`() {
+    fun `GIVEN a chapter or verse that is not laid out WHEN finding a verse THEN finds nothing`() {
+        // Given
+        val missingChapterFocus = VerseFocusUiModel(
+            bookId = BookId.EXO,
+            chapterNumber = 1,
+            verseNumbers = listOf(1),
+        )
+        val missingVerseFocus = VerseFocusUiModel(
+            bookId = BookId.GEN,
+            chapterNumber = 1,
+            verseNumbers = listOf(9),
+        )
+        val noVerseFocus = VerseFocusUiModel(
+            bookId = BookId.GEN,
+            chapterNumber = 1,
+            verseNumbers = emptyList(),
+        )
+
         // When
         val missingChapter = findVerseItemIndex(
             chapters = chapters,
             leadingItemCount = 0,
             isChapterStudyBeside = false,
-            focus = VerseFocusUiModel(
-                bookId = BookId.EXO,
-                chapterNumber = 1,
-                verseNumbers = listOf(1),
-            ),
+            focus = missingChapterFocus,
         )
         val missingVerse = findVerseItemIndex(
             chapters = chapters,
             leadingItemCount = 0,
             isChapterStudyBeside = false,
-            focus = VerseFocusUiModel(
-                bookId = BookId.GEN,
-                chapterNumber = 1,
-                verseNumbers = listOf(9),
-            ),
+            focus = missingVerseFocus,
         )
         val noVerse = findVerseItemIndex(
             chapters = chapters,
             leadingItemCount = 0,
             isChapterStudyBeside = false,
-            focus = VerseFocusUiModel(
-                bookId = BookId.GEN,
-                chapterNumber = 1,
-                verseNumbers = emptyList(),
-            ),
+            focus = noVerseFocus,
         )
 
         // Then

@@ -18,11 +18,14 @@ internal class ChapterStartIndicesTest {
 
     @Test
     fun `GIVEN the study card below WHEN getting start indices THEN a chapter spans its verses plus 3 items`() {
+        // Given
+        val isChapterStudyBeside = false
+
         // When
         val indices = getChapterStartIndices(
             chapters = chapters,
             leadingItemCount = 2,
-            isChapterStudyBeside = false,
+            isChapterStudyBeside = isChapterStudyBeside,
         )
 
         // Then
@@ -34,11 +37,14 @@ internal class ChapterStartIndicesTest {
 
     @Test
     fun `GIVEN the study card beside WHEN getting start indices THEN a chapter spans its verses plus 2 items`() {
+        // Given
+        val isChapterStudyBeside = true
+
         // When
         val indices = getChapterStartIndices(
             chapters = chapters,
             leadingItemCount = 2,
-            isChapterStudyBeside = true,
+            isChapterStudyBeside = isChapterStudyBeside,
         )
 
         // Then

@@ -22,12 +22,13 @@ internal class OfflineFirstSynchronizerTest {
     private lateinit var local: FakeLocalStore
     private lateinit var remote: FakeRemoteStore
     private lateinit var userId: MutableStateFlow<String?>
+    private lateinit var sync: OfflineFirstSynchronizer<String, String>
 
     @Test
     fun `GIVEN pending and online WHEN syncing THEN pushes mapped dtos and marks them synced`() = runTest {
         // Given
-        val sync = prepareScenario(online = true)
-        runPushLoop(sync)
+        prepareScenario(online = true)
+        runPushLoop()
 
         // When
         local.pending.value = listOf("GEN")
@@ -41,9 +42,9 @@ internal class OfflineFirstSynchronizerTest {
     @Test
     fun `GIVEN no authenticated session WHEN pending and online THEN does not push`() = runTest {
         // Given
-        val sync = prepareScenario(online = true)
+        prepareScenario(online = true)
         userId.value = null
-        runPushLoop(sync)
+        runPushLoop()
 
         // When
         local.pending.value = listOf("GEN")
@@ -57,9 +58,9 @@ internal class OfflineFirstSynchronizerTest {
     fun `GIVEN the session is lost after a failed push WHEN retrying THEN stops instead of pushing anonymously`() =
         runTest {
             // Given
-            val sync = prepareScenario(online = true)
+            prepareScenario(online = true)
             remote.upsertShouldFail = true
-            runPushLoop(sync)
+            runPushLoop()
             local.pending.value = listOf("GEN")
             runCurrent()
 
@@ -75,8 +76,8 @@ internal class OfflineFirstSynchronizerTest {
     @Test
     fun `GIVEN pending and offline WHEN syncing THEN does not push`() = runTest {
         // Given
-        val sync = prepareScenario(online = false)
-        runPushLoop(sync)
+        prepareScenario(online = false)
+        runPushLoop()
 
         // When
         local.pending.value = listOf("GEN")
@@ -89,7 +90,7 @@ internal class OfflineFirstSynchronizerTest {
     @Test
     fun `GIVEN a remote change WHEN it arrives THEN it is applied locally`() = runTest {
         // Given
-        val sync = prepareScenario(online = false)
+        prepareScenario(online = false)
         backgroundScope.launch { sync.observeRealtime() }
         runCurrent()
 
@@ -104,7 +105,7 @@ internal class OfflineFirstSynchronizerTest {
     @Test
     fun `GIVEN a remote snapshot WHEN pulling THEN every row is applied locally`() = runTest {
         // Given
-        val sync = prepareScenario(online = true)
+        prepareScenario(online = true)
         remote.snapshot = listOf("GEN", "EXO")
 
         // When
@@ -117,7 +118,7 @@ internal class OfflineFirstSynchronizerTest {
     @Test
     fun `GIVEN a remote snapshot WHEN only fetching THEN nothing is applied locally yet`() = runTest {
         // Given
-        val sync = prepareScenario(online = true)
+        prepareScenario(online = true)
         remote.snapshot = listOf("GEN", "EXO")
 
         // When
@@ -131,7 +132,7 @@ internal class OfflineFirstSynchronizerTest {
     @Test
     fun `GIVEN a remote snapshot WHEN pulling THEN provisional defaults are adopted after it is applied`() = runTest {
         // Given
-        val sync = prepareScenario(online = true)
+        prepareScenario(online = true)
         remote.snapshot = listOf("GEN")
 
         // When
@@ -145,7 +146,7 @@ internal class OfflineFirstSynchronizerTest {
     @Test
     fun `GIVEN no authenticated session WHEN pulling THEN provisional defaults are not adopted`() = runTest {
         // Given
-        val sync = prepareScenario(online = true)
+        prepareScenario(online = true)
         userId.value = null
 
         // When
@@ -158,7 +159,7 @@ internal class OfflineFirstSynchronizerTest {
     @Test
     fun `GIVEN pending WHEN flushing once THEN pushes and marks synced`() = runTest {
         // Given
-        val sync = prepareScenario(online = true)
+        prepareScenario(online = true)
         local.pending.value = listOf("GEN")
 
         // When
@@ -169,16 +170,16 @@ internal class OfflineFirstSynchronizerTest {
         assertEquals(listOf("GEN"), local.markSyncedCalls)
     }
 
-    private fun TestScope.runPushLoop(sync: OfflineFirstSynchronizer<String, String>) {
+    private fun TestScope.runPushLoop() {
         backgroundScope.launch { sync.runPushLoop() }
         runCurrent()
     }
 
-    private fun prepareScenario(online: Boolean): OfflineFirstSynchronizer<String, String> {
+    private fun prepareScenario(online: Boolean) {
         local = FakeLocalStore()
         remote = FakeRemoteStore()
         userId = MutableStateFlow("user-1")
-        return OfflineFirstSynchronizer(
+        sync = OfflineFirstSynchronizer(
             localStore = local,
             remoteStore = remote,
             networkConnectivityObserver = { flowOf(online) },

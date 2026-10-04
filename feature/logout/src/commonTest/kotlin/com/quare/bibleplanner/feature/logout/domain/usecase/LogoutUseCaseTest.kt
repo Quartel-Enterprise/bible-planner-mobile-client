@@ -14,7 +14,7 @@ internal class LogoutUseCaseTest {
     private var endSessionCalls = 0
 
     @Test
-    fun `GIVEN a successful flush WHEN logging out THEN syncs, ends the session and finishes with its result`() =
+    fun `GIVEN a successful flush WHEN logging out THEN syncs ends the session and finishes with its result`() =
         runTest {
             // Given
             prepareScenario(

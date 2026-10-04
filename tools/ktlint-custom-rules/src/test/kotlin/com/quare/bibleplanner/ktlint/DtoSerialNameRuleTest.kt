@@ -8,7 +8,8 @@ class DtoSerialNameRuleTest {
     private val dtoSerialNameRuleAssertThat = assertThatRule { DtoSerialNameRule() }
 
     @Test
-    fun `flags a field without a serial name`() {
+    fun `GIVEN a dto field without a serial name WHEN linting THEN reports the missing serial name`() {
+        // Given
         val code =
             """
             @Serializable
@@ -17,12 +18,16 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 9, buildMissingSerialNameMessage("name"))
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 9, buildMissingSerialNameMessage("name"))
     }
 
     @Test
-    fun `flags a var field without a serial name`() {
+    fun `GIVEN a dto var field without a serial name WHEN linting THEN reports the missing serial name`() {
+        // Given
         val code =
             """
             @Serializable
@@ -31,12 +36,16 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(3, 9, buildMissingSerialNameMessage("title"))
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(3, 9, buildMissingSerialNameMessage("title"))
     }
 
     @Test
-    fun `flags only the field that misses its serial name`() {
+    fun `GIVEN a dto with one field missing its serial name WHEN linting THEN reports only that field`() {
+        // Given
         val code =
             """
             @Serializable
@@ -47,12 +56,16 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(5, 9, buildMissingSerialNameMessage("name"))
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(5, 9, buildMissingSerialNameMessage("name"))
     }
 
     @Test
-    fun `flags a field with a default value`() {
+    fun `GIVEN a dto field with a default value WHEN linting THEN reports the default value`() {
+        // Given
         val code =
             """
             @Serializable
@@ -62,12 +75,16 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(4, 24, buildDefaultValueMessage("name"))
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(4, 24, buildDefaultValueMessage("name"))
     }
 
     @Test
-    fun `flags a nullable field that defaults to null`() {
+    fun `GIVEN a nullable dto field that defaults to null WHEN linting THEN reports the default value`() {
+        // Given
         val code =
             """
             @Serializable
@@ -77,12 +94,16 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(4, 29, buildDefaultValueMessage("coverUrl"))
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(4, 29, buildDefaultValueMessage("coverUrl"))
     }
 
     @Test
-    fun `flags both problems on the same field`() {
+    fun `GIVEN a dto field without a serial name and with a default WHEN linting THEN reports both problems`() {
+        // Given
         val code =
             """
             @Serializable
@@ -91,15 +112,19 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code)
-            .hasLintViolationsWithoutAutoCorrect(
-                LintViolation(3, 9, buildMissingSerialNameMessage("name")),
-                LintViolation(3, 24, buildDefaultValueMessage("name")),
-            )
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationsWithoutAutoCorrect(
+            LintViolation(3, 9, buildMissingSerialNameMessage("name")),
+            LintViolation(3, 24, buildDefaultValueMessage("name")),
+        )
     }
 
     @Test
-    fun `allows a dto whose fields all name their key and have no default`() {
+    fun `GIVEN a dto whose fields all name their key and have no default WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Serializable
@@ -111,11 +136,16 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a class that is not a dto`() {
+    fun `GIVEN a class that is not a dto WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             data class Book(
@@ -123,11 +153,16 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a class that only mentions dto in the middle of its name`() {
+    fun `GIVEN a class that only mentions dto in the middle of its name WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class BookDtoMapper(
@@ -135,11 +170,16 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a plain constructor parameter because it is not a field`() {
+    fun `GIVEN a dto with a plain constructor parameter WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Serializable
@@ -151,11 +191,16 @@ class DtoSerialNameRuleTest {
             }
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a dto that is not serializable`() {
+    fun `GIVEN a dto that is not serializable WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             data class ProfileDto(
@@ -163,18 +208,27 @@ class DtoSerialNameRuleTest {
             )
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a dto without a primary constructor`() {
+    fun `GIVEN a dto without a primary constructor WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @Serializable
             class EmptyDto
             """.trimIndent()
 
-        dtoSerialNameRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = dtoSerialNameRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

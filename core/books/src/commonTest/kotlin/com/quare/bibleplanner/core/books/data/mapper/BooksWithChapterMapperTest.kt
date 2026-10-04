@@ -13,7 +13,8 @@ internal class BooksWithChapterMapperTest {
     private val mapper = BooksWithChapterMapper()
 
     @Test
-    fun `maps one verse model per verse`() = runTest {
+    fun `GIVEN a chapter with two verses WHEN mapping the book THEN maps one verse model per verse`() = runTest {
+        // Given
         val book = BookWithChapters(
             book = BookEntity(
                 id = "GEN",
@@ -54,8 +55,10 @@ internal class BooksWithChapterMapperTest {
             ),
         )
 
+        // When
         val result = mapper.mapModel(book)
 
+        // Then
         val verses = result.chapters.single().verses
         assertEquals(2, verses.size)
         assertEquals(listOf(1, 2), verses.map { it.number })
@@ -63,86 +66,88 @@ internal class BooksWithChapterMapperTest {
     }
 
     @Test
-    fun `chapter read date is the latest read moment across the chapter flag and its verses`() = runTest {
-        // Given
-        val book = BookWithChapters(
-            book = BookEntity(
-                id = "GEN",
-                isRead = false,
-                favoriteUpdatedAt = null,
-                isFavoritePendingSync = false,
-                isFavorite = false,
-            ),
-            chapters = listOf(
-                ChapterWithVerses(
-                    chapter = ChapterEntity(
-                        id = 1,
-                        number = 1,
-                        bookId = "GEN",
-                        isRead = true,
-                        readUpdatedAt = 100L,
-                        isReadPendingSync = false,
-                    ),
-                    verses = listOf(
-                        VerseEntity(
+    fun `GIVEN a read chapter and a later read verse WHEN mapping THEN the chapter read date is the latest one`() =
+        runTest {
+            // Given
+            val book = BookWithChapters(
+                book = BookEntity(
+                    id = "GEN",
+                    isRead = false,
+                    favoriteUpdatedAt = null,
+                    isFavoritePendingSync = false,
+                    isFavorite = false,
+                ),
+                chapters = listOf(
+                    ChapterWithVerses(
+                        chapter = ChapterEntity(
                             id = 1,
                             number = 1,
-                            chapterId = 1,
+                            bookId = "GEN",
                             isRead = true,
-                            readUpdatedAt = 250L,
+                            readUpdatedAt = 100L,
                             isReadPendingSync = false,
+                        ),
+                        verses = listOf(
+                            VerseEntity(
+                                id = 1,
+                                number = 1,
+                                chapterId = 1,
+                                isRead = true,
+                                readUpdatedAt = 250L,
+                                isReadPendingSync = false,
+                            ),
                         ),
                     ),
                 ),
-            ),
-        )
+            )
 
-        // When
-        val result = mapper.mapModel(book)
+            // When
+            val result = mapper.mapModel(book)
 
-        // Then
-        assertEquals(250L, result.chapters.single().readUpdatedAt)
-    }
+            // Then
+            assertEquals(250L, result.chapters.single().readUpdatedAt)
+        }
 
     @Test
-    fun `chapter read date is null when neither the chapter nor its verses were read`() = runTest {
-        // Given
-        val book = BookWithChapters(
-            book = BookEntity(
-                id = "GEN",
-                isRead = false,
-                favoriteUpdatedAt = null,
-                isFavoritePendingSync = false,
-                isFavorite = false,
-            ),
-            chapters = listOf(
-                ChapterWithVerses(
-                    chapter = ChapterEntity(
-                        id = 1,
-                        number = 1,
-                        bookId = "GEN",
-                        isRead = false,
-                        readUpdatedAt = null,
-                        isReadPendingSync = false,
-                    ),
-                    verses = listOf(
-                        VerseEntity(
+    fun `GIVEN an unread chapter with unread verses WHEN mapping the book THEN the chapter read date is null`() =
+        runTest {
+            // Given
+            val book = BookWithChapters(
+                book = BookEntity(
+                    id = "GEN",
+                    isRead = false,
+                    favoriteUpdatedAt = null,
+                    isFavoritePendingSync = false,
+                    isFavorite = false,
+                ),
+                chapters = listOf(
+                    ChapterWithVerses(
+                        chapter = ChapterEntity(
                             id = 1,
                             number = 1,
-                            chapterId = 1,
+                            bookId = "GEN",
                             isRead = false,
                             readUpdatedAt = null,
                             isReadPendingSync = false,
                         ),
+                        verses = listOf(
+                            VerseEntity(
+                                id = 1,
+                                number = 1,
+                                chapterId = 1,
+                                isRead = false,
+                                readUpdatedAt = null,
+                                isReadPendingSync = false,
+                            ),
+                        ),
                     ),
                 ),
-            ),
-        )
+            )
 
-        // When
-        val result = mapper.mapModel(book)
+            // When
+            val result = mapper.mapModel(book)
 
-        // Then
-        assertEquals(null, result.chapters.single().readUpdatedAt)
-    }
+            // Then
+            assertEquals(null, result.chapters.single().readUpdatedAt)
+        }
 }

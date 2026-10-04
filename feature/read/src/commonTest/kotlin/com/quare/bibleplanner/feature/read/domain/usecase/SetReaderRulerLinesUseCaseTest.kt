@@ -19,7 +19,7 @@ internal class SetReaderRulerLinesUseCaseTest {
     }
 
     @Test
-    fun `stores a line count inside the bounds as it is`() = runTest {
+    fun `GIVEN a line count inside the bounds WHEN setting the ruler lines THEN stores it as it is`() = runTest {
         // When
         useCase(3)
 
@@ -31,7 +31,7 @@ internal class SetReaderRulerLinesUseCaseTest {
     }
 
     @Test
-    fun `clamps a line count below the minimum`() = runTest {
+    fun `GIVEN a line count below the minimum WHEN setting the ruler lines THEN clamps it to the minimum`() = runTest {
         // When
         useCase(0)
 
@@ -43,7 +43,7 @@ internal class SetReaderRulerLinesUseCaseTest {
     }
 
     @Test
-    fun `clamps a line count above the maximum`() = runTest {
+    fun `GIVEN a line count above the maximum WHEN setting the ruler lines THEN clamps it to the maximum`() = runTest {
         // When
         useCase(10)
 

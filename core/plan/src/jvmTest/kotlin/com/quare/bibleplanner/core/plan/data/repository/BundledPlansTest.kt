@@ -37,7 +37,7 @@ internal class BundledPlansTest {
     }
 
     @Test
-    fun `WHEN loading each bundled plan THEN returns its 52 weeks in order`() = runTest {
+    fun `GIVEN every bundled plan WHEN loading each THEN returns its 52 weeks in order`() = runTest {
         // When
         val weekNumbersByPlan = ReadingPlanType.entries.map { type -> repository.getPlans(type).map { it.number } }
 
@@ -46,7 +46,7 @@ internal class BundledPlansTest {
     }
 
     @Test
-    fun `WHEN loading the books order plan THEN starts with Genesis and ends with Revelation`() = runTest {
+    fun `GIVEN the books order plan WHEN loading it THEN starts with Genesis and ends with Revelation`() = runTest {
         // When
         val weeks = repository.getPlans(ReadingPlanType.BOOKS)
 
@@ -74,7 +74,7 @@ internal class BundledPlansTest {
     }
 
     @Test
-    fun `WHEN loading each bundled plan THEN every day schedules at least one passage`() = runTest {
+    fun `GIVEN every bundled plan WHEN loading each THEN every day schedules at least one passage`() = runTest {
         // When
         val days = ReadingPlanType.entries.flatMap { type -> repository.getPlans(type).flatMap { it.days } }
 

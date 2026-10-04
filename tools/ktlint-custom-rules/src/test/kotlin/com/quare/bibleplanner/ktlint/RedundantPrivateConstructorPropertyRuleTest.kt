@@ -8,7 +8,8 @@ class RedundantPrivateConstructorPropertyRuleTest {
         assertThatRule { RedundantPrivateConstructorPropertyRule() }
 
     @Test
-    fun `flags a private val only a property initializer reads`() {
+    fun `GIVEN a private val only a property initializer reads WHEN linting THEN reports the val`() {
+        // Given
         val code =
             """
             class BooksViewModel(
@@ -18,12 +19,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("repository", "val"))
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("repository", "val"))
     }
 
     @Test
-    fun `flags a private val only an init block reads`() {
+    fun `GIVEN a private val only an init block reads WHEN linting THEN reports the val`() {
+        // Given
         val code =
             """
             class Player(
@@ -35,12 +40,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("volume", "val"))
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("volume", "val"))
     }
 
     @Test
-    fun `flags a private val only a delegate reads`() {
+    fun `GIVEN a private val only a delegate reads WHEN linting THEN reports the val`() {
+        // Given
         val code =
             """
             class BooksViewModel(
@@ -50,12 +59,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("repository", "val"))
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("repository", "val"))
     }
 
     @Test
-    fun `flags a private val only a superclass constructor call reads`() {
+    fun `GIVEN a private val only a superclass constructor call reads WHEN linting THEN reports the val`() {
+        // Given
         val code =
             """
             class BooksPagingSource(
@@ -63,12 +76,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             ) : BasePagingSource(pageSize)
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("pageSize", "val"))
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("pageSize", "val"))
     }
 
     @Test
-    fun `flags a private var and names its keyword`() {
+    fun `GIVEN a private var only a property initializer reads WHEN linting THEN reports it naming its keyword`() {
+        // Given
         val code =
             """
             class Player(
@@ -78,12 +95,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("volume", "var"))
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("volume", "var"))
     }
 
     @Test
-    fun `flags only the property that initialization alone reads`() {
+    fun `GIVEN two private vals and only one read at initialization alone WHEN linting THEN reports only that one`() {
+        // Given
         val code =
             """
             class BooksViewModel(
@@ -98,12 +119,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code)
-            .hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("repository", "val"))
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasLintViolationWithoutAutoCorrect(2, 13, buildViolationMessage("repository", "val"))
     }
 
     @Test
-    fun `allows a private val a method reads`() {
+    fun `GIVEN a private val a method reads WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class BooksViewModel(
@@ -117,11 +142,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val a property getter reads`() {
+    fun `GIVEN a private val a property getter reads WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Player(
@@ -132,11 +162,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val a nested class reads`() {
+    fun `GIVEN a private val a nested class reads WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Player(
@@ -148,11 +183,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val read through a qualifier`() {
+    fun `GIVEN a private val read through a qualifier WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Player(
@@ -162,11 +202,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val a secondary constructor reads`() {
+    fun `GIVEN a private val a secondary constructor reads WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Player(
@@ -180,11 +225,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val nothing reads`() {
+    fun `GIVEN a private val nothing reads WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Player(
@@ -192,11 +242,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             )
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val whose name only labels a named argument`() {
+    fun `GIVEN a private val whose name only labels a named argument WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Player(
@@ -206,11 +261,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val of a data class`() {
+    fun `GIVEN a private val of a data class WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             data class Artwork(
@@ -220,11 +280,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a private val of a value class`() {
+    fun `GIVEN a private val of a value class WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             @JvmInline
@@ -237,11 +302,16 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 
     @Test
-    fun `allows a plain parameter and a public property`() {
+    fun `GIVEN a plain parameter and a public property WHEN linting THEN reports nothing`() {
+        // Given
         val code =
             """
             class Player(
@@ -253,7 +323,11 @@ class RedundantPrivateConstructorPropertyRuleTest {
             }
             """.trimIndent()
 
-        redundantPrivateConstructorPropertyRuleAssertThat(code).hasNoLintViolations()
+        // When
+        val linted = redundantPrivateConstructorPropertyRuleAssertThat(code)
+
+        // Then
+        linted.hasNoLintViolations()
     }
 }
 

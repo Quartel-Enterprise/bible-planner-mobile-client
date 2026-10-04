@@ -15,6 +15,7 @@ internal class ChatMessageUiMapperTest {
 
     @Test
     fun `GIVEN an answer with no text yet WHEN mapping THEN it becomes the thinking state`() {
+        // Given
         val messages = listOf(
             message(
                 id = "question",
@@ -29,12 +30,17 @@ internal class ChatMessageUiMapperTest {
             ),
         )
 
-        assertEquals(listOf("question"), mapper.map(messages).map { it.id })
+        // When
+        val mapped = mapper.map(messages)
+
+        // Then
+        assertEquals(listOf("question"), mapped.map { it.id })
         assertTrue(mapper.isThinking(messages))
     }
 
     @Test
     fun `GIVEN an answer being written WHEN mapping THEN it is shown as a streaming bubble`() {
+        // Given
         val messages = listOf(
             message(
                 id = "answer",
@@ -44,7 +50,10 @@ internal class ChatMessageUiMapperTest {
             ),
         )
 
+        // When
         val mapped = mapper.map(messages).single()
+
+        // Then
         assertEquals("Caim matou", mapped.text)
         assertFalse(mapped.isFromUser)
         assertTrue(mapped.isStreaming)
@@ -53,6 +62,7 @@ internal class ChatMessageUiMapperTest {
 
     @Test
     fun `GIVEN a repeated id WHEN mapping THEN the list stays safe for a lazy list`() {
+        // Given
         val messages = listOf(
             message(
                 id = "answer",
@@ -67,11 +77,16 @@ internal class ChatMessageUiMapperTest {
             ),
         )
 
-        assertEquals(listOf("answer"), mapper.map(messages).map { it.id })
+        // When
+        val mapped = mapper.map(messages)
+
+        // Then
+        assertEquals(listOf("answer"), mapped.map { it.id })
     }
 
     @Test
     fun `GIVEN an answer the server marked failed WHEN mapping THEN it survives to be shown`() {
+        // Given
         val messages = listOf(
             message(
                 id = "answer",
@@ -81,7 +96,10 @@ internal class ChatMessageUiMapperTest {
             ),
         )
 
+        // When
         val mapped = mapper.map(messages).single()
+
+        // Then
         assertTrue(mapped.isFailed)
         assertTrue(!mapper.isThinking(messages))
     }

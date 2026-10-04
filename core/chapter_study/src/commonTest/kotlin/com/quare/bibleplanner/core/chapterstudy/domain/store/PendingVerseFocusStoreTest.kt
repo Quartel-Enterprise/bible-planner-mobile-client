@@ -35,7 +35,7 @@ internal class PendingVerseFocusStoreTest {
     }
 
     @Test
-    fun `WHEN requesting a focus THEN it becomes the pending focus`() {
+    fun `GIVEN no pending focus WHEN requesting a focus THEN it becomes the pending focus`() {
         // When
         store.request(focus)
 

@@ -42,11 +42,14 @@ internal class AndroidColorSchemeViewModelTest {
     @Test
     fun `GIVEN dynamic colors stored as enabled WHEN the screen opens THEN shows them enabled`() =
         runTest(testDispatcher) {
-            // When
+            // Given
             prepareScenario(isDynamicColorsEnabled = true)
 
+            // When
+            val isDynamicColorsEnabled = viewModel.uiState.value
+
             // Then
-            assertTrue(viewModel.uiState.value)
+            assertTrue(isDynamicColorsEnabled)
         }
 
     @Test

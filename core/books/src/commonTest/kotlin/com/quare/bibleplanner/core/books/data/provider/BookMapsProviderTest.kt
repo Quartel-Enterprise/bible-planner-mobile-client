@@ -15,7 +15,7 @@ internal class BookMapsProviderTest {
     }
 
     @Test
-    fun `WHEN listing the book maps THEN covers every book once in canonical order`() {
+    fun `GIVEN the book maps WHEN listing their books THEN covers every book once in canonical order`() {
         // When
         val bookIds = bookMaps.flatMap { it.values }
 
@@ -24,7 +24,7 @@ internal class BookMapsProviderTest {
     }
 
     @Test
-    fun `WHEN listing the book maps THEN groups them into five old and five new testament groups`() {
+    fun `GIVEN the book maps WHEN reading the testament of each group THEN has five old and five new groups`() {
         // When
         val testamentOfEachGroup = bookMaps.map { group -> group.values.map { it.isNewTestament() }.distinct() }
 
@@ -36,7 +36,7 @@ internal class BookMapsProviderTest {
     }
 
     @Test
-    fun `WHEN resolving numbered book codes THEN maps them to their ordinal book ids`() {
+    fun `GIVEN the book maps WHEN merging them THEN maps numbered book codes to their ordinal book ids`() {
         // When
         val merged = bookMaps.reduce { acc, group -> acc + group }
 

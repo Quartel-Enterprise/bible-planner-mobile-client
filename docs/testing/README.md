@@ -21,6 +21,7 @@ Conventions for automated tests in this project. Follow these when adding or cha
 - Every test body is split into **Given / When / Then** sections.
 - Each test class ends with a single `prepareScenario(...)` factory that assembles the system under test and its fakes, so tests don't repeat instantiation.
 - Test names may only hold letters, digits, spaces, `-` and `_`: in a module with device tests they are dexed for Android, and D8 rejects an apostrophe or a comma ("the reading of today", not "today's reading").
+- ktlint enforces the test structure: the `GIVEN … WHEN … THEN …` names, the three sections and the `prepareScenario` rules are custom `bible-planner-style` rules that run on every test source set (`./scripts/ktlint.sh`). See the Enforcement sections of [given-when-then.md](given-when-then.md#enforcement) and [prepare-scenario.md](prepare-scenario.md#enforcement).
 
 ## What is covered where
 

@@ -1,16 +1,22 @@
 package com.quare.bibleplanner.core.provider.platform
 
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class PlatformUtilsTest {
-    private val platforms = listOf(
-        Platform.Android,
-        Platform.Ios,
-        Platform.Desktop.MacOs,
-        Platform.Desktop.Linux,
-        Platform.Desktop.Windows,
-    )
+    private lateinit var platforms: List<Platform>
+
+    @BeforeTest
+    fun setUp() {
+        platforms = listOf(
+            Platform.Android,
+            Platform.Ios,
+            Platform.Desktop.MacOs,
+            Platform.Desktop.Linux,
+            Platform.Desktop.Windows,
+        )
+    }
 
     @Test
     fun `GIVEN every platform WHEN checking for Apple THEN only iOS and macOS are Apple`() {

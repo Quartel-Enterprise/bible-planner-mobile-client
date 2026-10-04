@@ -53,102 +53,161 @@ internal class GetPlanMotivationMessageUseCaseTest {
     )
 
     @Test
-    fun `returns milestone when milestone resolver returns non-null`() {
-        val result = useCase(
+    fun `GIVEN the milestone resolver returns a milestone WHEN getting the message THEN returns the milestone`() {
+        // Given
+        val getPlanMotivationMessage = useCase(
             milestone = Milestone.EnteredNewTestament,
             streak = Streak.Day7,
             daySituation = DaySituation.Completed,
             progress = OverallProgress.Halfway,
-        ).invoke(weeks = listOf(week(day(number = 1))), bibleProgress = 50f)
+        )
+        val weeks = listOf(week(day(number = 1)))
 
+        // When
+        val result = getPlanMotivationMessage(
+            weeks = weeks,
+            bibleProgress = 50f,
+        )
+
+        // Then
         assertEquals(Milestone.EnteredNewTestament, result)
     }
 
     @Test
-    fun `falls back to streak when milestone is null`() {
-        val result = useCase(
+    fun `GIVEN no milestone WHEN getting the message THEN falls back to the streak`() {
+        // Given
+        val getPlanMotivationMessage = useCase(
             milestone = null,
             streak = Streak.Day7,
             daySituation = DaySituation.Completed,
             progress = OverallProgress.Halfway,
-        ).invoke(weeks = listOf(week(day(number = 1))), bibleProgress = 50f)
+        )
+        val weeks = listOf(week(day(number = 1)))
 
+        // When
+        val result = getPlanMotivationMessage(
+            weeks = weeks,
+            bibleProgress = 50f,
+        )
+
+        // Then
         assertEquals(Streak.Day7, result)
     }
 
     @Test
-    fun `falls back to day situation when milestone and streak are null`() {
-        val result = useCase(
+    fun `GIVEN no milestone and no streak WHEN getting the message THEN falls back to the day situation`() {
+        // Given
+        val getPlanMotivationMessage = useCase(
             milestone = null,
             streak = null,
             daySituation = DaySituation.NotStarted,
             progress = OverallProgress.Halfway,
-        ).invoke(weeks = listOf(week(day(number = 1))), bibleProgress = 50f)
+        )
+        val weeks = listOf(week(day(number = 1)))
 
+        // When
+        val result = getPlanMotivationMessage(
+            weeks = weeks,
+            bibleProgress = 50f,
+        )
+
+        // Then
         assertEquals(DaySituation.NotStarted, result)
     }
 
     @Test
-    fun `falls back to overall progress when all higher-priority resolvers return null`() {
-        val result: PlanMotivationMessage = useCase(
+    fun `GIVEN no higher-priority message WHEN getting the message THEN falls back to the overall progress`() {
+        // Given
+        val getPlanMotivationMessage = useCase(
             milestone = null,
             streak = null,
             daySituation = null,
             progress = OverallProgress.Halfway,
-        ).invoke(weeks = listOf(week(day(number = 1))), bibleProgress = 50f)
+        )
+        val weeks = listOf(week(day(number = 1)))
 
+        // When
+        val result: PlanMotivationMessage = getPlanMotivationMessage(
+            weeks = weeks,
+            bibleProgress = 50f,
+        )
+
+        // Then
         assertEquals(OverallProgress.Halfway, result)
     }
 
     @Test
-    fun `forwards flattened days and now to milestone resolver`() {
+    fun `GIVEN a week of two days WHEN getting the message THEN forwards its days and now to the milestone resolver`() {
+        // Given
         var capturedDays: List<DayModel>? = null
         var capturedNow: Long? = null
         val d1 = day(number = 1, passages = listOf(passage(BookId.GEN)))
         val d2 = day(number = 2, passages = listOf(passage(BookId.EXO)))
         val weeks = listOf(week(d1, d2))
-
-        useCase(
+        val getPlanMotivationMessage = useCase(
             milestone = Milestone.FirstBookCompleted,
             onMilestoneInvoked = { days, now ->
                 capturedDays = days
                 capturedNow = now
             },
-        ).invoke(weeks = weeks, bibleProgress = 0f)
+        )
 
+        // When
+        getPlanMotivationMessage(
+            weeks = weeks,
+            bibleProgress = 0f,
+        )
+
+        // Then
         assertEquals(listOf(d1, d2), capturedDays)
         assertEquals(fixedNowMillis, capturedNow)
     }
 
     @Test
-    fun `forwards today to streak and day situation resolvers`() {
+    fun `GIVEN a fixed today WHEN getting the message THEN forwards today to the streak and day situation resolvers`() {
+        // Given
         var streakToday: LocalDate? = null
         var daySituationToday: LocalDate? = null
-
-        useCase(
+        val getPlanMotivationMessage = useCase(
             milestone = null,
             streak = null,
             daySituation = DaySituation.NotStarted,
             onStreakInvoked = { _, today -> streakToday = today },
             onDaySituationInvoked = { _, today -> daySituationToday = today },
-        ).invoke(weeks = listOf(week(day())), bibleProgress = 0f)
+        )
+        val weeks = listOf(week(day()))
 
+        // When
+        getPlanMotivationMessage(
+            weeks = weeks,
+            bibleProgress = 0f,
+        )
+
+        // Then
         assertEquals(fixedToday, streakToday)
         assertEquals(fixedToday, daySituationToday)
     }
 
     @Test
-    fun `forwards bible progress to progress resolver`() {
+    fun `GIVEN a bible progress WHEN getting the message THEN forwards it to the progress resolver`() {
+        // Given
         var capturedProgress: Float? = null
-
-        useCase(
+        val getPlanMotivationMessage = useCase(
             milestone = null,
             streak = null,
             daySituation = null,
             progress = OverallProgress.Halfway,
             onProgressInvoked = { capturedProgress = it },
-        ).invoke(weeks = emptyList(), bibleProgress = 42.5f)
+        )
+        val bibleProgress = 42.5f
 
+        // When
+        getPlanMotivationMessage(
+            weeks = emptyList(),
+            bibleProgress = bibleProgress,
+        )
+
+        // Then
         assertEquals(42.5f, capturedProgress)
     }
 

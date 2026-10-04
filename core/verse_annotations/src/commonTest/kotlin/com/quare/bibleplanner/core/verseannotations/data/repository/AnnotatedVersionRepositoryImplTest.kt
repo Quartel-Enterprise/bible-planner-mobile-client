@@ -11,11 +11,12 @@ import kotlin.test.assertEquals
 
 internal class AnnotatedVersionRepositoryImplTest {
     private lateinit var dao: FakeAnnotatedVersionDao
+    private lateinit var repository: AnnotatedVersionRepositoryImpl
 
     @Test
     fun `GIVEN annotated versions WHEN observing them THEN lists them in a stable order`() = runTest {
         // Given
-        val repository = prepareScenario(initialVersionIds = listOf("NVI", "A21", "ACF"))
+        prepareScenario(initialVersionIds = listOf("NVI", "A21", "ACF"))
 
         // When
         val versionIds = repository.observeAnnotatedVersionIds().first()
@@ -30,7 +31,7 @@ internal class AnnotatedVersionRepositoryImplTest {
     @Test
     fun `GIVEN annotated versions WHEN the database reorders the same versions THEN emits them once`() = runTest {
         // Given
-        val repository = prepareScenario(initialVersionIds = listOf("A21", "ACF"))
+        prepareScenario(initialVersionIds = listOf("A21", "ACF"))
         val emissions = mutableListOf<List<String>>()
         backgroundScope.launch { repository.observeAnnotatedVersionIds().toList(emissions) }
         runCurrent()
@@ -51,8 +52,8 @@ internal class AnnotatedVersionRepositoryImplTest {
         )
     }
 
-    private fun prepareScenario(initialVersionIds: List<String>): AnnotatedVersionRepositoryImpl {
+    private fun prepareScenario(initialVersionIds: List<String>) {
         dao = FakeAnnotatedVersionDao(initialVersionIds = initialVersionIds)
-        return AnnotatedVersionRepositoryImpl(annotatedVersionDao = dao)
+        repository = AnnotatedVersionRepositoryImpl(annotatedVersionDao = dao)
     }
 }

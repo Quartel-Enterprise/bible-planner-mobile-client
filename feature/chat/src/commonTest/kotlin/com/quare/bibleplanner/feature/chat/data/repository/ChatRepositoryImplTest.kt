@@ -55,14 +55,17 @@ internal class ChatRepositoryImplTest {
 
     @Test
     fun `GIVEN an accepted question WHEN observing THEN the streamed answer grows over the cache`() = runTest {
+        // Given
         val repository = createRepository()
         val send = launch(UnconfinedTestDispatcher(testScheduler)) { repository.sendMessage(request()).first { false } }
-
         streamDataSource.emit(accepted())
         streamDataSource.emit(ChatStreamEvent.Delta("Caim "))
         streamDataSource.emit(ChatStreamEvent.Delta("matou"))
 
+        // When
         val thread = repository.observeMessages("conversation-1").first()
+
+        // Then
         assertEquals(listOf("question-1", "answer-1"), thread.map { it.id })
         assertEquals("Caim matou", thread.last().content)
         assertTrue(thread.last().isStreaming)
@@ -71,14 +74,17 @@ internal class ChatRepositoryImplTest {
 
     @Test
     fun `GIVEN a finished answer WHEN observing THEN it is cached after its question`() = runTest {
+        // Given
         val repository = createRepository()
         val send = launch(UnconfinedTestDispatcher(testScheduler)) { repository.sendMessage(request()).collect {} }
-
         streamDataSource.emit(accepted())
         streamDataSource.emit(ChatStreamEvent.Delta("Caim matou"))
         streamDataSource.emit(done())
 
+        // When
         val thread = repository.observeMessages("conversation-1").first()
+
+        // Then
         assertEquals(listOf("question-1", "answer-1"), thread.map { it.id })
         assertEquals("Caim matou Abel por inveja.", thread.last().content)
         assertTrue(!thread.last().isStreaming)
@@ -89,6 +95,7 @@ internal class ChatRepositoryImplTest {
 
     @Test
     fun `GIVEN a finishing answer WHEN observing THEN it never leaves the thread`() = runTest {
+        // Given
         val repository = createRepository()
         val send = launch(UnconfinedTestDispatcher(testScheduler)) { repository.sendMessage(request()).collect {} }
         streamDataSource.emit(accepted())
@@ -98,8 +105,10 @@ internal class ChatRepositoryImplTest {
             repository.observeMessages("conversation-1").collect { thread -> threads += thread.map { it.id } }
         }
 
+        // When
         streamDataSource.emit(done())
 
+        // Then
         assertTrue(threads.all { thread -> thread.lastOrNull() == "answer-1" })
         observation.cancel()
         send.cancel()
@@ -107,6 +116,7 @@ internal class ChatRepositoryImplTest {
 
     @Test
     fun `GIVEN a failed generation WHEN it dies THEN the thread is re-read from the server`() = runTest {
+        // Given
         val repository = createRepository()
         messagesDataSource.remoteMessages = mapOf("conversation-1" to listOf(questionDto()))
         var failure: Throwable? = null
@@ -114,10 +124,12 @@ internal class ChatRepositoryImplTest {
             runCatching { repository.sendMessage(request()).collect {} }
                 .onFailure { error -> failure = error }
         }
-
         streamDataSource.emit(accepted())
+
+        // When
         streamDataSource.fail(RuntimeException("stream died"))
 
+        // Then
         val thread = repository.observeMessages("conversation-1").first()
         assertEquals(listOf("question-1"), thread.map { it.id })
         assertTrue(thread.none { it.isStreaming })
@@ -127,24 +139,30 @@ internal class ChatRepositoryImplTest {
 
     @Test
     fun `GIVEN a realtime deletion WHEN applied THEN the conversation leaves the mirror`() = runTest {
+        // Given
         val repository = createRepository()
         localDataSource.conversations.value = listOf(conversation("conversation-1"))
         val sync = launch(UnconfinedTestDispatcher(testScheduler)) { repository.syncRemoteChanges() }
 
+        // When
         realtimeDataSource.conversationChanges.emit(ChatRemoteChange.ConversationDeleted("conversation-1"))
 
+        // Then
         assertTrue(localDataSource.conversations.value.isEmpty())
         sync.cancel()
     }
 
     @Test
     fun `GIVEN a message of an unknown conversation WHEN it arrives THEN the list is pulled first`() = runTest {
+        // Given
         val repository = createRepository()
         conversationsDataSource.remoteConversations = emptyList()
         val sync = launch(UnconfinedTestDispatcher(testScheduler)) { repository.syncRemoteChanges() }
 
+        // When
         realtimeDataSource.messageChanges.emit(ChatRemoteChange.MessageUpserted(questionDto()))
 
+        // Then
         assertEquals(1, conversationsDataSource.fetchCount)
         assertEquals(
             listOf("question-1"),
@@ -157,37 +175,46 @@ internal class ChatRepositoryImplTest {
 
     @Test
     fun `GIVEN another account signs in WHEN syncing THEN the previous mirror is wiped`() = runTest {
+        // Given
         val repository = createRepository()
         localDataSource.conversations.value = listOf(conversation("conversation-1"))
         val sync = launch(UnconfinedTestDispatcher(testScheduler)) { repository.syncRemoteChanges() }
 
+        // When
         authenticatedUserId.value = "user-2"
 
+        // Then
         assertTrue(localDataSource.conversations.value.isEmpty())
         sync.cancel()
     }
 
     @Test
     fun `GIVEN the same account WHEN it re-emits THEN the mirror survives`() = runTest {
+        // Given
         val repository = createRepository()
         localDataSource.conversations.value = listOf(conversation("conversation-1"))
         val sync = launch(UnconfinedTestDispatcher(testScheduler)) { repository.syncRemoteChanges() }
 
+        // When
         authenticatedUserId.value = null
         authenticatedUserId.value = "user-1"
 
+        // Then
         assertEquals(1, localDataSource.conversations.value.size)
         sync.cancel()
     }
 
     @Test
-    fun `GIVEN a deleted conversation THEN its draft goes with it`() = runTest {
+    fun `GIVEN a conversation with a draft WHEN deleting it THEN its draft goes with it`() = runTest {
+        // Given
         val repository = createRepository()
         localDataSource.conversations.value = listOf(conversation("conversation-1"))
         draftDataSource.drafts.value = mapOf("conversation-1" to "Por que")
 
+        // When
         repository.deleteConversation("conversation-1")
 
+        // Then
         assertEquals(listOf("conversation-1"), conversationsDataSource.deleted)
         assertTrue(localDataSource.conversations.value.isEmpty())
         assertTrue(draftDataSource.drafts.value.isEmpty())

@@ -44,8 +44,12 @@ class AnalyticsCatalogTest {
     )
 
     @Test
-    fun `every Track Manual name is wired to a trackEvent call elsewhere in its module`() {
-        val violations = uiEventDeclarationFiles().flatMap { file ->
+    fun `GIVEN every Track Manual name WHEN searching its module THEN finds a trackEvent call elsewhere`() {
+        // Given
+        val declarationFiles = uiEventDeclarationFiles()
+
+        // When
+        val violations = declarationFiles.flatMap { file ->
             val moduleRoot = file.moduleRoot()
             val text = file.readText()
             trackedManuallyNames(text).mapNotNull { name ->
@@ -62,31 +66,38 @@ class AnalyticsCatalogTest {
                 }
             }
         }
+
+        // Then
         if (violations.isNotEmpty()) {
             fail("Untraceable Track.Manual events:\n" + violations.joinToString("\n"))
         }
     }
 
     @Test
-    fun `every declared Track Automatic and Track Manual name has a docs analytics events catalog entry`() {
+    fun `GIVEN every declared Track Automatic and Track Manual name WHEN looking up the docs THEN each has an entry`() {
+        // Given
         val nameToValue = parseAnalyticsEventNames()
         val declaredNames = uiEventDeclarationFiles()
             .flatMap { file -> trackNames(file.readText()) + trackedManuallyNames(file.readText()) }
             .toSortedSet()
 
+        // When
         val violations = declaredNames.mapNotNull { constName ->
             val value = nameToValue[constName]
                 ?: return@mapNotNull "$constName is not declared in AnalyticsEventNames.kt"
             val doc = File(eventsDir, "$value.md")
             if (doc.exists()) null else "$constName -> $value: missing docs/analytics/events/$value.md"
         }
+
+        // Then
         if (violations.isNotEmpty()) {
             fail("Uncataloged analytics events:\n" + violations.joinToString("\n"))
         }
     }
 
     @Test
-    fun `every docs analytics events catalog entry is listed in the README index and vice versa`() {
+    fun `GIVEN the docs analytics events catalog WHEN comparing it with the README index THEN both match`() {
+        // Given
         val documented = eventsDir
             .listFiles()
             .orEmpty()
@@ -95,11 +106,14 @@ class AnalyticsCatalogTest {
             .toSet()
         val indexed = indexedEventNames()
 
+        // When
         val violations = (documented - indexed).sorted().map {
             "$it: docs/analytics/events/$it.md has no row in the README event index"
         } + (indexed - documented).sorted().map {
             "$it: README event index links to docs/analytics/events/$it.md, which does not exist"
         }
+
+        // Then
         if (violations.isNotEmpty()) {
             fail("README event index out of sync with the catalog:\n" + violations.joinToString("\n"))
         }

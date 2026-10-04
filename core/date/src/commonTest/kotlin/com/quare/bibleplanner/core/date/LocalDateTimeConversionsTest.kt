@@ -49,8 +49,11 @@ internal class LocalDateTimeConversionsTest {
 
     @Test
     fun `GIVEN a date WHEN converting it to a UTC timestamp THEN points to its UTC midnight`() {
+        // Given
+        val selectedDate = date
+
         // When
-        val timestamp = date.toTimestampUTC()
+        val timestamp = selectedDate.toTimestampUTC()
 
         // Then
         assertEquals(1_710_460_800_000L, timestamp)
@@ -82,8 +85,11 @@ internal class LocalDateTimeConversionsTest {
 
     @Test
     fun `GIVEN only an edited date WHEN computing the final timestamp THEN lands on its local midnight`() {
+        // Given
+        val getFinalTimestampAfterEdition = GetFinalTimestampAfterEditionUseCase()
+
         // When
-        val timestamp = GetFinalTimestampAfterEditionUseCase()(selectedLocalDate = date)
+        val timestamp = getFinalTimestampAfterEdition(selectedLocalDate = date)
 
         // Then
         assertEquals(

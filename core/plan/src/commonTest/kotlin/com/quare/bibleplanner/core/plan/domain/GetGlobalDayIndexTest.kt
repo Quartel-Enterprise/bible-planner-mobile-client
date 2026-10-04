@@ -6,8 +6,11 @@ import kotlin.test.assertEquals
 internal class GetGlobalDayIndexTest {
     @Test
     fun `GIVEN days across weeks WHEN computing their global index THEN counts seven days per earlier week`() {
+        // Given
+        val weekAndDayNumbers = listOf(1 to 1, 1 to 7, 2 to 1, 52 to 7)
+
         // When
-        val indexes = listOf(1 to 1, 1 to 7, 2 to 1, 52 to 7).map { (week, day) ->
+        val indexes = weekAndDayNumbers.map { (week, day) ->
             getGlobalDayIndex(
                 weekNumber = week,
                 dayNumber = day,

@@ -15,34 +15,62 @@ internal class ClassifyDayTimingUseCaseTest {
     )
 
     @Test
-    fun `classifies a day planned for today as on time`() {
+    fun `GIVEN a day planned for today WHEN classifying THEN returns on time`() {
+        // Given
+        val plannedDate = today
+
+        // When
+        val timing = classifyDayTiming(plannedDate)
+
+        // Then
         assertEquals(
             expected = DayTimingState.ON_TIME,
-            actual = classifyDayTiming(today),
+            actual = timing,
         )
     }
 
     @Test
-    fun `classifies a day planned before today as overdue`() {
+    fun `GIVEN a day planned before today WHEN classifying THEN returns overdue`() {
+        // Given
+        val plannedDate = LocalDate(2026, 8, 17)
+
+        // When
+        val timing = classifyDayTiming(plannedDate)
+
+        // Then
         assertEquals(
             expected = DayTimingState.OVERDUE,
-            actual = classifyDayTiming(LocalDate(2026, 8, 17)),
+            actual = timing,
         )
     }
 
     @Test
-    fun `classifies a day planned after today as early`() {
+    fun `GIVEN a day planned after today WHEN classifying THEN returns early`() {
+        // Given
+        val plannedDate = LocalDate(2026, 8, 28)
+
+        // When
+        val timing = classifyDayTiming(plannedDate)
+
+        // Then
         assertEquals(
             expected = DayTimingState.EARLY,
-            actual = classifyDayTiming(LocalDate(2026, 8, 28)),
+            actual = timing,
         )
     }
 
     @Test
-    fun `falls back to on time when the day has no planned date`() {
+    fun `GIVEN a day with no planned date WHEN classifying THEN falls back to on time`() {
+        // Given
+        val plannedDate: LocalDate? = null
+
+        // When
+        val timing = classifyDayTiming(plannedDate)
+
+        // Then
         assertEquals(
             expected = DayTimingState.ON_TIME,
-            actual = classifyDayTiming(null),
+            actual = timing,
         )
     }
 }

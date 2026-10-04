@@ -18,8 +18,11 @@ class UserDeviceLocalStoreTest {
 
     @Test
     fun `GIVEN an unknown row WHEN applying remote THEN inserts it`() = runTest {
+        // Given
+        val remote = dto(id = "row-1", name = "iPhone", updatedAt = "2026-07-11T10:00:00Z")
+
         // When
-        localStore.applyRemote(dto(id = "row-1", name = "iPhone", updatedAt = "2026-07-11T10:00:00Z"))
+        localStore.applyRemote(remote)
 
         // Then
         assertEquals("iPhone", dao.rows.getValue("row-1").name)
@@ -39,7 +42,8 @@ class UserDeviceLocalStoreTest {
 
     @Test
     fun `GIVEN a pending row WHEN applying remote THEN keeps the local name`() = runTest {
-        // Given a pending rename that is newer than the remote
+        // Given
+        // A pending rename that is newer than the remote
         dao.rows["row-1"] = entity(id = "row-1", name = "Local", updatedAt = Long.MAX_VALUE, pending = true)
 
         // When

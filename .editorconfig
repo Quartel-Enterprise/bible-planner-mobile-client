@@ -22,13 +22,12 @@ ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_when-entry-bracing = disabled
 ktlint_standard_no-unused-imports = enabled
 ktlint_function_signature_body_expression_wrapping = default
-# The test structure rules (docs/testing) only apply to test sources, enabled below.
+# The test structure rules (docs/testing) are enabled for the test source sets below.
 ktlint_bible-planner-style_test-name-given-when-then = disabled
 ktlint_bible-planner-style_test-body-sections = disabled
 ktlint_bible-planner-style_prepare-scenario-returns-unit = disabled
 ktlint_bible-planner-style_prepare-scenario-last-member = disabled
 ktlint_bible-planner-style_prepare-scenario-in-given = disabled
-
 
 # Test sources: fixtures and fakes are named after the value they produce
 # (versionDto(), passage(), day()), which is intentional and reads well in Given/When/Then.
@@ -37,6 +36,7 @@ ktlint_bible-planner-style_value-returning-function-naming = disabled
 
 # Comments are for tests (Given/When/Then), the :testing fake modules and the build: Gradle scripts and
 # build-logic. Production Kotlin keeps only // Why: comments (bible-planner-style:comments-say-why).
+# The test structure rules (docs/testing) run here, and only here.
 [**/src/{commonTest,jvmTest,androidHostTest,androidDeviceTest,iosTest,iosSimulatorArm64Test,test}/**]
 ktlint_bible-planner-style_comments-say-why = disabled
 ktlint_bible-planner-style_test-name-given-when-then = enabled

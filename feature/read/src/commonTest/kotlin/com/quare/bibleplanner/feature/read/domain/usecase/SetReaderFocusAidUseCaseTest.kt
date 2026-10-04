@@ -20,7 +20,7 @@ internal class SetReaderFocusAidUseCaseTest {
     }
 
     @Test
-    fun `turning the ruler on turns the focused verse off`() = runTest {
+    fun `GIVEN the focused verse on WHEN turning the ruler on THEN turns the focused verse off`() = runTest {
         // Given
         useCase(ReaderFocusAid.FOCUSED_VERSE)
 
@@ -33,7 +33,7 @@ internal class SetReaderFocusAidUseCaseTest {
     }
 
     @Test
-    fun `turning the focused verse on turns the ruler off`() = runTest {
+    fun `GIVEN the ruler on WHEN turning the focused verse on THEN turns the ruler off`() = runTest {
         // Given
         useCase(ReaderFocusAid.RULER)
 
@@ -46,7 +46,7 @@ internal class SetReaderFocusAidUseCaseTest {
     }
 
     @Test
-    fun `choosing no aid turns both off`() = runTest {
+    fun `GIVEN the ruler on WHEN choosing no aid THEN turns both off`() = runTest {
         // Given
         useCase(ReaderFocusAid.RULER)
 

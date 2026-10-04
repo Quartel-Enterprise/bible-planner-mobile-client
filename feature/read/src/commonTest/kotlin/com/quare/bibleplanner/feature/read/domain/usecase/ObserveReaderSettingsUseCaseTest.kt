@@ -20,7 +20,7 @@ internal class ObserveReaderSettingsUseCaseTest {
     }
 
     @Test
-    fun `clamps a stored size that falls outside the current bounds`() = runTest {
+    fun `GIVEN a stored size outside the current bounds WHEN observing the settings THEN clamps the size`() = runTest {
         // Given
         repository.settings.value = repository.settings.value.copy(fontSizeSp = 48f)
 

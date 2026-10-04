@@ -15,7 +15,7 @@ internal class HasCooldownElapsedUseCaseTest {
     }
 
     @Test
-    fun `elapses when there is no previous occurrence`() {
+    fun `GIVEN no previous occurrence WHEN checking the cooldown THEN has elapsed`() {
         // When
         val hasElapsed = useCase(
             lastOccurredAt = null,
@@ -27,7 +27,7 @@ internal class HasCooldownElapsedUseCaseTest {
     }
 
     @Test
-    fun `elapses when the cooldown has passed`() {
+    fun `GIVEN a cooldown that has passed WHEN checking the cooldown THEN has elapsed`() {
         // When
         val hasElapsed = useCase(
             lastOccurredAt = NOW - 4.hours.inWholeMilliseconds,
@@ -39,7 +39,7 @@ internal class HasCooldownElapsedUseCaseTest {
     }
 
     @Test
-    fun `elapses when the last occurrence is in the future`() {
+    fun `GIVEN a last occurrence in the future WHEN checking the cooldown THEN has elapsed`() {
         // When
         val hasElapsed = useCase(
             lastOccurredAt = NOW + 26.hours.inWholeMilliseconds,
@@ -51,7 +51,7 @@ internal class HasCooldownElapsedUseCaseTest {
     }
 
     @Test
-    fun `does not elapse within the cooldown window`() {
+    fun `GIVEN a last occurrence within the cooldown window WHEN checking the cooldown THEN has not elapsed`() {
         // When
         val hasElapsed = useCase(
             lastOccurredAt = NOW - 4.hours.inWholeMilliseconds + 1,
