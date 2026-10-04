@@ -103,20 +103,26 @@ internal class HeadlessViewModelTest {
     }
 
     @Test
-    fun `GIVEN a cold flow named after messages WHEN collecting it THEN reads it as actions`() = runTest {
-        // When
-        prepareScenario()
+    fun `GIVEN a cold flow named after messages WHEN reading the log THEN holds what it emitted as an action`() =
+        runTest {
+            // Given
+            prepareScenario()
 
-        // Then
-        assertEquals(
-            expected = LogEntry(
-                kind = LogKind.ACTION,
-                source = "SampleViewModel.messages",
-                payload = JsonPrimitive("toast"),
-            ),
-            actual = log.takeEntries().single(),
-        )
-    }
+            // When
+            val entries = log.takeEntries()
+
+            // Then
+            assertEquals(
+                expected = listOf(
+                    LogEntry(
+                        kind = LogKind.ACTION,
+                        source = "SampleViewModel.messages",
+                        payload = JsonPrimitive("toast"),
+                    ),
+                ),
+                actual = entries,
+            )
+        }
 
     @Test
     fun `GIVEN a ViewModel WHEN listing its events THEN lists every subtype`() = runTest {

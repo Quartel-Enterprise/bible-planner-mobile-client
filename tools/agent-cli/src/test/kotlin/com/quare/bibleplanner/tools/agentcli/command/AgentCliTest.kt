@@ -490,16 +490,16 @@ internal class AgentCliTest {
         session = fixture.session
         trackedRoutes = fixture.trackedRoutes
     }
-
-    private class Response(
-        val isOk: Boolean,
-        val result: JsonElement,
-        val error: String?,
-        val log: List<LogLine>,
-    )
-
-    private class LogLine(
-        val kind: String,
-        val payload: JsonObject,
-    )
 }
+
+private class Response(
+    val isOk: Boolean,
+    val result: JsonElement,
+    val error: String?,
+    val log: List<LogLine>,
+)
+
+private class LogLine(
+    val kind: String,
+    val payload: JsonObject,
+)
