@@ -111,19 +111,23 @@ class BooksRepositoryImpl(
         preferences[stringPreferencesKey(BOOK_LAYOUT_FORMAT)]
     }
 
-    override suspend fun setBookLayoutFormat(layoutFormat: String) = dataStore.write(
-        key = stringPreferencesKey(BOOK_LAYOUT_FORMAT),
-        value = layoutFormat,
-    )
+    override suspend fun setBookLayoutFormat(layoutFormat: String) {
+        dataStore.write(
+            key = stringPreferencesKey(BOOK_LAYOUT_FORMAT),
+            value = layoutFormat,
+        )
+    }
 
     override fun getSelectedTestamentFlow(): Flow<String?> = dataStore.data.map { preferences ->
         preferences[stringPreferencesKey(SELECTED_TESTAMENT)]
     }
 
-    override suspend fun setSelectedTestament(testament: String) = dataStore.write(
-        key = stringPreferencesKey(SELECTED_TESTAMENT),
-        value = testament,
-    )
+    override suspend fun setSelectedTestament(testament: String) {
+        dataStore.write(
+            key = stringPreferencesKey(SELECTED_TESTAMENT),
+            value = testament,
+        )
+    }
 
     companion object {
         private const val BOOK_LAYOUT_FORMAT = "book_layout_format"

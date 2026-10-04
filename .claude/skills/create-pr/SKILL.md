@@ -315,7 +315,14 @@ command exits:
 - **2, a check failed or was cancelled:** report which one (`gh pr checks <pr>`) and stop. The label
   stays on, so re-running the check until it's green still merges the pull request; `finish-task`
   then runs when the user asks for it.
-- **1, closed without merging, or 3, label removed:** tell the user and stop.
+- **3, label removed:** the usual reason is that every check passed but a review conversation is
+  still unresolved, often a `claude-review` finding. `merge-when-green` then removes its label and
+  comments on the pull request (see [docs/ci.md](../../../docs/ci.md#unresolved-conversations)).
+  List the open conversations with the `reviewThreads` GraphQL query from `merge-when-green.yml`
+  (asking for each thread's `path` and first comment body too) and show them to the user. For each
+  one, fix it or reply with why the code stays as it is, then resolve it on GitHub and add the label
+  again. If no such comment exists, someone removed the label by hand: tell the user and stop.
+- **1, closed without merging:** tell the user and stop.
 
 The `merge-when-green` check itself counts too: it fails when its token is missing or expired, or
 when the merge itself fails (e.g. a conflict with `main`), and then nothing else would merge the
@@ -329,8 +336,10 @@ gh pr checks --watch --required --interval 5
 gh pr merge --squash
 ```
 
-A ruleset on `main` requires the `check-translations` status check, so `gh pr merge` refuses to
-merge until it passes ("the base branch policy prohibits the merge"). It takes a few seconds. Right
+A ruleset on `main` requires the `check-translations` status check and every review conversation
+resolved, so `gh pr merge` refuses to merge until both hold ("the base branch policy prohibits the
+merge"). An unresolved `claude-review` finding has to be fixed or answered, then resolved, before
+the merge goes through. The check takes a few seconds. Right
 after the push, GitHub hasn't registered the check yet and `gh pr checks` fails with "no checks
 reported", so the loop first waits up to a minute for it to show up. If it never does, check the
 workflow runs with `gh run list --branch <branch>` and tell the user instead of merging. Never

@@ -82,10 +82,10 @@ internal class ObserveStudySuggestionSyncUseCaseTest {
             ),
         )
 
-        override suspend fun setEnabled(isEnabled: Boolean) = Unit
+        override suspend fun setEnabled(isEnabled: Boolean) {}
 
-        override suspend fun setMode(mode: StudySuggestionMode) = Unit
+        override suspend fun setMode(mode: StudySuggestionMode) {}
 
-        override suspend fun setSyncEnabled(enabled: Boolean) = Unit
+        override suspend fun setSyncEnabled(enabled: Boolean) {}
     }
 }

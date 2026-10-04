@@ -82,7 +82,7 @@ class ProfileMapperTest {
         updatedAt: Long = 1L,
         displayNamePendingSync: Boolean = false,
         avatarPendingSync: Boolean = false,
-    ) = ProfileEntity(
+    ): ProfileEntity = ProfileEntity(
         id = USER_ID,
         displayName = displayName,
         avatarUrl = avatarUrl,

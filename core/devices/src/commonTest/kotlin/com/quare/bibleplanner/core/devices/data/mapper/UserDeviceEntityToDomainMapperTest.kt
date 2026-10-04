@@ -25,7 +25,7 @@ class UserDeviceEntityToDomainMapperTest {
         assertFalse(model.isCurrentDevice)
     }
 
-    private fun entity(deviceId: String) = UserDeviceEntity(
+    private fun entity(deviceId: String): UserDeviceEntity = UserDeviceEntity(
         id = "row-1",
         deviceId = deviceId,
         name = "iPad Air",

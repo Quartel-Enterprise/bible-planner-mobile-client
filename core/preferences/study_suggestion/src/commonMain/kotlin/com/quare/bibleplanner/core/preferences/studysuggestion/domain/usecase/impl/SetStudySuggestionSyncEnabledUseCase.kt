@@ -6,5 +6,7 @@ import com.quare.bibleplanner.core.preferences.studysuggestion.domain.usecase.Se
 internal class SetStudySuggestionSyncEnabledUseCase(
     private val repository: StudySuggestionSettingsRepository,
 ) : SetStudySuggestionSyncEnabled {
-    override suspend fun invoke(enabled: Boolean) = repository.setSyncEnabled(enabled)
+    override suspend fun invoke(enabled: Boolean) {
+        repository.setSyncEnabled(enabled)
+    }
 }

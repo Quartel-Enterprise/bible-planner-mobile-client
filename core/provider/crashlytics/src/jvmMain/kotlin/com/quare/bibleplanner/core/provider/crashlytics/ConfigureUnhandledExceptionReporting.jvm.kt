@@ -1,3 +1,3 @@
 package com.quare.bibleplanner.core.provider.crashlytics
 
-internal actual fun configureUnhandledExceptionReporting() = Unit
+internal actual fun configureUnhandledExceptionReporting() {}

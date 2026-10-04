@@ -215,13 +215,13 @@ private class FakeSynchronizer(
 ) : Synchronizer {
     var appliedNames: MutableList<String> = mutableListOf()
 
-    override suspend fun seed(now: Long) = Unit
+    override suspend fun seed(now: Long) {}
 
-    override suspend fun runPushLoop() = Unit
+    override suspend fun runPushLoop() {}
 
-    override suspend fun pushPendingOnce() = Unit
+    override suspend fun pushPendingOnce() {}
 
-    override suspend fun observeRealtime() = Unit
+    override suspend fun observeRealtime() {}
 
     override suspend fun fetchSnapshot(): FetchedSnapshot {
         delay(fetchDelayMillis)
@@ -238,5 +238,5 @@ private class FakeSynchronizer(
         }
     }
 
-    override suspend fun clearLocal() = Unit
+    override suspend fun clearLocal() {}
 }

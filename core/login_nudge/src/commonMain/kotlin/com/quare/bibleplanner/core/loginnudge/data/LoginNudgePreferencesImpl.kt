@@ -17,22 +17,28 @@ internal class LoginNudgePreferencesImpl(
 
     override suspend fun getSnoozedAt(): Long? = dataStore.read(snoozedAtKey)
 
-    override suspend fun setSnoozedAt(timestamp: Long) = dataStore.write(
-        key = snoozedAtKey,
-        value = timestamp,
-    )
+    override suspend fun setSnoozedAt(timestamp: Long) {
+        dataStore.write(
+            key = snoozedAtKey,
+            value = timestamp,
+        )
+    }
 
     override suspend fun isDontShowAgain(): Boolean = dataStore.read(dontShowAgainKey) == true
 
-    override suspend fun setDontShowAgain() = dataStore.write(
-        key = dontShowAgainKey,
-        value = true,
-    )
+    override suspend fun setDontShowAgain() {
+        dataStore.write(
+            key = dontShowAgainKey,
+            value = true,
+        )
+    }
 
     override suspend fun getFirstActionAt(): Long? = dataStore.read(firstActionAtKey)
 
-    override suspend fun setFirstActionAt(timestamp: Long) = dataStore.write(
-        key = firstActionAtKey,
-        value = timestamp,
-    )
+    override suspend fun setFirstActionAt(timestamp: Long) {
+        dataStore.write(
+            key = firstActionAtKey,
+            value = timestamp,
+        )
+    }
 }

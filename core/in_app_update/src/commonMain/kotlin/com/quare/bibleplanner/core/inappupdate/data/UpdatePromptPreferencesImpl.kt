@@ -14,8 +14,10 @@ internal class UpdatePromptPreferencesImpl(
 
     override suspend fun getLastPromptedAt(): Long? = dataStore.read(lastPromptedAtKey)
 
-    override suspend fun setLastPromptedAt(timestamp: Long) = dataStore.write(
-        key = lastPromptedAtKey,
-        value = timestamp,
-    )
+    override suspend fun setLastPromptedAt(timestamp: Long) {
+        dataStore.write(
+            key = lastPromptedAtKey,
+            value = timestamp,
+        )
+    }
 }

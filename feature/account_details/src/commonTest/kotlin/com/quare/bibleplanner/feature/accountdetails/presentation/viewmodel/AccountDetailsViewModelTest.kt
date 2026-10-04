@@ -175,7 +175,7 @@ internal class AccountDetailsViewModelTest {
         return commands
     }
 
-    private fun user(provider: String) = UserModel(
+    private fun user(provider: String): UserModel = UserModel(
         id = "user-1",
         name = "Pierre",
         email = "pierre@example.com",
@@ -188,7 +188,7 @@ internal class AccountDetailsViewModelTest {
     private fun device(
         id: String,
         isCurrent: Boolean,
-    ) = DeviceModel(
+    ): DeviceModel = DeviceModel(
         id = id,
         deviceId = "device-$id",
         name = "Device $id",

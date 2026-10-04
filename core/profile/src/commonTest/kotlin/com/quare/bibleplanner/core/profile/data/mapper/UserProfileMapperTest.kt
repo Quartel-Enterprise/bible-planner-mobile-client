@@ -140,7 +140,7 @@ class UserProfileMapperTest {
     private fun user(
         name: String? = "Provider Name",
         photo: String? = null,
-    ) = UserModel(
+    ): UserModel = UserModel(
         id = USER_ID,
         name = name,
         email = "user@example.com",
@@ -154,7 +154,7 @@ class UserProfileMapperTest {
         displayName: String? = null,
         avatarUrl: String? = null,
         pendingAvatarBytes: ByteArray? = null,
-    ) = ProfileEntity(
+    ): ProfileEntity = ProfileEntity(
         id = USER_ID,
         displayName = displayName,
         avatarUrl = avatarUrl,

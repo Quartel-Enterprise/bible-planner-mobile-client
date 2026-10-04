@@ -32,7 +32,7 @@ private val notesByLocale = mapOf(
 private val chapters = listOf(1, 2, 3)
 private val readDate = LocalDate(year = 2026, monthNumber = 7, dayOfMonth = 20)
 
-private fun passage() = PassageModel(
+private fun passage(): PassageModel = PassageModel(
     bookId = BookId.GEN,
     chapters = chapters.map { chapter ->
         ChapterModel(
@@ -46,7 +46,7 @@ private fun passage() = PassageModel(
     chapterRanges = "${chapters.first()}-${chapters.last()}",
 )
 
-private fun datePickerUiState() = DatePickerUiState(
+private fun datePickerUiState(): DatePickerUiState = DatePickerUiState(
     visiblePicker = null,
     selectedDateMillis = null,
     selectedLocalDate = readDate,

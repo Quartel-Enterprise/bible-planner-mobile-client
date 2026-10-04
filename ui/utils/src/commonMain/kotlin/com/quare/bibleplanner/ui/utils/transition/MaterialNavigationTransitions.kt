@@ -7,6 +7,7 @@ import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -94,13 +95,13 @@ class MaterialNavigationTransitions(
         return enter togetherWith exit
     }
 
-    private fun createIncomingSpec() = tween<Float>(
+    private fun createIncomingSpec(): TweenSpec<Float> = tween<Float>(
         durationMillis = INCOMING_DURATION_MILLIS,
         delayMillis = OUTGOING_DURATION_MILLIS,
         easing = LinearOutSlowInEasing,
     )
 
-    private fun createOutgoingSpec() = tween<Float>(
+    private fun createOutgoingSpec(): TweenSpec<Float> = tween<Float>(
         durationMillis = OUTGOING_DURATION_MILLIS,
         easing = FastOutLinearInEasing,
     )

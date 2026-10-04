@@ -69,8 +69,12 @@ disk for the next one.
   since a phone in landscape leaves most lists below the fold. A lazy list doesn't even compose the
   items below the fold, so when a node is still missing after the screen has had 2 seconds to settle,
   every helper looks for it in the lazy lists on screen. With a dialog open, only the dialog's lists
-  are scrolled: scrolling the screen behind it would hide the bottom bar. When a node doesn't show up,
-  the error lists every text on screen.
+  are scrolled: scrolling the screen behind it would hide the bottom bar. A bar that hides while the
+  content scrolls down, like the read screen's top bar, keeps its nodes with no size. Before clicking
+  a node outside a list that isn't displayed, the click helpers swipe the lists of its own screen
+  down to bring the bar back, as the user would, but never inside a sheet or a dialog, which a swipe
+  down can dismiss. A node that still has no size fails the flow right there instead of taking a
+  click that lands nowhere. When a node doesn't show up, the error lists every text on screen.
 - Assert what the user sees. A matcher that waits for a state (`isOn()`, a text that only appears
   afterwards) is better than asserting right after a click.
 - The screens' strings live in each feature module's `Res`, which is internal, so the flows use the

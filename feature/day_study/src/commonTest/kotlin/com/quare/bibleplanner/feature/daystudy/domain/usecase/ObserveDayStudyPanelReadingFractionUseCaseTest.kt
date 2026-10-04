@@ -55,7 +55,8 @@ internal class ObserveDayStudyPanelReadingFractionUseCaseTest {
         assertEquals(0.5f, emitted)
     }
 
-    private fun useCaseWith(storedFraction: Float?) = ObserveDayStudyPanelReadingFractionUseCase(
-        repository = FakeDayStudyPanelRatioRepository(initialFraction = storedFraction),
-    )
+    private fun useCaseWith(storedFraction: Float?): ObserveDayStudyPanelReadingFractionUseCase =
+        ObserveDayStudyPanelReadingFractionUseCase(
+            repository = FakeDayStudyPanelRatioRepository(initialFraction = storedFraction),
+        )
 }

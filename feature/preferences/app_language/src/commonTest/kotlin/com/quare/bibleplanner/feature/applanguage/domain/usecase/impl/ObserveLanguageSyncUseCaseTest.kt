@@ -62,8 +62,8 @@ internal class ObserveLanguageSyncUseCaseTest {
 
         override fun getLanguageFlow(): Flow<Language> = flowOf(Language.ENGLISH)
 
-        override suspend fun setLanguage(language: Language) = Unit
+        override suspend fun setLanguage(language: Language) {}
 
-        override suspend fun setLanguageSyncEnabled(enabled: Boolean) = Unit
+        override suspend fun setLanguageSyncEnabled(enabled: Boolean) {}
     }
 }
