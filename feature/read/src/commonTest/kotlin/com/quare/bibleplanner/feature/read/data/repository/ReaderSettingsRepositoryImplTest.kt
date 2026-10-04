@@ -37,6 +37,7 @@ internal class ReaderSettingsRepositoryImplTest {
                 rulerLines = ReaderRulerLines.DEFAULT,
                 isFocusedVerseEnabled = false,
                 isVerticalReadingEnabled = false,
+                isNoteIconEnabled = true,
             ),
             actual = settings,
         )
@@ -51,6 +52,7 @@ internal class ReaderSettingsRepositoryImplTest {
         repository.setRulerLines(3)
         repository.setFocusedVerseEnabled(true)
         repository.setVerticalReadingEnabled(true)
+        repository.setNoteIconEnabled(false)
 
         // When
         val settings = repository.observe().first()
@@ -64,6 +66,7 @@ internal class ReaderSettingsRepositoryImplTest {
                 rulerLines = 3,
                 isFocusedVerseEnabled = true,
                 isVerticalReadingEnabled = true,
+                isNoteIconEnabled = false,
             ),
             actual = settings,
         )

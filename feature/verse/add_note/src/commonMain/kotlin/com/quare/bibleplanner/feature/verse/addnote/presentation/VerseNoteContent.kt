@@ -5,16 +5,23 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -25,6 +32,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import bibleplanner.feature.verse.add_note.generated.resources.Res
+import bibleplanner.feature.verse.add_note.generated.resources.delete_verse_note
 import bibleplanner.feature.verse.add_note.generated.resources.note_placeholder
 import bibleplanner.feature.verse.add_note.generated.resources.save_note
 import com.quare.bibleplanner.core.books.util.verseReferenceLabel
@@ -103,6 +111,31 @@ internal fun VerseNoteContent(
             onClick = { onEvent(VerseNoteUiEvent.OnSaveClick) },
         ) {
             Text(text = stringResource(Res.string.save_note))
+        }
+        if (uiState.isExisting) {
+            TextButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onEvent(VerseNoteUiEvent.OnDeleteClick) },
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
+            ) {
+                Icon(
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = null,
+                )
+                Spacer(modifier = Modifier.width(ButtonDefaults.IconSpacing))
+                Text(text = stringResource(Res.string.delete_verse_note))
+            }
+        }
+        if (uiState.isDeleteConfirmationVisible) {
+            DeleteVerseNoteDialog(
+                bookId = uiState.bookId,
+                chapterNumber = uiState.chapterNumber,
+                verseNumbers = uiState.verseNumbers,
+                onEvent = onEvent,
+            )
         }
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StickyNote2
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.EditNote
@@ -29,6 +30,7 @@ import bibleplanner.feature.verse.selection_menu.generated.resources.copy
 import bibleplanner.feature.verse.selection_menu.generated.resources.save_verses
 import bibleplanner.feature.verse.selection_menu.generated.resources.saved_verses
 import bibleplanner.feature.verse.selection_menu.generated.resources.share
+import bibleplanner.feature.verse.selection_menu.generated.resources.view_note
 import com.quare.bibleplanner.core.provider.platform.Platform
 import com.quare.bibleplanner.ui.component.icon.shareIcon
 import org.jetbrains.compose.resources.stringResource
@@ -38,6 +40,7 @@ private val tileHeight = 56.dp
 @Composable
 internal fun SelectionActionsRow(
     isSelectionSaved: Boolean,
+    hasNote: Boolean,
     onSaveClick: () -> Unit,
     onNoteClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -56,9 +59,9 @@ internal fun SelectionActionsRow(
             onClick = onSaveClick,
         )
         ActionTile(
-            imageVector = Icons.Default.EditNote,
-            label = stringResource(Res.string.add_note),
-            isActive = false,
+            imageVector = if (hasNote) Icons.AutoMirrored.Filled.StickyNote2 else Icons.Default.EditNote,
+            label = stringResource(if (hasNote) Res.string.view_note else Res.string.add_note),
+            isActive = hasNote,
             onClick = onNoteClick,
         )
         ActionTile(

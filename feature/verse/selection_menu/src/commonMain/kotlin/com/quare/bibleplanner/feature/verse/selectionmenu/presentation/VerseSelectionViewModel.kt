@@ -30,6 +30,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.usecase.ObserveVerseS
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ShouldBlockAddVerseNote
 import com.quare.bibleplanner.core.verseannotations.domain.usecase.ToggleSavedVerses
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.CustomColorUiModel
+import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.SelectionNoteUiModel
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiAction
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiEvent
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiState
@@ -78,6 +79,7 @@ internal class VerseSelectionViewModel(
         highlightColorByVerse = emptyMap(),
         savedVerseNumbers = emptySet(),
         noteIdByVerse = emptyMap(),
+        noteVerseNumbersById = emptyMap(),
     )
 
     val uiAction: SharedFlow<VerseSelectionUiAction>
@@ -108,7 +110,9 @@ internal class VerseSelectionViewModel(
                     .distinct()
                     .singleOrNull(),
                 isSelectionSaved = selection.verseNumbers.all { it in annotations.savedVerseNumbers },
-                noteId = selection.verseNumbers.firstNotNullOfOrNull { annotations.noteIdByVerse[it] },
+                note = selection.verseNumbers
+                    .firstNotNullOfOrNull { annotations.noteIdByVerse[it] }
+                    ?.let { noteId -> annotations.toSelectionNote(noteId) },
                 customColorPicker = picker,
                 isProUser = isPro,
             )
@@ -242,18 +246,21 @@ internal class VerseSelectionViewModel(
         }
     }
 
+    // Why: a selection that touches a note opens that note over its own verses, so viewing it
+    // never rewrites the passage it was written for.
     private fun openNote() {
         val selection = getCurrentSelection() ?: return
-        val noteId = uiState.value?.noteId
+        val note = uiState.value?.note
+        val verseNumbers = note?.verseNumbers ?: selection.verseNumbers
         trackEvent(
             name = AnalyticsEventNames.VERSE_NOTE_OPENED,
             params = mapOf(
-                AnalyticsParams.IS_EXISTING to (noteId != null),
-                AnalyticsParams.VERSE_COUNT to selection.verseNumbers.size,
+                AnalyticsParams.IS_EXISTING to (note != null),
+                AnalyticsParams.VERSE_COUNT to verseNumbers.size,
             ),
         )
         viewModelScope.launch {
-            if (noteId == null && shouldBlockAddVerseNote()) {
+            if (note == null && shouldBlockAddVerseNote()) {
                 blockAddVerseNote()
             } else {
                 navigator.navigate(
@@ -261,8 +268,8 @@ internal class VerseSelectionViewModel(
                         bibleVersionId = selection.chapter.bibleVersionId,
                         bookId = selection.chapter.bookId.name,
                         chapterNumber = selection.chapter.chapterNumber,
-                        verseNumbers = selection.verseNumbers,
-                        noteId = noteId,
+                        verseNumbers = verseNumbers,
+                        noteId = note?.noteId,
                     ),
                 )
             }
@@ -319,6 +326,11 @@ internal class VerseSelectionViewModel(
             ),
         )
     }
+
+    private fun ChapterAnnotations.toSelectionNote(noteId: String): SelectionNoteUiModel = SelectionNoteUiModel(
+        noteId = noteId,
+        verseNumbers = noteVerseNumbersById.getValue(noteId),
+    )
 
     private fun getCurrentSelection(): VerseSelection? = observeVerseSelection().value
 

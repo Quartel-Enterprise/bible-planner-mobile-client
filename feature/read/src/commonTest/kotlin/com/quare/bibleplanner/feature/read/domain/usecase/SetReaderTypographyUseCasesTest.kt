@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.domain.usecase
 
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderFontUseCase
+import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderNoteIconUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderVerticalReadingUseCase
 import com.quare.bibleplanner.feature.read.fake.FakeReaderSettingsRepository
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
@@ -8,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 internal class SetReaderTypographyUseCasesTest {
@@ -37,5 +39,14 @@ internal class SetReaderTypographyUseCasesTest {
 
         // Then
         assertTrue(repository.settings.value.isVerticalReadingEnabled)
+    }
+
+    @Test
+    fun `stores the note icon turned off`() = runTest {
+        // When
+        SetReaderNoteIconUseCase(readerSettingsRepository = repository)(false)
+
+        // Then
+        assertFalse(repository.settings.value.isNoteIconEnabled)
     }
 }

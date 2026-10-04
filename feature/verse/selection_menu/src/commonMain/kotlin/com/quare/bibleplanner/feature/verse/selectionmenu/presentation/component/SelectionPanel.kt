@@ -98,6 +98,7 @@ internal fun SelectionPanel(
         }
         SelectionActionsRow(
             isSelectionSaved = selection.isSelectionSaved,
+            hasNote = selection.note != null,
             onSaveClick = { onEvent(VerseSelectionUiEvent.OnToggleSavedClick) },
             onNoteClick = { onEvent(VerseSelectionUiEvent.OnNoteClick) },
             onShareClick = { onEvent(VerseSelectionUiEvent.OnShareClick) },

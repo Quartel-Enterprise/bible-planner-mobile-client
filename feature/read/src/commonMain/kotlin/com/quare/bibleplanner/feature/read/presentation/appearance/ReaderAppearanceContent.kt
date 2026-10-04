@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.filled.CenterFocusStrong
 import androidx.compose.material.icons.filled.DensityLarge
 import androidx.compose.material.icons.filled.DensitySmall
@@ -42,6 +43,8 @@ import bibleplanner.feature.read.generated.resources.font_preview
 import bibleplanner.feature.read.generated.resources.reader_focused_verse
 import bibleplanner.feature.read.generated.resources.reader_focused_verse_description
 import bibleplanner.feature.read.generated.resources.reader_font
+import bibleplanner.feature.read.generated.resources.reader_note_icon
+import bibleplanner.feature.read.generated.resources.reader_note_icon_description
 import bibleplanner.feature.read.generated.resources.reader_ruler
 import bibleplanner.feature.read.generated.resources.reader_ruler_description
 import bibleplanner.feature.read.generated.resources.reader_ruler_description_wide
@@ -94,6 +97,15 @@ internal fun ReaderAppearanceContent(
         FontCard(
             uiState = uiState,
             onEvent = onEvent,
+        )
+        SettingSwitchCard(
+            icon = Icons.AutoMirrored.Outlined.StickyNote2,
+            title = stringResource(Res.string.reader_note_icon),
+            description = stringResource(Res.string.reader_note_icon_description),
+            isChecked = uiState.settings.isNoteIconEnabled,
+            onCheckedChange = { isChecked ->
+                onEvent(ReaderAppearanceUiEvent.OnNoteIconChange(isChecked))
+            },
         )
         SettingSwitchCard(
             icon = Icons.Default.Straighten,

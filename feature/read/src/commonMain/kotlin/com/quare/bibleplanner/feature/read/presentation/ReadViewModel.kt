@@ -28,6 +28,7 @@ import com.quare.bibleplanner.core.model.route.ReadNavRoute
 import com.quare.bibleplanner.core.model.route.ReaderAppearanceNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockNavRoute
 import com.quare.bibleplanner.core.model.route.StudyUnlockSurface
+import com.quare.bibleplanner.core.model.route.VerseNoteNavRoute
 import com.quare.bibleplanner.core.model.route.VerseSelectionNavRoute
 import com.quare.bibleplanner.core.plan.domain.usecase.GetCompletedDayForChapter
 import com.quare.bibleplanner.core.plan.domain.usecase.ObserveDayCompletionCandidates
@@ -411,6 +412,8 @@ class ReadViewModel(
 
             is ReadUiEvent.OnVerseClick -> selectVerse(event)
 
+            is ReadUiEvent.OnNoteIconClick -> openNote(event)
+
             ReadUiEvent.OnAppearanceClick -> navigator.navigate(ReaderAppearanceNavRoute)
 
             is ReadUiEvent.OnChapterStudyClick -> openChapterStudy(event)
@@ -469,6 +472,18 @@ class ReadViewModel(
             params = mapOf(
                 AnalyticsParams.IS_SELECTED to (event.verseNumber in verseNumbers),
                 AnalyticsParams.VERSE_COUNT to verseNumbers.size,
+            ),
+        )
+    }
+
+    private fun openNote(event: ReadUiEvent.OnNoteIconClick) {
+        navigator.navigate(
+            VerseNoteNavRoute(
+                bibleVersionId = event.chapter.bibleVersionId,
+                bookId = event.chapter.bookId.name,
+                chapterNumber = event.chapter.chapterNumber,
+                verseNumbers = event.noteMark.noteVerseNumbers,
+                noteId = event.noteMark.noteId,
             ),
         )
     }
@@ -755,6 +770,7 @@ class ReadViewModel(
             rulerLines = ReaderRulerLines.DEFAULT,
             isFocusedVerseEnabled = false,
             isVerticalReadingEnabled = false,
+            isNoteIconEnabled = true,
         ),
         isLoadingPreviousChapter = false,
         isLoadingNextChapter = false,

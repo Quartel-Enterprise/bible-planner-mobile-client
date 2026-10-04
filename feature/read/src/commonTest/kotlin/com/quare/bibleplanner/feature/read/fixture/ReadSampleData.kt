@@ -147,7 +147,7 @@ internal fun readUiState(
                             isSelected = false,
                             highlightColor = highlightsByVerse[index + 1].takeIf { areVersesHighlighted },
                             isSaved = false,
-                            noteId = null,
+                            noteMark = null,
                         )
                     },
                 ),
@@ -160,6 +160,7 @@ internal fun readUiState(
             rulerLines = ReaderRulerLines.DEFAULT,
             isFocusedVerseEnabled = false,
             isVerticalReadingEnabled = false,
+            isNoteIconEnabled = true,
         ),
         isLoadingPreviousChapter = false,
         isLoadingNextChapter = false,

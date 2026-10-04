@@ -10,6 +10,7 @@ import com.quare.bibleplanner.feature.read.domain.usecase.ReadStudyUseCases
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFont
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderNoteIcon
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderVerticalReading
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.GetNextChapterUseCase
@@ -18,6 +19,7 @@ import com.quare.bibleplanner.feature.read.domain.usecase.impl.ObserveReaderSett
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderFocusAidUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderFontSizeUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderFontUseCase
+import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderNoteIconUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderRulerLinesUseCase
 import com.quare.bibleplanner.feature.read.domain.usecase.impl.SetReaderVerticalReadingUseCase
 import com.quare.bibleplanner.feature.read.presentation.ReadViewModel
@@ -43,6 +45,7 @@ val featureReadModule = module {
     factoryOf(::GetNextChapterUseCase).bind<GetNextChapter>()
     factoryOf(::GetPreviousChapterUseCase).bind<GetPreviousChapter>()
     factoryOf(::SetReaderVerticalReadingUseCase).bind<SetReaderVerticalReading>()
+    factoryOf(::SetReaderNoteIconUseCase).bind<SetReaderNoteIcon>()
 
     factoryOf(::GetReadNavigationSuggestionsModelUseCase)
     factoryOf(::ReadStudyUseCases)

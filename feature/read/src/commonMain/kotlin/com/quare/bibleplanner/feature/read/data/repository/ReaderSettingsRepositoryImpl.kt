@@ -24,6 +24,7 @@ internal class ReaderSettingsRepositoryImpl(
     private val rulerLinesKey = intPreferencesKey("reader_ruler_lines")
     private val focusedVerseEnabledKey = booleanPreferencesKey("reader_focused_verse_enabled")
     private val verticalReadingEnabledKey = booleanPreferencesKey("reader_vertical_reading_enabled")
+    private val noteIconEnabledKey = booleanPreferencesKey("reader_note_icon_enabled")
 
     override fun observe(): Flow<ReaderSettingsModel> = dataStore.data.map { preferences ->
         ReaderSettingsModel(
@@ -33,6 +34,7 @@ internal class ReaderSettingsRepositoryImpl(
             rulerLines = preferences[rulerLinesKey] ?: ReaderRulerLines.DEFAULT,
             isFocusedVerseEnabled = preferences[focusedVerseEnabledKey] == true,
             isVerticalReadingEnabled = preferences[verticalReadingEnabledKey] == true,
+            isNoteIconEnabled = preferences[noteIconEnabledKey] != false,
         )
     }
 
@@ -63,6 +65,11 @@ internal class ReaderSettingsRepositoryImpl(
 
     override suspend fun setVerticalReadingEnabled(isEnabled: Boolean) = dataStore.write(
         key = verticalReadingEnabledKey,
+        value = isEnabled,
+    )
+
+    override suspend fun setNoteIconEnabled(isEnabled: Boolean) = dataStore.write(
+        key = noteIconEnabledKey,
         value = isEnabled,
     )
 

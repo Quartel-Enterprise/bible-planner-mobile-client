@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="verse_note_title">Note</string>
+    <string name="edit_verse_note_title">Edit note</string>
+    <string name="delete_verse_note">Delete note</string>
+    <string name="delete_verse_note_title">Delete the note on %1$s?</string>
+    <string name="delete_verse_note_body">The text of this note will be deleted. The verses stay available in the reader.</string>
+    <string name="confirm_delete_verse_note">Delete</string>
+    <string name="cancel_delete_verse_note">Cancel</string>
     <string name="save_note">Save</string>
     <string name="note_placeholder">Write your reflection, prayer or observation about this passage…</string>
 </resources>

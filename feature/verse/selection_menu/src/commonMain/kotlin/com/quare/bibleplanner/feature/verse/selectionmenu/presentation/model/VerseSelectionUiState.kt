@@ -9,7 +9,7 @@ data class VerseSelectionUiState(
     val customColors: List<HighlightColor.Custom>,
     val activeColor: HighlightColor?,
     val isSelectionSaved: Boolean,
-    val noteId: String?,
+    val note: SelectionNoteUiModel?,
     val customColorPicker: CustomColorUiModel?,
     val isProUser: Boolean,
 )

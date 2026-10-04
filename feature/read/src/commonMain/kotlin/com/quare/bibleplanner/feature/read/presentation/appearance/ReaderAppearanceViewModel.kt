@@ -12,6 +12,7 @@ import com.quare.bibleplanner.feature.read.domain.usecase.ObserveReaderSettings
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFocusAid
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFont
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderFontSize
+import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderNoteIcon
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderRulerLines
 import com.quare.bibleplanner.feature.read.domain.usecase.SetReaderVerticalReading
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
@@ -30,6 +31,7 @@ internal class ReaderAppearanceViewModel(
     private val setReaderFocusAid: SetReaderFocusAid,
     private val setReaderRulerLines: SetReaderRulerLines,
     private val setReaderVerticalReading: SetReaderVerticalReading,
+    private val setReaderNoteIcon: SetReaderNoteIcon,
     private val navigator: Navigator,
     observeReaderSettings: ObserveReaderSettings,
     trackEvent: TrackEvent,
@@ -55,6 +57,7 @@ internal class ReaderAppearanceViewModel(
                 rulerLines = ReaderRulerLines.DEFAULT,
                 isFocusedVerseEnabled = false,
                 isVerticalReadingEnabled = false,
+                isNoteIconEnabled = true,
             ),
             isFontMenuExpanded = false,
         ),
@@ -114,6 +117,9 @@ internal class ReaderAppearanceViewModel(
                 )
                 viewModelScope.launch { setReaderVerticalReading(event.isEnabled) }
             }
+
+            is ReaderAppearanceUiEvent.OnNoteIconChange ->
+                viewModelScope.launch { setReaderNoteIcon(event.isEnabled) }
 
             ReaderAppearanceUiEvent.OnDismiss -> navigator.navigateBack()
         }

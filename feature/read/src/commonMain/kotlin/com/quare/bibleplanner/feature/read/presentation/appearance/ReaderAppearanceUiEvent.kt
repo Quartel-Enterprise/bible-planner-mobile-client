@@ -1,6 +1,7 @@
 package com.quare.bibleplanner.feature.read.presentation.appearance
 
 import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsEventNames
+import com.quare.bibleplanner.core.provider.analytics.domain.model.AnalyticsParams
 import com.quare.bibleplanner.core.provider.analytics.domain.model.EventAnalytics
 import com.quare.bibleplanner.feature.read.domain.model.ReaderFocusAid
 import com.quare.bibleplanner.ui.theme.font.ReaderFont
@@ -59,6 +60,15 @@ sealed interface ReaderAppearanceUiEvent : UiEvent {
     ) : ReaderAppearanceUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Track.Manual(
             AnalyticsEventNames.READER_VERTICAL_READING_TOGGLED,
+        )
+    }
+
+    data class OnNoteIconChange(
+        val isEnabled: Boolean,
+    ) : ReaderAppearanceUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Track.Automatic(
+            name = AnalyticsEventNames.READER_NOTE_ICON_TOGGLED,
+            params = mapOf(AnalyticsParams.IS_ENABLED to isEnabled),
         )
     }
 

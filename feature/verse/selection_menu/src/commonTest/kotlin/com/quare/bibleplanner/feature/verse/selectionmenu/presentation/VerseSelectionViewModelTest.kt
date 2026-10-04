@@ -22,6 +22,7 @@ import com.quare.bibleplanner.core.verseannotations.domain.model.HighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.PresetHighlightColor
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseRef
 import com.quare.bibleplanner.core.verseannotations.domain.model.VerseSelection
+import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.SelectionNoteUiModel
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiAction
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.VerseSelectionUiEvent
 import kotlinx.coroutines.Dispatchers
@@ -365,29 +366,56 @@ internal class VerseSelectionViewModelTest {
         }
 
     @Test
-    fun `still opens an existing note when the verse notes limit is reached`() = runTest(testDispatcher) {
+    fun `opens a note the selection touches over the verses of the note even at the verse notes limit`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                isAddVerseNoteBlocked = true,
+                noteIdByVerse = mapOf(
+                    1 to "note-1",
+                    4 to "note-1",
+                ),
+            )
+
+            // When
+            viewModel.onEvent(VerseSelectionUiEvent.OnNoteClick)
+            runCurrent()
+
+            // Then
+            assertEquals(
+                expected = NavigationCommand.Navigate(
+                    VerseNoteNavRoute(
+                        bibleVersionId = testChapter.bibleVersionId,
+                        bookId = testChapter.bookId.name,
+                        chapterNumber = testChapter.chapterNumber,
+                        verseNumbers = listOf(1, 4),
+                        noteId = "note-1",
+                    ),
+                ),
+                actual = commands.single(),
+            )
+        }
+
+    @Test
+    fun `exposes the note the selection touches so the panel offers to view it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            isAddVerseNoteBlocked = true,
-            noteIdByVerse = mapOf(1 to "note-1"),
+            noteIdByVerse = mapOf(
+                2 to "note-1",
+                3 to "note-1",
+            ),
         )
 
         // When
-        viewModel.onEvent(VerseSelectionUiEvent.OnNoteClick)
         runCurrent()
 
         // Then
         assertEquals(
-            expected = NavigationCommand.Navigate(
-                VerseNoteNavRoute(
-                    bibleVersionId = testChapter.bibleVersionId,
-                    bookId = testChapter.bookId.name,
-                    chapterNumber = testChapter.chapterNumber,
-                    verseNumbers = listOf(1, 2),
-                    noteId = "note-1",
-                ),
+            expected = SelectionNoteUiModel(
+                noteId = "note-1",
+                verseNumbers = listOf(2, 3),
             ),
-            actual = commands.single(),
+            actual = viewModel.uiState.value?.note,
         )
     }
 
@@ -542,6 +570,10 @@ internal class VerseSelectionViewModelTest {
                                     highlightColorByVerse = emptyMap(),
                                     savedVerseNumbers = emptySet(),
                                     noteIdByVerse = noteIdByVerse,
+                                    noteVerseNumbersById = noteIdByVerse.entries.groupBy(
+                                        keySelector = { it.value },
+                                        valueTransform = { it.key },
+                                    ),
                                 ),
                             )
                         },
