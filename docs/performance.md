@@ -86,12 +86,12 @@ it was for its deadline, so anything above zero is a frame the user saw drop.
 | CPU time P50 / P90 / P99 | 5.8 / 14.1 / 33.9 ms | 5.6 / 9.3 / 20.5 ms |
 | Overrun P50 / P90 / P99 | 2.9 / 11.8 / 58.6 ms | 2.3 / 5.7 / 29.1 ms |
 
-**A day** (cold start, open the first whole day on screen, fling it):
+**A day** (cold start with a whole day row on screen, then open it and fling it):
 
 | | Without profile | With profile |
 |---|--:|--:|
-| CPU time P50 / P90 / P99 | 5.4 / 10.9 / 22.2 ms | 5.0 / 9.3 / 16.0 ms |
-| Overrun P50 / P90 / P99 | 1.1 / 7.7 / 30.7 ms | 0.0 / 4.7 / 14.5 ms |
+| CPU time P50 / P90 / P99 | 5.0 / 9.1 / 21.3 ms | 4.7 / 7.1 / 14.9 ms |
+| Overrun P50 / P90 / P99 | 0.0 / 4.8 / 27.5 ms | −0.6 / 3.9 / 13.2 ms |
 
 **A chapter** (from the day, open its first chapter and fling the text):
 
