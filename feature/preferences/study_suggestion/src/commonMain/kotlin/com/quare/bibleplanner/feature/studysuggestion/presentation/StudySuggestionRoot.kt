@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.studysuggestion.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,7 +23,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.studySuggestionSettings() {
     entry<StudySuggestionNavRoute>(
         metadata = DialogSceneStrategy.dialog(

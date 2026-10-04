@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.profile.presentation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -299,7 +298,6 @@ internal class ProfileUiTest {
         return onNode(matcher)
     }
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     private fun ComposeUiTest.prepareScenario(uiState: ProfileUiState) {
         events = mutableListOf()
         setUiTestContent {

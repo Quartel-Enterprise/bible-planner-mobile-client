@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.presentation.component.week
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import com.quare.bibleplanner.feature.readingplan.presentation.model.ReadingPlan
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekGroup
 import com.quare.bibleplanner.feature.readingplan.presentation.model.WeekPlanPresentationModel
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun WeekPlanItem(
     sharedTransitionScope: SharedTransitionScope,

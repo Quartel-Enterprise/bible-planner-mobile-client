@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.presentation.model.BookGroup
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun BookGroupHeader(
     group: BookGroup,

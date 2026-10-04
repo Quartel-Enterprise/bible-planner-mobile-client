@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.core.provider.connectivity
 
-import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -14,7 +13,6 @@ import platform.Network.nw_path_monitor_start
 import platform.Network.nw_path_status_satisfied
 import platform.darwin.dispatch_queue_create
 
-@OptIn(ExperimentalForeignApi::class)
 internal class IosNetworkConnectivityObserver : NetworkConnectivityObserver {
     override fun observe(): Flow<Boolean> = callbackFlow {
         val monitor = nw_path_monitor_create()

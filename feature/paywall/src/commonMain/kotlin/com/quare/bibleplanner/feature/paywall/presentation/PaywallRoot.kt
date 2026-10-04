@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.paywall.presentation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
@@ -15,7 +14,6 @@ import com.quare.bibleplanner.feature.paywall.presentation.viewmodel.PaywallView
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.paywall(sharedTransitionScope: SharedTransitionScope) {
     entry<PaywallNavRoute> { route ->
         val viewModel = koinViewModel<PaywallViewModel> { parametersOf(route) }

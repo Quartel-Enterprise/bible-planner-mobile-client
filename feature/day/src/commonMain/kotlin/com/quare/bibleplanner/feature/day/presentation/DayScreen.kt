@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +25,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.ui.utils.asStable
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun DayScreen(
     platform: Platform,

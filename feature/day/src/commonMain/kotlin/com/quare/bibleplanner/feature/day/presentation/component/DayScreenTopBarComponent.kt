@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.component
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
@@ -14,7 +13,7 @@ import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 import com.quare.bibleplanner.ui.component.icon.BackIcon
 import com.quare.bibleplanner.ui.utils.asStable
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun DayScreenTopBarComponent(
     platform: Platform,

@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import com.quare.bibleplanner.feature.books.presentation.model.BookPresentationModel
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun BookProgressText(
     book: BookPresentationModel,

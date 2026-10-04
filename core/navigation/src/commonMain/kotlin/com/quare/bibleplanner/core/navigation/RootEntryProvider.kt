@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.core.navigation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavEntry
@@ -57,7 +56,6 @@ import com.quare.bibleplanner.feature.verse.annotations.presentation.annotations
 import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.verseSelection
 import com.quare.bibleplanner.feature.verse.share.presentation.shareVerse
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun SharedTransitionScope.toEntryProvider(): (NavKey) -> NavEntry<NavKey> = entryProvider {
     val sharedTransitionScope = this@toEntryProvider

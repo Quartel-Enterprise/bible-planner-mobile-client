@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.books.screenshots
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
@@ -61,7 +60,6 @@ internal class BooksScreenshotTest : ScreenshotTest() {
         }
     }
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
     private fun BooksContent(uiState: BooksUiState) {
         SharedTransitionLayout {

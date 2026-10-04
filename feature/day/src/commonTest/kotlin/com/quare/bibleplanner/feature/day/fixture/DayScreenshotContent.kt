@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.fixture
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,7 +32,6 @@ private const val FREE_LIMIT = 3
  * [statusBarHeight] is the room the frame's status bar takes at the top. The Play frames reserve
  * it themselves, so they pass zero; an iOS capture fills the whole screen and passes its slot's.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun DayScreenshotContent(
     locale: String,

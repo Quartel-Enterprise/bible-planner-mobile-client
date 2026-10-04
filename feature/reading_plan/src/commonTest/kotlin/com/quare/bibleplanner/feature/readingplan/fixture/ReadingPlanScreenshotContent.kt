@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.readingplan.fixture
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,7 +31,6 @@ internal const val READING_PLAN_LIGHT_SCREENSHOT = "06_reading_plan_light"
  * [statusBarHeight] is the room the frame's status bar takes at the top. The Play frames reserve
  * it themselves, so they pass zero; an iOS capture fills the whole screen and passes its slot's.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun ReadingPlanScreenshotContent(
     theme: Theme,

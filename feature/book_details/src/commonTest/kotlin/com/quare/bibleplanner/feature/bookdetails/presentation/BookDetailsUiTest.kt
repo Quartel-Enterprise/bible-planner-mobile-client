@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.bookdetails.presentation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -154,7 +153,6 @@ internal class BookDetailsUiTest {
         onNodeWithText(getString(Res.string.chapters)).assertDoesNotExist()
     }
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     private fun ComposeUiTest.prepareScenario(uiState: BookDetailsUiState) {
         events = mutableListOf()
         setUiTestContent {

@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.ui.component.progress
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
@@ -15,7 +14,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BookProgressBar(
     progress: Float,

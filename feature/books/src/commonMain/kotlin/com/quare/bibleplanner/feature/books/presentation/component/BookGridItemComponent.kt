@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +23,6 @@ import com.quare.bibleplanner.ui.component.icon.FavoriteIconButton
 import com.quare.bibleplanner.ui.component.progress.BookProgressBar
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun BookGridItemComponent(
     modifier: Modifier = Modifier,

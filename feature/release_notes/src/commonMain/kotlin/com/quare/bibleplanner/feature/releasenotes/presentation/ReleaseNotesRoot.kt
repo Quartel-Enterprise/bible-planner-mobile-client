@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.releasenotes.presentation
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,7 +10,6 @@ import com.quare.bibleplanner.feature.releasenotes.presentation.viewmodel.Releas
 import com.quare.bibleplanner.ui.utils.ActionCollector
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ReleaseNotesRoot(
     openUrl: (String) -> Unit,

@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.dayreadingcomplete.presentation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,7 +21,6 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.dayReadingComplete() {
     entry<DayReadingCompleteNavRoute>(
         metadata = DialogSceneStrategy.dialog(

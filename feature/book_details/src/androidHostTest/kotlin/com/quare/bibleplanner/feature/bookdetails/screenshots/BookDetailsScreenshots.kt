@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.bookdetails.screenshots
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -75,7 +74,6 @@ internal class ReadmeBookDetailsWideScreenshots :
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun BookDetailsContent() {
     SharedTransitionLayout {

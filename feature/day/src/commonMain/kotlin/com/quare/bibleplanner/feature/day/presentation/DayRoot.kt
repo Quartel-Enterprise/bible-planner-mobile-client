@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.day.presentation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -23,7 +22,6 @@ import com.quare.bibleplanner.ui.utils.LocalIsWideLayout
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<NavKey>.day(
     sharedTransitionScope: SharedTransitionScope,
     dayStudySection: DayStudySectionSlot,
@@ -37,7 +35,6 @@ fun EntryProviderScope<NavKey>.day(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun DayRootContent(
     route: DayNavRoute,

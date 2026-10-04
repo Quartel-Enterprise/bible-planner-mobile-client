@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.profile.screenshots
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import com.quare.bibleplanner.feature.profile.domain.model.AccountStatusModel
@@ -36,7 +35,6 @@ internal class ProfileScreenshotTest : ScreenshotTest() {
         }
     }
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
     private fun ProfileContent(uiState: ProfileUiState) {
         SharedTransitionLayout {

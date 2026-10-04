@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.contactsupport.presentation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.collectAsState
@@ -22,7 +21,6 @@ import com.quare.bibleplanner.ui.component.ResponsiveDialogSheet
 import com.quare.bibleplanner.ui.component.dialog.toSheetDialogProperties
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun EntryProviderScope<NavKey>.contactSupport() {
     entry<ContactSupportNavRoute>(
         metadata = DialogSceneStrategy.dialog(

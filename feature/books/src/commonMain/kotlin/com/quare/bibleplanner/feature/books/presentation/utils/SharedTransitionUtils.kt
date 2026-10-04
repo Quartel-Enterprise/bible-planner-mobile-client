@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.books.presentation.utils
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -15,7 +14,6 @@ import androidx.compose.ui.unit.dp
 
 // Why: the default bounds-based overlay clip cuts off ElevatedCard shadows during
 // shared transitions.
-@OptIn(ExperimentalSharedTransitionApi::class)
 val NoClip = object : SharedTransitionScope.OverlayClip {
     override fun getClipPath(
         sharedContentState: SharedTransitionScope.SharedContentState,
@@ -25,10 +23,8 @@ val NoClip = object : SharedTransitionScope.OverlayClip {
     ): Path? = null
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun getShadowClip(shape: Shape) = OverlayClip(shape, padding = 16.dp)
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 private fun OverlayClip(
     shape: Shape,
     padding: Dp = 0.dp,

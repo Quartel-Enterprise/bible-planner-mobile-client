@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.paywall.presentation.component
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,7 +33,7 @@ private val badgeCornerRadius = 13.dp
 private val badgeIconSize = 22.dp
 private val badgeEndPadding = 4.dp
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PaywallTopBar(
     platform: Platform,

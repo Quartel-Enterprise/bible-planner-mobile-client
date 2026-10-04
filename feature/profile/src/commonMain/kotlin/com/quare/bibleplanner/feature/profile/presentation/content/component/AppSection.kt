@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.profile.presentation.content.component
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiEvent
 import com.quare.bibleplanner.feature.profile.presentation.model.ProfileUiState
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun AppSection(
     state: ProfileUiState,

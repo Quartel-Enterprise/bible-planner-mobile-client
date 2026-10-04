@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.screenshots
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -61,7 +60,6 @@ internal class DayScreenshotTest : ScreenshotTest() {
         }
     }
 
-    @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
     private fun DayContent(
         uiState: DayUiState,

@@ -3,7 +3,6 @@ package com.quare.bibleplanner.ui.component.dialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
-import com.mohamedrejeb.calf.ui.ExperimentalCalfUiApi
 import com.mohamedrejeb.calf.ui.dialog.AdaptiveBasicAlertDialog
 import com.mohamedrejeb.calf.ui.dialog.uikit.AlertDialogIosAction
 import com.mohamedrejeb.calf.ui.dialog.uikit.AlertDialogIosActionStyle
@@ -11,7 +10,6 @@ import com.mohamedrejeb.calf.ui.dialog.uikit.AlertDialogIosProperties
 import com.mohamedrejeb.calf.ui.dialog.uikit.AlertDialogIosStyle
 import com.mohamedrejeb.calf.ui.dialog.uikit.AlertDialogIosTextField
 
-@OptIn(ExperimentalCalfUiApi::class)
 @Composable
 internal actual fun PlatformAlertDialog(
     title: String,

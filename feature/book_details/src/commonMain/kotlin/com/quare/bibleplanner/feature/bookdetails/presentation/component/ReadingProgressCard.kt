@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.bookdetails.presentation.component
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import com.quare.bibleplanner.ui.component.progress.BookProgressBar
 import com.quare.bibleplanner.ui.component.spacer.VerticalSpacer
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ReadingProgressCard(
     progress: Float,

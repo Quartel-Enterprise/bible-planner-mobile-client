@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.profile.presentation.content.component
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
@@ -18,7 +17,6 @@ import com.quare.bibleplanner.feature.profile.presentation.model.ProfileMenuItem
 import com.quare.bibleplanner.ui.component.shimmer.ShimmerBox
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun ProfileMenuItem(
     itemModel: ProfileMenuItemPresentationModel,

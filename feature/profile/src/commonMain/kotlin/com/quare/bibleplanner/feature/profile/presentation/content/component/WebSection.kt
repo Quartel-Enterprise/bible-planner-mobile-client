@@ -1,6 +1,5 @@
 package com.quare.bibleplanner.feature.profile.presentation.content.component
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -15,7 +14,6 @@ import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun WebSection(
     modifier: Modifier = Modifier,

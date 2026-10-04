@@ -1,7 +1,6 @@
 package com.quare.bibleplanner.feature.day.presentation.content.loaded.landscape.side
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +28,6 @@ import com.quare.bibleplanner.feature.day.presentation.content.loaded.PlannedRea
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiEvent
 import com.quare.bibleplanner.feature.day.presentation.model.DayUiState
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun LoadedDayLandscapeScreenLeftContent(
     modifier: Modifier = Modifier,
