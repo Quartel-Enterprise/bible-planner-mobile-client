@@ -17,22 +17,28 @@ internal class ReviewPreferencesImpl(
 
     override suspend fun getFirstEligibleAt(): Long? = dataStore.read(firstEligibleAtKey)
 
-    override suspend fun setFirstEligibleAt(timestamp: Long) = dataStore.write(
-        key = firstEligibleAtKey,
-        value = timestamp,
-    )
+    override suspend fun setFirstEligibleAt(timestamp: Long) {
+        dataStore.write(
+            key = firstEligibleAtKey,
+            value = timestamp,
+        )
+    }
 
     override suspend fun getLastPromptedAt(): Long? = dataStore.read(lastPromptedAtKey)
 
-    override suspend fun setLastPromptedAt(timestamp: Long) = dataStore.write(
-        key = lastPromptedAtKey,
-        value = timestamp,
-    )
+    override suspend fun setLastPromptedAt(timestamp: Long) {
+        dataStore.write(
+            key = lastPromptedAtKey,
+            value = timestamp,
+        )
+    }
 
     override suspend fun getLastPromptedVersion(): String? = dataStore.read(lastPromptedVersionKey)
 
-    override suspend fun setLastPromptedVersion(version: String) = dataStore.write(
-        key = lastPromptedVersionKey,
-        value = version,
-    )
+    override suspend fun setLastPromptedVersion(version: String) {
+        dataStore.write(
+            key = lastPromptedVersionKey,
+            value = version,
+        )
+    }
 }

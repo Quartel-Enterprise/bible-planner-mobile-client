@@ -39,7 +39,7 @@ private object JvmE2ePlatform : E2ePlatform {
         },
     )
 
-    override fun configure(koinApplication: KoinApplication) = Unit
+    override fun configure(koinApplication: KoinApplication) {}
 
     override fun createDirectory(): String = Files.createTempDirectory(E2E_DIRECTORY_PREFIX).toString()
 

@@ -170,9 +170,10 @@ class IosBackgroundDownloadBridge(
         clamped
     }
 
-    private suspend fun forgetDownloadedChapters(versionId: String) = downloadedChaptersMutex.withLock {
-        downloadedChapters.remove(versionId)
-        Unit
+    private suspend fun forgetDownloadedChapters(versionId: String) {
+        downloadedChaptersMutex.withLock {
+            downloadedChapters.remove(versionId)
+        }
     }
 
     private suspend fun resolveVersionName(versionId: String): String = bibleRepository

@@ -36,8 +36,10 @@ internal class SupabaseClientProviderTest {
     }
 
     @AfterTest
-    fun tearDown() = runTest {
-        client.close()
+    fun tearDown() {
+        runTest {
+            client.close()
+        }
     }
 
     @Test

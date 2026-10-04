@@ -28,9 +28,11 @@ internal class ProfileSynchronizer(
     private val initialBackoff: Duration = 2.seconds
     private val maxBackoff: Duration = 60.seconds
 
-    override suspend fun runPushLoop() = coroutineScope {
-        launch { runAvatarUploadLoop() }
-        delegate.runPushLoop()
+    override suspend fun runPushLoop() {
+        coroutineScope {
+            launch { runAvatarUploadLoop() }
+            delegate.runPushLoop()
+        }
     }
 
     override suspend fun pushPendingOnce() {

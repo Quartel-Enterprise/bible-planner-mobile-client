@@ -26,7 +26,7 @@ val NoClip = object : SharedTransitionScope.OverlayClip {
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun getShadowClip(shape: Shape) = OverlayClip(shape, padding = 16.dp)
+fun getShadowClip(shape: Shape): SharedTransitionScope.OverlayClip = OverlayClip(shape, padding = 16.dp)
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private fun OverlayClip(

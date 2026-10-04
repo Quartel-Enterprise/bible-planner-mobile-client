@@ -28,7 +28,9 @@ internal class NotificationPermissionViewModelTest {
     }
 
     @AfterTest
-    fun tearDown() = Dispatchers.resetMain()
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `GIVEN the first-time dialog WHEN confirming THEN logs prompted event with is_first_time true`() =

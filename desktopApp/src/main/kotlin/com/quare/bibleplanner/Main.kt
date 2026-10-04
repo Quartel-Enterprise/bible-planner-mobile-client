@@ -26,33 +26,35 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-fun main() = application {
-    initializeKoin(
-        platformModules = listOf(
-            jvmAppLanguageModule,
-            jvmLanguageProviderModule,
-            jvmLoginModule,
-            languageProviderModule,
-            module {
-                single { getDatabaseBuilder() }
-                singleOf(::DesktopBibleVersionDownloadNotifier).bind<BibleVersionDownloadNotifier>()
-                singleOf(::InProcessBibleVersionDownloader)
-                singleOf(::DesktopBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
-            },
-        ),
-    )
-    val koin = GlobalContext.get()
-    koin.get<CrashReporter>().configure(isDebug = isDebugBuild())
-    runBlocking {
-        initAppLocale(
-            getAppLanguageFlow = koin.get(),
-            applyLocale = koin.get(),
+fun main() {
+    application {
+        initializeKoin(
+            platformModules = listOf(
+                jvmAppLanguageModule,
+                jvmLanguageProviderModule,
+                jvmLoginModule,
+                languageProviderModule,
+                module {
+                    single { getDatabaseBuilder() }
+                    singleOf(::DesktopBibleVersionDownloadNotifier).bind<BibleVersionDownloadNotifier>()
+                    singleOf(::InProcessBibleVersionDownloader)
+                    singleOf(::DesktopBibleVersionDownloaderFacade).bind<BibleVersionDownloaderFacade>()
+                },
+            ),
         )
-    }
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = stringResource(Res.string.app_title),
-    ) {
-        AppRoot()
+        val koin = GlobalContext.get()
+        koin.get<CrashReporter>().configure(isDebug = isDebugBuild())
+        runBlocking {
+            initAppLocale(
+                getAppLanguageFlow = koin.get(),
+                applyLocale = koin.get(),
+            )
+        }
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = stringResource(Res.string.app_title),
+        ) {
+            AppRoot()
+        }
     }
 }

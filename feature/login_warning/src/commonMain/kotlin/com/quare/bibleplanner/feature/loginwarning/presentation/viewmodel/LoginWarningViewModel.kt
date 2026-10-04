@@ -21,15 +21,17 @@ internal class LoginWarningViewModel(
         track(AnalyticsEventNames.LOGIN_WARNING_SHOWN)
     }
 
-    override fun handleEvent(event: LoginWarningUiEvent) = when (event) {
-        LoginWarningUiEvent.OnLoginClick -> {
-            track(AnalyticsEventNames.LOGIN_WARNING_ACCEPTED)
-            navigator.navigateReplacingTop(LoginNavRoute(notifyResultViaSnackbar = true))
-        }
+    override fun handleEvent(event: LoginWarningUiEvent) {
+        when (event) {
+            LoginWarningUiEvent.OnLoginClick -> {
+                track(AnalyticsEventNames.LOGIN_WARNING_ACCEPTED)
+                navigator.navigateReplacingTop(LoginNavRoute(notifyResultViaSnackbar = true))
+            }
 
-        LoginWarningUiEvent.OnDismiss -> {
-            track(AnalyticsEventNames.LOGIN_WARNING_DISMISSED)
-            navigator.navigateBack()
+            LoginWarningUiEvent.OnDismiss -> {
+                track(AnalyticsEventNames.LOGIN_WARNING_DISMISSED)
+                navigator.navigateBack()
+            }
         }
     }
 

@@ -16,10 +16,12 @@ internal class MaterialYouRepositoryImpl(
         it[booleanPreferencesKey(IS_DYNAMIC_COLORS_ENABLED_KEY)].orFalse()
     }
 
-    override suspend fun setIsDynamicColorsEnabled(isEnabled: Boolean) = dataStore.write(
-        key = booleanPreferencesKey(IS_DYNAMIC_COLORS_ENABLED_KEY),
-        value = isEnabled,
-    )
+    override suspend fun setIsDynamicColorsEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = booleanPreferencesKey(IS_DYNAMIC_COLORS_ENABLED_KEY),
+            value = isEnabled,
+        )
+    }
 
     companion object {
         private const val IS_DYNAMIC_COLORS_ENABLED_KEY = "is_dynamic_colors_enabled"

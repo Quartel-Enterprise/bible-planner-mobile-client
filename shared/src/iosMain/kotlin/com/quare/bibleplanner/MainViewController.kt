@@ -34,6 +34,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 import platform.UIKit.UIUserInterfaceStyle
+import platform.UIKit.UIViewController
 import kotlin.experimental.ExperimentalNativeApi
 
 private var isInitialized = false
@@ -96,7 +97,7 @@ fun MainViewController(
     reviewRequester: IosReviewRequester,
     rewardedAdDataSource: RewardedAdDataSource,
     adsConsentDataSource: AdsConsentDataSource,
-) = ComposeUIViewController(
+): UIViewController = ComposeUIViewController(
     configure = {
         initializeKoinForIos(
             remoteConfigService = remoteConfigService,

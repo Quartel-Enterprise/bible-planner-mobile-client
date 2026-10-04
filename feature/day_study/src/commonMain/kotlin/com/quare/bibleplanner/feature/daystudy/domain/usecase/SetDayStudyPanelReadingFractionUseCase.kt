@@ -6,10 +6,12 @@ import com.quare.bibleplanner.feature.daystudy.domain.repository.DayStudyPanelRa
 class SetDayStudyPanelReadingFractionUseCase(
     private val repository: DayStudyPanelRatioRepository,
 ) {
-    suspend operator fun invoke(fraction: Float) = repository.setReadingFraction(
-        fraction.coerceIn(
-            minimumValue = DayStudyPanelRatio.MIN,
-            maximumValue = DayStudyPanelRatio.MAX,
-        ),
-    )
+    suspend operator fun invoke(fraction: Float) {
+        repository.setReadingFraction(
+            fraction.coerceIn(
+                minimumValue = DayStudyPanelRatio.MIN,
+                maximumValue = DayStudyPanelRatio.MAX,
+            ),
+        )
+    }
 }

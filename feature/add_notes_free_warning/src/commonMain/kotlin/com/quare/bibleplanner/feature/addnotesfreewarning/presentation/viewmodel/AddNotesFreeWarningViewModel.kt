@@ -17,12 +17,14 @@ internal class AddNotesFreeWarningViewModel(
     val maxFreeNotesAmount = route.maxFreeNotesAmount
     val type = route.type
 
-    override fun handleEvent(event: AddNotesFreeWarningUiEvent) = when (event) {
-        AddNotesFreeWarningUiEvent.OnCancel -> navigator.navigateBack()
+    override fun handleEvent(event: AddNotesFreeWarningUiEvent) {
+        when (event) {
+            AddNotesFreeWarningUiEvent.OnCancel -> navigator.navigateBack()
 
-        AddNotesFreeWarningUiEvent.OnSubscribeToPro -> navigator.navigateReplacingTop(
-            PaywallNavRoute(type.toPaywallEntrySource()),
-        )
+            AddNotesFreeWarningUiEvent.OnSubscribeToPro -> navigator.navigateReplacingTop(
+                PaywallNavRoute(type.toPaywallEntrySource()),
+            )
+        }
     }
 
     private fun AddNotesFreeWarningType.toPaywallEntrySource(): PaywallEntrySource = when (this) {

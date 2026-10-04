@@ -20,9 +20,9 @@ interface SyncLocalStore<E, D> {
         entity: E,
     ): D
 
-    suspend fun seed(now: Long) = Unit
+    suspend fun seed(now: Long) {}
 
-    suspend fun adoptProvisionalDefaults(now: Long) = Unit
+    suspend fun adoptProvisionalDefaults(now: Long) {}
 
     // Why: the logout wipe must not schedule a push, or it would propagate to the account's
     // remote data.

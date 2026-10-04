@@ -115,7 +115,7 @@ class CropGeometryTest {
         offsetX: Float = 0f,
         offsetY: Float = 0f,
         orientation: PhotoOrientation = original(),
-    ) = CropParams(
+    ): CropParams = CropParams(
         imageWidth = 1000,
         imageHeight = 2000,
         circleDiameter = 900f,

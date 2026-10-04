@@ -6,6 +6,10 @@ name: merge-when-green
 #
 # It runs when the label is added (the checks may already be green) and whenever one of the pull
 # request workflows completes (the last one to finish is the one that finds everything green).
+#
+# A green pull request with an unresolved review conversation (a finding of claude-review, say) is
+# not merged: the label goes and a comment says why. Resolving a conversation starts no workflow, so
+# adding the label again is what merges it then.
 on:
   pull_request:
     types:
@@ -33,6 +37,9 @@ jobs:
       (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     concurrency:
       group: merge-when-green-${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
     steps:
@@ -43,6 +50,7 @@ jobs:
       - name: Merge the pull request if every check passed
         env:
           GH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
         run: |
@@ -80,6 +88,35 @@ jobs:
           if [ -n "$unfinished" ]; then
             echo "#$pr is not green yet:"
             echo "$unfinished"
+            exit 0
+          fi
+
+          # The ruleset refuses the merge too, but checking first leaves a comment on the pull request
+          # instead of a failed run nobody looks at. The $ names in the query are GraphQL variables.
+          # shellcheck disable=SC2016
+          unresolved_threads=$(gh api graphql --paginate \
+            -F owner="${GH_REPO%/*}" \
+            -F name="${GH_REPO#*/}" \
+            -F number="$pr" \
+            -f query='query($owner: String!, $name: String!, $number: Int!, $endCursor: String) {
+              repository(owner: $owner, name: $name) {
+                pullRequest(number: $number) {
+                  reviewThreads(first: 100, after: $endCursor) {
+                    nodes { id isResolved }
+                    pageInfo { hasNextPage endCursor }
+                  }
+                }
+              }
+            }' \
+            --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not) | .id')
+          unresolved=$(grep -c . <<< "$unresolved_threads" || true)
+          if [ "$unresolved" -gt 0 ]; then
+            echo "#$pr is green but has $unresolved unresolved review conversation(s)."
+            body="Every check passed, but $unresolved review conversation(s) are still unresolved, so this"
+            body+=" was not merged. Fix each one, or reply with why it stays as it is, resolve them, then"
+            body+=" add the \`merge-when-green\` label again."
+            GH_TOKEN="$GITHUB_TOKEN" gh pr comment "$pr" --body "$body"
+            GH_TOKEN="$GITHUB_TOKEN" gh api --method DELETE "repos/$GH_REPO/issues/$pr/labels/merge-when-green" > /dev/null
             exit 0
           fi
 

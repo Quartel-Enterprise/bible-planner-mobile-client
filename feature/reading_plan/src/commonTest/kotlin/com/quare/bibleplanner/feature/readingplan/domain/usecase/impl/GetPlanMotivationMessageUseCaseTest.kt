@@ -31,7 +31,7 @@ internal class GetPlanMotivationMessageUseCaseTest {
         onStreakInvoked: (days: List<DayModel>, today: LocalDate) -> Unit = { _, _ -> },
         onDaySituationInvoked: (days: List<DayModel>, today: LocalDate) -> Unit = { _, _ -> },
         onProgressInvoked: (progress: Float) -> Unit = {},
-    ) = GetPlanMotivationMessageUseCase(
+    ): GetPlanMotivationMessageUseCase = GetPlanMotivationMessageUseCase(
         currentTimestampProvider = timestampProvider,
         localDateTimeProvider = dateProvider,
         resolveMilestoneMotivation = { days, nowMillis ->

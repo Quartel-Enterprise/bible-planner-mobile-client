@@ -38,40 +38,54 @@ internal class ReaderSettingsRepositoryImpl(
         )
     }
 
-    override suspend fun setFontSize(fontSizeSp: Float) = dataStore.write(
-        key = fontSizeKey,
-        value = fontSizeSp,
-    )
+    override suspend fun setFontSize(fontSizeSp: Float) {
+        dataStore.write(
+            key = fontSizeKey,
+            value = fontSizeSp,
+        )
+    }
 
-    override suspend fun setFont(fontName: String) = dataStore.write(
-        key = fontKey,
-        value = fontName,
-    )
+    override suspend fun setFont(fontName: String) {
+        dataStore.write(
+            key = fontKey,
+            value = fontName,
+        )
+    }
 
-    override suspend fun setRulerEnabled(isEnabled: Boolean) = dataStore.write(
-        key = rulerEnabledKey,
-        value = isEnabled,
-    )
+    override suspend fun setRulerEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = rulerEnabledKey,
+            value = isEnabled,
+        )
+    }
 
-    override suspend fun setRulerLines(lines: Int) = dataStore.write(
-        key = rulerLinesKey,
-        value = lines,
-    )
+    override suspend fun setRulerLines(lines: Int) {
+        dataStore.write(
+            key = rulerLinesKey,
+            value = lines,
+        )
+    }
 
-    override suspend fun setFocusedVerseEnabled(isEnabled: Boolean) = dataStore.write(
-        key = focusedVerseEnabledKey,
-        value = isEnabled,
-    )
+    override suspend fun setFocusedVerseEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = focusedVerseEnabledKey,
+            value = isEnabled,
+        )
+    }
 
-    override suspend fun setVerticalReadingEnabled(isEnabled: Boolean) = dataStore.write(
-        key = verticalReadingEnabledKey,
-        value = isEnabled,
-    )
+    override suspend fun setVerticalReadingEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = verticalReadingEnabledKey,
+            value = isEnabled,
+        )
+    }
 
-    override suspend fun setNoteIconEnabled(isEnabled: Boolean) = dataStore.write(
-        key = noteIconEnabledKey,
-        value = isEnabled,
-    )
+    override suspend fun setNoteIconEnabled(isEnabled: Boolean) {
+        dataStore.write(
+            key = noteIconEnabledKey,
+            value = isEnabled,
+        )
+    }
 
     private fun String.toReaderFont(): ReaderFont? = ReaderFont.entries.find { it.name == this }
 }

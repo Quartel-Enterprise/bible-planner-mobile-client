@@ -9,4 +9,4 @@ import com.quare.bibleplanner.feature.main.presentation.model.MainNavigationItem
 internal actual fun NativeTabBarAvatarEffect(
     mainNavigationModels: List<MainNavigationItemModel<NavKey>>,
     tabBarItems: List<UIKitUITabBarItem>,
-) = Unit
+) {}

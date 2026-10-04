@@ -15,15 +15,19 @@ internal class DataStoreSessionAuditStore(
     private val lastSavedAtKey = longPreferencesKey(LAST_SAVED_AT_KEY)
     private val lastDeletedAtKey = longPreferencesKey(LAST_DELETED_AT_KEY)
 
-    override suspend fun recordSaved() = dataStore.write(
-        key = lastSavedAtKey,
-        value = currentTimestampProvider.getCurrentTimestamp(),
-    )
+    override suspend fun recordSaved() {
+        dataStore.write(
+            key = lastSavedAtKey,
+            value = currentTimestampProvider.getCurrentTimestamp(),
+        )
+    }
 
-    override suspend fun recordDeleted() = dataStore.write(
-        key = lastDeletedAtKey,
-        value = currentTimestampProvider.getCurrentTimestamp(),
-    )
+    override suspend fun recordDeleted() {
+        dataStore.write(
+            key = lastDeletedAtKey,
+            value = currentTimestampProvider.getCurrentTimestamp(),
+        )
+    }
 
     override suspend fun getAudit(): SessionAudit = dataStore.data
         .map { preferences ->

@@ -50,6 +50,9 @@ last check to finish is the one that triggers the merge. A push to the pull requ
 commit and the new checks have to pass again. A failed check leaves the pull request open with the
 label on; re-running the check and getting it green merges it.
 
+A green pull request with an unresolved review conversation is not merged: the workflow removes the
+label and comments on the pull request instead. See [Unresolved conversations](#unresolved-conversations).
+
 The merge uses the `MERGE_WHEN_GREEN_TOKEN` secret, not `GITHUB_TOKEN`: a merge made with
 `GITHUB_TOKEN` triggers no other workflow, so the push to `main` would run no checks and
 `cleanup-pr-caches` would not delete the pull request's caches. The secret is a fine-grained personal
@@ -91,10 +94,11 @@ green with a "workflow validation" warning and posts nothing. The review step th
 `.github/actions/claude-review`, is not checked: a change to it runs on the pull request that makes
 it, with the token. Only branches of this repository get there, since forks are skipped.
 
-Treat them as advisory, not as a gate: their findings never fail a check. Since `claude-review` runs
-on the head commit the pull request opened with, `merge-when-green` waits for it to finish there,
-and a run that failed (an expired token) holds the merge until it is rerun. A later push brings a
-head commit with no review check, so the merge no longer waits for it.
+Their findings never fail a check, but each one is an inline comment, and an unresolved comment
+blocks the merge (see [Unresolved conversations](#unresolved-conversations)). Since `claude-review`
+runs on the head commit the pull request opened with, `merge-when-green` waits for it to finish
+there, and a run that failed (an expired token) holds the merge until it is rerun. A later push
+brings a head commit with no review check, so the merge no longer waits for it.
 
 The action hides Claude's output, since the logs of this repository are public. A tool the review
 was denied still shows as a warning on the run, with only its name, and for a Bash command its
@@ -115,6 +119,18 @@ repository.
 
 Anthropic's managed Code Review is not used: it is only available on Team and Enterprise plans, and
 enabling it next to these workflows would review every pull request twice.
+
+### Unresolved conversations
+
+The `Main rules` ruleset requires every review conversation to be resolved before a pull request
+merges into `main` ("Require conversation resolution before merging", with no approvals required).
+GitHub greys out the merge button while one is open, and `merge-when-green` checks first: when
+everything else is green, it removes its label and comments on the pull request instead of failing
+on the merge.
+
+For each Claude finding, either fix it, or reply with why the code stays as it is, then resolve the
+conversation. Resolving one starts no workflow, so add the `merge-when-green` label again afterwards.
+The ruleset has no bypass, so this applies to admins too.
 
 ## UI tests
 

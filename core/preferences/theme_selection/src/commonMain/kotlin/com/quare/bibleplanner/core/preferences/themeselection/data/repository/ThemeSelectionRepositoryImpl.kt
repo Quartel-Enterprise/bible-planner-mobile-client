@@ -82,19 +82,27 @@ internal class ThemeSelectionRepositoryImpl(
             value?.let(mapper::mapContrastPreferenceToModel)
         }
 
-    override suspend fun applySyncedTheme(theme: Theme) = writeTheme(theme)
+    override suspend fun applySyncedTheme(theme: Theme) {
+        writeTheme(theme)
+    }
 
-    override suspend fun applySyncedContrast(contrastType: ContrastType) = writeContrast(contrastType)
+    override suspend fun applySyncedContrast(contrastType: ContrastType) {
+        writeContrast(contrastType)
+    }
 
-    private suspend fun writeTheme(theme: Theme) = dataStore.write(
-        key = stringPreferencesKey(THEME),
-        value = mapper.mapModelToPreference(theme),
-    )
+    private suspend fun writeTheme(theme: Theme) {
+        dataStore.write(
+            key = stringPreferencesKey(THEME),
+            value = mapper.mapModelToPreference(theme),
+        )
+    }
 
-    private suspend fun writeContrast(contrastType: ContrastType) = dataStore.write(
-        key = stringPreferencesKey(CONTRAST),
-        value = mapper.mapModelToContrastPreference(contrastType),
-    )
+    private suspend fun writeContrast(contrastType: ContrastType) {
+        dataStore.write(
+            key = stringPreferencesKey(CONTRAST),
+            value = mapper.mapModelToContrastPreference(contrastType),
+        )
+    }
 
     private suspend fun mirrorIfSyncEnabled(
         key: String,

@@ -7,23 +7,23 @@ internal class SilentBibleVersionDownloadNotifier : BibleVersionDownloadNotifier
         versionId: String,
         versionName: String,
         progress: Float,
-    ) = Unit
+    ) {}
 
     override suspend fun showComplete(
         versionId: String,
         versionName: String,
-    ) = Unit
+    ) {}
 
     override suspend fun showPaused(
         versionId: String,
         versionName: String,
         progress: Float,
-    ) = Unit
+    ) {}
 
     override suspend fun showError(
         versionId: String,
         versionName: String,
-    ) = Unit
+    ) {}
 
-    override suspend fun dismiss(versionId: String) = Unit
+    override suspend fun dismiss(versionId: String) {}
 }

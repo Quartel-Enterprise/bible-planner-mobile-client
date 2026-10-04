@@ -88,9 +88,11 @@ class DayViewModel(
         observeSomething()
     }
 
-    fun onEvent(event: DayUiEvent) = when (event) {
-        is DayUiEvent.OnChapterClicked -> handleChapterClicked(event.chapterNumber)
-        DayUiEvent.OnBackClicked -> navigator.navigateBack()
+    fun onEvent(event: DayUiEvent) {
+        when (event) {
+            is DayUiEvent.OnChapterClicked -> handleChapterClicked(event.chapterNumber)
+            DayUiEvent.OnBackClicked -> navigator.navigateBack()
+        }
     }
 
     private fun observeSomething() {

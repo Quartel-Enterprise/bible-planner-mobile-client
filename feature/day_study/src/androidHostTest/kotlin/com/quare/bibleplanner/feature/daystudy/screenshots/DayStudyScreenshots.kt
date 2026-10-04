@@ -117,20 +117,22 @@ internal abstract class DayStudyScreenshots(
         captureContext()
     }
 
-    private fun captureContext() = contextBannerCopy.forEach { (locale, copy) ->
-        val (title, description) = copy
-        screenshot(
-            locales = listOf(locale),
-            title = title,
-            description = description,
-            backgroundColor = Color(BACKGROUND),
-            subdir = outputSubdir,
-            fileName = DAY_STUDY_CONTEXT_SCREENSHOT,
-        ) {
-            ScreenshotContent(
-                locale = locale,
+    private fun captureContext() {
+        contextBannerCopy.forEach { (locale, copy) ->
+            val (title, description) = copy
+            screenshot(
+                locales = listOf(locale),
+                title = title,
+                description = description,
+                backgroundColor = Color(BACKGROUND),
+                subdir = outputSubdir,
                 fileName = DAY_STUDY_CONTEXT_SCREENSHOT,
-            )
+            ) {
+                ScreenshotContent(
+                    locale = locale,
+                    fileName = DAY_STUDY_CONTEXT_SCREENSHOT,
+                )
+            }
         }
     }
 
