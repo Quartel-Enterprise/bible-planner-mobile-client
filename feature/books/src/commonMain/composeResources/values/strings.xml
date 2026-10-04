@@ -14,4 +14,6 @@
     <string name="list">List</string>
     <string name="grid">Grid</string>
     <string name="open_site">Open site</string>
+    <string name="content_description_sort">Sort</string>
+    <string name="content_description_filter">Filter</string>
 </resources>

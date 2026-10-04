@@ -1,4 +1,5 @@
 import com.bibleplanner.buildlogic.configureAppleStoreScreenshots
+import com.bibleplanner.buildlogic.configureScreenshotTests
 
 plugins {
     alias(libs.plugins.bibleplanner.kotlin.multiplatform)
@@ -106,3 +107,5 @@ tasks.named<Copy>("copyTestComposeResourcesForIosSimulatorArm64") {
 }
 
 configureAppleStoreScreenshots(screenshotsName = "day")
+
+configureScreenshotTests()

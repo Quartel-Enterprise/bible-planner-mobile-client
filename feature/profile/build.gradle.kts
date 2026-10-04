@@ -1,3 +1,4 @@
+import com.bibleplanner.buildlogic.configureScreenshotTests
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 
 plugins {
@@ -9,7 +10,9 @@ plugins {
 kotlin {
     android {
         namespace = "com.quare.bibleplanner.feature.profile"
-        withHostTest {}
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
 
     jvm()
@@ -104,3 +107,5 @@ buildkonfig {
         buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", project.property("versionName").toString())
     }
 }
+
+configureScreenshotTests()

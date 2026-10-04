@@ -1,7 +1,7 @@
 package com.quare.bibleplanner.feature.books.presentation.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -9,6 +9,7 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.core.books.presentation.model.BookTestament
@@ -32,14 +33,14 @@ internal fun TestamentToggle(
                     index = index,
                     count = testaments.size,
                 ),
-                modifier = Modifier.height(36.dp),
+                modifier = Modifier.heightIn(min = 48.dp),
             ) {
                 Text(
                     text = stringResource(testament.titleRes),
                     style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Visible,
-                    softWrap = false,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }

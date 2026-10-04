@@ -249,6 +249,13 @@ gh pr create \
 Take the label from the table in [`branch-types.md`](../branch-types.md). `chore` has no label:
 drop the `--label` flag for it.
 
+Also pass `--label record-screenshots` when the branch changes what a screen with
+[screenshot tests](../../../docs/testing/screenshot-tests.md) draws, or adds, renames or removes a
+`*ScreenshotTest`: a module with a `src/androidHostTest/screenshots` directory, or `:ui:theme` and
+`:ui:component`, which every screen draws through. The `record-screenshots` workflow then renders the
+new references on Linux and commits them to the branch. The references can't be recorded locally.
+When unsure, add it: a branch that changes nothing on screen gets no commit.
+
 If `gh` is not installed, ask the user before installing it (`brew install gh`, then
 `gh auth status || gh auth login`).
 

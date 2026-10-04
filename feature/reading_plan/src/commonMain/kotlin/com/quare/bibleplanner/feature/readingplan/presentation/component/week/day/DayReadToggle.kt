@@ -9,9 +9,9 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -20,6 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.bibleplanner.ui.icons.AppIcon
 import com.quare.bibleplanner.ui.icons.Icon
@@ -28,6 +31,7 @@ import com.quare.bibleplanner.ui.icons.Icon
 internal fun DayReadToggle(
     isRead: Boolean,
     isAccented: Boolean,
+    contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -56,8 +60,12 @@ internal fun DayReadToggle(
         modifier = modifier
             .size(36.dp)
             .clip(CircleShape)
-            .clickable(onClick = onClick)
-            .background(background)
+            .semantics { this.contentDescription = contentDescription }
+            .toggleable(
+                value = isRead,
+                role = Role.Checkbox,
+                onValueChange = { onClick() },
+            ).background(background)
             .border(width = borderWidth, color = borderColor, shape = CircleShape),
         contentAlignment = Alignment.Center,
     ) {

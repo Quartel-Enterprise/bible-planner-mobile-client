@@ -11,6 +11,8 @@ ktlint-gradle = "14.2.0"
 google-services = "4.5.0"
 firebase-crashlytics-plugin = "3.0.8"
 store-screenshots = "1.6.1"
+roborazzi = "1.75.0"
+robolectric = "4.16.1"
 jraska-modules-graph-assert = "2.9.1"
 kover = "0.9.9"
 
@@ -158,6 +160,12 @@ supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
 
 # Store screenshots
 storeScreenshots-library = { module = "io.github.lucianosantosdev:storescreenshots-library", version.ref = "store-screenshots" }
+
+# Screenshot tests
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
+roborazzi-accessibility-check = { module = "io.github.takahirom.roborazzi:roborazzi-accessibility-check", version.ref = "roborazzi" }
 
 # Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }

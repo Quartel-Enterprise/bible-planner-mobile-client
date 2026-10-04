@@ -1,0 +1,84 @@
+name: record-screenshots
+
+# Records the screenshot test references when a pull request gets the record-screenshots label: they
+# are rendered on Linux, like screenshot-tests verifies them, and committed to the pull request's
+# branch. See docs/testing/screenshot-tests.md.
+#
+# It is a workflow of its own because every label added to a pull request starts it. Its job leaves a
+# skipped record check for the other labels, which never stands in for screenshot-tests' verify.
+on:
+  pull_request:
+    types:
+      - labeled
+
+permissions:
+  contents: read
+
+# One group per label, so labeling the pull request with anything else (merge-when-green, say) never
+# cancels a recording halfway.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}-${{ github.event.label.name }}
+  cancel-in-progress: true
+
+jobs:
+  record:
+    # GitHub withholds secrets from pull requests opened from forks, so they can't push the
+    # references back. The run is skipped and the label stays on.
+    if: >-
+      github.event.label.name == 'record-screenshots'
+      && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    # This job never runs on main, so it has no Gradle cache entry of its own to restore. It
+    # compiles and renders exactly what screenshot-tests' verify does, so it restores that one's.
+    env:
+      GRADLE_BUILD_ACTION_CACHE_KEY_JOB: verify
+    steps:
+      - name: Checkout the pull request's branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Record the screenshots
+        run: ./gradlew screenshotTests -PscreenshotTests=record --continue
+
+      # A push made with GITHUB_TOKEN starts no workflow, and main's ruleset waits for
+      # check-translations on the head commit, so the commit is pushed with the repository's
+      # fine-grained token (Contents and Pull requests read and write), the one merge-when-green
+      # merges with. It is only handed to this step, after the pull request's code has run.
+      - name: Commit the new references
+        env:
+          PUSH_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if [ -z "$PUSH_TOKEN" ]; then
+            echo "::error::The MERGE_WHEN_GREEN_TOKEN secret is not set."
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add --all -- ':(glob)**/src/androidHostTest/screenshots/**'
+          if git diff --cached --quiet; then
+            echo 'The references already match what this branch renders.'
+          else
+            git commit -m 'chore: record the screenshot references'
+            git push "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${HEAD_REF}"
+          fi
+
+      # Dropped once the references are on the branch, so a run that fails, or a push rejected
+      # because the branch moved meanwhile, keeps it on: adding it again retries.
+      - name: Drop the label
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr edit "$PR_NUMBER" --remove-label record-screenshots
