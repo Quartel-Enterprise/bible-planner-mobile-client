@@ -396,8 +396,10 @@ internal class DayViewModel(
 
         viewModelScope.launch {
             if (useCases.shouldBlockAddNotes()) {
-                // Why: the user can type a note before this check returns, so notes that slipped in
-                // are removed.
+                /*
+                 * Why: the user can type a note before this check returns, so notes that slipped in
+                 * are removed.
+                 */
                 deleteNotesAsyncDueToBlockedAddNotes()
                 blockAddNotes()
             }

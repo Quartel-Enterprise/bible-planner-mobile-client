@@ -221,8 +221,10 @@ private fun TextSizeSlider(
     )
 }
 
-// Why: the stock slider draws a dot for every step, turning a twenty-position range into a row
-// of beads; steps still quantise the value, they are just not drawn.
+/*
+ * Why: the stock slider draws a dot for every step, turning a twenty-position range into a row
+ * of beads; steps still quantise the value, they are just not drawn.
+ */
 @Composable
 private fun PlainSlider(
     value: Float,

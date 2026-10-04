@@ -11,9 +11,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
-// Why: a pull only upserts, so another account signing in without logout wipes local data first;
-// realtime stays foreground-only so a background token refresh never hits Realtime's setAuth,
-// which crashes when the socket died; the reconnect snapshot pull covers what was missed.
+/*
+ * Why: a pull only upserts, so another account signing in without logout wipes local data first;
+ * realtime stays foreground-only so a background token refresh never hits Realtime's setAuth,
+ * which crashes when the socket died; the reconnect snapshot pull covers what was missed.
+ */
 internal class SyncCoordinator(
     private val observeAuthenticatedUserId: ObserveAuthenticatedUserId,
     private val synchronizers: List<Synchronizer>,

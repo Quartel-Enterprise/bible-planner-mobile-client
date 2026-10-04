@@ -45,8 +45,10 @@ internal class BackStackController(
         forwardStack.removeLastOrNull()?.asReversed()?.forEach(backStack::add)
     }
 
-    // Why: the study beside the reader follows the chapter on screen; anything else on top (e.g. verse
-    // selection) keeps its place and the study it covers is replaced on the next reader request.
+    /*
+     * Why: the study beside the reader follows the chapter on screen; anything else on top (e.g. verse
+     * selection) keeps its place and the study it covers is replaced on the next reader request.
+     */
     private fun showChapterStudyCompanion(route: ChapterStudyNavRoute) {
         when (backStack.lastOrNull()) {
             route -> Unit

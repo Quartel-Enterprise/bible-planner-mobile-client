@@ -7,12 +7,16 @@ interface SyncLocalStore<E, D> {
 
     suspend fun getPending(): List<E>
 
-    // Why: clear the pending flag only if the row was not re-touched (updatedAt guard), so a
-    // change made while the push was in flight is not lost.
+    /*
+     * Why: clear the pending flag only if the row was not re-touched (updatedAt guard), so a
+     * change made while the push was in flight is not lost.
+     */
     suspend fun markSynced(entity: E)
 
-    // Why: overwrite only non-pending rows with a strictly newer remote change, so the echo
-    // of our own write and stale remote rows are no-ops.
+    /*
+     * Why: overwrite only non-pending rows with a strictly newer remote change, so the echo
+     * of our own write and stale remote rows are no-ops.
+     */
     suspend fun applyRemote(dto: D)
 
     fun toDto(
@@ -24,7 +28,9 @@ interface SyncLocalStore<E, D> {
 
     suspend fun adoptProvisionalDefaults(now: Long) {}
 
-    // Why: the logout wipe must not schedule a push, or it would propagate to the account's
-    // remote data.
+    /*
+     * Why: the logout wipe must not schedule a push, or it would propagate to the account's
+     * remote data.
+     */
     suspend fun clearLocal()
 }

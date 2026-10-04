@@ -62,8 +62,10 @@ internal class VerseHighlightRepositoryImpl(
         }
     }
 
-    // Why: rows already holding the colour are skipped; re-marking them pending would cost a push and
-    // a realtime broadcast per device for an unchanged value.
+    /*
+     * Why: rows already holding the colour are skipped; re-marking them pending would cost a push and
+     * a realtime broadcast per device for an unchanged value.
+     */
     override suspend fun setColor(
         refs: List<VerseRef>,
         color: HighlightColor?,

@@ -13,8 +13,10 @@ import com.quare.bibleplanner.core.model.route.DayStudyMainPaneKey
 import com.quare.bibleplanner.core.model.route.ReaderPaneKey
 import com.quare.bibleplanner.core.navigation.scene.StudyPanelScene
 
-// Why: on wide windows a study sits beside what it studies instead of covering it; the study only
-// came along with its pane, so going back leaves both.
+/*
+ * Why: on wide windows a study sits beside what it studies instead of covering it; the study only
+ * came along with its pane, so going back leaves both.
+ */
 class StudyPanelSceneStrategy(
     private val isWide: Boolean,
     private val readingFraction: Float,

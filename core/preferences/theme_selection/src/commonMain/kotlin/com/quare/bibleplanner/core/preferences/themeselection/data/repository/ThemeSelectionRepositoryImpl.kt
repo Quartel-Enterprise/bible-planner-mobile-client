@@ -15,9 +15,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-// Why: DataStore is the render source; with sync on, user writes are mirrored to
-// SyncedPreferenceDao for pushing, while applySynced* skip the mirror to avoid an
-// echo loop.
+/*
+ * Why: DataStore is the render source; with sync on, user writes are mirrored to
+ * SyncedPreferenceDao for pushing, while applySynced* skip the mirror to avoid an
+ * echo loop.
+ */
 internal class ThemeSelectionRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
     private val mapper: ThemePreferenceMapper,

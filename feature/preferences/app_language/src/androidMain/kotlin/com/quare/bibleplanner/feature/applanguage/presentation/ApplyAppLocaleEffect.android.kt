@@ -14,8 +14,10 @@ actual fun ApplyAppLocaleEffect() {
     val getAppLanguageFlow: GetAppLanguageFlow = koinInject()
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        // Why: drop(1) because the current language was already applied via attachBaseContext
-        // at launch; only later changes (user or sync) need applying.
+        /*
+         * Why: drop(1) because the current language was already applied via attachBaseContext
+         * at launch; only later changes (user or sync) need applying.
+         */
         getAppLanguageFlow()
             .distinctUntilChanged()
             .drop(1)

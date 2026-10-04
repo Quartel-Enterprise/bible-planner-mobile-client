@@ -7,7 +7,9 @@ interface SyncRemoteStore<D> {
 
     suspend fun fetch(userId: String): List<D>
 
-    // Why: deletes are ignored because state changes are modeled as upserts, so a delete
-    // carries no state to apply.
+    /*
+     * Why: deletes are ignored because state changes are modeled as upserts, so a delete
+     * carries no state to apply.
+     */
     fun observeRemote(userId: String): Flow<D>
 }

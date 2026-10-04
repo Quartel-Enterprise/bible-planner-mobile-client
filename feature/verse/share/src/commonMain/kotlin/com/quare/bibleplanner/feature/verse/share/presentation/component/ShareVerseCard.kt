@@ -44,8 +44,10 @@ private val referenceFontSize = 10.5.sp
 private val referenceLetterSpacing = 1.6.sp
 private val logoSize = 22.dp
 
-// Why: one composable serves both preview and capture, guaranteeing the image matches what the
-// user approved.
+/*
+ * Why: one composable serves both preview and capture, guaranteeing the image matches what the
+ * user approved.
+ */
 @Composable
 internal fun ShareVerseCard(
     uiState: ShareVerseUiState,
@@ -65,8 +67,10 @@ internal fun ShareVerseCard(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Why: the mark sits on a line shorter than itself, as the design draws it; at nearly 3x the body
-            // size its own leading would eat the passage's room.
+            /*
+             * Why: the mark sits on a line shorter than itself, as the design draws it; at nearly 3x the body
+             * size its own leading would eat the passage's room.
+             */
             Text(
                 text = "“",
                 fontFamily = uiState.font.toFontFamily(),
@@ -79,8 +83,10 @@ internal fun ShareVerseCard(
                 text = uiState.quote,
                 style = TextStyle(
                     fontFamily = uiState.font.toFontFamily(),
-                    // Why: relative line height; an absolute one keeps every line as tall as it started, so shrinking
-                    // the glyphs would never shorten the block enough to fit.
+                    /*
+                     * Why: relative line height; an absolute one keeps every line as tall as it started, so shrinking
+                     * the glyphs would never shorten the block enough to fit.
+                     */
                     lineHeight = QUOTE_LINE_HEIGHT_RATIO.em,
                     fontStyle = FontStyle.Italic,
                     color = background.textColor,

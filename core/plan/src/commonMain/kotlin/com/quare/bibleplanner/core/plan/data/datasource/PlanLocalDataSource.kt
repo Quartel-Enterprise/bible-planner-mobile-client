@@ -17,8 +17,10 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
-// Why: the legacy accessors exist only for the one-time migration into
-// synced_preferences; live reads and writes go through PlanRepositoryImpl.
+/*
+ * Why: the legacy accessors exist only for the one-time migration into
+ * synced_preferences; live reads and writes go through PlanRepositoryImpl.
+ */
 class PlanLocalDataSource(
     private val dataStore: DataStore<Preferences>,
 ) {

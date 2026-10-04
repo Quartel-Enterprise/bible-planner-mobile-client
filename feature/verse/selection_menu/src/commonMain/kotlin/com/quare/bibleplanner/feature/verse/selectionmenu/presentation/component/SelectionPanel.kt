@@ -26,8 +26,10 @@ import com.quare.bibleplanner.feature.verse.selectionmenu.presentation.model.Ver
 import com.quare.bibleplanner.ui.component.icon.CommonIconButton
 import org.jetbrains.compose.resources.stringResource
 
-// Why: deliberately not modal so the reader stays tappable and the selection can be
-// extended while the panel is open.
+/*
+ * Why: deliberately not modal so the reader stays tappable and the selection can be
+ * extended while the panel is open.
+ */
 @Composable
 internal fun SelectionPanel(
     selection: VerseSelectionUiState,

@@ -59,8 +59,10 @@ abstract class SyncedPreferenceDao {
         }
     }
 
-    // Why: updatedAt = 0 marks the row provisional, so any remote value wins over it and
-    // adoptProvisional later promotes rows still at 0 to pending.
+    /*
+     * Why: updatedAt = 0 marks the row provisional, so any remote value wins over it and
+     * adoptProvisional later promotes rows still at 0 to pending.
+     */
     @Query(
         "INSERT OR IGNORE INTO synced_preferences (key, value, updatedAt, pendingSync) " +
             "VALUES (:key, :value, 0, 0)",

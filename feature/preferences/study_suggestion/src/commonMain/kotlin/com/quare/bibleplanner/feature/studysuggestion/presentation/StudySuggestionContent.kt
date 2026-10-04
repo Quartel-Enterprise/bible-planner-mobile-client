@@ -270,8 +270,10 @@ private fun SyncOption(
     }
 }
 
-// Why: the disabled switch takes no taps, so a transparent overlay over the switch only (not the
-// row) catches them to prompt logged-out users to sign in.
+/*
+ * Why: the disabled switch takes no taps, so a transparent overlay over the switch only (not the
+ * row) catches them to prompt logged-out users to sign in.
+ */
 @Composable
 private fun SyncSwitch(
     isChecked: Boolean,

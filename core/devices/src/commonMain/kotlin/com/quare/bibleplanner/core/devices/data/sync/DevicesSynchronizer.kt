@@ -18,8 +18,10 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
-// Why: rows are server-authoritative except the user-editable name (Last-Write-Wins), and unlike
-// OfflineFirstSynchronizer this must handle remote DELETEs (a session revoked elsewhere).
+/*
+ * Why: rows are server-authoritative except the user-editable name (Last-Write-Wins), and unlike
+ * OfflineFirstSynchronizer this must handle remote DELETEs (a session revoked elsewhere).
+ */
 internal class DevicesSynchronizer(
     private val localStore: UserDeviceLocalStore,
     private val remoteStore: UserDevicesRemoteStore,

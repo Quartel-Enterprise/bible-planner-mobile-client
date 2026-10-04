@@ -18,8 +18,10 @@ import org.jetbrains.compose.resources.stringResource
 
 private const val CHAPTER_HEADER_AND_END_ITEM_COUNT = 2
 
-// Why: vertical reading emits every chapter into one list, so the next chapter is already below
-// and the chapter arrows are dropped.
+/*
+ * Why: vertical reading emits every chapter into one list, so the next chapter is already below
+ * and the chapter arrows are dropped.
+ */
 internal fun LazyListScope.chapterContent(
     chapter: ReadChapterUiModel,
     header: ReadHeaderUiModel,
@@ -112,8 +114,10 @@ internal fun getChapterStartIndices(
     leadingItemCount: Int,
     isChapterStudyBeside: Boolean,
 ): List<Int> {
-    // Why: must match the items chapterContent emits, or the visible chapter and the verse scroll
-    // target drift by one item per chapter.
+    /*
+     * Why: must match the items chapterContent emits, or the visible chapter and the verse scroll
+     * target drift by one item per chapter.
+     */
     val studyCardItemCount = if (shouldListChapterStudyCard(isChapterStudyBeside)) 1 else 0
     return chapters.runningFold(leadingItemCount) { start, chapter ->
         start + CHAPTER_HEADER_AND_END_ITEM_COUNT + chapter.verses.size + studyCardItemCount

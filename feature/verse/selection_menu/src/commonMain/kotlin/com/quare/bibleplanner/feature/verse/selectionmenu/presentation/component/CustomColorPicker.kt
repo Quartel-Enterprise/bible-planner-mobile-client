@@ -54,8 +54,10 @@ private val hueBrush = Brush.horizontalGradient(
     ),
 )
 
-// Why: saturation is fixed so every mix stays legible behind verse text; the 4dp spacer gives
-// the design's 12dp track gap because each thumb overhangs its track by 4dp.
+/*
+ * Why: saturation is fixed so every mix stays legible behind verse text; the 4dp spacer gives
+ * the design's 12dp track gap because each thumb overhangs its track by 4dp.
+ */
 @Composable
 internal fun CustomColorPicker(
     color: CustomColorUiModel,

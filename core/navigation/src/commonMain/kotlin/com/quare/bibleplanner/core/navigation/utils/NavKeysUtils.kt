@@ -14,8 +14,10 @@ internal fun MutableList<NavKey>.popBackEntries(isWide: Boolean): List<NavKey> {
     return removed
 }
 
-// Why: the selection panel and the study beside a screen belong to it, so replacing the screen
-// removes them too; leaving the panel would replace it instead and keep the old screen under the new one.
+/*
+ * Why: the selection panel and the study beside a screen belong to it, so replacing the screen
+ * removes them too; leaving the panel would replace it instead and keep the old screen under the new one.
+ */
 internal fun MutableList<NavKey>.removeTopScreen(isWide: Boolean) {
     if (lastOrNull() == VerseSelectionNavRoute) {
         removeLastOrNull()

@@ -3,8 +3,10 @@ package com.quare.bibleplanner.feature.verse.share.presentation.model
 import com.quare.bibleplanner.core.books.domain.model.VersesShareContentModel
 
 sealed interface ShareVerseUiAction {
-    // Why: carries the passage, not a finished message, because the surrounding wording is
-    // localized and resources are resolved in the UI layer.
+    /*
+     * Why: carries the passage, not a finished message, because the surrounding wording is
+     * localized and resources are resolved in the UI layer.
+     */
     data class ShareText(
         val content: VersesShareContentModel,
     ) : ShareVerseUiAction

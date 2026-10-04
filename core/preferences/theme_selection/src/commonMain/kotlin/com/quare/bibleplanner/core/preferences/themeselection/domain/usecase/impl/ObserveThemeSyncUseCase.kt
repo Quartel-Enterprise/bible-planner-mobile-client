@@ -6,8 +6,10 @@ import com.quare.bibleplanner.core.preferences.themeselection.domain.repository.
 import com.quare.bibleplanner.core.preferences.themeselection.domain.usecase.ObserveThemeSync
 import kotlinx.coroutines.flow.combine
 
-// Why: inbound values are written through applySynced* (DataStore-only) so an inbound change
-// never re-triggers an outbound push (no echo loop).
+/*
+ * Why: inbound values are written through applySynced* (DataStore-only) so an inbound change
+ * never re-triggers an outbound push (no echo loop).
+ */
 internal class ObserveThemeSyncUseCase(
     private val repository: ThemeSelectionRepository,
 ) : ObserveThemeSync {

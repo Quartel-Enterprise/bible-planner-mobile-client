@@ -6,9 +6,11 @@ import org.jetbrains.kotlin.com.intellij.lang.ASTNode
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtParameter
 
-// Why: a Dto mirrors a wire format: @SerialName keeps renames from changing the
-// contract, and no defaults since absent keys are nullable types read as null
-// via explicitNulls = false.
+/*
+ * Why: a Dto mirrors a wire format: @SerialName keeps renames from changing the
+ * contract, and no defaults since absent keys are nullable types read as null
+ * via explicitNulls = false.
+ */
 class DtoSerialNameRule : BiblePlannerRule("dto-serial-name") {
     override fun beforeVisitChildNodes(
         node: ASTNode,

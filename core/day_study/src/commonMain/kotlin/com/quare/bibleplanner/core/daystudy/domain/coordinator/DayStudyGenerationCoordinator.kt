@@ -5,8 +5,10 @@ import com.quare.bibleplanner.core.model.plan.PassageModel
 import com.quare.bibleplanner.core.model.route.DayNavRoute
 import kotlinx.coroutines.flow.StateFlow
 
-// Why: app-scoped so a generation survives leaving the day screen (a root floating card also
-// observes jobs); a job is keyed by its DayNavRoute, one study per day, so no storage key lookup.
+/*
+ * Why: app-scoped so a generation survives leaving the day screen (a root floating card also
+ * observes jobs); a job is keyed by its DayNavRoute, one study per day, so no storage key lookup.
+ */
 interface DayStudyGenerationCoordinator {
     val jobs: StateFlow<List<DayStudyGenerationJob>>
     val activeKey: StateFlow<String?>

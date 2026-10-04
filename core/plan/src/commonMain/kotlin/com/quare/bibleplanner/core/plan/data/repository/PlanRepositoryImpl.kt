@@ -17,8 +17,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
 
-// Why: user writes are flagged pending so the sync engine pushes them; the provisional default
-// (seedDefaultStartDate) is non-pending so it never overwrites a real remote value.
+/*
+ * Why: user writes are flagged pending so the sync engine pushes them; the provisional default
+ * (seedDefaultStartDate) is non-pending so it never overwrites a real remote value.
+ */
 class PlanRepositoryImpl(
     private val planLocalDataSource: PlanLocalDataSource,
     private val weekPlanDtoToModelMapper: WeekPlanDtoToModelMapper,
@@ -27,8 +29,10 @@ class PlanRepositoryImpl(
     private val syncedPreferenceDao: SyncedPreferenceDao,
     private val currentTimestampProvider: CurrentTimestampProvider,
 ) : PlanRepository {
-    // Why: bundled plans never change at runtime and parsing costs 52 JSON files per plan, so they
-    // are cached for the process; the lock makes parallel cold callers share one parse.
+    /*
+     * Why: bundled plans never change at runtime and parsing costs 52 JSON files per plan, so they
+     * are cached for the process; the lock makes parallel cold callers share one parse.
+     */
     private val plansByType = mutableMapOf<ReadingPlanType, List<WeekPlanModel>>()
     private val plansMutex = Mutex()
 

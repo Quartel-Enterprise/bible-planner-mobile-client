@@ -30,11 +30,15 @@ class SheetExitAnimation {
         try {
             registeredAnimation?.invoke()
         } catch (exception: CancellationException) {
-            // Why: an exit animation interrupted by another one is cancelled while this coroutine
-            // is not, and rethrowing would keep the popped sheet's window on screen for good.
+            /*
+             * Why: an exit animation interrupted by another one is cancelled while this coroutine
+             * is not, and rethrowing would keep the popped sheet's window on screen for good.
+             */
             if (currentCoroutineContext().isActive) return
-            // Why: the exit itself is cancelled when the same route is pushed back while the sheet
-            // is still leaving, and the sheet on screen is then the one the user opened again.
+            /*
+             * Why: the exit itself is cancelled when the same route is pushed back while the sheet
+             * is still leaving, and the sheet on screen is then the one the user opened again.
+             */
             isExiting = false
             throw exception
         }

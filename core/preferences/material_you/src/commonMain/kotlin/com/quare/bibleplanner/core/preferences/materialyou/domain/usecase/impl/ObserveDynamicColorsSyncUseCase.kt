@@ -7,8 +7,10 @@ import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceDao
 import com.quare.bibleplanner.core.provider.room.dao.SyncedPreferenceKeys
 import kotlinx.coroutines.flow.combine
 
-// Why: no-op without Material You so an Android value never affects an unsupported device; writes
-// through the repository without mirroring so an inbound change is not pushed back.
+/*
+ * Why: no-op without Material You so an Android value never affects an unsupported device; writes
+ * through the repository without mirroring so an inbound change is not pushed back.
+ */
 internal class ObserveDynamicColorsSyncUseCase(
     private val repository: MaterialYouRepository,
     private val isDynamicColorSupported: IsDynamicColorSupported,

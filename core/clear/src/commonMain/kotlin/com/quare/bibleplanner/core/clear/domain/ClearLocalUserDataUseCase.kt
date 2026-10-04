@@ -6,8 +6,10 @@ import com.quare.bibleplanner.core.sync.domain.usecase.ClearAllSyncedLocalData
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
-// Why: wiping synced preferences also drops the plan start date, so it is re-seeded
-// with today only after the synced wipe; the start date must never be empty after logout.
+/*
+ * Why: wiping synced preferences also drops the plan start date, so it is re-seeded
+ * with today only after the synced wipe; the start date must never be empty after logout.
+ */
 internal class ClearLocalUserDataUseCase(
     private val clearLocalReadingData: ClearLocalReadingDataUseCase,
     private val clearAllSyncedLocalData: ClearAllSyncedLocalData,

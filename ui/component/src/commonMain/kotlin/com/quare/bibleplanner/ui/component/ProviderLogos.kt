@@ -8,8 +8,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
 
-// Why: brand marks aren't in the Material icon set, so they're rebuilt from SVG paths.
-// Google keeps its four colours (render with Image); Apple is monochrome (render with Icon).
+/*
+ * Why: brand marks aren't in the Material icon set, so they're rebuilt from SVG paths.
+ * Google keeps its four colours (render with Image); Apple is monochrome (render with Icon).
+ */
 
 private val logoSize = 24.dp
 private const val VIEWPORT = 24f

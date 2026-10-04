@@ -36,8 +36,10 @@ private val lastBarEndInset = 6.dp
 private const val ICON_ALPHA = 0.85f
 private const val BAR_ALPHA = 0.45f
 
-// Why: only the verse that carries the icon is announced; the bar on the verses below repeats the
-// same action, so it stays tappable but out of the screen reader's way.
+/*
+ * Why: only the verse that carries the icon is announced; the bar on the verses below repeats the
+ * same action, so it stays tappable but out of the screen reader's way.
+ */
 @Composable
 internal fun VerseNoteIndicator(
     position: VerseNoteMarkPosition,

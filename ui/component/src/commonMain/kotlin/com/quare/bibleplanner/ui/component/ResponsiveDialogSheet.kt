@@ -148,9 +148,11 @@ fun ResponsiveDialogSheet(
     }
 }
 
-// Why: capping the ModalBottomSheet modifier itself also shrinks the height M3 computes its
-// anchors from, which pins the sheet to the top of the screen. The cap goes on the content instead,
-// minus the drag handle and the bottom inset M3 pads the sheet with outside of it.
+/*
+ * Why: capping the ModalBottomSheet modifier itself also shrinks the height M3 computes its
+ * anchors from, which pins the sheet to the top of the screen. The cap goes on the content instead,
+ * minus the drag handle and the bottom inset M3 pads the sheet with outside of it.
+ */
 private fun Modifier.sheetMaxHeight(maxHeight: Dp?): Modifier = if (maxHeight == null) {
     this
 } else {
@@ -193,8 +195,10 @@ private fun CloseableContent(
     }
 }
 
-// Why: a centred title shares its row with the close button, so it uses the smaller size and
-// is inset to clear it; left-aligned titles keep the display size.
+/*
+ * Why: a centred title shares its row with the close button, so it uses the smaller size and
+ * is inset to clear it; left-aligned titles keep the display size.
+ */
 @Composable
 private fun DialogHeader(
     title: String,

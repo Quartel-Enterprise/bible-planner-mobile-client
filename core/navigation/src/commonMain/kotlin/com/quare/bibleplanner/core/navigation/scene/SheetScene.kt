@@ -8,8 +8,10 @@ import androidx.navigation3.scene.OverlayScene
 import com.quare.bibleplanner.ui.utils.sheet.LocalSheetExitAnimation
 import com.quare.bibleplanner.ui.utils.sheet.SheetExitAnimation
 
-// Why: a dialog scene leaves composition the moment its entry is popped, so a sheet closed by
-// anything but a swipe vanished at once; this one stays until the sheet has slid away.
+/*
+ * Why: a dialog scene leaves composition the moment its entry is popped, so a sheet closed by
+ * anything but a swipe vanished at once; this one stays until the sheet has slid away.
+ */
 internal class SheetScene(
     override val key: Any,
     private val entry: NavEntry<NavKey>,

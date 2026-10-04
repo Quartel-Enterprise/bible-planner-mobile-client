@@ -8,8 +8,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-// Why: each setup kills the app itself, so every iteration scrolls a list drawn for the first
-// time. StartupMode.COLD would kill it after the setup, and the measured block would find nothing.
+/*
+ * Why: each setup kills the app itself, so every iteration scrolls a list drawn for the first
+ * time. StartupMode.COLD would kill it after the setup, and the measured block would find nothing.
+ */
 @RunWith(AndroidJUnit4::class)
 class ScrollBenchmark {
     @get:Rule
